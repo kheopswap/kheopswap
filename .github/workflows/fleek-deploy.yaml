@@ -1,0 +1,29 @@
+name: Deploy site via Fleek
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy-to-fleek:
+    runs-on: ubuntu-latest
+    env:
+      FLEEK_TOKEN: ${{ secrets.FLEEK_TOKEN }}
+      FLEEK_PROJECT_ID: ${{ secrets.FLEEK_PROJECT_ID }}
+      VITE_APP_FEE_ADDRESS: ${{ secrets.VITE_APP_FEE_ADDRESS }}
+      VITE_APP_FEE_PERCENT: ${{ secrets.VITE_APP_FEE_PERCENT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: true
+      - name: Install Fleek CLI
+        run: pnpm i -g @fleekxyz/cli
+      - name: Build & deploy sites
+        run: fleek sites deploy

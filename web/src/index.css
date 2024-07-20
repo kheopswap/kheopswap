@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes spin2 {
+  0% {
+    stroke-dasharray: 1, 800;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 400, 400;
+    stroke-dashoffset: -200px;
+  }
+  100% {
+    stroke-dasharray: 800, 1;
+    stroke-dashoffset: -800px;
+  }
+}
+
+@keyframes spin3 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin2 {
+  transform-origin: center;
+  animation:
+    spin2 1.5s ease-in-out infinite,
+    spin3 2s linear infinite;
+  animation-direction: alternate;
+}
+
+@layer base {
+  body {
+    @apply tabular-nums text-neutral-100 accent-primary hidden [.wf-active>&]:block;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
+  }
+}

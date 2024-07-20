@@ -1,0 +1,13 @@
+<svg width="1em" height="1em" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <circle
+    class="spin2" 
+    cx="400"
+    cy="400"
+    fill="none"
+    r="200"
+    stroke-width="50"
+    stroke="#e6007a"
+    stroke-dasharray="700 1400"
+    stroke-linecap="round"
+  />
+</svg>

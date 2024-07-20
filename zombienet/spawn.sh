@@ -1,0 +1,1 @@
+./bin/zombienet-linux-x64 --provider native spawn ./small_network.toml

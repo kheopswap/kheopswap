@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 640 640" style="enable-background:new 0 0 640 640;" xml:space="preserve">
+<style type="text/css">
+	.white{fill:white;}
+    .cls-grad{fill:url(#grad_wnd);}
+</style>
+<circle class="cls-grad" cx="320" cy="320" r="320"/>
+<g>
+	<path class="white" d="M444.2,392.4h-67.6l-12.7-31h-85.8l-12.7,31h-67.6l80.9-184.3h84.5L444.2,392.4z M321.1,256l-22.4,55h44.7
+		L321.1,256z"/>
+	<circle class="white" cx="321" cy="122.1" r="46.9"/>
+	<circle class="white" cx="321" cy="517.1" r="46.9"/>
+	<circle class="white" cx="147.8" cy="216" r="46.9"/>
+	<circle class="white" cx="494.3" cy="216" r="46.9"/>
+	<circle class="white" cx="147.8" cy="424.8" r="46.9"/>
+	<circle class="white" cx="494.3" cy="424.8" r="46.9"/>
+</g>
+<linearGradient id="grad_wnd" x1="0" y1="400" x2="640" y2="200" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F79420" />
+    <stop offset="1" stop-color="#E6007A" />
+    </linearGradient>
+</svg>
