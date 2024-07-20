@@ -1,7 +1,7 @@
 import { MultiAddress } from "@polkadot-api/descriptors";
 import type { SS58String } from "polkadot-api";
 import { type Account } from "../common/accounts";
-import { type Api } from "../common/apis";
+import { type Api } from "../common/getApi";
 import { waitTransactionComplete } from "../common/waitTransactionComplete";
 
 export const sendNativeTokensCall = (

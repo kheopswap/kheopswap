@@ -1,5 +1,5 @@
 import { Binary } from "polkadot-api";
-import { type Api } from "../common/apis";
+import { type Api } from "../common/getApi";
 
 import { MultiAddress } from "@polkadot-api/descriptors";
 import { type Account } from "../common/accounts";

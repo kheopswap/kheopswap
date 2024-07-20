@@ -1,6 +1,6 @@
 import { Binary } from "polkadot-api";
 import { getAccount } from "./common/accounts";
-import { getApi } from "./common/apis";
+import { getApi } from "./common/getApi";
 import { waitTransactionComplete } from "./common/waitTransactionComplete";
 import { getAssetTokenLocation, getNativeTokenLocation } from "./common/xcm";
 import { printAssetsAndPool } from "./tasks/printAssetsAndPool";

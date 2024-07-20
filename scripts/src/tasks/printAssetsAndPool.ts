@@ -1,4 +1,4 @@
-import { type Api } from "../common/apis";
+import { type Api } from "../common/getApi";
 import { getAssetTokenLocation, getNativeTokenLocation } from "../common/xcm";
 import { formatUnits } from "viem";
 

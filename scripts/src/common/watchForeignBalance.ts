@@ -1,6 +1,6 @@
 import type { SS58String } from "polkadot-api";
 import { formatUnits } from "viem";
-import type { Api, AssetHubChainId } from "./apis";
+import type { Api, AssetHubChainId } from "./getApi";
 import type { XcmV3Multilocation } from "./xcm";
 
 export const watchForeignBalance = (

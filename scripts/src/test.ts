@@ -1,4 +1,4 @@
-import { getApi } from "./common/apis";
+import { getApi } from "./common/getApi";
 import { XcmV4Instruction } from "@polkadot-api/descriptors";
 
 const relay = await getApi("devrelay");

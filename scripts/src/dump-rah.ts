@@ -1,4 +1,4 @@
-import { getApi } from "./common/apis";
+import { getApi } from "./common/getApi";
 import { dumpData } from "./util/dumpData";
 
 /**

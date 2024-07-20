@@ -1,6 +1,6 @@
 import { AccountId, Binary } from "polkadot-api";
 import { getDevEnvAccount } from "./common/accounts";
-import { getApi } from "./common/apis";
+import { getApi } from "./common/getApi";
 import { watchForeignBalance } from "./common/watchForeignBalance";
 import { watchNativeBalance } from "./common/watchNativeBalance";
 import type { XcmV3Multilocation } from "./common/xcm";

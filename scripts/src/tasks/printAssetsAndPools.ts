@@ -1,4 +1,4 @@
-import { type Api } from "../common/apis";
+import { type Api } from "../common/getApi";
 
 export const printAssetsAndPools = async (api: Api<"devah" | "wah">) => {
   console.log("Assets");

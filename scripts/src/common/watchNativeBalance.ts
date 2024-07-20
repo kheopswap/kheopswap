@@ -1,6 +1,6 @@
 import type { SS58String } from "polkadot-api";
 import { formatUnits } from "viem";
-import type { Api, ChainId } from "./apis";
+import type { Api, ChainId } from "./getApi";
 
 export const watchNativeBalance = (
   api: Api<ChainId>,

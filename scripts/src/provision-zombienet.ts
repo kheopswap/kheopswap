@@ -1,6 +1,6 @@
 import { parseUnits } from "viem";
 import { alice } from "./common/accounts";
-import { getApi } from "./common/apis";
+import { getApi } from "./common/getApi";
 import { waitTransactionComplete } from "./common/waitTransactionComplete";
 import { createAssetCalls } from "./tasks/createAsset";
 import { createAssetAndPoolCalls } from "./tasks/createAssetAndPool";

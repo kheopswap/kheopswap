@@ -2,16 +2,18 @@
 
 This project is primarily intented to initialize a zombienet environment for testing and development. It is not intended to be used in production.
 
+It also includes a bunch of draft scripts used to prototype website features
+
 To install dependencies:
 
 ```bash
 bun install
 ```
 
-To run:
+To provision Zombienet:
 
 ```bash
-bun setup
+bun provision-zombienet
 ```
 
 ## IMPORTANT NOTE
