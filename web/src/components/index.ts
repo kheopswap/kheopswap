@@ -10,6 +10,7 @@ export * from "./FormSummary";
 export * from "./InjectedAccountIcon";
 export * from "./MagicButton";
 export * from "./ModalDialog";
+export * from "./SearchInput";
 export * from "./StablePrice";
 export * from "./TextShimmer";
 export * from "./TokenAmountField";
