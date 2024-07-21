@@ -9,10 +9,26 @@ import { balanceStatuses$ } from "./watchers";
 import { LoadingStatus } from "src/services/common";
 import { logger } from "src/util";
 
+const getInitialState = (): Record<BalanceId, BalanceState> => {
+  try {
+    return Object.fromEntries(
+      balancesStore$.value.map(
+        (b) =>
+          [
+            getBalanceId(b),
+            { balance: BigInt(b.balance), status: "stale" } as BalanceState,
+          ] as const,
+      ),
+    );
+  } catch (err) {
+    return {};
+  }
+};
+
 // contains all known balances and their status
 export const balancesState$ = new BehaviorSubject<
   Record<BalanceId, BalanceState>
->({});
+>(getInitialState());
 
 // maintain the above up to date
 combineLatest([
