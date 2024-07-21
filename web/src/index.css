@@ -44,7 +44,9 @@
   }
 
   button,
-  a {
-    @apply focus:outline-none focus-visible:ring-1 focus-visible:ring-white;
+  a,
+  div,
+  aside {
+    @apply focus:outline-none focus-visible:ring-1 focus-visible:outline-none focus-visible:ring-white;
   }
 }
