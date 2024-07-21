@@ -13,9 +13,14 @@ export const usePortfolioProvider = () => {
     [allChains],
   );
 
-  const { data: tokens, isLoading: isLoadingTokens } = useTokensByChainIds({
+  const { data: allTokens, isLoading: isLoadingTokens } = useTokensByChainIds({
     chainIds,
   });
+
+  const tokens = useMemo(
+    () => allTokens.filter((t) => t.type !== "pool-asset"),
+    [allTokens],
+  );
 
   const balanceDefs = useMemo(() => {
     // TODO genesishHash filter
