@@ -1,4 +1,5 @@
 import { BehaviorSubject, combineLatest } from "rxjs";
+import { groupBy } from "lodash";
 
 import { tokensStore$ } from "./store";
 import { sortTokens } from "./util";
@@ -7,48 +8,40 @@ import { chainTokensStatuses$ } from "./watchers";
 import { Token } from "src/config/tokens";
 import { LoadingStatus } from "src/services/common";
 import { ChainId } from "src/config/chains";
+import { logger } from "src/util";
 
-const getChainValue = (
-  chainId: ChainId,
-  statuses: Record<ChainId, LoadingStatus>,
-  tokens: Token[],
-) => ({
-  status: statuses[chainId],
-  tokens: tokens.filter((t) => t.chainId === chainId).sort(sortTokens),
-});
+type ChainTokensState = { status: LoadingStatus; tokens: Token[] };
+
+const combineState = (
+  statusByChain: Record<ChainId, LoadingStatus>,
+  allTokens: Token[],
+): Record<ChainId, ChainTokensState> => {
+  try {
+    const tokensByChain = groupBy(allTokens.sort(sortTokens), "chainId");
+
+    return Object.fromEntries(
+      Object.entries(statusByChain).map(([chainId, status]) => [
+        chainId,
+        {
+          status,
+          tokens: tokensByChain[chainId as ChainId] ?? [],
+        },
+      ]),
+    ) as Record<ChainId, ChainTokensState>;
+  } catch (err) {
+    logger.error("Failed to merge tokens state", { err });
+    return {} as Record<ChainId, ChainTokensState>;
+  }
+};
 
 // main datasource of the service
 export const tokensByChainState$ = new BehaviorSubject<
-  Record<ChainId, { status: LoadingStatus; tokens: Token[] }>
->(
-  Object.keys(chainTokensStatuses$.subject$.value).reduce(
-    (acc, chainId) => ({
-      ...acc,
-      [chainId]: getChainValue(
-        chainId as ChainId,
-        chainTokensStatuses$.subject$.value,
-        tokensStore$.value,
-      ),
-    }),
-    {} as Record<ChainId, { status: LoadingStatus; tokens: Token[] }>,
-  ),
-);
+  Record<ChainId, ChainTokensState>
+>(combineState(chainTokensStatuses$.subject$.value, tokensStore$.value));
 
 // keep subject up to date
 combineLatest([chainTokensStatuses$.subject$, tokensStore$]).subscribe(
   ([statusByChain, allTokens]) => {
-    tokensByChainState$.next(
-      Object.keys(statusByChain).reduce(
-        (acc, chainId) => ({
-          ...acc,
-          [chainId]: getChainValue(
-            chainId as ChainId,
-            statusByChain,
-            allTokens,
-          ),
-        }),
-        {} as Record<ChainId, { status: LoadingStatus; tokens: Token[] }>,
-      ),
-    );
+    tokensByChainState$.next(combineState(statusByChain, allTokens));
   },
 );

@@ -1,26 +1,43 @@
-import { BehaviorSubject, combineLatest, map, throttleTime } from "rxjs";
+import { BehaviorSubject, combineLatest, debounceTime, map, tap } from "rxjs";
 
 import { balancesStore$ } from "./store";
 import { obsBalanceSubscriptions$ } from "./subscriptions";
-import { BalanceId, BalanceState } from "./types";
+import { BalanceId, BalanceState, StoredBalance } from "./types";
 import { getBalanceId } from "./utils";
 import { balanceStatuses$ } from "./watchers";
 
 import { LoadingStatus } from "src/services/common";
 import { logger } from "src/util";
 
-const getInitialState = (): Record<BalanceId, BalanceState> => {
+const combineState = (
+  balanceIds: BalanceId[],
+  statuses: Record<BalanceId, LoadingStatus>,
+  balances: StoredBalance[],
+): Record<BalanceId, BalanceState> => {
   try {
-    return Object.fromEntries(
-      balancesStore$.value.map(
-        (b) =>
-          [
-            getBalanceId(b),
-            { balance: BigInt(b.balance), status: "stale" } as BalanceState,
-          ] as const,
-      ),
+    const balancesByBalanceId = new Map<BalanceId, string>(
+      balances.map((b) => [getBalanceId(b), b.balance] as const),
     );
+
+    const allBalanceIds = [
+      ...new Set<BalanceId>(balanceIds.concat([...balancesByBalanceId.keys()])),
+    ];
+
+    return Object.fromEntries(
+      allBalanceIds.map((balanceId) => {
+        const status = statuses[balanceId] ?? "stale";
+        const balance = balancesByBalanceId.has(balanceId)
+          ? BigInt(balancesByBalanceId.get(balanceId) as string)
+          : undefined;
+
+        return [balanceId, { status, balance }];
+      }),
+    ) as Record<
+      BalanceId,
+      { status: LoadingStatus; balance: bigint | undefined }
+    >;
   } catch (err) {
+    logger.error("Failed to merge balances state", { err });
     return {};
   }
 };
@@ -28,7 +45,7 @@ const getInitialState = (): Record<BalanceId, BalanceState> => {
 // contains all known balances and their status
 export const balancesState$ = new BehaviorSubject<
   Record<BalanceId, BalanceState>
->(getInitialState());
+>(combineState([], {}, balancesStore$.value));
 
 // maintain the above up to date
 combineLatest([
@@ -37,43 +54,22 @@ combineLatest([
   balancesStore$, // stored balances
 ])
   .pipe(
-    throttleTime(50, undefined, { trailing: true }),
-    map(([balanceIds, statuses, balances]) => {
-      const balancesByBalanceId = new Map<BalanceId, string>(
-        balances.map((b) => [getBalanceId(b), b.balance] as const),
-      );
-
-      const allBalanceIds = [
-        ...new Set<BalanceId>(
-          balanceIds.concat([...balancesByBalanceId.keys()]),
-        ),
-      ];
-
-      const balancesMap = Object.fromEntries(
-        allBalanceIds.map((balanceId) => {
-          const status = statuses[balanceId] ?? "stale";
-          const balance = balancesByBalanceId.has(balanceId)
-            ? BigInt(balancesByBalanceId.get(balanceId) as string)
-            : undefined;
-
-          return [balanceId, { status, balance }];
-        }),
-      ) as Record<
-        BalanceId,
-        { status: LoadingStatus; balance: bigint | undefined }
-      >;
+    debounceTime(50),
+    map(([balanceIds, statuses, balances]) =>
+      combineState(balanceIds, statuses, balances),
+    ),
+    tap((balancesMap) => {
+      if (!import.meta.env.DEV) return;
 
       const arBalances = Object.values(balancesMap);
+
       logger.debug(
-        "[balances report] subscriptions:%d | stale:%d | loading:%d | loaded:%d | total_stored:%d",
-        balanceIds.length,
+        "[balances report] stale:%d | loading:%d | loaded:%d | total_stored:%d",
         arBalances.filter((b) => b.status === "stale").length,
         arBalances.filter((b) => b.status === "loading").length,
         arBalances.filter((b) => b.status === "loaded").length,
-        balances.length,
+        arBalances.length,
       );
-
-      return balancesMap;
     }),
   )
   .subscribe((balances) => {

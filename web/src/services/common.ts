@@ -6,10 +6,9 @@ export type LoadingStatus = "stale" | "loading" | "loaded";
 
 export const initializeChainStatusWatcher = (refreshTimeout: number) => {
   const subject$ = new BehaviorSubject<Record<ChainId, LoadingStatus>>(
-    getChains().reduce(
-      (acc, chain) => ({ ...acc, [chain.id]: "stale" }),
-      {} as Record<ChainId, LoadingStatus>,
-    ),
+    Object.fromEntries(
+      getChains().map((chain) => [chain.id, "stale"]),
+    ) as Record<ChainId, LoadingStatus>,
   );
 
   const getLoadingStatus = (chainId: ChainId) => {
