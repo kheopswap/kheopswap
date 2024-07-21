@@ -123,7 +123,7 @@ export const Drawer: FC<DrawerProps> = ({
 
       {/* Drawer */}
       <TransitionChild
-        as="div"
+        as="aside"
         className={cn("z-40 shadow-2xl", position, drawer, className)}
         enter="transition-transform ease-in-out duration-300 transform"
         enterFrom={enterFrom}

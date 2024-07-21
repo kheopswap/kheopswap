@@ -42,4 +42,9 @@
     margin: 0;
     -moz-appearance: textfield !important;
   }
+
+  button,
+  a {
+    @apply focus:outline-none focus-visible:ring-1 focus-visible:ring-white;
+  }
 }
