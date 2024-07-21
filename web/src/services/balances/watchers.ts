@@ -1,7 +1,7 @@
 import { BehaviorSubject, Subscription } from "rxjs";
 
 import { balancesStore$ } from "./store";
-import { obsBalanceSubscriptions$ } from "./subscriptions";
+import { balanceSubscriptions$ } from "./subscriptions";
 import { BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
 
@@ -102,7 +102,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 
 // subscribe to the list of the unique balanceIds to watch
 // and update watchers accordingly
-obsBalanceSubscriptions$.subscribe((balanceIds) => {
+balanceSubscriptions$.subscribe((balanceIds) => {
   // add missing watchers
   balanceIds.forEach((balanceId) => {
     if (WATCHERS.has(balanceId)) return;

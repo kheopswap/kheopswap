@@ -1,7 +1,7 @@
 import { BehaviorSubject, combineLatest, debounceTime, map, tap } from "rxjs";
 
 import { balancesStore$ } from "./store";
-import { obsBalanceSubscriptions$ } from "./subscriptions";
+import { balanceSubscriptions$ } from "./subscriptions";
 import { BalanceId, BalanceState, StoredBalance } from "./types";
 import { getBalanceId } from "./utils";
 import { balanceStatuses$ } from "./watchers";
@@ -42,11 +42,11 @@ const combineState = (
 // contains all known balances and their status
 export const balancesState$ = new BehaviorSubject<
   Record<BalanceId, BalanceState>
->(combineState([], {}, balancesStore$.value));
+>(combineState([], balanceStatuses$.value, balancesStore$.value));
 
 // maintain the above up to date
 combineLatest([
-  obsBalanceSubscriptions$, // unique subscriptions
+  balanceSubscriptions$, // unique subscriptions
   balanceStatuses$, // status of each subscription
   balancesStore$, // stored balances
 ])
