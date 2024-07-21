@@ -10,7 +10,7 @@ export const safeStringify = (value: unknown) => {
       isBigInt(value)
         ? value.toString()
         : isBinary(value)
-          ? value.asText()
+          ? value.asHex()
           : value,
     2
   );

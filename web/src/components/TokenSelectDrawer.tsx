@@ -1,10 +1,11 @@
-import { FC, forwardRef, useCallback } from "react";
+import { FC, forwardRef, useCallback, useMemo, useState } from "react";
 
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
 import { TokenLogo } from "./TokenLogo";
 import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
+import { SearchInput } from "./SearchInput";
 
 import { Token, TokenId } from "src/config/tokens";
 import { useChainName } from "src/hooks";
@@ -29,19 +30,19 @@ const TokenButton = forwardRef<
       type="button"
       onClick={onClick}
       className={cn(
-        Styles.button, // bg-neutral-800 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-700
+        Styles.button,
         "flex h-16 w-full items-center gap-3 overflow-hidden rounded-md p-2 pl-4 pr-3",
-        "text-neutral-400 hover:text-neutral-200",
+        "text-left text-neutral-400 hover:text-neutral-200",
         selected && "ring-1 ring-neutral-500",
       )}
     >
       <TokenLogo className="size-10" token={token} />
-      <div className="flex grow flex-col items-start gap-0.5 text-neutral-400">
-        <div className="flex grow items-center gap-2 overflow-hidden ">
+      <div className="flex grow flex-col items-start gap-0.5 overflow-hidden text-neutral-400">
+        <div className="flex w-full grow items-center gap-2">
           <div className="font-bold text-neutral-50">{token.symbol}</div>
           <div className="inline-block truncate">{token.name ?? ""}</div>
         </div>
-        <div className="truncate text-xs font-light">
+        <div className="w-full truncate text-xs font-light">
           {chainName}
           {token.type === "asset" ? ` - ${token.assetId}` : null}
         </div>
@@ -83,6 +84,8 @@ const TokenSelectDrawerContent: FC<{
   isLoading?: boolean;
   onChange: (tokenId: TokenId) => void;
 }> = ({ tokenId, tokens, isLoading, onChange }) => {
+  const [search, setSearch] = useState("");
+
   const handleClick = useCallback(
     (id: TokenId) => () => {
       onChange(id);
@@ -90,9 +93,24 @@ const TokenSelectDrawerContent: FC<{
     [onChange],
   );
 
+  const items = useMemo(() => {
+    if (!tokens) return [];
+    if (!search) return tokens;
+
+    const ls = search.toLowerCase();
+
+    return tokens.filter(
+      (t) =>
+        t.symbol.toLowerCase().includes(ls) ||
+        t.name?.toLowerCase().includes(ls) ||
+        (t.type === "asset" && t.assetId.toString() === ls),
+    );
+  }, [tokens, search]);
+
   return (
     <div className="flex flex-col gap-2">
-      {tokens?.map((t) => (
+      <SearchInput className="mb-2" onChange={setSearch} placeholder="Search" />
+      {items.map((t) => (
         <TokenButton
           key={t.id}
           token={t}
