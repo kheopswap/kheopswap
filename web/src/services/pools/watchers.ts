@@ -125,3 +125,5 @@ poolsByChainSubscriptions$.subscribe((chainIds) => {
     chainPoolsLoadingStatuses.setLoadingStatus(chainId, "stale");
   }
 });
+
+export const getPoolsWatchersCount = () => WATCHERS.size;
