@@ -18,10 +18,10 @@ type TokensByChainState = {
 
 const DEFAULT_VALUE: TokensByChainState = { status: "stale", tokens: [] };
 
-export const subscribeTokensByChain = (chainId: ChainId) => {
-  addTokensByChainSubscription(chainId);
+export const subscribeTokensByChains = (chainIds: ChainId[]) => {
+  const subId = addTokensByChainSubscription(chainIds);
 
-  return () => removeTokensByChainSubscription(chainId);
+  return () => removeTokensByChainSubscription(subId);
 };
 
 export const getTokensByChain$ = (chainId: ChainId | null) => {

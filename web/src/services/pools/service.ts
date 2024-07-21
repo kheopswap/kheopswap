@@ -19,9 +19,9 @@ type PoolsByChainState = {
 const DEFAULT_VALUE: PoolsByChainState = { status: "stale", pools: [] };
 
 export const subscribePoolsByChain = (chainId: ChainId) => {
-  addPoolsByChainSubscription(chainId);
+  const subId = addPoolsByChainSubscription(chainId);
 
-  return () => removePoolsByChainSubscription(chainId);
+  return () => removePoolsByChainSubscription(subId);
 };
 
 export const getPoolsByChain$ = (chainId: ChainId | null) => {

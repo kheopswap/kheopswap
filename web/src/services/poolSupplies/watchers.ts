@@ -120,3 +120,5 @@ poolSuppliesSubscriptions$.subscribe((poolSupplyIds) => {
     });
   }
 });
+
+export const getPoolSuppliesWatchersCount = () => WATCHERS.size;

@@ -18,7 +18,7 @@ export type BalanceState = BalanceDef & {
 };
 
 type UseBalancesResult = {
-  data: BalanceState[] | undefined;
+  data: BalanceState[];
   isLoading: boolean;
 };
 

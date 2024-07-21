@@ -193,3 +193,5 @@ tokensByChainSubscriptions$.subscribe((chainIds) => {
     chainTokensStatuses$.setLoadingStatus(chainId, "stale");
   }
 });
+
+export const getTokensWatchersCount = () => WATCHERS.size;

@@ -5,7 +5,7 @@ import { ChainId } from "src/config/chains";
 
 type TokensByChainSubscriptionRequest = {
   id: string;
-  chainId: ChainId;
+  chainIds: ChainId[];
 };
 
 const allTokensByChainSubscriptions$ = new BehaviorSubject<
@@ -13,14 +13,14 @@ const allTokensByChainSubscriptions$ = new BehaviorSubject<
 >([]);
 
 export const tokensByChainSubscriptions$ = allTokensByChainSubscriptions$.pipe(
-  map((subs) => [...new Set(subs.map((sub) => sub.chainId))].sort()),
+  map((subs) => [...new Set(subs.flatMap((sub) => sub.chainIds))].sort()),
   distinctUntilChanged<ChainId[]>(isEqual),
 );
 
-export const addTokensByChainSubscription = (chainId: ChainId) => {
+export const addTokensByChainSubscription = (chainIds: ChainId[]) => {
   const request: TokensByChainSubscriptionRequest = {
     id: crypto.randomUUID(),
-    chainId,
+    chainIds,
   };
 
   allTokensByChainSubscriptions$.next([

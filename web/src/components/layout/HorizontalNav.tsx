@@ -28,6 +28,9 @@ export const HorizontalNav: FC = () => {
         <NavItem to={`/${relayId}/pools`}>
           <span className="hidden sm:inline">Liquidity </span>Pools
         </NavItem>
+        {import.meta.env.DEV && (
+          <NavItem to={`/${relayId}/portfolio`}>P</NavItem>
+        )}
       </div>
     </div>
   );

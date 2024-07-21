@@ -121,3 +121,5 @@ balanceSubscriptions$.subscribe((balanceIds) => {
     });
   }
 });
+
+export const getBalancesWatchersCount = () => WATCHERS.size;

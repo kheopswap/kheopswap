@@ -36,3 +36,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     />
   </React.StrictMode>,
 );
+
+if (import.meta.env.DEV) import("./devImports");
