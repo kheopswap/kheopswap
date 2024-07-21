@@ -32,10 +32,7 @@ const combineState = (
 
         return [balanceId, { status, balance }];
       }),
-    ) as Record<
-      BalanceId,
-      { status: LoadingStatus; balance: bigint | undefined }
-    >;
+    ) as Record<BalanceId, BalanceState>;
   } catch (err) {
     logger.error("Failed to merge balances state", { err });
     return {};
