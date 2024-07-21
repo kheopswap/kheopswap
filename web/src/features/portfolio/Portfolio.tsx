@@ -1,5 +1,6 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { groupBy } from "lodash";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { PortfolioProvider, usePortfolio } from "./PortfolioProvider";
 
@@ -21,11 +22,15 @@ type TokenRowProps = {
 };
 
 const TokenRow: FC<TokenRowProps> = ({ token, balances }) => {
-  const chain = getChainById(token.chainId);
-  const total = Object.values(balances).reduce((acc, { balance }) => {
-    return acc + (balance ?? 0n);
-  }, 0n);
-  const isLoading = Object.values(balances).some(({ isLoading }) => isLoading);
+  const [chain, total, isLoading, showBalances] = useMemo(
+    () => [
+      getChainById(token.chainId),
+      Object.values(balances).reduce((acc, b) => acc + (b.balance ?? 0n), 0n),
+      Object.values(balances).some(({ isLoading }) => isLoading),
+      !!Object.keys(balances).length,
+    ],
+    [balances, token.chainId],
+  );
 
   return (
     <button
@@ -38,18 +43,40 @@ const TokenRow: FC<TokenRowProps> = ({ token, balances }) => {
       <div className="flex grow flex-col">
         <div className="flex justify-between gap-4">
           <div className="grow truncate">{token.symbol}</div>
-          <div className={cn("shrink-0", isLoading && "animate-pulse")}>
-            <Tokens token={token} plancks={total} />
-          </div>
+          {showBalances && (
+            <div className={cn("shrink-0", isLoading && "animate-pulse")}>
+              <Tokens token={token} plancks={total} />
+            </div>
+          )}
         </div>
         <div className="flex justify-between gap-4 text-xs text-neutral-500">
           <div className="grow truncate">{chain.name}</div>
-          <div className={cn("shrink-0", isLoading && "animate-pulse")}>
-            <StablePrice tokenId={token.id} plancks={total} />
-          </div>
+          {showBalances && (
+            <div className={cn("shrink-0", isLoading && "animate-pulse")}>
+              <StablePrice tokenId={token.id} plancks={total} />
+            </div>
+          )}
         </div>
       </div>
     </button>
+  );
+};
+
+const TokenRows: FC<{ rows: TokenRowProps[] }> = ({ rows }) => {
+  const [parent] = useAutoAnimate();
+
+  return (
+    <div ref={parent} className="flex flex-col gap-2">
+      {rows.map(({ token, balances, isLoading, total }) => (
+        <TokenRow
+          key={token.id}
+          token={token}
+          balances={balances}
+          isLoading={isLoading}
+          total={total}
+        />
+      ))}
+    </div>
   );
 };
 
@@ -79,19 +106,7 @@ const TokensList = () => {
       .sort((a, b) => sortBigInt(a.total, b.total, true));
   }, [balances, tokens]);
 
-  return (
-    <div className="flex flex-col gap-2">
-      {tokenAndBalances.map(({ token, balances, isLoading, total }) => (
-        <TokenRow
-          key={token.id}
-          token={token}
-          balances={balances}
-          isLoading={isLoading}
-          total={total}
-        />
-      ))}
-    </div>
-  );
+  return <TokenRows rows={tokenAndBalances} />;
 };
 
 export const Portfolio = () => {
