@@ -213,14 +213,14 @@ export const LiquidityPoolForm = () => {
         <button
           type="button"
           onClick={() => setAction("add")}
-          className={cn(action === "add" && "rounded bg-primary-550")}
+          className={cn("rounded", action === "add" && "bg-primary-550")}
         >
           Add
         </button>
         <button
           type="button"
           onClick={() => setAction("remove")}
-          className={cn(action === "remove" && "rounded bg-primary-550")}
+          className={cn("rounded", action === "remove" && "bg-primary-550")}
         >
           Remove
         </button>
