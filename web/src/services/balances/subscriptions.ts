@@ -15,7 +15,7 @@ const allBalanceSubscriptions$ = new BehaviorSubject<
 >([]);
 
 // Unique active subscriptions (1 per token+address)
-export const obsBalanceSubscriptions$ = allBalanceSubscriptions$.pipe(
+export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
   debounceTime(50),
   map((subs) => subs.flatMap(({ balanceIds }) => balanceIds)),
   map((balanceIds) => [...new Set(balanceIds)].sort() as BalanceId[]),
