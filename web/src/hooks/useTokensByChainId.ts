@@ -4,7 +4,10 @@ import { map } from "rxjs";
 
 import { ChainId } from "src/config/chains";
 import { Token } from "src/config/tokens";
-import { getTokensByChain$, subscribeTokensByChain } from "src/services/tokens";
+import {
+  getTokensByChain$,
+  subscribeTokensByChains,
+} from "src/services/tokens";
 
 type UseTokensProps = {
   chainId: ChainId | null | undefined;
@@ -30,7 +33,7 @@ export const useTokensByChainId = ({
   useEffect(() => {
     if (!chainId) return;
 
-    const unsubscribe = subscribeTokensByChain(chainId);
+    const unsubscribe = subscribeTokensByChains([chainId]);
 
     return () => {
       unsubscribe();
