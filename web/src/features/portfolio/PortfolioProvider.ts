@@ -2,7 +2,11 @@ import { keyBy } from "lodash";
 import { useMemo } from "react";
 
 import { ChainId, isChainIdAssetHub } from "src/config/chains";
-import { getChainIdFromTokenId, TokenId } from "src/config/tokens";
+import {
+  getChainIdFromTokenId,
+  isTokenIdNative,
+  TokenId,
+} from "src/config/tokens";
 import {
   useBalances,
   useNativeToken,
@@ -34,7 +38,7 @@ const useStablePlancks = ({
   // outputTokenId, // TODO use this instead of stable
 }: UseStablePlancksProps): UseStablePlancksResult => {
   // TODO : make these depend on inputs
-  const { assetHub } = useRelayChains();
+  const { assetHub, relayId } = useRelayChains();
   const nativeToken = useNativeToken({ chain: assetHub });
   const { data: stableToken } = useToken({
     tokenId: assetHub.stableTokenId,
@@ -59,16 +63,17 @@ const useStablePlancks = ({
   const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
     chainId: assetHub.id,
   });
-  const poolsBalanceDefs = useMemo(
-    () =>
+  const poolsBalanceDefs = useMemo(() => {
+    // TODO filter out useless pools
+    return (
       pools?.flatMap((pool) =>
         pool.tokenIds.map((tokenId) => ({
           address: pool.owner,
           tokenId,
         })),
-      ) ?? [],
-    [pools],
-  );
+      ) ?? []
+    );
+  }, [pools]);
 
   const { data: poolsReserves, isLoading } = useBalances({
     balanceDefs: poolsBalanceDefs,
@@ -81,20 +86,26 @@ const useStablePlancks = ({
 
   const res = useMemo(() => {
     return inputs.map(({ tokenId, plancks }) => {
-      const token = allTokensMap[tokenId];
+      let token = allTokensMap[tokenId];
       if (!token)
         return {
           stablePlancks: null,
           isLoadingStablePlancks: isLoadingTokens,
         };
 
-      if (!isChainIdAssetHub(token.chainId)) {
-        // TODO token = findEquivalentAssetHubToken(token)
+      //if relay native token, replace token by the native token of asset hub
+      if (
+        isTokenIdNative(tokenId) &&
+        relayId === getChainIdFromTokenId(tokenId) &&
+        nativeToken
+      )
+        token = nativeToken;
+
+      if (!isChainIdAssetHub(token.chainId))
         return {
           stablePlancks: null,
           isLoadingStablePlancks: false,
         };
-      }
 
       const reservesNativeToToken =
         tokenId === nativeToken?.id
@@ -131,6 +142,7 @@ const useStablePlancks = ({
     nativeToken,
     pools,
     poolsReserves,
+    relayId,
     reservesNativeToStable,
     stableToken,
   ]);
@@ -141,7 +153,7 @@ const useStablePlancks = ({
 export const usePortfolioProvider = () => {
   const { accounts } = useWallets();
 
-  const { allChains } = useRelayChains();
+  const { allChains, assetHub } = useRelayChains();
   const chainIds = useMemo(
     () => allChains.map((chain) => chain.id),
     [allChains],
@@ -150,7 +162,6 @@ export const usePortfolioProvider = () => {
   const { data: allTokens, isLoading: isLoadingTokens } = useTokensByChainIds({
     chainIds,
   });
-
   const tokens = useMemo(
     () => allTokens.filter((t) => t.type !== "pool-asset"),
     [allTokens],
@@ -171,6 +182,7 @@ export const usePortfolioProvider = () => {
     balanceDefs,
   });
 
+  const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
   const { data: stables, isLoading: isLoadingStables } = useStablePlancks({
     inputs: balances.map(({ tokenId, balance }) => ({
       tokenId,
@@ -179,15 +191,33 @@ export const usePortfolioProvider = () => {
     outputTokenId: "TODO",
   });
 
-  return {
-    isLoading: isLoadingTokens || isLoadingBalances,
-    balances: balances.map((b, idx) => ({
-      ...b,
-      ...(stables[idx] ?? { stablePlancks: null, isLoading: isLoadingStables }),
-    })),
-    accounts,
-    tokens,
-  };
+  const ctx = useMemo(
+    () => ({
+      isLoading: isLoadingTokens || isLoadingBalances,
+      balances: balances.map((b, idx) => ({
+        ...b,
+        ...(stables[idx] ?? {
+          stablePlancks: null,
+          isLoading: isLoadingStables,
+        }),
+      })),
+      accounts,
+      tokens,
+      stableToken: stableToken!,
+    }),
+    [
+      accounts,
+      balances,
+      isLoadingBalances,
+      isLoadingStables,
+      isLoadingTokens,
+      stableToken,
+      stables,
+      tokens,
+    ],
+  );
+
+  return ctx;
 };
 
 export const [PortfolioProvider, usePortfolio] =

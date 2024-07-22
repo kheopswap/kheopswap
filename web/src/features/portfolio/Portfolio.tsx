@@ -7,8 +7,8 @@ import { PortfolioProvider, usePortfolio } from "./PortfolioProvider";
 import { Token } from "src/config/tokens";
 import { getChainById } from "src/config/chains";
 import { cn, isBigInt, sortBigInt } from "src/util";
-import { StablePrice, Styles, TokenLogo, Tokens } from "src/components";
-import { useToken } from "src/hooks";
+import { Styles, TokenLogo, Tokens } from "src/components";
+import { useWallets } from "src/hooks";
 
 type BalancesByAddress = Record<
   string,
@@ -22,9 +22,10 @@ type BalancesByAddress = Record<
 
 type TokenRowProps = {
   token: Token;
+  stableToken: Token;
   balances: BalancesByAddress;
   total: bigint;
-  totalStables: bigint;
+  totalStables: bigint | null;
   isLoading: boolean;
   isLoadingStables: boolean;
 };
@@ -36,29 +37,19 @@ const TokenRow: FC<TokenRowProps> = ({
   totalStables,
   isLoading,
   isLoadingStables,
+  stableToken,
 }) => {
-  const chain = useMemo(() => getChainById(token.chainId), [token]); // getChainById(token.chain)
+  const chain = useMemo(() => getChainById(token.chainId), [token]);
   const showBalances = useMemo(
     () => !!Object.keys(balances).length,
     [balances],
-  ); // getChainById(token.chain)
-  // const [chain, total, isLoading, showBalances] = useMemo(
-  //   () => [
-  //     getChainById(token.chainId),
-  //     Object.values(balances).reduce((acc, b) => acc + (b.balance ?? 0n), 0n),
-  //     Object.values(balances).some(({ isLoading }) => isLoading),
-  //     !!Object.keys(balances).length,
-  //   ],
-  //   [balances, token.chainId],
-  // );
-
-  const { data: stableToken } = useToken({ tokenId: chain.stableTokenId });
+  );
 
   return (
-    <button
+    <div
       className={cn(
         Styles.button,
-        "flex items-center gap-2 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 text-left",
+        "flex items-center gap-2 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 text-left sm:gap-3",
       )}
     >
       <TokenLogo className="inline-block size-10" token={token} />
@@ -72,18 +63,19 @@ const TokenRow: FC<TokenRowProps> = ({
           )}
         </div>
         <div className="flex justify-between gap-4 text-xs text-neutral-500">
-          <div className="grow truncate">{chain.name}</div>
+          <div className="grow truncate">{`${chain.name}${token.type === "asset" ? ` - ${token.assetId}` : ""}`}</div>
           {!!total && showBalances && !!stableToken && (
             <div
               className={cn("shrink-0", isLoadingStables && "animate-pulse")}
             >
-              <Tokens token={stableToken} plancks={totalStables} digits={2} />
-              {/* <StablePrice tokenId={token.id} plancks={total} /> */}
+              {totalStables !== null && (
+                <Tokens token={stableToken} plancks={totalStables} digits={2} />
+              )}
             </div>
           )}
         </div>
       </div>
-    </button>
+    </div>
   );
 };
 
@@ -92,32 +84,15 @@ const TokenRows: FC<{ rows: TokenRowProps[] }> = ({ rows }) => {
 
   return (
     <div ref={parent} className="flex flex-col gap-2">
-      {rows.map(
-        ({
-          token,
-          balances,
-          isLoading,
-          total,
-          totalStables,
-          isLoadingStables,
-        }) => (
-          <TokenRow
-            key={token.id}
-            token={token}
-            balances={balances}
-            isLoading={isLoading}
-            total={total}
-            totalStables={totalStables}
-            isLoadingStables={isLoadingStables}
-          />
-        ),
-      )}
+      {rows.map(({ token, ...props }) => (
+        <TokenRow key={token.id} token={token} {...props} />
+      ))}
     </div>
   );
 };
 
 const TokensList = () => {
-  const { balances, tokens } = usePortfolio();
+  const { balances, tokens, stableToken } = usePortfolio();
 
   const tokenAndBalances = useMemo<TokenRowProps[]>(() => {
     const balancesByTokenId = groupBy(balances, "tokenId");
@@ -128,10 +103,15 @@ const TokensList = () => {
           (acc, { balance }) => acc + (balance ?? 0n),
           0n,
         );
-        const totalStables = tokenBalances.reduce(
-          (acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
-          0n,
+        const hasStable = tokenBalances.some(
+          (tb) => tb.stablePlancks !== null && tb.balance,
         );
+        const totalStables = hasStable
+          ? tokenBalances.reduce(
+              (acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
+              0n,
+            )
+          : null;
         const isLoading = tokenBalances.some(({ isLoading }) => isLoading);
         const isLoadingStables = tokenBalances.some(
           ({ isLoadingStablePlancks }) => isLoadingStablePlancks,
@@ -156,6 +136,7 @@ const TokensList = () => {
           totalStables,
           isLoading,
           isLoadingStables: isLoading || isLoadingStables,
+          stableToken,
         };
       })
       .sort((a, b) => {
@@ -164,14 +145,20 @@ const TokensList = () => {
         if (isBigInt(a.totalStables)) return -1;
         if (isBigInt(b.totalStables)) return 1;
 
-        return sortBigInt(a.total, b.total, true);
+        if (a.total && !b.total) return -1;
+        if (!a.total && b.total) return 1;
+        return 0;
       });
-  }, [balances, tokens]);
+  }, [balances, stableToken, tokens]);
 
   return <TokenRows rows={tokenAndBalances} />;
 };
 
 export const Portfolio = () => {
+  const { isReady } = useWallets();
+
+  if (!isReady) return null;
+
   return (
     <PortfolioProvider>
       <TokensList />

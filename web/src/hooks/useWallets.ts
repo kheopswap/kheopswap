@@ -15,6 +15,7 @@ import {
   logger,
   provideContext,
 } from "src/util";
+import { sleep } from "src/util/sleep";
 
 export type InjectedAccount = InjectedPolkadotAccount & {
   id: InjectedAccountId;
@@ -31,6 +32,9 @@ const useWalletsProvider = () => {
   const [connectedAccounts, setConnectedAccounts] = useState<
     Record<string, InjectedPolkadotAccount[]>
   >({});
+
+  // flag indicating if auto connect is finished (or failed/timeout)
+  const [isReady, setIsReady] = useState(false);
 
   const connect = useCallback(
     async (name: string) => {
@@ -94,22 +98,35 @@ const useWalletsProvider = () => {
         });
       }
     }
+
+    if (!connectedExtensionIds.length) setIsReady(true);
   }, [connect, connectedExtensionIds, connectedExtensions]);
 
   useEffect(() => {
+    // timeout in case an extension is meant to be connected, but has been disabled by the user, or if user disconnected all accounts from it
+    // this flag is only used to prevent flickering on page refreshes, for screens that sort items based on connected wallets
+    // => no need to suspense the app for this
+    sleep(200).then(() => setIsReady(true));
+  }, []);
+
+  useEffect(() => {
+    let connected = 0;
+
     const unsubs = connectedExtensions.map((extension) =>
       extension.subscribe((accounts) => {
         setConnectedAccounts((prev) => ({
           ...prev,
           [extension.name]: accounts,
         }));
+        connected++;
+        if (connected === connectedExtensions.length) setIsReady(true);
       }),
     );
 
     return () => {
       unsubs.map((unsub) => unsub());
     };
-  });
+  }, [connectedExtensions]);
 
   const accounts = useMemo<InjectedAccount[]>(() => {
     return Object.entries(connectedAccounts)
@@ -128,6 +145,7 @@ const useWalletsProvider = () => {
     connect,
     disconnect,
     accounts,
+    isReady,
   };
 };
 
