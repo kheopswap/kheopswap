@@ -1,11 +1,11 @@
 import { bind } from "@react-rxjs/core";
 import { useEffect, useMemo } from "react";
-import { combineLatest, map } from "rxjs";
+import { map } from "rxjs";
 
 import { ChainId } from "src/config/chains";
 import { Token } from "src/config/tokens";
 import {
-  getTokensByChain$,
+  getTokensByChains$,
   subscribeTokensByChains,
 } from "src/services/tokens";
 import { sortTokens } from "src/services/tokens/util";
@@ -29,16 +29,14 @@ const deserializeChainIds = (chainIds: SerializedChainIds) => [
 ];
 
 const [useTokensByChains] = bind((strChainIds: SerializedChainIds) => {
-  return combineLatest(
-    deserializeChainIds(strChainIds).map((chainId) =>
-      getTokensByChain$(chainId),
-    ),
-  ).pipe(
+  const chainIds = deserializeChainIds(strChainIds);
+
+  return getTokensByChains$(chainIds).pipe(
     map((tokensByChains) => ({
-      isLoading: tokensByChains.some(
+      isLoading: Object.values(tokensByChains).some(
         (statusAndTokens) => statusAndTokens.status !== "loaded",
       ),
-      data: tokensByChains
+      data: Object.values(tokensByChains)
         .flatMap((statusAndTokens) => statusAndTokens.tokens)
         .sort(sortTokens),
     })),

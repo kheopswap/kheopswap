@@ -1,13 +1,10 @@
-import { bind } from "@react-rxjs/core";
-import { useEffect } from "react";
-import { map } from "rxjs";
+import { useEffect, useMemo } from "react";
+
+import { useTokensByChainIds } from "./useTokens";
 
 import { ChainId } from "src/config/chains";
 import { Token } from "src/config/tokens";
-import {
-  getTokensByChain$,
-  subscribeTokensByChains,
-} from "src/services/tokens";
+import { subscribeTokensByChains } from "src/services/tokens";
 
 type UseTokensProps = {
   chainId: ChainId | null | undefined;
@@ -17,15 +14,6 @@ type UseTokensResult = {
   isLoading: boolean;
   data: Token[];
 };
-
-const [useTokensByChain] = bind((chainId: ChainId | null | undefined) => {
-  return getTokensByChain$(chainId ?? null).pipe(
-    map((statusAndTokens) => ({
-      isLoading: statusAndTokens.status !== "loaded",
-      data: statusAndTokens.tokens,
-    })),
-  );
-});
 
 export const useTokensByChainId = ({
   chainId,
@@ -40,5 +28,7 @@ export const useTokensByChainId = ({
     };
   }, [chainId]);
 
-  return useTokensByChain(chainId);
+  const chainIds = useMemo(() => (chainId ? [chainId] : []), [chainId]);
+
+  return useTokensByChainIds({ chainIds });
 };

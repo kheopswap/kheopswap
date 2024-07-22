@@ -1,8 +1,142 @@
+import { keyBy } from "lodash";
 import { useMemo } from "react";
 
-import { useBalances, useRelayChains, useWallets } from "src/hooks";
+import { ChainId, isChainIdAssetHub } from "src/config/chains";
+import { getChainIdFromTokenId, TokenId } from "src/config/tokens";
+import {
+  useBalances,
+  useNativeToken,
+  usePoolsByChainId,
+  useRelayChains,
+  useToken,
+  useWallets,
+} from "src/hooks";
 import { useTokensByChainIds } from "src/hooks/useTokens";
-import { provideContext } from "src/util";
+import {
+  getAssetConvertPlancks,
+  getPoolReserves,
+  isBigInt,
+  provideContext,
+} from "src/util";
+
+type UseStablePlancksProps = {
+  inputs: { tokenId: TokenId; plancks: bigint | undefined }[];
+  outputTokenId: TokenId;
+};
+
+type UseStablePlancksResult = {
+  isLoading: boolean;
+  data: { stablePlancks: bigint | null; isLoadingStablePlancks: boolean }[];
+};
+
+const useStablePlancks = ({
+  inputs,
+  // outputTokenId, // TODO use this instead of stable
+}: UseStablePlancksProps): UseStablePlancksResult => {
+  // TODO : make these depend on inputs
+  const { assetHub } = useRelayChains();
+  const nativeToken = useNativeToken({ chain: assetHub });
+  const { data: stableToken } = useToken({
+    tokenId: assetHub.stableTokenId,
+  });
+
+  const chainIds = useMemo(
+    () => [
+      ...new Set(
+        inputs
+          .map(({ tokenId }) => getChainIdFromTokenId(tokenId)) // TODO why allow null ?
+          .filter(Boolean) as ChainId[],
+      ),
+    ],
+    [inputs],
+  );
+  const { data: allTokens, isLoading: isLoadingTokens } = useTokensByChainIds({
+    chainIds,
+  });
+  const allTokensMap = useMemo(() => keyBy(allTokens, "id"), [allTokens]);
+
+  // const assetHub = useMemo(() => assetHubId ? getChainById(assetHubId) : null, [assetHubId]);
+  const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
+    chainId: assetHub.id,
+  });
+  const poolsBalanceDefs = useMemo(
+    () =>
+      pools?.flatMap((pool) =>
+        pool.tokenIds.map((tokenId) => ({
+          address: pool.owner,
+          tokenId,
+        })),
+      ) ?? [],
+    [pools],
+  );
+
+  const { data: poolsReserves, isLoading } = useBalances({
+    balanceDefs: poolsBalanceDefs,
+  });
+
+  const reservesNativeToStable = useMemo(
+    () => getPoolReserves(pools, poolsReserves, nativeToken, stableToken),
+    [nativeToken, pools, poolsReserves, stableToken],
+  );
+
+  const res = useMemo(() => {
+    return inputs.map(({ tokenId, plancks }) => {
+      const token = allTokensMap[tokenId];
+      if (!token)
+        return {
+          stablePlancks: null,
+          isLoadingStablePlancks: isLoadingTokens,
+        };
+
+      if (!isChainIdAssetHub(token.chainId)) {
+        // TODO token = findEquivalentAssetHubToken(token)
+        return {
+          stablePlancks: null,
+          isLoadingStablePlancks: false,
+        };
+      }
+
+      const reservesNativeToToken =
+        tokenId === nativeToken?.id
+          ? ([1n, 1n] as [bigint, bigint])
+          : getPoolReserves(pools, poolsReserves, nativeToken, token);
+
+      const result =
+        !token ||
+        !isBigInt(plancks) ||
+        !nativeToken ||
+        !stableToken ||
+        !reservesNativeToStable ||
+        !reservesNativeToToken
+          ? null
+          : (getAssetConvertPlancks(
+              plancks,
+              token,
+              nativeToken,
+              stableToken,
+              reservesNativeToToken,
+              reservesNativeToStable,
+            ) ?? null);
+
+      return {
+        stablePlancks: result,
+        isLoadingStablePlancks: isLoadingPools,
+      };
+    });
+  }, [
+    allTokensMap,
+    inputs,
+    isLoadingPools,
+    isLoadingTokens,
+    nativeToken,
+    pools,
+    poolsReserves,
+    reservesNativeToStable,
+    stableToken,
+  ]);
+
+  return { isLoading, data: res };
+};
 
 export const usePortfolioProvider = () => {
   const { accounts } = useWallets();
@@ -37,11 +171,20 @@ export const usePortfolioProvider = () => {
     balanceDefs,
   });
 
-  // TODO stablePrice for each non null token with positive balance
+  const { data: stables, isLoading: isLoadingStables } = useStablePlancks({
+    inputs: balances.map(({ tokenId, balance }) => ({
+      tokenId,
+      plancks: balance,
+    })),
+    outputTokenId: "TODO",
+  });
 
   return {
     isLoading: isLoadingTokens || isLoadingBalances,
-    balances,
+    balances: balances.map((b, idx) => ({
+      ...b,
+      ...(stables[idx] ?? { stablePlancks: null, isLoading: isLoadingStables }),
+    })),
     accounts,
     tokens,
   };
