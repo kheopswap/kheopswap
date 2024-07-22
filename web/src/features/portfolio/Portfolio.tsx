@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { groupBy } from "lodash";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
@@ -10,146 +10,271 @@ import { cn, isBigInt, sortBigInt } from "src/util";
 import { Styles, TokenLogo, Tokens } from "src/components";
 import { useWallets } from "src/hooks";
 
-type BalancesByAddress = Record<
-  string,
-  {
-    balance: bigint | undefined;
-    isLoading: boolean;
-    stablePlancks: bigint | null;
-    isLoadingStablePlancks: boolean;
+type TokenBalancesSummaryData = {
+  tokenPlancks: bigint | undefined;
+  isLoadingTokenPlancks: boolean;
+  stablePlancks: bigint | null;
+  isLoadingStablePlancks: boolean;
+};
+
+const sortBySummary = (
+  a: TokenBalancesSummaryData,
+  b: TokenBalancesSummaryData,
+) => {
+  if (isBigInt(a.stablePlancks) && isBigInt(b.stablePlancks))
+    return sortBigInt(a.stablePlancks, b.stablePlancks, true);
+  if (isBigInt(a.stablePlancks)) return -1;
+  if (isBigInt(b.stablePlancks)) return 1;
+
+  if (a.tokenPlancks && !b.tokenPlancks) return -1;
+  if (!a.tokenPlancks && b.tokenPlancks) return 1;
+  return 0;
+};
+
+const sortByColumn =
+  (mode: SortMode) => (a: TokenRowProps | null, b: TokenRowProps | null) => {
+    if (mode === "symbol")
+      return (a?.token.symbol ?? "").localeCompare(b?.token.symbol ?? "");
+    if (mode === "tvl") {
+      if (a?.tvl?.tokenPlancks && b?.tvl?.tokenPlancks)
+        return sortBySummary(a.tvl, b.tvl);
+      if (a?.tvl?.tokenPlancks) return -1;
+      if (b?.tvl?.tokenPlancks) return 1;
+    } else {
+      if (a?.balance.tokenPlancks && b?.balance.tokenPlancks)
+        return sortBySummary(a.balance, b.balance);
+      if (a?.balance.tokenPlancks) return -1;
+      if (b?.balance.tokenPlancks) return 1;
+    }
+
+    return 0;
+  };
+
+const TokenBalancesSummary: FC<
+  TokenBalancesSummaryData & {
+    className?: string;
+    token: Token;
+    stableToken: Token;
   }
->;
+> = ({
+  token,
+  stableToken,
+  tokenPlancks,
+  isLoadingStablePlancks,
+  stablePlancks,
+  isLoadingTokenPlancks,
+  className,
+}) => (
+  <div className={cn("flex flex-col items-end", className)}>
+    <div className={cn("", isLoadingTokenPlancks && "animate-pulse")}>
+      <Tokens token={token} plancks={tokenPlancks ?? 0n} digits={2} />
+    </div>
+    <div
+      className={cn(
+        "truncate text-sm text-neutral-500",
+        isLoadingStablePlancks && "animate-pulse",
+      )}
+    >
+      <Tokens token={stableToken} plancks={stablePlancks ?? 0n} digits={2} />
+    </div>
+  </div>
+);
+
+// type BalancesByAddress = Record<
+//   string,
+//   {
+//     balance: bigint | undefined;
+//     isLoading: boolean;
+//     stablePlancks: bigint | null;
+//     isLoadingStablePlancks: boolean;
+//   }
+// >;
 
 type TokenRowProps = {
   token: Token;
   stableToken: Token;
-  balances: BalancesByAddress;
-  total: bigint;
-  totalStables: bigint | null;
-  isLoading: boolean;
-  isLoadingStables: boolean;
+  balance: TokenBalancesSummaryData;
+  tvl: TokenBalancesSummaryData | null;
+  // balances: BalancesByAddress;
+  // total: bigint;
+  // totalStables: bigint | null;
+  // isLoading: boolean;
+  // isLoadingStables: boolean;
 };
 
-const TokenRow: FC<TokenRowProps> = ({
-  token,
-  balances,
-  total,
-  totalStables,
-  isLoading,
-  isLoadingStables,
-  stableToken,
-}) => {
+const TokenRow: FC<TokenRowProps> = ({ token, stableToken, balance, tvl }) => {
   const chain = useMemo(() => getChainById(token.chainId), [token]);
-  const showBalances = useMemo(
-    () => !!Object.keys(balances).length,
-    [balances],
-  );
+  // const showBalances = useMemo(
+  //   () => !!Object.keys(balances).length,
+  //   [balances],
+  // );
 
   return (
     <div
       className={cn(
         Styles.button,
-        "flex items-center gap-2 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 text-left sm:gap-3",
+        "grid h-16 grid-cols-3 items-center gap-2 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 text-left sm:gap-3",
       )}
     >
-      <TokenLogo className="inline-block size-10" token={token} />
-      <div className="flex grow flex-col">
-        <div className="flex justify-between gap-4">
-          <div className="grow truncate">{token.symbol}</div>
-          {showBalances && (
-            <div className={cn("shrink-0", isLoading && "animate-pulse")}>
-              <Tokens token={token} plancks={total} />
-            </div>
-          )}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <TokenLogo className="inline-block size-10" token={token} />
+        <div className="flex grow flex-col items-start">
+          <div className="truncate">{token.symbol}</div>
+          <div className="truncate text-sm text-neutral-500">{`${chain.name}${token.type === "asset" ? ` - ${token.assetId}` : ""}`}</div>
         </div>
-        <div className="flex justify-between gap-4 text-xs text-neutral-500">
-          <div className="grow truncate">{`${chain.name}${token.type === "asset" ? ` - ${token.assetId}` : ""}`}</div>
-          {!!total && showBalances && !!stableToken && (
-            <div
-              className={cn("shrink-0", isLoadingStables && "animate-pulse")}
-            >
-              {totalStables !== null && (
-                <Tokens token={stableToken} plancks={totalStables} digits={2} />
-              )}
-            </div>
-          )}
+      </div>
+
+      {balance.tokenPlancks ? (
+        <TokenBalancesSummary
+          token={token}
+          stableToken={stableToken}
+          {...balance}
+        />
+      ) : (
+        <div></div>
+      )}
+      {tvl?.tokenPlancks ? (
+        <TokenBalancesSummary
+          token={token}
+          stableToken={stableToken}
+          {...tvl}
+        />
+      ) : (
+        <div></div>
+      )}
+    </div>
+  );
+};
+
+type SortMode = "tvl" | "balance" | "symbol";
+
+const TokenRows: FC<{ rows: TokenRowProps[] }> = ({ rows }) => {
+  const [parent] = useAutoAnimate();
+
+  const [sortBy, setSortBy] = useState<SortMode>("balance");
+
+  const handleSortClick = useCallback(
+    (column: SortMode) => () => {
+      setSortBy(column);
+    },
+    [],
+  );
+
+  const sortedRows = useMemo(
+    () => rows.sort(sortByColumn(sortBy)),
+    [rows, sortBy],
+  );
+
+  return (
+    <div>
+      <div className="mb-1 grid grid-cols-3 text-xs text-neutral-500">
+        <div className="pl-16">
+          <button
+            type="button"
+            className={cn(sortBy === "symbol" && "text-neutral-300")}
+            onClick={handleSortClick("symbol")}
+          >
+            Token
+          </button>
         </div>
+        <div className="pr-2 text-right">
+          <button
+            type="button"
+            className={cn(sortBy === "balance" && "text-neutral-300")}
+            onClick={handleSortClick("balance")}
+          >
+            Balance
+          </button>
+        </div>
+        <div className="pr-2 text-right">
+          <button
+            type="button"
+            className={cn(sortBy === "tvl" && "text-neutral-300")}
+            onClick={handleSortClick("tvl")}
+          >
+            Asset Hub TVL
+          </button>
+        </div>
+      </div>
+      <div ref={parent} className="flex flex-col gap-2">
+        {sortedRows.map(({ token, ...props }) => (
+          <TokenRow key={token.id} token={token} {...props} />
+        ))}
       </div>
     </div>
   );
 };
 
-const TokenRows: FC<{ rows: TokenRowProps[] }> = ({ rows }) => {
-  const [parent] = useAutoAnimate();
-
-  return (
-    <div ref={parent} className="flex flex-col gap-2">
-      {rows.map(({ token, ...props }) => (
-        <TokenRow key={token.id} token={token} {...props} />
-      ))}
-    </div>
-  );
-};
-
 const TokensList = () => {
-  const { balances, tokens, stableToken } = usePortfolio();
+  const { balances, tokens, stableToken, tvl } = usePortfolio();
+
+  // useEffect(() => {
+
+  // }, [balances, stableToken, tokens, tvl]);
 
   const tokenAndBalances = useMemo<TokenRowProps[]>(() => {
+    //console.log("TokensList", { balances, tokens, stableToken, tvl });
+
     const balancesByTokenId = groupBy(balances, "tokenId");
-    return tokens
-      .map<TokenRowProps>((token) => {
-        const tokenBalances = balancesByTokenId[token.id] ?? [];
-        const total = tokenBalances.reduce(
-          (acc, { balance }) => acc + (balance ?? 0n),
-          0n,
-        );
-        const hasStable = tokenBalances.some(
-          (tb) => tb.stablePlancks !== null && tb.balance,
-        );
-        const totalStables = hasStable
-          ? tokenBalances.reduce(
-              (acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
-              0n,
-            )
-          : null;
-        const isLoading = tokenBalances.some(({ isLoading }) => isLoading);
-        const isLoadingStables = tokenBalances.some(
-          ({ isLoadingStablePlancks }) => isLoadingStablePlancks,
-        );
-        const balances = tokenBalances.reduce(
-          (acc, bal) => ({
-            ...acc,
-            [bal.address]: {
-              balance: bal.balance,
-              isLoading: bal.isLoading,
-              stablePlancks: bal.stablePlancks,
-              isLoadingStablePlancks: bal.isLoadingStablePlancks,
-            },
-          }),
-          {} as BalancesByAddress,
-        );
+    return tokens.map<TokenRowProps>((token) => {
+      const tokenBalances = balancesByTokenId[token.id] ?? [];
+      const total = tokenBalances.reduce(
+        (acc, { balance }) => acc + (balance ?? 0n),
+        0n,
+      );
+      const hasStable = tokenBalances.some(
+        (tb) => tb.stablePlancks !== null && tb.balance,
+      );
+      const totalStables = hasStable
+        ? tokenBalances.reduce(
+            (acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
+            0n,
+          )
+        : null;
+      const isLoading = tokenBalances.some(({ isLoading }) => isLoading);
+      const isLoadingStables = tokenBalances.some(
+        ({ isLoadingStablePlancks }) => isLoadingStablePlancks,
+      );
+      const balance: TokenBalancesSummaryData = {
+        tokenPlancks: total,
+        isLoadingTokenPlancks: isLoading,
+        stablePlancks: totalStables,
+        isLoadingStablePlancks: isLoadingStables,
+      };
 
-        return {
-          token,
-          balances,
-          total,
-          totalStables,
-          isLoading,
-          isLoadingStables: isLoading || isLoadingStables,
-          stableToken,
-        };
-      })
-      .sort((a, b) => {
-        if (isBigInt(a.totalStables) && isBigInt(b.totalStables))
-          return sortBigInt(a.totalStables, b.totalStables, true);
-        if (isBigInt(a.totalStables)) return -1;
-        if (isBigInt(b.totalStables)) return 1;
+      const tokenTvl = tvl.find((t) => t.tokenId === token.id);
+      const rowTvl: TokenBalancesSummaryData | null = tokenTvl
+        ? {
+            tokenPlancks: tokenTvl.plancks,
+            isLoadingTokenPlancks: tokenTvl.isLoading,
+            stablePlancks: tokenTvl.stablePlancks,
+            isLoadingStablePlancks: tokenTvl.isLoadingStablePlancks,
+          }
+        : null;
 
-        if (a.total && !b.total) return -1;
-        if (!a.total && b.total) return 1;
-        return 0;
-      });
-  }, [balances, stableToken, tokens]);
+      // const balances = tokenBalances.reduce(
+      //   (acc, bal) => ({
+      //     ...acc,
+      //     [bal.address]: {
+      //       balance: bal.balance,
+      //       isLoading: bal.isLoading,
+      //       stablePlancks: bal.stablePlancks,
+      //       isLoadingStablePlancks: bal.isLoadingStablePlancks,
+      //     },
+      //   }),
+      //   {} as BalancesByAddress,
+      // );
+
+      return {
+        token,
+        stableToken,
+        balance,
+        balances,
+        tvl: rowTvl,
+      };
+    });
+    //   .sort(sortByColumn("balance"));
+  }, [balances, stableToken, tokens, tvl]);
 
   return <TokenRows rows={tokenAndBalances} />;
 };
