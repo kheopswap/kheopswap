@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useDeferredValue, useMemo, useState } from "react";
 import { groupBy } from "lodash";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
@@ -6,8 +6,8 @@ import { PortfolioProvider, usePortfolio } from "./PortfolioProvider";
 
 import { Token } from "src/config/tokens";
 import { getChainById } from "src/config/chains";
-import { cn, isBigInt, sortBigInt } from "src/util";
-import { Styles, TokenLogo, Tokens } from "src/components";
+import { cn, isBigInt, logger, sortBigInt } from "src/util";
+import { SearchInput, Styles, TokenLogo, Tokens } from "src/components";
 import { useWallets } from "src/hooks";
 
 type TokenBalancesSummaryData = {
@@ -32,7 +32,7 @@ const sortBySummary = (
 };
 
 const sortByColumn =
-  (mode: SortMode) => (a: TokenRowProps | null, b: TokenRowProps | null) => {
+  (mode: SortMode) => (a: TokenRowData | null, b: TokenRowData | null) => {
     if (mode === "symbol")
       return (a?.token.symbol ?? "").localeCompare(b?.token.symbol ?? "");
     if (mode === "tvl") {
@@ -65,13 +65,23 @@ const TokenBalancesSummary: FC<
   isLoadingTokenPlancks,
   className,
 }) => (
-  <div className={cn("flex flex-col items-end", className)}>
-    <div className={cn("", isLoadingTokenPlancks && "animate-pulse")}>
+  <div
+    className={cn(
+      "flex flex-col items-end overflow-hidden text-right",
+      className,
+    )}
+  >
+    <div
+      className={cn(
+        "w-full truncate",
+        isLoadingTokenPlancks && "animate-pulse",
+      )}
+    >
       <Tokens token={token} plancks={tokenPlancks ?? 0n} digits={2} />
     </div>
     <div
       className={cn(
-        "truncate text-sm text-neutral-500",
+        "w-full truncate text-sm text-neutral-500 ",
         isLoadingStablePlancks && "animate-pulse",
       )}
     >
@@ -80,125 +90,177 @@ const TokenBalancesSummary: FC<
   </div>
 );
 
-// type BalancesByAddress = Record<
-//   string,
-//   {
-//     balance: bigint | undefined;
-//     isLoading: boolean;
-//     stablePlancks: bigint | null;
-//     isLoadingStablePlancks: boolean;
-//   }
-// >;
-
-type TokenRowProps = {
+type TokenRowData = {
   token: Token;
   stableToken: Token;
   balance: TokenBalancesSummaryData;
   tvl: TokenBalancesSummaryData | null;
-  // balances: BalancesByAddress;
-  // total: bigint;
-  // totalStables: bigint | null;
-  // isLoading: boolean;
-  // isLoadingStables: boolean;
 };
 
-const TokenRow: FC<TokenRowProps> = ({ token, stableToken, balance, tvl }) => {
+type TokenRowProps = TokenRowData & {
+  visibleCol: VisibleColunm;
+};
+
+const TokenRow: FC<TokenRowProps> = ({
+  token,
+  stableToken,
+  balance,
+  tvl,
+  visibleCol,
+}) => {
   const chain = useMemo(() => getChainById(token.chainId), [token]);
-  // const showBalances = useMemo(
-  //   () => !!Object.keys(balances).length,
-  //   [balances],
-  // );
 
   return (
     <div
       className={cn(
         Styles.button,
-        "grid h-16 grid-cols-3 items-center gap-2 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 text-left sm:gap-3",
+        "grid h-16 items-center gap-2 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 text-left sm:gap-4 ",
+        "grid-cols-[1fr_120px] sm:grid-cols-[1fr_120px_120px]",
       )}
     >
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-2 overflow-hidden sm:gap-3">
         <TokenLogo className="inline-block size-10" token={token} />
-        <div className="flex grow flex-col items-start">
-          <div className="truncate">{token.symbol}</div>
-          <div className="truncate text-sm text-neutral-500">{`${chain.name}${token.type === "asset" ? ` - ${token.assetId}` : ""}`}</div>
+        <div className="flex grow flex-col items-start overflow-hidden">
+          <div className="w-full truncate">{token.symbol}</div>
+          <div className="w-full truncate text-sm text-neutral-500">{`${chain.name}${token.type === "asset" ? ` - ${token.assetId}` : ""}`}</div>
         </div>
       </div>
 
       {balance.tokenPlancks ? (
         <TokenBalancesSummary
+          className={cn(visibleCol === "tvl" && "hidden sm:block")}
           token={token}
           stableToken={stableToken}
           {...balance}
         />
       ) : (
-        <div></div>
+        <div className={cn(visibleCol === "tvl" && "hidden sm:block")}></div>
       )}
+
       {tvl?.tokenPlancks ? (
         <TokenBalancesSummary
+          className={cn(visibleCol === "balance" && "hidden sm:block")}
           token={token}
           stableToken={stableToken}
           {...tvl}
         />
       ) : (
-        <div></div>
+        <div
+          className={cn(visibleCol === "balance" && "hidden sm:block")}
+        ></div>
       )}
     </div>
   );
 };
 
 type SortMode = "tvl" | "balance" | "symbol";
+type VisibleColunm = "tvl" | "balance";
 
-const TokenRows: FC<{ rows: TokenRowProps[] }> = ({ rows }) => {
+const TokenRows: FC<{ rows: TokenRowData[] }> = ({ rows }) => {
+  const { accounts } = usePortfolio();
   const [parent] = useAutoAnimate();
 
-  const [sortBy, setSortBy] = useState<SortMode>("balance");
+  const [visibleCol, setVisibleCol] = useState<VisibleColunm>(
+    accounts.length ? "balance" : "tvl",
+  );
+  const [sortByCol, setSortByCol] = useState<SortMode>(visibleCol);
 
   const handleSortClick = useCallback(
     (column: SortMode) => () => {
-      setSortBy(column);
+      if (column !== "symbol") setVisibleCol(column);
+      setSortByCol(column);
     },
     [],
   );
 
   const sortedRows = useMemo(
-    () => rows.sort(sortByColumn(sortBy)),
-    [rows, sortBy],
+    () => rows.concat().sort(sortByColumn(sortByCol)),
+    [rows, sortByCol],
   );
+
+  const [rawSearch, setRawSearch] = useState("");
+  const search = useDeferredValue(rawSearch);
+
+  const searchedRows = useMemo(() => {
+    const stop = logger.timer("search");
+    const ls = search.toLowerCase().trim();
+    const res = !ls
+      ? sortedRows.filter(
+          ({ token, balance, tvl }) =>
+            !!token.verified || !!balance.tokenPlancks || !!tvl?.tokenPlancks,
+        )
+      : sortedRows.filter(
+          ({ token }) =>
+            token.symbol?.toLowerCase().includes(ls) ||
+            token.name?.toLowerCase().includes(ls) ||
+            (token.type === "asset" && token.assetId.toString() === ls),
+        );
+    stop();
+    return res;
+  }, [search, sortedRows]);
 
   return (
     <div>
-      <div className="mb-1 grid grid-cols-3 text-xs text-neutral-500">
-        <div className="pl-16">
-          <button
+      <SearchInput
+        className="mb-4 "
+        placeholder="Search for more tokens"
+        onChange={setRawSearch}
+      />
+      <div
+        className={cn(
+          "mb-1 grid  gap-2 pl-4 pr-3 text-xs text-neutral-500  sm:gap-4",
+          "grid-cols-[1fr_120px] sm:grid-cols-[1fr_120px_120px]",
+        )}
+      >
+        <div>
+          {/* <button
             type="button"
-            className={cn(sortBy === "symbol" && "text-neutral-300")}
+            className={cn(sortBy === "symbol" && "text-neutral-200")}
             onClick={handleSortClick("symbol")}
           >
             Token
-          </button>
+          </button> */}
         </div>
-        <div className="pr-2 text-right">
+        <div className="hidden text-right sm:block">
           <button
             type="button"
-            className={cn(sortBy === "balance" && "text-neutral-300")}
+            className={cn(sortByCol === "balance" && "text-neutral-200")}
             onClick={handleSortClick("balance")}
           >
             Balance
           </button>
         </div>
-        <div className="pr-2 text-right">
+        <div className="whitespace-nowrap text-right">
           <button
             type="button"
-            className={cn(sortBy === "tvl" && "text-neutral-300")}
+            className={cn(
+              "sm:hidden",
+              sortByCol === "balance" && "text-neutral-200",
+            )}
+            onClick={handleSortClick("balance")}
+          >
+            Balance
+          </button>
+          <span className="mx-1 inline-block shrink-0 sm:hidden">/</span>
+          <button
+            type="button"
+            className={cn(sortByCol === "tvl" && "text-neutral-200")}
             onClick={handleSortClick("tvl")}
           >
-            Asset Hub TVL
+            TVL
           </button>
         </div>
       </div>
       <div ref={parent} className="flex flex-col gap-2">
-        {sortedRows.map(({ token, ...props }) => (
-          <TokenRow key={token.id} token={token} {...props} />
+        {searchedRows.map(({ token, balance, stableToken, tvl }) => (
+          <TokenRow
+            key={token.id}
+            token={token}
+            visibleCol={visibleCol}
+            balance={balance}
+            stableToken={stableToken}
+            tvl={tvl}
+          />
         ))}
       </div>
     </div>
@@ -212,11 +274,11 @@ const TokensList = () => {
 
   // }, [balances, stableToken, tokens, tvl]);
 
-  const tokenAndBalances = useMemo<TokenRowProps[]>(() => {
+  const tokenAndBalances = useMemo<TokenRowData[]>(() => {
     //console.log("TokensList", { balances, tokens, stableToken, tvl });
 
     const balancesByTokenId = groupBy(balances, "tokenId");
-    return tokens.map<TokenRowProps>((token) => {
+    return tokens.map<TokenRowData>((token) => {
       const tokenBalances = balancesByTokenId[token.id] ?? [];
       const total = tokenBalances.reduce(
         (acc, { balance }) => acc + (balance ?? 0n),
