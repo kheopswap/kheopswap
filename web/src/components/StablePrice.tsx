@@ -1,6 +1,6 @@
 import { FC, ReactNode, useMemo } from "react";
 
-import { Shimmer } from "./TextShimmer";
+import { Shimmer } from "./Shimmer";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
 import { TokenId } from "src/config/tokens";

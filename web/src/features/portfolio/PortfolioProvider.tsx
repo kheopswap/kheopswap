@@ -30,7 +30,7 @@ export const usePortfolioProvider = () => {
 
   const balanceDefs = useMemo(() => {
     // TODO genesishHash filter
-    // TODO account/chain compatibility filter
+    // TODO account/chain compatibility filter (substrate vs ethereum)
     return tokens.flatMap((token) =>
       accounts.map((acc) => ({
         address: acc.address,
@@ -49,7 +49,6 @@ export const usePortfolioProvider = () => {
       tokenId,
       plancks: balance,
     })),
-    //outputTokenId: "TODO",
   });
 
   const { data: tvl } = useAssetHubTVL();
