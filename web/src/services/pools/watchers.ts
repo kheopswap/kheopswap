@@ -69,17 +69,17 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 };
 
 const watchPoolsByChain = (chainId: ChainId) => {
-  const controller = new AbortController();
+  const watchController = new AbortController();
   // let stop = false;
   let retryTimeout = 3_000;
 
   const refresh = async () => {
-    const controller2 = new AbortController();
-    const abort2 = () => controller2.abort();
-    controller.signal.addEventListener("abort", abort2);
+    const refreshController = new AbortController();
+    const cancelRefresh = () => refreshController.abort();
+    watchController.signal.addEventListener("abort", cancelRefresh);
 
     try {
-      if (controller.signal.aborted) return;
+      if (watchController.signal.aborted) return;
 
       chainPoolsLoadingStatuses.setLoadingStatus(chainId, "loading");
 
@@ -88,16 +88,16 @@ const watchPoolsByChain = (chainId: ChainId) => {
 
       await Promise.race([
         Promise.all([
-          fetchAssetConvertionPools(chain, controller2.signal),
+          fetchAssetConvertionPools(chain, refreshController.signal),
           // more pool types to fetch here
         ]),
         throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
       ]);
 
-      if (!controller.signal.aborted)
+      if (!watchController.signal.aborted)
         chainPoolsLoadingStatuses.setLoadingStatus(chainId, "loaded");
     } catch (err) {
-      controller2.abort();
+      refreshController.abort();
       console.error("Failed to fetch tokens", { chainId, err });
       // wait before retrying to prevent browser from hanging
       await sleep(retryTimeout);
@@ -105,7 +105,7 @@ const watchPoolsByChain = (chainId: ChainId) => {
       chainPoolsLoadingStatuses.setLoadingStatus(chainId, "stale");
     }
 
-    controller.signal.removeEventListener("abort", abort2);
+    watchController.signal.removeEventListener("abort", cancelRefresh);
   };
 
   const sub = chainPoolsLoadingStatuses.subject$
@@ -118,7 +118,7 @@ const watchPoolsByChain = (chainId: ChainId) => {
     });
 
   return () => {
-    controller.abort();
+    watchController.abort();
     sub.unsubscribe();
   };
 };
