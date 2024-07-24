@@ -1,4 +1,4 @@
-import { distinctUntilChanged, map } from "rxjs";
+import { distinctUntilChanged, filter } from "rxjs";
 import { isEqual } from "lodash";
 
 import { tokensByChainSubscriptions$ } from "./subscriptions";
@@ -19,12 +19,13 @@ import {
   STORAGE_QUERY_TIMEOUT,
   TOKENS_CACHE_DURATION,
 } from "src/config/constants";
-import { initializeChainStatusWatcher } from "src/services/common";
+import { pollChainStatus } from "src/services/pollChainStatus";
 import { sleep } from "src/util/sleep";
 
-export const chainTokensStatuses$ = initializeChainStatusWatcher(
-  TOKENS_CACHE_DURATION,
-);
+const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
+  pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);
+
+export const chainTokensStatuses$ = loadingStatusByChain$;
 
 const WATCHERS = new Map<ChainId, () => void>();
 
@@ -149,14 +150,14 @@ const watchTokensByChain = (chainId: ChainId) => {
   let retryTimeout = 3_000;
 
   const refresh = async () => {
+    if (watchController.signal.aborted) return;
+
     const refreshController = new AbortController();
     const cancelRefresh = () => refreshController.abort();
     watchController.signal.addEventListener("abort", cancelRefresh);
 
     try {
-      if (watchController.signal.aborted) return;
-
-      chainTokensStatuses$.setLoadingStatus(chainId, "loading");
+      setLoadingStatus(chainId, "loading");
 
       const chain = getChainById(chainId);
       if (!chain) throw new Error(`Could not find chain ${chainId}`);
@@ -169,48 +170,48 @@ const watchTokensByChain = (chainId: ChainId) => {
         throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
       ]);
 
-      if (!watchController.signal.aborted)
-        chainTokensStatuses$.setLoadingStatus(chainId, "loaded");
+      if (!watchController.signal.aborted) setLoadingStatus(chainId, "loaded");
     } catch (err) {
       refreshController.abort();
       console.error("Failed to fetch tokens", { chainId, err });
       // wait before retrying to prevent browser from hanging
       await sleep(retryTimeout);
       retryTimeout *= 2; // increase backoff duration
-      chainTokensStatuses$.setLoadingStatus(chainId, "stale");
+      setLoadingStatus(chainId, "stale");
     }
 
     watchController.signal.removeEventListener("abort", cancelRefresh);
   };
 
-  const sub = chainTokensStatuses$.subject$
+  const sub = getLoadingStatus$(chainId)
     .pipe(
-      map((statusByChain) => statusByChain[chainId]),
       distinctUntilChanged(),
+      filter((status) => status === "stale"),
     )
-    .subscribe((status) => {
-      if (status === "stale") refresh();
+    .subscribe(() => {
+      refresh();
     });
 
   return () => {
-    watchController.abort();
     sub.unsubscribe();
+    watchController.abort();
   };
 };
 
 tokensByChainSubscriptions$.subscribe((chainIds) => {
-  // add missing watchers
-  for (const chainId of chainIds.filter((id) => !WATCHERS.has(id)))
-    WATCHERS.set(chainId, watchTokensByChain(chainId));
-
   // remove watchers that are not needed anymore
   const existingIds = Array.from(WATCHERS.keys());
   const watchersToStop = existingIds.filter((id) => !chainIds.includes(id));
+
   for (const chainId of watchersToStop) {
     WATCHERS.get(chainId)?.();
     WATCHERS.delete(chainId);
-    chainTokensStatuses$.setLoadingStatus(chainId, "stale");
+    setLoadingStatus(chainId, "stale");
   }
+
+  // add missing watchers
+  for (const chainId of chainIds.filter((id) => !WATCHERS.has(id)))
+    WATCHERS.set(chainId, watchTokensByChain(chainId));
 });
 
 export const getTokensWatchersCount = () => WATCHERS.size;

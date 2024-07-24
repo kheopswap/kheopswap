@@ -3,7 +3,7 @@ import { groupBy } from "lodash";
 
 import { poolsStore$ } from "./store";
 import { Pool } from "./types";
-import { chainPoolsLoadingStatuses } from "./watchers";
+import { chainPoolsStatuses$ } from "./watchers";
 
 import { LoadingStatus } from "src/services/common";
 import { ChainId } from "src/config/chains";
@@ -34,10 +34,10 @@ const combineState = (
 // main datasource of the service
 export const poolsByChainState$ = new BehaviorSubject<
   Record<ChainId, { status: LoadingStatus; pools: Pool[] }>
->(combineState(chainPoolsLoadingStatuses.subject$.value, poolsStore$.value));
+>(combineState(chainPoolsStatuses$.value, poolsStore$.value));
 
 // keep subject up to date
-combineLatest([chainPoolsLoadingStatuses.subject$, poolsStore$]).subscribe(
+combineLatest([chainPoolsStatuses$, poolsStore$]).subscribe(
   ([statusByChain, allPools]) => {
     poolsByChainState$.next(combineState(statusByChain, allPools));
   },
