@@ -28,16 +28,20 @@ export const chainTokensStatuses$ = initializeChainStatusWatcher(
 
 const WATCHERS = new Map<ChainId, () => void>();
 
-const fetchPoolAssetTokens = async (chain: Chain) => {
+const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
   if (isAssetHub(chain)) {
     const api = await getApi(chain.id);
+    if (signal.aborted) return;
+
     await api.waitReady;
+    if (signal.aborted) return;
 
     const stop = logger.timer(
       `chain.api.query.PoolAssets.Metadata.getEntries() - ${chain.id}`,
     );
     const tokens = await api.query.PoolAssets.Asset.getEntries({
       at: "best",
+      signal,
     });
     stop();
 
@@ -78,16 +82,20 @@ const fetchPoolAssetTokens = async (chain: Chain) => {
   }
 };
 
-const fetchAssetTokens = async (chain: Chain) => {
+const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
   if (hasAssetPallet(chain)) {
     const api = await getApi(chain.id);
+    if (signal.aborted) return;
+
     await api.waitReady;
+    if (signal.aborted) return;
 
     const stop = logger.timer(
       `chain.api.query.Assets.Metadata.getEntries() - ${chain.id}`,
     );
     const tokens = await api.query.Assets.Metadata.getEntries({
       at: "best",
+      signal,
     });
     stop();
 
@@ -137,12 +145,16 @@ const fetchAssetTokens = async (chain: Chain) => {
 };
 
 const watchTokensByChain = (chainId: ChainId) => {
-  let stop = false;
+  const controller = new AbortController();
   let retryTimeout = 3_000;
 
   const refresh = async () => {
+    const controller2 = new AbortController();
+    const abort2 = () => controller2.abort();
+    controller.signal.addEventListener("abort", abort2);
+
     try {
-      if (stop) return;
+      if (controller.signal.aborted) return;
 
       chainTokensStatuses$.setLoadingStatus(chainId, "loading");
 
@@ -150,18 +162,25 @@ const watchTokensByChain = (chainId: ChainId) => {
       if (!chain) throw new Error(`Could not find chain ${chainId}`);
 
       await Promise.race([
-        Promise.all([fetchAssetTokens(chain), fetchPoolAssetTokens(chain)]),
+        Promise.all([
+          fetchAssetTokens(chain, controller2.signal),
+          fetchPoolAssetTokens(chain, controller2.signal),
+        ]),
         throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
       ]);
 
-      if (!stop) chainTokensStatuses$.setLoadingStatus(chainId, "loaded");
+      if (!controller.signal.aborted)
+        chainTokensStatuses$.setLoadingStatus(chainId, "loaded");
     } catch (err) {
+      controller2.abort();
       console.error("Failed to fetch tokens", { chainId, err });
       // wait before retrying to prevent browser from hanging
       await sleep(retryTimeout);
       retryTimeout *= 2; // increase backoff duration
       chainTokensStatuses$.setLoadingStatus(chainId, "stale");
     }
+
+    controller.signal.removeEventListener("abort", abort2);
   };
 
   const sub = chainTokensStatuses$.subject$
@@ -174,7 +193,7 @@ const watchTokensByChain = (chainId: ChainId) => {
     });
 
   return () => {
-    stop = true;
+    controller.abort();
     sub.unsubscribe();
   };
 };

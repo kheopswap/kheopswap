@@ -21,17 +21,20 @@ export const chainPoolsLoadingStatuses =
 
 const WATCHERS = new Map<ChainId, () => void>();
 
-const fetchAssetConvertionPools = async (chain: Chain) => {
+const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
   if (isAssetHub(chain)) {
     const api = await getApi(chain.id);
-    await api.waitReady;
+    if (signal.aborted) return;
 
-    const stop = logger.timer(`fetch pools & metadata - ${chain.id}`);
+    await api.waitReady;
+    if (signal.aborted) return;
+
+    const stopWatch = logger.timer(`fetch pools & metadata - ${chain.id}`);
     const [rawPools, rawPoolAssets] = await Promise.all([
-      api.query.AssetConversion.Pools.getEntries({ at: "best" }),
-      api.query.PoolAssets.Asset.getEntries({ at: "best" }),
+      api.query.AssetConversion.Pools.getEntries({ at: "best", signal }),
+      api.query.PoolAssets.Asset.getEntries({ at: "best", signal }),
     ]);
-    stop();
+    stopWatch();
 
     const pools = rawPools
       .map<AssetConvertionPoolDef | null>((d) => {
@@ -66,12 +69,17 @@ const fetchAssetConvertionPools = async (chain: Chain) => {
 };
 
 const watchPoolsByChain = (chainId: ChainId) => {
-  let stop = false;
+  const controller = new AbortController();
+  // let stop = false;
   let retryTimeout = 3_000;
 
   const refresh = async () => {
+    const controller2 = new AbortController();
+    const abort2 = () => controller2.abort();
+    controller.signal.addEventListener("abort", abort2);
+
     try {
-      if (stop) return;
+      if (controller.signal.aborted) return;
 
       chainPoolsLoadingStatuses.setLoadingStatus(chainId, "loading");
 
@@ -80,20 +88,24 @@ const watchPoolsByChain = (chainId: ChainId) => {
 
       await Promise.race([
         Promise.all([
-          fetchAssetConvertionPools(chain),
+          fetchAssetConvertionPools(chain, controller2.signal),
           // more pool types to fetch here
         ]),
         throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
       ]);
 
-      if (!stop) chainPoolsLoadingStatuses.setLoadingStatus(chainId, "loaded");
+      if (!controller.signal.aborted)
+        chainPoolsLoadingStatuses.setLoadingStatus(chainId, "loaded");
     } catch (err) {
+      controller2.abort();
       console.error("Failed to fetch tokens", { chainId, err });
       // wait before retrying to prevent browser from hanging
       await sleep(retryTimeout);
       retryTimeout *= 2; // increase backoff duration
       chainPoolsLoadingStatuses.setLoadingStatus(chainId, "stale");
     }
+
+    controller.signal.removeEventListener("abort", abort2);
   };
 
   const sub = chainPoolsLoadingStatuses.subject$
@@ -106,7 +118,7 @@ const watchPoolsByChain = (chainId: ChainId) => {
     });
 
   return () => {
-    stop = true;
+    controller.abort();
     sub.unsubscribe();
   };
 };

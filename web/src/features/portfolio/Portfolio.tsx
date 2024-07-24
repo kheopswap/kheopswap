@@ -6,7 +6,7 @@ import { PortfolioProvider, usePortfolio } from "./PortfolioProvider";
 
 import { Token } from "src/config/tokens";
 import { getChainById } from "src/config/chains";
-import { cn, isBigInt, logger, sortBigInt } from "src/util";
+import { cn, isBigInt, sortBigInt } from "src/util";
 import { SearchInput, Styles, TokenLogo, Tokens } from "src/components";
 import { useWallets } from "src/hooks";
 
@@ -182,9 +182,8 @@ const TokenRows: FC<{ rows: TokenRowData[] }> = ({ rows }) => {
   const search = useDeferredValue(rawSearch);
 
   const searchedRows = useMemo(() => {
-    const stop = logger.timer("search");
     const ls = search.toLowerCase().trim();
-    const res = !ls
+    return !ls
       ? sortedRows.filter(
           ({ token, balance, tvl }) =>
             !!token.verified || !!balance.tokenPlancks || !!tvl?.tokenPlancks,
@@ -195,8 +194,6 @@ const TokenRows: FC<{ rows: TokenRowData[] }> = ({ rows }) => {
             token.name?.toLowerCase().includes(ls) ||
             (token.type === "asset" && token.assetId.toString() === ls),
         );
-    stop();
-    return res;
   }, [search, sortedRows]);
 
   return (
