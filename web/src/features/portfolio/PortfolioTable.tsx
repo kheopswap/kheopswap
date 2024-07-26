@@ -10,9 +10,11 @@ import {
   TokenBalancesSummaryData,
 } from "./types";
 import { PortfolioHeaderRow } from "./PortfolioHeaderRow";
+import { PortfolioTokenDrawer } from "./PortfolioTokenDrawer";
 
 import { SearchInput } from "src/components";
 import { isBigInt, sortBigInt } from "src/util";
+import { TokenId } from "src/config/tokens";
 
 const sortByValue = (
   a: TokenBalancesSummaryData,
@@ -23,6 +25,8 @@ const sortByValue = (
   if (isBigInt(a.stablePlancks)) return -1;
   if (isBigInt(b.stablePlancks)) return 1;
 
+  if (isBigInt(a.tokenPlancks) && isBigInt(b.tokenPlancks))
+    return sortBigInt(a.tokenPlancks, b.tokenPlancks, true);
   if (a.tokenPlancks && !b.tokenPlancks) return -1;
   if (!a.tokenPlancks && b.tokenPlancks) return 1;
   return 0;
@@ -50,6 +54,7 @@ const sortByColumn =
 
 export const PortfolioTable = () => {
   const allRows = usePortfolioRows();
+  const [selectedTokenId, setSelectedTokenId] = useState<TokenId | null>(null);
 
   const { accounts, balances, isLoading } = usePortfolio();
 
@@ -105,6 +110,11 @@ export const PortfolioTable = () => {
         rows={rows}
         visibleCol={visibleCol}
         isLoading={isLoading}
+        onTokenSelect={setSelectedTokenId}
+      />
+      <PortfolioTokenDrawer
+        tokenId={selectedTokenId}
+        onDismiss={() => setSelectedTokenId(null)}
       />
     </div>
   );

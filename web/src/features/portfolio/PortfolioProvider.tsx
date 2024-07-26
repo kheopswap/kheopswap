@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 
+import { BalanceAndFiat } from "./types";
+
 import {
   useAssetHubTVL,
   useBalances,
@@ -53,7 +55,7 @@ export const usePortfolioProvider = () => {
 
   const { data: tvl } = useAssetHubTVL();
 
-  const balances = useMemo(
+  const balances = useMemo<BalanceAndFiat[]>(
     () =>
       rawBalances.map((b, idx) => ({
         ...b,

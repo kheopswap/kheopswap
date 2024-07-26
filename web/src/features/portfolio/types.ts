@@ -1,4 +1,5 @@
 import { Token } from "src/config/tokens";
+import { BalanceState } from "src/hooks";
 
 export type TokenBalancesSummaryData = {
   tokenPlancks: bigint | undefined;
@@ -17,3 +18,8 @@ export type PortfolioRowData = {
 };
 
 export type PortfolioSortMode = "tvl" | "balance" | "symbol";
+
+export type BalanceAndFiat = BalanceState & {
+  stablePlancks: bigint | null;
+  isLoadingStablePlancks: boolean;
+};
