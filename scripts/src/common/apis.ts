@@ -19,10 +19,10 @@ import { chainSpec as rahChainSpecs } from "polkadot-api/chains/rococo_v2_2_asse
 import { chainSpec as westendChainSpecs } from "polkadot-api/chains/westend2";
 import { chainSpec as wahChainSpecs } from "polkadot-api/chains/westend2_asset_hub";
 
-import { start, type Chain as SmolChain } from "polkadot-api/smoldot";
-export const smoldot = start({
-  maxLogLevel: 0,
-});
+// import { start, type Chain as SmolChain } from "polkadot-api/smoldot";
+// export const smoldot = start({
+//   maxLogLevel: 0,
+// });
 
 // const providerRelay = WebSocketProvider(
 //   packageJson["polkadot-api"].devrelay.wsUrl
@@ -72,43 +72,44 @@ type ChainDescriptors<Id extends ChainId> = Descriptors[Id];
 
 export type Api<T extends ChainId> = TypedApi<ChainDescriptors<T>>;
 
-const smolChains = new Map<ChainId, SmolChain>();
+// const smolChains = new Map<ChainId, SmolChain>();
 
-const providers = new Map<ChainId, any>();
+// const providers = new Map<ChainId, any>();
 
-const getChain = async (
-  chainId: ChainId,
-  potentialRelayChains?: SmolChain[]
-) => {
-  if (smolChains.has(chainId)) return smolChains.get(chainId)!;
-  const chainSpec = chainsSpecs[chainId]!;
-  const chain = await smoldot.addChain({ chainSpec, potentialRelayChains });
-  if (!chain) throw new Error("Failed to add chain");
-  smolChains.set(chainId, chain);
-  return chain!;
-};
+// const getChain = async (
+//   chainId: ChainId,
+//   potentialRelayChains?: SmolChain[]
+// ) => {
+//   if (smolChains.has(chainId)) return smolChains.get(chainId)!;
+//   const chainSpec = chainsSpecs[chainId]!;
+//   const chain = await smoldot.addChain({ chainSpec, potentialRelayChains });
+//   if (!chain) throw new Error("Failed to add chain");
+//   smolChains.set(chainId, chain);
+//   return chain!;
+// };
 
-const getRelayProvider = async (relay: ChainId) => {
-  if (providers.has(relay)) return providers.get(relay);
-  const chain = await getChain(relay);
-  return getSmProvider(chain);
-};
+// const getRelayProvider = async (relay: ChainId) => {
+//   if (providers.has(relay)) return providers.get(relay);
+//   const chain = await getChain(relay);
+//   return getSmProvider(chain);
+// };
 
-const getParaProvider = async (relay: ChainId, paraId: ChainId) => {
-  if (providers.has(paraId)) return providers.get(paraId);
-  const relayChain = await getChain(relay);
-  const chain = await getChain(paraId, [relayChain]);
-  smolChains.set(paraId, chain);
-  return getSmProvider(chain);
-};
+// const getParaProvider = async (relay: ChainId, paraId: ChainId) => {
+//   if (providers.has(paraId)) return providers.get(paraId);
+//   const relayChain = await getChain(relay);
+//   const chain = await getChain(paraId, [relayChain]);
+//   smolChains.set(paraId, chain);
+//   return getSmProvider(chain);
+// };
 
 const getProvider = async (chainId: ChainId) => {
   // TODO make light clients work
   if (!Date.now() && chainsSpecs[chainId]) {
-    const relayId = relayMap[chainId];
-    return relayId
-      ? getParaProvider(relayId, chainId)
-      : getRelayProvider(chainId);
+    throw new Error("TODO");
+    // const relayId = relayMap[chainId];
+    // return relayId
+    //   ? getParaProvider(relayId, chainId)
+    //   : getRelayProvider(chainId);
   } else {
     const networks = packageJson["polkadot-api"] as any;
     const wsUrl = networks[chainId]?.wsUrl as string;
