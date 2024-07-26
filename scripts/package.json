@@ -12,50 +12,17 @@
     "preinstall": "npx only-allow bun"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.1.6"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@polkadot-api/descriptors": "file:.papi/descriptors",
     "@polkadot-labs/hdkd": "^0.0.6",
     "@polkadot-labs/hdkd-helpers": "^0.0.6",
-    "polkadot-api": "^0.10.0",
+    "polkadot-api": "^0.12.0",
     "rxjs": "^7.8.1",
-    "viem": "^2.10.1"
-  },
-  "polkadot-api": {
-    "devrelay": {
-      "wsUrl": "ws://127.0.0.1:42069",
-      "metadata": "papi/devrelay.scale"
-    },
-    "devah": {
-      "wsUrl": "ws://127.0.0.1:42070",
-      "metadata": "papi/devah.scale"
-    },
-    "wah": {
-      "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
-      "metadata": "papi/wah.scale"
-    },
-    "kah": {
-      "wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
-      "metadata": "papi/wah.scale"
-    },
-    "rah": {
-      "wsUrl": "wss://rococo-asset-hub-rpc.polkadot.io",
-      "metadata": "papi/rah.scale"
-    },
-    "pah": {
-      "wsUrl": "wss://statemint-rpc.dwellir.com",
-      "metadata": "papi/pah.scale"
-    },
-    "rococo": {
-      "wsUrl": "wss://rococo-rpc.polkadot.io",
-      "metadata": "papi/rococo.scale"
-    },
-    "westend": {
-      "wsUrl": "wss://westend-rpc.polkadot.io",
-      "metadata": "papi/westend.scale"
-    }
+    "viem": "^2.18.2"
   }
 }

@@ -8,10 +8,14 @@ import {
   wah,
   westend,
 } from "@polkadot-api/descriptors";
-import { createClient, type TypedApi } from "polkadot-api";
+import {
+  createClient,
+  type ChainDefinition,
+  type TypedApi,
+} from "polkadot-api";
 import { getSmProvider } from "polkadot-api/sm-provider";
 import { WebSocketProvider } from "polkadot-api/ws-provider/web";
-import packageJson from "../../package.json";
+import papiConfig from "../../.papi/polkadot-api.json";
 
 // import {chainSpec as polkadotChainSpecs} from "polkadot-api/chains/polkadot"
 import { chainSpec as rococoChainSpecs } from "polkadot-api/chains/rococo_v2_2";
@@ -68,9 +72,9 @@ export type ChainId = keyof Descriptors;
 export type AssetHubChainId = "devah" | "wah" | "rah" | "pah" | "kah";
 export type RelayChainId = "devrelay" | "rococo" | "westend";
 
-type ChainDescriptors<Id extends ChainId> = Descriptors[Id];
+export type Api<Id extends ChainId> = TypedApi<Descriptors[Id]>;
 
-export type Api<T extends ChainId> = TypedApi<ChainDescriptors<T>>;
+//type ChainDescriptors<Id extends ChainId> = Descriptors[Id];
 
 // const smolChains = new Map<ChainId, SmolChain>();
 
@@ -103,7 +107,7 @@ export type Api<T extends ChainId> = TypedApi<ChainDescriptors<T>>;
 // };
 
 const getProvider = async (chainId: ChainId) => {
-  // TODO make light clients work
+  // TODO bring back light clients
   if (!Date.now() && chainsSpecs[chainId]) {
     throw new Error("TODO");
     // const relayId = relayMap[chainId];
@@ -111,8 +115,7 @@ const getProvider = async (chainId: ChainId) => {
     //   ? getParaProvider(relayId, chainId)
     //   : getRelayProvider(chainId);
   } else {
-    const networks = packageJson["polkadot-api"] as any;
-    const wsUrl = networks[chainId]?.wsUrl as string;
+    const wsUrl = papiConfig.entries[chainId]?.wsUrl as string;
     if (!wsUrl) throw new Error("wsUrl not found for chainId: " + chainId);
     return WebSocketProvider(wsUrl);
   }
@@ -128,5 +131,6 @@ export const getApi = async <Id extends keyof typeof descriptors>(
 
   const provider = await getProvider(chainId);
   const client = createClient(provider);
+
   return client.getTypedApi(descriptors[chainId]);
 };

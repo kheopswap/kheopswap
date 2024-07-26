@@ -109,9 +109,6 @@ try {
 
   dumpData("tx2.json", tx2);
 
-  const runtime = await api.runtime.latest();
-  runtime._getCtx().metadata.lookup;
-
   printResult(tx2);
 } catch (err) {
   console.error(err);
