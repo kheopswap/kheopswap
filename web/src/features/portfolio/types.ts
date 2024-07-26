@@ -15,3 +15,5 @@ export type PortfolioRowData = {
   balance: TokenBalancesSummaryData;
   tvl: TokenBalancesSummaryData | null;
 };
+
+export type PortfolioSortMode = "tvl" | "balance" | "symbol";
