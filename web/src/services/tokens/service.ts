@@ -24,32 +24,8 @@ export const subscribeTokensByChains = (chainIds: ChainId[]) => {
   return () => removeTokensByChainSubscription(subId);
 };
 
-// export const getTokensByChain$ = (chainId: ChainId | null) => {
-//   console.log("getTokenByChin", chainId);
-//   return tokensByChainState$.pipe(
-//     map((statusAndTokens) => {
-//       console.log({ chainId, statusAndTokens });
-//       return statusAndTokens[chainId as ChainId] ?? DEFAULT_VALUE;
-//     }),
-//     distinctUntilChanged<TokensByChainState>(isEqual),
-//   );
-// };
-
 export const getTokensByChains$ = (chainIds: ChainId[]) => {
-  // const key = crypto.randomUUID();
-  // console.log("hey getTokensByChains", chainIds, key);
-  //let count = 0;
   return tokensByChainState$.pipe(
-    // tap({
-    //   subscribe: () => {
-    //     count++;
-    //     console.log("hey subscribe", chainIds, key, count);
-    //   },
-    //   unsubscribe: () => {
-    //     count--;
-    //     console.log("hey unsubscribe", chainIds, key, count);
-    //   },
-    // }),
     map((statusAndTokens) =>
       Object.fromEntries(
         chainIds.map((chainId) => [

@@ -160,7 +160,6 @@ const PoolsList: FC<{
         )}
       >
         <div></div>
-
         <div className="whitespace-nowrap text-right">
           <ColumnHeaderButton selected={true}>TVL</ColumnHeaderButton>
         </div>

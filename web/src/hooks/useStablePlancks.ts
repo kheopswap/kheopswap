@@ -18,7 +18,6 @@ import { ChainId, isChainIdAssetHub } from "src/config/chains";
 
 type UseStablePlancksProps = {
   inputs: { tokenId: TokenId; plancks: bigint | undefined }[];
-  // outputTokenId: TokenId; // TODO use this instead of relay's stable
 };
 
 type UseStablePlancksResult = {
@@ -51,7 +50,6 @@ export const useStablePlancksMulti = ({
   });
   const allTokensMap = useMemo(() => keyBy(allTokens, "id"), [allTokens]);
 
-  // const assetHub = useMemo(() => assetHubId ? getChainById(assetHubId) : null, [assetHubId]);
   const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
     chainId: assetHub.id,
   });
