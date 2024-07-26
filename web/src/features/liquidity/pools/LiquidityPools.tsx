@@ -3,6 +3,7 @@ import { FC, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import { Tokens, TokenLogo, Styles } from "src/components";
+import { ColumnHeaderButton } from "src/components/ColumnHeaderButton";
 import { TokenAsset, TokenNative } from "src/config/tokens/types";
 import {
   useChainName,
@@ -150,14 +151,32 @@ const PoolsList: FC<{
   const [parent] = useAutoAnimate();
 
   return (
-    <ul ref={parent} className="relative flex flex-col gap-2">
-      {pools.map(({ pool, token1, token2 }) => (
-        <li key={`${pool.chainId}-${pool.assetPoolId}`}>
-          <PoolRow pool={pool} token1={token1} token2={token2} />
-        </li>
-      ))}
-      <PoolShimmerRow className={isLoading ? "block" : "hidden"} />
-    </ul>
+    <div>
+      <div
+        className={cn(
+          "mb-1 gap-2 pl-4 pr-3 text-xs sm:gap-4",
+          !pools.length && !isLoading && "invisible",
+          "hidden sm:block",
+        )}
+      >
+        <div></div>
+
+        <div className="whitespace-nowrap text-right">
+          <ColumnHeaderButton selected={true}>TVL</ColumnHeaderButton>
+        </div>
+      </div>
+      <div ref={parent} className="relative flex flex-col gap-2">
+        {pools.map(({ pool, token1, token2 }) => (
+          <PoolRow
+            key={`${pool.chainId}-${pool.assetPoolId}`}
+            pool={pool}
+            token1={token1}
+            token2={token2}
+          />
+        ))}
+        <PoolShimmerRow className={isLoading ? "block" : "hidden"} />
+      </div>
+    </div>
   );
 };
 

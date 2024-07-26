@@ -1,11 +1,4 @@
-import {
-  FC,
-  ReactNode,
-  useCallback,
-  useDeferredValue,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { PortfolioProvider, usePortfolio } from "./PortfolioProvider";
@@ -20,6 +13,7 @@ import { usePortfolioRows } from "./usePortfolioRows";
 import { cn, isBigInt, sortBigInt } from "src/util";
 import { SearchInput, Shimmer } from "src/components";
 import { useWallets } from "src/hooks";
+import { ColumnHeaderButton } from "src/components/ColumnHeaderButton";
 
 const sortByValue = (
   a: TokenBalancesSummaryData,
@@ -56,23 +50,6 @@ const sortByColumn =
   };
 
 type SortMode = "tvl" | "balance" | "symbol";
-
-const ColumnHeaderButton: FC<{
-  selected: boolean;
-  children: ReactNode;
-  className?: string;
-  onClick: () => void;
-}> = ({ selected, children, className, onClick }) => {
-  return (
-    <button
-      type="button"
-      className={cn(className, selected && "text-neutral-200")}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};
 
 const PortfolioRows = ({
   rows,
@@ -171,7 +148,7 @@ const PortfolioTable = () => {
       />
       <div
         className={cn(
-          "mb-1 grid  gap-2 pl-4 pr-3 text-xs text-neutral-500  sm:gap-4",
+          "mb-1 grid  gap-2 pl-4 pr-3 text-xs  sm:gap-4",
           "grid-cols-[1fr_120px] sm:grid-cols-[1fr_120px_120px]",
           !searchedRows.length && !isLoading && "invisible",
         )}
