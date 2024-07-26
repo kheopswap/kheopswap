@@ -1,5 +1,5 @@
 import { distinctUntilChanged, map } from "rxjs";
-import { isEqual } from "lodash";
+import { Dictionary, isEqual } from "lodash";
 
 import { tokensByChainState$ } from "./state";
 import {
@@ -24,11 +24,16 @@ export const subscribeTokensByChains = (chainIds: ChainId[]) => {
   return () => removeTokensByChainSubscription(subId);
 };
 
-export const getTokensByChain$ = (chainId: ChainId | null) => {
+export const getTokensByChains$ = (chainIds: ChainId[]) => {
   return tokensByChainState$.pipe(
-    map(
-      (statusAndTokens) => statusAndTokens[chainId as ChainId] ?? DEFAULT_VALUE,
+    map((statusAndTokens) =>
+      Object.fromEntries(
+        chainIds.map((chainId) => [
+          chainId,
+          statusAndTokens[chainId] ?? DEFAULT_VALUE,
+        ]),
+      ),
     ),
-    distinctUntilChanged<TokensByChainState>(isEqual),
+    distinctUntilChanged<Dictionary<TokensByChainState>>(isEqual),
   );
 };

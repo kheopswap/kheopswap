@@ -1,13 +1,22 @@
 import { useMemo } from "react";
 
-import { useBalances, useRelayChains, useWallets } from "src/hooks";
+import { BalanceAndFiat } from "./types";
+
+import {
+  useAssetHubTVL,
+  useBalances,
+  useRelayChains,
+  useToken,
+  useWallets,
+} from "src/hooks";
+import { useStablePlancksMulti } from "src/hooks/useStablePlancks";
 import { useTokensByChainIds } from "src/hooks/useTokens";
 import { provideContext } from "src/util";
 
 export const usePortfolioProvider = () => {
   const { accounts } = useWallets();
 
-  const { allChains } = useRelayChains();
+  const { allChains, assetHub } = useRelayChains();
   const chainIds = useMemo(
     () => allChains.map((chain) => chain.id),
     [allChains],
@@ -16,7 +25,6 @@ export const usePortfolioProvider = () => {
   const { data: allTokens, isLoading: isLoadingTokens } = useTokensByChainIds({
     chainIds,
   });
-
   const tokens = useMemo(
     () => allTokens.filter((t) => t.type !== "pool-asset"),
     [allTokens],
@@ -24,7 +32,7 @@ export const usePortfolioProvider = () => {
 
   const balanceDefs = useMemo(() => {
     // TODO genesishHash filter
-    // TODO account/chain compatibility filter
+    // TODO account/chain compatibility filter (substrate vs ethereum)
     return tokens.flatMap((token) =>
       accounts.map((acc) => ({
         address: acc.address,
@@ -33,17 +41,36 @@ export const usePortfolioProvider = () => {
     );
   }, [accounts, tokens]);
 
-  const { data: balances, isLoading: isLoadingBalances } = useBalances({
+  const { data: rawBalances, isLoading: isLoadingBalances } = useBalances({
     balanceDefs,
   });
 
-  // TODO stablePrice for each non null token with positive balance
+  const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
+  const { data: stables } = useStablePlancksMulti({
+    inputs: rawBalances.map(({ tokenId, balance }) => ({
+      tokenId,
+      plancks: balance,
+    })),
+  });
+
+  const { data: tvl } = useAssetHubTVL();
+
+  const balances = useMemo<BalanceAndFiat[]>(
+    () =>
+      rawBalances.map((b, idx) => ({
+        ...b,
+        ...stables[idx],
+      })),
+    [rawBalances, stables],
+  );
 
   return {
     isLoading: isLoadingTokens || isLoadingBalances,
     balances,
     accounts,
     tokens,
+    stableToken: stableToken!,
+    tvl,
   };
 };
 

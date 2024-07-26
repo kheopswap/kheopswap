@@ -6,7 +6,7 @@ import { sortTokens } from "./util";
 import { chainTokensStatuses$ } from "./watchers";
 
 import { Token } from "src/config/tokens";
-import { LoadingStatus } from "src/services/common";
+import { type LoadingStatus } from "src/services/common";
 import { ChainId } from "src/config/chains";
 import { logger } from "src/util";
 
@@ -37,10 +37,10 @@ const combineState = (
 // main datasource of the service
 export const tokensByChainState$ = new BehaviorSubject<
   Record<ChainId, ChainTokensState>
->(combineState(chainTokensStatuses$.subject$.value, tokensStore$.value));
+>(combineState(chainTokensStatuses$.value, tokensStore$.value));
 
 // keep subject up to date
-combineLatest([chainTokensStatuses$.subject$, tokensStore$]).subscribe(
+combineLatest([chainTokensStatuses$, tokensStore$]).subscribe(
   ([statusByChain, allTokens]) => {
     tokensByChainState$.next(combineState(statusByChain, allTokens));
   },

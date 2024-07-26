@@ -1,6 +1,6 @@
 import { DetailedHTMLProps, FC, InputHTMLAttributes, useMemo } from "react";
 
-import { Shimmer } from "./TextShimmer";
+import { Shimmer } from "./Shimmer";
 import { TokenSelectButton } from "./TokenSelectButton";
 import { Styles } from "./styles";
 

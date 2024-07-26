@@ -95,8 +95,7 @@ const DrawerContent: FC<{
         </label>
         <div className="mt-1 text-sm text-neutral-500">
           Light clients are blockchain nodes running in your browser. They
-          provide secure and uncensorable connections to the other blockchain
-          nodes.
+          provide secure and uncensorable connections to Polkadot networks.
           <br />
           Pro-tip: get{" "}
           {/* eslint-disable-next-line react/jsx-no-target-blank */}
@@ -107,7 +106,7 @@ const DrawerContent: FC<{
           >
             Substrate Connect
           </a>{" "}
-          browser extension to share light clients across all your browser tabs.
+          browser extension to share light clients across all your browser apps.
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 export * from "./useApi";
 export * from "./useAssetConvertPlancks";
+export * from "./useAssetHubTVL";
 export * from "./useBalance";
 export * from "./useBalances";
 export * from "./useCanAccountReceive";

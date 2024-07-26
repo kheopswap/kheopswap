@@ -1,6 +1,7 @@
 import { ComponentProps, FC } from "react";
 import { NavLink, useParams } from "react-router-dom";
 
+import { useWallets } from "src/hooks";
 import { cn } from "src/util";
 
 const NavItem: FC<ComponentProps<typeof NavLink>> = ({ to, children }) => {
@@ -8,7 +9,7 @@ const NavItem: FC<ComponentProps<typeof NavLink>> = ({ to, children }) => {
     <NavLink
       to={to}
       className={cn(
-        "rounded-xl  px-3 py-1 text-base text-neutral-50 opacity-50",
+        "rounded-xl px-1 py-0.5 text-neutral-50 opacity-50 min-[370px]:px-2 min-[370px]:py-1 sm:px-3",
         "hover:opacity-100 [&.active]:bg-pink [&.active]:opacity-100",
       )}
     >
@@ -18,19 +19,24 @@ const NavItem: FC<ComponentProps<typeof NavLink>> = ({ to, children }) => {
 };
 
 export const HorizontalNav: FC = () => {
+  const { accounts } = useWallets();
   const { relayId } = useParams();
   return (
     <div>
-      <div className={cn("my-2 flex w-full justify-center gap-2 px-2 sm:my-6")}>
+      <div
+        className={cn(
+          "my-2 flex w-full justify-center px-2 text-sm min-[340px]:gap-1 min-[360px]:gap-2 sm:my-6 sm:text-base",
+        )}
+      >
         <NavItem to={`/${relayId}/swap`}>Swap</NavItem>
         <NavItem to={`/${relayId}/teleport`}>Teleport</NavItem>
         <NavItem to={`/${relayId}/transfer`}>Transfer</NavItem>
-        <NavItem to={`/${relayId}/pools`}>
-          <span className="hidden sm:inline">Liquidity </span>Pools
+        <NavItem to={`/${relayId}/portfolio`}>
+          {accounts.length ? "Portfolio" : "Tokens"}
         </NavItem>
-        {import.meta.env.DEV && (
-          <NavItem to={`/${relayId}/portfolio`}>P</NavItem>
-        )}
+        <NavItem to={`/${relayId}/pools`}>
+          <span className="hidden min-[440px]:inline">Liquidity </span>Pools
+        </NavItem>
       </div>
     </div>
   );

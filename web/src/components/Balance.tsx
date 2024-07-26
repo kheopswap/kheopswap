@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { Shimmer } from "./TextShimmer";
+import { Shimmer } from "./Shimmer";
 import { Tokens } from "./Tokens";
 
 import { TokenId } from "src/config/tokens";

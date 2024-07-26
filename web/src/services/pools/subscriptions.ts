@@ -1,5 +1,5 @@
 import { isEqual } from "lodash";
-import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
+import { BehaviorSubject, debounceTime, distinctUntilChanged, map } from "rxjs";
 
 import { ChainId } from "src/config/chains";
 
@@ -13,6 +13,7 @@ const allPoolsByChainSubscriptions$ = new BehaviorSubject<
 >([]);
 
 export const poolsByChainSubscriptions$ = allPoolsByChainSubscriptions$.pipe(
+  debounceTime(50),
   map((subs) => [...new Set(subs.map((sub) => sub.chainId))].sort()),
   distinctUntilChanged<ChainId[]>(isEqual),
 );

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const isDevMode = import.meta.env.DEV;
+const isDevMode = true; // import.meta.env.DEV;
 
 const NO_OP = () => {};
 

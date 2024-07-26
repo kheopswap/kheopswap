@@ -1,8 +1,6 @@
-# Kheopswap
+# kheopswap.xyz
 
-DEX for Polkadot Asset Hub
-
-Dapp url : https://kheopswap.xyz
+https://kheopswap.xyz - Swaps on Polkadot Asset Hub
 
 ## Get started
 

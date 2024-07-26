@@ -100,14 +100,31 @@ const watchBalance = async (balanceId: BalanceId) => {
   }
 };
 
+const sortBalanceIdsByBalanceDesc = (bid1: BalanceId, bid2: BalanceId) => {
+  const [b1, b2] = [bid1, bid2]
+    .map(parseBalanceId)
+    .map(({ address, tokenId }) =>
+      balancesStore$.value.find(
+        (b) => b.tokenId === tokenId && b.address === address,
+      ),
+    )
+    .map((b) => b?.balance ?? 0n);
+
+  if (b1 > b2) return -1;
+  if (b1 < b2) return 1;
+  return 0;
+};
+
 // subscribe to the list of the unique balanceIds to watch
 // and update watchers accordingly
 balanceSubscriptions$.subscribe((balanceIds) => {
   // add missing watchers
-  balanceIds.forEach((balanceId) => {
-    if (WATCHERS.has(balanceId)) return;
+  for (const balanceId of balanceIds
+    .filter((id) => !WATCHERS.has(id))
+    // prioritize watchers for positive balance first, to reduce user waiting time
+    .sort(sortBalanceIdsByBalanceDesc)) {
     WATCHERS.set(balanceId, watchBalance(balanceId));
-  });
+  }
 
   // remove watchers that are not needed anymore
   const existingIds = Array.from(WATCHERS.keys());
