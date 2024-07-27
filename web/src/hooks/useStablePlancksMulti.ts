@@ -121,12 +121,15 @@ export const useStablePlancksMulti = ({
 
       return {
         stablePlancks: result,
-        isLoadingStablePlancks: isLoadingPools,
+        isLoadingStablePlancks: !isBigInt(result)
+          ? isLoading || isLoadingPools
+          : isLoading,
       };
     });
   }, [
     allTokensMap,
     inputs,
+    isLoading,
     isLoadingPools,
     isLoadingTokens,
     nativeToken,

@@ -79,7 +79,9 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
           isInitializing:
             locked?.isInitializing ??
             (isLoadingBalances || isLoadingPools || isLoadingTokens),
-          isLoadingTokenPlancks: locked?.isLoading || isLoadingTokens,
+          isLoadingTokenPlancks:
+            locked?.isLoading ||
+            (!isBigInt(locked?.plancks) && isLoadingTokens),
           ...assetConvertPlancks[i],
         };
       }),
