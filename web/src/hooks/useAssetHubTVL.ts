@@ -6,17 +6,11 @@ import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useBalances } from "./useBalances";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";
 
-import { TokenId } from "src/config/tokens";
+import { BalanceWithStable } from "src/types";
 
 type UseAssetHubTVLResult = {
   isLoading: boolean;
-  data: {
-    tokenId: TokenId;
-    plancks: bigint;
-    isLoading: boolean;
-    stablePlancks: bigint | null;
-    isLoadingStablePlancks: boolean;
-  }[];
+  data: BalanceWithStable[];
 };
 
 export const useAssetHubTVL = (): UseAssetHubTVLResult => {
@@ -72,7 +66,9 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
       isLoading:
         isLoadingBalances || isLoadingPools || isLoadingAssetConvertPlancks,
       data: lockedTokens.map((token, i) => ({
-        ...token,
+        tokenId: token.tokenId,
+        tokenPlancks: token.plancks,
+        isLoadingTokenPlancks: token.isLoading,
         ...assetConvertPlancks[i],
       })),
     }),

@@ -13,10 +13,10 @@ import {
   InjectedAccount,
   useChainName,
   useBalancesByTokenSummary,
-  BalanceWithStableSummary,
   useRelayChains,
 } from "src/hooks";
 import { cn } from "src/util";
+import { BalanceWithStableSummary } from "src/types";
 
 const TokenButton = forwardRef<
   HTMLButtonElement,

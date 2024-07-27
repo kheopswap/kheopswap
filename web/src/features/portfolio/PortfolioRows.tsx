@@ -25,13 +25,12 @@ export const PortfolioRows: FC<{
 
   return (
     <div ref={parent} className="flex flex-col gap-2">
-      {rows.map(({ token, balance, stableToken, tvl }) => (
+      {rows.map(({ token, balance, tvl }) => (
         <PortfolioRow
           key={token.id}
           token={token}
           visibleCol={visibleCol}
           balance={balance}
-          stableToken={stableToken}
           tvl={tvl}
           onClick={handleRowClick(token.id)}
         />

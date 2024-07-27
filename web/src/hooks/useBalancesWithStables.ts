@@ -4,28 +4,17 @@ import { useMemo } from "react";
 import { Token, TokenId } from "src/config/tokens";
 import { useBalances, useStablePlancksMulti } from "src/hooks";
 import { BalanceDef } from "src/services/balances";
+import { AccountBalanceWithStable } from "src/types";
 
-type UseuseAccountBalancesWithStablesProps = {
+type UseAccountBalancesWithStablesProps = {
   tokens: Token[] | TokenId[] | null | undefined;
   accounts: InjectedAccount[] | string[] | null | undefined;
 };
 
-export type BalanceWithStable = {
-  tokenId: string;
-  tokenPlancks: bigint | null;
-  isLoadingTokenPlancks: boolean;
-  stablePlancks: bigint | null;
-  isLoadingStablePlancks: boolean;
-};
-
-export type AccountBalanceWithStable = {
-  address: string;
-} & BalanceWithStable;
-
 export const useBalancesWithStables = ({
   tokens,
   accounts,
-}: UseuseAccountBalancesWithStablesProps) => {
+}: UseAccountBalancesWithStablesProps) => {
   const balanceDefs: BalanceDef[] = useMemo(() => {
     return (tokens ?? []).flatMap((token) =>
       (accounts ?? []).map((acc) => ({

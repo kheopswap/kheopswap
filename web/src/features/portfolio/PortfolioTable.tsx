@@ -7,7 +7,6 @@ import {
   PortfolioRowData,
   PortfolioVisibleColunm,
   PortfolioSortMode,
-  TokenBalancesSummaryData,
 } from "./types";
 import { PortfolioHeaderRow } from "./PortfolioHeaderRow";
 import { PortfolioTokenDrawer } from "./PortfolioTokenDrawer";
@@ -15,11 +14,9 @@ import { PortfolioTokenDrawer } from "./PortfolioTokenDrawer";
 import { SearchInput } from "src/components";
 import { isBigInt, sortBigInt } from "src/util";
 import { TokenId } from "src/config/tokens";
+import { BalanceWithStable } from "src/types";
 
-const sortByValue = (
-  a: TokenBalancesSummaryData,
-  b: TokenBalancesSummaryData,
-) => {
+const sortByValue = (a: BalanceWithStable, b: BalanceWithStable) => {
   if (isBigInt(a.stablePlancks) && isBigInt(b.stablePlancks))
     return sortBigInt(a.stablePlancks, b.stablePlancks, true);
   if (isBigInt(a.stablePlancks)) return -1;
@@ -43,10 +40,10 @@ const sortByColumn =
       if (a?.tvl?.tokenPlancks) return -1;
       if (b?.tvl?.tokenPlancks) return 1;
     } else {
-      if (a?.balance.tokenPlancks && b?.balance.tokenPlancks)
+      if (a?.balance?.tokenPlancks && b?.balance?.tokenPlancks)
         return sortByValue(a.balance, b.balance);
-      if (a?.balance.tokenPlancks) return -1;
-      if (b?.balance.tokenPlancks) return 1;
+      if (a?.balance?.tokenPlancks) return -1;
+      if (b?.balance?.tokenPlancks) return 1;
     }
 
     return 0;
@@ -76,7 +73,7 @@ export const PortfolioTable = () => {
     return !ls
       ? sortedRows.filter(
           ({ token, balance, tvl }) =>
-            !!token.verified || !!balance.tokenPlancks || !!tvl?.tokenPlancks,
+            !!token.verified || !!balance?.tokenPlancks || !!tvl?.tokenPlancks,
         )
       : sortedRows.filter(
           ({ token }) =>

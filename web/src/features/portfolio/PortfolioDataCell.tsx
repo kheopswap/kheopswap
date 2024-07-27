@@ -1,13 +1,12 @@
 import { FC } from "react";
 
-import { TokenBalancesSummaryData } from "./types";
-
 import { Token } from "src/config/tokens";
 import { cn } from "src/util";
 import { Tokens } from "src/components";
+import { BalanceWithStable } from "src/types";
 
 export const TokenBalancesSummary: FC<
-  TokenBalancesSummaryData & {
+  BalanceWithStable & {
     className?: string;
     token: Token;
     stableToken: Token;
