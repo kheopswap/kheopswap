@@ -8,9 +8,9 @@ import {
   useRelayChains,
   useToken,
   useWallets,
+  useStablePlancksMulti,
+  useTokensByChainIds,
 } from "src/hooks";
-import { useStablePlancksMulti } from "src/hooks/useStablePlancks";
-import { useTokensByChainIds } from "src/hooks/useTokens";
 import { provideContext } from "src/util";
 
 export const usePortfolioProvider = () => {

@@ -4,7 +4,7 @@ import { groupBy, mapValues, toPairs } from "lodash";
 import { useRelayChains } from "./useRelayChains";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useBalances } from "./useBalances";
-import { useStablePlancksMulti } from "./useStablePlancks";
+import { useStablePlancksMulti } from "./useStablePlancksMulti";
 
 import { TokenId } from "src/config/tokens";
 

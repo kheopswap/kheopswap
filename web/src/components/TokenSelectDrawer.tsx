@@ -1,14 +1,21 @@
 import { FC, forwardRef, useCallback, useMemo, useState } from "react";
 
-import { Drawer } from "./Drawer";
-import { DrawerContainer } from "./DrawerContainer";
-import { TokenLogo } from "./TokenLogo";
-import { ActionRightIcon } from "./icons";
-import { Styles } from "./styles";
-import { SearchInput } from "./SearchInput";
-
+import { Tokens } from "src/components/Tokens";
+import { Shimmer } from "src/components/Shimmer";
+import { Drawer } from "src/components/Drawer";
+import { DrawerContainer } from "src/components/DrawerContainer";
+import { TokenLogo } from "src/components/TokenLogo";
+import { ActionRightIcon } from "src/components/icons";
+import { Styles } from "src/components/styles";
+import { SearchInput } from "src/components/SearchInput";
 import { Token, TokenId } from "src/config/tokens";
-import { useChainName } from "src/hooks";
+import {
+  InjectedAccount,
+  useChainName,
+  useBalancesByTokenSummary,
+  BalanceWithStableSummary,
+  useRelayChains,
+} from "src/hooks";
 import { cn } from "src/util";
 
 const TokenButton = forwardRef<
@@ -18,10 +25,12 @@ const TokenButton = forwardRef<
     HTMLButtonElement
   > & {
     token: Token;
+    balances?: BalanceWithStableSummary;
     selected?: boolean;
     onClick: () => void;
   }
->(({ token, selected, onClick }, ref) => {
+>(({ token, balances, selected, onClick }, ref) => {
+  const { stableToken } = useRelayChains();
   const { name: chainName } = useChainName({ chainId: token.chainId });
 
   return (
@@ -38,7 +47,7 @@ const TokenButton = forwardRef<
     >
       <TokenLogo className="size-10" token={token} />
       <div className="flex grow flex-col items-start gap-0.5 overflow-hidden text-neutral-400">
-        <div className="flex w-full grow items-center gap-2">
+        <div className="flex w-full grow items-center gap-2 overflow-hidden">
           <div className="font-bold text-neutral-50">{token.symbol}</div>
           <div className="inline-block truncate">{token.name ?? ""}</div>
         </div>
@@ -47,8 +56,45 @@ const TokenButton = forwardRef<
           {token.type === "asset" ? ` - ${token.assetId}` : null}
         </div>
       </div>
-
-      <ActionRightIcon className="size-5 shrink-0 fill-current" />
+      {balances ? (
+        <div className="flex flex-col justify-end text-right">
+          <div className="text-neutral-50">
+            {balances.isInitializing ? (
+              <Shimmer>
+                <Tokens token={token} plancks={balances.tokenPlancks ?? 0n} />
+              </Shimmer>
+            ) : (
+              <Tokens
+                token={token}
+                plancks={balances.tokenPlancks ?? 0n}
+                className={cn(
+                  balances.isLoadingTokenPlancks && "animate-pulse",
+                )}
+              />
+            )}
+          </div>
+          <div className="text-sm">
+            {balances.isInitializing ? (
+              <Shimmer>
+                <Tokens
+                  token={stableToken}
+                  plancks={balances.stablePlancks ?? 0n}
+                />
+              </Shimmer>
+            ) : (
+              <Tokens
+                token={stableToken}
+                plancks={balances.stablePlancks ?? 0n}
+                className={cn(
+                  balances.isLoadingStablePlancks && "animate-pulse",
+                )}
+              />
+            )}
+          </div>
+        </div>
+      ) : (
+        <ActionRightIcon className="size-5 shrink-0 fill-current" />
+      )}
     </button>
   );
 });
@@ -81,9 +127,10 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 const TokenSelectDrawerContent: FC<{
   tokenId?: TokenId | null;
   tokens?: Token[];
+  accounts?: InjectedAccount[] | string[];
   isLoading?: boolean;
   onChange: (tokenId: TokenId) => void;
-}> = ({ tokenId, tokens, isLoading, onChange }) => {
+}> = ({ tokenId, tokens, accounts, isLoading, onChange }) => {
   const [search, setSearch] = useState("");
 
   const handleClick = useCallback(
@@ -93,19 +140,37 @@ const TokenSelectDrawerContent: FC<{
     [onChange],
   );
 
+  const { data: balances } = useBalancesByTokenSummary({
+    tokens,
+    accounts,
+  });
+
+  const sortedTokens = useMemo(
+    () =>
+      (tokens ?? []).sort((t1, t2) => {
+        const [b1, b2] = [t1, t2].map((t) => balances?.[t.id]);
+        if (!b1 || !b2) return 0;
+        if (b1.stablePlancks === b2.stablePlancks) return 0;
+        if (b1.stablePlancks === null) return 1;
+        if (b2.stablePlancks === null) return -1;
+        return b1.stablePlancks > b2.stablePlancks ? -1 : 1;
+      }),
+    [tokens, balances],
+  );
+
   const items = useMemo(() => {
-    if (!tokens) return [];
-    if (!search) return tokens;
+    if (!sortedTokens) return [];
+    if (!search) return sortedTokens;
 
-    const ls = search.toLowerCase();
+    const ls = search.toLowerCase().trim();
 
-    return tokens.filter(
+    return sortedTokens.filter(
       (t) =>
         t.symbol.toLowerCase().includes(ls) ||
         t.name?.toLowerCase().includes(ls) ||
         (t.type === "asset" && t.assetId.toString() === ls),
     );
-  }, [tokens, search]);
+  }, [sortedTokens, search]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -114,6 +179,7 @@ const TokenSelectDrawerContent: FC<{
         <TokenButton
           key={t.id}
           token={t}
+          balances={balances?.[t.id]}
           onClick={handleClick(t.id)}
           selected={t.id === tokenId}
         />
@@ -127,6 +193,7 @@ export const TokenSelectDrawer: FC<{
   isOpen?: boolean;
   tokenId?: TokenId | null;
   tokens?: Token[];
+  accounts?: InjectedAccount[] | string[];
   isLoading?: boolean;
   title?: string;
   onChange: (tokenId: TokenId) => void;
@@ -135,6 +202,7 @@ export const TokenSelectDrawer: FC<{
   isOpen,
   tokenId,
   tokens,
+  accounts,
   isLoading,
   title = "Select token",
   onChange,
@@ -146,6 +214,7 @@ export const TokenSelectDrawer: FC<{
         <TokenSelectDrawerContent
           tokenId={tokenId}
           tokens={tokens}
+          accounts={accounts}
           isLoading={isLoading}
           onChange={onChange}
         />

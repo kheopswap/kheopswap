@@ -3,7 +3,7 @@ import { keyBy } from "lodash";
 
 import { useBalances } from "./useBalances";
 import { usePoolsByChainId } from "./usePoolsByChainId";
-import { useTokensByChainIds } from "./useTokens";
+import { useTokensByChainIds } from "./useTokensByChainIds";
 import { useToken } from "./useToken";
 import { useRelayChains } from "./useRelayChains";
 import { useNativeToken } from "./useNativeToken";
