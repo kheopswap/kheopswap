@@ -9,13 +9,15 @@ import {
   TokenId,
 } from "src/config/tokens";
 import { getLocalStorageKey } from "src/util";
+import { DEV_IGNORE_STORAGE } from "src/config/constants";
 
 const loadTokens = (): Token[] => {
   try {
     const strTokens = localStorage.getItem(getLocalStorageKey("tokens"));
-    const tokensList: Token[] = strTokens
-      ? JSON.parse(strTokens)
-      : KNOWN_TOKENS_LIST;
+    const tokensList: Token[] =
+      strTokens && !DEV_IGNORE_STORAGE
+        ? JSON.parse(strTokens)
+        : KNOWN_TOKENS_LIST;
 
     const tokensMap = Object.fromEntries(
       (tokensList as Token[]).map((t) => [t.id, t]),

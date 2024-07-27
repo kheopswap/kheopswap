@@ -1,12 +1,12 @@
 import { Token } from "src/config/tokens";
-import { BalanceWithStable } from "src/types";
+import { BalanceWithStableSummary } from "src/types";
 
 export type PortfolioVisibleColunm = "tvl" | "balance";
 
 export type PortfolioRowData = {
   token: Token;
-  balance: BalanceWithStable | null;
-  tvl: BalanceWithStable | null;
+  balance: BalanceWithStableSummary | null;
+  tvl: BalanceWithStableSummary | null;
 };
 
 export type PortfolioSortMode = "tvl" | "balance" | "symbol";

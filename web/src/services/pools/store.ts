@@ -3,6 +3,7 @@ import { BehaviorSubject, debounceTime } from "rxjs";
 import { Pool, PoolStorage } from "./types";
 
 import { getLocalStorageKey } from "src/util";
+import { DEV_IGNORE_STORAGE } from "src/config/constants";
 
 const poolToStorage = (pool: Pool): PoolStorage => {
   switch (pool.type) {
@@ -24,6 +25,8 @@ const poolFromStorage = (pool: PoolStorage): Pool => {
 
 const loadPools = (): Pool[] => {
   try {
+    if (DEV_IGNORE_STORAGE) return [];
+
     const strPools = localStorage.getItem(getLocalStorageKey("pools"));
     if (!strPools) return [];
 

@@ -2,12 +2,11 @@ import { FC } from "react";
 
 import { Token } from "src/config/tokens";
 import { cn } from "src/util";
-import { Tokens } from "src/components";
-import { BalanceWithStable } from "src/types";
+import { Shimmer, Tokens } from "src/components";
+import { BalanceWithStableSummary } from "src/types";
 
 export const TokenBalancesSummary: FC<
-  BalanceWithStable & {
-    className?: string;
+  BalanceWithStableSummary & {
     token: Token;
     stableToken: Token;
   }
@@ -18,29 +17,39 @@ export const TokenBalancesSummary: FC<
   isLoadingStablePlancks,
   stablePlancks,
   isLoadingTokenPlancks,
-  className,
-}) => (
-  <div
-    className={cn(
-      "flex flex-col items-end overflow-hidden text-right",
-      className,
-    )}
-  >
-    <div
-      className={cn(
-        "w-full truncate",
-        isLoadingTokenPlancks && "animate-pulse",
-      )}
-    >
-      <Tokens token={token} plancks={tokenPlancks ?? 0n} digits={2} />
+  isInitializing,
+}) => {
+  if (!isInitializing && !tokenPlancks) return null;
+
+  if (isInitializing)
+    return (
+      <div
+        className={cn(
+          "flex size-full flex-col items-end justify-center gap-1 overflow-hidden",
+        )}
+      >
+        <div>
+          <Shimmer className="h-5 overflow-hidden">0.0001 TKN</Shimmer>
+        </div>
+        <div>
+          <Shimmer className="h-4 overflow-hidden text-sm">0.00 USDC</Shimmer>
+        </div>
+      </div>
+    );
+
+  return (
+    <div className="flex size-full flex-col items-end justify-center overflow-hidden">
+      <div className={cn("truncate", isLoadingTokenPlancks && "animate-pulse")}>
+        <Tokens token={token} plancks={tokenPlancks ?? 0n} digits={2} />
+      </div>
+      <div
+        className={cn(
+          "truncate text-sm text-neutral-500 ",
+          isLoadingStablePlancks && "animate-pulse",
+        )}
+      >
+        <Tokens token={stableToken} plancks={stablePlancks ?? 0n} digits={2} />
+      </div>
     </div>
-    <div
-      className={cn(
-        "w-full truncate text-sm text-neutral-500 ",
-        isLoadingStablePlancks && "animate-pulse",
-      )}
-    >
-      <Tokens token={stableToken} plancks={stablePlancks ?? 0n} digits={2} />
-    </div>
-  </div>
-);
+  );
+};
