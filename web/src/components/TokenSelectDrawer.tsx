@@ -15,7 +15,7 @@ import {
   useBalancesByTokenSummary,
   useRelayChains,
 } from "src/hooks";
-import { cn } from "src/util";
+import { cn, isBigInt } from "src/util";
 import { BalanceWithStableSummary } from "src/types";
 
 const TokenButton = forwardRef<
@@ -79,6 +79,8 @@ const TokenButton = forwardRef<
                 plancks={balances.stablePlancks ?? 0n}
                 className={cn(
                   balances.isLoadingStablePlancks && "animate-pulse",
+                  !isBigInt(balances.stablePlancks) && "invisible",
+                  token.id === stableToken.id && "invisible",
                 )}
               />
             </div>

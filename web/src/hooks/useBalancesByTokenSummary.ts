@@ -27,10 +27,15 @@ export const getBalancesByTokenSummary = (
       const isLoadingTokenPlancks = tokenBalances.some(
         (b) => b.isLoadingTokenPlancks,
       );
-      const stablePlancks = tokenBalances.reduce(
-        (acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
-        0n,
+      const hasStablePlancks = tokenBalances.some(
+        (b) => b.stablePlancks !== null,
       );
+      const stablePlancks = hasStablePlancks
+        ? tokenBalances.reduce(
+            (acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
+            0n,
+          )
+        : null;
       const isLoadingStablePlancks = tokenBalances.some(
         (b) => b.isLoadingStablePlancks,
       );

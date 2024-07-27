@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 import { Token } from "src/config/tokens";
-import { cn } from "src/util";
+import { cn, isBigInt } from "src/util";
 import { Shimmer, Tokens } from "src/components";
 import { BalanceWithStableSummary } from "src/types";
 
@@ -48,7 +48,15 @@ export const TokenBalancesSummary: FC<
           isLoadingStablePlancks && "animate-pulse",
         )}
       >
-        <Tokens token={stableToken} plancks={stablePlancks ?? 0n} digits={2} />
+        <Tokens
+          token={stableToken}
+          plancks={stablePlancks ?? 0n}
+          digits={2}
+          className={cn(
+            !isBigInt(stablePlancks) && "invisible",
+            token.id === stableToken.id && "invisible",
+          )}
+        />
       </div>
     </div>
   );

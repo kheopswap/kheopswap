@@ -52,6 +52,7 @@ const sortByColumn =
 export const PortfolioTable = () => {
   const { accounts, balances, isLoading } = usePortfolio();
   const allRows = usePortfolioRows();
+
   const [selectedTokenId, setSelectedTokenId] = useState<TokenId | null>(null);
 
   const [visibleCol, setVisibleCol] = useState<PortfolioVisibleColunm>(

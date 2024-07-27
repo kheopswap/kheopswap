@@ -71,8 +71,9 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
         isLoadingBalances ||
         isLoadingPools ||
         isLoadingAssetConvertPlancks,
-      data: tokens.map((token, i) => {
-        const locked = lockedTokens.find((t) => t.tokenId === token.id);
+      data: tokens.map((token) => {
+        const lockedIdx = lockedTokens.findIndex((t) => t.tokenId === token.id);
+        const locked = lockedTokens[lockedIdx];
         return {
           tokenId: token.id,
           tokenPlancks: locked?.plancks ?? null,
@@ -82,7 +83,7 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
           isLoadingTokenPlancks:
             locked?.isLoading ||
             (!isBigInt(locked?.plancks) && isLoadingTokens),
-          ...assetConvertPlancks[i],
+          ...assetConvertPlancks[lockedIdx],
         };
       }),
     }),
