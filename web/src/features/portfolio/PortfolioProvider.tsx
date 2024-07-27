@@ -1,22 +1,18 @@
 import { useMemo } from "react";
 
-import { BalanceAndFiat } from "./types";
-
 import {
   useAssetHubTVL,
-  useBalances,
   useRelayChains,
-  useToken,
   useWallets,
+  useTokensByChainIds,
+  useBalancesWithStables,
 } from "src/hooks";
-import { useStablePlancksMulti } from "src/hooks/useStablePlancks";
-import { useTokensByChainIds } from "src/hooks/useTokens";
 import { provideContext } from "src/util";
 
 export const usePortfolioProvider = () => {
   const { accounts } = useWallets();
 
-  const { allChains, assetHub } = useRelayChains();
+  const { allChains } = useRelayChains();
   const chainIds = useMemo(
     () => allChains.map((chain) => chain.id),
     [allChains],
@@ -30,46 +26,16 @@ export const usePortfolioProvider = () => {
     [allTokens],
   );
 
-  const balanceDefs = useMemo(() => {
-    // TODO genesishHash filter
-    // TODO account/chain compatibility filter (substrate vs ethereum)
-    return tokens.flatMap((token) =>
-      accounts.map((acc) => ({
-        address: acc.address,
-        tokenId: token.id,
-      })),
-    );
-  }, [accounts, tokens]);
-
-  const { data: rawBalances, isLoading: isLoadingBalances } = useBalances({
-    balanceDefs,
-  });
-
-  const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
-  const { data: stables } = useStablePlancksMulti({
-    inputs: rawBalances.map(({ tokenId, balance }) => ({
-      tokenId,
-      plancks: balance,
-    })),
-  });
-
   const { data: tvl } = useAssetHubTVL();
 
-  const balances = useMemo<BalanceAndFiat[]>(
-    () =>
-      rawBalances.map((b, idx) => ({
-        ...b,
-        ...stables[idx],
-      })),
-    [rawBalances, stables],
-  );
+  const { data: balances, isLoading: isLoadingBalances } =
+    useBalancesWithStables({ tokens, accounts });
 
   return {
     isLoading: isLoadingTokens || isLoadingBalances,
     balances,
     accounts,
     tokens,
-    stableToken: stableToken!,
     tvl,
   };
 };

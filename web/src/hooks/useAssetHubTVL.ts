@@ -4,23 +4,22 @@ import { groupBy, mapValues, toPairs } from "lodash";
 import { useRelayChains } from "./useRelayChains";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useBalances } from "./useBalances";
-import { useStablePlancksMulti } from "./useStablePlancks";
+import { useStablePlancksMulti } from "./useStablePlancksMulti";
+import { useTokensByChainIds } from "./useTokensByChainIds";
 
-import { TokenId } from "src/config/tokens";
+import { BalanceWithStableSummary } from "src/types";
+import { isBigInt } from "src/util";
 
 type UseAssetHubTVLResult = {
   isLoading: boolean;
-  data: {
-    tokenId: TokenId;
-    plancks: bigint;
-    isLoading: boolean;
-    stablePlancks: bigint | null;
-    isLoadingStablePlancks: boolean;
-  }[];
+  data: BalanceWithStableSummary[];
 };
 
 export const useAssetHubTVL = (): UseAssetHubTVLResult => {
   const { assetHub } = useRelayChains();
+  const { data: tokens, isLoading: isLoadingTokens } = useTokensByChainIds({
+    chainIds: [assetHub.id],
+  });
 
   const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
     chainId: assetHub.id,
@@ -47,18 +46,16 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
         mapValues(groupBy(lockedBalances, "tokenId"), (tokenBalances) =>
           tokenBalances.reduce(
             (acc, { balance, isLoading }) => {
-              acc.balance += balance ?? 0n;
+              acc.plancks += balance ?? 0n;
               acc.isLoading = acc.isLoading || isLoading;
+              acc.isInitializing =
+                acc.isInitializing || (!isBigInt(balance) && isLoading);
               return acc;
             },
-            { balance: 0n, isLoading: false },
+            { plancks: 0n, isLoading: false, isInitializing: false },
           ),
         ),
-      ).map(([tokenId, { balance, isLoading }]) => ({
-        tokenId,
-        plancks: balance,
-        isLoading,
-      })),
+      ).map(([tokenId, summary]) => ({ tokenId, ...summary })),
     [lockedBalances],
   );
 
@@ -70,18 +67,31 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
   return useMemo(
     () => ({
       isLoading:
-        isLoadingBalances || isLoadingPools || isLoadingAssetConvertPlancks,
-      data: lockedTokens.map((token, i) => ({
-        ...token,
-        ...assetConvertPlancks[i],
-      })),
+        isLoadingTokens ||
+        isLoadingBalances ||
+        isLoadingPools ||
+        isLoadingAssetConvertPlancks,
+      data: tokens.map((token, i) => {
+        const locked = lockedTokens.find((t) => t.tokenId === token.id);
+        return {
+          tokenId: token.id,
+          tokenPlancks: locked?.plancks ?? null,
+          isInitializing:
+            locked?.isInitializing ??
+            (isLoadingBalances || isLoadingPools || isLoadingTokens),
+          isLoadingTokenPlancks: locked?.isLoading || isLoadingTokens,
+          ...assetConvertPlancks[i],
+        };
+      }),
     }),
     [
       assetConvertPlancks,
       isLoadingAssetConvertPlancks,
       isLoadingBalances,
       isLoadingPools,
+      isLoadingTokens,
       lockedTokens,
+      tokens,
     ],
   );
 };

@@ -6,6 +6,7 @@ import { useTeleport } from "./TeleportProvider";
 import { TokenAmountPicker, Styles } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { cn, isBigInt } from "src/util";
+import { useWalletAccount, useWallets } from "src/hooks";
 
 const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
   onClick,
@@ -45,6 +46,13 @@ export const TeleportTokensEditor = () => {
     onMaxClick,
   } = useTeleport();
 
+  const { accounts: allAccounts } = useWallets();
+  const account = useWalletAccount({ id: formData.from });
+  const tokenPickerAccounts = useMemo(
+    () => (account ? [account] : allAccounts),
+    [account, allAccounts],
+  );
+
   const { insufficientBalances } = useTransaction();
 
   const inputErrorMessage = useMemo(() => {
@@ -70,6 +78,7 @@ export const TeleportTokensEditor = () => {
         tokenId={tokenIn?.id}
         plancks={plancksIn}
         tokens={tokens}
+        accounts={tokenPickerAccounts}
         isLoading={isLoadingTokens}
         onTokenChange={onTokenInChange}
         errorMessage={inputErrorMessage}
@@ -86,6 +95,7 @@ export const TeleportTokensEditor = () => {
         tokenId={tokenOut?.id}
         plancks={plancksOut}
         tokens={tokens}
+        accounts={tokenPickerAccounts}
         isLoading={isLoadingTokens}
         onTokenChange={onTokenOutChange}
         balance={balanceOut}

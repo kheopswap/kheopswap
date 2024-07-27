@@ -6,6 +6,7 @@ import { useSwap } from "./SwapProvider";
 import { TokenAmountPicker, Styles } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { cn, isBigInt } from "src/util";
+import { useWalletAccount, useWallets } from "src/hooks";
 
 const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
   onClick,
@@ -56,6 +57,13 @@ export const SwapTokensEditor = () => {
     return insufficientBalances[tokenIn?.id ?? ""];
   }, [formData.amountIn, insufficientBalances, totalIn, tokenIn?.id]);
 
+  const { accounts: allAccounts } = useWallets();
+  const account = useWalletAccount({ id: formData.from });
+  const tokenPickerAccounts = useMemo(
+    () => (account ? [account] : allAccounts),
+    [account, allAccounts],
+  );
+
   const handleAmountInChange: React.ChangeEventHandler<HTMLInputElement> =
     useCallback(
       (e) => {
@@ -74,6 +82,7 @@ export const SwapTokensEditor = () => {
         tokenId={tokenIn?.id}
         plancks={totalIn}
         tokens={tokens}
+        accounts={tokenPickerAccounts}
         isLoading={isLoadingTokens}
         onTokenChange={onTokenInChange}
         errorMessage={inputErrorMessage}
@@ -87,6 +96,7 @@ export const SwapTokensEditor = () => {
         tokenId={tokenOut?.id}
         plancks={swapPlancksOut}
         tokens={tokens}
+        accounts={tokenPickerAccounts}
         isLoading={isLoadingTokens}
         onTokenChange={onTokenOutChange}
         errorMessage={outputErrorMessage}

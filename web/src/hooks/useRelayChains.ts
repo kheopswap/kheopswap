@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
+import { useToken } from "./useToken";
+
 import {
   Chain,
   ChainAssetHub,
@@ -40,11 +42,15 @@ const useRelayChainsProvider = () => {
     return { relay, assetHub, allChains };
   }, [relayId]);
 
+  const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
+  if (!stableToken) throw new Error("Stable token not found");
+
   return {
     relayId,
     relay,
     assetHub,
     allChains,
+    stableToken,
   };
 };
 

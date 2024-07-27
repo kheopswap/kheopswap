@@ -1,10 +1,9 @@
 import { FC, useCallback, useMemo } from "react";
 
-import { Styles } from "./styles";
-
+import { Styles } from "src/components/styles";
 import { TokenLogo, TokenSelectDrawer } from "src/components";
 import { Token, TokenId } from "src/config/tokens";
-import { useChainName, useOpenClose } from "src/hooks";
+import { InjectedAccount, useChainName, useOpenClose } from "src/hooks";
 import { cn } from "src/util";
 
 const TokenButton: FC<{
@@ -49,11 +48,20 @@ const TokenButton: FC<{
 export const TokenSelectButton: FC<{
   tokenId: TokenId | null | undefined;
   tokens: Token[] | undefined;
+  accounts?: InjectedAccount[] | string[];
   isLoading: boolean;
   onChange: (tokenId: TokenId) => void;
   className?: string;
   disabled?: boolean;
-}> = ({ tokenId, tokens, isLoading, className, disabled, onChange }) => {
+}> = ({
+  tokenId,
+  tokens,
+  accounts,
+  isLoading,
+  className,
+  disabled,
+  onChange,
+}) => {
   const { isOpen, open, close } = useOpenClose();
 
   const handleChange = useCallback(
@@ -77,6 +85,7 @@ export const TokenSelectButton: FC<{
       <TokenSelectDrawer
         isOpen={isOpen}
         tokens={tokens}
+        accounts={accounts}
         isLoading={isLoading}
         tokenId={tokenId}
         onChange={handleChange}

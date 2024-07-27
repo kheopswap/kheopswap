@@ -3,9 +3,12 @@ import { BehaviorSubject, debounceTime } from "rxjs";
 import { StoredBalance } from "./types";
 
 import { getLocalStorageKey, logger } from "src/util";
+import { DEV_IGNORE_STORAGE } from "src/config/constants";
 
 const load = (): StoredBalance[] => {
   try {
+    if (DEV_IGNORE_STORAGE) return [];
+
     const strPools = localStorage.getItem(getLocalStorageKey("balances"));
     return strPools ? JSON.parse(strPools) : [];
   } catch (err) {

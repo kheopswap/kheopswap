@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 
-import { useTokensByChainIds } from "./useTokens";
+import { useTokensByChainIds } from "./useTokensByChainIds";
 
 import { ChainId } from "src/config/chains";
 import { Token } from "src/config/tokens";

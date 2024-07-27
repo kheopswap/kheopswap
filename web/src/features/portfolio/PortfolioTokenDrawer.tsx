@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo, useState } from "react";
 
 import { usePortfolio } from "./PortfolioProvider";
-import { BalanceAndFiat } from "./types";
 
 import {
   AccountSelectDrawer,
@@ -13,19 +12,21 @@ import {
   Tokens,
 } from "src/components";
 import { Token, TokenId } from "src/config/tokens";
-import { useChainName, useOpenClose } from "src/hooks";
+import { useChainName, useOpenClose, useRelayChains } from "src/hooks";
 import { cn, isBigInt, sortBigInt } from "src/util";
+import { BalanceWithStable } from "src/types";
 
-const sortBalances = (a: BalanceAndFiat, b: BalanceAndFiat) => {
-  if (isBigInt(a.balance) && isBigInt(b.balance))
-    return sortBigInt(a.balance, b.balance, true);
-  if (a.balance && !b.balance) return -1;
-  if (!a.balance && b.balance) return 1;
+const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
+  if (isBigInt(a.tokenPlancks) && isBigInt(b.tokenPlancks))
+    return sortBigInt(a.tokenPlancks, b.tokenPlancks, true);
+  if (a.tokenPlancks && !b.tokenPlancks) return -1;
+  if (!a.tokenPlancks && b.tokenPlancks) return 1;
   return 0;
 };
 
 const Balances: FC<{ token: Token }> = ({ token }) => {
-  const { accounts, balances, isLoading, stableToken } = usePortfolio();
+  const { stableToken } = useRelayChains();
+  const { accounts, balances, isLoading } = usePortfolio();
   const { open, close, isOpen } = useOpenClose();
 
   const rows = useMemo(
@@ -57,11 +58,13 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
               </div>
               <div className="flex shrink-0 flex-col items-end gap-0.5">
                 <div className="text-sm">
-                  {isBigInt(balance.balance) ? (
+                  {isBigInt(balance.tokenPlancks) ? (
                     <Tokens
                       token={token}
-                      plancks={balance.balance}
-                      className={cn(balance.isLoading && "animate-pulse")}
+                      plancks={balance.tokenPlancks}
+                      className={cn(
+                        balance.isLoadingTokenPlancks && "animate-pulse",
+                      )}
                     />
                   ) : (
                     <Shimmer>

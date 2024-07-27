@@ -12,6 +12,7 @@ import {
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { isBigInt } from "src/util";
+import { useWalletAccount, useWallets } from "src/hooks";
 
 export const TransferForm = () => {
   const {
@@ -33,6 +34,18 @@ export const TransferForm = () => {
 
   const { canSubmit, onSubmit, insufficientBalances } = useTransaction();
 
+  const { accounts: allAccounts } = useWallets();
+  const account = useWalletAccount({ id: formData.from });
+  const tokenPickerAccounts = useMemo(
+    () => (account ? [account] : allAccounts),
+    [account, allAccounts],
+  );
+
+  const inputErrorMessage = useMemo(() => {
+    if (!!formData.amount && !isBigInt(plancks)) return "Invalid amount";
+    return insufficientBalances[token?.id ?? ""];
+  }, [formData.amount, insufficientBalances, plancks, token?.id]);
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
     (e) => {
       e.preventDefault();
@@ -49,11 +62,6 @@ export const TransferForm = () => {
       },
       [onAmountChange],
     );
-
-  const inputErrorMessage = useMemo(() => {
-    if (!!formData.amount && !isBigInt(plancks)) return "Invalid amount";
-    return insufficientBalances[token?.id ?? ""];
-  }, [formData.amount, insufficientBalances, plancks, token?.id]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -95,6 +103,7 @@ export const TransferForm = () => {
             tokenId={token?.id}
             plancks={plancks}
             tokens={tokens}
+            accounts={tokenPickerAccounts}
             isLoading={isLoadingTokens}
             onTokenChange={onTokenChange}
             errorMessage={inputErrorMessage}

@@ -1,6 +1,7 @@
 import { ChainIdRelay } from "./chains";
 
 export const DEV = import.meta.env.DEV;
+export const DEV_IGNORE_STORAGE = import.meta.env.VITE_DEV_IGNORE_STORAGE;
 
 export const APP_KEY = "kheopswap";
 export const APP_FEE_ADDRESS = import.meta.env.VITE_APP_FEE_ADDRESS;

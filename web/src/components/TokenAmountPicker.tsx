@@ -13,6 +13,7 @@ import {
 } from "src/components";
 import { Token, TokenId } from "src/config/tokens";
 import { cn, isBigInt } from "src/util";
+import { InjectedAccount } from "src/hooks";
 
 export type TokenAmountPickerProps = Partial<
   DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
@@ -22,6 +23,7 @@ export const TokenAmountPicker: FC<{
   inputProps: TokenAmountPickerProps;
   tokenId: TokenId | null | undefined;
   tokens?: Token[] | undefined;
+  accounts?: InjectedAccount[] | string[];
   plancks: bigint | null | undefined;
   isLoading: boolean;
   errorMessage?: string | null;
@@ -34,6 +36,7 @@ export const TokenAmountPicker: FC<{
   inputProps,
   tokenId,
   tokens,
+  accounts,
   isLoading,
   plancks,
   errorMessage,
@@ -87,6 +90,7 @@ export const TokenAmountPicker: FC<{
               "border-neutral-750/50 bg-transparent disabled:opacity-100",
           )}
           tokens={tokens}
+          accounts={accounts}
           isLoading={isLoading}
           tokenId={tokenId}
           onChange={onTokenChange}

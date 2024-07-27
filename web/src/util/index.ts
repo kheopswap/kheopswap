@@ -20,7 +20,6 @@ export * from "./safeQueryKeyPart";
 export * from "./shortenChainName";
 export * from "./sortWallets";
 export * from "./throwAfter";
-export * from "./types";
 export * from "./xcmV3MultiLocation";
 export * from "./sortBigInt";
 export * from "./getPoolReserves";
