@@ -8,7 +8,7 @@ import { MagicButton, FormFieldContainer, AccountSelect } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 
 export const SwapForm = () => {
-  const { from, onFromChange } = useSwap();
+  const { from, onFromChange, tokenIn } = useSwap();
   const { onSubmit, canSubmit } = useTransaction();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
@@ -27,6 +27,7 @@ export const SwapForm = () => {
           <AccountSelect
             id="from-account"
             idOrAddress={from}
+            tokenId={tokenIn?.id}
             ownedOnly
             onChange={onFromChange}
           />

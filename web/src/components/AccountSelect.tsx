@@ -14,6 +14,7 @@ import {
   useWallets,
 } from "src/hooks";
 import { cn } from "src/util";
+import { TokenId } from "src/config/tokens";
 
 const AddressRow: FC<{ address: string; className?: string }> = ({
   address,
@@ -115,10 +116,11 @@ const AccountSelectButton: FC<{
 export const AccountSelect: FC<{
   id?: string;
   idOrAddress: string | null | undefined;
+  tokenId?: TokenId;
   ownedOnly?: boolean;
   className?: string;
   onChange: (idOrAddress: string) => void;
-}> = ({ id, ownedOnly, idOrAddress, className, onChange }) => {
+}> = ({ id, ownedOnly, idOrAddress, tokenId, className, onChange }) => {
   const { isOpen, open, close } = useOpenClose();
 
   const handleChange = useCallback(
@@ -142,6 +144,7 @@ export const AccountSelect: FC<{
         isOpen={isOpen}
         ownedOnly={ownedOnly}
         idOrAddress={idOrAddress}
+        tokenId={tokenId}
         onChange={handleChange}
         onDismiss={close}
       />

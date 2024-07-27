@@ -1,15 +1,33 @@
 import WalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
 import { getInjectedExtensions } from "polkadot-api/pjs-signer";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { fromPairs } from "lodash";
 
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
 import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
+import { Shimmer } from "./Shimmer";
+import { Tokens } from "./Tokens";
 
-import { InjectedAccount, useInjectedExtension, useWallets } from "src/hooks";
-import { cn, isValidAddress, sortWallets } from "src/util";
+import {
+  InjectedAccount,
+  useBalancesWithStables,
+  useInjectedExtension,
+  useRelayChains,
+  useToken,
+  useWallets,
+} from "src/hooks";
+import {
+  cn,
+  isBigInt,
+  isValidAddress,
+  shortenAddress,
+  sortWallets,
+} from "src/util";
+import { BalanceWithStableSummary } from "src/types";
+import { Token } from "src/config/tokens";
 
 const ExtensionButton: FC<{
   name: string;
@@ -51,8 +69,19 @@ const AccountButton: FC<{
   account: InjectedAccount;
   selected?: boolean;
   disabled?: boolean;
+  balance?: BalanceWithStableSummary;
+  token?: Token | null;
+  stableToken?: Token;
   onClick: () => void;
-}> = ({ account, selected, disabled, onClick }) => {
+}> = ({
+  account,
+  selected,
+  balance,
+  token,
+  stableToken,
+  disabled,
+  onClick,
+}) => {
   const { Icon } = useInjectedExtension(account.wallet);
 
   return (
@@ -68,19 +97,47 @@ const AccountButton: FC<{
       )}
     >
       <InjectedAccountIcon account={account} className="size-8" />
-      <div className="flex grow flex-col justify-center overflow-hidden">
-        <div className="flex items-center gap-2 text-neutral-300">
+      <div className="flex grow flex-col items-start justify-center overflow-hidden">
+        <div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
           <div className="truncate">{account.name}</div>
           <div className="inline-block size-4 shrink-0">
             {Icon ? <Icon /> : <WalletIcon className="size-4 stroke-current" />}
           </div>
         </div>
         <div className="truncate text-xs text-neutral-500">
-          {account.address}
+          {shortenAddress(account.address)}
         </div>
       </div>
-      {!disabled && (
-        <ActionRightIcon className="size-5 shrink-0 fill-current" />
+      {balance && token && stableToken ? (
+        balance.isInitializing ? (
+          <div className="flex h-full flex-col items-end justify-center gap-0.5">
+            <Shimmer className="h-5 overflow-hidden">0.0001 TKN</Shimmer>
+            <Shimmer className="h-4 overflow-hidden text-sm">0.00 USDC</Shimmer>
+          </div>
+        ) : (
+          <div className="flex h-full flex-col items-end justify-center">
+            <div className="text-neutral-50">
+              <Tokens
+                token={token}
+                plancks={balance.tokenPlancks ?? 0n}
+                className={cn(balance.isLoadingTokenPlancks && "animate-pulse")}
+              />
+            </div>
+            <div className="text-sm text-neutral-500">
+              <Tokens
+                token={stableToken}
+                plancks={balance.stablePlancks ?? 0n}
+                className={cn(
+                  balance.isLoadingStablePlancks && "animate-pulse",
+                )}
+              />
+            </div>
+          </div>
+        )
+      ) : (
+        !disabled && (
+          <ActionRightIcon className="size-5 shrink-0 fill-current" />
+        )
       )}
     </button>
   );
@@ -142,10 +199,35 @@ const AccountSelectDrawerContent: FC<{
   title?: string;
   idOrAddress?: string | null;
   ownedOnly?: boolean;
+  tokenId?: string;
   onClose: () => void;
   onChange?: (accountIdOrAddress: string) => void;
-}> = ({ title, idOrAddress, ownedOnly, onClose, onChange }) => {
+}> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
   const { accounts, connect, disconnect, connectedExtensions } = useWallets();
+
+  const { stableToken } = useRelayChains();
+  const { data: token } = useToken({ tokenId });
+  const summaryInputs = useMemo(
+    () => ({
+      tokens: token ? [token] : [],
+      accounts,
+    }),
+    [accounts, token],
+  );
+  const { data: balances, isLoading } = useBalancesWithStables(summaryInputs);
+
+  const balanceByAccount = useMemo(() => {
+    if (!balances) return {};
+    return fromPairs(
+      balances.map((b) => [
+        b.address,
+        {
+          ...b,
+          isInitializing: !isBigInt(b.tokenPlancks) && isLoading,
+        } as BalanceWithStableSummary,
+      ]),
+    );
+  }, [balances, isLoading]);
 
   const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
 
@@ -177,6 +259,19 @@ const AccountSelectDrawerContent: FC<{
     },
     [onChange],
   );
+
+  const sortedAccounts = useMemo(() => {
+    return accounts.concat().sort((a1, a2) => {
+      const [b1, b2] = [a1, a2].map((a) => balanceByAccount[a.address]);
+      if (b1 && b2) {
+        if (b1.stablePlancks === b2.stablePlancks) return 0;
+        if (b1.stablePlancks === null) return 1;
+        if (b2.stablePlancks === null) return -1;
+        return b1.stablePlancks > b2.stablePlancks ? -1 : 1;
+      }
+      return 0;
+    });
+  }, [accounts, balanceByAccount]);
 
   return (
     <DrawerContainer
@@ -216,11 +311,14 @@ const AccountSelectDrawerContent: FC<{
         <div>
           <h4 className="mb-1">Connected Accounts</h4>
           <div className="flex flex-col gap-2">
-            {accounts.map((account) => (
+            {sortedAccounts.map((account) => (
               <AccountButton
                 key={account.id}
                 account={account}
                 selected={account.id === idOrAddress}
+                balance={balanceByAccount[account.address]}
+                token={token}
+                stableToken={stableToken}
                 onClick={handleClick(account.id)}
                 disabled={!onChange}
               />
@@ -236,16 +334,26 @@ export const AccountSelectDrawer: FC<{
   title?: string;
   isOpen: boolean;
   ownedOnly?: boolean;
+  tokenId?: string;
   idOrAddress?: string | null | undefined;
   onDismiss: () => void;
   onChange?: (idOrAddress: string) => void;
-}> = ({ title, isOpen, idOrAddress, ownedOnly, onChange, onDismiss }) => {
+}> = ({
+  title,
+  isOpen,
+  idOrAddress,
+  tokenId,
+  ownedOnly,
+  onChange,
+  onDismiss,
+}) => {
   return (
     <Drawer anchor="right" isOpen={isOpen} onDismiss={onDismiss}>
       <AccountSelectDrawerContent
         title={title}
         ownedOnly={ownedOnly}
         idOrAddress={idOrAddress}
+        tokenId={tokenId}
         onClose={onDismiss}
         onChange={onChange}
       />
