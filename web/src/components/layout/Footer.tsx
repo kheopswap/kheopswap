@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 
 import { ModalDialog } from "src/components";
-import { DiscordIcon, XDotComIcon } from "src/components/icons";
+import { DiscordIcon, GitHubIcon, XDotComIcon } from "src/components/icons";
 import { useOpenClose } from "src/hooks";
 import { cn } from "src/util";
 
@@ -11,8 +11,7 @@ export const Footer = () => {
       <div className="w-16">
         <FeedbackButton />
       </div>
-      <div className="flex flex-col items-center gap-1 text-center">
-        <div className="text-sm">Built with 😅 by Kheops</div>
+      <div className="hidden flex-col items-center gap-1 text-center sm:flex">
         <div className="text-xs text-neutral-500">
           Powered by polkadot-api and smoldot
         </div>
@@ -35,6 +34,15 @@ export const Footer = () => {
           title="Join us on Discord"
         >
           <DiscordIcon className="inline-block size-6 fill-neutral-400 opacity-50 hover:opacity-70" />
+        </a>
+        <a
+          href="https://github.com/kheopswap/kheopswap"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-neutral-400"
+          title="Kheopswap GitHub repository"
+        >
+          <GitHubIcon className="inline-block size-6 fill-neutral-400 opacity-50 hover:opacity-70" />
         </a>
       </div>
     </div>
