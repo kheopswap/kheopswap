@@ -46,8 +46,8 @@ const TokenButton = forwardRef<
       )}
     >
       <TokenLogo className="size-10" token={token} />
-      <div className="flex grow flex-col items-start gap-0.5 overflow-hidden text-neutral-400">
-        <div className="flex w-full grow items-center gap-2 overflow-hidden">
+      <div className="flex h-full grow flex-col items-start justify-center gap-0.5 overflow-hidden text-neutral-400">
+        <div className="flex w-full items-center gap-2 overflow-hidden">
           <div className="font-bold text-neutral-50">{token.symbol}</div>
           <div className="inline-block truncate">{token.name ?? ""}</div>
         </div>
@@ -57,13 +57,14 @@ const TokenButton = forwardRef<
         </div>
       </div>
       {balances ? (
-        <div className="flex flex-col justify-end text-right">
-          <div className="text-neutral-50">
-            {balances.isInitializing ? (
-              <Shimmer>
-                <Tokens token={token} plancks={balances.tokenPlancks ?? 0n} />
-              </Shimmer>
-            ) : (
+        balances.isInitializing ? (
+          <div className="flex h-full flex-col items-end justify-center gap-0.5">
+            <Shimmer className="h-5 overflow-hidden">0.0001 TKN</Shimmer>
+            <Shimmer className="h-4 overflow-hidden text-sm">0.00 USDC</Shimmer>
+          </div>
+        ) : (
+          <div className="flex h-full flex-col items-end justify-center">
+            <div className="text-neutral-50">
               <Tokens
                 token={token}
                 plancks={balances.tokenPlancks ?? 0n}
@@ -71,17 +72,8 @@ const TokenButton = forwardRef<
                   balances.isLoadingTokenPlancks && "animate-pulse",
                 )}
               />
-            )}
-          </div>
-          <div className="text-sm">
-            {balances.isInitializing ? (
-              <Shimmer>
-                <Tokens
-                  token={stableToken}
-                  plancks={balances.stablePlancks ?? 0n}
-                />
-              </Shimmer>
-            ) : (
+            </div>
+            <div className="text-sm">
               <Tokens
                 token={stableToken}
                 plancks={balances.stablePlancks ?? 0n}
@@ -89,9 +81,9 @@ const TokenButton = forwardRef<
                   balances.isLoadingStablePlancks && "animate-pulse",
                 )}
               />
-            )}
+            </div>
           </div>
-        </div>
+        )
       ) : (
         <ActionRightIcon className="size-5 shrink-0 fill-current" />
       )}
