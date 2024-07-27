@@ -1,9 +1,26 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FC,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { ModalDialog } from "src/components";
 import { DiscordIcon, GitHubIcon, XDotComIcon } from "src/components/icons";
 import { useOpenClose } from "src/hooks";
+import { useLoadingStatusSummary } from "src/hooks/useLoadingStatusSummary";
 import { cn } from "src/util";
+
+const LoadingStatus = () => {
+  const { loaded, total } = useDeferredValue(useLoadingStatusSummary());
+  return (
+    <div>
+      {loaded}/{total} active subscriptions
+    </div>
+  );
+};
 
 export const Footer = () => {
   return (
@@ -11,10 +28,9 @@ export const Footer = () => {
       <div className="w-16">
         <FeedbackButton />
       </div>
-      <div className="hidden flex-col items-center gap-1 text-center sm:flex">
-        <div className="text-xs text-neutral-500">
-          Powered by polkadot-api and smoldot
-        </div>
+      <div className="hidden flex-col items-center gap-1 text-center text-xs text-neutral-500 sm:flex">
+        <div className="">Powered by polkadot-api and smoldot</div>
+        <LoadingStatus />
       </div>
       <div className="flex items-center gap-4">
         <a
