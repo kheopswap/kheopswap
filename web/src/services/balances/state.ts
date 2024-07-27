@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest, debounceTime, map, tap } from "rxjs";
+import { BehaviorSubject, combineLatest, debounceTime, map } from "rxjs";
 
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
@@ -55,19 +55,6 @@ combineLatest([
     map(([balanceIds, statuses, balances]) =>
       combineState(balanceIds, statuses, balances),
     ),
-    tap((balancesMap) => {
-      if (!import.meta.env.DEV) return;
-
-      const arBalances = Object.values(balancesMap);
-
-      logger.debug(
-        "[balances report] stale:%d | loading:%d | loaded:%d | total_stored:%d",
-        arBalances.filter((b) => b.status === "stale").length,
-        arBalances.filter((b) => b.status === "loading").length,
-        arBalances.filter((b) => b.status === "loaded").length,
-        arBalances.length,
-      );
-    }),
   )
   .subscribe((balances) => {
     balancesState$.next(balances);
