@@ -1,6 +1,5 @@
 import WalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
-import { getInjectedExtensions } from "polkadot-api/pjs-signer";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { fromPairs } from "lodash";
 
 import { Drawer } from "./Drawer";
@@ -19,13 +18,7 @@ import {
   useToken,
   useWallets,
 } from "src/hooks";
-import {
-  cn,
-  isBigInt,
-  isValidAddress,
-  shortenAddress,
-  sortWallets,
-} from "src/util";
+import { cn, isBigInt, isValidAddress, shortenAddress } from "src/util";
 import { BalanceWithStableSummary } from "src/types";
 import { Token } from "src/config/tokens";
 
@@ -203,7 +196,13 @@ const AccountSelectDrawerContent: FC<{
   onClose: () => void;
   onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-  const { accounts, connect, disconnect, connectedExtensions } = useWallets();
+  const {
+    accounts,
+    connect,
+    disconnect,
+    connectedExtensions,
+    injectedExtensionIds: injectedWallets,
+  } = useWallets();
 
   const { stableToken } = useRelayChains();
   const { data: token } = useToken({ tokenId });
@@ -228,13 +227,6 @@ const AccountSelectDrawerContent: FC<{
       ]),
     );
   }, [balances, isLoading]);
-
-  const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
-
-  useEffect(() => {
-    const wallets = getInjectedExtensions();
-    setInjectedWallets(wallets?.sort(sortWallets) ?? []);
-  }, []);
 
   const handleConnectWalletClick = useCallback(
     (wallet: string) => async () => {
