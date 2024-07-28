@@ -77,6 +77,7 @@ export const TransferForm = () => {
             id="from-account"
             idOrAddress={formData.from}
             ownedOnly
+            tokenId={token?.id}
             onChange={onFromChange}
           />
         </FormFieldContainer>
@@ -91,6 +92,7 @@ export const TransferForm = () => {
           <AccountSelect
             id="to-account"
             idOrAddress={formData.to}
+            tokenId={token?.id}
             onChange={onToChange}
           />
         </FormFieldContainer>

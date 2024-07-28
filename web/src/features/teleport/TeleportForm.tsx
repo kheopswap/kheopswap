@@ -27,6 +27,7 @@ export const TeleportForm = () => {
           <AccountSelect
             id="from-account"
             idOrAddress={formData.from}
+            tokenId={formData.tokenIdIn}
             ownedOnly
             onChange={onFromChange}
           />
