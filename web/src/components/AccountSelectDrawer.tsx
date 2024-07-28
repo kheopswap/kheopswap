@@ -18,13 +18,7 @@ import {
   useToken,
   useWallets,
 } from "src/hooks";
-import {
-  cn,
-  isBigInt,
-  isValidAddress,
-  shortenAddress,
-  sortWallets,
-} from "src/util";
+import { cn, isBigInt, isValidAddress, shortenAddress } from "src/util";
 import { BalanceWithStableSummary } from "src/types";
 import { Token } from "src/config/tokens";
 

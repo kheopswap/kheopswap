@@ -77,18 +77,12 @@ const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
       for (const extension of extensions)
         if (!subscriptions[extension.name]) {
           try {
-            console.log("subscribing to %s", extension.name);
             // required because some wallets dont always fire subscription callbacks
             accounts[extension.name] = extension.getAccounts();
             subscriber.next({ ...accounts });
 
             subscriptions[extension.name] = extension.subscribe(
               (extensionAccounts) => {
-                console.log(
-                  "callback accounts",
-                  extension.name,
-                  extensionAccounts,
-                );
                 accounts[extension.name] = extensionAccounts;
                 subscriber.next({ ...accounts });
               },
@@ -125,16 +119,6 @@ const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
   ),
   shareReplay(1),
 );
-
-injectedExtensionIds$.subscribe((val) => {
-  console.log("injectedExtensionIds$", val);
-});
-connectedExtensions$.subscribe((val) => {
-  console.log("connectedExtensions$", val);
-});
-accounts$.subscribe((val) => {
-  console.log("accounts$", val);
-});
 
 const [useInjectedExtensionsIds] = bind(injectedExtensionIds$);
 const [useConnectedExtensions] = bind(connectedExtensions$);
