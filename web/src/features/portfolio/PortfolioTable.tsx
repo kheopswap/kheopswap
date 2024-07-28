@@ -111,6 +111,7 @@ export const PortfolioTable = () => {
       />
       <PortfolioTokenDrawer
         tokenId={selectedTokenId}
+        rows={rows}
         onDismiss={() => setSelectedTokenId(null)}
       />
     </div>

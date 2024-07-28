@@ -25,3 +25,4 @@ export * from "./sortBigInt";
 export * from "./getPoolReserves";
 export * from "./shortAddress";
 export * from "./getAssetHubMirrorTokenId";
+export * from "./getTokenTypeLabel";

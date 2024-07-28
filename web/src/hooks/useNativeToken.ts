@@ -8,13 +8,13 @@ type UseNativeTokenProps<T extends Chain | null | undefined> = {
   chain: T;
 };
 
-type UseNativeResult<T> = T extends Chain ? TokenNative : null;
+type UseNativeTokenResult<T> = T extends Chain ? TokenNative : null;
 
 export const useNativeToken = <T extends Chain | null | undefined>({
   chain,
-}: UseNativeTokenProps<T>): UseNativeResult<T> => {
+}: UseNativeTokenProps<T>): UseNativeTokenResult<T> => {
   return useMemo(
-    () => (chain ? getNativeToken(chain.id) : null) as UseNativeResult<T>,
+    () => (chain ? getNativeToken(chain.id) : null) as UseNativeTokenResult<T>,
     [chain],
   );
 };
