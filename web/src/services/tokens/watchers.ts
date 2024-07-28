@@ -206,8 +206,8 @@ tokensByChainSubscriptions$.subscribe((chainIds) => {
   for (const chainId of watchersToStop) {
     WATCHERS.get(chainId)?.();
     WATCHERS.delete(chainId);
-    setLoadingStatus(chainId, "stale");
   }
+  setLoadingStatus(watchersToStop, "stale");
 
   // add missing watchers
   for (const chainId of chainIds.filter((id) => !WATCHERS.has(id)))

@@ -9,6 +9,7 @@ import { getChainById } from "src/config/chains";
 import { parseTokenId } from "src/config/tokens";
 import { getApi, isApiAssetHub } from "src/services/api";
 import { LoadingStatus } from "src/services/common";
+import { logger } from "src/util";
 
 export const balanceStatuses$ = new BehaviorSubject<
   Record<BalanceId, LoadingStatus>
@@ -118,24 +119,28 @@ const sortBalanceIdsByBalanceDesc = (bid1: BalanceId, bid2: BalanceId) => {
 // subscribe to the list of the unique balanceIds to watch
 // and update watchers accordingly
 balanceSubscriptions$.subscribe((balanceIds) => {
-  // add missing watchers
-  for (const balanceId of balanceIds
-    .filter((id) => !WATCHERS.has(id))
-    // prioritize watchers for positive balance first, to reduce user waiting time
-    .sort(sortBalanceIdsByBalanceDesc)) {
-    WATCHERS.set(balanceId, watchBalance(balanceId));
-  }
+  try {
+    // add missing watchers
+    for (const balanceId of balanceIds
+      .filter((id) => !WATCHERS.has(id))
+      // prioritize watchers for positive balance first, to reduce user waiting time
+      .sort(sortBalanceIdsByBalanceDesc)) {
+      WATCHERS.set(balanceId, watchBalance(balanceId));
+    }
 
-  // remove watchers that are not needed anymore
-  const existingIds = Array.from(WATCHERS.keys());
-  const watchersToStop = existingIds.filter((id) => !balanceIds.includes(id));
-  for (const balanceId of watchersToStop) {
-    WATCHERS.get(balanceId)?.then((watcher) => watcher.unsubscribe());
-    WATCHERS.delete(balanceId);
+    // remove watchers that are not needed anymore
+    const existingIds = Array.from(WATCHERS.keys());
+    const watchersToStop = existingIds.filter((id) => !balanceIds.includes(id));
+    for (const balanceId of watchersToStop) {
+      WATCHERS.get(balanceId)?.then((watcher) => watcher.unsubscribe());
+      WATCHERS.delete(balanceId);
+    }
     balanceStatuses$.next({
       ...balanceStatuses$.value,
-      [balanceId]: "stale",
+      ...watchersToStop.reduce((acc, id) => ({ ...acc, [id]: "stale" }), {}),
     });
+  } catch (err) {
+    logger.error("Failed to update balance watchers", { balanceIds, err });
   }
 });
 

@@ -22,12 +22,16 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
     ) as Record<ChainId, LoadingStatus>,
   );
 
-  const setLoadingStatus = (chainId: ChainId, status: LoadingStatus) => {
-    if (loadingStatusByChain$.value[chainId] !== status)
-      loadingStatusByChain$.next({
-        ...loadingStatusByChain$.value,
-        [chainId]: status,
-      });
+  const setLoadingStatus = (
+    chainId: ChainId | ChainId[],
+    status: LoadingStatus,
+  ) => {
+    const chainIds = Array.isArray(chainId) ? chainId : [chainId];
+
+    loadingStatusByChain$.next({
+      ...loadingStatusByChain$.value,
+      ...chainIds.reduce((acc, id) => ({ ...acc, [id]: status }), {}),
+    });
   };
 
   const staleWatchCache = new Map<ChainId, number>();

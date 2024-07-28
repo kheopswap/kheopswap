@@ -38,7 +38,6 @@ export const loadingStatusSummary$ = combineLatest([
       },
       { loading: 0, loaded: 0 },
     );
-
     return { loading, loaded, total: loading + loaded };
   }),
   distinctUntilChanged<LoadingStatusSummary>(isEqual),

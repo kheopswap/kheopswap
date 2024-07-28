@@ -114,11 +114,11 @@ poolSuppliesSubscriptions$.subscribe((poolSupplyIds) => {
   for (const poolSupplyId of watchersToStop) {
     WATCHERS.get(poolSupplyId)?.then((watcher) => watcher.unsubscribe());
     WATCHERS.delete(poolSupplyId);
-    poolSuppliesStatuses$.next({
-      ...poolSuppliesStatuses$.value,
-      [poolSupplyId]: "stale",
-    });
   }
+  poolSuppliesStatuses$.next({
+    ...poolSuppliesStatuses$.value,
+    ...watchersToStop.reduce((acc, id) => ({ ...acc, [id]: "stale" }), {}),
+  });
 });
 
 export const getPoolSuppliesWatchersCount = () => WATCHERS.size;
