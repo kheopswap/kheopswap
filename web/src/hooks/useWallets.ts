@@ -116,6 +116,11 @@ const useWalletsProvider = () => {
     refInitialized.current = true;
 
     const injectedExtensions = getInjectedExtensions();
+    console.log(
+      "injectedExtensions",
+      connectedExtensionIds,
+      connectedExtensions,
+    );
 
     for (const wallet of connectedExtensionIds) {
       if (
