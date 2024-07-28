@@ -24,3 +24,4 @@ export * from "./xcmV3MultiLocation";
 export * from "./sortBigInt";
 export * from "./getPoolReserves";
 export * from "./shortAddress";
+export * from "./getAssetHubMirrorTokenId";

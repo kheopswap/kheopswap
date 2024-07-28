@@ -4,6 +4,7 @@ import { useRelayChains } from "./useRelayChains";
 import { useAssetConvertMulti } from "./useAssetConvertMulti";
 
 import { TokenId } from "src/config/tokens";
+import { getAssetHubMirrorTokenId } from "src/util";
 
 type UseStablePlancksProps = {
   inputs: { tokenId: TokenId; plancks: bigint | undefined }[];
@@ -22,7 +23,7 @@ export const useStablePlancksMulti = ({
   const convertInputs = useMemo(
     () =>
       inputs.map(({ tokenId, plancks }) => ({
-        tokenIdIn: tokenId,
+        tokenIdIn: getAssetHubMirrorTokenId(tokenId),
         plancksIn: plancks ?? 0n,
         tokenIdOut: stableToken.id,
       })),

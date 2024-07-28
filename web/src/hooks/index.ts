@@ -35,3 +35,4 @@ export * from "./useTokensByChainIds";
 export * from "./useWalletAccount";
 export * from "./useWallets";
 export * from "./useTokens";
+export * from "./useAllTokens";

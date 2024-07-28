@@ -40,7 +40,7 @@ export const TokenBalancesSummary: FC<
   return (
     <div className="flex size-full flex-col items-end justify-center overflow-hidden">
       <div className={cn("truncate", isLoadingTokenPlancks && "animate-pulse")}>
-        <Tokens token={token} plancks={tokenPlancks ?? 0n} digits={2} />
+        <Tokens token={token} plancks={tokenPlancks ?? 0n} />
       </div>
       <div
         className={cn(

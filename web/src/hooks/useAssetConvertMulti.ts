@@ -10,13 +10,13 @@ import { useBalances } from "./useBalances";
 import { TokenId } from "src/config/tokens";
 import { getAssetConvertPlancks, getPoolReserves } from "src/util";
 
-type AssetConvertInput = {
+export type AssetConvertInput = {
   tokenIdIn: TokenId;
   plancksIn: bigint;
   tokenIdOut: TokenId;
 };
 
-type UseAssetConvertMultiProps = {
+export type UseAssetConvertMultiProps = {
   inputs: AssetConvertInput[];
 };
 

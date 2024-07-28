@@ -6,7 +6,7 @@ import { TokenBalancesSummary } from "./PortfolioDataCell";
 import { Styles, TokenLogo } from "src/components";
 import { getChainById } from "src/config/chains";
 import { cn } from "src/util";
-import { useRelayChains } from "src/hooks";
+import { useNativeToken, useRelayChains } from "src/hooks";
 
 type PortfolioRowProps = PortfolioRowData & {
   visibleCol: PortfolioVisibleColunm;
@@ -16,11 +16,12 @@ type PortfolioRowProps = PortfolioRowData & {
 export const PortfolioRow: FC<PortfolioRowProps> = ({
   token,
   balance,
-  tvl,
+  price,
   visibleCol,
   onClick,
 }) => {
-  const { stableToken } = useRelayChains();
+  const { assetHub, stableToken } = useRelayChains();
+  const nativeToken = useNativeToken({ chain: assetHub });
   const chain = useMemo(() => getChainById(token.chainId), [token.chainId]);
 
   return (
@@ -41,7 +42,7 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
         </div>
       </div>
 
-      <div className={cn(visibleCol === "tvl" && "hidden sm:block")}>
+      <div className={cn(visibleCol === "price" && "hidden sm:block")}>
         {!!balance && (
           <TokenBalancesSummary
             token={token}
@@ -52,11 +53,11 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
       </div>
 
       <div className={cn(visibleCol === "balance" && "hidden sm:block")}>
-        {!!tvl && (
+        {!!price && (
           <TokenBalancesSummary
-            token={token}
+            token={nativeToken}
             stableToken={stableToken}
-            {...tvl}
+            {...price}
           />
         )}
       </div>

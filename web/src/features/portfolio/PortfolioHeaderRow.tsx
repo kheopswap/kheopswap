@@ -59,10 +59,10 @@ export const PortfolioHeaderRow: FC<{
           </>
         )}
         <ColumnHeaderButton
-          selected={sortByCol === "tvl"}
-          onClick={handleSortClick("tvl")}
+          selected={sortByCol === "price"}
+          onClick={handleSortClick("price")}
         >
-          TVL
+          Price
         </ColumnHeaderButton>
       </div>
     </div>

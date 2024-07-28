@@ -4,13 +4,17 @@ import { Chain } from "src/config/chains";
 import { TokenNative } from "src/config/tokens/types";
 import { getNativeToken } from "src/util";
 
-type UseNativeTokenProps = {
-  chain: Chain | null | undefined;
+type UseNativeTokenProps<T extends Chain | null | undefined> = {
+  chain: T;
 };
 
-export const useNativeToken = ({ chain }: UseNativeTokenProps) => {
-  return useMemo<TokenNative | null>(
-    () => (chain ? getNativeToken(chain.id) : null),
+type UseNativeResult<T> = T extends Chain ? TokenNative : null;
+
+export const useNativeToken = <T extends Chain | null | undefined>({
+  chain,
+}: UseNativeTokenProps<T>): UseNativeResult<T> => {
+  return useMemo(
+    () => (chain ? getNativeToken(chain.id) : null) as UseNativeResult<T>,
     [chain],
   );
 };
