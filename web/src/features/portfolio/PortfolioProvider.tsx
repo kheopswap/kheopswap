@@ -1,42 +1,36 @@
-import { useMemo } from "react";
-
+import { TokenType } from "src/config/tokens/types";
 import {
   useAssetHubTVL,
-  useRelayChains,
   useWallets,
-  useTokensByChainIds,
   useBalancesWithStables,
+  useAllTokens,
 } from "src/hooks";
 import { provideContext } from "src/util";
+import { useTokenPrices } from "src/hooks/useTokenPrices";
+
+const TRADABLE_TOKEN_TYPES: TokenType[] = ["native", "asset"];
 
 export const usePortfolioProvider = () => {
   const { accounts } = useWallets();
 
-  const { allChains } = useRelayChains();
-  const chainIds = useMemo(
-    () => allChains.map((chain) => chain.id),
-    [allChains],
-  );
-
-  const { data: allTokens, isLoading: isLoadingTokens } = useTokensByChainIds({
-    chainIds,
+  const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
+    types: TRADABLE_TOKEN_TYPES,
   });
-  const tokens = useMemo(
-    () => allTokens.filter((t) => t.type !== "pool-asset"),
-    [allTokens],
-  );
 
   const { data: tvl } = useAssetHubTVL();
 
   const { data: balances, isLoading: isLoadingBalances } =
     useBalancesWithStables({ tokens, accounts });
 
+  const { data: prices, isLoading: isLoadingPrices } = useTokenPrices();
+
   return {
-    isLoading: isLoadingTokens || isLoadingBalances,
+    isLoading: isLoadingTokens || isLoadingBalances || isLoadingPrices,
     balances,
     accounts,
     tokens,
     tvl,
+    prices,
   };
 };
 

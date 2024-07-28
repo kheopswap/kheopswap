@@ -1,6 +1,7 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 
 import { usePortfolio } from "./PortfolioProvider";
+import { PortfolioRowData } from "./types";
 
 import {
   AccountSelectDrawer,
@@ -12,9 +13,14 @@ import {
   Tokens,
 } from "src/components";
 import { Token, TokenId } from "src/config/tokens";
-import { useChainName, useOpenClose, useRelayChains } from "src/hooks";
-import { cn, isBigInt, sortBigInt } from "src/util";
-import { BalanceWithStable } from "src/types";
+import {
+  useNativeToken,
+  useOpenClose,
+  useRelayChains,
+  useTokenChain,
+} from "src/hooks";
+import { cn, isBigInt, sortBigInt, getTokenTypeLabel } from "src/util";
+import { BalanceWithStable, BalanceWithStableSummary } from "src/types";
 
 const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
   if (isBigInt(a.tokenPlancks) && isBigInt(b.tokenPlancks))
@@ -50,7 +56,10 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
           {rows.map(({ account, balance }) => (
             <div
               key={account.id}
-              className="flex h-12 items-center gap-4 rounded bg-neutral-850 px-2"
+              className={cn(
+                "flex h-12 items-center gap-4 rounded bg-neutral-850 px-2",
+                !balance.tokenPlancks && "opacity-50",
+              )}
             >
               <div className="flex grow items-center gap-2">
                 <InjectedAccountIcon className="size-6" account={account} />
@@ -100,7 +109,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
           ))}
         </div>
       ) : (
-        <div className="text-neutral-500">
+        <div className="my-4 rounded-lg bg-neutral-850 p-4 text-neutral-500">
           <button
             type="button"
             onClick={open}
@@ -124,54 +133,139 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 const Header: FC<{
   token: Token;
 }> = ({ token }) => {
-  const { name: chainName } = useChainName({ chainId: token.chainId });
-
   return (
-    <div className="flex items-center gap-2">
-      <TokenLogo className="size-10" token={token} />
-      <div className="grow">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-neutral-50">{token.symbol}</div>
-          <div className="text-lg text-neutral-400">{token.name}</div>
-        </div>
-        <div className="w-full truncate text-sm text-neutral-400">
-          {chainName}
-          {token.type === "asset" ? ` - ${token.assetId}` : null}
-        </div>
+    <div className="flex flex-col items-center gap-3 bg-neutral-950 p-4">
+      <TokenLogo className="size-20" token={token} />
+      <div className="flex max-w-full items-center gap-2 overflow-hidden text-xl">
+        <div className="text-neutral-50">{token.symbol}</div>
+        <div className="grow truncate text-neutral-400">{token.name}</div>
       </div>
     </div>
   );
 };
 
-const DrawerContent: FC<{
-  token: Token;
-}> = ({ token }) => {
+const TokenDetailsRowValue: FC<
+  BalanceWithStableSummary & {
+    token: Token;
+  }
+> = ({
+  token,
+  tokenPlancks,
+  isLoadingStablePlancks,
+  stablePlancks,
+  isLoadingTokenPlancks,
+  isInitializing,
+}) => {
+  const { stableToken } = useRelayChains();
+
+  if (isInitializing) return null;
+
   return (
-    <div className="">
-      <Header token={token} />
-      <hr className="my-4 text-neutral-800" />
+    <div className="flex gap-2 whitespace-nowrap text-neutral-50">
+      <Tokens
+        token={token}
+        plancks={tokenPlancks ?? 0n}
+        className={cn(isLoadingTokenPlancks && "animate-pulse")}
+      />
+      <span
+        className={cn(
+          "text-neutral-500",
+          isLoadingStablePlancks && "animate-pulse",
+          !isBigInt(stablePlancks) && "hidden",
+          token.id === stableToken.id && "hidden",
+        )}
+      >
+        <Tokens token={stableToken} plancks={stablePlancks ?? 0n} digits={2} />
+      </span>
+    </div>
+  );
+};
+
+const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
+  label,
+  children,
+}) => (
+  <div className="flex w-full justify-between gap-4 overflow-hidden">
+    <div className="text-neutral-400">{label}</div>
+    <div className="overflow-hidden">{children}</div>
+  </div>
+);
+
+const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
+  const { token, balance, price, tvl } = row;
+  const { assetHub } = useRelayChains();
+  const nativeToken = useNativeToken({ chain: assetHub });
+
+  const chain = useTokenChain({ tokenId: token.id });
+
+  return (
+    <div className="flex flex-col gap-2">
+      <TokenDetailsRow label="Network">
+        <div className="flex w-full items-center gap-2 overflow-hidden">
+          <img src={chain.logo} alt="" className="size-6 shrink-0" />
+          <div className="truncate">{chain.name}</div>
+        </div>
+      </TokenDetailsRow>
+      <TokenDetailsRow label="Type">
+        {getTokenTypeLabel(token.type)}
+      </TokenDetailsRow>
+      {token.type === "asset" && (
+        <TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
+      )}
+      <TokenDetailsRow label="Price">
+        {!!price && <TokenDetailsRowValue {...price} token={nativeToken} />}
+      </TokenDetailsRow>
+      {!!tvl && (
+        <TokenDetailsRow label="TVL">
+          <TokenDetailsRowValue {...tvl} token={token} />
+        </TokenDetailsRow>
+      )}
+      {!!balance && (
+        <TokenDetailsRow label="Portfolio">
+          <TokenDetailsRowValue {...balance} token={token} />
+        </TokenDetailsRow>
+      )}
+
       <Balances token={token} />
+    </div>
+  );
+};
+
+const DrawerContent: FC<{
+  tokenRow: PortfolioRowData;
+}> = ({ tokenRow }) => {
+  return (
+    <div>
+      <Header token={tokenRow.token} />
+
+      <div className="h-4 border-t border-neutral-800 p-3">
+        <TokenDetails row={tokenRow} />
+      </div>
     </div>
   );
 };
 
 export const PortfolioTokenDrawer: FC<{
   tokenId: TokenId | null;
-
+  rows: PortfolioRowData[];
   onDismiss: () => void;
-}> = ({ tokenId, onDismiss }) => {
+}> = ({ tokenId, rows, onDismiss }) => {
   const { tokens } = usePortfolio();
 
-  const [token, setToken] = useState<Token>();
+  const [tokenRow, setTokenRow] = useState<PortfolioRowData>();
 
   useEffect(() => {
-    setToken(tokens.find((t) => t.id === tokenId));
-  }, [tokenId, tokens]);
+    if (tokenId) setTokenRow(rows.find((row) => row.token.id === tokenId));
+  }, [rows, tokenId, tokens]);
 
   return (
-    <Drawer anchor="right" isOpen={!!token} onDismiss={onDismiss}>
-      <DrawerContainer title={"Token Details"} onClose={onDismiss}>
-        {token && <DrawerContent token={token} />}
+    <Drawer anchor="right" isOpen={!!tokenId} onDismiss={onDismiss}>
+      <DrawerContainer
+        contentClassName="p-0"
+        title={"Token Details"}
+        onClose={onDismiss}
+      >
+        {tokenRow && <DrawerContent tokenRow={tokenRow} />}
       </DrawerContainer>
     </Drawer>
   );

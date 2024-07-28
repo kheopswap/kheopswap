@@ -34,11 +34,11 @@ const sortByColumn =
   (a: PortfolioRowData | null, b: PortfolioRowData | null) => {
     if (mode === "symbol")
       return (a?.token.symbol ?? "").localeCompare(b?.token.symbol ?? "");
-    if (mode === "tvl") {
-      if (a?.tvl?.tokenPlancks && b?.tvl?.tokenPlancks)
-        return sortByValue(a.tvl, b.tvl);
-      if (a?.tvl?.tokenPlancks) return -1;
-      if (b?.tvl?.tokenPlancks) return 1;
+    if (mode === "price") {
+      if (a?.price?.tokenPlancks && b?.price?.tokenPlancks)
+        return sortByValue(a.price, b.price);
+      if (a?.price?.tokenPlancks) return -1;
+      if (b?.price?.tokenPlancks) return 1;
     } else {
       if (a?.balance?.tokenPlancks && b?.balance?.tokenPlancks)
         return sortByValue(a.balance, b.balance);
@@ -56,7 +56,7 @@ export const PortfolioTable = () => {
   const [selectedTokenId, setSelectedTokenId] = useState<TokenId | null>(null);
 
   const [visibleCol, setVisibleCol] = useState<PortfolioVisibleColunm>(
-    accounts.length ? "balance" : "tvl",
+    accounts.length ? "balance" : "price",
   );
   const [sortByCol, setSortByCol] = useState<PortfolioSortMode>(visibleCol);
 
@@ -111,6 +111,7 @@ export const PortfolioTable = () => {
       />
       <PortfolioTokenDrawer
         tokenId={selectedTokenId}
+        rows={rows}
         onDismiss={() => setSelectedTokenId(null)}
       />
     </div>
