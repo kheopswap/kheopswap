@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import merge from "lodash/merge";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
@@ -74,6 +75,6 @@ export const getSetting$ = <Key extends keyof Settings, Value = Settings[Key]>(
 ) => {
   return settingsStore$.pipe(
     map((s) => s[key] as Value),
-    distinctUntilChanged(),
+    distinctUntilChanged<Value>(isEqual),
   );
 };
