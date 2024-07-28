@@ -203,7 +203,13 @@ const AccountSelectDrawerContent: FC<{
   onClose: () => void;
   onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-  const { accounts, connect, disconnect, connectedExtensions } = useWallets();
+  const {
+    accounts,
+    connect,
+    disconnect,
+    connectedExtensions,
+    injectedExtensionIds: injectedWallets,
+  } = useWallets();
 
   const { stableToken } = useRelayChains();
   const { data: token } = useToken({ tokenId });
@@ -229,12 +235,11 @@ const AccountSelectDrawerContent: FC<{
     );
   }, [balances, isLoading]);
 
-  const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
+  // const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
 
-  useEffect(() => {
-    const wallets = getInjectedExtensions();
-    setInjectedWallets(wallets?.sort(sortWallets) ?? []);
-  }, []);
+  // useEffect(() => {
+  //   setInjectedWallets(injectedExtensionIds.sort(sortWallets) ?? []);
+  // }, [injectedExtensionIds]);
 
   const handleConnectWalletClick = useCallback(
     (wallet: string) => async () => {

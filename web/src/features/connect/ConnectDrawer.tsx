@@ -78,14 +78,20 @@ const AccountRow: FC<{
 // );
 
 const ConnectDrawerContent: FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { connect, disconnect, accounts, connectedExtensions } = useWallets();
+  const {
+    connect,
+    disconnect,
+    accounts,
+    connectedExtensions,
+    injectedExtensionIds: injectedWallets,
+  } = useWallets();
 
-  const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
+  // const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
 
-  useEffect(() => {
-    const wallets = getInjectedExtensions();
-    setInjectedWallets(wallets?.sort(sortWallets) ?? []);
-  }, []);
+  // useEffect(() => {
+  //   const wallets = getInjectedExtensions();
+  //   setInjectedWallets(wallets?.sort(sortWallets) ?? []);
+  // }, []);
 
   const handleConnectWalletClick = useCallback(
     (wallet: string) => async () => {

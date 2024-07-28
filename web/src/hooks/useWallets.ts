@@ -16,6 +16,7 @@ import {
   mergeMap,
   Observable,
   ReplaySubject,
+  share,
   shareReplay,
   tap,
   timeout,
@@ -31,22 +32,25 @@ import {
   getInjectedAccountId,
   logger,
   provideContext,
+  sortWallets,
 } from "src/util";
 import { sleep } from "src/util/sleep";
-import { getSetting$ } from "src/services/settings";
+import { getSetting$, setSetting } from "src/services/settings";
 
 export type InjectedAccount = InjectedPolkadotAccount & {
   id: InjectedAccountId;
   wallet: string;
 };
 
-const injectedExtensionIds$ = interval(100).pipe(
-  map(() => getInjectedExtensions() ?? []),
+const injectedExtensionIds$ = interval(1000).pipe(
+  map(() => (getInjectedExtensions() ?? []).concat().sort(sortWallets)),
+  //shareReplay(1),
   distinctUntilChanged<string[]>(isEqual),
 );
+//.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
 injectedExtensionIds$.subscribe((ids) => {
-  console.log("injectedExtensionIds$", ids);
+  console.log("injectedExtensionIds$.sub", ids);
 });
 // combineLatest(
 //   [
@@ -69,7 +73,7 @@ injectedExtensionIds$.subscribe((ids) => {
 // );
 
 const connectedExtensions$ = combineLatest([
-  injectedExtensionIds$.pipe(distinctUntilChanged<string[]>(isEqual)),
+  injectedExtensionIds$,
   getSetting$("connectedExtensionIds"),
 ]).pipe(
   mergeMap(async ([injectedExtensions, connectedExtensionIds]) => {
@@ -89,6 +93,7 @@ const connectedExtensions$ = combineLatest([
 
     return injectedWallets.filter(Boolean) as InjectedExtension[];
   }),
+  shareReplay(1),
 );
 
 const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
@@ -163,6 +168,7 @@ const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
 //   },
 // );
 
+const [useInjectedExtensionsIds] = bind(injectedExtensionIds$);
 const [useConnectedExtensions] = bind(connectedExtensions$);
 const [useConnectedAccounts] = bind(accounts$);
 // tap((extensions) => {
@@ -203,20 +209,15 @@ const [useConnectedAccounts] = bind(accounts$);
 // );
 
 const useWalletsProvider = () => {
-  const [connectedExtensionIds, setConnectedExtensionIds] = useSetting(
-    "connectedExtensionIds",
-  );
+  const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
+  const injectedExtensionIds = useInjectedExtensionsIds();
+
   const connectedExtensions = useConnectedExtensions();
-  useEffect(() => {
-    console.log("connectedExtensions changed", connectedExtensions);
-  }, [connectedExtensions]);
+
   // const [connectedExtensions, setConnectedExtensions] = useState<
   //   InjectedExtension[]
   // >([]);
   const accounts = useConnectedAccounts();
-  useEffect(() => {
-    console.log("connectedAccounts changed", accounts);
-  }, [accounts]);
 
   // const [connectedAccounts, setConnectedAccounts] = useState<
   //   Record<string, InjectedPolkadotAccount[]>
@@ -257,6 +258,7 @@ const useWalletsProvider = () => {
         // setConnectedExtensions((prev) =>
         //   prev.filter((ext) => ext.name !== name),
         // );
+
         setConnectedExtensionIds((prev) => prev.filter((n) => n !== name));
         // setConnectedAccounts((prev) =>
         //   Object.fromEntries(
@@ -346,6 +348,7 @@ const useWalletsProvider = () => {
   // console.log({ connectedExtensions });
 
   return {
+    injectedExtensionIds,
     connectedExtensions,
     connect,
     disconnect,
