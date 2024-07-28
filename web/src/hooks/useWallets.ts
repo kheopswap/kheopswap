@@ -40,8 +40,9 @@ export type InjectedAccount = InjectedPolkadotAccount & {
   wallet: string;
 };
 
-const injectedExtensionIds$ = new BehaviorSubject<string[]>(
-  getInjectedExtensions() ?? [],
+const injectedExtensionIds$ = interval(100).pipe(
+  map(() => getInjectedExtensions() ?? []),
+  distinctUntilChanged<string[]>(isEqual),
 );
 
 injectedExtensionIds$.subscribe((ids) => {
