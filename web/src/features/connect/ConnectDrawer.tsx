@@ -1,12 +1,11 @@
 import WalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
-import { getInjectedExtensions } from "polkadot-api/pjs-signer";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback } from "react";
 
 import { useConnectDrawer } from "./context";
 
 import { Drawer, DrawerContainer, InjectedAccountIcon } from "src/components";
 import { InjectedAccount, useInjectedExtension, useWallets } from "src/hooks";
-import { cn, sortWallets } from "src/util";
+import { cn } from "src/util";
 
 const ExtensionButton: FC<{
   name: string;
@@ -67,16 +66,6 @@ const AccountRow: FC<{
   );
 };
 
-// const Warning: FC<{ title: string; children: ReactNode }> = ({
-//   title,
-//   children,
-// }) => (
-//   <div className="bg-primary-700 p-2 px-3 rounded">
-//     <div className="font-bold text-sm">{title}</div>
-//     <div className="text-xs text-primary-150">{children}</div>
-//   </div>
-// );
-
 const ConnectDrawerContent: FC<{ onClose: () => void }> = ({ onClose }) => {
   const {
     connect,
@@ -85,13 +74,6 @@ const ConnectDrawerContent: FC<{ onClose: () => void }> = ({ onClose }) => {
     connectedExtensions,
     injectedExtensionIds: injectedWallets,
   } = useWallets();
-
-  // const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
-
-  // useEffect(() => {
-  //   const wallets = getInjectedExtensions();
-  //   setInjectedWallets(wallets?.sort(sortWallets) ?? []);
-  // }, []);
 
   const handleConnectWalletClick = useCallback(
     (wallet: string) => async () => {

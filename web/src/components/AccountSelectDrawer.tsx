@@ -1,6 +1,5 @@
 import WalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
-import { getInjectedExtensions } from "polkadot-api/pjs-signer";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { fromPairs } from "lodash";
 
 import { Drawer } from "./Drawer";
@@ -234,12 +233,6 @@ const AccountSelectDrawerContent: FC<{
       ]),
     );
   }, [balances, isLoading]);
-
-  // const [injectedWallets, setInjectedWallets] = useState<string[]>([]);
-
-  // useEffect(() => {
-  //   setInjectedWallets(injectedExtensionIds.sort(sortWallets) ?? []);
-  // }, [injectedExtensionIds]);
 
   const handleConnectWalletClick = useCallback(
     (wallet: string) => async () => {

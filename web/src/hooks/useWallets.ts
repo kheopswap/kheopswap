@@ -5,24 +5,17 @@ import {
   connectInjectedExtension,
   getInjectedExtensions,
 } from "polkadot-api/pjs-signer";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback } from "react";
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   interval,
   map,
-  merge,
   mergeMap,
   Observable,
-  ReplaySubject,
-  share,
   shareReplay,
-  tap,
-  timeout,
-  timer,
 } from "rxjs";
-import { Dictionary, entries, flatMap, isEqual, keys, values } from "lodash";
+import { entries, isEqual } from "lodash";
 import { bind } from "@react-rxjs/core";
 
 import { useSetting } from "./useSetting";
@@ -34,8 +27,7 @@ import {
   provideContext,
   sortWallets,
 } from "src/util";
-import { sleep } from "src/util/sleep";
-import { getSetting$, setSetting } from "src/services/settings";
+import { getSetting$ } from "src/services/settings";
 
 export type InjectedAccount = InjectedPolkadotAccount & {
   id: InjectedAccountId;
@@ -44,33 +36,10 @@ export type InjectedAccount = InjectedPolkadotAccount & {
 
 const injectedExtensionIds$ = interval(1000).pipe(
   map(() => (getInjectedExtensions() ?? []).concat().sort(sortWallets)),
-  //shareReplay(1),
   distinctUntilChanged<string[]>(isEqual),
 );
-//.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-injectedExtensionIds$.subscribe((ids) => {
-  console.log("injectedExtensionIds$.sub", ids);
-});
-// combineLatest(
-//   [
-//     //0, 100,
-//     500, 1000,
-//   ].map((duration) => timer(duration)),
-// ).subscribe(() => {
-//   console.log("tick", getInjectedExtensions()?.length);
-//   injectedExtensionIds$.next();
-// });
-
-// setTimeout(() => {
-//   injectedExtensionIds$.next(getInjectedExtensions() ?? []);
-// }, 1000);
-
-//const connectedExtensions$ = new BehaviorSubject<InjectedExtension[]>([]);
-
-// const connectedExtensionIds = connectedExtensions$.pipe(
-//   map((exts) => keys(exts)),
-// );
+const connectedExtensions = new Map<string, Promise<InjectedExtension>>();
 
 const connectedExtensions$ = combineLatest([
   injectedExtensionIds$,
@@ -82,10 +51,14 @@ const connectedExtensions$ = combineLatest([
         .filter((id) => injectedExtensions.includes(id))
         .map(async (name) => {
           try {
-            console.log("connecting wallet %s", name);
-            return await connectInjectedExtension(name);
+            if (!connectedExtensions.has(name)) {
+              logger.debug("connecting wallet %s", name);
+              connectedExtensions.set(name, connectInjectedExtension(name));
+            }
+            return (await connectedExtensions.get(name)) as InjectedExtension;
           } catch (err) {
             console.error("Failed to connect wallet %s", name, { err });
+            connectedExtensions.delete(name);
             return null;
           }
         }),
@@ -93,7 +66,6 @@ const connectedExtensions$ = combineLatest([
 
     return injectedWallets.filter(Boolean) as InjectedExtension[];
   }),
-  shareReplay(1),
 );
 
 const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
@@ -139,213 +111,58 @@ const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
     });
   },
 ).pipe(
-  map((connectedAccounts) => {
-    return entries(connectedAccounts)
-      .map(([wallet, accounts]) =>
-        accounts.map((account) => ({
-          id: getInjectedAccountId(wallet, account.address as SS58String),
-          ...account,
-          wallet,
-        })),
-      )
-      .flat() as InjectedAccount[];
-  }),
+  map(
+    (connectedAccounts) =>
+      entries(connectedAccounts)
+        .map(([wallet, accounts]) =>
+          accounts.map((account) => ({
+            id: getInjectedAccountId(wallet, account.address as SS58String),
+            ...account,
+            wallet,
+          })),
+        )
+        .flat() as InjectedAccount[],
+  ),
   shareReplay(1),
 );
 
-// connectedAccounts$.subscribe((accounts) => {
-//   console.log(
-//     "connectedAccounts$",
-//     entries(accounts)
-//       .map(([k, v]) => [k, v.length].join(":"))
-//       .join(", "),
-//   );
-// });
-
-// getSetting$("connectedExtensionIds").subscribe(
-//   async (connectedExtensionIds) => {
-
-//   },
-// );
+injectedExtensionIds$.subscribe((val) => {
+  console.log("injectedExtensionIds$", val);
+});
+connectedExtensions$.subscribe((val) => {
+  console.log("connectedExtensions$", val);
+});
+accounts$.subscribe((val) => {
+  console.log("accounts$", val);
+});
 
 const [useInjectedExtensionsIds] = bind(injectedExtensionIds$);
 const [useConnectedExtensions] = bind(connectedExtensions$);
 const [useConnectedAccounts] = bind(accounts$);
-// tap((extensions) => {
-//   for (const [name, extension] of entries(extensions)) {
-//     extension.subscribe((accounts) => {
-//       accountsByWallet[name] = accounts;
-//       subscriber.next(values(accountsByWallet).flat());
-//     });
-//   }
-// }),
-//);
-
-// return () => {
-//   unsubs.forEach((unsub) => unsub());
-// };
-
-// combineLatest([connectedExtensions$, connectedAccounts2$]).subscribe(
-//   ([extensions, accounts]) => {
-//     console.log(
-//       "WOOT extensions:%d accounts:%d",
-//       keys(extensions).length,
-//       accounts.length,
-//     );
-//   },
-// );
-
-// connectedAccounts$.subscribe((accounts) => {
-//   console.log("connectedExtensions$.valueconnectedAccounts$", accounts, connectedExtensions$.value);
-// });
-
-// const injectedAccounts = connectedExtensions$.pipe(
-//   map((extensions) =>
-//     extensions.map((extension) => ({
-//       wallet: extension.name,
-//       accounts: extension.getAccounts(),
-//     })),
-//   ),
-// );
 
 const useWalletsProvider = () => {
   const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
+
   const injectedExtensionIds = useInjectedExtensionsIds();
-
   const connectedExtensions = useConnectedExtensions();
-
-  // const [connectedExtensions, setConnectedExtensions] = useState<
-  //   InjectedExtension[]
-  // >([]);
   const accounts = useConnectedAccounts();
-
-  // const [connectedAccounts, setConnectedAccounts] = useState<
-  //   Record<string, InjectedPolkadotAccount[]>
-  // >({});
-
-  // flag indicating if auto connect is finished (or failed/timeout)
-  // const [isReady, setIsReady] = useState(!connectedExtensionIds.length);
 
   const connect = useCallback(
     async (name: string) => {
-      try {
-        // logger.log("attempting to connect %s", name);
-        // const injected = await connectInjectedExtension(name);
-
-        // connectedExtensions$.next({
-        //   ...connectedExtensions$.value,
-        //   [name]: injected,
-        // });
-        // setConnectedExtensions((prev) =>
-        //   prev.some((ext) => ext.name === name) ? prev : [...prev, injected],
-        // );
-        setConnectedExtensionIds((prev) => [
-          ...prev.filter((n) => n !== name),
-          name,
-        ]);
-      } catch (err) {
-        console.error("Failed to connect wallet %s", name, { err });
-        throw err;
-      }
+      setConnectedExtensionIds((prev) => [
+        ...prev.filter((n) => n !== name),
+        name,
+      ]);
     },
     [setConnectedExtensionIds],
   );
 
   const disconnect = useCallback(
     async (name: string) => {
-      try {
-        logger.log("attempting to disconnect %s", name);
-        // setConnectedExtensions((prev) =>
-        //   prev.filter((ext) => ext.name !== name),
-        // );
-
-        setConnectedExtensionIds((prev) => prev.filter((n) => n !== name));
-        // setConnectedAccounts((prev) =>
-        //   Object.fromEntries(
-        //     Object.entries(prev).filter(([wallet]) => wallet !== name),
-        //   ),
-        // );
-      } catch (err) {
-        console.error("Failed to connect wallet %s", name, { err });
-        throw err;
-      }
+      setConnectedExtensionIds((prev) => prev.filter((n) => n !== name));
     },
     [setConnectedExtensionIds],
   );
-
-  // const refInitialized = useRef(false);
-
-  // const accounts = useMemo<InjectedAccount[]>(() => {
-  //   return Object.entries(connectedAccounts)
-  //     .map(([wallet, accounts]) =>
-  //       accounts.map((account) => ({
-  //         id: getInjectedAccountId(wallet, account.address as SS58String),
-  //         ...account,
-  //         wallet,
-  //       })),
-  //     )
-  //     .flat();
-  // }, [connectedAccounts]);
-
-  // console.log("accounts", accounts);
-
-  // useEffect(() => {
-  //   let connected = 0;
-
-  //   const unsubs = connectedExtensions.map((extension) =>
-  //     extension.subscribe((accounts) => {
-  //       setConnectedAccounts((prev) => ({
-  //         ...prev,
-  //         [extension.name]: accounts,
-  //       }));
-  //       connected++;
-  //       if (connected === connectedExtensionIds.length) setIsReady(true);
-  //     }),
-  //   );
-
-  //   return () => {
-  //     unsubs.map((unsub) => unsub());
-  //   };
-  // }, [connectedExtensionIds.length, connectedExtensions]);
-
-  // auto connect, only once
-  // useEffect(() => {
-  //   if (refInitialized.current) return;
-  //   refInitialized.current = true;
-
-  //   const injectedExtensionIds = getInjectedExtensions() ?? [];
-  //   console.log(
-  //     "injectedExtensions",
-  //     connectedExtensionIds,
-  //     connectedExtensions,
-  //   );
-
-  //   //const extensionsToConnectIds = injectedExtensionIds.filter((name) => connectedExtensionIds.includes(name));
-
-  //   //connectedExtensions$.next(connectedExtensionIds.map((name) => ({ name })));
-
-  //   for (const wallet of connectedExtensionIds) {
-  //     if (
-  //       injectedExtensionIds?.includes(wallet) && // if injected
-  //       !connectedExtensions.some((ext) => ext.name === wallet) // and not connected yet
-  //     ) {
-  //       logger.log("attempting to connect %s", wallet);
-  //       connect(wallet).catch((err) => {
-  //         console.error("Failed to reconnect %s", wallet, { err });
-  //         return;
-  //       });
-  //     }
-  //   }
-  // }, [connect, connectedExtensionIds, connectedExtensions]);
-
-  // useEffect(() => {
-  //   // timeout in case an extension is meant to be connected, but has been disabled by the user, or if user disconnected all accounts from it
-  //   // this flag is only used to prevent flickering on page refreshes, for screens that sort items based on connected wallets
-  //   // => no need to suspense the app for this
-  //   sleep(500).then(() => setIsReady(true));
-  // }, []);
-
-  // console.log({ connectedExtensions });
 
   return {
     injectedExtensionIds,
@@ -353,7 +170,6 @@ const useWalletsProvider = () => {
     connect,
     disconnect,
     accounts,
-    // isReady,
   };
 };
 
