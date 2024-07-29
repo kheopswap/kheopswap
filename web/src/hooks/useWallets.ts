@@ -7,11 +7,12 @@ import {
 } from "polkadot-api/pjs-signer";
 import { useCallback } from "react";
 import {
+  BehaviorSubject,
   combineLatest,
-  distinctUntilChanged,
   map,
   mergeMap,
   Observable,
+  of,
   shareReplay,
   timer,
 } from "rxjs";
@@ -24,7 +25,6 @@ import {
   InjectedAccountId,
   getInjectedAccountId,
   logger,
-  provideContext,
   sortWallets,
 } from "src/util";
 import { getSetting$ } from "src/services/settings";
@@ -34,13 +34,21 @@ export type InjectedAccount = InjectedPolkadotAccount & {
   wallet: string;
 };
 
-// account for wallets that are slow to register
-const injectedExtensionIds$ = combineLatest(
-  [0, 100, 500, 1000].map((time) => timer(time)),
-).pipe(
-  map(() => (getInjectedExtensions() ?? []).concat().sort(sortWallets)),
-  distinctUntilChanged<string[]>(isEqual),
+const getInjectedWalletsIds = () =>
+  getInjectedExtensions()?.concat().sort(sortWallets) ?? [];
+
+const injectedExtensionIds$ = new BehaviorSubject<string[]>(
+  getInjectedWalletsIds(),
 );
+
+// poll for wallets that are slow to register
+of(100, 500, 1000)
+  .pipe(mergeMap((time) => timer(time)))
+  .subscribe(() => {
+    const ids = getInjectedWalletsIds();
+    if (!isEqual(ids, injectedExtensionIds$.value))
+      injectedExtensionIds$.next(ids);
+  });
 
 const connectedExtensions = new Map<string, Promise<InjectedExtension>>();
 
@@ -132,7 +140,7 @@ const [useInjectedExtensionsIds] = bind(injectedExtensionIds$);
 const [useConnectedExtensions] = bind(connectedExtensions$);
 const [useConnectedAccounts] = bind(accounts$);
 
-const useWalletsProvider = () => {
+export const useWallets = () => {
   const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
 
   const injectedExtensionIds = useInjectedExtensionsIds();
@@ -164,5 +172,3 @@ const useWalletsProvider = () => {
     accounts,
   };
 };
-
-export const [WalletsProvider, useWallets] = provideContext(useWalletsProvider);

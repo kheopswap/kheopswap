@@ -1,4 +1,4 @@
-import { distinctUntilChanged, map } from "rxjs";
+import { distinctUntilChanged, map, tap } from "rxjs";
 import { Dictionary, isEqual } from "lodash";
 
 import { tokensByChainState$ } from "./state";
@@ -18,14 +18,18 @@ type TokensByChainState = {
 
 const DEFAULT_VALUE: TokensByChainState = { status: "stale", tokens: [] };
 
-export const subscribeTokensByChains = (chainIds: ChainId[]) => {
-  const subId = addTokensByChainSubscription(chainIds);
-
-  return () => removeTokensByChainSubscription(subId);
-};
-
 export const getTokensByChains$ = (chainIds: ChainId[]) => {
+  let subId = "";
+
   return tokensByChainState$.pipe(
+    tap({
+      subscribe: () => {
+        if (chainIds.length) subId = addTokensByChainSubscription(chainIds);
+      },
+      unsubscribe: () => {
+        if (chainIds.length) removeTokensByChainSubscription(subId);
+      },
+    }),
     map((statusAndTokens) =>
       Object.fromEntries(
         chainIds.map((chainId) => [

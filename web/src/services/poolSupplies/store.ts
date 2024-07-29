@@ -28,9 +28,11 @@ const save = (poolSupplies: StoredPoolSupply[]) => {
   }
 };
 
+const stop = logger.timer("initializing poolSupplies store");
 export const poolSuppliesStore$ = new BehaviorSubject<StoredPoolSupply[]>(
   load(),
 );
+stop();
 
 // save after updates
 poolSuppliesStore$.pipe(debounceTime(1_000)).subscribe(save);

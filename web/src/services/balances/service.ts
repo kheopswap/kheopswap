@@ -1,5 +1,5 @@
 import isEqual from "lodash/isEqual";
-import { distinctUntilChanged, map } from "rxjs";
+import { distinctUntilChanged, map, tap } from "rxjs";
 
 import {
   addBalancesSubscription,
@@ -14,30 +14,20 @@ const DEFAULT_BALANCE_STATE: BalanceState = {
   status: "stale",
 };
 
-export const subscribeBalances = (balanceDefs: BalanceDef[]) => {
-  const subId = addBalancesSubscription(balanceDefs);
-
-  return () => {
-    removeBalancesSubscription(subId);
-  };
-};
-
-export const getBalance$ = (def: BalanceDef) => {
-  const balanceId = getBalanceId(def);
-  return balancesState$.pipe(
-    map(
-      (balances): Balance => ({
-        ...def,
-        ...(balances[balanceId] ?? DEFAULT_BALANCE_STATE),
-      }),
-    ),
-    distinctUntilChanged<Balance>(isEqual),
-  );
-};
-
 export const getBalances$ = (defs: BalanceDef[]) => {
   const balanceIds = defs.map(getBalanceId);
+
+  let subId = "";
+
   return balancesState$.pipe(
+    tap({
+      subscribe: () => {
+        if (defs.length) subId = addBalancesSubscription(defs);
+      },
+      unsubscribe: () => {
+        if (defs.length) removeBalancesSubscription(subId);
+      },
+    }),
     map((balances) =>
       balanceIds.map(
         (id, idx): Balance => ({
