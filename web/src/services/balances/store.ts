@@ -28,7 +28,9 @@ const save = (balances: StoredBalance[]) => {
   }
 };
 
+const stop = logger.timer("initialiwing balances store");
 export const balancesStore$ = new BehaviorSubject<StoredBalance[]>(load());
+stop();
 
 // save after updates
 balancesStore$.pipe(debounceTime(1_000)).subscribe(save);

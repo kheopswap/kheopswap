@@ -8,7 +8,7 @@ import {
   Token,
   TokenId,
 } from "src/config/tokens";
-import { getLocalStorageKey } from "src/util";
+import { getLocalStorageKey, logger } from "src/util";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
 
 const loadTokens = (): Token[] => {
@@ -42,7 +42,9 @@ const saveTokens = (tokens: Token[]) => {
   }
 };
 
+const stop = logger.timer("initializing tokens store");
 export const tokensStore$ = new BehaviorSubject<Token[]>(loadTokens());
+stop();
 
 // save after updates
 tokensStore$.pipe(debounceTime(1_000)).subscribe(saveTokens);

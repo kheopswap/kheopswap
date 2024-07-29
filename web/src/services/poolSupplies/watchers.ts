@@ -17,11 +17,7 @@ import { getChainById, isAssetHub } from "src/config/chains";
 import { parseTokenId } from "src/config/tokens";
 import { getApi } from "src/services/api";
 import { LoadingStatus } from "src/services/common";
-import {
-  getPoolsByChain$,
-  Pool,
-  subscribePoolsByChain,
-} from "src/services/pools";
+import { getPoolsByChain$, Pool } from "src/services/pools";
 
 export const poolSuppliesStatuses$ = new BehaviorSubject<
   Record<PoolSupplyId, LoadingStatus>
@@ -67,8 +63,6 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 
   updateBalanceLoadingStatus(poolSupplyId, "loading");
 
-  const unsubscribeChainPools = subscribePoolsByChain(chain.id);
-
   const chainPool$ = getPoolsByChain$(chain.id).pipe(
     map((chainPools) =>
       chainPools.pools.find(
@@ -92,7 +86,6 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 
   return new Subscription(() => {
     supplySub.unsubscribe();
-    unsubscribeChainPools();
     updateBalanceLoadingStatus(poolSupplyId, "stale");
   });
 };

@@ -1,4 +1,4 @@
-import { distinctUntilChanged, map } from "rxjs";
+import { distinctUntilChanged, map, tap } from "rxjs";
 import { isEqual } from "lodash";
 
 import { Pool } from "./types";
@@ -18,14 +18,22 @@ type PoolsByChainState = {
 
 const DEFAULT_VALUE: PoolsByChainState = { status: "stale", pools: [] };
 
-export const subscribePoolsByChain = (chainId: ChainId) => {
-  const subId = addPoolsByChainSubscription(chainId);
-
-  return () => removePoolsByChainSubscription(subId);
-};
-
 export const getPoolsByChain$ = (chainId: ChainId | null) => {
+  let subId = "";
+
   return poolsByChainState$.pipe(
+    tap({
+      subscribe: () => {
+        if (chainId) {
+          subId = addPoolsByChainSubscription(chainId);
+        }
+      },
+      unsubscribe: () => {
+        if (chainId) {
+          removePoolsByChainSubscription(subId);
+        }
+      },
+    }),
     map(
       (statusAndTokens) => statusAndTokens[chainId as ChainId] ?? DEFAULT_VALUE,
     ),

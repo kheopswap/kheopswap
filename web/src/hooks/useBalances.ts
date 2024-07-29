@@ -1,12 +1,8 @@
-import { useEffect, useMemo } from "react";
-import { bind } from "@react-rxjs/core";
+import { useMemo } from "react";
 import { map } from "rxjs";
+import { useObservable } from "react-rx";
 
-import {
-  getBalances$,
-  subscribeBalances,
-  BalanceDef,
-} from "src/services/balances";
+import { getBalances$, BalanceDef } from "src/services/balances";
 
 type UseBalancesProps = {
   balanceDefs: BalanceDef[] | undefined;
@@ -22,56 +18,37 @@ type UseBalancesResult = {
   isLoading: boolean;
 };
 
-const serializeBalanceDefs = (balanceDefs: BalanceDef[] = []): string => {
-  return balanceDefs
-    ?.map(({ address, tokenId }) => `${address}||${tokenId}`)
-    .join(",");
-};
-
-const deserializeBalanceDefs = (strBalanceDefs: string = ""): BalanceDef[] => {
-  return strBalanceDefs
-    .split(",")
-    .filter(Boolean)
-    .map((key) => {
-      const [address, tokenId] = key.split("||");
-      return { address, tokenId };
-    });
-};
-
-const [useBalancesFromDef] = bind((strBalanceDefs: string = "") => {
-  const balanceDefs = deserializeBalanceDefs(strBalanceDefs);
-
-  return getBalances$(balanceDefs).pipe(
-    map((balances) => ({
-      data: balances.map((bs) => ({
-        address: bs.address,
-        tokenId: bs.tokenId,
-        balance: bs.balance,
-        isLoading: bs.status !== "loaded",
-      })),
-      isLoading: balances.some((b) => b.status !== "loaded"),
-    })),
-  );
-});
-
 export const useBalances = ({
-  balanceDefs,
+  balanceDefs = [],
 }: UseBalancesProps): UseBalancesResult => {
-  useEffect(() => {
-    if (!balanceDefs?.length) return;
-
-    const unsubscribe = subscribeBalances(balanceDefs);
-
-    return () => {
-      unsubscribe();
-    };
-  }, [balanceDefs]);
-
-  // serialize hook args to prevent infinite re-render loop
-  const strBalanceDefs = useMemo(
-    () => serializeBalanceDefs(balanceDefs),
+  const balances$ = useMemo(
+    () =>
+      getBalances$(balanceDefs).pipe(
+        map((balances) => ({
+          data: balances.map((bs) => ({
+            address: bs.address,
+            tokenId: bs.tokenId,
+            balance: bs.balance,
+            isLoading: bs.status !== "loaded",
+          })),
+          isLoading: balances.some((b) => b.status !== "loaded"),
+        })),
+      ),
     [balanceDefs],
   );
 
-  return useBalancesFromDef(strBalanceDefs);
+  const defaultBalances = useMemo(
+    () => ({
+      data: balanceDefs.map((bs) => ({
+        address: bs.address,
+        tokenId: bs.tokenId,
+        balance: undefined,
+        isLoading: !!balanceDefs.length,
+      })),
+      isLoading: !!balanceDefs.length,
+    }),
+    [balanceDefs],
+  );
+
+  return useObservable(balances$, defaultBalances);
 };

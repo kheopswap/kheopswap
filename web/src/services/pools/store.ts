@@ -2,7 +2,7 @@ import { BehaviorSubject, debounceTime } from "rxjs";
 
 import { Pool, PoolStorage } from "./types";
 
-import { getLocalStorageKey } from "src/util";
+import { getLocalStorageKey, logger } from "src/util";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
 
 const poolToStorage = (pool: Pool): PoolStorage => {
@@ -50,7 +50,9 @@ const savePools = (pools: Pool[]) => {
   }
 };
 
+const stop = logger.timer("initializing pools store");
 export const poolsStore$ = new BehaviorSubject<Pool[]>(loadPools());
+stop();
 
 // save after updates
 poolsStore$.pipe(debounceTime(1_000)).subscribe(savePools);

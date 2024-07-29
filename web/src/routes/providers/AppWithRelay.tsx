@@ -5,7 +5,7 @@ import { ChainInitNotification } from "src/components";
 import { isChainIdRelay } from "src/config/chains";
 import { ConnectDrawer } from "src/features/connect/ConnectDrawer";
 import { ConnectDrawerProvider } from "src/features/connect/context";
-import { RelayChainsProvider, WalletsProvider } from "src/hooks";
+import { RelayChainsProvider } from "src/hooks";
 
 const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
   const { relayId } = useParams();
@@ -21,12 +21,10 @@ export const AppWithRelay: FC = () => {
   return (
     <RelayPathCheck>
       <RelayChainsProvider>
-        <WalletsProvider>
-          <ConnectDrawerProvider>
-            <Outlet />
-            <ConnectDrawer />
-          </ConnectDrawerProvider>
-        </WalletsProvider>
+        <ConnectDrawerProvider>
+          <Outlet />
+          <ConnectDrawer />
+        </ConnectDrawerProvider>
         <ChainInitNotification />
       </RelayChainsProvider>
     </RelayPathCheck>
