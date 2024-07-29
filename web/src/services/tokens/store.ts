@@ -8,8 +8,9 @@ import {
   Token,
   TokenId,
 } from "src/config/tokens";
-import { getLocalStorageKey, logger } from "src/util";
+import { logger } from "src/util";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
+import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 const loadTokens = (): Token[] => {
   try {

@@ -5,7 +5,7 @@ export * from "./getErrorMessageFromTxEvents";
 export * from "./getExistentialDeposit";
 export * from "./getFeeAssetLocation";
 export * from "./getNativeToken";
-export * from "./getLocalStorageKey";
+// export * from "./getLocalStorageKey"; // Just don't :)
 export * from "./getTxOptions";
 export * from "./injectedAccountId";
 export * from "./isBigInt";

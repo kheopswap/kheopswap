@@ -1,5 +1,7 @@
+import { DEV } from "src/config/constants";
+
 /* eslint-disable no-console */
-const isDevMode = true; // import.meta.env.DEV;
+const isDevMode = true || DEV; // TODO remove true
 
 const NO_OP = () => {};
 

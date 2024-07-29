@@ -1,9 +1,12 @@
 /* eslint-disable no-console */
 import { FC, useEffect } from "react";
 
+import { DEV } from "src/config/constants";
+
 export const SuspenseMonitor: FC<{ label: string }> = ({ label }) => {
   useEffect(() => {
-    if (import.meta.env.PROD) return;
+    // eslint-disable-next-line no-constant-condition
+    if (false && !DEV) return; // TODO remove false
 
     const key = `[Suspense] ${label} - ${crypto.randomUUID()}}`;
     console.time(key);

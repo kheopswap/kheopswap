@@ -2,8 +2,9 @@ import { BehaviorSubject, debounceTime } from "rxjs";
 
 import { StoredPoolSupply } from "./types";
 
-import { getLocalStorageKey, logger } from "src/util";
+import { logger } from "src/util";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
+import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 const load = (): StoredPoolSupply[] => {
   try {

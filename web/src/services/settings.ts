@@ -2,7 +2,7 @@ import { isEqual } from "lodash";
 import merge from "lodash/merge";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
-import { getLocalStorageKey } from "src/util";
+import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 export type Settings = {
   connectedExtensionIds: string[];
