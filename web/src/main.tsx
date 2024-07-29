@@ -16,7 +16,7 @@ import { Subscribe } from "@react-rxjs/core";
 
 import { router } from "./routes";
 import { preloadFont } from "./util/preloadFont";
-import { SuspenseMonitor } from "./components/SuspenseMonitor";
+import { SuspenseSpinner } from "./components/SuspenseSpinner";
 
 preloadFont();
 
@@ -25,8 +25,11 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <Subscribe fallback={<SuspenseMonitor label="Subscribe" />}>
-        <RouterProvider router={router} />
+      <Subscribe fallback={<SuspenseSpinner label="Subscribe" />}>
+        <RouterProvider
+          router={router}
+          fallbackElement={<SuspenseSpinner label="RouterProvider" />}
+        />
       </Subscribe>
     </QueryClientProvider>
     <ToastContainer

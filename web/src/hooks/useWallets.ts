@@ -9,11 +9,11 @@ import { useCallback } from "react";
 import {
   combineLatest,
   distinctUntilChanged,
-  interval,
   map,
   mergeMap,
   Observable,
   shareReplay,
+  timer,
 } from "rxjs";
 import { entries, isEqual } from "lodash";
 import { bind } from "@react-rxjs/core";
@@ -34,7 +34,10 @@ export type InjectedAccount = InjectedPolkadotAccount & {
   wallet: string;
 };
 
-const injectedExtensionIds$ = interval(1000).pipe(
+// account for wallets that are slow to register
+const injectedExtensionIds$ = combineLatest(
+  [0, 100, 500, 1000].map((time) => timer(time)),
+).pipe(
   map(() => (getInjectedExtensions() ?? []).concat().sort(sortWallets)),
   distinctUntilChanged<string[]>(isEqual),
 );
@@ -51,11 +54,16 @@ const connectedExtensions$ = combineLatest([
         .filter((id) => injectedExtensions.includes(id))
         .map(async (name) => {
           try {
+            const stop = logger.timer(`connecting wallet ${name}`);
             if (!connectedExtensions.has(name)) {
               logger.debug("connecting wallet %s", name);
               connectedExtensions.set(name, connectInjectedExtension(name));
             }
-            return (await connectedExtensions.get(name)) as InjectedExtension;
+            const connected = (await connectedExtensions.get(
+              name,
+            )) as InjectedExtension;
+            stop();
+            return connected;
           } catch (err) {
             console.error("Failed to connect wallet %s", name, { err });
             connectedExtensions.delete(name);
@@ -132,7 +140,7 @@ const useWalletsProvider = () => {
   const accounts = useConnectedAccounts();
 
   const connect = useCallback(
-    async (name: string) => {
+    (name: string) => {
       setConnectedExtensionIds((prev) => [
         ...prev.filter((n) => n !== name),
         name,
@@ -142,7 +150,7 @@ const useWalletsProvider = () => {
   );
 
   const disconnect = useCallback(
-    async (name: string) => {
+    (name: string) => {
       setConnectedExtensionIds((prev) => prev.filter((n) => n !== name));
     },
     [setConnectedExtensionIds],
