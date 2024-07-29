@@ -24,14 +24,10 @@ export const getPoolsByChain$ = (chainId: ChainId | null) => {
   return poolsByChainState$.pipe(
     tap({
       subscribe: () => {
-        if (chainId) {
-          subId = addPoolsByChainSubscription(chainId);
-        }
+        if (chainId) subId = addPoolsByChainSubscription(chainId);
       },
       unsubscribe: () => {
-        if (chainId) {
-          removePoolsByChainSubscription(subId);
-        }
+        if (chainId) removePoolsByChainSubscription(subId);
       },
     }),
     map(

@@ -22,14 +22,10 @@ export const getBalances$ = (defs: BalanceDef[]) => {
   return balancesState$.pipe(
     tap({
       subscribe: () => {
-        if (defs.length) {
-          subId = addBalancesSubscription(defs);
-        }
+        if (defs.length) subId = addBalancesSubscription(defs);
       },
       unsubscribe: () => {
-        if (defs.length) {
-          removeBalancesSubscription(subId);
-        }
+        if (defs.length) removeBalancesSubscription(subId);
       },
     }),
     map((balances) =>

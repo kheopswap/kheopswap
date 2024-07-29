@@ -28,14 +28,10 @@ export const getPoolSupplies$ = (pairs: TokenIdsPair[]) => {
   return poolSuppliesState$.pipe(
     tap({
       subscribe: () => {
-        if (pairs.length) {
-          subId = addPoolSupplySubscription(pairs);
-        }
+        if (pairs.length) subId = addPoolSupplySubscription(pairs);
       },
       unsubscribe: () => {
-        if (pairs.length) {
-          removePoolSupplySubscription(subId);
-        }
+        if (pairs.length) removePoolSupplySubscription(subId);
       },
     }),
     map((poolSupplies) =>

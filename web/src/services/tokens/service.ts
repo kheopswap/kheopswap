@@ -24,14 +24,10 @@ export const getTokensByChains$ = (chainIds: ChainId[]) => {
   return tokensByChainState$.pipe(
     tap({
       subscribe: () => {
-        if (chainIds.length) {
-          subId = addTokensByChainSubscription(chainIds);
-        }
+        if (chainIds.length) subId = addTokensByChainSubscription(chainIds);
       },
       unsubscribe: () => {
-        if (chainIds.length) {
-          removeTokensByChainSubscription(subId);
-        }
+        if (chainIds.length) removeTokensByChainSubscription(subId);
       },
     }),
     map((statusAndTokens) =>
