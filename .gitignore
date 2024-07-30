@@ -28,3 +28,4 @@ zombienet-linux-arm64
 zombienet-linux-x64
 zombienet.log
 zombienet/bin/*
+!zombienet/bin/README.md

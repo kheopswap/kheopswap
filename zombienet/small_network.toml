@@ -1,7 +1,7 @@
 [relaychain]
 default_image = "parity/polkadot:latest"
 default_command = "./bin/polkadot"
-chain = "rococo-local"
+chain = "westend-local"
 
 [[relaychain.nodes]]
 name = "alice"
@@ -21,7 +21,7 @@ validator = true
 [[parachains]]
 id = 1000
 cumulus_based = true
-chain = "asset-hub-rococo-local"
+chain = "asset-hub-westend-local"
 
 # run charlie as parachain collator
 [[parachains.collators]]
