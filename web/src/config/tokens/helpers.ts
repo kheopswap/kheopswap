@@ -1,6 +1,9 @@
 import lzs from "lz-string";
+import urlJoin from "url-join";
 
 import {
+  Token,
+  TokenForeignAsset,
   TokenId,
   TokenIdAsset,
   TokenIdForeignAsset,
@@ -13,9 +16,11 @@ import {
   TokenTypePoolAsset,
 } from "./types";
 
+import { getParachainName } from "src/config/parachains";
 import { XcmV3Multilocation } from "src/types";
 import { ChainId, getChainById } from "src/config/chains";
 import { safeParse, safeStringify } from "src/util";
+import { getEvmNetworkName, getEvmNetworkById } from "src/config/evmNetworks";
 
 export const isTokenIdNative = (
   tokenId: TokenId | null | undefined,
@@ -125,4 +130,80 @@ export const getChainIdFromTokenId = (
   } catch (err) {
     return null;
   }
+};
+
+export type DisplayProperty = {
+  label: string;
+  value: string;
+  format?: "address";
+  url?: string;
+};
+
+export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
+  if (token.type === "foreign-asset") {
+    const interior = token.location.interior;
+    if (interior.type === "X1") {
+      if (interior.value.type === "Parachain")
+        return [
+          {
+            label: "Origin",
+            value: getParachainName(interior.value.value.toString()),
+          },
+        ];
+
+      if (interior.value.type === "GlobalConsensus") {
+        switch (interior.value.value.type) {
+          case "ByFork":
+          case "ByGenesis":
+          case "PolkadotBulletin":
+            return [];
+          default:
+            return [{ label: "Origin", value: interior.value.value.type }];
+        }
+      }
+    }
+
+    if (interior.type === "X2") {
+      if (
+        interior.value[0].type === "GlobalConsensus" &&
+        interior.value[0].value.type === "Ethereum" &&
+        interior.value[1].type === "AccountKey20"
+      ) {
+        const network = getEvmNetworkById(
+          interior.value[0].value.value.chain_id.toString(),
+        );
+        return [
+          {
+            label: "Origin",
+            value: getEvmNetworkName(
+              interior.value[0].value.value.chain_id.toString(),
+            ),
+          },
+          {
+            label: "Contract address",
+            value: interior.value[1].value.key.asHex(),
+            format: "address",
+            url: network?.explorerUrl
+              ? urlJoin(
+                  network.explorerUrl,
+                  "address",
+                  interior.value[1].value.key.asHex(),
+                )
+              : undefined,
+          },
+        ];
+      }
+    }
+
+    if (interior.type === "X2") {
+      if (interior.value[0].type === "Parachain") {
+        const network = {
+          label: "Origin",
+          value: getParachainName(interior.value[0].value.toString()),
+        };
+        return [network];
+      }
+    }
+  }
+  return [];
 };

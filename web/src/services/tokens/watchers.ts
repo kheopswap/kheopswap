@@ -12,8 +12,13 @@ import {
   hasAssetPallet,
   isAssetHub,
 } from "src/config/chains";
-import { getTokenId, Token, KNOWN_TOKENS_MAP } from "src/config/tokens";
-import { logger, throwAfter } from "src/util";
+import {
+  getTokenId,
+  Token,
+  KNOWN_TOKENS_MAP,
+  TOKENS_OVERRIDES_MAP,
+} from "src/config/tokens";
+import { logger, safeStringify, throwAfter } from "src/util";
 import { getApi } from "src/services/api";
 import {
   STORAGE_QUERY_TIMEOUT,
@@ -74,8 +79,11 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
             name,
             logo: "./img/tokens/asset.svg",
             verified: false,
+            ...TOKENS_OVERRIDES_MAP[id],
           } as Token),
       );
+
+    console.log("foreign assets", foreignAssetTokens);
 
     const currentTokens = tokensStore$.value;
 
@@ -130,6 +138,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
             name: "",
             logo: "",
             isSufficient: false,
+            ...TOKENS_OVERRIDES_MAP[id],
           }) as Token,
       );
 
@@ -192,6 +201,7 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
             logo: "./img/tokens/asset.svg",
             verified: false,
             isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
+            ...TOKENS_OVERRIDES_MAP[id],
           } as Token),
       );
 
