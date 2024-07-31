@@ -17,7 +17,7 @@ export const useTransferExtrinsic = ({
   recipient,
 }: UseTransferExtrinsicProps) => {
   return useQuery({
-    queryKey: ["useTeleportExtrinsic", tokenId, plancks?.toString(), recipient],
+    queryKey: ["useTransferExtrinsic", tokenId, plancks?.toString(), recipient],
     queryFn: () => {
       if (!tokenId || !recipient || typeof plancks !== "bigint") return null;
       return getTransferExtrinsic(tokenId, plancks, recipient);

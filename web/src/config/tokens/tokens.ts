@@ -19,4 +19,14 @@ export const KNOWN_TOKENS_MAP = Object.fromEntries(
   KNOWN_TOKENS_LIST.map((a) => [a.id, a]),
 ) as Record<TokenId, Token>;
 
-export const TRADABLE_TOKEN_TYPES: TokenType[] = ["native", "asset"];
+export const TRADABLE_TOKEN_TYPES: TokenType[] = [
+  "native",
+  "asset",
+  "foreign-asset",
+];
+
+export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
+  "native",
+  "asset",
+  "foreign-asset",
+];
