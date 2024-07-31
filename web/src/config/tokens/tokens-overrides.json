@@ -60,11 +60,6 @@
     "verified": true
   },
   {
-    "id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmdPIDMAX3VA==",
-    "logo": "./img/tokens/FREN.svg",
-    "verified": true
-  },
-  {
     "id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48G6BgFYAvpgHVaAcXgEOASTgATGAA85C7rQBGOAOZ4EqAAwh1AXXXqgA===",
     "logo": "./img/tokens/TNKR.svg",
     "verified": true
