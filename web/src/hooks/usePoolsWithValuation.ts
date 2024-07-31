@@ -6,7 +6,7 @@ import { Token } from "src/config/tokens";
 import { Pool } from "src/services/pools";
 import { isBigInt } from "src/util";
 import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
-import { getPoolReserves } from "src/util/getPoolReserves";
+import { getPoolReserves } from "src/helpers/getPoolReserves";
 
 export type PoolWithValuation = Pool & {
   valuation: bigint | null;

@@ -2,6 +2,7 @@ import { isEqual } from "lodash";
 import merge from "lodash/merge";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
+import { safeParse, safeStringify } from "src/util";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 export type Settings = {
@@ -36,12 +37,17 @@ const getPersistedSettings = () => {
     localStorage.removeItem(getLocalStorageKey("defaultAccount"));
 
     const strSettings = localStorage.getItem(STORAGE_KEY);
-    const settings = strSettings ? JSON.parse(strSettings) : DEFAULT_SETTINGS;
+    const settings = strSettings
+      ? safeParse<Settings>(strSettings)
+      : DEFAULT_SETTINGS;
 
     // clean up old settings
     if (strSettings)
       for (const key of Object.keys(settings))
-        if (!(key in DEFAULT_SETTINGS)) delete settings[key];
+        if (!(key in DEFAULT_SETTINGS)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          delete (settings as any)[key];
+        }
 
     if (strSettings) return merge(DEFAULT_SETTINGS, settings as Settings);
   } catch (err) {
@@ -53,7 +59,7 @@ const getPersistedSettings = () => {
 const settingsStore$ = new BehaviorSubject<Settings>(getPersistedSettings());
 
 settingsStore$.subscribe((settings) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  localStorage.setItem(STORAGE_KEY, safeStringify(settings));
 });
 
 export const setSetting = <Key extends keyof Settings, Value = Settings[Key]>(

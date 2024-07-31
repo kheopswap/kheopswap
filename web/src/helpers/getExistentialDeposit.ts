@@ -14,7 +14,20 @@ export const getExistentialDeposit = async (tokenId: TokenId) => {
       });
       return asset?.min_balance ?? null;
     }
+
     case "native":
       return api.constants.Balances.ExistentialDeposit();
+
+    case "foreign-asset": {
+      if (!isApiAssetHub(api)) throw new Error("Chain is not an asset hub");
+      const asset = await api.query.ForeignAssets.Asset.getValue(
+        token.location,
+        { at: "best" },
+      );
+      return asset?.min_balance ?? null;
+    }
+
+    default:
+      throw new Error(`Unsupported token type: ${tokenId}`);
   }
 };

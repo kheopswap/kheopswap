@@ -1,12 +1,8 @@
 import { XcmV3Junctions, XcmV3Junction } from "@polkadot-api/descriptors";
 
 import { TokenId, getTokenId, parseTokenId } from "src/config/tokens";
-import { ChainId } from "src/config/chains";
-
-export type XcmV3Multilocation = {
-  parents: number;
-  interior: XcmV3Junctions;
-};
+import { ChainId, isChainIdAssetHub } from "src/config/chains";
+import { XcmV3Multilocation } from "src/types";
 
 export const getXcmV3MultilocationFromTokenId = (
   tokenId: TokenId | null | undefined,
@@ -30,6 +26,8 @@ export const getXcmV3MultilocationFromTokenId = (
       ]),
     };
 
+  if (parsed.type === "foreign-asset") return parsed.location;
+
   return null;
 };
 
@@ -48,9 +46,16 @@ export const getTokenIdFromXcmV3Multilocation = (
       if (entry.type === "GeneralIndex")
         return getTokenId({
           type: "asset",
-          chainId: chainId,
+          chainId,
           assetId: Number(entry.value),
         });
+
+  if (isChainIdAssetHub(chainId))
+    return getTokenId({
+      type: "foreign-asset",
+      chainId,
+      location: multilocation,
+    });
 
   return null;
 };

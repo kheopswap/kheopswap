@@ -4,10 +4,9 @@ import { useParams } from "react-router-dom";
 import { useAccountBalancesForPool } from "./useAccountBalancesForPool";
 import { usePoolPosition } from "./usePoolPosition";
 
-import { getTokenId } from "src/config/tokens";
 import {
   useNativeToken,
-  usePoolByTokenIds,
+  usePoolByPoolAssetId,
   usePoolReserves,
   useRelayChains,
   useSetting,
@@ -18,7 +17,8 @@ import { provideContext } from "src/util";
 
 // provides informations that are common between add & remove liquidity pages
 const useLiquidityPoolPageProvider = () => {
-  const { assetId } = useParams();
+  const { poolAssetId } = useParams();
+
   const { assetHub } = useRelayChains();
   const [defaultAccountId, setDefaultAccountId] =
     useSetting("defaultAccountId");
@@ -27,30 +27,16 @@ const useLiquidityPoolPageProvider = () => {
   const account = useWalletAccount({ id: defaultAccountId });
   const address = useMemo(() => account?.address ?? null, [account]);
 
-  const assetTokenId = useMemo(
-    () =>
-      assetId
-        ? getTokenId({
-            type: "asset",
-            chainId: assetHub.id,
-            assetId: Number(assetId),
-          })
-        : null,
-    [assetId, assetHub.id],
-  );
+  const { data: pool, isLoading: isLoadingPool } = usePoolByPoolAssetId({
+    poolAssetId: Number(poolAssetId),
+  });
 
   const nativeToken = useNativeToken({ chain: assetHub });
 
   const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
 
   const { data: assetToken, isLoading: isLoadingToken } = useToken({
-    tokenId: assetTokenId,
-  });
-
-  const { data: pool, isLoading: isLoadingPool } = usePoolByTokenIds({
-    chainId: assetHub.id,
-    tokenIds:
-      nativeToken && assetTokenId ? [nativeToken.id, assetTokenId] : null,
+    tokenId: pool?.tokenIds[1],
   });
 
   const { data: reserves, isLoading: isLoadingReserves } = usePoolReserves({

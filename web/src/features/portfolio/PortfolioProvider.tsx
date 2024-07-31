@@ -8,7 +8,7 @@ import {
 import { provideContext } from "src/util";
 import { useTokenPrices } from "src/hooks/useTokenPrices";
 
-const TRADABLE_TOKEN_TYPES: TokenType[] = ["native", "asset"];
+const TRADABLE_TOKEN_TYPES: TokenType[] = ["native", "asset", "foreign-asset"];
 
 export const usePortfolioProvider = () => {
   const { accounts } = useWallets();

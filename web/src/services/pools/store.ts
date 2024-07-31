@@ -28,7 +28,7 @@ const loadPools = (): Pool[] => {
   try {
     if (DEV_IGNORE_STORAGE) return [];
 
-    const strPools = localStorage.getItem(getLocalStorageKey("pools"));
+    const strPools = localStorage.getItem(getLocalStorageKey("pools::v2"));
     if (!strPools) return [];
 
     const storagePools = JSON.parse(strPools) as PoolStorage[];
@@ -45,7 +45,7 @@ const savePools = (pools: Pool[]) => {
     const storagePools = pools.map(poolToStorage);
     const strPools = JSON.stringify(storagePools);
 
-    localStorage.setItem(getLocalStorageKey("pools"), strPools);
+    localStorage.setItem(getLocalStorageKey("pools::v2"), strPools);
   } catch (err) {
     console.error("Failed to save pools", err);
   }

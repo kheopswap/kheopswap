@@ -1,10 +1,8 @@
 import { LiquidityPoolPageProvider } from "./LiquidityPoolPageProvider";
 import { LiquidityPoolForm } from "./LiquidityPoolForm";
 
-export const LiquidityPool = () => {
-  return (
-    <LiquidityPoolPageProvider>
-      <LiquidityPoolForm />
-    </LiquidityPoolPageProvider>
-  );
-};
+export const LiquidityPool = () => (
+  <LiquidityPoolPageProvider>
+    <LiquidityPoolForm />
+  </LiquidityPoolPageProvider>
+);

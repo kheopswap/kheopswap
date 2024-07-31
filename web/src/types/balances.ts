@@ -1,4 +1,4 @@
-import { TokenId } from "src/config/tokens";
+import type { TokenId } from "src/config/tokens";
 
 export type BalanceWithStable = {
   tokenId: TokenId;

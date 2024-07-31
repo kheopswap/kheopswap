@@ -8,7 +8,7 @@ import {
   Token,
   TokenId,
 } from "src/config/tokens";
-import { logger } from "src/util";
+import { logger, safeParse, safeStringify } from "src/util";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
@@ -17,7 +17,7 @@ const loadTokens = (): Token[] => {
     const strTokens = localStorage.getItem(getLocalStorageKey("tokens"));
     const tokensList: Token[] =
       strTokens && !DEV_IGNORE_STORAGE
-        ? JSON.parse(strTokens)
+        ? safeParse(strTokens)
         : KNOWN_TOKENS_LIST;
 
     const tokensMap = Object.fromEntries(
@@ -37,7 +37,7 @@ const loadTokens = (): Token[] => {
 
 const saveTokens = (tokens: Token[]) => {
   try {
-    localStorage.setItem(getLocalStorageKey("tokens"), JSON.stringify(tokens));
+    localStorage.setItem(getLocalStorageKey("tokens"), safeStringify(tokens));
   } catch (err) {
     console.error("Failed to save tokens", err);
   }
