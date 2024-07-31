@@ -98,6 +98,24 @@ const watchBalance = async (balanceId: BalanceId) => {
         updateBalance(balanceId, balance);
       });
     }
+    case "foreign-asset": {
+      if (!isApiAssetHub(api))
+        throw new Error(
+          `Cannot watch balance for ${tokenId}. ForeignAssets are not supported on ${chain.id}`,
+        );
+
+      const obsAccount = api.query.ForeignAssets.Account.watchValue(
+        token.location,
+        address,
+        "best",
+      );
+
+      return obsAccount.subscribe((account) => {
+        const balance =
+          account?.status.type === "Liquid" ? account.balance : 0n;
+        updateBalance(balanceId, balance);
+      });
+    }
   }
 };
 

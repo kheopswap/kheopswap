@@ -11,15 +11,29 @@ import {
   Shimmer,
   TokenLogo,
   Tokens,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "src/components";
-import { Token, TokenId } from "src/config/tokens";
+import {
+  DisplayProperty,
+  getTokenDisplayProperties,
+  Token,
+  TokenId,
+} from "src/config/tokens";
 import {
   useNativeToken,
   useOpenClose,
   useRelayChains,
   useTokenChain,
 } from "src/hooks";
-import { cn, isBigInt, sortBigInt, getTokenTypeLabel } from "src/util";
+import {
+  cn,
+  isBigInt,
+  sortBigInt,
+  getTokenTypeLabel,
+  shortenAddress,
+} from "src/util";
 import { BalanceWithStable, BalanceWithStableSummary } from "src/types";
 
 const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
@@ -191,12 +205,40 @@ const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
   </div>
 );
 
+const DisplayPropertyValue: FC<DisplayProperty> = ({ value, format, url }) => {
+  const formatted = useMemo(() => {
+    if (format === "address") return shortenAddress(value);
+    return value;
+  }, [format, value]);
+
+  if (url)
+    return (
+      <a href={url} target="_blank" rel="noreferrer">
+        {formatted}
+      </a>
+    );
+
+  if (formatted && formatted !== value)
+    return (
+      <Tooltip>
+        <TooltipTrigger>{formatted}</TooltipTrigger>
+        <TooltipContent>{value}</TooltipContent>
+      </Tooltip>
+    );
+
+  return formatted || null;
+};
+
 const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
   const { token, balance, price, tvl } = row;
   const { assetHub } = useRelayChains();
   const nativeToken = useNativeToken({ chain: assetHub });
 
   const chain = useTokenChain({ tokenId: token.id });
+
+  const displayProps = useMemo(() => {
+    return getTokenDisplayProperties(token);
+  }, [token]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -212,6 +254,14 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
       {token.type === "asset" && (
         <TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
       )}
+      {displayProps.map((prop, i) => (
+        <TokenDetailsRow key={i} label={prop.label}>
+          <DisplayPropertyValue {...prop} />
+        </TokenDetailsRow>
+      ))}
+      {/* {token.type === "foreign-asset" && token.location. && (
+        <TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
+      )} */}
       <TokenDetailsRow label="Price">
         {!!price && <TokenDetailsRowValue {...price} token={nativeToken} />}
       </TokenDetailsRow>

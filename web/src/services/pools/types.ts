@@ -6,7 +6,7 @@ import { TokenIdsPair } from "src/config/tokens";
 export type AssetConvertionPoolDef = {
   type: "asset-convertion";
   chainId: ChainId;
-  assetPoolId: number;
+  poolAssetId: number;
   tokenIds: TokenIdsPair;
   owner: SS58String;
 };
@@ -14,7 +14,7 @@ export type AssetConvertionPoolDef = {
 export type AssetConvertionPoolDefStorage = {
   type: "asset-convertion";
   chainId: ChainId;
-  assetPoolId: number;
+  poolAssetId: number;
   tokenIds: TokenIdsPair;
   owner: SS58String;
 };

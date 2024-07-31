@@ -8,7 +8,8 @@ import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useBalances } from "./useBalances";
 
 import { TokenId } from "src/config/tokens";
-import { getAssetConvertPlancks, getPoolReserves } from "src/util";
+import { getAssetConvertPlancks } from "src/util";
+import { getPoolReserves } from "src/helpers/getPoolReserves";
 
 export type AssetConvertInput = {
   tokenIdIn: TokenId;

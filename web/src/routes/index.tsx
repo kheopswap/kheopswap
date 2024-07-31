@@ -32,7 +32,7 @@ export const router = createHashRouter([
         element: <TransferPage />,
       },
       {
-        path: "pools/:assetId",
+        path: "pools/:poolAssetId",
         element: <LiquidityPoolPage />,
       },
       {

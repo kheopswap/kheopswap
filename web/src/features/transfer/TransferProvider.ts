@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { TransferFormInputs } from "./schema";
 import { useTransferExtrinsic } from "./useTransferExtrinsic";
 
-import { TokenId } from "src/config/tokens";
+import { TokenId, TRANSFERABLE_TOKEN_TYPES } from "src/config/tokens";
 import {
   useAssetConvertPlancks,
   useEstimateFee,
@@ -15,10 +15,9 @@ import {
   useSetting,
   useBalance,
   useTokenChain,
-  useTokensByChainId,
   useWalletAccount,
+  useAllTokens,
 } from "src/hooks";
-import { sortTokens } from "src/services/tokens/util";
 import {
   getAddressFromAccountField,
   getFeeAssetLocation,
@@ -56,30 +55,12 @@ const useTransferProvider = () => {
   const [formData, setFormData] = useState<TransferFormInputs>(defaultValues);
 
   const [, setDefaultAccountId] = useSetting("defaultAccountId");
-  const { relay, assetHub } = useRelayChains();
+  const { relay } = useRelayChains();
   const defaultToken = useNativeToken({ chain: relay });
 
-  const { data: tokensRelay = [], isLoading: isLoadingTokensRelay } =
-    useTokensByChainId({ chainId: relay.id });
-  const { data: tokensAssetHub = [], isLoading: isLoadingTokensAssetHub } =
-    useTokensByChainId({
-      chainId: assetHub.id,
-    });
-
-  const [tokens, isLoadingTokens] = useMemo(
-    () => [
-      [...tokensRelay, ...tokensAssetHub]
-        .filter((t) => t.type === "asset" || t.type === "native")
-        .sort(sortTokens),
-      isLoadingTokensRelay || isLoadingTokensAssetHub,
-    ],
-    [
-      tokensRelay,
-      tokensAssetHub,
-      isLoadingTokensRelay,
-      isLoadingTokensAssetHub,
-    ],
-  );
+  const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
+    types: TRANSFERABLE_TOKEN_TYPES,
+  });
 
   useEffect(() => {
     if (formData.from) setDefaultAccountId(formData.from);
@@ -213,7 +194,7 @@ const useTransferProvider = () => {
       let plancks = balanceSender;
 
       const nativeMargin =
-        2n * (feeToken?.id === token?.id ? feeEstimate ?? 0n : 0n) +
+        2n * (feeToken?.id === token?.id ? (feeEstimate ?? 0n) : 0n) +
         (edTokenIn ?? 0n);
 
       if (token.type === "native" && nativeMargin <= plancks)

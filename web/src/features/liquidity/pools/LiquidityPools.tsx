@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 
 import { Tokens, TokenLogo, Styles } from "src/components";
 import { ColumnHeaderButton } from "src/components/ColumnHeaderButton";
-import { TokenAsset, TokenNative } from "src/config/tokens/types";
+import {
+  TokenAsset,
+  TokenForeignAsset,
+  TokenNative,
+} from "src/config/tokens/types";
 import {
   useChainName,
   useNativeToken,
@@ -24,7 +28,7 @@ import { cn, isBigInt, tokensToPlancks } from "src/util";
 type PoolRowProps = {
   pool: PoolWithValuation;
   token1: TokenNative;
-  token2: TokenAsset;
+  token2: TokenAsset | TokenForeignAsset;
 };
 const PoolBalances: FC<PoolRowProps> = ({ token1, token2, pool }) => {
   const { data: reserve1, isLoading: isLoadingNative } = useBalance({
@@ -85,7 +89,7 @@ const PoolRow: FC<PoolRowProps> = ({ pool, token1, token2 }) => {
 
   return (
     <Link
-      to={token2.assetId.toString()}
+      to={pool.poolAssetId.toString()} // TODO change to pool id
       className={cn(
         Styles.button,
         "flex min-h-16 w-full flex-wrap items-center gap-1 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 hover:bg-primary-900/50",
@@ -167,7 +171,7 @@ const PoolsList: FC<{
       <div ref={parent} className="relative flex flex-col gap-2">
         {pools.map(({ pool, token1, token2 }) => (
           <PoolRow
-            key={`${pool.chainId}-${pool.assetPoolId}`}
+            key={`${pool.chainId}-${pool.poolAssetId}`}
             pool={pool}
             token1={token1}
             token2={token2}

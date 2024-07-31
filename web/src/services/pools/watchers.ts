@@ -40,21 +40,23 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 
     const pools = rawPools
       .map<AssetConvertionPoolDef | null>((d) => {
-        const assetPoolId = d.value;
+        const poolAssetId = d.value;
         const poolAsset = rawPoolAssets.find(
-          (p) => p.keyArgs[0] === assetPoolId,
+          (p) => p.keyArgs[0] === poolAssetId,
         );
+
         if (!poolAsset) return null;
 
         const pool: AssetConvertionPoolDef = {
           type: "asset-convertion",
           chainId: chain.id,
-          assetPoolId,
+          poolAssetId,
           tokenIds: d.keyArgs[0].map(
             (k) => getTokenIdFromXcmV3Multilocation(chain.id, k)!,
           ) as TokenIdsPair,
           owner: poolAsset.value.owner,
         };
+
         return pool;
       })
       .filter((p): p is AssetConvertionPoolDef => !!p)

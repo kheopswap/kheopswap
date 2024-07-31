@@ -1,4 +1,3 @@
-import { TokenType } from "src/config/tokens/types";
 import {
   useAssetHubTVL,
   useWallets,
@@ -7,8 +6,7 @@ import {
 } from "src/hooks";
 import { provideContext } from "src/util";
 import { useTokenPrices } from "src/hooks/useTokenPrices";
-
-const TRADABLE_TOKEN_TYPES: TokenType[] = ["native", "asset"];
+import { TRADABLE_TOKEN_TYPES } from "src/config/tokens";
 
 export const usePortfolioProvider = () => {
   const { accounts } = useWallets();

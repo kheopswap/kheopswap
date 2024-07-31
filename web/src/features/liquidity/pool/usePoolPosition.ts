@@ -30,7 +30,7 @@ export const usePoolPosition = ({
         ? getTokenId({
             type: "pool-asset",
             chainId: pool?.chainId,
-            poolAssetId: pool?.assetPoolId,
+            poolAssetId: pool?.poolAssetId,
           })
         : null,
     [pool],

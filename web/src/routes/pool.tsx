@@ -3,20 +3,25 @@ import { useMemo } from "react";
 import { NavLink, Navigate, useParams } from "react-router-dom";
 
 import { Layout, PageContent, PageTitle } from "src/components";
-import { getTokenId } from "src/config/tokens";
 import { LiquidityPool } from "src/features/liquidity";
-import { useNativeToken, useRelayChains, useToken } from "src/hooks";
+import {
+  useNativeToken,
+  usePoolByPoolAssetId,
+  useRelayChains,
+  useToken,
+} from "src/hooks";
 
 const usePoolName = () => {
   const { assetHub } = useRelayChains();
   const nativeToken = useNativeToken({ chain: assetHub });
-  const { assetId } = useParams();
-  const { data: assetToken, isLoading } = useToken({
-    tokenId: getTokenId({
-      type: "asset",
-      chainId: assetHub.id,
-      assetId: Number(assetId),
-    }),
+  const { poolAssetId } = useParams();
+
+  const { data: pool, isLoading: isLoadingPool } = usePoolByPoolAssetId({
+    poolAssetId: Number(poolAssetId),
+  });
+
+  const { data: assetToken, isLoading: isLoadingToken } = useToken({
+    tokenId: pool?.tokenIds[1],
   });
 
   const poolName = useMemo(() => {
@@ -24,7 +29,7 @@ const usePoolName = () => {
     return `${nativeToken.symbol}/${assetToken.symbol}`;
   }, [assetToken, nativeToken]);
 
-  return { data: poolName, isLoading };
+  return { data: poolName, isLoading: isLoadingPool || isLoadingToken };
 };
 
 export const LiquidityPoolPage = () => {

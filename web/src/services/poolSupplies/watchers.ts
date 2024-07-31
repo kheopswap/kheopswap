@@ -75,7 +75,7 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
     filter((pool) => !!pool),
     distinctUntilChanged<Pool>(isEqual),
     mergeMap((pool) =>
-      api.query.PoolAssets.Asset.watchValue(pool.assetPoolId, "best"),
+      api.query.PoolAssets.Asset.watchValue(pool.poolAssetId, "best"),
     ),
   );
 

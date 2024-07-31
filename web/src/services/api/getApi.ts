@@ -1,4 +1,5 @@
 import { TypedApi } from "polkadot-api";
+import { firstValueFrom } from "rxjs";
 
 import { getClient } from "./getClient";
 
@@ -56,15 +57,12 @@ const getApiInner = async <Id extends ChainId>(
 
   const api = client.getTypedApi(descriptors) as Api<Id>;
   api.chainId = chainId as Id;
-  api.waitReady = new Promise<void>((resolve) => {
+  api.waitReady = new Promise<void>((resolve, reject) => {
     const stop2 = logger.timer(`api ${chainId} ready`);
-    const sub = client.bestBlocks$.subscribe({
-      next: () => {
-        sub.unsubscribe();
-        resolve();
-        stop2();
-      },
-    });
+    firstValueFrom(client.bestBlocks$)
+      .then(() => resolve())
+      .catch(reject);
+    stop2();
   });
 
   stop();

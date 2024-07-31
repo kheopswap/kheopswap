@@ -12,8 +12,13 @@ import {
   hasAssetPallet,
   isAssetHub,
 } from "src/config/chains";
-import { getTokenId, Token, KNOWN_TOKENS_MAP } from "src/config/tokens";
-import { logger, throwAfter } from "src/util";
+import {
+  getTokenId,
+  Token,
+  KNOWN_TOKENS_MAP,
+  TOKENS_OVERRIDES_MAP,
+} from "src/config/tokens";
+import { logger, safeStringify, throwAfter } from "src/util";
 import { getApi } from "src/services/api";
 import {
   STORAGE_QUERY_TIMEOUT,
@@ -29,6 +34,72 @@ export const chainTokensStatuses$ = loadingStatusByChain$;
 
 const WATCHERS = new Map<ChainId, () => void>();
 
+const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
+  if (isAssetHub(chain)) {
+    const api = await getApi(chain.id);
+    if (signal.aborted) return;
+
+    await api.waitReady;
+    if (signal.aborted) return;
+
+    const stop = logger.timer(
+      `chain.api.query.ForeignAssets.Metadata.getEntries() - ${chain.id}`,
+    );
+    const tokens = await api.query.ForeignAssets.Metadata.getEntries({
+      at: "best",
+      signal,
+    });
+    stop();
+
+    const foreignAssetTokens = tokens
+      .map((d) => ({
+        location: d.keyArgs[0],
+        symbol: d.value.symbol.asText(),
+        decimals: d.value.decimals,
+        name: d.value.name.asText(),
+      }))
+      .map((d) => ({
+        ...d,
+        id: getTokenId({
+          type: "foreign-asset",
+          chainId: chain.id,
+          location: d.location,
+        }),
+      }))
+      .map(
+        ({ id, location, symbol, decimals, name }) =>
+          KNOWN_TOKENS_MAP[id] ??
+          ({
+            id,
+            type: "foreign-asset",
+            chainId: chain.id,
+            location,
+            symbol,
+            decimals,
+            name,
+            logo: "./img/tokens/asset.svg",
+            verified: false,
+            ...TOKENS_OVERRIDES_MAP[id],
+          } as Token),
+      );
+
+    console.log("foreign assets", foreignAssetTokens);
+
+    const currentTokens = tokensStore$.value;
+
+    const otherTokens = currentTokens.filter(
+      (t) => t.chainId !== chain.id || t.type !== "foreign-asset",
+    );
+
+    const newValue = [...otherTokens, ...foreignAssetTokens];
+
+    if (!isEqual(currentTokens, newValue))
+      tokensStore$.next(
+        [...otherTokens, ...foreignAssetTokens].sort(sortTokens),
+      );
+  }
+};
+
 const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
   if (isAssetHub(chain)) {
     const api = await getApi(chain.id);
@@ -38,7 +109,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
     if (signal.aborted) return;
 
     const stop = logger.timer(
-      `chain.api.query.PoolAssets.Metadata.getEntries() - ${chain.id}`,
+      `chain.api.query.PoolAssets.Asset.getEntries() - ${chain.id}`,
     );
     const tokens = await api.query.PoolAssets.Asset.getEntries({
       at: "best",
@@ -67,6 +138,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
             name: "",
             logo: "",
             isSufficient: false,
+            ...TOKENS_OVERRIDES_MAP[id],
           }) as Token,
       );
 
@@ -129,6 +201,7 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
             logo: "./img/tokens/asset.svg",
             verified: false,
             isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
+            ...TOKENS_OVERRIDES_MAP[id],
           } as Token),
       );
 
@@ -166,6 +239,7 @@ const watchTokensByChain = (chainId: ChainId) => {
         Promise.all([
           fetchAssetTokens(chain, refreshController.signal),
           fetchPoolAssetTokens(chain, refreshController.signal),
+          fetchForeignAssetTokens(chain, refreshController.signal),
         ]),
         throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
       ]);

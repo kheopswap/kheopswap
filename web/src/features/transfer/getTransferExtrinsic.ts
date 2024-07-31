@@ -43,5 +43,16 @@ export const getTransferExtrinsic = async (
         value: plancks,
       });
     }
+    case "foreign-asset": {
+      if (!isApiAssetHub(api))
+        throw new Error(
+          `Chain ${chain.name} does not have the ForeignAssets pallet`,
+        );
+      return api.tx.ForeignAssets.transfer({
+        id: token.location,
+        amount: plancks,
+        target: MultiAddress.Id(dest),
+      });
+    }
   }
 };
