@@ -1,46 +1,46 @@
 {
-  "version": 0,
-  "descriptorPath": ".papi/descriptors",
-  "entries": {
-    "kah": {
-      "wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
-      "metadata": ".papi/scale/kah.scale"
-    },
-    "pah": {
-      "wsUrl": "wss://statemint-rpc.dwellir.com",
-      "metadata": ".papi/scale/pah.scale"
-    },
-    "wah": {
-      "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
-      "metadata": ".papi/scale/wah.scale"
-    },
-    "rah": {
-      "wsUrl": "wss://rococo-asset-hub-rpc.polkadot.io",
-      "metadata": ".papi/scale/rah.scale"
-    },
-    "polkadot": {
-      "wsUrl": "wss://rpc.ibp.network/polkadot",
-      "metadata": ".papi/scale/polkadot.scale"
-    },
-    "kusama": {
-      "wsUrl": "wss://rpc.ibp.network/kusama",
-      "metadata": ".papi/scale/kusama.scale"
-    },
-    "rococo": {
-      "wsUrl": "wss://rococo-rpc.polkadot.io",
-      "metadata": ".papi/scale/rococo.scale"
-    },
-    "westend": {
-      "wsUrl": "wss://westend-rpc.polkadot.io",
-      "metadata": ".papi/scale/westend.scale"
-    },
-    "devrelay": {
-      "wsUrl": "ws://127.0.0.1:42069",
-      "metadata": ".papi/scale/devrelay.scale"
-    },
-    "devah": {
-      "wsUrl": "ws://127.0.0.1:42070",
-      "metadata": ".papi/scale/devah.scale"
-    }
-  }
+	"version": 0,
+	"descriptorPath": ".papi/descriptors",
+	"entries": {
+		"kah": {
+			"wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
+			"metadata": ".papi/scale/kah.scale"
+		},
+		"pah": {
+			"wsUrl": "wss://statemint-rpc.dwellir.com",
+			"metadata": ".papi/scale/pah.scale"
+		},
+		"wah": {
+			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
+			"metadata": ".papi/scale/wah.scale"
+		},
+		"rah": {
+			"wsUrl": "wss://rococo-asset-hub-rpc.polkadot.io",
+			"metadata": ".papi/scale/rah.scale"
+		},
+		"polkadot": {
+			"wsUrl": "wss://rpc.ibp.network/polkadot",
+			"metadata": ".papi/scale/polkadot.scale"
+		},
+		"kusama": {
+			"wsUrl": "wss://rpc.ibp.network/kusama",
+			"metadata": ".papi/scale/kusama.scale"
+		},
+		"rococo": {
+			"wsUrl": "wss://rococo-rpc.polkadot.io",
+			"metadata": ".papi/scale/rococo.scale"
+		},
+		"westend": {
+			"wsUrl": "wss://westend-rpc.polkadot.io",
+			"metadata": ".papi/scale/westend.scale"
+		},
+		"devrelay": {
+			"wsUrl": "ws://127.0.0.1:42069",
+			"metadata": ".papi/scale/devrelay.scale"
+		},
+		"devah": {
+			"wsUrl": "ws://127.0.0.1:42070",
+			"metadata": ".papi/scale/devah.scale"
+		}
+	}
 }

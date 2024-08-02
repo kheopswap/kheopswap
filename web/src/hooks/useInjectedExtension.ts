@@ -10,11 +10,11 @@ import { TalismanIcon } from "src/components/icons";
  * @returns
  */
 export const useInjectedExtension = (name: string) => {
-  return useMemo(
-    () => ({
-      extension: Extensions[name] as ExtensionConfig | undefined,
-      Icon: name === "talisman" ? TalismanIcon : getExtensionIcon(name),
-    }),
-    [name],
-  );
+	return useMemo(
+		() => ({
+			extension: Extensions[name] as ExtensionConfig | undefined,
+			Icon: name === "talisman" ? TalismanIcon : getExtensionIcon(name),
+		}),
+		[name],
+	);
 };

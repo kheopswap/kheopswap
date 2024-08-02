@@ -5,12 +5,12 @@ import { TransferTransactionProvider } from "./TransferTransactionProvider";
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 
 export const Transfer = () => {
-  return (
-    <TransferProvider>
-      <TransferTransactionProvider>
-        <TransferForm />
-        <TransactionFollowUp />
-      </TransferTransactionProvider>
-    </TransferProvider>
-  );
+	return (
+		<TransferProvider>
+			<TransferTransactionProvider>
+				<TransferForm />
+				<TransactionFollowUp />
+			</TransferTransactionProvider>
+		</TransferProvider>
+	);
 };

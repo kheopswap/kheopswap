@@ -6,20 +6,20 @@ import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolP
 import { TransactionProvider } from "src/features/transaction/TransactionProvider";
 
 export const RemoveLiquidityTransactionProvider: FC<PropsWithChildren> = ({
-  children,
+	children,
 }) => {
-  const { assetHub, account } = useLiquidityPoolPage();
-  const { call, onReset } = useRemoveLiquidity();
+	const { assetHub, account } = useLiquidityPoolPage();
+	const { call, onReset } = useRemoveLiquidity();
 
-  return (
-    <TransactionProvider
-      call={call}
-      fakeCall={call}
-      chainId={assetHub.id}
-      signer={account?.id}
-      onReset={onReset}
-    >
-      {children}
-    </TransactionProvider>
-  );
+	return (
+		<TransactionProvider
+			call={call}
+			fakeCall={call}
+			chainId={assetHub.id}
+			signer={account?.id}
+			onReset={onReset}
+		>
+			{children}
+		</TransactionProvider>
+	);
 };

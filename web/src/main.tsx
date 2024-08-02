@@ -21,21 +21,21 @@ preloadFont();
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Subscribe fallback={<SuspenseMonitor label="Subscribe" />}>
-        <RouterProvider
-          router={router}
-          fallbackElement={<SuspenseMonitor label="RouterProvider" />}
-        />
-      </Subscribe>
-    </QueryClientProvider>
-    <ToastContainer
-      theme="dark"
-      bodyClassName="font-sans text-sm"
-      position="bottom-right"
-    />
-  </React.StrictMode>,
+	<React.StrictMode>
+		<QueryClientProvider client={queryClient}>
+			<Subscribe fallback={<SuspenseMonitor label="Subscribe" />}>
+				<RouterProvider
+					router={router}
+					fallbackElement={<SuspenseMonitor label="RouterProvider" />}
+				/>
+			</Subscribe>
+		</QueryClientProvider>
+		<ToastContainer
+			theme="dark"
+			bodyClassName="font-sans text-sm"
+			position="bottom-right"
+		/>
+	</React.StrictMode>,
 );
 
 // if (import.meta.env.DEV) import("./devImports");

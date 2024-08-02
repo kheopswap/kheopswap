@@ -5,11 +5,11 @@ import { getPoolsWatchersCount } from "./services/pools";
 import { logger } from "./util";
 
 setInterval(() => {
-  logger.debug(
-    "[watchers report] balances:%d pools:%d tokens:%d poolSupplies:%d",
-    getBalancesWatchersCount(),
-    getPoolsWatchersCount(),
-    getTokensWatchersCount(),
-    getPoolSuppliesWatchersCount(),
-  );
+	logger.debug(
+		"[watchers report] balances:%d pools:%d tokens:%d poolSupplies:%d",
+		getBalancesWatchersCount(),
+		getPoolsWatchersCount(),
+		getTokensWatchersCount(),
+		getPoolSuppliesWatchersCount(),
+	);
 }, 5_000);

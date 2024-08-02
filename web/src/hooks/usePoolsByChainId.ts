@@ -6,27 +6,27 @@ import { ChainId } from "src/config/chains";
 import { Pool, getPoolsByChain$ } from "src/services/pools";
 
 type UsePoolsProps = {
-  chainId: ChainId | null | undefined;
+	chainId: ChainId | null | undefined;
 };
 
 type UsePoolsResult = {
-  isLoading: boolean;
-  data: Pool[];
+	isLoading: boolean;
+	data: Pool[];
 };
 
 export const usePoolsByChainId = ({
-  chainId,
+	chainId,
 }: UsePoolsProps): UsePoolsResult => {
-  const pools$ = useMemo(
-    () =>
-      getPoolsByChain$(chainId ?? null).pipe(
-        map((statusAndPools) => ({
-          isLoading: statusAndPools.status !== "loaded",
-          data: statusAndPools.pools,
-        })),
-      ),
-    [chainId],
-  );
+	const pools$ = useMemo(
+		() =>
+			getPoolsByChain$(chainId ?? null).pipe(
+				map((statusAndPools) => ({
+					isLoading: statusAndPools.status !== "loaded",
+					data: statusAndPools.pools,
+				})),
+			),
+		[chainId],
+	);
 
-  return useObservable(pools$, { isLoading: !!chainId, data: [] });
+	return useObservable(pools$, { isLoading: !!chainId, data: [] });
 };

@@ -12,66 +12,66 @@ import { logger } from "src/util";
  * @returns
  */
 export const pollChainStatus = (label: string, refreshTimeout: number) => {
-  logger.debug("pollChainStatus - %s - %dms", label, refreshTimeout);
+	logger.debug("pollChainStatus - %s - %dms", label, refreshTimeout);
 
-  const loadingStatusByChain$ = new BehaviorSubject<
-    Record<ChainId, LoadingStatus>
-  >(
-    Object.fromEntries(
-      getChains().map((chain) => [chain.id, "stale"]),
-    ) as Record<ChainId, LoadingStatus>,
-  );
+	const loadingStatusByChain$ = new BehaviorSubject<
+		Record<ChainId, LoadingStatus>
+	>(
+		Object.fromEntries(
+			getChains().map((chain) => [chain.id, "stale"]),
+		) as Record<ChainId, LoadingStatus>,
+	);
 
-  const setLoadingStatus = (
-    chainId: ChainId | ChainId[],
-    status: LoadingStatus,
-  ) => {
-    const chainIds = Array.isArray(chainId) ? chainId : [chainId];
+	const setLoadingStatus = (
+		chainId: ChainId | ChainId[],
+		status: LoadingStatus,
+	) => {
+		const chainIds = Array.isArray(chainId) ? chainId : [chainId];
 
-    loadingStatusByChain$.next({
-      ...loadingStatusByChain$.value,
-      ...chainIds.reduce((acc, id) => ({ ...acc, [id]: status }), {}),
-    });
-  };
+		loadingStatusByChain$.next({
+			...loadingStatusByChain$.value,
+			...chainIds.reduce((acc, id) => ({ ...acc, [id]: status }), {}),
+		});
+	};
 
-  const staleWatchCache = new Map<ChainId, number>();
+	const staleWatchCache = new Map<ChainId, number>();
 
-  loadingStatusByChain$.subscribe((statusByChain) => {
-    for (const key in statusByChain) {
-      const chainId = key as ChainId;
+	loadingStatusByChain$.subscribe((statusByChain) => {
+		for (const key in statusByChain) {
+			const chainId = key as ChainId;
 
-      if (
-        statusByChain[chainId] === "loaded" &&
-        !staleWatchCache.has(chainId)
-      ) {
-        staleWatchCache.set(
-          chainId,
-          setTimeout(() => {
-            if (staleWatchCache.has(chainId)) {
-              if (loadingStatusByChain$.value[chainId] === "loaded")
-                setLoadingStatus(chainId, "stale");
-            }
-          }, refreshTimeout),
-        );
-      }
+			if (
+				statusByChain[chainId] === "loaded" &&
+				!staleWatchCache.has(chainId)
+			) {
+				staleWatchCache.set(
+					chainId,
+					setTimeout(() => {
+						if (staleWatchCache.has(chainId)) {
+							if (loadingStatusByChain$.value[chainId] === "loaded")
+								setLoadingStatus(chainId, "stale");
+						}
+					}, refreshTimeout),
+				);
+			}
 
-      if (statusByChain[chainId] !== "loaded" && staleWatchCache.has(chainId)) {
-        clearTimeout(staleWatchCache.get(chainId)!);
-        staleWatchCache.delete(chainId);
-      }
-    }
-  });
+			if (statusByChain[chainId] !== "loaded" && staleWatchCache.has(chainId)) {
+				clearTimeout(staleWatchCache.get(chainId)!);
+				staleWatchCache.delete(chainId);
+			}
+		}
+	});
 
-  const getLoadingStatus$ = (chainId: ChainId) => {
-    return loadingStatusByChain$.pipe(
-      map((statusByChain) => statusByChain[chainId]),
-      distinctUntilChanged(),
-    );
-  };
+	const getLoadingStatus$ = (chainId: ChainId) => {
+		return loadingStatusByChain$.pipe(
+			map((statusByChain) => statusByChain[chainId]),
+			distinctUntilChanged(),
+		);
+	};
 
-  return {
-    setLoadingStatus,
-    getLoadingStatus$,
-    loadingStatusByChain$,
-  };
+	return {
+		setLoadingStatus,
+		getLoadingStatus$,
+		loadingStatusByChain$,
+	};
 };

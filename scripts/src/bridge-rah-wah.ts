@@ -6,13 +6,13 @@ import { watchNativeBalance } from "./common/watchNativeBalance";
 import type { XcmV3Multilocation } from "./common/xcm";
 
 import {
-  XcmV3Junction,
-  XcmV3JunctionNetworkId,
-  XcmV3Junctions,
-  XcmV3MultiassetFungibility,
-  XcmV3WeightLimit,
-  XcmVersionedAssets,
-  XcmVersionedLocation,
+	XcmV3Junction,
+	XcmV3JunctionNetworkId,
+	XcmV3Junctions,
+	XcmV3MultiassetFungibility,
+	XcmV3WeightLimit,
+	XcmVersionedAssets,
+	XcmVersionedLocation,
 } from "@polkadot-api/descriptors";
 import { waitTransactionComplete } from "./common/waitTransactionComplete";
 
@@ -32,45 +32,45 @@ const devAccount = getDevEnvAccount();
 // };
 
 const NATIVE_FROM_PARA = {
-  parents: 1,
-  interior: XcmV3Junctions.Here(),
+	parents: 1,
+	interior: XcmV3Junctions.Here(),
 };
 
 const RAH_FROM_WAH: XcmV3Multilocation = {
-  parents: 2,
-  interior: XcmV3Junctions.X2([
-    XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Rococo()),
-    XcmV3Junction.Parachain(1000),
-  ]),
+	parents: 2,
+	interior: XcmV3Junctions.X2([
+		XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Rococo()),
+		XcmV3Junction.Parachain(1000),
+	]),
 };
 
 const RAH_FROM_WESTEND: XcmV3Multilocation = {
-  parents: 2,
-  interior: XcmV3Junctions.X2([
-    XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Rococo()),
-    XcmV3Junction.Parachain(1000),
-  ]),
+	parents: 2,
+	interior: XcmV3Junctions.X2([
+		XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Rococo()),
+		XcmV3Junction.Parachain(1000),
+	]),
 };
 
 const WAH_FROM_RAH: XcmV3Multilocation = {
-  parents: 2,
-  interior: XcmV3Junctions.X2([
-    XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Westend()),
-    XcmV3Junction.Parachain(1000),
-  ]),
+	parents: 2,
+	interior: XcmV3Junctions.X2([
+		XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Westend()),
+		XcmV3Junction.Parachain(1000),
+	]),
 };
 
 const ROC_FROM_WAH: XcmV3Multilocation = {
-  parents: 2,
-  interior: XcmV3Junctions.X1(
-    XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Rococo())
-  ),
+	parents: 2,
+	interior: XcmV3Junctions.X1(
+		XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Rococo()),
+	),
 };
 const WND_FROM_RAH: XcmV3Multilocation = {
-  parents: 2,
-  interior: XcmV3Junctions.X1(
-    XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Westend())
-  ),
+	parents: 2,
+	interior: XcmV3Junctions.X1(
+		XcmV3Junction.GlobalConsensus(XcmV3JunctionNetworkId.Westend()),
+	),
 };
 
 const westend = await getApi("westend");
@@ -79,37 +79,37 @@ const rah = await getApi("rah");
 const wah = await getApi("wah");
 
 await Promise.all([
-  westend.runtime.latest(),
-  rococo.runtime.latest(),
-  rah.runtime.latest(),
-  wah.runtime.latest(),
+	westend.runtime.latest(),
+	rococo.runtime.latest(),
+	rah.runtime.latest(),
+	wah.runtime.latest(),
 ]);
 // if (Date.now()) process.exit(0);
 
 await Promise.all([
-  watchNativeBalance(westend, devAccount.address, "WND Native", "WND", 12),
-  watchNativeBalance(rococo, devAccount.address, "ROC Native", "ROC", 12),
-  watchNativeBalance(wah, devAccount.address, "WAH Native", "WND", 12),
-  watchNativeBalance(rah, devAccount.address, "RAH Native", "ROC", 12),
+	watchNativeBalance(westend, devAccount.address, "WND Native", "WND", 12),
+	watchNativeBalance(rococo, devAccount.address, "ROC Native", "ROC", 12),
+	watchNativeBalance(wah, devAccount.address, "WAH Native", "WND", 12),
+	watchNativeBalance(rah, devAccount.address, "RAH Native", "ROC", 12),
 ]);
 
 await Promise.all([
-  watchForeignBalance(
-    rah,
-    devAccount.address,
-    WND_FROM_RAH,
-    "WND on RAH",
-    "WND",
-    12
-  ),
-  watchForeignBalance(
-    wah,
-    devAccount.address,
-    ROC_FROM_WAH,
-    "ROC on WAH",
-    "ROC",
-    12
-  ),
+	watchForeignBalance(
+		rah,
+		devAccount.address,
+		WND_FROM_RAH,
+		"WND on RAH",
+		"WND",
+		12,
+	),
+	watchForeignBalance(
+		wah,
+		devAccount.address,
+		ROC_FROM_WAH,
+		"ROC on WAH",
+		"ROC",
+		12,
+	),
 ]);
 // // watchForeignBalance(
 // //   rah,
@@ -131,29 +131,29 @@ await Promise.all([
 const { nonce } = await wah.query.System.Account.getValue(devAccount.address);
 console.log("nonce on westend", nonce);
 const callXferWahToRah = wah.tx.PolkadotXcm.transfer_assets({
-  dest: XcmVersionedLocation.V4(RAH_FROM_WAH),
-  assets: XcmVersionedAssets.V4([
-    {
-      id: { parents: 1, interior: XcmV3Junctions.Here() },
-      fun: XcmV3MultiassetFungibility.Fungible(3_000_000_000n), // { Fungible: 100_000_000n },
-    },
-  ]),
-  beneficiary: XcmVersionedLocation.V4({
-    parents: 0,
-    interior: XcmV3Junctions.X1(
-      XcmV3Junction.AccountId32({
-        id: Binary.fromBytes(AccountId().enc(devAccount.address)),
-        network: undefined,
-      })
-    ),
-  }),
-  fee_asset_item: 0,
-  weight_limit: XcmV3WeightLimit.Unlimited(),
+	dest: XcmVersionedLocation.V4(RAH_FROM_WAH),
+	assets: XcmVersionedAssets.V4([
+		{
+			id: { parents: 1, interior: XcmV3Junctions.Here() },
+			fun: XcmV3MultiassetFungibility.Fungible(3_000_000_000n), // { Fungible: 100_000_000n },
+		},
+	]),
+	beneficiary: XcmVersionedLocation.V4({
+		parents: 0,
+		interior: XcmV3Junctions.X1(
+			XcmV3Junction.AccountId32({
+				id: Binary.fromBytes(AccountId().enc(devAccount.address)),
+				network: undefined,
+			}),
+		),
+	}),
+	fee_asset_item: 0,
+	weight_limit: XcmV3WeightLimit.Unlimited(),
 });
 
 const obsXferWahToRah = callXferWahToRah.signSubmitAndWatch(devAccount.signer, {
-  mortality: { mortal: true, period: 64 },
-  nonce,
+	mortality: { mortal: true, period: 64 },
+	nonce,
 });
 
 await waitTransactionComplete("Transfer WAH to RAH", obsXferWahToRah);

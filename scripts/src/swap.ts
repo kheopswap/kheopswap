@@ -21,7 +21,7 @@ const derivationPath = process.env.KHEOPSWAP_DERIVATION_PATH;
 const expectedAddress = process.env.KHEOPSWAP_ADDRESS;
 
 if (!mnemonic || !derivationPath || !expectedAddress) {
-  throw new Error("Missing env variables");
+	throw new Error("Missing env variables");
 }
 
 console.log(derivationPath);
@@ -31,20 +31,20 @@ console.log("expected", expectedAddress);
 console.log("kheopswap", kheopswap.address);
 
 const balanceToken1 = await wah.query.System.Account.getValue(
-  kheopswap.address
+	kheopswap.address,
 );
 console.log("balanceToken1", balanceToken1);
 const balanceToken2 = await wah.query.Assets.Account.getValue(
-  assetId,
-  kheopswap.address
+	assetId,
+	kheopswap.address,
 );
 console.log("balanceToken2", balanceToken2);
 
 const obsTx = await wah.tx.Assets.set_metadata({
-  id: assetId,
-  decimals: 12,
-  symbol: Binary.fromText("obs"),
-  name: Binary.fromText("obsolete do not use"),
+	id: assetId,
+	decimals: 12,
+	symbol: Binary.fromText("obs"),
+	name: Binary.fromText("obsolete do not use"),
 });
 
 // const obsTx = await wah.tx.AssetConversion.swap_exact_tokens_for_tokens({

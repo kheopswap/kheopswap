@@ -8,25 +8,25 @@ import { ConnectDrawerProvider } from "src/features/connect/context";
 import { RelayChainsProvider } from "src/hooks";
 
 const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
-  const { relayId } = useParams();
+	const { relayId } = useParams();
 
-  return isChainIdRelay(relayId) ? (
-    <>{children}</>
-  ) : (
-    <Navigate to="/polkadot/swap" replace />
-  );
+	return isChainIdRelay(relayId) ? (
+		<>{children}</>
+	) : (
+		<Navigate to="/polkadot/swap" replace />
+	);
 };
 
 export const AppWithRelay: FC = () => {
-  return (
-    <RelayPathCheck>
-      <RelayChainsProvider>
-        <ConnectDrawerProvider>
-          <Outlet />
-          <ConnectDrawer />
-        </ConnectDrawerProvider>
-        <ChainInitNotification />
-      </RelayChainsProvider>
-    </RelayPathCheck>
-  );
+	return (
+		<RelayPathCheck>
+			<RelayChainsProvider>
+				<ConnectDrawerProvider>
+					<Outlet />
+					<ConnectDrawer />
+				</ConnectDrawerProvider>
+				<ChainInitNotification />
+			</RelayChainsProvider>
+		</RelayPathCheck>
+	);
 };

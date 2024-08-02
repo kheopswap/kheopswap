@@ -5,10 +5,10 @@ import { AddLiquidityTransactionProvider } from "./AddLiquidityTransactionProvid
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 
 export const AddLiquidity = () => (
-  <AddLiquidityProvider>
-    <AddLiquidityTransactionProvider>
-      <AddLiquidityForm />
-      <TransactionFollowUp />
-    </AddLiquidityTransactionProvider>
-  </AddLiquidityProvider>
+	<AddLiquidityProvider>
+		<AddLiquidityTransactionProvider>
+			<AddLiquidityForm />
+			<TransactionFollowUp />
+		</AddLiquidityTransactionProvider>
+	</AddLiquidityProvider>
 );

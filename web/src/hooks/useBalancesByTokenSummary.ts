@@ -8,65 +8,65 @@ import { Token, TokenId } from "src/config/tokens";
 import { AccountBalanceWithStable, BalanceWithStableSummary } from "src/types";
 
 type UseBalancesByTokenSummaryProps = {
-  tokens: Token[] | TokenId[] | null | undefined;
-  accounts: InjectedAccount[] | string[] | null | undefined;
+	tokens: Token[] | TokenId[] | null | undefined;
+	accounts: InjectedAccount[] | string[] | null | undefined;
 };
 
 export const getBalancesByTokenSummary = (
-  balances: AccountBalanceWithStable[],
+	balances: AccountBalanceWithStable[],
 ) => {
-  const balancesByTokenId = groupBy(balances, "tokenId");
+	const balancesByTokenId = groupBy(balances, "tokenId");
 
-  return keys(balancesByTokenId).reduce(
-    (acc, tokenId) => {
-      const tokenBalances = balancesByTokenId[tokenId];
-      const tokenPlancks = tokenBalances.reduce(
-        (acc, { tokenPlancks }) => acc + (tokenPlancks ?? 0n),
-        0n,
-      );
-      const isLoadingTokenPlancks = tokenBalances.some(
-        (b) => b.isLoadingTokenPlancks,
-      );
-      const hasStablePlancks = tokenBalances.some(
-        (b) => b.stablePlancks !== null,
-      );
-      const stablePlancks = hasStablePlancks
-        ? tokenBalances.reduce(
-            (acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
-            0n,
-          )
-        : null;
-      const isLoadingStablePlancks = tokenBalances.some(
-        (b) => b.isLoadingStablePlancks,
-      );
-      const isInitializing =
-        tokenPlancks === 0n &&
-        tokenBalances.some((b) => b.tokenPlancks === null);
+	return keys(balancesByTokenId).reduce(
+		(acc, tokenId) => {
+			const tokenBalances = balancesByTokenId[tokenId];
+			const tokenPlancks = tokenBalances.reduce(
+				(acc, { tokenPlancks }) => acc + (tokenPlancks ?? 0n),
+				0n,
+			);
+			const isLoadingTokenPlancks = tokenBalances.some(
+				(b) => b.isLoadingTokenPlancks,
+			);
+			const hasStablePlancks = tokenBalances.some(
+				(b) => b.stablePlancks !== null,
+			);
+			const stablePlancks = hasStablePlancks
+				? tokenBalances.reduce(
+						(acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
+						0n,
+					)
+				: null;
+			const isLoadingStablePlancks = tokenBalances.some(
+				(b) => b.isLoadingStablePlancks,
+			);
+			const isInitializing =
+				tokenPlancks === 0n &&
+				tokenBalances.some((b) => b.tokenPlancks === null);
 
-      acc[tokenId] = {
-        tokenId,
-        tokenPlancks,
-        isLoadingTokenPlancks,
-        stablePlancks,
-        isLoadingStablePlancks,
-        isInitializing,
-      };
-      return acc;
-    },
-    {} as Record<TokenId, BalanceWithStableSummary>,
-  );
+			acc[tokenId] = {
+				tokenId,
+				tokenPlancks,
+				isLoadingTokenPlancks,
+				stablePlancks,
+				isLoadingStablePlancks,
+				isInitializing,
+			};
+			return acc;
+		},
+		{} as Record<TokenId, BalanceWithStableSummary>,
+	);
 };
 
 export const useBalancesByTokenSummary = ({
-  tokens,
-  accounts,
+	tokens,
+	accounts,
 }: UseBalancesByTokenSummaryProps) => {
-  const { data: balances, isLoading } = useBalancesWithStables({
-    tokens,
-    accounts,
-  });
+	const { data: balances, isLoading } = useBalancesWithStables({
+		tokens,
+		accounts,
+	});
 
-  const data = useMemo(() => getBalancesByTokenSummary(balances), [balances]);
+	const data = useMemo(() => getBalancesByTokenSummary(balances), [balances]);
 
-  return { data, isLoading };
+	return { data, isLoading };
 };

@@ -5,16 +5,16 @@ import { TokenNative } from "src/config/tokens/types";
 import { getNativeToken } from "src/util";
 
 type UseNativeTokenProps<T extends Chain | null | undefined> = {
-  chain: T;
+	chain: T;
 };
 
 type UseNativeTokenResult<T> = T extends Chain ? TokenNative : null;
 
 export const useNativeToken = <T extends Chain | null | undefined>({
-  chain,
+	chain,
 }: UseNativeTokenProps<T>): UseNativeTokenResult<T> => {
-  return useMemo(
-    () => (chain ? getNativeToken(chain.id) : null) as UseNativeTokenResult<T>,
-    [chain],
-  );
+	return useMemo(
+		() => (chain ? getNativeToken(chain.id) : null) as UseNativeTokenResult<T>,
+		[chain],
+	);
 };

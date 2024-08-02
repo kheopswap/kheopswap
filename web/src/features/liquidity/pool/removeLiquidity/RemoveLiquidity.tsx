@@ -5,10 +5,10 @@ import { RemoveLiquidityTransactionProvider } from "./RemoveLiquidityTransaction
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 
 export const RemoveLiquidity = () => (
-  <RemoveLiquidityProvider>
-    <RemoveLiquidityTransactionProvider>
-      <RemoveLiquidityForm />
-      <TransactionFollowUp />
-    </RemoveLiquidityTransactionProvider>
-  </RemoveLiquidityProvider>
+	<RemoveLiquidityProvider>
+		<RemoveLiquidityTransactionProvider>
+			<RemoveLiquidityForm />
+			<TransactionFollowUp />
+		</RemoveLiquidityTransactionProvider>
+	</RemoveLiquidityProvider>
 );

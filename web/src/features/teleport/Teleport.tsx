@@ -5,10 +5,10 @@ import { TeleportTransactionProvider } from "./TeleportTransactionProvider";
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 
 export const Teleport = () => (
-  <TeleportProvider>
-    <TeleportTransactionProvider>
-      <TeleportForm />
-      <TransactionFollowUp />
-    </TeleportTransactionProvider>
-  </TeleportProvider>
+	<TeleportProvider>
+		<TeleportTransactionProvider>
+			<TeleportForm />
+			<TransactionFollowUp />
+		</TeleportTransactionProvider>
+	</TeleportProvider>
 );

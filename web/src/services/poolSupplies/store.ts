@@ -7,31 +7,31 @@ import { DEV_IGNORE_STORAGE } from "src/config/constants";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 const load = (): StoredPoolSupply[] => {
-  try {
-    if (DEV_IGNORE_STORAGE) return [];
+	try {
+		if (DEV_IGNORE_STORAGE) return [];
 
-    const strPools = localStorage.getItem(getLocalStorageKey("poolSupplies"));
-    return strPools ? safeParse(strPools) : [];
-  } catch (err) {
-    logger.error("Failed to load pool supplies", err);
-    return [];
-  }
+		const strPools = localStorage.getItem(getLocalStorageKey("poolSupplies"));
+		return strPools ? safeParse(strPools) : [];
+	} catch (err) {
+		logger.error("Failed to load pool supplies", err);
+		return [];
+	}
 };
 
 const save = (poolSupplies: StoredPoolSupply[]) => {
-  try {
-    localStorage.setItem(
-      getLocalStorageKey("poolSupplies"),
-      safeStringify(poolSupplies),
-    );
-  } catch (err) {
-    logger.error("Failed to save pool supplies", err);
-  }
+	try {
+		localStorage.setItem(
+			getLocalStorageKey("poolSupplies"),
+			safeStringify(poolSupplies),
+		);
+	} catch (err) {
+		logger.error("Failed to save pool supplies", err);
+	}
 };
 
 const stop = logger.timer("initializing poolSupplies store");
 export const poolSuppliesStore$ = new BehaviorSubject<StoredPoolSupply[]>(
-  load(),
+	load(),
 );
 stop();
 
