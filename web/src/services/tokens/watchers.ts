@@ -83,7 +83,7 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
           } as Token),
       );
 
-    console.log("foreign assets", foreignAssetTokens);
+    logger.log("foreign assets", foreignAssetTokens);
 
     const currentTokens = tokensStore$.value;
 

@@ -9,6 +9,8 @@
     "build": "papi --whitelist papi-whitelist.ts && tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint ./src/**/*",
+    "test": "eslint ./src/**/* --max-warnings 0",
+    "test2": "eslint ./src/**/* --max-warnings 0",
     "papi:update": "papi update polkadot,kusama,rococo,westend,kah,pah,wah,rah"
   },
   "dependencies": {
