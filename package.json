@@ -21,7 +21,7 @@
   },
   "lint-staged": {
     "*": [
-      "cd web && pnpm --filter web test"
+      "cd web && pnpm web run precommit"
     ]
   }
 }

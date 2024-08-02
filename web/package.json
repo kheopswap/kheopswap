@@ -9,8 +9,9 @@
     "build": "papi --whitelist papi-whitelist.ts && tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint ./src/**/*",
-    "test": "eslint ./src/**/* --max-warnings 0",
-    "test2": "eslint ./src/**/* --max-warnings 0",
+    "precommit:eslint": "eslint ./src/**/* --max-warnings 0",
+    "precommit:prettier": "prettier --ignore-unknown --write",
+    "precommit": "pnpm run precommit:eslint && pnpm run precommit:prettier",
     "papi:update": "papi update polkadot,kusama,rococo,westend,kah,pah,wah,rah"
   },
   "dependencies": {
