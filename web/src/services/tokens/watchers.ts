@@ -34,6 +34,8 @@ export const chainTokensStatuses$ = loadingStatusByChain$;
 
 const WATCHERS = new Map<ChainId, () => void>();
 
+console.log("haha");
+
 // comment
 const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	if (isAssetHub(chain)) {
