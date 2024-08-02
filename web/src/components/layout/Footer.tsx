@@ -177,6 +177,14 @@ const FeedbackContent: FC<{ onClose: () => void; onSent: () => void }> = ({
         <p>
           Your anonymous feedback will help us improving the website. Shoot!
         </p>
+        <p className="mt-4 text-xs font-light text-neutral-500">
+          Feedbacks are anonymous and one-way only.
+          <br />
+          If you expect an answer, please contact us on our Discord server
+          instead, or create a Github issue.
+          <br />
+          Links to those are in the bottom right of the screen.
+        </p>
         <textarea
           ref={refTextArea}
           className="mt-4 w-full resize-none border border-primary-700 bg-primary-950 p-1 outline-primary focus:outline"
