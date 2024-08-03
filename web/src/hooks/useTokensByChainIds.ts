@@ -1,3 +1,4 @@
+import { type Dictionary, values } from "lodash";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
@@ -5,7 +6,6 @@ import { map } from "rxjs";
 import type { ChainId } from "src/config/chains";
 import type { Token } from "src/config/tokens";
 import { getTokensByChains$ } from "src/services/tokens";
-import { sortTokens } from "src/services/tokens/util";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];
@@ -13,7 +13,7 @@ type UseTokensByChainIdsProps = {
 
 type UseTokensByChainIdsResult = {
 	isLoading: boolean;
-	data: Token[];
+	data: Dictionary<Token>;
 };
 
 export const useTokensByChainIds = ({
@@ -23,16 +23,21 @@ export const useTokensByChainIds = ({
 		() =>
 			getTokensByChains$(chainIds).pipe(
 				map((tokensByChains) => ({
-					isLoading: Object.values(tokensByChains).some(
+					isLoading: values(tokensByChains).some(
 						(statusAndTokens) => statusAndTokens.status !== "loaded",
 					),
-					data: Object.values(tokensByChains)
-						.flatMap((statusAndTokens) => statusAndTokens.tokens)
-						.sort(sortTokens),
+					data: values(tokensByChains)
+						.map((chainTokens) => chainTokens.tokens)
+						.reduce((acc, tokens) => Object.assign(acc, tokens), {}),
 				})),
 			),
 		[chainIds],
 	);
 
-	return useObservable(tokens$, { isLoading: !chainIds.length, data: [] });
+	const defaultValue = useMemo(
+		() => ({ isLoading: !chainIds.length, data: {} }),
+		[chainIds],
+	);
+
+	return useObservable(tokens$, defaultValue);
 };

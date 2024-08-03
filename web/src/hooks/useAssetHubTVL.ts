@@ -1,4 +1,4 @@
-import { groupBy, mapValues, toPairs } from "lodash";
+import { groupBy, mapValues, toPairs, values } from "lodash";
 import { useMemo } from "react";
 
 import { useBalances } from "./useBalances";
@@ -71,7 +71,7 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 				isLoadingBalances ||
 				isLoadingPools ||
 				isLoadingAssetConvertPlancks,
-			data: tokens.map((token) => {
+			data: values(tokens).map((token) => {
 				const lockedIdx = lockedTokens.findIndex((t) => t.tokenId === token.id);
 				const locked = lockedTokens[lockedIdx];
 				return {

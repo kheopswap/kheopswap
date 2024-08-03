@@ -1,22 +1,24 @@
-import { type Dictionary, isEqual } from "lodash";
+import { type Dictionary, fromPairs, isEqual } from "lodash";
 import { distinctUntilChanged, map, tap } from "rxjs";
 
-import { tokensByChainState$ } from "./state";
+import {
+	type ChainTokensState,
+	type TokenState,
+	tokensByChainState$,
+	tokensByIdState$,
+} from "./state";
 import {
 	addTokensByChainSubscription,
 	removeTokensByChainSubscription,
 } from "./subscriptions";
 
 import type { ChainId } from "src/config/chains";
-import type { Token } from "src/config/tokens";
-import type { LoadingStatus } from "src/services/common";
+import { type TokenId, getChainIdFromTokenId } from "src/config/tokens";
 
-type TokensByChainState = {
-	status: LoadingStatus;
-	tokens: Token[];
+const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
+	status: "stale",
+	tokens: {},
 };
-
-const DEFAULT_VALUE: TokensByChainState = { status: "stale", tokens: [] };
 
 export const getTokensByChains$ = (chainIds: ChainId[]) => {
 	let subId = "";
@@ -34,10 +36,40 @@ export const getTokensByChains$ = (chainIds: ChainId[]) => {
 			Object.fromEntries(
 				chainIds.map((chainId) => [
 					chainId,
-					statusAndTokens[chainId] ?? DEFAULT_VALUE,
+					statusAndTokens[chainId] ?? DEFAULT_VALUE_BY_CHAIN,
 				]),
 			),
 		),
-		distinctUntilChanged<Dictionary<TokensByChainState>>(isEqual),
+		distinctUntilChanged<Dictionary<ChainTokensState>>(isEqual),
+	);
+};
+
+const DEFAULT_VALUE_BY_TOKEN: TokenState = {
+	status: "stale",
+	token: undefined,
+};
+
+export const getTokensById$ = (tokenIds: TokenId[]) => {
+	const chainIds = tokenIds.map(getChainIdFromTokenId);
+	let subId = "";
+
+	return tokensByIdState$.pipe(
+		tap({
+			subscribe: () => {
+				if (chainIds.length) subId = addTokensByChainSubscription(chainIds);
+			},
+			unsubscribe: () => {
+				if (chainIds.length) removeTokensByChainSubscription(subId);
+			},
+		}),
+		map((statusAndTokens) =>
+			fromPairs(
+				tokenIds.map((tokenId) => [
+					tokenId,
+					statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
+				]),
+			),
+		),
+		distinctUntilChanged<Dictionary<TokenState>>(isEqual),
 	);
 };

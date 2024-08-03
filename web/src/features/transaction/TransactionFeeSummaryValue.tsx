@@ -1,4 +1,5 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { keyBy } from "lodash";
 import { type FC, useCallback, useMemo } from "react";
 
 import { Shimmer, TokenSelectDrawer, Tokens } from "src/components";
@@ -33,6 +34,8 @@ export const TransactionFeeSummaryValue: FC = () => {
 		},
 		[close, onFeeTokenChange],
 	);
+
+	const feeTokensMap = useMemo(() => keyBy(feeTokens, "id"), [feeTokens]);
 
 	if (
 		!feeToken ||
@@ -75,7 +78,7 @@ export const TransactionFeeSummaryValue: FC = () => {
 				isOpen={isOpen}
 				onDismiss={close}
 				onChange={handleTokenChange}
-				tokens={feeTokens}
+				tokens={feeTokensMap}
 				isLoading={isLoadingFeeTokens}
 				tokenId={feeToken.id}
 				title="Select fee token"

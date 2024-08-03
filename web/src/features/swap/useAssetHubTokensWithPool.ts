@@ -1,3 +1,4 @@
+import { values } from "lodash";
 import { useMemo } from "react";
 
 import {
@@ -18,7 +19,7 @@ export const useAssetHubTokensWithPool = () => {
 
 	const [tokensWithPools, isLoading] = useMemo(() => {
 		if (!tokens || !pools) return [[], true];
-		const tokensWithPools = tokens.filter((token) =>
+		const tokensWithPools = values(tokens).filter((token) =>
 			pools.some((pool) => pool.tokenIds.includes(token.id)),
 		);
 		return [tokensWithPools, isLoadingTokens || isLoadingPools];

@@ -9,6 +9,7 @@ import { Shimmer } from "./Shimmer";
 import { TokenSelectButton } from "./TokenSelectButton";
 import { Styles } from "./styles";
 
+import type { Dictionary } from "lodash";
 import {
 	StablePrice,
 	Tokens,
@@ -27,7 +28,7 @@ export type TokenAmountPickerProps = Partial<
 export const TokenAmountPicker: FC<{
 	inputProps: TokenAmountPickerProps;
 	tokenId: TokenId | null | undefined;
-	tokens?: Token[] | undefined;
+	tokens?: Dictionary<Token> | undefined;
 	accounts?: InjectedAccount[] | string[];
 	plancks: bigint | null | undefined;
 	isLoading: boolean;
@@ -53,7 +54,7 @@ export const TokenAmountPicker: FC<{
 	onMaxClick,
 }) => {
 	const token = useMemo(
-		() => tokens?.find((t) => t.id === tokenId),
+		() => (tokenId ? tokens?.[tokenId] : undefined),
 		[tokenId, tokens],
 	);
 

@@ -1,24 +1,27 @@
 import { useMemo } from "react";
 
-import { useTokensByChainId } from "./useTokensByChainId";
-
-import { type TokenId, getChainIdFromTokenId } from "src/config/tokens";
+import type { Token, TokenId } from "src/config/tokens";
+import { useTokens } from "./useTokens";
 
 type UseTokenProps = {
 	tokenId: TokenId | null | undefined;
 };
 
-export const useToken = ({ tokenId }: UseTokenProps) => {
-	const chainId = useMemo(() => getChainIdFromTokenId(tokenId), [tokenId]);
+type UseTokenResult = {
+	data: Token | null;
+	isLoading: boolean;
+};
 
-	const { data: tokens, isLoading } = useTokensByChainId({
-		chainId,
-	});
+export const useToken = ({ tokenId }: UseTokenProps): UseTokenResult => {
+	const tokenIds = useMemo(() => (tokenId ? [tokenId] : []), [tokenId]);
 
-	const data = useMemo(() => {
-		if (!tokenId) return null;
-		return tokens?.find((a) => a.id === tokenId) ?? null;
+	const { data: tokens } = useTokens({ tokenIds });
+
+	return useMemo(() => {
+		if (!tokenId) return { data: null, isLoading: false };
+		return {
+			data: tokens[tokenId]?.token ?? null,
+			isLoading: tokens[tokenId]?.isLoading ?? false,
+		};
 	}, [tokenId, tokens]);
-
-	return { data, isLoading };
 };

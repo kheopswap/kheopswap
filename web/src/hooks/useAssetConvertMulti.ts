@@ -1,4 +1,3 @@
-import { keyBy } from "lodash";
 import { useMemo } from "react";
 
 import { useBalances } from "./useBalances";
@@ -50,8 +49,6 @@ export const useAssetConvertMulti = ({
 
 	const { data: tokens, isLoading: isLoadingTokens } = useTokens({ tokenIds });
 
-	const tokensMap = useMemo(() => keyBy(tokens, "id"), [tokens]);
-
 	const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
 		chainId: assetHub.id,
 	});
@@ -75,8 +72,8 @@ export const useAssetConvertMulti = ({
 	return useMemo(() => {
 		const data = inputs.map<AssetConvertResult>((input) => {
 			const { tokenIdIn, plancksIn, tokenIdOut } = input;
-			const tokenIn = tokensMap[tokenIdIn];
-			const tokenOut = tokensMap[tokenIdOut];
+			const tokenIn = tokens[tokenIdIn]?.token;
+			const tokenOut = tokens[tokenIdOut]?.token;
 
 			if (!tokenIn || !tokenOut || !nativeToken)
 				return { ...input, plancksOut: null, isLoading: isLoadingTokens };
@@ -127,6 +124,6 @@ export const useAssetConvertMulti = ({
 		nativeToken,
 		pools,
 		reserves,
-		tokensMap,
+		tokens,
 	]);
 };

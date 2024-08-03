@@ -1,3 +1,5 @@
+import { values } from "lodash";
+import { useMemo } from "react";
 import { TRADABLE_TOKEN_TYPES } from "src/config/tokens";
 import {
 	useAllTokens,
@@ -11,9 +13,11 @@ import { provideContext } from "src/util";
 export const usePortfolioProvider = () => {
 	const { accounts } = useWallets();
 
-	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
+	const { data: tokensMap, isLoading: isLoadingTokens } = useAllTokens({
 		types: TRADABLE_TOKEN_TYPES,
 	});
+
+	const tokens = useMemo(() => values(tokensMap), [tokensMap]);
 
 	const { data: tvl } = useAssetHubTVL();
 

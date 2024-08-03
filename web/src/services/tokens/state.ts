@@ -1,4 +1,11 @@
-import { groupBy } from "lodash";
+import {
+	type Dictionary,
+	fromPairs,
+	groupBy,
+	keyBy,
+	toPairs,
+	values,
+} from "lodash";
 import { BehaviorSubject, combineLatest } from "rxjs";
 
 import { tokensStore$ } from "./store";
@@ -10,38 +17,75 @@ import type { Token } from "src/config/tokens";
 import type { LoadingStatus } from "src/services/common";
 import { logger } from "src/util";
 
-type ChainTokensState = { status: LoadingStatus; tokens: Token[] };
+export type ChainTokensState = {
+	status: LoadingStatus;
+	tokens: Dictionary<Token>;
+};
 
-const combineState = (
+export type TokenState = { status: LoadingStatus; token: Token | undefined };
+
+const combineStateByChainId = (
 	statusByChain: Record<ChainId, LoadingStatus>,
-	allTokens: Token[],
-): Record<ChainId, ChainTokensState> => {
+	tokens: Dictionary<Token>,
+): Dictionary<ChainTokensState> => {
 	try {
-		const tokensByChain = groupBy(allTokens.sort(sortTokens), "chainId");
+		const tokensByChain = groupBy(values(tokens).sort(sortTokens), "chainId");
 
-		return Object.fromEntries(
-			Object.entries(statusByChain).map(([chainId, status]) => [
+		return fromPairs(
+			toPairs(statusByChain).map(([chainId, status]) => [
 				chainId,
 				{
 					status,
-					tokens: tokensByChain[chainId as ChainId] ?? [],
+					tokens: keyBy(tokensByChain[chainId as ChainId] ?? [], "id"),
 				},
 			]),
-		) as Record<ChainId, ChainTokensState>;
+		);
 	} catch (err) {
-		logger.error("Failed to merge tokens state", { err });
+		logger.error("Failed to merge tokens by chain state", { err });
 		return {} as Record<ChainId, ChainTokensState>;
 	}
 };
 
 // main datasource of the service
 export const tokensByChainState$ = new BehaviorSubject<
-	Record<ChainId, ChainTokensState>
->(combineState(chainTokensStatuses$.value, tokensStore$.value));
+	Dictionary<ChainTokensState>
+>(combineStateByChainId(chainTokensStatuses$.value, tokensStore$.value));
 
 // keep subject up to date
 combineLatest([chainTokensStatuses$, tokensStore$]).subscribe(
-	([statusByChain, allTokens]) => {
-		tokensByChainState$.next(combineState(statusByChain, allTokens));
+	([statusByChain, tokens]) => {
+		tokensByChainState$.next(combineStateByChainId(statusByChain, tokens));
+	},
+);
+
+const combineStateByTokenId = (
+	statusByChain: Record<ChainId, LoadingStatus>,
+	tokens: Dictionary<Token>,
+): Dictionary<TokenState> => {
+	try {
+		return fromPairs(
+			toPairs(tokens).map(([tokenId, token]) => [
+				tokenId,
+				{
+					status: statusByChain[token.chainId] ?? "stale",
+					token,
+				},
+			]),
+		);
+	} catch (err) {
+		logger.error("Failed to merge tokens state", { err });
+		return {};
+	}
+};
+
+// main datasource of the service
+export const tokensByIdState$ = new BehaviorSubject<Dictionary<TokenState>>(
+	combineStateByTokenId(chainTokensStatuses$.value, tokensStore$.value),
+);
+
+// keep subject up to date
+combineLatest([chainTokensStatuses$, tokensStore$]).subscribe(
+	([statusByChain, tokens]) => {
+		tokensByIdState$.next(combineStateByTokenId(statusByChain, tokens));
 	},
 );

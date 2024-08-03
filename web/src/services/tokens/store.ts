@@ -1,7 +1,6 @@
 import { BehaviorSubject, debounceTime } from "rxjs";
 
-import { sortTokens } from "./util";
-
+import { type Dictionary, keyBy } from "lodash";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
 import {
 	KNOWN_TOKENS_LIST,
@@ -12,39 +11,41 @@ import {
 import { logger, safeParse, safeStringify } from "src/util";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
-const loadTokens = (): Token[] => {
+const STORAGE_KEY = getLocalStorageKey("tokens");
+
+const loadTokens = (): Dictionary<Token> => {
 	try {
-		const strTokens = localStorage.getItem(getLocalStorageKey("tokens"));
+		const strTokens = localStorage.getItem(STORAGE_KEY);
 		const tokensList: Token[] =
 			strTokens && !DEV_IGNORE_STORAGE
 				? safeParse(strTokens)
 				: KNOWN_TOKENS_LIST;
 
-		const tokensMap = Object.fromEntries(
-			(tokensList as Token[]).map((t) => [t.id, t]),
-		);
+		const tokensMap = keyBy(tokensList, "id");
 
 		// override known tokens
 		for (const key in KNOWN_TOKENS_MAP)
 			tokensMap[key] = KNOWN_TOKENS_MAP[key as TokenId];
 
-		return Object.values(tokensMap).sort(sortTokens);
+		return tokensMap;
 	} catch (err) {
 		console.error("Failed to load tokens", err);
-		return KNOWN_TOKENS_LIST;
+		return keyBy(KNOWN_TOKENS_LIST, "id");
 	}
 };
 
-const saveTokens = (tokens: Token[]) => {
+const saveTokens = (tokens: Dictionary<Token>) => {
 	try {
-		localStorage.setItem(getLocalStorageKey("tokens"), safeStringify(tokens));
+		localStorage.setItem(STORAGE_KEY, safeStringify(tokens));
 	} catch (err) {
 		console.error("Failed to save tokens", err);
 	}
 };
 
 const stop = logger.timer("initializing tokens store");
-export const tokensStore$ = new BehaviorSubject<Token[]>(loadTokens());
+export const tokensStore$ = new BehaviorSubject<Dictionary<Token>>(
+	loadTokens(),
+);
 stop();
 
 // save after updates

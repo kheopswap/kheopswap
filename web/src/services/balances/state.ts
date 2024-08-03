@@ -3,36 +3,32 @@ import { BehaviorSubject, combineLatest, debounceTime, map } from "rxjs";
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId, BalanceState, StoredBalance } from "./types";
-import { getBalanceId } from "./utils";
 import { balanceStatuses$ } from "./watchers";
 
+import { type Dictionary, fromPairs, keys } from "lodash";
 import type { LoadingStatus } from "src/services/common";
 import { logger } from "src/util";
 
 const combineState = (
 	balanceIds: BalanceId[],
-	statuses: Record<BalanceId, LoadingStatus>,
-	balances: StoredBalance[],
-): Record<BalanceId, BalanceState> => {
+	statuses: Dictionary<LoadingStatus>,
+	balances: Dictionary<StoredBalance>,
+): Dictionary<BalanceState> => {
 	try {
-		const balancesByBalanceId = new Map<BalanceId, string>(
-			balances.map((b) => [getBalanceId(b), b.balance] as const),
-		);
-
 		const allBalanceIds = [
-			...new Set<BalanceId>(balanceIds.concat([...balancesByBalanceId.keys()])),
+			...new Set<BalanceId>(balanceIds.concat(keys(balances))),
 		];
 
-		return Object.fromEntries(
+		return fromPairs(
 			allBalanceIds.map((balanceId) => {
 				const status = statuses[balanceId] ?? "stale";
-				const balance = balancesByBalanceId.has(balanceId)
-					? BigInt(balancesByBalanceId.get(balanceId) as string)
+				const balance = balances[balanceId]
+					? BigInt(balances[balanceId].balance)
 					: undefined;
 
 				return [balanceId, { status, balance }];
 			}),
-		) as Record<BalanceId, BalanceState>;
+		) as Dictionary<BalanceState>;
 	} catch (err) {
 		logger.error("Failed to merge balances state", { err });
 		return {};
@@ -40,9 +36,9 @@ const combineState = (
 };
 
 // contains all known balances and their status
-export const balancesState$ = new BehaviorSubject<
-	Record<BalanceId, BalanceState>
->(combineState([], balanceStatuses$.value, balancesStore$.value));
+export const balancesState$ = new BehaviorSubject<Dictionary<BalanceState>>(
+	combineState([], balanceStatuses$.value, balancesStore$.value),
+);
 
 // maintain the above up to date
 combineLatest([

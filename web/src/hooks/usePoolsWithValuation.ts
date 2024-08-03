@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import { useBalances } from "./useBalances";
 
+import type { Dictionary } from "lodash";
 import type { Token } from "src/config/tokens";
 import { getPoolReserves } from "src/helpers/getPoolReserves";
 import type { Pool } from "src/services/pools";
@@ -14,7 +15,7 @@ export type PoolWithValuation = Pool & {
 
 type UsePoolsWithValuationProps = {
 	pools: Pool[] | null | undefined;
-	tokens: Token[] | null | undefined;
+	tokens: Dictionary<Token> | null | undefined;
 	nativeToken: Token | null | undefined;
 	stableToken: Token | null | undefined;
 };
@@ -54,7 +55,7 @@ export const usePoolsWithValuation = ({
 			);
 
 			const stablePrices = poolBalances?.map(({ balance, tokenId }) => {
-				const token = tokens?.find((t) => t.id === tokenId);
+				const token = tokens?.[tokenId];
 				const reservesNativeToToken =
 					tokenId === nativeToken?.id
 						? ([1n, 1n] as [bigint, bigint])

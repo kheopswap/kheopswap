@@ -11,6 +11,7 @@ import {
 import { useAddLiquidity } from "./AddLiquidityProvider";
 import { AddLiquiditySummary } from "./AddLiquiditySummary";
 
+import { keyBy } from "lodash";
 import {
 	FormFieldContainer,
 	MagicButton,
@@ -41,7 +42,7 @@ const AddLiquidityEditor: FC = () => {
 	const { feeEstimate, feeToken, insufficientBalances } = useTransaction();
 
 	const tokens = useMemo(
-		() => [nativeToken, assetToken].filter(Boolean) as Token[],
+		() => keyBy([nativeToken, assetToken].filter(Boolean) as Token[], "id"),
 		[assetToken, nativeToken],
 	);
 

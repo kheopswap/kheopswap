@@ -4,6 +4,7 @@ import type { SwapFormInputs } from "./schema";
 import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
+import { keyBy, values } from "lodash";
 import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "src/config/constants";
 import { type TokenId, getTokenId, parseTokenId } from "src/config/tokens";
 import {
@@ -129,9 +130,12 @@ const useSwapProvider = () => {
 				})
 				.flatMap((p) => p.tokenIds) ?? [];
 		return [
-			allTokens?.filter(
-				(t) => t.type === "native" || swappableAssetIds.includes(t.id),
-			) ?? [],
+			keyBy(
+				values(allTokens).filter(
+					(t) => t.type === "native" || swappableAssetIds.includes(t.id),
+				) ?? [],
+				"id",
+			),
 			isLoadingAllTokens ||
 				isLoadingPools ||
 				poolSupplies.some((s) => s.isLoading),
