@@ -1,4 +1,4 @@
-import { Layout, PageContent } from "src/components";
+import { Layout, PageContent, TabTitle } from "src/components";
 import { Teleport } from "src/features/teleport";
 
 export const TeleportPage = () => (
@@ -8,5 +8,6 @@ export const TeleportPage = () => (
 				<Teleport />
 			</PageContent>
 		</div>
+		<TabTitle title="Teleport" />
 	</Layout>
 );
