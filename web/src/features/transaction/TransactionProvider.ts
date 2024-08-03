@@ -33,9 +33,9 @@ export type CallSpendings = Partial<
 >;
 
 type UseTransactionProviderProps = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	call: Transaction<any, any, any, any> | null | undefined;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	fakeCall: Transaction<any, any, any, any> | null | undefined; // used as backup for calculating fees without all the inputs
 	signer: string | null | undefined; // accountkey
 	chainId: ChainId | null | undefined;
@@ -45,7 +45,7 @@ type UseTransactionProviderProps = {
 };
 
 type FollowUpInputs = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	call: Transaction<any, any, any, any> | null | undefined;
 	obsTxEvents: Observable<FollowUpTxEvent>;
 	account: InjectedAccount;

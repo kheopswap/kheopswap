@@ -10,23 +10,23 @@ export const waitTransactionComplete = async (
 			const sub = obsEvents.subscribe({
 				next: (e) => {
 					if (e.type === "broadcasted")
-						console.log("[%s] Transaction broadcasted", label);
+						console.info("[%s] Transaction broadcasted", label);
 					if (e.type === "txBestBlocksState")
 						if (e.found) {
 							if (e.ok) {
-								console.log(
+								console.info(
 									"[%s] Transaction appears valid",
 									label,
 									`${e.block.hash}-${e.block.index}`,
 								);
 							} else {
 								const { events, ...rest } = e;
-								console.log(rest);
+								console.info(rest);
 								for (const event of events) {
 									const { type, value } = event;
 									const eventType = [type, value.type].join(".");
-									console.log("Event ", eventType);
-									console.log(value);
+									console.info("Event ", eventType);
+									console.info(value);
 								}
 								reject(new Error("Transaction failed"));
 							}
@@ -34,7 +34,7 @@ export const waitTransactionComplete = async (
 
 					if (e.type === "finalized") {
 						sub.unsubscribe();
-						console.log(
+						console.info(
 							e.ok ? "[%s] Transaction successful" : "[%s] Transaction failed",
 							label,
 							`${e.block.hash}-${e.block.index}`,

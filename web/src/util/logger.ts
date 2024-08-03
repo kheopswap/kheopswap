@@ -1,6 +1,5 @@
 import { DEV } from "src/config/constants";
 
-/* eslint-disable no-console */
 const isDevMode = true || DEV; // TODO remove true
 
 const NO_OP = () => {};
@@ -28,7 +27,7 @@ export const logger = {
 		? (label: string, logAtStart?: boolean) => {
 				const key = `${label} - ${crypto.randomUUID().slice(0, 8)}`;
 
-				if (logAtStart) debug(key + " starting");
+				if (logAtStart) debug(`${key} starting`);
 
 				time(key);
 				return () => {

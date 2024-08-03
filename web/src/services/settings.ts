@@ -45,7 +45,7 @@ const getPersistedSettings = () => {
 		if (strSettings)
 			for (const key of Object.keys(settings))
 				if (!(key in DEFAULT_SETTINGS)) {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 					delete (settings as any)[key];
 				}
 

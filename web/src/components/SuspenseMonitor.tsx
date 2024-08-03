@@ -1,11 +1,10 @@
-/* eslint-disable no-console */
 import { type FC, useEffect } from "react";
 
 import { DEV } from "src/config/constants";
 
 export const SuspenseMonitor: FC<{ label: string }> = ({ label }) => {
 	useEffect(() => {
-		// eslint-disable-next-line no-constant-condition
+		// biome-ignore lint/correctness/noConstantCondition: <explanation>
 		if (false && !DEV) return; // TODO remove false
 
 		const key = `[Suspense] ${label} - ${crypto.randomUUID()}}`;

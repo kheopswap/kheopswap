@@ -94,7 +94,7 @@ const DrawerContent: FC<{
 								"after:absolute after:left-[2px] after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
 								"peer-checked:bg-neutral-500 peer-checked:after:translate-x-full peer-checked:after:border-neutral-200 peer-focus-visible:ring-1 peer-focus-visible:ring-neutral-200",
 							)}
-						></div>
+						/>
 					</div>
 				</label>
 				<div className="mt-1 text-sm text-neutral-500">
@@ -102,7 +102,6 @@ const DrawerContent: FC<{
 					provide secure and uncensorable connections to Polkadot networks.
 					<br />
 					Pro-tip: get{" "}
-					{/* eslint-disable-next-line react/jsx-no-target-blank */}
 					<a
 						href="https://substrate.io/developers/substrate-connect/"
 						className="text-neutral-300 underline hover:text-neutral-200"

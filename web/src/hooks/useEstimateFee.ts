@@ -6,9 +6,8 @@ import type { KheopswapTxOptions } from "src/util/getTxOptions";
 
 type UseEstimateFeeProps = {
 	from: SS58String | null | undefined;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	call: Transaction<any, any, any, any> | null | undefined;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	options?: KheopswapTxOptions;
 };
 

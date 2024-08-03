@@ -1,17 +1,17 @@
 import { isBigInt } from "./isBigInt";
 import { isBinary } from "./isBinary";
 
-export const safeStringify = (value: unknown) => {
+export const safeStringify = (value: unknown, format?: boolean) => {
 	if (!value) return value?.toString() ?? "";
 
 	return JSON.stringify(
 		value,
 		(_, value) =>
 			isBigInt(value)
-				? value.toString()
+				? `bigint:${value.toString()}`
 				: isBinary(value)
-					? value.asHex()
+					? `binary:${value.asHex()}`
 					: value,
-		2,
+		format ? 2 : undefined,
 	);
 };

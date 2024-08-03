@@ -4,7 +4,7 @@ export type TxEvents = {
 	type: string;
 	value: {
 		type: string;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		value: any;
 	};
 }[];
@@ -15,7 +15,7 @@ export const getErrorMessageFromTxEvents = (events: TxEvents) => {
 			(e) => e.type === "System" && e.value.type === "ExtrinsicFailed",
 		);
 		const dispatchError = errorEvent?.value.value.dispatch_error;
-		if (dispatchError && dispatchError.type && dispatchError.value?.type)
+		if (dispatchError?.type && dispatchError.value?.type)
 			return `${dispatchError.type}: ${dispatchError.value.type}`;
 
 		// const moduleError =
