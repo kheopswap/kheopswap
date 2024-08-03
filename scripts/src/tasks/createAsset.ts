@@ -19,7 +19,7 @@ export const createAssetCalls = async (
 	const existing = await api.query.Assets.Asset.getValue(id);
 
 	if (!existing) {
-		console.log("Creating asset");
+		console.info("Creating asset");
 
 		const createAsset = api.tx.Assets.create({
 			id: id,

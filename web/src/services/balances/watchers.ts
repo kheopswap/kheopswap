@@ -47,7 +47,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 	const { tokenId, address } = parseBalanceId(balanceId);
 	const token = parseTokenId(tokenId);
 	const chain = getChainById(token.chainId);
-	if (!chain) throw new Error("Chain not found for " + token.chainId);
+	if (!chain) throw new Error(`Chain not found for ${token.chainId}`);
 
 	const api = await getApi(chain.id);
 
@@ -155,7 +155,7 @@ balanceSubscriptions$.subscribe((balanceIds) => {
 		}
 		balanceStatuses$.next({
 			...balanceStatuses$.value,
-			...watchersToStop.reduce((acc, id) => ({ ...acc, [id]: "stale" }), {}),
+			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
 		});
 	} catch (err) {
 		logger.error("Failed to update balance watchers", { balanceIds, err });

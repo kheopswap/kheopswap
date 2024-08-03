@@ -6,6 +6,7 @@ export const TalismanIcon = () => (
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 	>
+		<title>Talisman</title>
 		<rect width="82" height="82" rx="12" fill="#D5FF5C" />
 		<path
 			d="M35.04 55C35.04 58.2905 37.6887 60.9623 40.9703 60.9996C44.2519 60.9623 46.9006 58.2905 46.9006 55C46.9006 51.7096 44.2519 49.0377 40.9703 49.0004C37.6887 49.0377 35.04 51.7096 35.04 55Z"

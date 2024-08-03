@@ -54,6 +54,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 			accounts
 				.map((account) => ({
 					account,
+					// biome-ignore lint/style/noNonNullAssertion: <explanation>
 					balance: balances.find(
 						(b) => b.tokenId === token.id && b.address === account.address,
 					)!,
@@ -255,13 +256,11 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 				<TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
 			)}
 			{displayProps.map((prop, i) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 				<TokenDetailsRow key={i} label={prop.label}>
 					<DisplayPropertyValue {...prop} />
 				</TokenDetailsRow>
 			))}
-			{/* {token.type === "foreign-asset" && token.location. && (
-        <TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
-      )} */}
 			<TokenDetailsRow label="Price">
 				{!!price && <TokenDetailsRowValue {...price} token={nativeToken} />}
 			</TokenDetailsRow>
@@ -300,13 +299,11 @@ export const PortfolioTokenDrawer: FC<{
 	rows: PortfolioRowData[];
 	onDismiss: () => void;
 }> = ({ tokenId, rows, onDismiss }) => {
-	const { tokens } = usePortfolio();
-
 	const [tokenRow, setTokenRow] = useState<PortfolioRowData>();
 
 	useEffect(() => {
 		if (tokenId) setTokenRow(rows.find((row) => row.token.id === tokenId));
-	}, [rows, tokenId, tokens]);
+	}, [rows, tokenId]);
 
 	return (
 		<Drawer anchor="right" isOpen={!!tokenId} onDismiss={onDismiss}>

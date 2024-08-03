@@ -30,7 +30,7 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 
 		loadingStatusByChain$.next({
 			...loadingStatusByChain$.value,
-			...chainIds.reduce((acc, id) => ({ ...acc, [id]: status }), {}),
+			...Object.fromEntries(chainIds.map((id) => [id, status])),
 		});
 	};
 
@@ -56,7 +56,7 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 			}
 
 			if (statusByChain[chainId] !== "loaded" && staleWatchCache.has(chainId)) {
-				clearTimeout(staleWatchCache.get(chainId)!);
+				clearTimeout(staleWatchCache.get(chainId));
 				staleWatchCache.delete(chainId);
 			}
 		}

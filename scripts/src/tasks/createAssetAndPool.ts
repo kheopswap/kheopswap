@@ -30,7 +30,7 @@ export const createAssetAndPoolCalls = async (
 	const existing = await api.query.Assets.Asset.getValue(id);
 
 	if (!existing) {
-		console.log("Creating asset and pool");
+		console.info("Creating asset and pool");
 
 		const createAsset = api.tx.Assets.create({
 			id: id,

@@ -56,8 +56,8 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 					type: "asset-convertion",
 					chainId: chain.id,
 					poolAssetId,
-					tokenIds: d.keyArgs[0].map(
-						(k) => getTokenIdFromXcmV3Multilocation(chain.id, k)!,
+					tokenIds: d.keyArgs[0].map((k) =>
+						getTokenIdFromXcmV3Multilocation(chain.id, k),
 					) as TokenIdsPair,
 					owner: poolAsset.value.owner,
 				};

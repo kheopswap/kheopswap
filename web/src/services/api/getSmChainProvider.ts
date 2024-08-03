@@ -24,6 +24,7 @@ const loadChain = async ({ chainId, chainSpec }: ChainDef, relay?: Chain) => {
 			}),
 		);
 
+	// biome-ignore lint/style/noNonNullAssertion: <explanation>
 	return SMOLDOT_CHAINS_CACHE.get(chainId)!;
 };
 

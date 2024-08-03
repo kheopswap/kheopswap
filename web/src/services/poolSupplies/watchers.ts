@@ -54,7 +54,7 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 	const token1 = parseTokenId(tokenId1);
 
 	const chain = getChainById(token1.chainId);
-	if (!chain) throw new Error("Chain not found for " + token1.chainId);
+	if (!chain) throw new Error(`Chain not found for ${token1.chainId}`);
 
 	if (!isAssetHub(chain))
 		throw new Error("Can't watch pool supply on this chain");
@@ -94,10 +94,10 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 // and update watchers accordingly
 poolSuppliesSubscriptions$.subscribe((poolSupplyIds) => {
 	// add missing watchers
-	poolSupplyIds.forEach((poolSupplyId) => {
-		if (WATCHERS.has(poolSupplyId)) return;
+	for (const poolSupplyId of poolSupplyIds) {
+		if (WATCHERS.has(poolSupplyId)) continue;
 		WATCHERS.set(poolSupplyId, watchPoolSupply(poolSupplyId));
-	});
+	}
 
 	// remove watchers that are not needed anymore
 	const existingIds = Array.from(WATCHERS.keys());
@@ -110,7 +110,7 @@ poolSuppliesSubscriptions$.subscribe((poolSupplyIds) => {
 	}
 	poolSuppliesStatuses$.next({
 		...poolSuppliesStatuses$.value,
-		...watchersToStop.reduce((acc, id) => ({ ...acc, [id]: "stale" }), {}),
+		...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
 	});
 });
 

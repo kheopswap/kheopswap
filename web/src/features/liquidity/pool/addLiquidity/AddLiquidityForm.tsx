@@ -57,7 +57,7 @@ const AddLiquidityEditor: FC = () => {
 					!e.target.value ||
 					!nativeToken ||
 					!assetToken ||
-					isNaN(val) ||
+					Number.isNaN(val) ||
 					val < 0
 				) {
 					if (tokenIdx === "native" && refInput2.current)

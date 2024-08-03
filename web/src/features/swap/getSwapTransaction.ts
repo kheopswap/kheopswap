@@ -44,8 +44,8 @@ export const getSwapExtrinsic = async (
 
 	return api.tx.AssetConversion.swap_exact_tokens_for_tokens({
 		path: [
-			getXcmV3MultilocationFromTokenId(tokenIdIn)!,
-			getXcmV3MultilocationFromTokenId(tokenIdOut)!,
+			getXcmV3MultilocationFromTokenId(tokenIdIn),
+			getXcmV3MultilocationFromTokenId(tokenIdOut),
 		],
 		amount_in: amountIn,
 		amount_out_min: amountOutMin,

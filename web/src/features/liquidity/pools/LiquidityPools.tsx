@@ -163,7 +163,7 @@ const PoolsList: FC<{
 					"hidden sm:block",
 				)}
 			>
-				<div></div>
+				<div />
 				<div className="whitespace-nowrap text-right">
 					<ColumnHeaderButton selected={true}>TVL</ColumnHeaderButton>
 				</div>

@@ -112,7 +112,7 @@ const useTransferProvider = () => {
 			return formData.amount && token
 				? [tokensToPlancks(formData.amount, token.decimals), true]
 				: [null, true];
-		} catch (err) {
+		} catch (_err) {
 			// invalid amount
 			return [null, false];
 		}

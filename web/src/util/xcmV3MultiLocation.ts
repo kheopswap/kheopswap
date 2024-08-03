@@ -4,10 +4,15 @@ import { type ChainId, isChainIdAssetHub } from "src/config/chains";
 import { type TokenId, getTokenId, parseTokenId } from "src/config/tokens";
 import type { XcmV3Multilocation } from "src/types";
 
-export const getXcmV3MultilocationFromTokenId = (
-	tokenId: TokenId | null | undefined,
-): XcmV3Multilocation | null => {
-	if (!tokenId) return null;
+type Multilocation<T> = T extends TokenId ? XcmV3Multilocation : null;
+
+// TODO conditional result type
+export const getXcmV3MultilocationFromTokenId = <
+	T extends TokenId | null | undefined,
+>(
+	tokenId: T,
+): Multilocation<T> => {
+	if (!tokenId) return null as Multilocation<T>;
 
 	const parsed = parseTokenId(tokenId);
 
@@ -15,7 +20,7 @@ export const getXcmV3MultilocationFromTokenId = (
 		return {
 			parents: 1,
 			interior: XcmV3Junctions.Here(),
-		};
+		} as Multilocation<T>;
 
 	if (parsed.type === "asset")
 		return {
@@ -24,11 +29,12 @@ export const getXcmV3MultilocationFromTokenId = (
 				XcmV3Junction.PalletInstance(50),
 				XcmV3Junction.GeneralIndex(BigInt(parsed.assetId)),
 			]),
-		};
+		} as Multilocation<T>;
 
-	if (parsed.type === "foreign-asset") return parsed.location;
+	if (parsed.type === "foreign-asset")
+		return parsed.location as Multilocation<T>;
 
-	return null;
+	throw new Error(`Invalid token type: ${parsed.type}`);
 };
 
 export const getTokenIdFromXcmV3Multilocation = (

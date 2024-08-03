@@ -29,6 +29,7 @@ export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
 				leaveTo="opacity-0"
 			/>
 
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 			<div
 				onClick={onDismiss}
 				role="presentation"
@@ -38,6 +39,7 @@ export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
 					onDismiss && "cursor-pointer",
 				)}
 			>
+				{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 				<div
 					className="cursor-default"
 					onClick={(e) => {

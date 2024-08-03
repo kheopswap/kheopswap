@@ -93,36 +93,36 @@ export const MagicButton: FC<
 			while (refShouldRotateBorder.current && scope.current) {
 				await animate(
 					scope.current,
-					{ background: ROTATING_BORDER__MAP["TOP_LEFT"] },
+					{ background: ROTATING_BORDER__MAP.TOP_LEFT },
 					{
-						duration: ROTATING_BORDER_DURATION_MAP["TOP_LEFT"],
+						duration: ROTATING_BORDER_DURATION_MAP.TOP_LEFT,
 						ease: "linear",
 					},
 				);
 				if (!refShouldRotateBorder.current || !scope.current) return;
 				await animate(
 					scope.current,
-					{ background: ROTATING_BORDER__MAP["TOP_RIGHT"] },
+					{ background: ROTATING_BORDER__MAP.TOP_RIGHT },
 					{
-						duration: ROTATING_BORDER_DURATION_MAP["TOP_RIGHT"],
+						duration: ROTATING_BORDER_DURATION_MAP.TOP_RIGHT,
 						ease: "linear",
 					},
 				);
 				if (!refShouldRotateBorder.current || !scope.current) return;
 				await animate(
 					scope.current,
-					{ background: ROTATING_BORDER__MAP["BOTTOM_RIGHT"] },
+					{ background: ROTATING_BORDER__MAP.BOTTOM_RIGHT },
 					{
-						duration: ROTATING_BORDER_DURATION_MAP["BOTTOM_RIGHT"],
+						duration: ROTATING_BORDER_DURATION_MAP.BOTTOM_RIGHT,
 						ease: "linear",
 					},
 				);
 				if (!refShouldRotateBorder.current || !scope.current) return;
 				await animate(
 					scope.current,
-					{ background: ROTATING_BORDER__MAP["BOTTOM_LEFT"] },
+					{ background: ROTATING_BORDER__MAP.BOTTOM_LEFT },
 					{
-						duration: ROTATING_BORDER_DURATION_MAP["BOTTOM_LEFT"],
+						duration: ROTATING_BORDER_DURATION_MAP.BOTTOM_LEFT,
 						ease: "linear",
 					},
 				);
@@ -174,7 +174,7 @@ export const MagicButton: FC<
 						"size-full rounded-[inherit]",
 						"bg-primary-950 transition-colors duration-300 group-enabled:group-hover:bg-primary-900 group-disabled:bg-primary-950",
 					)}
-				></div>
+				/>
 			</div>
 			<div className={cn("z-20")}>{children}</div>
 		</button>

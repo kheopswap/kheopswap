@@ -24,7 +24,7 @@ import {
 } from "src/config/tokens";
 import { getApi } from "src/services/api";
 import { pollChainStatus } from "src/services/pollChainStatus";
-import { logger, safeStringify, throwAfter } from "src/util";
+import { logger, throwAfter } from "src/util";
 import { sleep } from "src/util/sleep";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
@@ -83,7 +83,7 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					} as Token),
 			);
 
-		console.log("foreign assets", foreignAssetTokens);
+		logger.info("foreign assets", foreignAssetTokens);
 
 		const currentTokens = tokensStore$.value;
 

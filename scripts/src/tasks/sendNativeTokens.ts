@@ -6,7 +6,7 @@ import { waitTransactionComplete } from "../common/waitTransactionComplete";
 
 export const sendNativeTokensCall = (
 	api: Api<"devah" | "devrelay" | "wah">,
-	from: Account,
+	_from: Account,
 	to: SS58String,
 	amount: bigint,
 ) => {
@@ -22,7 +22,7 @@ export const sendNativeTokens = async (
 	to: SS58String,
 	amount: bigint,
 ) => {
-	console.log("sendNativeTokens");
+	console.info("sendNativeTokens");
 
 	const call = sendNativeTokensCall(api, from, to, amount);
 

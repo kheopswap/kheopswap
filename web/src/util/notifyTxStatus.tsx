@@ -48,6 +48,7 @@ export const notifyTxStatus = () => {
 							isLoading: true,
 						});
 						return false;
+						// biome-ignore lint/style/noUselessElse: <explanation>
 					} else {
 						const errorMessage = getErrorMessageFromTxEvents(status.events);
 

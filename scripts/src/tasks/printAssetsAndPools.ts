@@ -1,15 +1,15 @@
 import type { Api } from "../common/apis";
 
 export const printAssetsAndPools = async (api: Api<"devah" | "wah">) => {
-	console.log("Assets");
+	console.info("Assets");
 	const assets = await api.query.Assets.Asset.getEntries({ at: "best" });
 	const assetsMetadata = await api.query.Assets.Metadata.getEntries({
 		at: "best",
 	});
 
-	//   console.log(assets);
-	//   console.log(assetsMetadata);
-	console.log();
+	//   console.info(assets);
+	//   console.info(assetsMetadata);
+	console.info();
 
 	const assetIds = assets.map((a) => a.keyArgs[0]);
 
@@ -19,9 +19,9 @@ export const printAssetsAndPools = async (api: Api<"devah" | "wah">) => {
 			(a) => a.keyArgs[0] === assetId,
 		)?.value;
 
-		console.log("Asset", assetId);
+		console.info("Asset", assetId);
 		if (metadata) {
-			console.log(
+			console.info(
 				"%s - %s - %d decimals - frozen:%s",
 				metadata.symbol.asText(),
 				metadata.name.asText(),
@@ -30,16 +30,16 @@ export const printAssetsAndPools = async (api: Api<"devah" | "wah">) => {
 			);
 		}
 		if (asset) {
-			console.log("Admin", asset.admin);
-			console.log("Supply: %s - Account:%s", asset.supply, asset.accounts);
-			console.log("Status:", asset.status.type);
-			console.log("Min balance:", asset.min_balance);
-			console.log(
+			console.info("Admin", asset.admin);
+			console.info("Supply: %s - Account:%s", asset.supply, asset.accounts);
+			console.info("Status:", asset.status.type);
+			console.info("Min balance:", asset.min_balance);
+			console.info(
 				"Sufficient: %s (%s)",
 				asset.is_sufficient,
 				asset.sufficients,
 			);
 		}
-		console.log();
+		console.info();
 	}
 };

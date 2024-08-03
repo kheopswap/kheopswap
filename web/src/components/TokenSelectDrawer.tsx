@@ -103,7 +103,7 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 				className,
 			)}
 		>
-			<div className="size-10 rounded-full bg-neutral-700"></div>
+			<div className="size-10 rounded-full bg-neutral-700" />
 			<div className="flex grow select-none flex-col items-start gap-0.5 text-neutral-400">
 				<div className="flex grow items-center gap-2 overflow-hidden ">
 					<div className="inline-block truncate rounded-md bg-neutral-700 text-neutral-700">

@@ -122,6 +122,7 @@ const FollowUpModalInner: FC<{
 		);
 		if (finalized?.type === "finalized") {
 			if (finalized.ok) return ["Transaction succeeded", true, "success"];
+			// biome-ignore lint/style/noUselessElse: <explanation>
 			else return ["Transaction failed", true, "error"];
 		}
 
@@ -130,6 +131,7 @@ const FollowUpModalInner: FC<{
 		);
 		if (best?.type === "txBestBlocksState" && best.found) {
 			if (best.ok) return ["Waiting for finalization", true, "success"];
+			// biome-ignore lint/style/noUselessElse: <explanation>
 			else return ["Waiting for finalization", true, "error"];
 		}
 

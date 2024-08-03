@@ -125,7 +125,7 @@ export const Drawer: FC<DrawerProps> = ({
 				leaveFrom="opacity-100"
 				leaveTo="opacity-0"
 				onClick={handleDismiss}
-			></TransitionChild>
+			/>
 
 			{/* Drawer */}
 			<TransitionChild

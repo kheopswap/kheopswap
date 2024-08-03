@@ -6,12 +6,12 @@ import { waitTransactionComplete } from "../common/waitTransactionComplete";
 
 export const sendAssetTokensCall = (
 	api: Api<"devah" | "wah">,
-	from: Account,
+	_from: Account,
 	to: SS58String,
 	assetId: number,
 	amount: bigint,
 ) => {
-	console.log("sendAssetTokens");
+	console.info("sendAssetTokens");
 
 	return api.tx.Assets.transfer_keep_alive({
 		id: assetId,
@@ -27,7 +27,7 @@ export const sendAssetTokens = async (
 	assetId: number,
 	amount: bigint,
 ) => {
-	console.log("sendAssetTokens");
+	console.info("sendAssetTokens");
 
 	const call = await sendAssetTokensCall(api, from, to, assetId, amount);
 

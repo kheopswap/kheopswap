@@ -12,7 +12,7 @@ export const Header: FC = () => {
 				<RelaySelect />
 				<ConnectButton />
 			</div>
-			<div className="h-10"></div>
+			<div className="h-10" />
 		</div>
 	);
 };

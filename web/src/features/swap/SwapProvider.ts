@@ -81,7 +81,7 @@ const useSwapInputs = ({ tokenIdIn, amountIn }: SwapInputsProps) => {
 			const plancksIn = totalIn - fee;
 
 			return [plancksIn, fee, totalIn, true];
-		} catch (err) {
+		} catch (_err) {
 			return [null, null, null, false];
 		}
 	}, [amountIn, tokenIn]);

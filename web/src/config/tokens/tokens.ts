@@ -27,8 +27,6 @@ export const TOKENS_OVERRIDES_MAP = Object.fromEntries(
 	TOKENS_OVERRIDES.map((a) => [a.id, a]),
 ) as Record<TokenId, Partial<Token>>;
 
-console.log({ TOKENS_OVERRIDES_MAP });
-
 export const TRADABLE_TOKEN_TYPES: TokenType[] = [
 	"native",
 	"asset",

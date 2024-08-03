@@ -35,7 +35,7 @@ export const PortfolioHeaderRow: FC<{
 				!rows.length && !isLoading && "invisible",
 			)}
 		>
-			<div></div>
+			<div />
 			<div className={"hidden text-right sm:block"}>
 				<ColumnHeaderButton
 					selected={sortByCol === "balance"}

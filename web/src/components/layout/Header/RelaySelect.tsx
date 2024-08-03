@@ -129,11 +129,11 @@ export const RelaySelect = () => {
 			const last = matches[matches.length - 1];
 			if (last?.params?.relayId) {
 				const newPath = last.pathname.replace(
-					"/" + last.params.relayId,
-					"/" + relayId,
+					`/${last.params.relayId}`,
+					`/${relayId}`,
 				);
 				navigate(newPath);
-			} else navigate("/" + relayId + "/swap");
+			} else navigate(`/${relayId}/swap`);
 			close();
 		},
 		[matches, navigate, close],

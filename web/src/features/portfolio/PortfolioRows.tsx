@@ -44,7 +44,7 @@ export const PortfolioRows: FC<{
 			>
 				{isLoading ? (
 					<>
-						<Shimmer className="size-10 rounded-full"></Shimmer>
+						<Shimmer className="size-10 rounded-full" />
 						<div className="flex grow flex-col items-start gap-1 overflow-hidden text-xs">
 							<Shimmer className="">TOKEN</Shimmer>
 							<Shimmer className="">Polkadot Network</Shimmer>

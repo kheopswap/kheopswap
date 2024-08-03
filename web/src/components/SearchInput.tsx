@@ -54,7 +54,9 @@ export const SearchInput: FC<{
 				ref={refInput}
 				type="text"
 				placeholder={placeholder}
-				className={`grow bg-transparent outline-none placeholder:text-neutral-600 `}
+				className={
+					"grow bg-transparent outline-none placeholder:text-neutral-600"
+				}
 				onChange={(e) => setSearch(e.target.value)}
 			/>
 			<button

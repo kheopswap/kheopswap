@@ -123,7 +123,7 @@ const useTeleportProvider = () => {
 			return formData.amountIn && tokenIn
 				? tokensToPlancks(formData.amountIn, tokenIn.decimals)
 				: null;
-		} catch (err) {
+		} catch (_err) {
 			// invalid amount
 			return null;
 		}
@@ -216,7 +216,7 @@ const useTeleportProvider = () => {
 			tokenIdIn: prev.tokenIdOut,
 			tokenIdOut: prev.tokenIdIn,
 		}));
-	}, [setFormData]);
+	}, []);
 
 	const onMaxClick = useCallback(() => {
 		if (tokenIn && balanceIn && feeToken) {

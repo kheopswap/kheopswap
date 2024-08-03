@@ -42,7 +42,7 @@ const ExtensionButton: FC<{
 					"size-2 rounded-full",
 					isConnected ? "bg-success-500" : "bg-error-500",
 				)}
-			></div>
+			/>
 		</button>
 	);
 };
