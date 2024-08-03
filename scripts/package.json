@@ -4,9 +4,6 @@
 	"type": "module",
 	"scripts": {
 		"setup": "bun papi update && bun papi generate && bun src/index.ts",
-		"exec": "bun src/index.ts",
-		"debugpool": "bun src/debugpool.ts",
-		"swap": "bun src/swap.ts",
 		"provision-kht": "bun src/provision-kht.ts",
 		"provision-zombienet": "bun papi update devah devrelay && bun src/provision-zombienet.ts",
 		"preinstall": "npx only-allow bun"

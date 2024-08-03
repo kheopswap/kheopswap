@@ -8,31 +8,31 @@
 		},
 		"devah": {
 			"wsUrl": "ws://127.0.0.1:42070",
-			"metadata": ".papi/scale/papi/devah.scale"
+			"metadata": ".papi/scale/devah.scale"
 		},
 		"wah": {
 			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
-			"metadata": ".papi/scale/papi/wah.scale"
+			"metadata": ".papi/scale/wah.scale"
 		},
 		"kah": {
 			"wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
-			"metadata": ".papi/scale/papi/wah.scale"
+			"metadata": ".papi/scale/wah.scale"
 		},
 		"rah": {
 			"wsUrl": "wss://rococo-asset-hub-rpc.polkadot.io",
-			"metadata": ".papi/scale/papi/rah.scale"
+			"metadata": ".papi/scale/rah.scale"
 		},
 		"pah": {
 			"wsUrl": "wss://statemint-rpc.dwellir.com",
-			"metadata": ".papi/scale/papi/pah.scale"
+			"metadata": ".papi/scale/pah.scale"
 		},
 		"rococo": {
 			"wsUrl": "wss://rococo-rpc.polkadot.io",
-			"metadata": ".papi/scale/papi/rococo.scale"
+			"metadata": ".papi/scale/rococo.scale"
 		},
 		"westend": {
 			"wsUrl": "wss://westend-rpc.polkadot.io",
-			"metadata": ".papi/scale/papi/westend.scale"
+			"metadata": ".papi/scale/westend.scale"
 		}
 	}
 }

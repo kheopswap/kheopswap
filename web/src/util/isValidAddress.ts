@@ -9,7 +9,7 @@ export const isValidAddress = (
 		if (!address) return false;
 		accountIdEncoder(address);
 		return true;
-	} catch (err) {
+	} catch (_err) {
 		return false;
 	}
 };

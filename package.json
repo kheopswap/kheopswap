@@ -7,7 +7,8 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "pnpm --filter web build",
 		"dev": "pnpm --filter web dev",
-		"clean": "rm -rf node_modules && rm -rf web/node_modules && rm -rf scripts/node_modules"
+		"clean": "rm -rf node_modules && rm -rf web/node_modules && rm -rf scripts/node_modules",
+		"lint": "pnpm biome check --write"
 	},
 	"keywords": [],
 	"author": "Kheops",
