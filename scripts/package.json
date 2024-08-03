@@ -1,28 +1,26 @@
 {
-  "name": "scripts",
-  "module": "src/index.ts",
-  "type": "module",
-  "scripts": {
-    "setup": "bun papi update && bun papi generate && bun src/index.ts",
-    "exec": "bun src/index.ts",
-    "debugpool": "bun src/debugpool.ts",
-    "swap": "bun src/swap.ts",
-    "provision-kht": "bun src/provision-kht.ts",
-    "provision-zombienet": "bun papi update devah devrelay && bun src/provision-zombienet.ts",
-    "preinstall": "npx only-allow bun"
-  },
-  "devDependencies": {
-    "@types/bun": "^1.1.6"
-  },
-  "peerDependencies": {
-    "typescript": "^5.5.4"
-  },
-  "dependencies": {
-    "@polkadot-api/descriptors": "file:.papi/descriptors",
-    "@polkadot-labs/hdkd": "^0.0.6",
-    "@polkadot-labs/hdkd-helpers": "^0.0.6",
-    "polkadot-api": "^0.12.0",
-    "rxjs": "^7.8.1",
-    "viem": "^2.18.2"
-  }
+	"name": "scripts",
+	"module": "src/index.ts",
+	"type": "module",
+	"scripts": {
+		"setup": "bun papi update && bun papi generate && bun src/index.ts",
+		"provision-kht": "bun src/provision-kht.ts",
+		"provision-zombienet": "bun papi update devah devrelay && bun src/provision-zombienet.ts",
+		"preinstall": "npx only-allow bun"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.1.6",
+		"@biomejs/biome": "^1.8.3"
+	},
+	"peerDependencies": {
+		"typescript": "^5.5.4"
+	},
+	"dependencies": {
+		"@polkadot-api/descriptors": "file:.papi/descriptors",
+		"@polkadot-labs/hdkd": "^0.0.6",
+		"@polkadot-labs/hdkd-helpers": "^0.0.6",
+		"polkadot-api": "^0.12.0",
+		"rxjs": "^7.8.1",
+		"viem": "^2.18.2"
+	}
 }

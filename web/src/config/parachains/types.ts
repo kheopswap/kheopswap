@@ -1,8 +1,8 @@
-import { ChainId } from "src/config/chains";
+import type { ChainId } from "src/config/chains";
 
 export type Parachain = {
-  paraId: number;
-  chainId?: ChainId;
-  name: string;
-  subscanUrl?: string;
+	paraId: number;
+	chainId?: ChainId;
+	name: string;
+	subscanUrl?: string;
 };

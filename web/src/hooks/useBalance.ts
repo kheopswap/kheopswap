@@ -1,30 +1,30 @@
-import { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 
 import { useBalances } from "./useBalances";
 
-import { TokenId } from "src/config/tokens";
+import type { TokenId } from "src/config/tokens";
 
 type UseBalanceProps = {
-  address: SS58String | null | undefined;
-  tokenId: TokenId | null | undefined;
+	address: SS58String | null | undefined;
+	tokenId: TokenId | null | undefined;
 };
 
 type UseBalanceResult = {
-  isLoading: boolean;
-  data: bigint | undefined;
+	isLoading: boolean;
+	data: bigint | undefined;
 };
 
 export const useBalance = ({
-  address,
-  tokenId,
+	address,
+	tokenId,
 }: UseBalanceProps): UseBalanceResult => {
-  const balanceDefs = useMemo(
-    () => (address && tokenId ? [{ address, tokenId }] : undefined),
-    [address, tokenId],
-  );
+	const balanceDefs = useMemo(
+		() => (address && tokenId ? [{ address, tokenId }] : undefined),
+		[address, tokenId],
+	);
 
-  const { isLoading, data } = useBalances({ balanceDefs });
+	const { isLoading, data } = useBalances({ balanceDefs });
 
-  return { isLoading, data: data?.[0]?.balance };
+	return { isLoading, data: data?.[0]?.balance };
 };

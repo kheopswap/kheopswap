@@ -1,139 +1,137 @@
-import { SS58String } from "polkadot-api";
+import { bind } from "@react-rxjs/core";
+import { entries, isEqual } from "lodash";
+import type { SS58String } from "polkadot-api";
 import {
-  InjectedExtension,
-  InjectedPolkadotAccount,
-  connectInjectedExtension,
-  getInjectedExtensions,
+	type InjectedExtension,
+	type InjectedPolkadotAccount,
+	connectInjectedExtension,
+	getInjectedExtensions,
 } from "polkadot-api/pjs-signer";
 import { useCallback } from "react";
 import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  mergeMap,
-  Observable,
-  of,
-  shareReplay,
-  timer,
+	BehaviorSubject,
+	Observable,
+	combineLatest,
+	map,
+	mergeMap,
+	of,
+	shareReplay,
+	timer,
 } from "rxjs";
-import { entries, isEqual } from "lodash";
-import { bind } from "@react-rxjs/core";
 
 import { useSetting } from "./useSetting";
 
-import {
-  InjectedAccountId,
-  getInjectedAccountId,
-  logger,
-  sortWallets,
-} from "src/util";
 import { getSetting$ } from "src/services/settings";
+import {
+	type InjectedAccountId,
+	getInjectedAccountId,
+	logger,
+	sortWallets,
+} from "src/util";
 
 export type InjectedAccount = InjectedPolkadotAccount & {
-  id: InjectedAccountId;
-  wallet: string;
+	id: InjectedAccountId;
+	wallet: string;
 };
 
 const getInjectedWalletsIds = () =>
-  getInjectedExtensions()?.concat().sort(sortWallets) ?? [];
+	getInjectedExtensions()?.concat().sort(sortWallets) ?? [];
 
 const injectedExtensionIds$ = new BehaviorSubject<string[]>(
-  getInjectedWalletsIds(),
+	getInjectedWalletsIds(),
 );
 
 // poll for wallets that are slow to register
 of(100, 500, 1000)
-  .pipe(mergeMap((time) => timer(time)))
-  .subscribe(() => {
-    const ids = getInjectedWalletsIds();
-    if (!isEqual(ids, injectedExtensionIds$.value))
-      injectedExtensionIds$.next(ids);
-  });
+	.pipe(mergeMap((time) => timer(time)))
+	.subscribe(() => {
+		const ids = getInjectedWalletsIds();
+		if (!isEqual(ids, injectedExtensionIds$.value))
+			injectedExtensionIds$.next(ids);
+	});
 
 const connectedExtensions = new Map<string, Promise<InjectedExtension>>();
 
 const connectedExtensions$ = combineLatest([
-  injectedExtensionIds$,
-  getSetting$("connectedExtensionIds"),
+	injectedExtensionIds$,
+	getSetting$("connectedExtensionIds"),
 ]).pipe(
-  mergeMap(async ([injectedExtensions, connectedExtensionIds]) => {
-    const injectedWallets = await Promise.all(
-      connectedExtensionIds
-        .filter((id) => injectedExtensions.includes(id))
-        .map(async (name) => {
-          try {
-            const stop = logger.timer(`connecting wallet ${name}`);
-            if (!connectedExtensions.has(name)) {
-              logger.debug("connecting wallet %s", name);
-              connectedExtensions.set(name, connectInjectedExtension(name));
-            }
-            const connected = (await connectedExtensions.get(
-              name,
-            )) as InjectedExtension;
-            stop();
-            return connected;
-          } catch (err) {
-            console.error("Failed to connect wallet %s", name, { err });
-            connectedExtensions.delete(name);
-            return null;
-          }
-        }),
-    );
+	mergeMap(async ([injectedExtensions, connectedExtensionIds]) => {
+		const injectedWallets = await Promise.all(
+			connectedExtensionIds
+				.filter((id) => injectedExtensions.includes(id))
+				.map(async (name) => {
+					try {
+						const stop = logger.timer(`connecting wallet ${name}`);
+						if (!connectedExtensions.has(name)) {
+							logger.debug("connecting wallet %s", name);
+							connectedExtensions.set(name, connectInjectedExtension(name));
+						}
+						const connected = (await connectedExtensions.get(
+							name,
+						)) as InjectedExtension;
+						stop();
+						return connected;
+					} catch (err) {
+						console.error("Failed to connect wallet %s", name, { err });
+						connectedExtensions.delete(name);
+						return null;
+					}
+				}),
+		);
 
-    return injectedWallets.filter(Boolean) as InjectedExtension[];
-  }),
+		return injectedWallets.filter(Boolean) as InjectedExtension[];
+	}),
 );
 
 const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
-  (subscriber) => {
-    const accounts: Record<string, InjectedPolkadotAccount[]> = {};
-    const subscriptions: Record<string, () => void> = {};
+	(subscriber) => {
+		const accounts: Record<string, InjectedPolkadotAccount[]> = {};
+		const subscriptions: Record<string, () => void> = {};
 
-    return connectedExtensions$.subscribe((extensions) => {
-      for (const extension of extensions)
-        if (!subscriptions[extension.name]) {
-          try {
-            // required because some wallets dont always fire subscription callbacks
-            accounts[extension.name] = extension.getAccounts();
-            subscriber.next({ ...accounts });
+		return connectedExtensions$.subscribe((extensions) => {
+			for (const extension of extensions)
+				if (!subscriptions[extension.name]) {
+					try {
+						// required because some wallets dont always fire subscription callbacks
+						accounts[extension.name] = extension.getAccounts();
+						subscriber.next({ ...accounts });
 
-            subscriptions[extension.name] = extension.subscribe(
-              (extensionAccounts) => {
-                accounts[extension.name] = extensionAccounts;
-                subscriber.next({ ...accounts });
-              },
-            );
-          } catch (err) {
-            console.error("Failed to subscribe to %s", extension.name, { err });
-          }
-        }
+						subscriptions[extension.name] = extension.subscribe(
+							(extensionAccounts) => {
+								accounts[extension.name] = extensionAccounts;
+								subscriber.next({ ...accounts });
+							},
+						);
+					} catch (err) {
+						console.error("Failed to subscribe to %s", extension.name, { err });
+					}
+				}
 
-      for (const [name, unsub] of entries(subscriptions))
-        if (!extensions.some((ext) => ext.name === name)) {
-          unsub();
-          delete subscriptions[name];
-          delete accounts[name];
-          subscriber.next({ ...accounts });
-        }
+			for (const [name, unsub] of entries(subscriptions))
+				if (!extensions.some((ext) => ext.name === name)) {
+					unsub();
+					delete subscriptions[name];
+					delete accounts[name];
+					subscriber.next({ ...accounts });
+				}
 
-      // init empty if no extensions
-      if (!extensions.length) subscriber.next({});
-    });
-  },
+			// init empty if no extensions
+			if (!extensions.length) subscriber.next({});
+		});
+	},
 ).pipe(
-  map(
-    (connectedAccounts) =>
-      entries(connectedAccounts)
-        .map(([wallet, accounts]) =>
-          accounts.map((account) => ({
-            id: getInjectedAccountId(wallet, account.address as SS58String),
-            ...account,
-            wallet,
-          })),
-        )
-        .flat() as InjectedAccount[],
-  ),
-  shareReplay(1),
+	map(
+		(connectedAccounts) =>
+			entries(connectedAccounts).flatMap(([wallet, accounts]) =>
+				accounts.map((account) => ({
+					id: getInjectedAccountId(wallet, account.address as SS58String),
+					...account,
+					wallet,
+				})),
+			) as InjectedAccount[],
+	),
+	shareReplay(1),
 );
 
 const [useInjectedExtensionsIds] = bind(injectedExtensionIds$);
@@ -141,34 +139,34 @@ const [useConnectedExtensions] = bind(connectedExtensions$);
 const [useConnectedAccounts] = bind(accounts$);
 
 export const useWallets = () => {
-  const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
+	const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
 
-  const injectedExtensionIds = useInjectedExtensionsIds();
-  const connectedExtensions = useConnectedExtensions();
-  const accounts = useConnectedAccounts();
+	const injectedExtensionIds = useInjectedExtensionsIds();
+	const connectedExtensions = useConnectedExtensions();
+	const accounts = useConnectedAccounts();
 
-  const connect = useCallback(
-    (name: string) => {
-      setConnectedExtensionIds((prev) => [
-        ...prev.filter((n) => n !== name),
-        name,
-      ]);
-    },
-    [setConnectedExtensionIds],
-  );
+	const connect = useCallback(
+		(name: string) => {
+			setConnectedExtensionIds((prev) => [
+				...prev.filter((n) => n !== name),
+				name,
+			]);
+		},
+		[setConnectedExtensionIds],
+	);
 
-  const disconnect = useCallback(
-    (name: string) => {
-      setConnectedExtensionIds((prev) => prev.filter((n) => n !== name));
-    },
-    [setConnectedExtensionIds],
-  );
+	const disconnect = useCallback(
+		(name: string) => {
+			setConnectedExtensionIds((prev) => prev.filter((n) => n !== name));
+		},
+		[setConnectedExtensionIds],
+	);
 
-  return {
-    injectedExtensionIds,
-    connectedExtensions,
-    connect,
-    disconnect,
-    accounts,
-  };
+	return {
+		injectedExtensionIds,
+		connectedExtensions,
+		connect,
+		disconnect,
+		accounts,
+	};
 };

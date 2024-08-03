@@ -1,7 +1,7 @@
 [
-  {
-    "id": 1,
-    "name": "Ethereum Mainnet",
-    "explorerUrl": "https://etherscan.io"
-  }
+	{
+		"id": 1,
+		"name": "Ethereum Mainnet",
+		"explorerUrl": "https://etherscan.io"
+	}
 ]
