@@ -305,6 +305,8 @@ const useTransactionProvider = ({
 	);
 
 	return {
+		account,
+
 		feeToken,
 		feeTokens,
 		isLoadingFeeTokens,

@@ -5,13 +5,14 @@ import { type FC, useCallback, useMemo } from "react";
 import { Shimmer, TokenSelectDrawer, Tokens } from "src/components";
 import type { TokenId } from "src/config/tokens";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { useOpenClose } from "src/hooks";
+import { type InjectedAccount, useOpenClose } from "src/hooks";
 import { cn, isBigInt } from "src/util";
 
 export const TransactionFeeSummaryValue: FC = () => {
 	const { isOpen, open, close } = useOpenClose();
 
 	const {
+		account,
 		feeEstimate,
 		feeToken,
 		feeTokens,
@@ -36,6 +37,11 @@ export const TransactionFeeSummaryValue: FC = () => {
 	);
 
 	const feeTokensMap = useMemo(() => keyBy(feeTokens, "id"), [feeTokens]);
+
+	const accounts = useMemo(
+		() => [account].filter(Boolean) as InjectedAccount[],
+		[account],
+	);
 
 	if (
 		!feeToken ||
@@ -79,6 +85,7 @@ export const TransactionFeeSummaryValue: FC = () => {
 				onDismiss={close}
 				onChange={handleTokenChange}
 				tokens={feeTokensMap}
+				accounts={accounts}
 				isLoading={isLoadingFeeTokens}
 				tokenId={feeToken.id}
 				title="Select fee token"
