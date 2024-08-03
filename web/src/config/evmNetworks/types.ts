@@ -1,5 +1,5 @@
 export type EvmNetwork = {
-  id: number;
-  name: string;
-  explorerUrl?: string;
+	id: number;
+	name: string;
+	explorerUrl?: string;
 };

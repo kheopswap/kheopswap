@@ -1,19 +1,19 @@
 import {
-  devah,
-  devrelay,
-  kah,
-  pah,
-  rah,
-  rococo,
-  wah,
-  westend,
+	devah,
+	devrelay,
+	kah,
+	pah,
+	rah,
+	rococo,
+	wah,
+	westend,
 } from "@polkadot-api/descriptors";
 import {
-  createClient,
-  type ChainDefinition,
-  type TypedApi,
+	type ChainDefinition,
+	type TypedApi,
+	createClient,
 } from "polkadot-api";
-import { getSmProvider } from "polkadot-api/sm-provider";
+import type { getSmProvider } from "polkadot-api/sm-provider";
 import { WebSocketProvider } from "polkadot-api/ws-provider/web";
 import papiConfig from "../../.papi/polkadot-api.json";
 
@@ -43,26 +43,26 @@ import { chainSpec as wahChainSpecs } from "polkadot-api/chains/westend2_asset_h
 type JsonRpcProvider = ReturnType<typeof getSmProvider>;
 
 const chainsSpecs: Partial<Record<ChainId, any>> = {
-  rococo: rococoChainSpecs,
-  westend: westendChainSpecs,
-  wah: wahChainSpecs,
-  rah: rahChainSpecs,
+	rococo: rococoChainSpecs,
+	westend: westendChainSpecs,
+	wah: wahChainSpecs,
+	rah: rahChainSpecs,
 };
 
 const relayMap: Partial<Record<ChainId, ChainId>> = {
-  wah: "westend",
-  rah: "rococo",
+	wah: "westend",
+	rah: "rococo",
 };
 
 const descriptors = {
-  devrelay,
-  rococo,
-  westend,
-  devah,
-  wah,
-  kah,
-  rah,
-  pah,
+	devrelay,
+	rococo,
+	westend,
+	devah,
+	wah,
+	kah,
+	rah,
+	pah,
 } as const;
 
 type Descriptors = typeof descriptors;
@@ -107,30 +107,30 @@ export type Api<Id extends ChainId> = TypedApi<Descriptors[Id]>;
 // };
 
 const getProvider = async (chainId: ChainId) => {
-  // TODO bring back light clients
-  if (!Date.now() && chainsSpecs[chainId]) {
-    throw new Error("TODO");
-    // const relayId = relayMap[chainId];
-    // return relayId
-    //   ? getParaProvider(relayId, chainId)
-    //   : getRelayProvider(chainId);
-  } else {
-    const wsUrl = papiConfig.entries[chainId]?.wsUrl as string;
-    if (!wsUrl) throw new Error("wsUrl not found for chainId: " + chainId);
-    return WebSocketProvider(wsUrl);
-  }
+	// TODO bring back light clients
+	if (!Date.now() && chainsSpecs[chainId]) {
+		throw new Error("TODO");
+		// const relayId = relayMap[chainId];
+		// return relayId
+		//   ? getParaProvider(relayId, chainId)
+		//   : getRelayProvider(chainId);
+	} else {
+		const wsUrl = papiConfig.entries[chainId]?.wsUrl as string;
+		if (!wsUrl) throw new Error("wsUrl not found for chainId: " + chainId);
+		return WebSocketProvider(wsUrl);
+	}
 };
 
 export const getApi = async <Id extends keyof typeof descriptors>(
-  chainId: Id
+	chainId: Id,
 ): Promise<Api<Id>> => {
-  // const networks = packageJson["polkadot-api"] as any;
-  // const wsUrl = networks[chainId]?.wsUrl as string;
-  // if (!wsUrl) throw new Error("wsUrl not found for chainId: " + chainId);
-  // const provider = WebSocketProvider(wsUrl);
+	// const networks = packageJson["polkadot-api"] as any;
+	// const wsUrl = networks[chainId]?.wsUrl as string;
+	// if (!wsUrl) throw new Error("wsUrl not found for chainId: " + chainId);
+	// const provider = WebSocketProvider(wsUrl);
 
-  const provider = await getProvider(chainId);
-  const client = createClient(provider);
+	const provider = await getProvider(chainId);
+	const client = createClient(provider);
 
-  return client.getTypedApi(descriptors[chainId]);
+	return client.getTypedApi(descriptors[chainId]);
 };

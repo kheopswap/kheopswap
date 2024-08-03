@@ -4,12 +4,12 @@ import { SwapProvider } from "./SwapProvider";
 import { SwapTransactionProvider } from "./SwapTransactionProvider";
 
 export const Swap = () => {
-  return (
-    <SwapProvider>
-      <SwapTransactionProvider>
-        <SwapForm />
-        <SwapFollowUp />
-      </SwapTransactionProvider>
-    </SwapProvider>
-  );
+	return (
+		<SwapProvider>
+			<SwapTransactionProvider>
+				<SwapForm />
+				<SwapFollowUp />
+			</SwapTransactionProvider>
+		</SwapProvider>
+	);
 };

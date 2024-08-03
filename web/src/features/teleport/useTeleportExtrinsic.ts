@@ -1,42 +1,42 @@
 import { useQuery } from "@tanstack/react-query";
-import { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api";
 
 import { getTeleportExtrinsic } from "./extrinsics";
 
-import { TokenId } from "src/config/tokens";
+import type { TokenId } from "src/config/tokens";
 
 type UseTeleportExtrinsicProps = {
-  tokenIdIn: TokenId | null | undefined;
-  tokenIdOut: TokenId | null | undefined;
-  plancksIn: bigint | null;
-  recipient: SS58String | null;
+	tokenIdIn: TokenId | null | undefined;
+	tokenIdOut: TokenId | null | undefined;
+	plancksIn: bigint | null;
+	recipient: SS58String | null;
 };
 
 export const useTeleportExtrinsic = ({
-  tokenIdIn,
-  tokenIdOut,
-  plancksIn,
-  recipient,
+	tokenIdIn,
+	tokenIdOut,
+	plancksIn,
+	recipient,
 }: UseTeleportExtrinsicProps) => {
-  return useQuery({
-    queryKey: [
-      "teleportExtrinsic",
-      tokenIdIn,
-      tokenIdOut,
-      plancksIn?.toString(),
-      recipient,
-    ],
-    queryFn: () => {
-      if (
-        !tokenIdIn ||
-        !tokenIdOut ||
-        !recipient ||
-        typeof plancksIn !== "bigint"
-      )
-        return null;
+	return useQuery({
+		queryKey: [
+			"teleportExtrinsic",
+			tokenIdIn,
+			tokenIdOut,
+			plancksIn?.toString(),
+			recipient,
+		],
+		queryFn: () => {
+			if (
+				!tokenIdIn ||
+				!tokenIdOut ||
+				!recipient ||
+				typeof plancksIn !== "bigint"
+			)
+				return null;
 
-      return getTeleportExtrinsic(tokenIdIn, plancksIn, tokenIdOut, recipient);
-    },
-    refetchInterval: false,
-  });
+			return getTeleportExtrinsic(tokenIdIn, plancksIn, tokenIdOut, recipient);
+		},
+		refetchInterval: false,
+	});
 };

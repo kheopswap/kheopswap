@@ -4,58 +4,58 @@
  */
 
 export type ProviderDetail = {
-  kind: string;
-  info: ProviderInfo;
-  provider: unknown;
+	kind: string;
+	info: ProviderInfo;
+	provider: unknown;
 };
 
 export type OnProvider = {
-  onProvider(detail: ProviderDetail): void;
+	onProvider(detail: ProviderDetail): void;
 };
 
 export type ProviderInfo = {
-  uuid: string;
-  name: string;
-  icon: string;
-  rdns: string;
+	uuid: string;
+	name: string;
+	icon: string;
+	rdns: string;
 };
 
 export const discoverScProviders = (): ProviderDetail[] => {
-  const providers: ProviderDetail[] = [];
+	const providers: ProviderDetail[] = [];
 
-  // When this event is dispatched, event listeners are expected to
-  // respond immediately with a provider. This means the `providers`
-  // array will be populated synchronously.
-  window.dispatchEvent(
-    new CustomEvent<OnProvider>("substrateDiscovery:requestProvider", {
-      detail: {
-        onProvider(detail) {
-          providers.push(detail);
-        },
-      },
-    }),
-  );
+	// When this event is dispatched, event listeners are expected to
+	// respond immediately with a provider. This means the `providers`
+	// array will be populated synchronously.
+	window.dispatchEvent(
+		new CustomEvent<OnProvider>("substrateDiscovery:requestProvider", {
+			detail: {
+				onProvider(detail) {
+					providers.push(detail);
+				},
+			},
+		}),
+	);
 
-  // slice the array to prevent further "asynchronous" updates. Providers
-  // that did not respond synchronously will be dropped.
-  const providersSliced = providers.slice();
+	// slice the array to prevent further "asynchronous" updates. Providers
+	// that did not respond synchronously will be dropped.
+	const providersSliced = providers.slice();
 
-  return providersSliced;
+	return providersSliced;
 };
 
 // #region Events
 export interface AnnounceProviderEvent extends CustomEvent<ProviderDetail> {
-  type: "substrateDiscovery:announceProvider";
+	type: "substrateDiscovery:announceProvider";
 }
 
 export interface RequestProviderEvent extends CustomEvent<OnProvider> {
-  type: "substrateDiscovery:requestProvider";
+	type: "substrateDiscovery:requestProvider";
 }
 
 declare global {
-  interface WindowEventMap {
-    "substrateDiscovery:announceProvider": AnnounceProviderEvent;
-    "substrateDiscovery:requestProvider": RequestProviderEvent;
-  }
+	interface WindowEventMap {
+		"substrateDiscovery:announceProvider": AnnounceProviderEvent;
+		"substrateDiscovery:requestProvider": RequestProviderEvent;
+	}
 }
 // #endregion

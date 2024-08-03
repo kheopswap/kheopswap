@@ -1,37 +1,37 @@
 [
-  {
-    "paraId": 3369,
-    "name": "Mythos",
-    "subscanUrl": "https://mythos.subscan.io",
-    "parachainInfoUrl": "https://parachains.info/details/mythos"
-  },
-  {
-    "paraId": 2004,
-    "name": "Moonbeam",
-    "subscanUrl": "https://moonbeam.subscan.io",
-    "parachainInfoUrl": "https://parachains.info/details/moonbeam"
-  },
-  {
-    "paraId": 2023,
-    "name": "Moonriver",
-    "subscanUrl": "https://moonriver.subscan.io",
-    "parachainInfoUrl": "https://parachains.info/details/moonriver"
-  },
-  {
-    "paraId": 2034,
-    "name": "Hydration",
-    "subscanUrl": "https://hydration.subscan.io/",
-    "parachainInfoUrl": "https://parachains.info/details/hydration"
-  },
-  {
-    "paraId": 2051,
-    "name": "Ajuna Network",
-    "subscanUrl": "https://ajuna.subscan.io/",
-    "parachainInfoUrl": "https://parachains.info/details/ajuna_network"
-  },
-  {
-    "paraId": 2011,
-    "name": "Equilibrium",
-    "parachainInfoUrl": "https://parachains.info/details/equilibrium"
-  }
+	{
+		"paraId": 3369,
+		"name": "Mythos",
+		"subscanUrl": "https://mythos.subscan.io",
+		"parachainInfoUrl": "https://parachains.info/details/mythos"
+	},
+	{
+		"paraId": 2004,
+		"name": "Moonbeam",
+		"subscanUrl": "https://moonbeam.subscan.io",
+		"parachainInfoUrl": "https://parachains.info/details/moonbeam"
+	},
+	{
+		"paraId": 2023,
+		"name": "Moonriver",
+		"subscanUrl": "https://moonriver.subscan.io",
+		"parachainInfoUrl": "https://parachains.info/details/moonriver"
+	},
+	{
+		"paraId": 2034,
+		"name": "Hydration",
+		"subscanUrl": "https://hydration.subscan.io/",
+		"parachainInfoUrl": "https://parachains.info/details/hydration"
+	},
+	{
+		"paraId": 2051,
+		"name": "Ajuna Network",
+		"subscanUrl": "https://ajuna.subscan.io/",
+		"parachainInfoUrl": "https://parachains.info/details/ajuna_network"
+	},
+	{
+		"paraId": 2011,
+		"name": "Equilibrium",
+		"parachainInfoUrl": "https://parachains.info/details/equilibrium"
+	}
 ]

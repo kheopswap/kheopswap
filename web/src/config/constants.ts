@@ -1,4 +1,4 @@
-import { ChainIdRelay } from "./chains";
+import type { ChainIdRelay } from "./chains";
 
 export const DEV = import.meta.env.DEV;
 export const DEV_IGNORE_STORAGE = import.meta.env.VITE_DEV_IGNORE_STORAGE;
