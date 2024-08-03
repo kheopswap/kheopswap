@@ -10,8 +10,6 @@ const log = console.log.bind(console);
 const info = console.info.bind(console);
 const warn = console.warn.bind(console);
 const error = console.error.bind(console);
-const time = console.time.bind(console);
-const timeEnd = console.timeEnd.bind(console);
 const table = console.table.bind(console);
 
 export const logger = {
@@ -25,14 +23,11 @@ export const logger = {
 
 	timer: isDevMode
 		? (label: string, logAtStart?: boolean) => {
-				const key = `${label} - ${crypto.randomUUID().slice(0, 8)}`;
+				if (logAtStart) debug(`${label} starting`);
 
-				if (logAtStart) debug(`${key} starting`);
+				const start = performance.now();
 
-				time(key);
-				return () => {
-					timeEnd(key);
-				};
+				return () => debug(`${label} - ${performance.now() - start}ms`);
 			}
 		: () => NO_OP,
 };
