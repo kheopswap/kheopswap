@@ -82,7 +82,7 @@ const useTransferProvider = () => {
 	);
 
 	const token = useMemo(
-		() => tokens.find((t) => t.id === formData.tokenId) ?? null,
+		() => tokens[formData.tokenId] ?? null,
 		[formData.tokenId, tokens],
 	);
 	const tokenChain = useTokenChain({ tokenId: formData.tokenId as TokenId });

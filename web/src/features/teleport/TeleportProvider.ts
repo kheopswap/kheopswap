@@ -3,12 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { TeleportFormInputs } from "./schema";
 import { useTeleportExtrinsic } from "./useTeleportExtrinsic";
 
-import {
-	type Token,
-	type TokenId,
-	getTokenId,
-	parseTokenId,
-} from "src/config/tokens";
+import { keyBy, values } from "lodash";
+import { type TokenId, getTokenId, parseTokenId } from "src/config/tokens";
 import {
 	useBalance,
 	useEstimateFee,
@@ -59,10 +55,7 @@ const useTeleportProvider = () => {
 
 	// TODO para to para & relay to paras other than asset hub
 	const tokens = useMemo(
-		() =>
-			[relayNativeToken, assetHubNativeToken].filter(
-				(t: unknown): t is Token => !!t,
-			) as Token[],
+		() => keyBy([relayNativeToken, assetHubNativeToken], "id"),
 		[relayNativeToken, assetHubNativeToken],
 	);
 
@@ -113,8 +106,8 @@ const useTeleportProvider = () => {
 	}, [allChains, assetHub, formData, relay]);
 
 	const [tokenIn, tokenOut] = useMemo(() => {
-		const tokenIn = tokens.find((t) => t.id === formData.tokenIdIn);
-		const tokenOut = tokens.find((t) => t.id === formData.tokenIdOut);
+		const tokenIn = tokens[formData.tokenIdIn];
+		const tokenOut = tokens[formData.tokenIdOut];
 		return [tokenIn, tokenOut];
 	}, [formData.tokenIdIn, formData.tokenIdOut, tokens]);
 
@@ -186,7 +179,7 @@ const useTeleportProvider = () => {
 
 	const onTokenInChange = useCallback(
 		(tokenId: TokenId) => {
-			const other = tokens.find((t) => t.id !== tokenId);
+			const other = tokens[tokenId];
 			if (!other) return;
 			setFormData((prev) => ({
 				...prev,
@@ -199,7 +192,7 @@ const useTeleportProvider = () => {
 
 	const onTokenOutChange = useCallback(
 		(tokenId: TokenId) => {
-			const other = tokens.find((t) => t.id !== tokenId);
+			const other = values(tokens).find((t) => t.id !== tokenId);
 			if (!other) return;
 			setFormData((prev) => ({
 				...prev,

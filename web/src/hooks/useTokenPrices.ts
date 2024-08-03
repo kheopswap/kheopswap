@@ -1,4 +1,4 @@
-import { keyBy } from "lodash";
+import { keyBy, values } from "lodash";
 import { useMemo } from "react";
 import { parseUnits } from "viem";
 
@@ -24,7 +24,7 @@ export const useTokenPrices = () => {
 
 	const nativePriceInputs = useMemo<UseAssetConvertMultiProps>(
 		() => ({
-			inputs: tokens.map((token) => ({
+			inputs: values(tokens).map((token) => ({
 				tokenIdIn: token.id,
 				plancksIn: parseUnits("1", token.decimals),
 				tokenIdOut: nativeToken.id,
@@ -35,7 +35,7 @@ export const useTokenPrices = () => {
 
 	const stablePriceInputs = useMemo<UseAssetConvertMultiProps>(
 		() => ({
-			inputs: tokens.map((token) => ({
+			inputs: values(tokens).map((token) => ({
 				tokenIdIn: getAssetHubMirrorTokenId(token.id),
 				plancksIn: parseUnits("1", token.decimals),
 				tokenIdOut: stableToken.id,
@@ -54,7 +54,7 @@ export const useTokenPrices = () => {
 		const nativePricesMap = keyBy(nativePrices, "tokenIdIn");
 		const stablePricesMap = keyBy(stablePrices, "tokenIdIn");
 
-		return tokens.map((token) => {
+		return values(tokens).map((token) => {
 			const priceTokenId = getAssetHubMirrorTokenId(token.id);
 			const nativePrice = nativePricesMap[priceTokenId];
 			const stablePrice = stablePricesMap[priceTokenId];

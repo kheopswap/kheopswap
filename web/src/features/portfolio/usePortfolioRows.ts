@@ -1,4 +1,4 @@
-import { keyBy } from "lodash";
+import { keyBy, values } from "lodash";
 import { useMemo } from "react";
 
 import { usePortfolio } from "./PortfolioProvider";
@@ -17,7 +17,7 @@ export const usePortfolioRows = () => {
 	return useMemo(() => {
 		const tvlByTokenId = keyBy(tvl, "tokenId");
 		const priceByTokenId = keyBy(prices, "tokenId");
-		return tokens.map<PortfolioRowData>((token) => {
+		return values(tokens).map<PortfolioRowData>((token) => {
 			return {
 				token,
 				balance: balancesByTokenId[token.id] ?? null,

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import { useNativeToken } from "./useNativeToken";
-import { usePoolReservesByTokenIds } from "./usePoolReservesByAssetIds";
+import { usePoolReservesByTokenIds } from "./usePoolReservesByTokenIds";
 import { useToken } from "./useToken";
 import { useTokenChain } from "./useTokenChain";
 

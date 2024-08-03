@@ -28,5 +28,10 @@ export const usePoolsByChainId = ({
 		[chainId],
 	);
 
-	return useObservable(pools$, { isLoading: !!chainId, data: [] });
+	const defaultValue = useMemo(
+		() => ({ isLoading: !chainId, data: [] }),
+		[chainId],
+	);
+
+	return useObservable(pools$, defaultValue);
 };

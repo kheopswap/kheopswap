@@ -1,9 +1,8 @@
-import { isEqual } from "lodash";
+import { isEqual, keyBy, values } from "lodash";
 import { distinctUntilChanged, filter } from "rxjs";
 
 import { tokensStore$ } from "./store";
 import { tokensByChainSubscriptions$ } from "./subscriptions";
-import { sortTokens } from "./util";
 
 import {
 	type Chain,
@@ -85,18 +84,15 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 
 		logger.info("foreign assets", foreignAssetTokens);
 
-		const currentTokens = tokensStore$.value;
+		const currentTokens = values(tokensStore$.value);
 
 		const otherTokens = currentTokens.filter(
 			(t) => t.chainId !== chain.id || t.type !== "foreign-asset",
 		);
 
-		const newValue = [...otherTokens, ...foreignAssetTokens];
+		const newValue = keyBy([...otherTokens, ...foreignAssetTokens], "id");
 
-		if (!isEqual(currentTokens, newValue))
-			tokensStore$.next(
-				[...otherTokens, ...foreignAssetTokens].sort(sortTokens),
-			);
+		if (!isEqual(currentTokens, newValue)) tokensStore$.next(newValue);
 	}
 };
 
@@ -142,16 +138,15 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					}) as Token,
 			);
 
-		const currentTokens = tokensStore$.value;
+		const currentTokens = values(tokensStore$.value);
 
 		const otherTokens = currentTokens.filter(
 			(t) => t.chainId !== chain.id || t.type !== "pool-asset",
 		);
 
-		const newValue = [...otherTokens, ...assetTokens];
+		const newValue = keyBy([...otherTokens, ...assetTokens], "id");
 
-		if (!isEqual(currentTokens, newValue))
-			tokensStore$.next([...otherTokens, ...assetTokens].sort(sortTokens));
+		if (!isEqual(currentTokens, newValue)) tokensStore$.next(newValue);
 	}
 };
 
@@ -205,16 +200,15 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					} as Token),
 			);
 
-		const currentTokens = tokensStore$.value;
+		const currentTokens = values(tokensStore$.value);
 
 		const otherTokens = currentTokens.filter(
 			(t) => t.chainId !== chain.id || t.type !== "asset",
 		);
 
-		const newValue = [...otherTokens, ...assetTokens];
+		const newValue = keyBy([...otherTokens, ...assetTokens], "id");
 
-		if (!isEqual(currentTokens, newValue))
-			tokensStore$.next([...otherTokens, ...assetTokens].sort(sortTokens));
+		if (!isEqual(currentTokens, newValue)) tokensStore$.next(newValue);
 	}
 };
 

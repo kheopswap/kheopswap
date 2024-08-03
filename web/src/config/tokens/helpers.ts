@@ -119,15 +119,19 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 	}
 };
 
-export const getChainIdFromTokenId = (
-	tokenId: TokenId | null | undefined,
-): ChainId | null => {
-	if (!tokenId) return null;
+type TokenChainId<T extends TokenId | null | undefined> = T extends TokenId
+	? ChainId
+	: null;
+
+export const getChainIdFromTokenId = <T extends TokenId | null | undefined>(
+	tokenId: T,
+): TokenChainId<T> => {
+	if (!tokenId) return null as TokenChainId<T>;
 	try {
 		const parsed = parseTokenId(tokenId);
-		return parsed.chainId;
+		return parsed.chainId as TokenChainId<T>;
 	} catch (_err) {
-		return null;
+		return null as TokenChainId<T>;
 	}
 };
 

@@ -53,7 +53,7 @@ export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 		const token = feeTokens?.find(
 			(token) => token.id === feeTokenId && token.chainId === chainId,
 		);
-		return token?.type === "asset" && token?.isSufficient ? token : nativeToken;
+		return token?.isSufficient ? token : nativeToken;
 	}, [feeTokensSettings, key, feeTokens, nativeToken, chainId]);
 
 	return { feeToken, feeTokens, setFeeTokenId, isLoading };

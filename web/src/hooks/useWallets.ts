@@ -12,6 +12,7 @@ import {
 	BehaviorSubject,
 	Observable,
 	combineLatest,
+	distinctUntilChanged,
 	map,
 	mergeMap,
 	of,
@@ -21,7 +22,7 @@ import {
 
 import { useSetting } from "./useSetting";
 
-import { getSetting$ } from "src/services/settings";
+import { getSetting$, setSetting } from "src/services/settings";
 import {
 	type InjectedAccountId,
 	getInjectedAccountId,
@@ -56,6 +57,7 @@ const connectedExtensions$ = combineLatest([
 	injectedExtensionIds$,
 	getSetting$("connectedExtensionIds"),
 ]).pipe(
+	distinctUntilChanged<[string[], string[]]>(isEqual),
 	mergeMap(async ([injectedExtensions, connectedExtensionIds]) => {
 		const injectedWallets = await Promise.all(
 			connectedExtensionIds
@@ -75,6 +77,10 @@ const connectedExtensions$ = combineLatest([
 					} catch (err) {
 						console.error("Failed to connect wallet %s", name, { err });
 						connectedExtensions.delete(name);
+						setSetting(
+							"connectedExtensionIds",
+							connectedExtensionIds.filter((id) => id !== name),
+						);
 						return null;
 					}
 				}),

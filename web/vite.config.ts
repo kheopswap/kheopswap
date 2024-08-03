@@ -1,11 +1,11 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-import biomePlugin from "vite-plugin-biome";
+import checker from "vite-plugin-checker";
 import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), svgr(), biomePlugin()],
+	plugins: [react(), svgr(), checker({ typescript: true, biome: true })],
 	resolve: {
 		alias: {
 			src: "/src",

@@ -1,33 +1,42 @@
-import { keyBy } from "lodash";
+import { type Dictionary, keyBy, values } from "lodash";
 import { useMemo } from "react";
 
-import { useTokensByChainIds } from "./useTokensByChainIds";
-
-import type { ChainId } from "src/config/chains";
-import { type TokenId, getChainIdFromTokenId } from "src/config/tokens";
+import { useObservable } from "react-rx";
+import { map } from "rxjs";
+import type { Token, TokenId } from "src/config/tokens";
+import { getTokensById$ } from "src/services/tokens";
 
 type UseTokensProps = { tokenIds: TokenId[] };
 
-export const useTokens = ({ tokenIds }: UseTokensProps) => {
-	const chainIds = useMemo(
-		() => [
-			...new Set(
-				tokenIds
-					.map(getChainIdFromTokenId) // TODO why allow null ?
-					.filter(Boolean) as ChainId[],
+type UseTokensResult = {
+	isLoading: boolean;
+	data: Dictionary<{ token: Token; isLoading: boolean }>;
+};
+
+const DEFAULT_VALUE: UseTokensResult = { isLoading: true, data: {} };
+
+export const useTokens = ({ tokenIds }: UseTokensProps): UseTokensResult => {
+	const tokens$ = useMemo(
+		() =>
+			getTokensById$(tokenIds).pipe(
+				map(
+					(tokensById) =>
+						({
+							isLoading: values(tokensById).some(
+								(tokenState) => tokenState.status !== "loaded",
+							),
+							data: keyBy(
+								values(tokensById).map(({ token, status }) => ({
+									token,
+									isLoading: status !== "loaded",
+								})),
+								"token.id",
+							),
+						}) as UseTokensResult,
+				),
 			),
-		],
 		[tokenIds],
 	);
 
-	const { data: allTokens, isLoading } = useTokensByChainIds({
-		chainIds,
-	});
-
-	const data = useMemo(() => {
-		const allTokensMap = keyBy(allTokens, "id");
-		return tokenIds.map((tokenId) => allTokensMap[tokenId]).filter(Boolean);
-	}, [allTokens, tokenIds]);
-
-	return { data, isLoading };
+	return useObservable(tokens$, DEFAULT_VALUE);
 };

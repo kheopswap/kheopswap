@@ -5,15 +5,16 @@ import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
 
+import type { Dictionary } from "lodash";
 import { getChainById } from "src/config/chains";
 import { parseTokenId } from "src/config/tokens";
 import { getApi, isApiAssetHub } from "src/services/api";
 import type { LoadingStatus } from "src/services/common";
 import { logger } from "src/util";
 
-export const balanceStatuses$ = new BehaviorSubject<
-	Record<BalanceId, LoadingStatus>
->({});
+export const balanceStatuses$ = new BehaviorSubject<Dictionary<LoadingStatus>>(
+	{},
+);
 
 const WATCHERS = new Map<BalanceId, Promise<Subscription>>();
 
@@ -32,12 +33,11 @@ const updateBalanceLoadingStatus = (
 const updateBalance = (balanceId: BalanceId, balance: bigint) => {
 	const { tokenId, address } = parseBalanceId(balanceId);
 
-	const newBalances = balancesStore$.value
-		.filter((b) => b.tokenId !== tokenId || b.address !== address)
-		.concat({ address, tokenId, balance: balance.toString() });
-
 	// update balances store
-	balancesStore$.next(newBalances);
+	balancesStore$.next({
+		...balancesStore$.value,
+		[balanceId]: { address, tokenId, balance },
+	});
 
 	// indicate it's loaded
 	updateBalanceLoadingStatus(balanceId, "loaded");
@@ -120,14 +120,9 @@ const watchBalance = async (balanceId: BalanceId) => {
 };
 
 const sortBalanceIdsByBalanceDesc = (bid1: BalanceId, bid2: BalanceId) => {
-	const [b1, b2] = [bid1, bid2]
-		.map(parseBalanceId)
-		.map(({ address, tokenId }) =>
-			balancesStore$.value.find(
-				(b) => b.tokenId === tokenId && b.address === address,
-			),
-		)
-		.map((b) => b?.balance ?? 0n);
+	const [b1, b2] = [bid1, bid2].map(
+		(balanceId) => balancesStore$.value[balanceId]?.balance ?? 0n,
+	);
 
 	if (b1 > b2) return -1;
 	if (b1 < b2) return 1;

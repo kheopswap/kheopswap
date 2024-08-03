@@ -1,3 +1,4 @@
+import type { Dictionary } from "lodash";
 import { type FC, useCallback, useMemo } from "react";
 
 import { TokenLogo, TokenSelectDrawer } from "src/components";
@@ -8,14 +9,14 @@ import { cn } from "src/util";
 
 const TokenButton: FC<{
 	tokenId: TokenId | null | undefined;
-	tokens: Token[] | undefined;
+	tokens: Dictionary<Token> | undefined;
 	isLoading?: boolean;
 	disabled?: boolean;
 	className?: string;
 	onClick: () => void;
 }> = ({ tokenId, tokens, disabled, className, onClick }) => {
 	const token = useMemo(
-		() => tokens?.find((t) => t.id === tokenId),
+		() => (tokenId ? tokens?.[tokenId] : undefined),
 		[tokenId, tokens],
 	);
 	const { shortName: chainName } = useChainName({ chainId: token?.chainId });
@@ -47,7 +48,7 @@ const TokenButton: FC<{
 
 export const TokenSelectButton: FC<{
 	tokenId: TokenId | null | undefined;
-	tokens: Token[] | undefined;
+	tokens: Dictionary<Token> | undefined;
 	accounts?: InjectedAccount[] | string[];
 	isLoading: boolean;
 	onChange: (tokenId: TokenId) => void;

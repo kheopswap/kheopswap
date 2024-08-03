@@ -1,3 +1,4 @@
+import { type Dictionary, values } from "lodash";
 import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
 
 import { Drawer } from "src/components/Drawer";
@@ -120,11 +121,11 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 
 const TokenSelectDrawerContent: FC<{
 	tokenId?: TokenId | null;
-	tokens?: Token[];
+	tokens?: Dictionary<Token>;
 	accounts?: InjectedAccount[] | string[];
 	isLoading?: boolean;
 	onChange: (tokenId: TokenId) => void;
-}> = ({ tokenId, tokens, accounts, isLoading, onChange }) => {
+}> = ({ tokenId, tokens: tokensMap, accounts, isLoading, onChange }) => {
 	const [search, setSearch] = useState("");
 
 	const handleClick = useCallback(
@@ -133,6 +134,8 @@ const TokenSelectDrawerContent: FC<{
 		},
 		[onChange],
 	);
+
+	const tokens = useMemo(() => values(tokensMap ?? {}), [tokensMap]);
 
 	const { data: balances } = useBalancesByTokenSummary({
 		tokens,
@@ -186,7 +189,7 @@ const TokenSelectDrawerContent: FC<{
 export const TokenSelectDrawer: FC<{
 	isOpen?: boolean;
 	tokenId?: TokenId | null;
-	tokens?: Token[];
+	tokens?: Dictionary<Token>;
 	accounts?: InjectedAccount[] | string[];
 	isLoading?: boolean;
 	title?: string;

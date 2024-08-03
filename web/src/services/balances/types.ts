@@ -8,7 +8,7 @@ export type Address = SS58String; // ethereum soon
 export type StoredBalance = {
 	tokenId: TokenId;
 	address: Address;
-	balance: string; // serialized bigint
+	balance: bigint;
 };
 
 export type BalanceId = string; // `${Address}||${TokenId}`;

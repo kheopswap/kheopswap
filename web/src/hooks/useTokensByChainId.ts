@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
+import type { Dictionary } from "lodash";
 import type { ChainId } from "src/config/chains";
 import type { Token } from "src/config/tokens";
 
@@ -11,7 +12,7 @@ type UseTokensProps = {
 
 type UseTokensResult = {
 	isLoading: boolean;
-	data: Token[];
+	data: Dictionary<Token>;
 };
 
 export const useTokensByChainId = ({

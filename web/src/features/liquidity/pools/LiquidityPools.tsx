@@ -188,10 +188,9 @@ export const LiquidityPools = () => {
 	const nativeToken = useNativeToken({ chain: assetHub });
 	const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
 
-	const { data: allTokens = [], isLoading: isLoadingTokens } =
-		useTokensByChainId({
-			chainId: assetHub.id,
-		});
+	const { data: allTokens, isLoading: isLoadingTokens } = useTokensByChainId({
+		chainId: assetHub.id,
+	});
 
 	const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
 		chainId: assetHub.id,
@@ -217,8 +216,8 @@ export const LiquidityPools = () => {
 			}
 
 			// or alphabetically by token symbol
-			const assetA = allTokens.find((t) => t.id === a.tokenIds[1]);
-			const assetB = allTokens.find((t) => t.id === b.tokenIds[1]);
+			const assetA = allTokens[a.tokenIds[1]];
+			const assetB = allTokens[b.tokenIds[1]];
 
 			return assetA?.symbol.localeCompare(assetB?.symbol ?? "") ?? 0;
 		});
@@ -228,8 +227,8 @@ export const LiquidityPools = () => {
 		return sortedPools
 			.map((pool) => ({
 				pool,
-				token1: allTokens.find((t) => t.id === pool.tokenIds[0]),
-				token2: allTokens.find((t) => t.id === pool.tokenIds[1]),
+				token1: allTokens[pool.tokenIds[0]],
+				token2: allTokens[pool.tokenIds[1]],
 			}))
 			.filter((rp): rp is PoolRowProps => !!rp.token1 && !!rp.token2);
 	}, [allTokens, sortedPools]);

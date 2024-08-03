@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useRelayChains } from "./useRelayChains";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
+import { keyBy, values } from "lodash";
 import type { TokenType } from "src/config/tokens/types";
 
 type UseAllTokensProps = {
@@ -25,7 +26,11 @@ export const useAllTokens = ({
 		chainIds,
 	});
 	const data = useMemo(
-		() => allTokens.filter((t) => types.includes(t.type)),
+		() =>
+			keyBy(
+				values(allTokens).filter((t) => types.includes(t.type)),
+				"id",
+			),
 		[allTokens, types],
 	);
 
