@@ -2,7 +2,7 @@ import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
 import { NavLink, Navigate, useParams } from "react-router-dom";
 
-import { Layout, PageContent, PageTitle } from "src/components";
+import { Layout, PageContent, PageTitle, TabTitle } from "src/components";
 import { LiquidityPool } from "src/features/liquidity";
 import {
 	useNativeToken,
@@ -58,6 +58,7 @@ export const LiquidityPoolPage = () => {
 				</PageTitle>
 				<PageContent>{poolName ? <LiquidityPool /> : "Loading..."}</PageContent>
 			</div>
+			<TabTitle title={poolName ? `${poolName} LP` : "Pool"} />
 		</Layout>
 	);
 };

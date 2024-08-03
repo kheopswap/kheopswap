@@ -1,4 +1,4 @@
-import { Layout, PageContent } from "src/components";
+import { Layout, PageContent, TabTitle } from "src/components";
 import { Transfer } from "src/features/transfer";
 
 export const TransferPage = () => (
@@ -8,5 +8,6 @@ export const TransferPage = () => (
 				<Transfer />
 			</PageContent>
 		</div>
+		<TabTitle title="Transfer" />
 	</Layout>
 );
