@@ -11,7 +11,7 @@ import {
 import { logger, safeParse, safeStringify } from "src/util";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
-const STORAGE_KEY = getLocalStorageKey("tokens");
+const STORAGE_KEY = getLocalStorageKey("tokens::v2");
 
 const loadTokens = (): Dictionary<Token> => {
 	try {
@@ -25,7 +25,10 @@ const loadTokens = (): Dictionary<Token> => {
 
 		// override known tokens
 		for (const key in KNOWN_TOKENS_MAP)
-			tokensMap[key] = KNOWN_TOKENS_MAP[key as TokenId];
+			tokensMap[key] = {
+				...tokensMap[key],
+				...KNOWN_TOKENS_MAP[key as TokenId],
+			};
 
 		return tokensMap;
 	} catch (err) {
