@@ -198,44 +198,44 @@ const useTransactionProvider = ({
 		error: errorExistentialDeposits,
 	} = useExistentialDeposits({ tokenIds });
 
-	const allSpendings = useMemo(() => {
-		return Object.fromEntries(
-			tokenIds.map((tokenId) => {
-				const callSpending = callSpendings[tokenId]?.plancks ?? 0n;
-				if (tokenId === feeToken?.id && isBigInt(feeEstimate))
-					return [tokenId, callSpending + feeEstimate];
-				return [tokenId, callSpending];
-			}),
-		);
-	}, [callSpendings, feeEstimate, feeToken?.id, tokenIds]);
-
 	const insufficientBalances = useMemo(() => {
 		const result: Record<TokenId, string> = {};
 
-		if (call && existentialDeposits && balances && feeEstimate && feeToken)
+		if (call && existentialDeposits && balances && feeEstimate && feeToken) {
+			const allSpendings = Object.fromEntries(
+				tokenIds.map((tokenId) => {
+					const callSpending = callSpendings[tokenId]?.plancks ?? 0n;
+					if (tokenId === feeToken?.id && isBigInt(feeEstimate))
+						return [tokenId, callSpending + feeEstimate];
+					return [tokenId, callSpending];
+				}),
+			);
+
 			for (const tokenId of tokenIds) {
 				const balance =
 					balances.find((b) => b.tokenId === tokenId)?.balance ?? 0n;
 				const ed = existentialDeposits[tokenId] ?? 0n;
 				const fee = tokenId === feeToken.id ? feeEstimate : 0n; // double the amount just in case
 				const spendings = allSpendings[tokenId] ?? 0n;
+				const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
 
 				if (balance < spendings) result[tokenId] = "Insufficient balance";
 				else if (balance < spendings + fee)
 					result[tokenId] = "Insufficient balance to pay for fee";
-				else if (balance < spendings + fee + ed)
+				else if (!allowDeath && balance < spendings + fee + ed)
 					result[tokenId] = "Insufficient balance to keep acount alive";
 			}
+		}
 
 		return result;
 	}, [
 		call,
-		allSpendings,
 		balances,
 		existentialDeposits,
 		feeEstimate,
 		feeToken,
 		tokenIds,
+		callSpendings,
 	]);
 
 	const error = useMemo(() => {
