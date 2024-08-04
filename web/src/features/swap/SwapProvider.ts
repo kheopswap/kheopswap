@@ -87,15 +87,17 @@ const useSwapInputs = ({ tokenIdIn, amountIn }: SwapInputsProps) => {
 		}
 	}, [amountIn, tokenIn]);
 
-	const canSendAppCommission = useCanAccountReceive({
+	const { data: checkCanAccountReceive } = useCanAccountReceive({
 		address: APP_FEE_ADDRESS,
 		tokenId: tokenIdIn,
 		plancks: feeIn,
 	});
 
 	const [swapPlancksIn, appCommission] = useMemo(() => {
-		return canSendAppCommission ? [plancksIn, feeIn] : [totalIn, 0n];
-	}, [canSendAppCommission, feeIn, plancksIn, totalIn]);
+		return checkCanAccountReceive?.canReceive
+			? [plancksIn, feeIn]
+			: [totalIn, 0n];
+	}, [checkCanAccountReceive?.canReceive, feeIn, plancksIn, totalIn]);
 
 	return { swapPlancksIn, appCommission, totalIn, isValidAmountIn };
 };
@@ -277,7 +279,7 @@ const useSwapProvider = () => {
 		amountIn: swapPlancksIn,
 		amountOutMin: minPlancksOut,
 		dest: account?.address,
-		appCommission: appCommission,
+		appCommission,
 	});
 
 	// fake call for fee estimation up front
@@ -373,25 +375,19 @@ const useSwapProvider = () => {
 		return { slippage, tokenOut, minPlancksOut, swapPlancksOut };
 	}, [minPlancksOut, slippage, swapPlancksOut, tokenOut]);
 
-	// const inputErrorMessage = useMemo(() => {
-	//   if (hasInsufficientBalance) return "Insufficient balance";
-	//   if (!isValidAmountIn) return "Invalid amount";
-	//   if (feeToken?.id === tokenIn?.id && hasInsufficientFeeTokenBalance)
-	//     return "Insufficient balance to pay for fee";
-	//   return null;
-	// }, [
-	//   feeToken?.id,
-	//   hasInsufficientBalance,
-	//   hasInsufficientFeeTokenBalance,
-	//   isValidAmountIn,
-	//   tokenIn?.id,
-	// ]);
+	const { data: checkCanReceive, isLoading: isCheckingRecipient } =
+		useCanAccountReceive({
+			address: account?.address,
+			tokenId: tokenIdOut,
+			plancks: minPlancksOut,
+		});
 
 	const outputErrorMessage = useMemo(() => {
+		if (checkCanReceive?.reason) return checkCanReceive.reason;
 		if (hasInsufficientLiquidity) return "Insufficient liquidity";
 		if (isPoolNotFound) return "Liquidity pool not found";
 		return null;
-	}, [hasInsufficientLiquidity, isPoolNotFound]);
+	}, [hasInsufficientLiquidity, isPoolNotFound, checkCanReceive?.reason]);
 
 	const onTokenInChange = (tokenId: TokenId) => {
 		const nativeTokenId = getTokenId({
@@ -499,8 +495,8 @@ const useSwapProvider = () => {
 		isValidAmountIn,
 		hasInsufficientBalance,
 		hasInsufficientLiquidity,
-		call,
-		fakeCall,
+		call: outputErrorMessage || isCheckingRecipient ? undefined : call,
+		fakeCall: fakeCall,
 		isLoadingFeeToken,
 		isLoadingFeeEstimate,
 		isPoolNotFound,
