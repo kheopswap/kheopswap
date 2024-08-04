@@ -7,6 +7,7 @@ import { keyBy } from "lodash";
 import { type TokenId, getTokenId, parseTokenId } from "src/config/tokens";
 import {
 	useBalance,
+	useCanAccountReceive,
 	useEstimateFee,
 	useExistentialDeposit,
 	useFeeToken,
@@ -172,6 +173,18 @@ const useTeleportProvider = () => {
 		tokenId: tokenOut?.id,
 	});
 
+	const { data: checkCanAccountReceive, isLoading: isCheckingRecipient } =
+		useCanAccountReceive({
+			address: recipient,
+			tokenId: tokenOut?.id,
+			plancks: plancksOut,
+		});
+
+	const outputErrorMessage = useMemo(
+		() => checkCanAccountReceive?.reason,
+		[checkCanAccountReceive?.reason],
+	);
+
 	const onFromChange = useCallback((accountId: string) => {
 		setSetting("defaultAccountId", accountId);
 		setFormData((prev) => ({ ...prev, from: accountId }));
@@ -241,8 +254,10 @@ const useTeleportProvider = () => {
 		balanceOut,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
-		call: extrinsic?.call,
+		call:
+			outputErrorMessage || isCheckingRecipient ? undefined : extrinsic?.call,
 		fakeCall: fakeExtrinsic?.call,
+		outputErrorMessage,
 		onFromChange,
 		onAmountInChange,
 		onTokenInChange,
