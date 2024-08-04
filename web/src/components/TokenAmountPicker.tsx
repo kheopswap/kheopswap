@@ -58,17 +58,6 @@ export const TokenAmountPicker: FC<{
 		[tokenId, tokens],
 	);
 
-	const fiatPrefix = useMemo(() => {
-		if (
-			inputProps.readOnly &&
-			typeof inputProps.value === "string" &&
-			plancks &&
-			inputProps.value.startsWith("< ")
-		)
-			return "< ";
-		return null;
-	}, [inputProps.readOnly, inputProps.value, plancks]);
-
 	return (
 		<div
 			className={cn(
@@ -116,7 +105,6 @@ export const TokenAmountPicker: FC<{
 						<StablePrice
 							plancks={plancks}
 							tokenId={tokenId}
-							prefix={fiatPrefix}
 							className="text-neutral-500"
 						/>
 					)}
