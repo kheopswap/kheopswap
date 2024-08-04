@@ -48,28 +48,27 @@ export const notifyTxStatus = () => {
 							isLoading: true,
 						});
 						return false;
-						// biome-ignore lint/style/noUselessElse: <explanation>
-					} else {
-						const errorMessage = getErrorMessageFromTxEvents(status.events);
-
-						toast.update(toastId, {
-							type: "error",
-							autoClose: false,
-							render: errorMessage ? (
-								<div>
-									<div>Transaction failed</div>
-									<div className="text-error-500">{errorMessage}</div>
-								</div>
-							) : (
-								"Transaction failed"
-							),
-							isLoading: false,
-						});
-
-						// prevent further updates
-						toastId = "STOP";
-						return true;
 					}
+
+					const errorMessage = getErrorMessageFromTxEvents(status.events);
+
+					toast.update(toastId, {
+						type: "error",
+						autoClose: false,
+						render: errorMessage ? (
+							<div>
+								<div>Transaction failed</div>
+								<div className="text-error-500">{errorMessage}</div>
+							</div>
+						) : (
+							"Transaction failed"
+						),
+						isLoading: false,
+					});
+
+					// prevent further updates
+					toastId = "STOP";
+					return true;
 				}
 				logger.warn("tx not found in best block", status);
 				return false;

@@ -1,21 +1,21 @@
 import { type FC, useEffect } from "react";
 
 import { DEV } from "src/config/constants";
+import { logger } from "src/util";
 
 export const SuspenseMonitor: FC<{ label: string }> = ({ label }) => {
 	useEffect(() => {
 		// biome-ignore lint/correctness/noConstantCondition: <explanation>
 		if (false && !DEV) return; // TODO remove false
 
-		const key = `[Suspense] ${label} - ${crypto.randomUUID()}}`;
-		console.time(key);
+		const stop = logger.timer(`[Suspense] ${label}`);
 
 		const timeout = setTimeout(() => {
 			console.warn(`[Suspense] ${label} is hanging`);
 		}, 500);
 
 		return () => {
-			console.timeEnd(key);
+			stop();
 			clearTimeout(timeout);
 		};
 	}, [label]);
