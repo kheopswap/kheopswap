@@ -55,10 +55,11 @@ const watchBalance = async (balanceId: BalanceId) => {
 
 	switch (token.type) {
 		case "native": {
-			const obsAccount = api.query.System.Account.watchValue(address, "best");
+			const account$ = api.query.System.Account.watchValue(address, "best");
 
-			return obsAccount.subscribe((account) => {
+			return account$.subscribe((account) => {
 				const balance = account.data.free - account.data.frozen;
+
 				updateBalance(balanceId, balance);
 			});
 		}
@@ -68,13 +69,13 @@ const watchBalance = async (balanceId: BalanceId) => {
 					`Cannot watch balance for ${tokenId}. Assets are not supported on ${chain.id}`,
 				);
 
-			const obsAccount = api.query.Assets.Account.watchValue(
+			const account$ = api.query.Assets.Account.watchValue(
 				token.assetId,
 				address,
 				"best",
 			);
 
-			return obsAccount.subscribe((account) => {
+			return account$.subscribe((account) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
 				updateBalance(balanceId, balance);
@@ -86,13 +87,13 @@ const watchBalance = async (balanceId: BalanceId) => {
 					`Cannot watch balance for ${tokenId}. PoolAssets are not supported on ${chain.id}`,
 				);
 
-			const obsAccount = api.query.PoolAssets.Account.watchValue(
+			const account$ = api.query.PoolAssets.Account.watchValue(
 				token.poolAssetId,
 				address,
 				"best",
 			);
 
-			return obsAccount.subscribe((account) => {
+			return account$.subscribe((account) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
 				updateBalance(balanceId, balance);
@@ -104,13 +105,13 @@ const watchBalance = async (balanceId: BalanceId) => {
 					`Cannot watch balance for ${tokenId}. ForeignAssets are not supported on ${chain.id}`,
 				);
 
-			const obsAccount = api.query.ForeignAssets.Account.watchValue(
+			const account$ = api.query.ForeignAssets.Account.watchValue(
 				token.location,
 				address,
 				"best",
 			);
 
-			return obsAccount.subscribe((account) => {
+			return account$.subscribe((account) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
 				updateBalance(balanceId, balance);

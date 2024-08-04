@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest, debounceTime, map, tap } from "rxjs";
+import { BehaviorSubject, combineLatest, debounceTime, map } from "rxjs";
 
 import { poolSuppliesStore$ } from "./store";
 import { poolSuppliesSubscriptions$ } from "./subscriptions";
@@ -59,19 +59,6 @@ combineLatest([
 		map(([poolSupplyIds, statuses, poolSupplies]) =>
 			combineState(poolSupplyIds, statuses, poolSupplies),
 		),
-		tap((poolSuppliesMap) => {
-			if (!import.meta.env.DEV) return;
-
-			const values = Object.values(poolSuppliesMap);
-
-			logger.debug(
-				"[pool supplies report] stale:%d | loading:%d | loaded:%d | total_stored:%d",
-				values.filter((b) => b.status === "stale").length,
-				values.filter((b) => b.status === "loading").length,
-				values.filter((b) => b.status === "loaded").length,
-				values.length,
-			);
-		}),
 	)
 	.subscribe((poolSupplies) => {
 		poolSuppliesState$.next(poolSupplies);

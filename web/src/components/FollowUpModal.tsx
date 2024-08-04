@@ -121,18 +121,18 @@ const FollowUpModalInner: FC<{
 			(event) => event.type === "finalized",
 		);
 		if (finalized?.type === "finalized") {
-			if (finalized.ok) return ["Transaction succeeded", true, "success"];
-			// biome-ignore lint/style/noUselessElse: <explanation>
-			else return ["Transaction failed", true, "error"];
+			return finalized.ok
+				? ["Transaction succeeded", true, "success"]
+				: ["Transaction failed", true, "error"];
 		}
 
 		const best = followUp.txEvents.find(
 			(event) => event.type === "txBestBlocksState",
 		);
 		if (best?.type === "txBestBlocksState" && best.found) {
-			if (best.ok) return ["Waiting for finalization", true, "success"];
-			// biome-ignore lint/style/noUselessElse: <explanation>
-			else return ["Waiting for finalization", true, "error"];
+			return best.ok
+				? ["Waiting for finalization", true, "success"]
+				: ["Waiting for finalization", true, "error"];
 		}
 
 		const broadcasted = followUp.txEvents.find(

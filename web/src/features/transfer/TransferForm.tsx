@@ -25,6 +25,7 @@ export const TransferForm = () => {
 		recipient,
 		balanceSender,
 		isLoadingBalanceSender,
+		outputErrorMessage,
 		onAmountChange,
 		onTokenChange,
 		onFromChange,
@@ -43,8 +44,14 @@ export const TransferForm = () => {
 
 	const inputErrorMessage = useMemo(() => {
 		if (!!formData.amount && !isBigInt(plancks)) return "Invalid amount";
-		return insufficientBalances[token?.id ?? ""];
-	}, [formData.amount, insufficientBalances, plancks, token?.id]);
+		return insufficientBalances[token?.id ?? ""] ?? outputErrorMessage;
+	}, [
+		formData.amount,
+		insufficientBalances,
+		plancks,
+		token?.id,
+		outputErrorMessage,
+	]);
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
 		(e) => {

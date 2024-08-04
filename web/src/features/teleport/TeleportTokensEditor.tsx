@@ -39,6 +39,7 @@ export const TeleportTokensEditor = () => {
 		balanceOut,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
+		outputErrorMessage,
 		onAmountInChange,
 		onTokenInChange,
 		onTokenOutChange,
@@ -97,6 +98,7 @@ export const TeleportTokensEditor = () => {
 				tokens={tokens}
 				accounts={tokenPickerAccounts}
 				isLoading={isLoadingTokens}
+				errorMessage={outputErrorMessage}
 				onTokenChange={onTokenOutChange}
 				balance={balanceOut}
 				isLoadingBalance={isLoadingBalanceOut}

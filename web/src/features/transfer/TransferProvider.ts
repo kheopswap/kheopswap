@@ -8,6 +8,7 @@ import {
 	useAllTokens,
 	useAssetConvertPlancks,
 	useBalance,
+	useCanAccountReceive,
 	useEstimateFee,
 	useExistentialDeposit,
 	useFeeToken,
@@ -173,6 +174,18 @@ const useTransferProvider = () => {
 		tokenId: token?.id,
 	});
 
+	const { data: checkCanAccountReceive, isLoading: isCheckingRecipient } =
+		useCanAccountReceive({
+			address: recipient,
+			tokenId: token?.id,
+			plancks,
+		});
+
+	const outputErrorMessage = useMemo(
+		() => checkCanAccountReceive?.reason,
+		[checkCanAccountReceive?.reason],
+	);
+
 	const onTokenChange = useCallback((tokenId: TokenId) => {
 		setFormData((prev) => ({ ...prev, tokenId }));
 	}, []);
@@ -222,6 +235,7 @@ const useTransferProvider = () => {
 		balanceRecipient,
 		balanceSender,
 		isLoadingBalanceSender,
+		outputErrorMessage,
 
 		onAmountChange,
 		onTokenChange,
@@ -230,7 +244,7 @@ const useTransferProvider = () => {
 		onMaxClick,
 		onReset,
 
-		call,
+		call: outputErrorMessage || isCheckingRecipient ? undefined : call,
 		fakeCall,
 	};
 };

@@ -5,7 +5,15 @@ import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), svgr(), checker({ typescript: true, biome: true })],
+	plugins: [
+		react(),
+		svgr(),
+		checker({
+			typescript: true,
+			biome: true,
+			overlay: { initialIsOpen: "error" },
+		}),
+	],
 	resolve: {
 		alias: {
 			src: "/src",
