@@ -212,7 +212,7 @@ const useTransactionProvider = ({
 	const insufficientBalances = useMemo(() => {
 		const result: Record<TokenId, string> = {};
 
-		if (existentialDeposits && balances && feeEstimate && feeToken)
+		if (call && existentialDeposits && balances && feeEstimate && feeToken)
 			for (const tokenId of tokenIds) {
 				const balance =
 					balances.find((b) => b.tokenId === tokenId)?.balance ?? 0n;
@@ -229,6 +229,7 @@ const useTransactionProvider = ({
 
 		return result;
 	}, [
+		call,
 		allSpendings,
 		balances,
 		existentialDeposits,
