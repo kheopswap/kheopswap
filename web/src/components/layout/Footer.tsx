@@ -34,7 +34,7 @@ export const Footer = () => {
 			</div>
 			<div className="flex items-center gap-4">
 				<a
-					href="https://x.com/KheopsCrypto"
+					href="https://x.com/kheopswap"
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-neutral-400 hover:text-neutral-300"
