@@ -10,8 +10,8 @@ export const PriceImpact: FC<{ value: number; className?: string }> = ({
 	return (
 		<span
 			className={cn(
-				value > 0.01 && "text-warn-500",
-				value > 0.05 && "text-error-500",
+				value < -0.01 && "text-warn-500",
+				value < -0.05 && "text-error-500",
 				className,
 			)}
 		>

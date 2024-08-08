@@ -215,11 +215,21 @@ const useSwapProvider = () => {
 		return plancksToTokens(swapPlancksOut, tokenOut.decimals);
 	}, [swapPlancksOut, tokenOut]);
 
+	const { plancksOut: rawPlancksOut } = useAssetConvertPlancks({
+		tokenIdIn,
+		tokenIdOut,
+		plancks: totalIn,
+	});
+
 	const priceImpact = useMemo(() => {
-		if (!swapPlancksIn || !swapPlancksOut || !reserveOut || !reserveOut)
-			return undefined;
-		return Number((10000n * swapPlancksOut) / reserveOut) / 10000;
-	}, [swapPlancksIn, swapPlancksOut, reserveOut]);
+		// ratio difference between rawplancksout and swapplancksout
+		if (!rawPlancksOut || !swapPlancksOut) return undefined;
+
+		return (
+			-Number((10000n * (rawPlancksOut - swapPlancksOut)) / rawPlancksOut) /
+			10000
+		);
+	}, [rawPlancksOut, swapPlancksOut]);
 
 	const minPlancksOut = useMemo(() => {
 		if (!swapPlancksOut || slippage === undefined) return null;
