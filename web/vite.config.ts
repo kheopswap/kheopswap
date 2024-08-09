@@ -19,4 +19,7 @@ export default defineConfig({
 			src: "/src",
 		},
 	},
+	optimizeDeps: {
+		exclude: ["./.papi"],
+	},
 });
