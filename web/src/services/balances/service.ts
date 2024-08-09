@@ -31,7 +31,7 @@ export const getBalances$ = (defs: BalanceDef[]) => {
 		map((balances) =>
 			balanceIds.map(
 				(id, idx): Balance => ({
-					...defs[idx],
+					...(defs[idx] as BalanceDef),
 					...(balances[id] ?? DEFAULT_BALANCE_STATE),
 				}),
 			),

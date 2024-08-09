@@ -37,7 +37,7 @@ export const getPoolSupplies$ = (pairs: TokenIdsPair[]) => {
 		map((poolSupplies) =>
 			poolSupplyIds.map(
 				(id, idx): PoolSupplyStateWithPair => ({
-					pair: pairs[idx],
+					pair: pairs[idx] as TokenIdsPair,
 					...(poolSupplies[id] ?? DEFAULT_POOL_SUPPLY_STATE),
 				}),
 			),

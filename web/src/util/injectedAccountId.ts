@@ -18,7 +18,7 @@ export const parseInjectedAccountId = (walletAccountId: string) => {
 	if (!walletAccountId) throw new Error("Invalid walletAccountId");
 	const [wallet, address] = walletAccountId.split("::");
 	if (!wallet) throw new Error("Missing walletId");
-	if (!isValidAddress(address)) throw new Error("Invalid address");
+	if (!address || !isValidAddress(address)) throw new Error("Invalid address");
 	return { wallet, address };
 };
 

@@ -22,7 +22,9 @@ export const getBalancesByTokenSummary = (
 
 	return keys(balancesByTokenId).reduce(
 		(acc, tokenId) => {
-			const tokenBalances = balancesByTokenId[tokenId];
+			const tokenBalances = balancesByTokenId[
+				tokenId
+			] as AccountBalanceWithStable[];
 			const tokenPlancks = tokenBalances.reduce(
 				(acc, { tokenPlancks }) => acc + (tokenPlancks ?? 0n),
 				0n,

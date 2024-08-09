@@ -123,7 +123,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 const sortBalanceIdsByBalanceDesc = (bid1: BalanceId, bid2: BalanceId) => {
 	const [b1, b2] = [bid1, bid2].map(
 		(balanceId) => balancesStore$.value[balanceId]?.balance ?? 0n,
-	);
+	) as [bigint, bigint];
 
 	if (b1 > b2) return -1;
 	if (b1 < b2) return 1;

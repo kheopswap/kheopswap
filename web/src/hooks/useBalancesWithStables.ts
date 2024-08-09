@@ -42,7 +42,9 @@ export const useBalancesWithStables = ({
 				tokenId,
 				tokenPlancks: balance ?? null,
 				isLoadingTokenPlancks: isLoading,
-				...stables[idx],
+				// biome-ignore lint/style/noNonNullAssertion: <explanation>
+				// biome-ignore lint/suspicious/noExtraNonNullAssertion: <explanation>
+				...stables[idx]!,
 			})),
 		[rawBalances, stables],
 	);

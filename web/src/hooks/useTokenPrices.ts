@@ -66,7 +66,7 @@ export const useTokenPrices = () => {
 				stablePlancks: stablePrice?.plancksOut ?? null,
 				isLoadingStablePlancks: stablePrice?.isLoading ?? false,
 				isInitializing:
-					!isBigInt(nativePrice?.plancksOut) && nativePrice.isLoading,
+					!isBigInt(nativePrice?.plancksOut) && !!nativePrice?.isLoading,
 			};
 		});
 	}, [nativePrices, stablePrices, tokens]);

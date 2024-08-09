@@ -27,7 +27,7 @@ export const usePoolSupply = ({
 	const { data, isLoading } = usePoolSupplies({ pairs });
 
 	return {
-		data: data?.[0].supply,
+		data: data?.[0]?.supply,
 		isLoading,
 	};
 };

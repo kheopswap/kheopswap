@@ -1,6 +1,6 @@
 import { BehaviorSubject, debounceTime } from "rxjs";
 
-import { type Dictionary, keyBy } from "lodash";
+import { type Dictionary, entries, keyBy } from "lodash";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
 import {
 	KNOWN_TOKENS_LIST,
@@ -24,10 +24,10 @@ const loadTokens = (): Dictionary<Token> => {
 		const tokensMap = keyBy(tokensList, "id");
 
 		// override known tokens
-		for (const key in KNOWN_TOKENS_MAP)
-			tokensMap[key] = {
-				...tokensMap[key],
-				...KNOWN_TOKENS_MAP[key as TokenId],
+		for (const [tokenId, token] of entries(KNOWN_TOKENS_MAP))
+			tokensMap[tokenId] = {
+				...token,
+				...KNOWN_TOKENS_MAP[tokenId as TokenId],
 			};
 
 		return tokensMap;

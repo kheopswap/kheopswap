@@ -69,6 +69,7 @@ export const useCanAccountReceive = ({
 
 		const balanceMap = keyBy(balances, "tokenId");
 		const token = allTokens[tokenId];
+		if (!token) return { canReceive: false };
 
 		// if the token being sent is sufficient, all good
 		if (token.isSufficient && plancks >= existentialDeposit)
@@ -86,7 +87,7 @@ export const useCanAccountReceive = ({
 					: "Account has no sufficient assets",
 			};
 
-		if ((balanceMap[tokenId].balance ?? 0n) + plancks >= existentialDeposit)
+		if ((balanceMap[tokenId]?.balance ?? 0n) + plancks >= existentialDeposit)
 			return { canReceive: true };
 
 		return { canReceive: false, reason: "Cannot send insufficient amount" };

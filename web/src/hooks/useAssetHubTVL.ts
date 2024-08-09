@@ -83,7 +83,8 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 					isLoadingTokenPlancks:
 						locked?.isLoading ||
 						(!isBigInt(locked?.plancks) && isLoadingTokens),
-					...assetConvertPlancks[lockedIdx],
+					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					...assetConvertPlancks[lockedIdx]!,
 				};
 			}),
 		}),

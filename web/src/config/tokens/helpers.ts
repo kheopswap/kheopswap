@@ -77,8 +77,9 @@ export const parseTokenId = (
 				return { type: "pool-asset", chainId, poolAssetId };
 			}
 			case "foreign-asset": {
+				if (parts.length < 3) throw new Error("Invalid foreign-asset token id");
 				const location = safeParse<XcmV3Multilocation>(
-					lzs.decompressFromBase64(parts[2]),
+					lzs.decompressFromBase64(parts[2] as string),
 				);
 				return { type: "foreign-asset", chainId, location };
 			}
@@ -168,9 +169,9 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 
 		if (interior.type === "X2") {
 			if (
-				interior.value[0].type === "GlobalConsensus" &&
+				interior.value[0]?.type === "GlobalConsensus" &&
 				interior.value[0].value.type === "Ethereum" &&
-				interior.value[1].type === "AccountKey20"
+				interior.value[1]?.type === "AccountKey20"
 			) {
 				const network = getEvmNetworkById(
 					interior.value[0].value.value.chain_id.toString(),
@@ -199,7 +200,7 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 		}
 
 		if (interior.type === "X2") {
-			if (interior.value[0].type === "Parachain") {
+			if (interior.value[0]?.type === "Parachain") {
 				const network = {
 					label: "Origin",
 					value: getParachainName(interior.value[0].value.toString()),
