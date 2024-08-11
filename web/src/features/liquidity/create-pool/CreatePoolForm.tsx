@@ -1,3 +1,4 @@
+import { keyBy } from "lodash";
 import {
 	type ChangeEventHandler,
 	type FC,
@@ -44,7 +45,12 @@ export const CreatePoolForm = () => {
 						onChange={onFromChange}
 					/>
 				</FormFieldContainer>
-				<FormFieldContainer label="Tokens">
+				<FormFieldContainer label="Initial liquidity (optional)">
+					<p className="text-xs text-neutral mb-2">
+						If you decide to provide liquidity to this pool, the amount of each
+						token that you indicate here will essentially define the token's
+						price. Make sure it's accurate or your position might be arbitraged.
+					</p>
 					<AddLiquidityEditor />
 				</FormFieldContainer>
 				<MagicButton type="submit" disabled={!canSubmit}>
@@ -60,22 +66,19 @@ const AddLiquidityEditor: FC = () => {
 	const {
 		token1,
 		token2,
-		tokens,
+		tokensWithoutPool,
 		isLoadingTokens,
 		accountBalances,
 		isLoadingAccountBalances,
 		liquidityToAdd,
 		setLiquidityToAdd,
+		onToken2Change,
 		token1ExistentialDeposit,
 		token2ExistentialDeposit,
+		sender,
 	} = useCreatePool();
 
 	const { feeEstimate, feeToken, insufficientBalances } = useTransaction();
-
-	// const tokens = useMemo(
-	// 	() => keyBy([nativeToken, assetToken].filter(Boolean) as Token[], "id"),
-	// 	[assetToken, nativeToken],
-	// );
 
 	const refInput1 = useRef<HTMLInputElement>(null);
 	const refInput2 = useRef<HTMLInputElement>(null);
@@ -137,7 +140,6 @@ const AddLiquidityEditor: FC = () => {
 						? accountBalances[0]
 						: accountBalances[0] - margin;
 				const maxToken2 = liquidityToAdd?.[1] ?? 0n;
-				//const maxAsset = (maxNative * reserves[1]) / reserves[0];
 
 				setLiquidityToAdd([maxToken1, maxToken2]);
 
@@ -188,6 +190,12 @@ const AddLiquidityEditor: FC = () => {
 		return insufficientBalances[token2?.id ?? ""];
 	}, [insufficientBalances, token2?.id]);
 
+	const nativeTokens = useMemo(() => keyBy([token1], "id"), [token1]);
+
+	const accounts = useMemo(
+		() => [sender].filter(Boolean) as string[],
+		[sender],
+	);
 	return (
 		<div className="relative flex flex-col gap-2">
 			<TokenAmountPicker
@@ -199,7 +207,7 @@ const AddLiquidityEditor: FC = () => {
 				}}
 				tokenId={token1?.id}
 				plancks={liquidityToAdd?.[0]}
-				//tokens={tokens}
+				tokens={nativeTokens}
 				isLoading={false}
 				onTokenChange={() => {}}
 				errorMessage={errorMessageNative}
@@ -215,13 +223,13 @@ const AddLiquidityEditor: FC = () => {
 					onChange: handleChange("token2"),
 					formNoValidate: true,
 				}}
+				accounts={accounts}
 				tokenId={token2?.id}
 				plancks={liquidityToAdd?.[1]}
-				tokens={tokens}
+				tokens={tokensWithoutPool}
 				isLoading={isLoadingTokens}
-				onTokenChange={() => {}}
+				onTokenChange={onToken2Change}
 				errorMessage={errorMessageAsset}
-				disableTokenButton
 				balance={accountBalances?.[1]}
 				isLoadingBalance={isLoadingAccountBalances}
 				onMaxClick={handleMaxClick("token2")}

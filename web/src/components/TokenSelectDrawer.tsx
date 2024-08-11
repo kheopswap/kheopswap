@@ -147,10 +147,19 @@ const TokenSelectDrawerContent: FC<{
 			(tokens ?? []).sort((t1, t2) => {
 				const [b1, b2] = [t1, t2].map((t) => balances?.[t.id]);
 				if (!b1 || !b2) return 0;
-				if (b1.stablePlancks === b2.stablePlancks) return 0;
-				if (b1.stablePlancks === null) return 1;
-				if (b2.stablePlancks === null) return -1;
-				return b1.stablePlancks > b2.stablePlancks ? -1 : 1;
+				if (b1.stablePlancks || b2.stablePlancks) {
+					if (b1.stablePlancks === b2.stablePlancks) return 0;
+					if (b1.stablePlancks === null) return 1;
+					if (b2.stablePlancks === null) return -1;
+					return b1.stablePlancks > b2.stablePlancks ? -1 : 1;
+				}
+				if (b1.tokenPlancks || b2.tokenPlancks) {
+					if (b1.tokenPlancks === b2.tokenPlancks) return 0;
+					if (b1.tokenPlancks === null) return 1;
+					if (b2.tokenPlancks === null) return -1;
+					return b1.tokenPlancks > b2.tokenPlancks ? -1 : 1;
+				}
+				return 0;
 			}),
 		[tokens, balances],
 	);

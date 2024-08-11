@@ -13,20 +13,21 @@ export const CreatePoolTransactionProvider: FC<PropsWithChildren> = ({
 		call,
 		fakeCall,
 		formData,
-		//	token, plancks,
+		liquidityToAdd,
+		token1,
+		token2,
 		onReset,
 		assetHub,
 	} = useCreatePool();
 
-	const callSpendings = useMemo<CallSpendings>(
-		() => ({}),
-		// token && !!plancks
-		// 	? {
-		// 			[token.id]: { plancks, allowDeath: true },
-		// 		}
-		// 	: {}
-		[],
-	);
+	const callSpendings = useMemo<CallSpendings>(() => {
+		if (!liquidityToAdd || !token1 || !token2) return {};
+
+		return {
+			[token1.id]: { plancks: liquidityToAdd[0], allowDeath: false },
+			[token2.id]: { plancks: liquidityToAdd[1], allowDeath: false },
+		};
+	}, [token1, token2, liquidityToAdd]);
 
 	return (
 		<TransactionProvider
