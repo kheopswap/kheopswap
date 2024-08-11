@@ -38,3 +38,5 @@ export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
 	"asset",
 	"foreign-asset",
 ];
+
+export const POOL_TOKEN2_TOKEN_TYPES: TokenType[] = ["asset", "foreign-asset"];

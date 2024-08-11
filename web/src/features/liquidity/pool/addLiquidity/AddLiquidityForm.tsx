@@ -50,7 +50,7 @@ const AddLiquidityEditor: FC = () => {
 	const refInput2 = useRef<HTMLInputElement>(null);
 
 	const handleChange = useCallback(
-		(tokenIdx: "native" | "asset"): ChangeEventHandler<HTMLInputElement> =>
+		(tokenIdx: "token1" | "token2"): ChangeEventHandler<HTMLInputElement> =>
 			(e) => {
 				const val = Number(e.target.value);
 
@@ -61,9 +61,9 @@ const AddLiquidityEditor: FC = () => {
 					Number.isNaN(val) ||
 					val < 0
 				) {
-					if (tokenIdx === "native" && refInput2.current)
+					if (tokenIdx === "token1" && refInput2.current)
 						refInput2.current.value = "";
-					if (tokenIdx === "asset" && refInput1.current)
+					if (tokenIdx === "token2" && refInput1.current)
 						refInput1.current.value = "";
 					setLiquidityToAdd(null);
 					return;
@@ -71,7 +71,7 @@ const AddLiquidityEditor: FC = () => {
 
 				if (!reserves || reserves.includes(0n)) {
 					// empty pool, can't derive 2nd value
-					if (tokenIdx === "native")
+					if (tokenIdx === "token1")
 						setLiquidityToAdd([
 							tokensToPlancks(e.target.value, nativeToken.decimals),
 							liquidityToAdd?.[1] ?? 0n,
@@ -85,7 +85,7 @@ const AddLiquidityEditor: FC = () => {
 				}
 
 				try {
-					if (tokenIdx === "native") {
+					if (tokenIdx === "token1") {
 						const nativePlancks = tokensToPlancks(
 							e.target.value,
 							nativeToken.decimals,
@@ -118,7 +118,7 @@ const AddLiquidityEditor: FC = () => {
 	);
 
 	const handleMaxClick = useCallback(
-		(tokenIdx: "native" | "asset") => () => {
+		(tokenIdx: "token1" | "token2") => () => {
 			if (
 				!accountBalances ||
 				!reserves ||
@@ -130,7 +130,7 @@ const AddLiquidityEditor: FC = () => {
 			)
 				return;
 
-			if (tokenIdx === "native") {
+			if (tokenIdx === "token1") {
 				const fee = feeToken?.id === nativeToken.id ? feeEstimate ?? 0n : 0n;
 				const nativeMargin = 2n * fee + (nativeExistentialDeposit ?? 0n);
 				const maxNative =
@@ -204,7 +204,7 @@ const AddLiquidityEditor: FC = () => {
 				inputProps={{
 					ref: refInput1,
 					inputMode: "decimal",
-					onChange: handleChange("native"),
+					onChange: handleChange("token1"),
 					formNoValidate: true,
 				}}
 				tokenId={nativeToken?.id}
@@ -216,13 +216,13 @@ const AddLiquidityEditor: FC = () => {
 				disableTokenButton
 				balance={accountBalances?.[0]}
 				isLoadingBalance={isLoadingAccountBalances}
-				onMaxClick={handleMaxClick("native")}
+				onMaxClick={handleMaxClick("token1")}
 			/>
 			<TokenAmountPicker
 				inputProps={{
 					ref: refInput2,
 					inputMode: "decimal",
-					onChange: handleChange("asset"),
+					onChange: handleChange("token2"),
 					formNoValidate: true,
 				}}
 				tokenId={assetToken?.id}
@@ -234,7 +234,7 @@ const AddLiquidityEditor: FC = () => {
 				disableTokenButton
 				balance={accountBalances?.[1]}
 				isLoadingBalance={isLoadingAccountBalances}
-				onMaxClick={handleMaxClick("asset")}
+				onMaxClick={handleMaxClick("token2")}
 			/>
 		</div>
 	);
