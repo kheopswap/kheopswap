@@ -9,7 +9,7 @@ import {
 	westend,
 } from "@polkadot-api/descriptors";
 import { type TypedApi, createClient } from "polkadot-api";
-import { WebSocketProvider } from "polkadot-api/ws-provider/web";
+import { getWsProvider } from "polkadot-api/ws-provider/web";
 import papiConfig from "../../.papi/polkadot-api.json";
 
 const descriptors = {
@@ -35,7 +35,7 @@ export type Api<Id extends ChainId> = TypedApi<Descriptors[Id]>;
 const getProvider = async (chainId: ChainId) => {
 	const wsUrl = papiConfig.entries[chainId]?.wsUrl as string;
 	if (!wsUrl) throw new Error(`wsUrl not found for chainId: ${chainId}`);
-	return WebSocketProvider(wsUrl);
+	return getWsProvider(wsUrl);
 };
 
 export const getApi = async <Id extends keyof typeof descriptors>(

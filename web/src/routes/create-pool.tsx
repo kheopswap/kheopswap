@@ -10,7 +10,7 @@ export const CreateLiquidityPoolPage = () => {
 	const { relayId, tokenId } = useParams();
 	const { assetHub } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
-	const { data: token } = useToken({
+	const { data: token, isLoading } = useToken({
 		tokenId,
 	});
 
@@ -22,6 +22,9 @@ export const CreateLiquidityPoolPage = () => {
 	if (!relayId) return <Navigate to="/" replace />;
 
 	if (!tokenId) return <Navigate to={`/${relayId}/pools`} replace />;
+
+	if (!isLoading && (!token || token.chainId !== assetHub.id))
+		return <Navigate to={`/${relayId}/pools`} replace />;
 
 	return (
 		<Layout>
