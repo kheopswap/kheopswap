@@ -169,7 +169,7 @@ const FollowUpModalInner: FC<{
 					(e.type === "finalized" && !e.ok) ||
 					(e.type === "txBestBlocksState" && e.found && !e.ok),
 			)
-				? getErrorMessageFromTxEvents(allEvents)
+				? getErrorMessageFromTxEvents(allEvents) // TODO cleanup, since papi 1.13 no need to lookup for extrinsic failed, we have event.dispatchError
 				: null;
 
 			return [

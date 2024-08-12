@@ -1,6 +1,7 @@
 import { isNumber } from "lodash";
 import type { Transaction } from "polkadot-api";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import { type Observable, catchError, of, shareReplay } from "rxjs";
 
 import type { FollowUpTxEvent } from "src/components";
@@ -20,6 +21,7 @@ import {
 } from "src/hooks";
 import type { BalanceDef } from "src/services/balances";
 import {
+	formatTxError,
 	getFeeAssetLocation,
 	getTxOptions,
 	isBigInt,
@@ -153,11 +155,24 @@ const useTransactionProvider = ({
 				if (x.type === "error") {
 					// Handles errors such as user cancelling the transaction from the wallet
 					logger.error("Transaction error", x.error);
+					const errorMessage = x.error.error
+						? formatTxError(x.error.error)
+						: "";
+					const errorType = x.error instanceof Error ? x.error.name : "Error";
+					const errorText = errorMessage
+						? `${errorType}: ${errorMessage}`
+						: null;
+
+					if (errorMessage === "Unknown: CannotLookup")
+						console.warn(
+							"It could be that the chain doesn't support CheckMetadataHash",
+						);
 
 					// if submitted let follow up display it
 					// if not, use standard error notification
 					if (!isSubmitted) {
-						notifyError(x.error);
+						if (errorText) toast(errorText, { type: "error" });
+						else notifyError(x.error);
 						setFollowUpInputs(undefined);
 					}
 
