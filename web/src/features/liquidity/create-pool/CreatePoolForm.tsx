@@ -15,12 +15,15 @@ import {
 	TokenAmountPicker,
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
+import { useToken } from "src/hooks";
 import { plancksToTokens, tokensToPlancks } from "src/util";
 import { useCreatePool } from "./CreatePoolProvider";
 import { CreatePoolSummary } from "./CreatePoolSummary";
 
 export const CreatePoolForm = () => {
 	const { formData, onFromChange } = useCreatePool();
+
+	const { data: token } = useToken({ tokenId: formData.token2Id });
 
 	const { canSubmit, onSubmit } = useTransaction();
 
@@ -47,9 +50,9 @@ export const CreatePoolForm = () => {
 				</FormFieldContainer>
 				<FormFieldContainer label="Initial liquidity (optional)">
 					<p className="text-xs text-neutral mb-2">
-						If you decide to provide liquidity to this pool, the ratio between
-						amount of each token will essentially define the token's price. Make
-						sure it's accurate or your position might be arbitraged.
+						The amounts of each token you provide will determine the price of{" "}
+						{token?.symbol}. Make sure it reflects it's true market value, or
+						others may take advantage of the price difference.
 					</p>
 					<AddLiquidityEditor />
 				</FormFieldContainer>
@@ -227,6 +230,7 @@ const AddLiquidityEditor: FC = () => {
 				tokenId={token2?.id}
 				plancks={liquidityToAdd?.[1]}
 				tokens={tokensWithoutPool}
+				disableTokenButton
 				isLoading={isLoadingTokens}
 				onTokenChange={onToken2Change}
 				errorMessage={errorMessageAsset}
