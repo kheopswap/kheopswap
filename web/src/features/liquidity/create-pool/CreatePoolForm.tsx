@@ -36,7 +36,7 @@ export const CreatePoolForm = () => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-3">
-				<FormFieldContainer id="from-account" label="From">
+				<FormFieldContainer id="from-account" label="Account">
 					<AccountSelect
 						id="from-account"
 						idOrAddress={formData.from}
@@ -47,9 +47,9 @@ export const CreatePoolForm = () => {
 				</FormFieldContainer>
 				<FormFieldContainer label="Initial liquidity (optional)">
 					<p className="text-xs text-neutral mb-2">
-						If you decide to provide liquidity to this pool, the amount of each
-						token that you indicate here will essentially define the token's
-						price. Make sure it's accurate or your position might be arbitraged.
+						If you decide to provide liquidity to this pool, the ratio between
+						amount of each token will essentially define the token's price. Make
+						sure it's accurate or your position might be arbitraged.
 					</p>
 					<AddLiquidityEditor />
 				</FormFieldContainer>

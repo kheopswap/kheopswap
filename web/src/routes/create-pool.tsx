@@ -1,36 +1,27 @@
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
-import { NavLink, useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { NavLink, Navigate, useParams } from "react-router-dom";
 
 import { Layout, PageContent, PageTitle, TabTitle } from "src/components";
 import { CreatePool } from "src/features/liquidity/create-pool";
-
-// const usePoolName = () => {
-// 	const { assetHub } = useRelayChains();
-// 	const nativeToken = useNativeToken({ chain: assetHub });
-// 	const { poolAssetId } = useParams();
-
-// 	const { data: pool, isLoading: isLoadingPool } = usePoolByPoolAssetId({
-// 		poolAssetId: Number(poolAssetId),
-// 	});
-
-// 	const { data: assetToken, isLoading: isLoadingToken } = useToken({
-// 		tokenId: pool?.tokenIds[1],
-// 	});
-
-// 	const poolName = useMemo(() => {
-// 		if (!nativeToken || !assetToken) return null;
-// 		return `${nativeToken.symbol}/${assetToken.symbol}`;
-// 	}, [assetToken, nativeToken]);
-
-// 	return { data: poolName, isLoading: isLoadingPool || isLoadingToken };
-// };
+import { useNativeToken, useRelayChains, useToken } from "src/hooks";
 
 export const CreateLiquidityPoolPage = () => {
-	//const { data: poolName, isLoading } = usePoolName();
-	const { relayId } = useParams();
+	const { relayId, tokenId } = useParams();
+	const { assetHub } = useRelayChains();
+	const nativeToken = useNativeToken({ chain: assetHub });
+	const { data: token } = useToken({
+		tokenId,
+	});
 
-	// if (!isLoading && !poolName)
-	// 	return <Navigate to={`/${relayId}/pools`} replace />;
+	const poolName = useMemo(() => {
+		if (!nativeToken || !token) return null;
+		return `${nativeToken.symbol}/${token.symbol}`;
+	}, [nativeToken, token]);
+
+	if (!relayId) return <Navigate to="/" replace />;
+
+	if (!tokenId) return <Navigate to={`/${relayId}/pools`} replace />;
 
 	return (
 		<Layout>
@@ -42,13 +33,13 @@ export const CreateLiquidityPoolPage = () => {
 					>
 						Liquidity Pools
 					</NavLink>{" "}
-					<ChevronRightIcon className="inline size-[0.8em]" /> Create
+					<ChevronRightIcon className="inline size-[0.8em]" /> Create {poolName}
 				</PageTitle>
 				<PageContent>
-					<CreatePool />
+					<CreatePool tokenId={tokenId} />
 				</PageContent>
 			</div>
-			<TabTitle title="Create Liquidity Pool" />
+			<TabTitle title={`Create Pool ${poolName}`} />
 		</Layout>
 	);
 };

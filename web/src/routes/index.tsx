@@ -33,7 +33,7 @@ export const router = createHashRouter([
 				element: <TransferPage />,
 			},
 			{
-				path: "pools/create",
+				path: "pools/create/:tokenId",
 				element: <CreateLiquidityPoolPage />,
 			},
 			{

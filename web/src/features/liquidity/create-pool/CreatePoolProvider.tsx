@@ -20,7 +20,7 @@ import { getAddressFromAccountField, isBigInt, provideContext } from "src/util";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 
-const useDefaultValues = () => {
+const useDefaultValues = (token2Id: TokenId) => {
 	const [defaultAccountId] = useSetting("defaultAccountId");
 
 	// account won't be available on first render
@@ -31,17 +31,17 @@ const useDefaultValues = () => {
 	return useMemo<CreatePoolFormInputs>(
 		() => ({
 			from: account?.id ?? "",
-			token2Id: "",
+			token2Id,
 			token1Amount: "",
 			token2Amount: "",
 		}),
-		[account?.id],
+		[account?.id, token2Id],
 	);
 };
 
-const useCreatePoolProvider = () => {
+const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const { assetHub } = useRelayChains();
-	const defaultValues = useDefaultValues();
+	const defaultValues = useDefaultValues(tokenId);
 	const [formData, setFormData] = useState<CreatePoolFormInputs>(defaultValues);
 	const [, setDefaultAccountId] = useSetting("defaultAccountId");
 
@@ -110,16 +110,6 @@ const useCreatePoolProvider = () => {
 		liquidityToAdd: fakeLiquidityToAdd,
 		mintTo: sender,
 	});
-
-	// useEffect(() => {
-	// 	console.log({
-	// 		token1,
-	// 		token2,
-	// 		liquidityToAdd,
-	// 		mintTo: sender,
-	// 		call: call?.decodedCall,
-	// 	});
-	// }, [call, token1, token2, liquidityToAdd, sender]);
 
 	const { feeToken } = useFeeToken({
 		chainId: assetHub.id,

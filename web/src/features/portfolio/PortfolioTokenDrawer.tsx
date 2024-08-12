@@ -251,7 +251,7 @@ const LiquidityPoolValue: FC<{ token: TokenAsset | TokenForeignAsset }> = ({
 	const handleClick = useCallback(() => {
 		const url = pool
 			? `/${relayId}/pools/${pool.poolAssetId}`
-			: `/${relayId}/pool/create/${token.id}`;
+			: `/${relayId}/pools/create/${token.id}`;
 		navigate(url);
 	}, [token, pool, relayId, navigate]);
 
