@@ -19,6 +19,7 @@ export * from "./useOpenClose";
 export * from "./usePoolReserves";
 export * from "./usePoolReservesByTokenIds";
 export * from "./usePoolsByChainId";
+export * from "./usePoolByTokenId";
 export * from "./usePoolSupplies";
 export * from "./usePoolSupply";
 export * from "./useRelayChains";

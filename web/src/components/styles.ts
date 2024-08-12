@@ -6,6 +6,6 @@ export const Styles = {
 	),
 
 	button: cn(
-		"rounded border  border-neutral-750 bg-neutral-850 enabled:hover:bg-neutral-800 disabled:opacity-70",
+		"rounded border border-neutral-750 bg-neutral-850 enabled:hover:bg-neutral-800 disabled:opacity-70",
 	),
 };
