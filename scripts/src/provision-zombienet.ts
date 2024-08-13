@@ -21,7 +21,7 @@ const provisionRelay = async () => {
 };
 
 const provisionAssetHub = async () => {
-	const callsToken1 = await createAssetAndPoolCalls(
+	const callsToken1 = await createAssetCalls(
 		assetHub,
 		10001,
 		"TK1",
@@ -29,11 +29,10 @@ const provisionAssetHub = async () => {
 		12,
 		alice,
 		parseUnits("12000000", 12), // 12M
-		parseUnits("1000", 12), // 1K ROC
-		parseUnits("1000000", 12), // 1M tokens
+		false,
 	);
 
-	const callsToken2 = await createAssetAndPoolCalls(
+	const callsToken2 = await createAssetCalls(
 		assetHub,
 		10002,
 		"TK2",
@@ -41,8 +40,7 @@ const provisionAssetHub = async () => {
 		12,
 		alice,
 		parseUnits("12000000", 12), // 12M
-		parseUnits("1000", 12), // 1K ROC
-		parseUnits("1000000", 12), // 1M tokens
+		false,
 	);
 
 	const callsToken3 = await createAssetCalls(
@@ -53,7 +51,7 @@ const provisionAssetHub = async () => {
 		12,
 		alice,
 		parseUnits("12000000", 12), // 12M
-		true,
+		false,
 	);
 
 	const callsToken4 = await createAssetCalls(
@@ -90,11 +88,27 @@ const provisionAssetHub = async () => {
 		assetHub,
 		alice,
 		ADDRESS_DEV,
-		10003,
+		10001,
 		parseUnits("1000000", 12),
 	);
 
 	const callsSendAssetsTokens2 = sendAssetTokensCall(
+		assetHub,
+		alice,
+		ADDRESS_DEV,
+		10002,
+		parseUnits("1000000", 12),
+	);
+
+	const callsSendAssetsTokens3 = sendAssetTokensCall(
+		assetHub,
+		alice,
+		ADDRESS_DEV,
+		10003,
+		parseUnits("1000000", 12),
+	);
+
+	const callsSendAssetsTokens4 = sendAssetTokensCall(
 		assetHub,
 		alice,
 		ADDRESS_DEV,
@@ -112,6 +126,8 @@ const provisionAssetHub = async () => {
 			callsSendNativeTokens1.decodedCall,
 			callsSendAssetsTokens1.decodedCall,
 			callsSendAssetsTokens2.decodedCall,
+			callsSendAssetsTokens3.decodedCall,
+			callsSendAssetsTokens4.decodedCall,
 		],
 	}).signSubmitAndWatch(alice.signer);
 

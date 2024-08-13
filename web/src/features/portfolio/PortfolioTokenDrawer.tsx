@@ -1,14 +1,23 @@
-import { type FC, type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+	type FC,
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
 
+import { useNavigate } from "react-router-dom";
 import {
 	AccountSelectDrawer,
 	Drawer,
 	DrawerContainer,
 	InjectedAccountIcon,
 	Shimmer,
+	Styles,
 	TokenLogo,
 	Tokens,
 	Tooltip,
@@ -21,9 +30,11 @@ import {
 	type TokenId,
 	getTokenDisplayProperties,
 } from "src/config/tokens";
+import type { TokenAsset, TokenForeignAsset } from "src/config/tokens/types";
 import {
 	useNativeToken,
 	useOpenClose,
+	usePoolByTokenId,
 	useRelayChains,
 	useTokenChain,
 } from "src/hooks";
@@ -200,7 +211,7 @@ const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
 	label,
 	children,
 }) => (
-	<div className="flex w-full justify-between gap-4 overflow-hidden">
+	<div className="flex w-full justify-between gap-4 overflow-hidden items-center h-7">
 		<div className="text-neutral-400">{label}</div>
 		<div className="overflow-hidden">{children}</div>
 	</div>
@@ -230,6 +241,33 @@ const DisplayPropertyValue: FC<DisplayProperty> = ({ value, format, url }) => {
 	return formatted || null;
 };
 
+const LiquidityPoolValue: FC<{ token: TokenAsset | TokenForeignAsset }> = ({
+	token,
+}) => {
+	const { relayId } = useRelayChains();
+	const { data: pool, isLoading } = usePoolByTokenId({ tokenId: token.id });
+	const navigate = useNavigate();
+
+	const handleClick = useCallback(() => {
+		const url = pool
+			? `/${relayId}/pools/${pool.poolAssetId}`
+			: `/${relayId}/pools/create/${token.id}`;
+		navigate(url);
+	}, [token, pool, relayId, navigate]);
+
+	if (isLoading) return <Shimmer className="w-20 h-5" />;
+
+	return (
+		<button
+			type="button"
+			onClick={handleClick}
+			className={cn(Styles.button, "px-2")}
+		>
+			{pool ? `Pool ${pool.poolAssetId}` : "Create Pool"}{" "}
+		</button>
+	);
+};
+
 const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 	const { token, balance, price, tvl } = row;
 	const { assetHub } = useRelayChains();
@@ -240,6 +278,11 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 	const displayProps = useMemo(() => {
 		return getTokenDisplayProperties(token);
 	}, [token]);
+
+	// const {data, isLoading}=	usePoolByTokenId({tokenId:});
+	// const
+
+	// 	console.log(tvl);
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -261,6 +304,11 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 					<DisplayPropertyValue {...prop} />
 				</TokenDetailsRow>
 			))}
+			{token.type === "asset" || token.type === "foreign-asset" ? (
+				<TokenDetailsRow label="Liquidity Pool">
+					<LiquidityPoolValue token={token} />
+				</TokenDetailsRow>
+			) : null}
 			<TokenDetailsRow label="Price">
 				{!!price && <TokenDetailsRowValue {...price} token={nativeToken} />}
 			</TokenDetailsRow>
@@ -269,6 +317,7 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 					<TokenDetailsRowValue {...tvl} token={token} />
 				</TokenDetailsRow>
 			)}
+
 			{!!balance && (
 				<TokenDetailsRow label="Portfolio">
 					<TokenDetailsRowValue {...balance} token={token} />

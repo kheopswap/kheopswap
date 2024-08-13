@@ -10,6 +10,7 @@ import type { Pool } from "./types";
 
 import type { ChainId } from "src/config/chains";
 import type { LoadingStatus } from "src/services/common";
+import { setLoadingStatus } from "./watchers";
 
 type PoolsByChainState = {
 	status: LoadingStatus;
@@ -35,4 +36,8 @@ export const getPoolsByChain$ = (chainId: ChainId | null) => {
 		),
 		distinctUntilChanged<PoolsByChainState>(isEqual),
 	);
+};
+
+export const refreshPools = (chainId: ChainId) => {
+	setLoadingStatus(chainId, "stale");
 };

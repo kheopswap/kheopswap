@@ -1,5 +1,6 @@
 import { Navigate, createHashRouter } from "react-router-dom";
 
+import { CreateLiquidityPoolPage } from "./create-pool";
 import { ErrorBoundaryPage } from "./error";
 import { LiquidityPoolPage } from "./pool";
 import { LiquidityPoolsPage } from "./pools";
@@ -30,6 +31,10 @@ export const router = createHashRouter([
 			{
 				path: "transfer",
 				element: <TransferPage />,
+			},
+			{
+				path: "pools/create/:tokenId",
+				element: <CreateLiquidityPoolPage />,
 			},
 			{
 				path: "pools/:poolAssetId",

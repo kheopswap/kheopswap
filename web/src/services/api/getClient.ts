@@ -1,5 +1,5 @@
 import { type PolkadotClient, createClient } from "polkadot-api";
-import { WebSocketProvider } from "polkadot-api/ws-provider/web";
+import { getWsProvider } from "polkadot-api/ws-provider/web";
 
 import { getChainSpec, hasChainSpec } from "./getChainSpec";
 import { getScChainProvider } from "./getScChainProvider";
@@ -48,7 +48,7 @@ const getRelayChainClient = async (
 ) => {
 	// force ws provider if light clients are disabled or chainSpec is not available
 	if (!options.lightClients || !hasChainSpec(chain.id))
-		return createClient(WebSocketProvider(chain.wsUrl));
+		return createClient(getWsProvider(chain.wsUrl));
 
 	const chainSpec = await getChainSpec(chain.id);
 
@@ -73,7 +73,7 @@ const getParaChainClient = async (chain: Chain, options: ClientOptions) => {
 		!hasChainSpec(paraChainId) ||
 		!hasChainSpec(relayChainId)
 	)
-		return createClient(WebSocketProvider(chain.wsUrl));
+		return createClient(getWsProvider(chain.wsUrl));
 
 	const [relayChainSpec, paraChainSpec] = await Promise.all([
 		getChainSpec(relayChainId),
