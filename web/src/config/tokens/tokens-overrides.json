@@ -73,5 +73,13 @@
 		"id": "foreign-asset::wah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAlIgGNdREAF9jhoA==",
 		"logo": "./img/tokens/ROC.svg",
 		"verified": true
+	},
+	{
+		"id": "asset::pah::17",
+		"logo": "./img/tokens/WIFD.svg"
+	},
+	{
+		"id": "asset::pah::690",
+		"logo": "./img/tokens/BORK.webp"
 	}
 ]
