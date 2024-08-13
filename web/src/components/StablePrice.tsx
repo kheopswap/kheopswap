@@ -1,29 +1,35 @@
-import { type FC, type ReactNode, useMemo } from "react";
+import { type FC, useMemo } from "react";
 
 import { Shimmer } from "./Shimmer";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
 import type { TokenId } from "src/config/tokens";
-import { useStablePrice } from "src/hooks";
-import { cn, formatDecimals } from "src/util";
+import { useStablePlancks } from "src/hooks";
+import { cn } from "src/util";
+import { Tokens } from "./Tokens";
 
 export const StablePrice: FC<{
 	plancks: bigint | null | undefined;
 	tokenId: TokenId | null | undefined;
-	prefix?: ReactNode;
 	className?: string;
-}> = ({ plancks, tokenId, className, prefix }) => {
-	const { price, isLoading, stableToken, token } = useStablePrice({
+}> = ({ plancks, tokenId, className }) => {
+	const { stablePlancks, isLoading, stableToken, token } = useStablePlancks({
 		tokenId,
 		plancks,
 	});
 
 	const hide = useMemo(
-		() => !stableToken || !token || typeof plancks !== "bigint" || !price,
-		[plancks, price, stableToken, token],
+		() =>
+			!stableToken || !token || typeof plancks !== "bigint" || !stablePlancks,
+		[plancks, stablePlancks, stableToken, token],
 	);
 
-	if (hide || isLoading)
+	if (
+		isLoading ||
+		!stableToken ||
+		!token ||
+		typeof plancks !== "bigint" ||
+		!stablePlancks
+	)
 		return (
 			<Shimmer className={cn("inline-block", className, hide && "invisible")}>
 				{`0000 ${stableToken?.symbol ?? "USDC"}`}
@@ -31,18 +37,12 @@ export const StablePrice: FC<{
 		);
 
 	return (
-		<Tooltip>
-			<TooltipTrigger asChild>
-				<span className={cn("whitespace-nowrap", className)}>
-					{prefix}
-					{formatDecimals(price, 2)} {stableToken?.symbol}
-				</span>
-			</TooltipTrigger>
-			{price && (
-				<TooltipContent>
-					{price} {stableToken?.symbol}
-				</TooltipContent>
-			)}
-		</Tooltip>
+		<Tokens
+			plancks={stablePlancks}
+			token={stableToken}
+			digits={2}
+			showSymbol
+			className={className}
+		/>
 	);
 };
