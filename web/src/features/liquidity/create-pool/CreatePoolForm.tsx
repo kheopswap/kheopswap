@@ -91,33 +91,28 @@ const AddLiquidityEditor: FC = () => {
 			(e) => {
 				const val = Number(e.target.value);
 
-				if (
-					!e.target.value ||
-					!token1 ||
-					!token2 ||
-					Number.isNaN(val) ||
-					val < 0
-				) {
+				if (!token1 || !token2) {
 					if (tokenIdx === "token1" && refInput2.current)
 						refInput2.current.value = "";
 					if (tokenIdx === "token2" && refInput1.current)
 						refInput1.current.value = "";
-					setLiquidityToAdd(null);
-					return;
+					return setLiquidityToAdd(null);
 				}
 
-				// empty pool, can't derive 2nd value
+				let [val1, val2] = liquidityToAdd ?? [0n, 0n];
+
 				if (tokenIdx === "token1")
-					setLiquidityToAdd([
-						tokensToPlancks(e.target.value, token1.decimals),
-						liquidityToAdd?.[1] ?? 0n,
-					]);
+					val1 =
+						Number.isNaN(val) || val < 0
+							? 0n
+							: tokensToPlancks(val, token1.decimals);
 				else
-					setLiquidityToAdd([
-						liquidityToAdd?.[0] ?? 0n,
-						tokensToPlancks(e.target.value, token2.decimals),
-					]);
-				return;
+					val2 =
+						Number.isNaN(val) || val < 0
+							? 0n
+							: tokensToPlancks(val, token2.decimals);
+
+				setLiquidityToAdd(!val1 && !val2 ? null : [val1, val2]);
 			},
 		[token2, liquidityToAdd, token1, setLiquidityToAdd],
 	);
