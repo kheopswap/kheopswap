@@ -81,5 +81,9 @@
 	{
 		"id": "asset::pah::690",
 		"logo": "./img/tokens/BORK.webp"
+	},
+	{
+		"id": "asset::pah::31337",
+		"logo": "./img/tokens/WUD.webp"
 	}
 ]
