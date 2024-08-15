@@ -279,11 +279,6 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 		return getTokenDisplayProperties(token);
 	}, [token]);
 
-	// const {data, isLoading}=	usePoolByTokenId({tokenId:});
-	// const
-
-	// 	console.log(tvl);
-
 	return (
 		<div className="flex flex-col gap-2">
 			<TokenDetailsRow label="Network">
