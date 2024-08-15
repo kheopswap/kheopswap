@@ -41,22 +41,29 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 		await api.waitReady;
 		if (signal.aborted) return;
 
-		const stop = logger.timer(
-			`chain.api.query.ForeignAssets.Metadata.getEntries() - ${chain.id}`,
-		);
-		const tokens = await api.query.ForeignAssets.Metadata.getEntries({
-			at: "best",
-			signal,
-		});
+		const stop = logger.timer(`fetchForeignAssetTokens() - ${chain.id}`);
+		const [metadata, assets] = await Promise.all([
+			api.query.ForeignAssets.Metadata.getEntries({
+				at: "best",
+				signal,
+			}),
+			api.query.ForeignAssets.Asset.getEntries({
+				at: "best",
+				signal,
+			}),
+		]);
 		stop();
 
-		const foreignAssetTokens = tokens
+		const foreignAssetTokens = metadata
 			.map((d) => ({
 				location: d.keyArgs[0],
 				symbol: d.value.symbol.asText(),
 				decimals: d.value.decimals,
 				name: d.value.name.asText(),
+				// biome-ignore lint/style/noNonNullAssertion: filtered out
+				asset: assets.find((a) => isEqual(a.keyArgs[0], d.keyArgs[0]))?.value!,
 			}))
+			.filter((d) => !!d.asset) // ignore entries without asset
 			.map((d) => ({
 				...d,
 				id: getTokenId({
@@ -66,8 +73,7 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 				}),
 			}))
 			.map(
-				({ id, location, symbol, decimals, name }) =>
-					KNOWN_TOKENS_MAP[id] ??
+				({ id, location, symbol, decimals, name, asset }) =>
 					({
 						id,
 						type: "foreign-asset",
@@ -78,8 +84,18 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 						name,
 						logo: "./img/tokens/asset.svg",
 						verified: false,
+						isSufficient: asset.is_sufficient,
+						accounts: asset.accounts,
+						owner: asset.owner,
+						issuer: asset.issuer,
+						admin: asset.admin,
+						freezer: asset.freezer,
+						minBalance: asset.min_balance,
+						status: asset.status.type,
+						supply: asset.supply,
+						...((KNOWN_TOKENS_MAP[id] as unknown) ?? {}),
 						...TOKENS_OVERRIDES_MAP[id],
-					} as Token),
+					}) as Token,
 			);
 
 		logger.info("foreign assets", foreignAssetTokens);
@@ -158,21 +174,29 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 		await api.waitReady;
 		if (signal.aborted) return;
 
-		const stop = logger.timer(
-			`chain.api.query.Assets.Metadata.getEntries() - ${chain.id}`,
-		);
-		const tokens = await api.query.Assets.Metadata.getEntries({
-			at: "best",
-			signal,
-		});
+		const stop = logger.timer(`fetchAssetTokens() - ${chain.id}`);
+
+		const [metadata, assets] = await Promise.all([
+			api.query.Assets.Metadata.getEntries({
+				at: "best",
+				signal,
+			}),
+			api.query.Assets.Asset.getEntries({
+				at: "best",
+				signal,
+			}),
+		]);
+
 		stop();
 
-		const assetTokens = tokens
+		const assetTokens = metadata
 			.map((d) => ({
 				assetId: d.keyArgs[0],
 				symbol: d.value.symbol.asText(),
 				decimals: d.value.decimals,
 				name: d.value.name.asText(),
+				// biome-ignore lint/style/noNonNullAssertion: filtered out
+				asset: assets.find((a) => isEqual(a.keyArgs[0], d.keyArgs[0]))?.value!,
 			}))
 			.map((d) => ({
 				...d,
@@ -183,8 +207,7 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 				}),
 			}))
 			.map(
-				({ id, assetId, symbol, decimals, name }) =>
-					KNOWN_TOKENS_MAP[id] ??
+				({ id, assetId, symbol, decimals, name, asset }) =>
 					({
 						id,
 						type: "asset",
@@ -196,8 +219,17 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 						logo: "./img/tokens/asset.svg",
 						verified: false,
 						isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
+						accounts: asset.accounts,
+						owner: asset.owner,
+						issuer: asset.issuer,
+						admin: asset.admin,
+						freezer: asset.freezer,
+						minBalance: asset.min_balance,
+						status: asset.status.type,
+						supply: asset.supply,
+						...((KNOWN_TOKENS_MAP[id] as unknown) ?? {}),
 						...TOKENS_OVERRIDES_MAP[id],
-					} as Token),
+					}) as Token,
 			);
 
 		const currentTokens = values(tokensStore$.value);

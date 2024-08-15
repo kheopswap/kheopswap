@@ -32,6 +32,14 @@ export type TokenAssetNoId = {
 	assetId: number;
 	verified: boolean;
 	isSufficient: boolean;
+	supply: bigint;
+	owner: string;
+	issuer: string;
+	admin: string;
+	freezer: string;
+	minBalance: bigint;
+	accounts: number;
+	status: string;
 };
 
 export type TokenPoolAssetNoId = {
@@ -49,13 +57,21 @@ export type TokenPoolAssetNoId = {
 export type TokenForeignAssetNoId = {
 	type: TokenTypeForeignAsset;
 	chainId: ChainId;
-	decimals: number; // TODO set to 0
-	symbol: string; // TODO remove
-	name: string; // TODO remove
-	logo: string; // TODO remove
+	decimals: number;
+	symbol: string;
+	name: string;
+	logo: string;
 	location: XcmV3Multilocation;
 	verified: boolean;
 	isSufficient: boolean;
+	supply: bigint;
+	owner: string;
+	issuer: string;
+	admin: string;
+	freezer: string;
+	minBalance: bigint;
+	accounts: number;
+	status: string;
 };
 
 export type TokenNoId = TokenNativeNoId | TokenAssetNoId | TokenPoolAssetNoId;

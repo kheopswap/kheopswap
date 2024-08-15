@@ -1,5 +1,11 @@
 [
 	{
+		"chainId": "pah",
+		"paraId": 1000,
+		"name": "Polkadot Asset Hub",
+		"subscanUrl": "https://assethub-polkadot.subscan.io"
+	},
+	{
 		"paraId": 3369,
 		"name": "Mythos",
 		"subscanUrl": "https://mythos.subscan.io",

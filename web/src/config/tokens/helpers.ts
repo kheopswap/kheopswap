@@ -17,9 +17,14 @@ import type {
 
 import { type ChainId, getChainById } from "src/config/chains";
 import { getEvmNetworkById, getEvmNetworkName } from "src/config/evmNetworks";
-import { getParachainName } from "src/config/parachains";
+import { getParachainById, getParachainName } from "src/config/parachains";
 import type { XcmV3Multilocation } from "src/types";
-import { safeParse, safeStringify } from "src/util";
+import {
+	formatDecimals,
+	plancksToTokens,
+	safeParse,
+	safeStringify,
+} from "src/util";
 
 export const isTokenIdNative = (
 	tokenId: TokenId | null | undefined,
@@ -144,25 +149,29 @@ export type DisplayProperty = {
 };
 
 export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
+	const properties: DisplayProperty[] = [];
+
 	if (token.type === "foreign-asset") {
 		const interior = token.location.interior;
 		if (interior.type === "X1") {
 			if (interior.value.type === "Parachain")
-				return [
-					{
-						label: "Origin",
-						value: getParachainName(interior.value.value.toString()),
-					},
-				];
+				properties.push({
+					label: "Origin",
+					value: getParachainName(interior.value.value.toString()),
+				});
 
 			if (interior.value.type === "GlobalConsensus") {
 				switch (interior.value.value.type) {
 					case "ByFork":
 					case "ByGenesis":
 					case "PolkadotBulletin":
-						return [];
+						break;
 					default:
-						return [{ label: "Origin", value: interior.value.value.type }];
+						properties.push({
+							label: "Origin",
+							value: interior.value.value.type,
+						});
+						break;
 				}
 			}
 		}
@@ -176,7 +185,7 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 				const network = getEvmNetworkById(
 					interior.value[0].value.value.chain_id.toString(),
 				);
-				return [
+				properties.push(
 					{
 						label: "Origin",
 						value: getEvmNetworkName(
@@ -195,19 +204,70 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 								)
 							: undefined,
 					},
-				];
+				);
 			}
 		}
 
 		if (interior.type === "X2") {
 			if (interior.value[0]?.type === "Parachain") {
-				const network = {
+				properties.push({
 					label: "Origin",
 					value: getParachainName(interior.value[0].value.toString()),
-				};
-				return [network];
+				});
 			}
 		}
 	}
-	return [];
+
+	if (token.type === "asset" || token.type === "foreign-asset") {
+		properties.push({
+			label: "Total Supply",
+			value: `${formatDecimals(plancksToTokens(token.supply, token.decimals))} ${token.symbol}`,
+		});
+		properties.push({
+			label: "Holders",
+			value: token.accounts.toString(),
+		});
+		properties.push({
+			label: "Status",
+			value: token.status,
+		});
+		const parachain = getParachainById(token.chainId);
+		properties.push({
+			label: "Owner",
+			value: token.owner,
+			format: "address",
+			url: parachain?.subscanUrl
+				? urlJoin(parachain.subscanUrl, "account", token.owner)
+				: undefined,
+		});
+		if (token.admin !== token.owner)
+			properties.push({
+				label: "Admin",
+				value: token.admin,
+				format: "address",
+				url: parachain?.subscanUrl
+					? urlJoin(parachain.subscanUrl, "account", token.admin)
+					: undefined,
+			});
+		if (token.issuer !== token.owner)
+			properties.push({
+				label: "Issuer",
+				value: token.issuer,
+				format: "address",
+				url: parachain?.subscanUrl
+					? urlJoin(parachain.subscanUrl, "account", token.issuer)
+					: undefined,
+			});
+		if (token.freezer !== token.owner)
+			properties.push({
+				label: "Freezer",
+				value: token.freezer,
+				format: "address",
+				url: parachain?.subscanUrl
+					? urlJoin(parachain.subscanUrl, "account", token.freezer)
+					: undefined,
+			});
+	}
+
+	return properties;
 };
