@@ -283,7 +283,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 	return (
 		<>
 			<TokenDetailsRow label="Total Supply">
-				{tokenInfo?.supply ? (
+				{tokenInfo ? (
 					<Tokens
 						plancks={tokenInfo.supply}
 						token={token}
@@ -294,7 +294,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 				)}
 			</TokenDetailsRow>
 			<TokenDetailsRow label="Holders">
-				{tokenInfo?.accounts ? (
+				{tokenInfo ? (
 					<span className={cn(isLoading && "animate-pulse")}>
 						{tokenInfo.accounts}
 					</span>
@@ -303,7 +303,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 				)}
 			</TokenDetailsRow>
 			<TokenDetailsRow label="Status">
-				{tokenInfo?.status ? (
+				{tokenInfo ? (
 					<span className={cn(isLoading && "animate-pulse")}>
 						{tokenInfo.status}
 					</span>
@@ -312,7 +312,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 				)}
 			</TokenDetailsRow>
 			<TokenDetailsRow label="Owner">
-				{tokenInfo?.owner ? (
+				{tokenInfo ? (
 					<AddressDisplay
 						address={tokenInfo.owner}
 						blockExporerUrl={chain.blockExplorerUrl}
@@ -323,7 +323,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 					<Shimmer>0xdeadbeef...deadbeef</Shimmer>
 				)}
 			</TokenDetailsRow>
-			{tokenInfo?.admin && tokenInfo.admin !== tokenInfo?.owner && (
+			{tokenInfo && tokenInfo.admin !== tokenInfo?.owner && (
 				<TokenDetailsRow label="Admin">
 					<AddressDisplay
 						address={tokenInfo.admin}
@@ -333,7 +333,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 					/>
 				</TokenDetailsRow>
 			)}
-			{tokenInfo?.issuer && tokenInfo.admin !== tokenInfo?.owner && (
+			{tokenInfo && tokenInfo.admin !== tokenInfo?.owner && (
 				<TokenDetailsRow label="Issuer">
 					<AddressDisplay
 						address={tokenInfo.issuer}
@@ -343,7 +343,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 					/>
 				</TokenDetailsRow>
 			)}
-			{tokenInfo?.freezer && tokenInfo.admin !== tokenInfo?.owner && (
+			{tokenInfo && tokenInfo.admin !== tokenInfo?.owner && (
 				<TokenDetailsRow label="Freezer">
 					<AddressDisplay
 						address={tokenInfo.freezer}
