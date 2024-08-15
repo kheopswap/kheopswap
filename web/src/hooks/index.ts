@@ -36,3 +36,5 @@ export * from "./useWallets";
 export * from "./useTokens";
 export * from "./useAllTokens";
 export * from "./usePoolByPoolAssetId";
+export * from "./useTokenInfo";
+export * from "./useTokenInfos";

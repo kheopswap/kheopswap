@@ -13,6 +13,7 @@ import type { PortfolioRowData } from "./types";
 import { useNavigate } from "react-router-dom";
 import {
 	AccountSelectDrawer,
+	AddressDisplay,
 	Drawer,
 	DrawerContainer,
 	InjectedAccountIcon,
@@ -38,6 +39,7 @@ import {
 	useRelayChains,
 	useTokenChain,
 } from "src/hooks";
+import { useTokenInfo } from "src/hooks/useTokenInfo";
 import type { BalanceWithStable, BalanceWithStableSummary } from "src/types";
 import {
 	cn,
@@ -255,7 +257,7 @@ const LiquidityPoolValue: FC<{ token: TokenAsset | TokenForeignAsset }> = ({
 		navigate(url);
 	}, [token, pool, relayId, navigate]);
 
-	if (isLoading) return <Shimmer className="w-20 h-5" />;
+	if (!pool && isLoading) return <Shimmer className="w-20 h-5" />;
 
 	return (
 		<button
@@ -265,6 +267,93 @@ const LiquidityPoolValue: FC<{ token: TokenAsset | TokenForeignAsset }> = ({
 		>
 			{pool ? `Pool ${pool.poolAssetId}` : "Create Pool"}{" "}
 		</button>
+	);
+};
+
+const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
+	const { data: tokenInfo, isLoading } = useTokenInfo({ tokenId: token.id });
+	const chain = useTokenChain({ tokenId: token.id });
+
+	switch (tokenInfo?.type) {
+		case "pool-asset":
+		case "native":
+			return null;
+	}
+
+	return (
+		<>
+			<TokenDetailsRow label="Total Supply">
+				{tokenInfo?.supply ? (
+					<Tokens
+						plancks={tokenInfo.supply}
+						token={token}
+						className={cn(isLoading && "animate-pulse")}
+					/>
+				) : (
+					<Shimmer>000 TKN</Shimmer>
+				)}
+			</TokenDetailsRow>
+			<TokenDetailsRow label="Holders">
+				{tokenInfo?.accounts ? (
+					<span className={cn(isLoading && "animate-pulse")}>
+						{tokenInfo.accounts}
+					</span>
+				) : (
+					<Shimmer>00000</Shimmer>
+				)}
+			</TokenDetailsRow>
+			<TokenDetailsRow label="Status">
+				{tokenInfo?.status ? (
+					<span className={cn(isLoading && "animate-pulse")}>
+						{tokenInfo.status}
+					</span>
+				) : (
+					<Shimmer>Live</Shimmer>
+				)}
+			</TokenDetailsRow>
+			<TokenDetailsRow label="Owner">
+				{tokenInfo?.owner ? (
+					<AddressDisplay
+						address={tokenInfo.owner}
+						blockExporerUrl={chain.blockExplorerUrl}
+						className={cn(isLoading && "animate-pulse")}
+						iconClassName="size-5"
+					/>
+				) : (
+					<Shimmer>0xdeadbeef...deadbeef</Shimmer>
+				)}
+			</TokenDetailsRow>
+			{tokenInfo?.admin && tokenInfo.admin !== tokenInfo?.owner && (
+				<TokenDetailsRow label="Admin">
+					<AddressDisplay
+						address={tokenInfo.admin}
+						blockExporerUrl={chain.blockExplorerUrl}
+						className={cn(isLoading && "animate-pulse")}
+						iconClassName="size-5"
+					/>
+				</TokenDetailsRow>
+			)}
+			{tokenInfo?.issuer && tokenInfo.admin !== tokenInfo?.owner && (
+				<TokenDetailsRow label="Issuer">
+					<AddressDisplay
+						address={tokenInfo.issuer}
+						blockExporerUrl={chain.blockExplorerUrl}
+						className={cn(isLoading && "animate-pulse")}
+						iconClassName="size-5"
+					/>
+				</TokenDetailsRow>
+			)}
+			{tokenInfo?.freezer && tokenInfo.admin !== tokenInfo?.owner && (
+				<TokenDetailsRow label="Freezer">
+					<AddressDisplay
+						address={tokenInfo.freezer}
+						blockExporerUrl={chain.blockExplorerUrl}
+						className={cn(isLoading && "animate-pulse")}
+						iconClassName="size-5"
+					/>
+				</TokenDetailsRow>
+			)}
+		</>
 	);
 };
 
@@ -299,6 +388,7 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 					<DisplayPropertyValue {...prop} />
 				</TokenDetailsRow>
 			))}
+			<TokenInfoRows token={token} />
 			{token.type === "asset" || token.type === "foreign-asset" ? (
 				<TokenDetailsRow label="Liquidity Pool">
 					<LiquidityPoolValue token={token} />
