@@ -6,6 +6,11 @@ import { DEV_IGNORE_STORAGE } from "src/config/constants";
 import { logger } from "src/util";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
+// cleanup old keys
+localStorage.removeItem(getLocalStorageKey("pools"));
+
+const STORAGE_KEY = getLocalStorageKey("pools::v2");
+
 const poolToStorage = (pool: Pool): PoolStorage => {
 	switch (pool.type) {
 		case "asset-convertion":
@@ -28,7 +33,7 @@ const loadPools = (): Pool[] => {
 	try {
 		if (DEV_IGNORE_STORAGE) return [];
 
-		const strPools = localStorage.getItem(getLocalStorageKey("pools::v2"));
+		const strPools = localStorage.getItem(STORAGE_KEY);
 		if (!strPools) return [];
 
 		const storagePools = JSON.parse(strPools) as PoolStorage[];
@@ -45,7 +50,7 @@ const savePools = (pools: Pool[]) => {
 		const storagePools = pools.map(poolToStorage);
 		const strPools = JSON.stringify(storagePools);
 
-		localStorage.setItem(getLocalStorageKey("pools::v2"), strPools);
+		localStorage.setItem(STORAGE_KEY, strPools);
 	} catch (err) {
 		console.error("Failed to save pools", err);
 	}
