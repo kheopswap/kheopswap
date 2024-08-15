@@ -5,6 +5,7 @@ import { balanceStatuses$ } from "./balances/watchers";
 import type { LoadingStatus } from "./common";
 import { poolSuppliesStatuses$ } from "./poolSupplies/watchers";
 import { chainPoolsStatuses$ } from "./pools/watchers";
+import { tokenInfosStatuses$ } from "./tokenInfos/watchers";
 import { chainTokensStatuses$ } from "./tokens/watchers";
 
 type LoadingStatusSummary = {
@@ -28,6 +29,7 @@ export const loadingStatusSummary$ = combineLatest([
 	chainPoolsStatuses$.pipe(map(getSummary)),
 	poolSuppliesStatuses$.pipe(map(getSummary)),
 	chainTokensStatuses$.pipe(map(getSummary)),
+	tokenInfosStatuses$.pipe(map(getSummary)),
 ]).pipe(
 	map((statusMaps) => {
 		const { loading, loaded } = statusMaps.reduce(

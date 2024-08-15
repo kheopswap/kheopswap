@@ -22,3 +22,4 @@ export * from "./Tokens";
 export * from "./tooltip/Tooltip";
 export * from "./layout";
 export * from "./styles";
+export * from "./AddressDisplay";

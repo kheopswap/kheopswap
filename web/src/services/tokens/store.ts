@@ -1,17 +1,21 @@
 import { BehaviorSubject, debounceTime } from "rxjs";
 
-import { type Dictionary, entries, keyBy } from "lodash";
+import { type Dictionary, entries, keyBy, values } from "lodash";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
 import {
 	KNOWN_TOKENS_LIST,
 	KNOWN_TOKENS_MAP,
+	TOKENS_OVERRIDES_MAP,
 	type Token,
-	type TokenId,
 } from "src/config/tokens";
 import { logger, safeParse, safeStringify } from "src/util";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
-const STORAGE_KEY = getLocalStorageKey("tokens::v2");
+// cleanup old keys
+localStorage.removeItem(getLocalStorageKey("tokens"));
+localStorage.removeItem(getLocalStorageKey("tokens::v2"));
+
+const STORAGE_KEY = getLocalStorageKey("tokens::v3");
 
 const loadTokens = (): Dictionary<Token> => {
 	try {
@@ -23,12 +27,13 @@ const loadTokens = (): Dictionary<Token> => {
 
 		const tokensMap = keyBy(tokensList, "id");
 
-		// override known tokens
+		// override with our static info
 		for (const [tokenId, token] of entries(KNOWN_TOKENS_MAP))
-			tokensMap[tokenId] = {
-				...token,
-				...KNOWN_TOKENS_MAP[tokenId as TokenId],
-			};
+			tokensMap[tokenId] = Object.assign(tokensMap[tokenId] ?? {}, token);
+
+		for (const [tokenId, overrides] of entries(TOKENS_OVERRIDES_MAP))
+			if (tokensMap[tokenId])
+				tokensMap[tokenId] = Object.assign(tokensMap[tokenId], overrides);
 
 		return tokensMap;
 	} catch (err) {
@@ -39,7 +44,7 @@ const loadTokens = (): Dictionary<Token> => {
 
 const saveTokens = (tokens: Dictionary<Token>) => {
 	try {
-		localStorage.setItem(STORAGE_KEY, safeStringify(tokens));
+		localStorage.setItem(STORAGE_KEY, safeStringify(values(tokens)));
 	} catch (err) {
 		console.error("Failed to save tokens", err);
 	}

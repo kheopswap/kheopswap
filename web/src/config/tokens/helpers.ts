@@ -151,7 +151,10 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 				return [
 					{
 						label: "Origin",
-						value: getParachainName(interior.value.value.toString()),
+						value: getParachainName(
+							getChainById(token.chainId).relay,
+							interior.value.value.toString(),
+						),
 					},
 				];
 
@@ -174,14 +177,12 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 				interior.value[1]?.type === "AccountKey20"
 			) {
 				const network = getEvmNetworkById(
-					interior.value[0].value.value.chain_id.toString(),
+					interior.value[0].value.value.chain_id,
 				);
 				return [
 					{
 						label: "Origin",
-						value: getEvmNetworkName(
-							interior.value[0].value.value.chain_id.toString(),
-						),
+						value: getEvmNetworkName(interior.value[0].value.value.chain_id),
 					},
 					{
 						label: "Contract address",
@@ -203,7 +204,10 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 			if (interior.value[0]?.type === "Parachain") {
 				const network = {
 					label: "Origin",
-					value: getParachainName(interior.value[0].value.toString()),
+					value: getParachainName(
+						getChainById(token.chainId).relay,
+						interior.value[0].value,
+					),
 				};
 				return [network];
 			}

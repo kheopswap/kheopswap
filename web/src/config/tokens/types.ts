@@ -84,3 +84,54 @@ export type Token =
 	| TokenAsset
 	| TokenPoolAsset
 	| TokenForeignAsset;
+
+export type TokenInfoAsset = {
+	id: TokenIdAsset;
+	type: TokenTypeAsset;
+	supply: bigint;
+	owner: string;
+	issuer: string;
+	admin: string;
+	freezer: string;
+	minBalance: bigint;
+	accounts: number;
+	status: string;
+};
+
+export type TokenInfoForeignAsset = {
+	id: TokenIdForeignAsset;
+	type: TokenTypeForeignAsset;
+	supply: bigint;
+	owner: string;
+	issuer: string;
+	admin: string;
+	freezer: string;
+	minBalance: bigint;
+	accounts: number;
+	status: string;
+};
+
+export type TokenInfoPoolAsset = {
+	id: TokenIdPoolAsset;
+	type: TokenTypePoolAsset;
+	supply: bigint;
+	owner: string;
+	issuer: string;
+	admin: string;
+	freezer: string;
+	minBalance: bigint;
+	accounts: number;
+	status: string;
+};
+
+export type TokenInfoNative = {
+	id: TokenIdNative;
+	type: TokenTypeNative;
+	minBalance: bigint;
+};
+
+export type TokenInfo =
+	| TokenInfoNative
+	| TokenInfoAsset
+	| TokenInfoPoolAsset
+	| TokenInfoForeignAsset;

@@ -8,6 +8,9 @@ import { logger, safeParse, safeStringify } from "src/util";
 import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 import { getBalanceId } from "./utils";
 
+// cleanup old keys
+localStorage.removeItem(getLocalStorageKey("balances"));
+
 const STORAGE_KEY = getLocalStorageKey("balances::v2");
 
 const load = (): Dictionary<StoredBalance> => {
