@@ -32,6 +32,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8rZPQISoBmAE4xdHQqgDMYAA4nZIhkmABWKwAWJvQAdhgIJxrk1qqrYZ6ANijGQIBdQKA==",
 		"logo": "./img/tokens/ETH.png",
+		"symbol": "WETH.e",
 		"name": "Wrapped Ethereum (Snowbridge)",
 		"verified": true
 	},
@@ -79,7 +80,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA",
 		"logo": "./img/tokens/PEPE.webp",
-		"symbol": "PEPE",
+		"symbol": "PEPE.e",
 		"name": "Pepe (Snowbridge)",
 		"decimals": 18,
 		"verified": true
@@ -87,7 +88,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IZLEADgA2AE4anysq9B8KsQBmKqsfJx8apwAWCHQYGpgxZKsYDuSqsf6KgP8AXUCgA",
 		"logo": "./img/tokens/USDC.webp",
-		"symbol": "USDC",
+		"symbol": "USDC.e",
 		"name": "USDC (Snowbridge)",
 		"decimals": 6,
 		"verified": true
@@ -95,7 +96,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8JABYfJycAM2SANjEAdmrqpwAOAE4nH3Q6xrEAVggOgGYxaphq9DLpmDEU5JGA/wBdQKA==",
 		"logo": "./img/tokens/MYTH.webp",
-		"symbol": "MYTH",
+		"symbol": "MYTH.e",
 		"name": "Mythos (Snowbridge)",
 		"decimals": 18,
 		"verified": true
@@ -103,7 +104,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fAA5ksoAWADMJADZGiABmZqdmgHYAVgBOdBqIdHrWmqcqnogOqqcnHuaIMrKA/wBdQKA==",
 		"logo": "./img/tokens/tBTC.webp",
-		"symbol": "tBTC",
+		"symbol": "tBTC.e",
 		"name": "tBTC v2 (Snowbridge)",
 		"decimals": 18,
 		"verified": true
@@ -111,7 +112,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzAGYATisAVgAOH3K66rqxOsr6qzEfarEnZLFK8oanCAA2K2rKuph0KwhUwIBdQKA==",
 		"logo": "./img/tokens/wstETH.webp",
-		"symbol": "wstETH",
+		"symbol": "wstETH.e",
 		"name": "Wrapped liquid staked Ether 2.0 (Snowbridge)",
 		"decimals": 18,
 		"verified": true
@@ -119,7 +120,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgAOdCdygHZ0CB8xZIBOABYAMytW8vbSpxgAZh8nAbEagfaq5rEYVpr+9r9AgF1AoA===",
 		"logo": "./img/tokens/TONCOIN.webp",
-		"symbol": "TONCOIN",
+		"symbol": "TON.e",
 		"name": "Wrapped TON Coin (Snowbridge)",
 		"decimals": 9,
 		"verified": true
@@ -127,7 +128,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANjEfAHYAVgAWStqYAA4ATmSW2qta2qcIFqaxFrqYGCcYCC6h9EqfJ2SAMwD/AF1AoA===",
 		"logo": "./img/tokens/DAI.webp",
-		"symbol": "DAI",
+		"symbol": "DAI.e",
 		"name": "Dai Stablecoin (Snowbridge)",
 		"decimals": 18,
 		"verified": true
@@ -135,7 +136,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ATgBWCCcANh8xZIgfcuSnAHZS9B9SpysAM2qAFhgfGGqo5J9e5LFBqwGrGkCAXUCgA",
 		"logo": "./img/tokens/SHIB.webp",
-		"symbol": "SHIB",
+		"symbol": "SHIB.e",
 		"name": "SHIBA INU (Snowbridge)",
 		"decimals": 18,
 		"verified": true
@@ -143,7 +144,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA90dAA2ZIAzCCsAVhg6uoAWdAgAdnaAZggIZuaqsSsqmCcq9qsfAE4uofR6qamA/wBdQKA==",
 		"logo": "./img/tokens/WBTC.webp",
-		"symbol": "WBTC",
+		"symbol": "WBTC.e",
 		"name": "Wrapped BTC (Snowbridge)",
 		"decimals": 8,
 		"verified": true
@@ -151,7 +152,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADicIGAknGABOdHQnADMAdgBmAFYrNtKrUuSrFqqnFuTSiCaOsZ8OpogIAP8AXUCgA",
 		"logo": "./img/tokens/tBTC.webp",
-		"symbol": "tBTC",
+		"symbol": "tBTC.e",
 		"name": "tBTC (Snowbridge)",
 		"decimals": 18,
 		"verified": true
@@ -159,7 +160,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8nCCsfAHYAMwBOAFYADid0GBh69ABmCHQUgDZ+2tqAFnrayorOp0bOnxgrSoD/AF1AoA===",
 		"logo": "./img/tokens/USDT.webp",
-		"symbol": "USDT",
+		"symbol": "USDT.e",
 		"name": "Tether USD (Snowbridge)",
 		"decimals": 6,
 		"verified": true
