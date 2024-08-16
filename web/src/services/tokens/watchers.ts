@@ -1,4 +1,4 @@
-import { isEqual, keyBy, values } from "lodash";
+import { isEqual, isNumber, keyBy, values } from "lodash";
 import { distinctUntilChanged, filter } from "rxjs";
 
 import { tokensStore$ } from "./store";
@@ -23,7 +23,7 @@ import {
 } from "src/config/tokens";
 import { getApi } from "src/services/api";
 import { pollChainStatus } from "src/services/pollChainStatus";
-import { logger, throwAfter } from "src/util";
+import { logger, safeStringify, throwAfter } from "src/util";
 import { sleep } from "src/util/sleep";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
@@ -41,46 +41,63 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 		await api.waitReady;
 		if (signal.aborted) return;
 
-		const stop = logger.timer(
-			`chain.api.query.ForeignAssets.Metadata.getEntries() - ${chain.id}`,
-		);
-		const tokens = await api.query.ForeignAssets.Metadata.getEntries({
-			at: "best",
-			signal,
-		});
+		const stop = logger.timer(`fetch foreign assets - ${chain.id}`);
+		// not all foreign assets have metadata registered on assethub
+		// print a warning if metadata is missing
+		const [assets, metadatas] = await Promise.all([
+			api.query.ForeignAssets.Asset.getEntries({
+				at: "best",
+				signal,
+			}),
+			api.query.ForeignAssets.Metadata.getEntries({
+				at: "best",
+				signal,
+			}),
+		]);
+
 		stop();
 
-		const foreignAssetTokens = tokens
+		const foreignAssetTokens = assets
 			.map((d) => ({
-				location: d.keyArgs[0],
-				symbol: d.value.symbol.asText(),
-				decimals: d.value.decimals,
-				name: d.value.name.asText(),
-			}))
-			.map((d) => ({
-				...d,
 				id: getTokenId({
 					type: "foreign-asset",
 					chainId: chain.id,
-					location: d.location,
+					location: d.keyArgs[0],
 				}),
+				location: d.keyArgs[0],
+				metadata: metadatas.find(
+					//lodash isEqual doesn't work with bigints
+					(m) => safeStringify(m.keyArgs[0]) === safeStringify(d.keyArgs[0]),
+				)?.value,
 			}))
 			.map(
-				({ id, location, symbol, decimals, name }) =>
-					KNOWN_TOKENS_MAP[id] ??
+				({ id, location, metadata }) =>
 					({
 						id,
 						type: "foreign-asset",
 						chainId: chain.id,
 						location,
-						symbol,
-						decimals,
-						name,
+						symbol: metadata?.symbol.asText(),
+						decimals: metadata?.decimals,
+						name: metadata?.name.asText(),
 						logo: "./img/tokens/asset.svg",
 						verified: false,
+						...KNOWN_TOKENS_MAP[id],
 						...TOKENS_OVERRIDES_MAP[id],
-					} as Token),
-			);
+					}) as Token,
+			)
+			.filter((token) => {
+				if (!token.symbol || !isNumber(token.decimals) || !token.name) {
+					logger.warn("No metadata found for foreign asset", {
+						id: token.id,
+						location:
+							token.type === "foreign-asset" && safeStringify(token.location),
+						token,
+					});
+					return false;
+				}
+				return true;
+			});
 
 		logger.info("foreign assets", foreignAssetTokens);
 
@@ -184,7 +201,6 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 			}))
 			.map(
 				({ id, assetId, symbol, decimals, name }) =>
-					KNOWN_TOKENS_MAP[id] ??
 					({
 						id,
 						type: "asset",
@@ -196,8 +212,9 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 						logo: "./img/tokens/asset.svg",
 						verified: false,
 						isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
+						...KNOWN_TOKENS_MAP[id],
 						...TOKENS_OVERRIDES_MAP[id],
-					} as Token),
+					}) as Token,
 			);
 
 		const currentTokens = values(tokensStore$.value);
