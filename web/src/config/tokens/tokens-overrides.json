@@ -78,7 +78,7 @@
 
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA",
-		"logo": "./img/tokens/pepe-token.webp",
+		"logo": "./img/tokens/PEPE.webp",
 		"symbol": "PEPE",
 		"name": "Pepe (Snowbridge)",
 		"decimals": 18,
