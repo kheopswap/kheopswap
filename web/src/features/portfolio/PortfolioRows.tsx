@@ -2,7 +2,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { type FC, useCallback } from "react";
 
 import { PortfolioRow } from "./PortfolioRow";
-import type { PortfolioRowData, PortfolioVisibleColunm } from "./types";
+import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 
 import { Shimmer } from "src/components";
 import type { TokenId } from "src/config/tokens";
@@ -10,7 +10,7 @@ import { cn } from "src/util";
 
 export const PortfolioRows: FC<{
 	rows: PortfolioRowData[];
-	visibleCol: PortfolioVisibleColunm;
+	visibleCol: PortfolioVisibleCol;
 	isLoading: boolean;
 	onTokenSelect: (tokenId: TokenId) => void;
 }> = ({ rows, visibleCol, isLoading, onTokenSelect }) => {

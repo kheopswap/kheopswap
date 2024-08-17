@@ -7,7 +7,7 @@ import { PortfolioTokenDrawer } from "./PortfolioTokenDrawer";
 import type {
 	PortfolioRowData,
 	PortfolioSortMode,
-	PortfolioVisibleColunm,
+	PortfolioVisibleCol,
 } from "./types";
 import { usePortfolioRows } from "./usePortfolioRows";
 
@@ -55,13 +55,18 @@ export const PortfolioTable = () => {
 
 	const [selectedTokenId, setSelectedTokenId] = useState<TokenId | null>(null);
 
-	const [visibleCol, setVisibleCol] = useState<PortfolioVisibleColunm>(
+	const [visibleCol, setVisibleCol] = useState<PortfolioVisibleCol>(
 		accounts.length ? "balance" : "price",
 	);
 	const [sortByCol, setSortByCol] = useState<PortfolioSortMode>(visibleCol);
 
 	const sortedRows = useMemo(
-		() => allRows.concat().sort(sortByColumn(sortByCol)),
+		() =>
+			allRows
+				.concat()
+				.sort(sortByColumn("symbol"))
+				.sort(sortByColumn("price"))
+				.sort(sortByColumn(sortByCol)),
 		[allRows, sortByCol],
 	);
 

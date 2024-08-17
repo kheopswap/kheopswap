@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 
-import { useBalances } from "./useBalances";
+import { useBalances } from "../../../hooks/useBalances";
 
 import type { Dictionary } from "lodash";
 import type { Token } from "src/config/tokens";
+
 import { getPoolReserves } from "src/helpers/getPoolReserves";
 import type { Pool } from "src/services/pools";
 import { isBigInt } from "src/util";
