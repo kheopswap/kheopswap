@@ -11,7 +11,7 @@
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQDYAnAF8NQA",
-		"logo": "./img/tokens/MYTH.webp",
+		"logo": "./img/tokens/MYTH.webp?rounded",
 		"verified": true
 	},
 	{
@@ -79,7 +79,7 @@
 
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA",
-		"logo": "./img/tokens/PEPE.webp",
+		"logo": "./img/tokens/PEPE.webp?rounded",
 		"symbol": "PEPE.e",
 		"name": "Pepe (Snowbridge)",
 		"decimals": 18,
@@ -95,7 +95,7 @@
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8JABYfJycAM2SANjEAdmrqpwAOAE4nH3Q6xrEAVggOgGYxaphq9DLpmDEU5JGA/wBdQKA==",
-		"logo": "./img/tokens/MYTH.webp",
+		"logo": "./img/tokens/MYTH.webp?rounded",
 		"symbol": "MYTH.e",
 		"name": "Mythos (Snowbridge)",
 		"decimals": 18,
@@ -111,7 +111,7 @@
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzAGYATisAVgAOH3K66rqxOsr6qzEfarEnZLFK8oanCAA2K2rKuph0KwhUwIBdQKA==",
-		"logo": "./img/tokens/wstETH.webp",
+		"logo": "./img/tokens/wstETH.webp?rounded",
 		"symbol": "wstETH.e",
 		"name": "Wrapped liquid staked Ether 2.0 (Snowbridge)",
 		"decimals": 18,
@@ -168,7 +168,7 @@
 
 	{
 		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA",
-		"logo": "./img/tokens/TEER.webp",
+		"logo": "./img/tokens/TEER.webp?rounded",
 		"symbol": "TEER",
 		"name": "Teer",
 		"decimals": 12,

@@ -20,7 +20,10 @@ const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 				loading="lazy"
 				src={token?.logo ?? "/img/tokens/unknown.svg"}
 				alt={token?.symbol ?? ""}
-				className={"size-full rounded-full"} // sorry bifrost
+				className={cn(
+					"size-full",
+					token?.logo.endsWith("?rounded") && "rounded-full",
+				)}
 			/>
 			{chain && chain.logo !== token?.logo && (
 				<img
