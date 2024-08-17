@@ -167,6 +167,15 @@
 	},
 
 	{
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA",
+		"logo": "./img/tokens/TEER.webp",
+		"symbol": "TEER",
+		"name": "Teer",
+		"decimals": 12,
+		"verified": true
+	},
+
+	{
 		"id": "asset::pah::17",
 		"logo": "./img/tokens/WIFD.svg"
 	},

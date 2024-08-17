@@ -13,11 +13,10 @@ import type { Token, TokenId } from "src/config/tokens";
 import {
 	type InjectedAccount,
 	useBalancesByTokenSummary,
-	useChainName,
 	useRelayChains,
 } from "src/hooks";
 import type { BalanceWithStableSummary } from "src/types";
-import { cn, isBigInt } from "src/util";
+import { cn, getTokenDescription, isBigInt } from "src/util";
 
 const TokenButton = forwardRef<
 	HTMLButtonElement,
@@ -32,7 +31,7 @@ const TokenButton = forwardRef<
 	}
 >(({ token, balances, selected, onClick }, ref) => {
 	const { stableToken } = useRelayChains();
-	const { name: chainName } = useChainName({ chainId: token.chainId });
+	const description = useMemo(() => getTokenDescription(token), [token]);
 
 	return (
 		<button
@@ -52,10 +51,7 @@ const TokenButton = forwardRef<
 					<div className="font-bold text-neutral-50">{token.symbol}</div>
 					<div className="inline-block truncate">{token.name ?? ""}</div>
 				</div>
-				<div className="w-full truncate text-xs font-light">
-					{chainName}
-					{token.type === "asset" ? ` - ${token.assetId}` : null}
-				</div>
+				<div className="w-full truncate text-xs font-light">{description}</div>
 			</div>
 			{balances ? (
 				balances.isInitializing ? (

@@ -18,40 +18,59 @@
 		"paraId": 3369,
 		"name": "Mythos",
 		"subscanUrl": "https://mythos.subscan.io",
-		"parachainInfoUrl": "https://parachains.info/details/mythos"
+		"parachainsInfoUrl": "https://parachains.info/details/mythos"
 	},
 	{
 		"relay": "polkadot",
 		"paraId": 2004,
 		"name": "Moonbeam",
 		"subscanUrl": "https://moonbeam.subscan.io",
-		"parachainInfoUrl": "https://parachains.info/details/moonbeam"
+		"parachainsInfoUrl": "https://parachains.info/details/moonbeam"
 	},
 	{
 		"relay": "kusama",
 		"paraId": 2023,
 		"name": "Moonriver",
 		"subscanUrl": "https://moonriver.subscan.io",
-		"parachainInfoUrl": "https://parachains.info/details/moonriver"
+		"parachainsInfoUrl": "https://parachains.info/details/moonriver"
 	},
 	{
 		"relay": "polkadot",
 		"paraId": 2034,
 		"name": "Hydration",
 		"subscanUrl": "https://hydration.subscan.io/",
-		"parachainInfoUrl": "https://parachains.info/details/hydration"
+		"parachainsInfoUrl": "https://parachains.info/details/hydration"
 	},
 	{
 		"relay": "polkadot",
 		"paraId": 2051,
 		"name": "Ajuna Network",
 		"subscanUrl": "https://ajuna.subscan.io/",
-		"parachainInfoUrl": "https://parachains.info/details/ajuna_network"
+		"parachainsInfoUrl": "https://parachains.info/details/ajuna_network"
 	},
 	{
 		"relay": "polkadot",
 		"paraId": 2011,
 		"name": "Equilibrium",
-		"parachainInfoUrl": "https://parachains.info/details/equilibrium"
+		"parachainsInfoUrl": "https://parachains.info/details/equilibrium"
+	},
+	{
+		"relay": "polkadot",
+		"paraId": 2030,
+		"name": "Bifrost Polkadot",
+		"subscanUrl": "https://bifrost.subscan.io/",
+		"parachainsInfoUrl": "https://parachains.info/details/bifrost_finance_polkadot"
+	},
+	{
+		"relay": "kusama",
+		"paraId": 2125,
+		"name": "Tinkernet",
+		"parachainsInfoUrl": "https://parachains.info/details/invarch_tinkernet/"
+	},
+	{
+		"relay": "kusama",
+		"paraId": 2015,
+		"name": "Integritee Kusama",
+		"parachainsInfoUrl": "https://parachains.info/details/integritee/"
 	}
 ]

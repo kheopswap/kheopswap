@@ -25,3 +25,4 @@ export * from "./shortAddress";
 export * from "./getAssetHubMirrorTokenId";
 export * from "./getTokenTypeLabel";
 export * from "./serialization";
+export * from "./getTokenDescription";

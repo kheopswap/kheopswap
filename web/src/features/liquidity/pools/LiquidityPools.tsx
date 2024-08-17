@@ -11,7 +11,6 @@ import type {
 } from "src/config/tokens/types";
 import {
 	useBalance,
-	useChainName,
 	useNativeToken,
 	usePoolsByChainId,
 	useRelayChains,
@@ -23,7 +22,7 @@ import {
 	type PoolWithValuation,
 	usePoolsWithValuation,
 } from "src/hooks/usePoolsWithValuation";
-import { cn, isBigInt, tokensToPlancks } from "src/util";
+import { cn, getTokenDescription, isBigInt, tokensToPlancks } from "src/util";
 
 type PoolRowProps = {
 	pool: PoolWithValuation;
@@ -85,7 +84,7 @@ const PoolBalances: FC<PoolRowProps> = ({ token1, token2, pool }) => {
 };
 
 const PoolRow: FC<PoolRowProps> = ({ pool, token1, token2 }) => {
-	const { name: chainName } = useChainName({ chainId: token2.chainId });
+	const description = useMemo(() => getTokenDescription(token2), [token2]);
 
 	return (
 		<Link
@@ -106,10 +105,7 @@ const PoolRow: FC<PoolRowProps> = ({ pool, token1, token2 }) => {
 							{token1.symbol}/{token2.symbol}
 						</div>
 					</div>
-					<div className="truncate text-xs">
-						{chainName}
-						{token2.type === "asset" ? ` - ${token2.assetId}` : null}
-					</div>
+					<div className="truncate text-xs">{description}</div>
 				</div>
 			</div>
 			<div className="flex w-full items-center justify-between sm:w-auto">

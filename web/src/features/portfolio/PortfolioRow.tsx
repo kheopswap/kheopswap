@@ -4,9 +4,8 @@ import { TokenBalancesSummary } from "./PortfolioDataCell";
 import type { PortfolioRowData, PortfolioVisibleColunm } from "./types";
 
 import { Styles, TokenLogo } from "src/components";
-import { getChainById } from "src/config/chains";
 import { useNativeToken, useRelayChains } from "src/hooks";
-import { cn } from "src/util";
+import { cn, getTokenDescription } from "src/util";
 
 type PortfolioRowProps = PortfolioRowData & {
 	visibleCol: PortfolioVisibleColunm;
@@ -22,7 +21,7 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
 }) => {
 	const { assetHub, stableToken } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
-	const chain = useMemo(() => getChainById(token.chainId), [token.chainId]);
+	const description = useMemo(() => getTokenDescription(token), [token]);
 
 	return (
 		<button
@@ -38,7 +37,9 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
 				<TokenLogo className="inline-block size-10" token={token} />
 				<div className="flex grow flex-col items-start overflow-hidden">
 					<div className="w-full truncate">{token.symbol}</div>
-					<div className="w-full truncate text-sm text-neutral-500">{`${chain.name}${token.type === "asset" ? ` - ${token.assetId}` : ""}`}</div>
+					<div className="w-full truncate text-sm text-neutral-500">
+						{description}
+					</div>
 				</div>
 			</div>
 
