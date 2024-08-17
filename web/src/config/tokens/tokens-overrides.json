@@ -186,5 +186,13 @@
 	{
 		"id": "asset::pah::31337",
 		"logo": "./img/tokens/WUD.webp"
+	},
+	{
+		"id": "asset::pah::42069",
+		"logo": "./img/tokens/STINK.webp?rounded"
+	},
+	{
+		"id": "asset::pah::18",
+		"logo": "./img/tokens/DOTA.webp?rounded"
 	}
 ]
