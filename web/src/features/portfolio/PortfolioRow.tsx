@@ -28,12 +28,12 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
 			type="button"
 			className={cn(
 				Styles.button,
-				"grid  h-16 items-center gap-2 rounded-md bg-primary-950/50 p-2 pl-4 pr-3 text-left enabled:hover:bg-primary-900/50 sm:gap-4",
+				"grid  h-16 items-center gap-2 rounded-md bg-primary-950/50 px-2 pl-3 pr-3 text-left enabled:hover:bg-primary-900/50 sm:gap-4",
 				"grid-cols-[1fr_120px] sm:grid-cols-[1fr_120px_120px]",
 			)}
 			onClick={onClick}
 		>
-			<div className="flex items-center gap-2 overflow-hidden  sm:gap-3">
+			<div className="flex items-center gap-2 overflow-hidden sm:gap-3 h-full pl-1">
 				<TokenLogo className="inline-block size-10" token={token} />
 				<div className="flex grow flex-col items-start overflow-hidden">
 					<div className="w-full truncate">{token.symbol}</div>
