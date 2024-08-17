@@ -1,14 +1,14 @@
 import { type FC, useMemo } from "react";
 
 import { TokenBalancesSummary } from "./PortfolioDataCell";
-import type { PortfolioRowData, PortfolioVisibleColunm } from "./types";
+import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 
 import { Styles, TokenLogo } from "src/components";
 import { useNativeToken, useRelayChains } from "src/hooks";
 import { cn, getTokenDescription } from "src/util";
 
 type PortfolioRowProps = PortfolioRowData & {
-	visibleCol: PortfolioVisibleColunm;
+	visibleCol: PortfolioVisibleCol;
 	onClick: () => void;
 };
 

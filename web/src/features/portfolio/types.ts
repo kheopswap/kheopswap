@@ -1,7 +1,7 @@
 import type { Token } from "src/config/tokens";
 import type { BalanceWithStableSummary } from "src/types";
 
-export type PortfolioVisibleColunm = "price" | "balance";
+export type PortfolioVisibleCol = "price" | "balance";
 
 export type PortfolioRowData = {
 	token: Token;
