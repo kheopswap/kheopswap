@@ -1,8 +1,8 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { type FC, useMemo } from "react";
+import { type FC, useDeferredValue, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Styles, TokenLogo, Tokens } from "src/components";
+import { SearchInput, Styles, TokenLogo, Tokens } from "src/components";
 import { ColumnHeaderButton } from "src/components/ColumnHeaderButton";
 import type {
 	TokenAsset,
@@ -151,7 +151,7 @@ const PoolsList: FC<{
 	const [parent] = useAutoAnimate();
 
 	return (
-		<div>
+		<>
 			<div
 				className={cn(
 					"mb-1 gap-2 pl-4 pr-3 text-xs sm:gap-4",
@@ -175,7 +175,7 @@ const PoolsList: FC<{
 				))}
 				<PoolShimmerRow className={isLoading ? "block" : "hidden"} />
 			</div>
-		</div>
+		</>
 	);
 };
 
@@ -204,7 +204,7 @@ export const LiquidityPools = () => {
 	const sortedPools = useMemo(() => {
 		if (!poolsWithValuation) return [];
 
-		return poolsWithValuation.sort((a, b) => {
+		return poolsWithValuation.concat().sort((a, b) => {
 			// sort based on valuation
 			if (isBigInt(a.valuation) || isBigInt(b.valuation)) {
 				if ((a.valuation ?? 0n) > (b.valuation ?? 0n)) return -1;
@@ -229,7 +229,31 @@ export const LiquidityPools = () => {
 			.filter((rp): rp is PoolRowProps => !!rp.token1 && !!rp.token2);
 	}, [allTokens, sortedPools]);
 
+	const [rawSearch, setRawSearch] = useState("");
+	const search = useDeferredValue(rawSearch);
+
+	const rows = useMemo(() => {
+		const ls = search.toLowerCase().trim();
+		return !ls
+			? poolsRows
+			: poolsRows.filter(
+					({ token2 }) =>
+						token2.symbol?.toLowerCase().includes(ls) ||
+						token2.name?.toLowerCase().includes(ls) ||
+						(token2.type === "asset" && token2.assetId.toString() === ls),
+				);
+	}, [poolsRows, search]);
+
 	if (!nativeToken) return null;
 
-	return <PoolsList pools={poolsRows} isLoading={isLoading} />;
+	return (
+		<div>
+			<SearchInput
+				className="mb-4"
+				placeholder="Search liquidity pools"
+				onChange={setRawSearch}
+			/>
+			<PoolsList pools={rows} isLoading={isLoading} />
+		</div>
+	);
 };
