@@ -16,9 +16,7 @@ import type { LoadingStatus } from "src/services/common";
 import { logger } from "src/util";
 import { tokenInfosStore$ } from "./store";
 
-export const tokenInfosStatuses$ = new BehaviorSubject<
-	Dictionary<LoadingStatus>
->({});
+const statusByTokenId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
 
 const WATCHERS = new Map<TokenId, Promise<Subscription>>();
 
@@ -26,10 +24,10 @@ const updateTokenInfoLoadingStatus = (
 	tokenId: TokenId,
 	status: LoadingStatus,
 ) => {
-	if (tokenInfosStatuses$.value[tokenId] === status) return;
+	if (statusByTokenId$.value[tokenId] === status) return;
 
-	tokenInfosStatuses$.next({
-		...tokenInfosStatuses$.value,
+	statusByTokenId$.next({
+		...statusByTokenId$.value,
 		[tokenId]: status,
 	});
 };
@@ -169,13 +167,15 @@ tokenInfosSubscriptions$.subscribe((tokenIds) => {
 			WATCHERS.get(tokenId)?.then((watcher) => watcher.unsubscribe());
 			WATCHERS.delete(tokenId);
 		}
-		tokenInfosStatuses$.next({
-			...tokenInfosStatuses$.value,
+		statusByTokenId$.next({
+			...statusByTokenId$.value,
 			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
 		});
 	} catch (err) {
 		logger.error("Failed to update token infos watchers", { tokenIds, err });
 	}
 });
+
+export const tokenInfosStatuses$ = statusByTokenId$.asObservable();
 
 export const getTokenInfosWatchersCount = () => WATCHERS.size;

@@ -1,5 +1,5 @@
 import { isEqual, values } from "lodash";
-import { combineLatest, distinctUntilChanged, map } from "rxjs";
+import { combineLatest, distinctUntilChanged, map, throttleTime } from "rxjs";
 
 import { balanceStatuses$ } from "./balances/watchers";
 import type { LoadingStatus } from "./common";
@@ -31,6 +31,7 @@ export const loadingStatusSummary$ = combineLatest([
 	chainTokensStatuses$.pipe(map(getSummary)),
 	tokenInfosStatuses$.pipe(map(getSummary)),
 ]).pipe(
+	throttleTime(50, undefined, { leading: true, trailing: true }),
 	map((statusMaps) => {
 		const { loading, loaded } = statusMaps.reduce(
 			(acc, statusMap) => {

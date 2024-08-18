@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest, debounceTime, map } from "rxjs";
+import { combineLatest, map, throttleTime } from "rxjs";
 
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
@@ -35,23 +35,13 @@ const combineState = (
 	}
 };
 
-// contains all known balances and their status
-export const balancesState$ = new BehaviorSubject<Dictionary<BalanceState>>(
-	combineState([], balanceStatuses$.value, balancesStore$.value),
-);
-
-// maintain the above up to date
-combineLatest([
+export const balancesState$ = combineLatest([
 	balanceSubscriptions$, // unique subscriptions
 	balanceStatuses$, // status of each subscription
 	balancesStore$, // stored balances
-])
-	.pipe(
-		debounceTime(50),
-		map(([balanceIds, statuses, balances]) =>
-			combineState(balanceIds, statuses, balances),
-		),
-	)
-	.subscribe((balances) => {
-		balancesState$.next(balances);
-	});
+]).pipe(
+	throttleTime(50, undefined, { leading: true, trailing: true }),
+	map(([balanceIds, statuses, balances]) =>
+		combineState(balanceIds, statuses, balances),
+	),
+);

@@ -12,9 +12,7 @@ import { getApi, isApiAssetHub } from "src/services/api";
 import type { LoadingStatus } from "src/services/common";
 import { logger } from "src/util";
 
-export const balanceStatuses$ = new BehaviorSubject<Dictionary<LoadingStatus>>(
-	{},
-);
+const statusByBalanceId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
 
 const WATCHERS = new Map<BalanceId, Promise<Subscription>>();
 
@@ -22,10 +20,10 @@ const updateBalanceLoadingStatus = (
 	balanceId: BalanceId,
 	status: LoadingStatus,
 ) => {
-	if (balanceStatuses$.value[balanceId] === status) return;
+	if (statusByBalanceId$.value[balanceId] === status) return;
 
-	balanceStatuses$.next({
-		...balanceStatuses$.value,
+	statusByBalanceId$.next({
+		...statusByBalanceId$.value,
 		[balanceId]: status,
 	});
 };
@@ -149,13 +147,15 @@ balanceSubscriptions$.subscribe((balanceIds) => {
 			WATCHERS.get(balanceId)?.then((watcher) => watcher.unsubscribe());
 			WATCHERS.delete(balanceId);
 		}
-		balanceStatuses$.next({
-			...balanceStatuses$.value,
+		statusByBalanceId$.next({
+			...statusByBalanceId$.value,
 			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
 		});
 	} catch (err) {
 		logger.error("Failed to update balance watchers", { balanceIds, err });
 	}
 });
+
+export const balanceStatuses$ = statusByBalanceId$.asObservable();
 
 export const getBalancesWatchersCount = () => WATCHERS.size;

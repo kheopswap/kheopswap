@@ -1,5 +1,5 @@
 import { isEqual } from "lodash";
-import { BehaviorSubject, debounceTime, distinctUntilChanged, map } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map, throttleTime } from "rxjs";
 
 import type { TokenId } from "src/config/tokens";
 
@@ -15,7 +15,7 @@ const allTokenInfosSubscriptions$ = new BehaviorSubject<
 
 // Unique active subscriptions (1 per token)
 export const tokenInfosSubscriptions$ = allTokenInfosSubscriptions$.pipe(
-	debounceTime(50),
+	throttleTime(200, undefined, { leading: true, trailing: true }),
 	map((subs) => subs.flatMap(({ tokenIds }) => tokenIds)),
 	map((tokenIds) => [...new Set(tokenIds)].sort() as TokenId[]),
 	distinctUntilChanged<TokenId[]>(isEqual),

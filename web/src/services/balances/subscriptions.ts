@@ -1,5 +1,5 @@
 import { isEqual } from "lodash";
-import { BehaviorSubject, debounceTime, distinctUntilChanged, map } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map, throttleTime } from "rxjs";
 
 import type { BalanceDef, BalanceId } from "./types";
 import { getBalanceId } from "./utils";
@@ -16,7 +16,7 @@ const allBalanceSubscriptions$ = new BehaviorSubject<
 
 // Unique active subscriptions (1 per token+address)
 export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
-	debounceTime(50),
+	throttleTime(200, undefined, { leading: true, trailing: true }),
 	map((subs) => subs.flatMap(({ balanceIds }) => balanceIds)),
 	map((balanceIds) => [...new Set(balanceIds)].sort() as BalanceId[]),
 	distinctUntilChanged<BalanceId[]>(isEqual),

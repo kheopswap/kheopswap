@@ -6,7 +6,7 @@ import {
 	toPairs,
 	values,
 } from "lodash";
-import { BehaviorSubject, combineLatest } from "rxjs";
+import { combineLatest, map } from "rxjs";
 
 import { tokensStore$ } from "./store";
 import { sortTokens } from "./util";
@@ -46,16 +46,13 @@ const combineStateByChainId = (
 	}
 };
 
-// main datasource of the service
-export const tokensByChainState$ = new BehaviorSubject<
-	Dictionary<ChainTokensState>
->(combineStateByChainId(chainTokensStatuses$.value, tokensStore$.value));
-
-// keep subject up to date
-combineLatest([chainTokensStatuses$, tokensStore$]).subscribe(
-	([statusByChain, tokens]) => {
-		tokensByChainState$.next(combineStateByChainId(statusByChain, tokens));
-	},
+export const tokensByChainState$ = combineLatest([
+	chainTokensStatuses$,
+	tokensStore$,
+]).pipe(
+	map(([statusByChain, tokens]) =>
+		combineStateByChainId(statusByChain, tokens),
+	),
 );
 
 const combineStateByTokenId = (
@@ -78,14 +75,11 @@ const combineStateByTokenId = (
 	}
 };
 
-// main datasource of the service
-export const tokensByIdState$ = new BehaviorSubject<Dictionary<TokenState>>(
-	combineStateByTokenId(chainTokensStatuses$.value, tokensStore$.value),
-);
-
-// keep subject up to date
-combineLatest([chainTokensStatuses$, tokensStore$]).subscribe(
-	([statusByChain, tokens]) => {
-		tokensByIdState$.next(combineStateByTokenId(statusByChain, tokens));
-	},
+export const tokensByIdState$ = combineLatest([
+	chainTokensStatuses$,
+	tokensStore$,
+]).pipe(
+	map(([statusByChain, tokens]) =>
+		combineStateByTokenId(statusByChain, tokens),
+	),
 );
