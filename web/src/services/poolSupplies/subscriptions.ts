@@ -1,10 +1,11 @@
 import { isEqual } from "lodash";
-import { BehaviorSubject, distinctUntilChanged, map, throttleTime } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import type { PoolSupplyId } from "./types";
 import { getPoolSupplyId } from "./utils";
 
 import type { TokenIdsPair } from "src/config/tokens";
+import { firstThenDebounceTime } from "src/util";
 
 type PoolSupplySubscriptionRequest = {
 	id: string;
@@ -18,7 +19,7 @@ const allPoolSupplySubscriptions$ = new BehaviorSubject<
 
 // Unique active subscriptions (1 per token+address)
 export const poolSuppliesSubscriptions$ = allPoolSupplySubscriptions$.pipe(
-	throttleTime(200, undefined, { leading: true, trailing: true }),
+	firstThenDebounceTime(100),
 	map((subs) => subs.flatMap(({ poolSupplyIds }) => poolSupplyIds)),
 	map((pollSupplyIds) => [...new Set(pollSupplyIds)].sort() as PoolSupplyId[]),
 	distinctUntilChanged<PoolSupplyId[]>(isEqual),

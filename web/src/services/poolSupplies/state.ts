@@ -48,7 +48,7 @@ export const poolSuppliesState$ = combineLatest([
 	poolSuppliesStatuses$, // status of each subscription
 	poolSuppliesStore$, // stored supplies
 ]).pipe(
-	throttleTime(200, undefined, { leading: true, trailing: true }),
+	throttleTime(100, undefined, { leading: true, trailing: true }),
 	map(([poolSupplyIds, statuses, poolSupplies]) =>
 		combineState(poolSupplyIds, statuses, poolSupplies),
 	),
