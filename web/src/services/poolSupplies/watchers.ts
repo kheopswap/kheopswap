@@ -19,7 +19,7 @@ import { getApi } from "src/services/api";
 import type { LoadingStatus } from "src/services/common";
 import { type Pool, getPoolsByChain$ } from "src/services/pools";
 
-export const poolSuppliesStatuses$ = new BehaviorSubject<
+const statusByPoolSupplyId$ = new BehaviorSubject<
 	Record<PoolSupplyId, LoadingStatus>
 >({});
 
@@ -29,10 +29,10 @@ const updateBalanceLoadingStatus = (
 	poolSupplyId: PoolSupplyId,
 	status: LoadingStatus,
 ) => {
-	if (poolSuppliesStatuses$.value[poolSupplyId] === status) return;
+	if (statusByPoolSupplyId$.value[poolSupplyId] === status) return;
 
-	poolSuppliesStatuses$.next({
-		...poolSuppliesStatuses$.value,
+	statusByPoolSupplyId$.next({
+		...statusByPoolSupplyId$.value,
 		[poolSupplyId]: status,
 	});
 };
@@ -108,10 +108,12 @@ poolSuppliesSubscriptions$.subscribe((poolSupplyIds) => {
 		WATCHERS.get(poolSupplyId)?.then((watcher) => watcher.unsubscribe());
 		WATCHERS.delete(poolSupplyId);
 	}
-	poolSuppliesStatuses$.next({
-		...poolSuppliesStatuses$.value,
+	statusByPoolSupplyId$.next({
+		...statusByPoolSupplyId$.value,
 		...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
 	});
 });
+
+export const poolSuppliesStatuses$ = statusByPoolSupplyId$.asObservable();
 
 export const getPoolSuppliesWatchersCount = () => WATCHERS.size;

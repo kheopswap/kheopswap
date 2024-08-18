@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest, debounceTime, map } from "rxjs";
+import { combineLatest, map, throttleTime } from "rxjs";
 
 import { poolSuppliesStore$ } from "./store";
 import { poolSuppliesSubscriptions$ } from "./subscriptions";
@@ -43,23 +43,13 @@ const combineState = (
 	}
 };
 
-// contains all known pool supplies and their status
-export const poolSuppliesState$ = new BehaviorSubject<
-	Record<PoolSupplyId, PoolSupplyState>
->(combineState([], {}, poolSuppliesStore$.value));
-
-// maintain the above up to date
-combineLatest([
+export const poolSuppliesState$ = combineLatest([
 	poolSuppliesSubscriptions$, // unique subscriptions
 	poolSuppliesStatuses$, // status of each subscription
 	poolSuppliesStore$, // stored supplies
-])
-	.pipe(
-		debounceTime(50),
-		map(([poolSupplyIds, statuses, poolSupplies]) =>
-			combineState(poolSupplyIds, statuses, poolSupplies),
-		),
-	)
-	.subscribe((poolSupplies) => {
-		poolSuppliesState$.next(poolSupplies);
-	});
+]).pipe(
+	throttleTime(100, undefined, { leading: true, trailing: true }),
+	map(([poolSupplyIds, statuses, poolSupplies]) =>
+		combineState(poolSupplyIds, statuses, poolSupplies),
+	),
+);

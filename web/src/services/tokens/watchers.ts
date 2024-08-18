@@ -29,7 +29,7 @@ import { sleep } from "src/util/sleep";
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);
 
-export const chainTokensStatuses$ = loadingStatusByChain$;
+export const chainTokensStatuses$ = loadingStatusByChain$.asObservable();
 
 const WATCHERS = new Map<ChainId, () => void>();
 

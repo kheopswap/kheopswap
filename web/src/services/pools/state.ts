@@ -1,5 +1,5 @@
 import { groupBy } from "lodash";
-import { BehaviorSubject, combineLatest } from "rxjs";
+import { combineLatest, map } from "rxjs";
 
 import { poolsStore$ } from "./store";
 import type { Pool } from "./types";
@@ -31,14 +31,9 @@ const combineState = (
 	}
 };
 
-// main datasource of the service
-export const poolsByChainState$ = new BehaviorSubject<
-	Record<ChainId, { status: LoadingStatus; pools: Pool[] }>
->(combineState(chainPoolsStatuses$.value, poolsStore$.value));
-
-// keep subject up to date
-combineLatest([chainPoolsStatuses$, poolsStore$]).subscribe(
-	([statusByChain, allPools]) => {
-		poolsByChainState$.next(combineState(statusByChain, allPools));
-	},
+export const poolsByChainState$ = combineLatest([
+	chainPoolsStatuses$,
+	poolsStore$,
+]).pipe(
+	map(([statusByChain, allPools]) => combineState(statusByChain, allPools)),
 );

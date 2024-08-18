@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest, debounceTime, map } from "rxjs";
+import { combineLatest, map, throttleTime } from "rxjs";
 
 import { type Dictionary, fromPairs, keys } from "lodash";
 import type { TokenId, TokenInfo } from "src/config/tokens";
@@ -34,23 +34,13 @@ const combineState = (
 	}
 };
 
-// contains all known balances and their status
-export const tokenInfosState$ = new BehaviorSubject<Dictionary<TokenInfoState>>(
-	combineState([], tokenInfosStatuses$.value, tokenInfosStore$.value),
-);
-
-// maintain the above up to date
-combineLatest([
+export const tokenInfosState$ = combineLatest([
 	tokenInfosSubscriptions$, // unique subscriptions
 	tokenInfosStatuses$, // status of each subscription
 	tokenInfosStore$, // stored balances
-])
-	.pipe(
-		debounceTime(50),
-		map(([balanceIds, statuses, balances]) =>
-			combineState(balanceIds, statuses, balances),
-		),
-	)
-	.subscribe((balances) => {
-		tokenInfosState$.next(balances);
-	});
+]).pipe(
+	throttleTime(100, undefined, { leading: true, trailing: true }),
+	map(([balanceIds, statuses, balances]) =>
+		combineState(balanceIds, statuses, balances),
+	),
+);

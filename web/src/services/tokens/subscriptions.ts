@@ -1,7 +1,8 @@
 import { isEqual } from "lodash";
-import { BehaviorSubject, debounceTime, distinctUntilChanged, map } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import type { ChainId } from "src/config/chains";
+import { firstThenDebounceTime } from "src/util";
 
 type TokensByChainSubscriptionRequest = {
 	id: string;
@@ -13,7 +14,7 @@ const allTokensByChainSubscriptions$ = new BehaviorSubject<
 >([]);
 
 export const tokensByChainSubscriptions$ = allTokensByChainSubscriptions$.pipe(
-	debounceTime(50),
+	firstThenDebounceTime(100),
 	map((subs) => [...new Set(subs.flatMap((sub) => sub.chainIds))].sort()),
 	distinctUntilChanged<ChainId[]>(isEqual),
 );

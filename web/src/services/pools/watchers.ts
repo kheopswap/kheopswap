@@ -24,8 +24,6 @@ import { sleep } from "src/util/sleep";
 export const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("poolsByChainStatuses", POOLS_CACHE_DURATION);
 
-export const chainPoolsStatuses$ = loadingStatusByChain$;
-
 const WATCHERS = new Map<ChainId, () => void>();
 
 const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
@@ -146,5 +144,7 @@ poolsByChainSubscriptions$.subscribe((chainIds) => {
 	for (const chainId of chainIds.filter((id) => !WATCHERS.has(id)))
 		WATCHERS.set(chainId, watchPoolsByChain(chainId));
 });
+
+export const chainPoolsStatuses$ = loadingStatusByChain$.asObservable();
 
 export const getPoolsWatchersCount = () => WATCHERS.size;
