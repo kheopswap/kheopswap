@@ -17,6 +17,7 @@
 		"@formkit/auto-animate": "^0.8.2",
 		"@headlessui/react": "^2.1.2",
 		"@heroicons/react": "^2.1.5",
+		"@mimirdev/apps-inject": "^0.3.0",
 		"@polkadot-api/descriptors": "file:.papi/descriptors",
 		"@polkadot-api/json-rpc-provider-proxy": "^0.2.0",
 		"@polkadot-ui/assets": "0.0.1-alpha.2",

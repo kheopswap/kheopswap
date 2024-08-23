@@ -30,10 +30,21 @@ import {
 	sortWallets,
 } from "src/util";
 
+import { MIMIR_REGEXP, inject, isMimirReady } from "@mimirdev/apps-inject";
+
 export type InjectedAccount = InjectedPolkadotAccount & {
 	id: InjectedAccountId;
 	wallet: string;
 };
+
+const isOpenInIframe = window !== window.parent;
+
+if (isOpenInIframe) {
+	isMimirReady().then((origin) => {
+		// check is mimir url
+		if (origin && MIMIR_REGEXP.test(origin)) inject();
+	});
+}
 
 const getInjectedWalletsIds = () =>
 	getInjectedExtensions()?.concat().sort(sortWallets) ?? [];
@@ -67,11 +78,13 @@ const connectedExtensions$ = combineLatest([
 						const stop = logger.timer(`connecting wallet ${name}`);
 						if (!connectedExtensions.has(name)) {
 							logger.debug("connecting wallet %s", name);
+							// (window as any).injectedWeb3[name].enable("Kheopswap LOCAL");
 							connectedExtensions.set(name, connectInjectedExtension(name));
 						}
 						const connected = (await connectedExtensions.get(
 							name,
 						)) as InjectedExtension;
+						// console.log("connected", connected);
 						stop();
 						return connected;
 					} catch (err) {
@@ -96,15 +109,23 @@ const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
 		const subscriptions: Record<string, () => void> = {};
 
 		return connectedExtensions$.subscribe((extensions) => {
+			// console.log("extensions", extensions);
 			for (const extension of extensions)
 				if (!subscriptions[extension.name]) {
 					try {
 						// required because some wallets dont always fire subscription callbacks
+						// console.log("getAccounts");
 						accounts[extension.name] = extension.getAccounts();
+						// console.log("accounts", extension.name, accounts);
 						subscriber.next({ ...accounts });
 
 						subscriptions[extension.name] = extension.subscribe(
 							(extensionAccounts) => {
+								// console.log(
+								// 	"extensionAccounts",
+								// 	extension.name,
+								// 	extensionAccounts,
+								// );
 								accounts[extension.name] = extensionAccounts;
 								subscriber.next({ ...accounts });
 							},
