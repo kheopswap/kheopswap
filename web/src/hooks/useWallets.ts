@@ -78,7 +78,6 @@ const connectedExtensions$ = combineLatest([
 						const stop = logger.timer(`connecting wallet ${name}`);
 						if (!connectedExtensions.has(name)) {
 							logger.debug("connecting wallet %s", name);
-							// (window as any).injectedWeb3[name].enable("Kheopswap LOCAL");
 							connectedExtensions.set(name, connectInjectedExtension(name));
 						}
 						const connected = (await connectedExtensions.get(
