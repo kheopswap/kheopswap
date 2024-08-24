@@ -220,6 +220,15 @@ const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
 );
 
 const DisplayPropertyValue: FC<DisplayProperty> = ({ value, format, url }) => {
+	if (format === "address")
+		return (
+			<AddressDisplay
+				address={value}
+				blockExporerUrl={url}
+				iconClassName="size-5"
+			/>
+		);
+
 	const formatted = useMemo(() => {
 		if (format === "address") return shortenAddress(value);
 		return value;
