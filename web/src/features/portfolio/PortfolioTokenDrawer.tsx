@@ -274,11 +274,25 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 	const { data: tokenInfo, isLoading } = useTokenInfo({ tokenId: token.id });
 	const chain = useTokenChain({ tokenId: token.id });
 
-	switch (tokenInfo?.type) {
-		case "pool-asset":
-		case "native":
-			return null;
-	}
+	if (token.type === "pool-asset") return null;
+
+	if (token.type === "native")
+		return (
+			<TokenDetailsRow label="Total Supply">
+				{tokenInfo?.supply ? (
+					<Tokens
+						plancks={tokenInfo.supply}
+						token={token}
+						className={cn(isLoading && "animate-pulse")}
+					/>
+				) : (
+					<Shimmer>000 TKN</Shimmer>
+				)}
+			</TokenDetailsRow>
+		);
+
+	if (tokenInfo?.type === "native" || tokenInfo?.type === "pool-asset")
+		return null;
 
 	return (
 		<>

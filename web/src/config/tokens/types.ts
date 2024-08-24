@@ -128,6 +128,7 @@ export type TokenInfoNative = {
 	id: TokenIdNative;
 	type: TokenTypeNative;
 	minBalance: bigint;
+	supply: bigint;
 };
 
 export type TokenInfo =

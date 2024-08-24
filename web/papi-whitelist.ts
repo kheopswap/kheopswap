@@ -28,6 +28,7 @@ export const whitelist: WhiteListEntry[] = [
 	"query.ForeignAssets.Asset",
 	"query.ForeignAssets.Account",
 	"query.ForeignAssets.Metadata",
+	"query.Balances.TotalIssuance",
 	"const.AssetConversion.LPFee",
 	"const.Balances.ExistentialDeposit",
 	"api.AssetConversionApi.*",

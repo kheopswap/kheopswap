@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject, type Subscription } from "rxjs";
 
 import { tokenInfosSubscriptions$ } from "./subscriptions";
 
@@ -54,15 +54,19 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 
 	switch (token.type) {
 		case "native": {
-			// TODO subscribe runtime changes ? :joy:
-			const minBalance = await api.constants.Balances.ExistentialDeposit();
+			const [minBalance, supply$] = await Promise.all([
+				api.constants.Balances.ExistentialDeposit(),
+				api.query.Balances.TotalIssuance.watchValue("best"),
+			]);
 
-			updateTokenInfo({
-				id: tokenId as TokenIdNative,
-				type: "native",
-				minBalance,
+			return supply$.subscribe((supply) => {
+				updateTokenInfo({
+					id: tokenId as TokenIdNative,
+					type: "native",
+					minBalance,
+					supply,
+				});
 			});
-			return new Subscription(() => {}); // poudre de perlinpinpin
 		}
 
 		case "asset": {
