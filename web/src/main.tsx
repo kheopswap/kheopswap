@@ -9,9 +9,9 @@ import ReactDOM from "react-dom/client";
 import { Subscribe } from "@react-rxjs/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
+import { Toasts } from "./components/Toasts";
 import { router } from "./routes";
 import { preloadFont } from "./util/preloadFont";
 
@@ -29,11 +29,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 				/>
 			</Subscribe>
 		</QueryClientProvider>
-		<ToastContainer
-			theme="dark"
-			bodyClassName="font-sans text-sm"
-			position="bottom-right"
-		/>
+		<Toasts />
 	</React.StrictMode>,
 );
 

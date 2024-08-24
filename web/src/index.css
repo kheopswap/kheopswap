@@ -50,3 +50,19 @@
     @apply focus:outline-none focus-visible:ring-1 focus-visible:outline-none focus-visible:ring-white;
   }
 }
+
+/* react-toastify overrides */
+:root {
+  --toastify-color-dark: #18181b;
+  --toastify-text-color-dark: #fafafa;
+
+  --toastify-color-info: #fafafa;
+  --toastify-color-success: #22c55e;
+  --toastify-color-warning: #f97316;
+  --toastify-color-error: #ef4444;
+
+  --toastify-text-color-info: #fafafa;
+  --toastify-text-color-success: #fafafa;
+  --toastify-text-color-warning: #fafafa;
+  --toastify-text-color-error: #fafafa;
+}
