@@ -4,6 +4,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
 import type { Token } from "src/config/tokens";
 import { cn, formatDecimals, plancksToTokens } from "src/util";
+import { Pulse } from "./Pulse";
 
 export const Tokens: FC<{
 	plancks: bigint;
@@ -11,7 +12,8 @@ export const Tokens: FC<{
 	showSymbol?: boolean;
 	digits?: number;
 	className?: string;
-}> = ({ plancks, token, className, showSymbol = true, digits = 4 }) => {
+	pulse?: boolean;
+}> = ({ plancks, token, pulse, className, showSymbol = true, digits = 4 }) => {
 	const { tooltip, display } = useMemo(() => {
 		const tokens = plancksToTokens(plancks, token.decimals);
 		const formatted = formatDecimals(tokens, Math.min(digits, token.decimals));
@@ -28,7 +30,13 @@ export const Tokens: FC<{
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<span className={cn("whitespace-nowrap", className)}>{display}</span>
+				<Pulse
+					as="span"
+					pulse={pulse}
+					className={cn("whitespace-nowrap", className)}
+				>
+					{display}
+				</Pulse>
 			</TooltipTrigger>
 			{tooltip && <TooltipContent>{tooltip}</TooltipContent>}
 		</Tooltip>

@@ -130,7 +130,7 @@ export const TokenAmountPicker: FC<{
 								<Tokens
 									plancks={balance}
 									token={token}
-									className={cn(isLoadingBalance && "animate-pulse")}
+									pulse={isLoadingBalance}
 								/>
 							</>
 						) : isLoadingBalance ? (

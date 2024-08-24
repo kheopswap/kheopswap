@@ -22,6 +22,7 @@ import {
 	getErrorMessageFromTxEvents,
 	isBigInt,
 } from "src/util";
+import { Pulse } from "./Pulse";
 
 export type FollowUpTxEvent =
 	| TxEvent
@@ -204,15 +205,15 @@ const FollowUpModalInner: FC<{
 			<div className="pt-5">
 				<FollowUpResultIcon className="inline-block" result={result} />
 			</div>
-			<div
+			<Pulse
+				pulse={!error && isPendingFinalization}
 				className={cn(
 					"text-xl font-medium text-neutral-300 transition-colors",
-					!error && isPendingFinalization && "animate-pulse",
 					(!!error || isFinalized) && "text-neutral-100",
 				)}
 			>
 				{message ?? null}
-			</div>
+			</Pulse>
 			<div className="my-10 flex w-96 max-w-full grow flex-col justify-center gap-4 text-center">
 				{!!errorMessage && <div className="text-error">{errorMessage}</div>}
 				{children && <div>{children}</div>}

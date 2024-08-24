@@ -10,6 +10,7 @@ import { cn, logger, notifyError, shortenAddress } from "src/util";
 import urlJoin from "url-join";
 import { useCopyToClipboard } from "usehooks-ts";
 import { isAddress as isEvmAddress } from "viem";
+import { Pulse } from "./Pulse";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 const JAZZICON_PAPER_STYLES: CSSProperties = { width: "100%", height: "100%" };
@@ -56,7 +57,8 @@ export const AddressDisplay: FC<{
 	blockExporerUrl?: string | null;
 	className?: string;
 	iconClassName?: string;
-}> = ({ address, blockExporerUrl, className, iconClassName }) => {
+	pulse?: boolean;
+}> = ({ address, blockExporerUrl, pulse, className, iconClassName }) => {
 	const { accounts } = useWallets();
 	const [, copyToClipboard] = useCopyToClipboard();
 
@@ -77,7 +79,10 @@ export const AddressDisplay: FC<{
 	}, [address, copyToClipboard]);
 
 	return (
-		<div className={cn("inline-flex gap-1 items-center", className)}>
+		<Pulse
+			pulse={pulse}
+			className={cn("inline-flex gap-1 items-center", className)}
+		>
 			<AddressAvatar
 				address={address}
 				className={cn("size-[1.4em]", iconClassName)}
@@ -102,6 +107,6 @@ export const AddressDisplay: FC<{
 					<DocumentDuplicateIcon className={iconClassName} />
 				</button>
 			)}
-		</div>
+		</Pulse>
 	);
 };

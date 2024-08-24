@@ -39,18 +39,18 @@ export const TokenBalancesSummary: FC<
 
 	return (
 		<div className="flex size-full flex-col items-end justify-center overflow-hidden">
-			<div className={cn("truncate", isLoadingTokenPlancks && "animate-pulse")}>
-				<Tokens token={token} plancks={tokenPlancks ?? 0n} />
+			<div className="truncate">
+				<Tokens
+					token={token}
+					plancks={tokenPlancks ?? 0n}
+					pulse={isLoadingTokenPlancks}
+				/>
 			</div>
-			<div
-				className={cn(
-					"truncate text-sm text-neutral-500 ",
-					isLoadingStablePlancks && "animate-pulse",
-				)}
-			>
+			<div className="truncate text-sm text-neutral-500">
 				<Tokens
 					token={stableToken}
 					plancks={stablePlancks ?? 0n}
+					pulse={isLoadingStablePlancks}
 					digits={2}
 					className={cn(
 						!isBigInt(stablePlancks) && "invisible",

@@ -17,6 +17,7 @@ import {
 } from "src/hooks";
 import type { BalanceWithStableSummary } from "src/types";
 import { cn, getTokenDescription, isBigInt } from "src/util";
+import { Pulse } from "./Pulse";
 
 const TokenButton = forwardRef<
 	HTMLButtonElement,
@@ -65,9 +66,7 @@ const TokenButton = forwardRef<
 							<Tokens
 								token={token}
 								plancks={balances.tokenPlancks ?? 0n}
-								className={cn(
-									balances.isLoadingTokenPlancks && "animate-pulse",
-								)}
+								pulse={balances.isLoadingTokenPlancks}
 							/>
 						</div>
 						<div className="text-sm">
@@ -75,10 +74,10 @@ const TokenButton = forwardRef<
 								token={stableToken}
 								plancks={balances.stablePlancks ?? 0n}
 								className={cn(
-									balances.isLoadingStablePlancks && "animate-pulse",
 									!isBigInt(balances.stablePlancks) && "invisible",
 									token.id === stableToken.id && "invisible",
 								)}
+								pulse={balances.isLoadingStablePlancks}
 							/>
 						</div>
 					</div>
@@ -93,10 +92,11 @@ TokenButton.displayName = "TokenButton";
 
 const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 	return (
-		<div
+		<Pulse
+			pulse
 			className={cn(
 				Styles.button,
-				"flex h-16 w-full animate-pulse select-none items-center gap-4 overflow-hidden rounded-md bg-neutral-800 p-2  pl-4 pr-3 text-neutral-400",
+				"flex h-16 w-full select-none items-center gap-4 overflow-hidden rounded-md bg-neutral-800 p-2  pl-4 pr-3 text-neutral-400",
 				className,
 			)}
 		>
@@ -111,7 +111,7 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 					Chain name and asset id
 				</div>
 			</div>
-		</div>
+		</Pulse>
 	);
 };
 

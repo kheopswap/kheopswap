@@ -1,7 +1,8 @@
 import { type FC, useMemo } from "react";
 import { Tokens } from "src/components";
+import { Pulse } from "src/components/Pulse";
 import { useBalance, useStablePrice } from "src/hooks";
-import { cn, tokensToPlancks } from "src/util";
+import { tokensToPlancks } from "src/util";
 import type { LiquidityPoolRowData } from "./useLiquidityPools";
 
 export const LiquidityPoolBalances: FC<{
@@ -51,12 +52,7 @@ export const LiquidityPoolBalances: FC<{
 	}, [reserve1, reserve2, display, pool]);
 
 	return (
-		<div
-			className={cn(
-				"flex flex-col items-end text-white",
-				isLoading && "animate-pulse",
-			)}
-		>
+		<Pulse className="flex flex-col items-end text-white" pulse={isLoading}>
 			{!!valuationPlancks && stableToken ? (
 				<div>
 					<Tokens plancks={valuationPlancks} token={stableToken} />
@@ -73,6 +69,6 @@ export const LiquidityPoolBalances: FC<{
 					</div>
 				</>
 			)}
-		</div>
+		</Pulse>
 	);
 };

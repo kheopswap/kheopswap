@@ -1,19 +1,21 @@
 import type { FC, ReactNode } from "react";
 
 import { cn } from "src/util";
+import { Pulse } from "./Pulse";
 
 export const Shimmer: FC<{ children?: ReactNode; className?: string }> = ({
 	children,
 	className,
 }) => {
 	return (
-		<div
+		<Pulse
+			pulse
 			className={cn(
-				"animate-pulse select-none rounded bg-neutral-800 text-neutral-800",
+				"select-none rounded bg-neutral-800 text-neutral-800",
 				className,
 			)}
 		>
 			{children}
-		</div>
+		</Pulse>
 	);
 };

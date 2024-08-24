@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { LiquidityPoolsRow } from "./LiquidityPoolsRow";
 
 import { Shimmer } from "src/components";
+import { Pulse } from "src/components/Pulse";
 import { cn } from "src/util";
 import type { LiquidityPoolsVisibleCol } from "./types";
 import type { LiquidityPoolRowData } from "./useLiquidityPools";
@@ -32,10 +33,10 @@ export const LiquidityPoolsRows: FC<{
 			>
 				{isLoading ? (
 					<>
-						<div className="h-10 shrink-0 animate-pulse">
+						<Pulse pulse className="h-10 shrink-0">
 							<Shimmer className="inline-block size-10 rounded-full animate-none" />
 							<Shimmer className="inline-block -ml-3 size-10 rounded-full animate-none" />
-						</div>
+						</Pulse>
 						<div className="flex grow flex-col items-start gap-1 overflow-hidden text-xs">
 							<Shimmer className="">TK1/TK2</Shimmer>
 							<Shimmer className="">Asset Hub - 420</Shimmer>

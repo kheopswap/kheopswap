@@ -25,6 +25,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "src/components";
+import { Pulse } from "src/components/Pulse";
 import {
 	type DisplayProperty,
 	type Token,
@@ -99,9 +100,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 										<Tokens
 											token={token}
 											plancks={balance.tokenPlancks}
-											className={cn(
-												balance.isLoadingTokenPlancks && "animate-pulse",
-											)}
+											pulse={balance.isLoadingTokenPlancks}
 										/>
 									) : (
 										<Shimmer>
@@ -118,9 +117,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 												<Tokens
 													token={stableToken}
 													plancks={balance.stablePlancks}
-													className={cn(
-														balance.isLoadingStablePlancks && "animate-pulse",
-													)}
+													pulse={balance.isLoadingStablePlancks}
 													digits={2}
 												/>
 											) : (
@@ -193,17 +190,21 @@ const TokenDetailsRowValue: FC<
 			<Tokens
 				token={token}
 				plancks={tokenPlancks ?? 0n}
-				className={cn(isLoadingTokenPlancks && "animate-pulse")}
+				pulse={isLoadingTokenPlancks}
 			/>
 			<span
 				className={cn(
 					"text-neutral-500",
-					isLoadingStablePlancks && "animate-pulse",
 					!isBigInt(stablePlancks) && "hidden",
 					token.id === stableToken.id && "hidden",
 				)}
 			>
-				<Tokens token={stableToken} plancks={stablePlancks ?? 0n} digits={2} />
+				<Tokens
+					token={stableToken}
+					plancks={stablePlancks ?? 0n}
+					digits={2}
+					pulse={isLoadingStablePlancks}
+				/>
 			</span>
 		</div>
 	);
@@ -289,11 +290,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 		return (
 			<TokenDetailsRow label="Total Supply">
 				{tokenInfo?.supply ? (
-					<Tokens
-						plancks={tokenInfo.supply}
-						token={token}
-						className={cn(isLoading && "animate-pulse")}
-					/>
+					<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
 				) : (
 					<Shimmer>000 TKN</Shimmer>
 				)}
@@ -307,29 +304,25 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 		<>
 			<TokenDetailsRow label="Total Supply">
 				{tokenInfo ? (
-					<Tokens
-						plancks={tokenInfo.supply}
-						token={token}
-						className={cn(isLoading && "animate-pulse")}
-					/>
+					<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
 				) : (
 					<Shimmer>000 TKN</Shimmer>
 				)}
 			</TokenDetailsRow>
 			<TokenDetailsRow label="Holders">
 				{tokenInfo ? (
-					<span className={cn(isLoading && "animate-pulse")}>
+					<Pulse as="span" pulse={isLoading}>
 						{tokenInfo.accounts}
-					</span>
+					</Pulse>
 				) : (
 					<Shimmer>00000</Shimmer>
 				)}
 			</TokenDetailsRow>
 			<TokenDetailsRow label="Status">
 				{tokenInfo ? (
-					<span className={cn(isLoading && "animate-pulse")}>
+					<Pulse as="span" pulse={isLoading}>
 						{tokenInfo.status}
-					</span>
+					</Pulse>
 				) : (
 					<Shimmer>Live</Shimmer>
 				)}
@@ -339,7 +332,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 					<AddressDisplay
 						address={tokenInfo.owner}
 						blockExporerUrl={chain.blockExplorerUrl}
-						className={cn(isLoading && "animate-pulse")}
+						pulse={isLoading}
 						iconClassName="size-5"
 					/>
 				) : (
@@ -351,8 +344,8 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 					<AddressDisplay
 						address={tokenInfo.admin}
 						blockExporerUrl={chain.blockExplorerUrl}
-						className={cn(isLoading && "animate-pulse")}
 						iconClassName="size-5"
+						pulse={isLoading}
 					/>
 				</TokenDetailsRow>
 			)}
@@ -361,8 +354,8 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 					<AddressDisplay
 						address={tokenInfo.issuer}
 						blockExporerUrl={chain.blockExplorerUrl}
-						className={cn(isLoading && "animate-pulse")}
 						iconClassName="size-5"
+						pulse={isLoading}
 					/>
 				</TokenDetailsRow>
 			)}
@@ -371,8 +364,8 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 					<AddressDisplay
 						address={tokenInfo.freezer}
 						blockExporerUrl={chain.blockExplorerUrl}
-						className={cn(isLoading && "animate-pulse")}
 						iconClassName="size-5"
+						pulse={isLoading}
 					/>
 				</TokenDetailsRow>
 			)}

@@ -23,7 +23,8 @@ export const Balance: FC<{
 			<Tokens
 				plancks={balance}
 				token={token}
-				className={cn(className, isLoading && "animate-pulse")}
+				pulse={isLoading}
+				className={className}
 			/>
 		);
 

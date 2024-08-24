@@ -113,16 +113,14 @@ const AccountButton: FC<{
 							<Tokens
 								token={token}
 								plancks={balance.tokenPlancks ?? 0n}
-								className={cn(balance.isLoadingTokenPlancks && "animate-pulse")}
+								pulse={balance.isLoadingTokenPlancks}
 							/>
 						</div>
 						<div className="text-sm text-neutral-500">
 							<Tokens
 								token={stableToken}
 								plancks={balance.stablePlancks ?? 0n}
-								className={cn(
-									balance.isLoadingStablePlancks && "animate-pulse",
-								)}
+								pulse={balance.isLoadingStablePlancks}
 							/>
 						</div>
 					</div>

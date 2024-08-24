@@ -12,6 +12,7 @@ import {
 	TokenLogo,
 	Tokens,
 } from "src/components";
+import { Pulse } from "src/components/Pulse";
 import { useStablePlancks } from "src/hooks";
 import { cn, isBigInt } from "src/util";
 
@@ -20,11 +21,9 @@ const PoolReserves: FC = () => {
 		useLiquidityPoolPage();
 
 	return (
-		<div
-			className={cn(
-				"flex flex-col items-start text-white ",
-				isLoadingReserves && "animate-pulse",
-			)}
+		<Pulse
+			pulse={isLoadingReserves}
+			className={cn("flex flex-col items-start text-white ")}
 		>
 			<div className="flex items-center gap-1">
 				{!!nativeToken && (
@@ -42,7 +41,7 @@ const PoolReserves: FC = () => {
 					</>
 				)}
 			</div>
-		</div>
+		</Pulse>
 	);
 };
 
@@ -65,11 +64,7 @@ const PoolValue: FC = () => {
 	return (
 		<div className="flex items-center gap-1">
 			<TokenLogo token={stableToken} className="inline-block size-5" />
-			<Tokens
-				plancks={valuation}
-				token={stableToken}
-				className={cn(isLoading && "animate-pulse")}
-			/>
+			<Tokens plancks={valuation} token={stableToken} pulse={isLoading} />
 		</div>
 	);
 };
@@ -84,11 +79,9 @@ const PoolPosition: FC = () => {
 	} = useLiquidityPoolPage();
 
 	return (
-		<div
-			className={cn(
-				"flex flex-col items-start  ",
-				(isLoadingPosition || isLoadingToken) && "animate-pulse",
-			)}
+		<Pulse
+			pulse={isLoadingPosition || isLoadingToken}
+			className="flex flex-col items-start"
 		>
 			<div className="flex items-center gap-1">
 				{!!nativeToken && (
@@ -106,7 +99,7 @@ const PoolPosition: FC = () => {
 					</>
 				)}
 			</div>
-		</div>
+		</Pulse>
 	);
 };
 
@@ -169,7 +162,8 @@ const PoolPositionValue: FC = () => {
 				<Tokens
 					plancks={total ?? 0n}
 					token={stableToken}
-					className={cn("truncate", isLoadingPosition && "animate-pulse")}
+					className="truncate"
+					pulse={isLoadingPosition}
 				/>
 			</div>
 			<div className="shrink-0 grow text-right">{sharesRatio}</div>
