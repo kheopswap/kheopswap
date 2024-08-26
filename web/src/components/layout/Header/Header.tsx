@@ -2,7 +2,7 @@ import type { FC } from "react";
 
 import { RelaySelect } from "./RelaySelect";
 
-import { ConnectButton } from "src/features/connect/ConnectButton";
+import { ConnectButton } from "src/components/ConnectButton";
 
 export const Header: FC = () => {
 	return (

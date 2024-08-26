@@ -27,6 +27,8 @@
 		"@talismn/orb": "0.0.0-pr1364-20240325022411",
 		"@tanstack/react-query": "^5.51.9",
 		"@w3f/polkadot-icons": "^1.0.0",
+		"@walletconnect/modal": "^2.6.2",
+		"@walletconnect/universal-provider": "^2.15.1",
 		"clsx": "^2.1.1",
 		"framer-motion": "^11.3.28",
 		"lodash": "^4.17.21",

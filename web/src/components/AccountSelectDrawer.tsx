@@ -11,6 +11,7 @@ import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 
 import type { Token } from "src/config/tokens";
+import { connectWalletConnectClient } from "src/features/connect/walletConnect";
 import {
 	type InjectedAccount,
 	useBalancesWithStables,
@@ -263,6 +264,16 @@ const AccountSelectDrawerContent: FC<{
 		});
 	}, [accounts, balanceByAccount]);
 
+	const handleWalletConnectClick = useCallback(async () => {
+		console.log("Wallet Connect");
+		try {
+			const accounts = await connectWalletConnectClient();
+			console.log("Wallet Connect", { accounts });
+		} catch (err) {
+			console.error("Failed to connect Wallet Connect", { err });
+		}
+	}, []);
+
 	return (
 		<DrawerContainer
 			title={title ?? (accounts.length ? "Select account" : "Connect wallet")}
@@ -296,6 +307,18 @@ const AccountSelectDrawerContent: FC<{
 				{!injectedWallets.length && (
 					<div className="mb-1">No wallets found</div>
 				)}
+			</div>
+			<div>
+				<h4>External wallets</h4>
+				<ul className="mt-2 flex flex-col gap-2">
+					<li>
+						<ExtensionButton
+							name={"Wallet Connect"}
+							isConnected={false}
+							onClick={handleWalletConnectClick}
+						/>
+					</li>
+				</ul>
 			</div>
 			{!!accounts.length && (
 				<div>
