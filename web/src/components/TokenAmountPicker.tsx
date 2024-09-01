@@ -2,6 +2,7 @@ import {
 	type DetailedHTMLProps,
 	type FC,
 	type InputHTMLAttributes,
+	forwardRef,
 	useMemo,
 } from "react";
 
@@ -9,7 +10,10 @@ import { Shimmer } from "./Shimmer";
 import { TokenSelectButton } from "./TokenSelectButton";
 import { Styles } from "./styles";
 
+import { maskitoNumberOptionsGenerator } from "@maskito/kit";
+import { useMaskito } from "@maskito/react";
 import type { Dictionary } from "lodash";
+import { mergeRefs } from "react-merge-refs";
 import {
 	StablePrice,
 	Tokens,
@@ -20,6 +24,29 @@ import {
 import type { Token, TokenId } from "src/config/tokens";
 import type { InjectedAccount } from "src/hooks";
 import { cn, isBigInt } from "src/util";
+
+const TokenInput = forwardRef<
+	HTMLInputElement,
+	{ decimals?: number } & DetailedHTMLProps<
+		InputHTMLAttributes<HTMLInputElement>,
+		HTMLInputElement
+	>
+>(({ decimals, ...props }, ref) => {
+	const maskito = useMemo(
+		() => ({
+			options: maskitoNumberOptionsGenerator({
+				thousandSeparator: "",
+				min: 0,
+				precision: decimals,
+			}),
+		}),
+		[decimals],
+	);
+
+	const refFormat = useMaskito(maskito);
+
+	return <input ref={mergeRefs([refFormat, ref])} {...props} />;
+});
 
 export type TokenAmountPickerProps = Partial<
 	DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
@@ -67,10 +94,11 @@ export const TokenAmountPicker: FC<{
 			)}
 		>
 			<div className="flex w-full">
-				<input
+				<TokenInput
+					decimals={token?.decimals}
 					{...inputProps}
 					inputMode="decimal"
-					placeholder="0.0"
+					placeholder="0"
 					spellCheck={false}
 					autoComplete="off"
 					autoCorrect="off"
