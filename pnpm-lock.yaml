@@ -101,9 +101,6 @@ importers:
       react-jazzicon:
         specifier: ^1.0.4
         version: 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-merge-refs:
-        specifier: ^2.1.1
-        version: 2.1.1
       react-router-dom:
         specifier: ^6.26.1
         version: 6.26.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2520,9 +2517,6 @@ packages:
     peerDependencies:
       react: '>=17.0.0'
       react-dom: '>=17.0.0'
-
-  react-merge-refs@2.1.1:
-    resolution: {integrity: sha512-jLQXJ/URln51zskhgppGJ2ub7b2WFKGq3cl3NYKtlHoTG+dN2q7EzWrn3hN3EgPsTMvpR9tpq5ijdp7YwFZkag==}
 
   react-router-dom@6.26.1:
     resolution: {integrity: sha512-veut7m41S1fLql4pLhxeSW3jlqs+4MtjRLj0xvuCEXsxusJCbs6I8yn9BxzzDX2XDgafrccY6hwjmd/bL54tFw==}
@@ -5174,8 +5168,6 @@ snapshots:
       mersenne-twister: 1.1.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-
-  react-merge-refs@2.1.1: {}
 
   react-router-dom@6.26.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:

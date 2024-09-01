@@ -10,10 +10,11 @@ import { Shimmer } from "./Shimmer";
 import { TokenSelectButton } from "./TokenSelectButton";
 import { Styles } from "./styles";
 
+import { useMergeRefs } from "@floating-ui/react";
 import { maskitoNumberOptionsGenerator } from "@maskito/kit";
 import { useMaskito } from "@maskito/react";
 import type { Dictionary } from "lodash";
-import { mergeRefs } from "react-merge-refs";
+
 import {
 	StablePrice,
 	Tokens,
@@ -31,7 +32,7 @@ const TokenInput = forwardRef<
 		InputHTMLAttributes<HTMLInputElement>,
 		HTMLInputElement
 	>
->(({ decimals, ...props }, ref) => {
+>(({ decimals, ...props }, refForward) => {
 	const maskito = useMemo(
 		() => ({
 			options: maskitoNumberOptionsGenerator({
@@ -45,7 +46,9 @@ const TokenInput = forwardRef<
 
 	const refFormat = useMaskito(maskito);
 
-	return <input ref={mergeRefs([refFormat, ref])} {...props} />;
+	const ref = useMergeRefs([refFormat, refForward]);
+
+	return <input ref={ref} {...props} />;
 });
 
 export type TokenAmountPickerProps = Partial<
