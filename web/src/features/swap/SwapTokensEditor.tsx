@@ -1,5 +1,5 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
-import { type FC, useCallback, useMemo } from "react";
+import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
 
 import { useSwap } from "./SwapProvider";
 
@@ -64,20 +64,19 @@ export const SwapTokensEditor = () => {
 		[account, allAccounts],
 	);
 
-	const handleAmountInChange: React.ChangeEventHandler<HTMLInputElement> =
-		useCallback(
-			(e) => {
-				onAmountInChange(e.target.value);
-			},
-			[onAmountInChange],
-		);
+	const handleAmountInInput: FormEventHandler<HTMLInputElement> = useCallback(
+		(e) => {
+			onAmountInChange(e.currentTarget.value);
+		},
+		[onAmountInChange],
+	);
 
 	return (
 		<div className="relative flex flex-col gap-2">
 			<TokenAmountPicker
 				inputProps={{
 					value: formData.amountIn,
-					onChange: handleAmountInChange,
+					onInput: handleAmountInInput,
 				}}
 				tokenId={tokenIn?.id}
 				plancks={totalIn}

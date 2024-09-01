@@ -1,6 +1,5 @@
 import { keyBy } from "lodash";
 import {
-	type ChangeEventHandler,
 	type FC,
 	type FormEventHandler,
 	useCallback,
@@ -86,10 +85,10 @@ const AddLiquidityEditor: FC = () => {
 	const refInput1 = useRef<HTMLInputElement>(null);
 	const refInput2 = useRef<HTMLInputElement>(null);
 
-	const handleChange = useCallback(
-		(tokenIdx: "token1" | "token2"): ChangeEventHandler<HTMLInputElement> =>
+	const handleTokensInput = useCallback(
+		(tokenIdx: "token1" | "token2"): FormEventHandler<HTMLInputElement> =>
 			(e) => {
-				const val = Number(e.target.value);
+				const val = Number(e.currentTarget.value);
 
 				if (!token1 || !token2) {
 					if (tokenIdx === "token1" && refInput2.current)
@@ -200,7 +199,7 @@ const AddLiquidityEditor: FC = () => {
 				inputProps={{
 					ref: refInput1,
 					inputMode: "decimal",
-					onChange: handleChange("token1"),
+					onInput: handleTokensInput("token1"),
 					formNoValidate: true,
 				}}
 				tokenId={token1?.id}
@@ -218,7 +217,7 @@ const AddLiquidityEditor: FC = () => {
 				inputProps={{
 					ref: refInput2,
 					inputMode: "decimal",
-					onChange: handleChange("token2"),
+					onInput: handleTokensInput("token2"),
 					formNoValidate: true,
 				}}
 				accounts={accounts}
