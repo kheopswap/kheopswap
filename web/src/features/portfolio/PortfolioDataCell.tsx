@@ -9,6 +9,7 @@ export const TokenBalancesSummary: FC<
 	BalanceWithStableSummary & {
 		token: Token;
 		stableToken: Token;
+		isPrice?: boolean;
 	}
 > = ({
 	token,
@@ -18,6 +19,7 @@ export const TokenBalancesSummary: FC<
 	stablePlancks,
 	isLoadingTokenPlancks,
 	isInitializing,
+	isPrice,
 }) => {
 	if (!isInitializing && !tokenPlancks) return null;
 
@@ -44,6 +46,7 @@ export const TokenBalancesSummary: FC<
 					token={token}
 					plancks={tokenPlancks ?? 0n}
 					pulse={isLoadingTokenPlancks}
+					isPrice={isPrice}
 				/>
 			</div>
 			<div className="truncate text-sm text-neutral-500">
@@ -52,6 +55,7 @@ export const TokenBalancesSummary: FC<
 					plancks={stablePlancks ?? 0n}
 					pulse={isLoadingStablePlancks}
 					digits={2}
+					isPrice={isPrice}
 					className={cn(
 						!isBigInt(stablePlancks) && "invisible",
 						token.id === stableToken.id && "invisible",
