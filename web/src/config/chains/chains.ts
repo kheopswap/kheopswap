@@ -10,6 +10,7 @@ import {
 	wah,
 	westend,
 } from "@polkadot-api/descriptors";
+import type { SharedUnionFieldsDeep } from "type-fest";
 
 import { DEV } from "src/config/constants";
 
@@ -29,14 +30,8 @@ const DESCRIPTORS_ASSET_HUB = {
 	devah,
 } as const;
 
-export const DESCRIPTORS_ALL = {
-	...DESCRIPTORS_RELAY,
-	...DESCRIPTORS_ASSET_HUB,
-} as const;
-
 type DescriptorsAssetHub = typeof DESCRIPTORS_ASSET_HUB;
 type DescriptorsRelay = typeof DESCRIPTORS_RELAY;
-export type DescriptorsAll = DescriptorsRelay & DescriptorsAssetHub;
 
 export type ChainIdAssetHub = keyof DescriptorsAssetHub;
 export type ChainIdRelay = keyof DescriptorsRelay;
@@ -47,10 +42,16 @@ export const isChainIdAssetHub = (id: unknown): id is ChainIdAssetHub =>
 export const isChainIdRelay = (id: unknown): id is ChainIdRelay =>
 	typeof id === "string" && !!DESCRIPTORS_RELAY[id as ChainIdRelay];
 
-export type Descriptors<Id extends ChainId> = DescriptorsAll[Id];
+export type Descriptors = SharedUnionFieldsDeep<
+	DescriptorsAssetHub[ChainIdAssetHub] | DescriptorsRelay[ChainIdRelay]
+>;
 
-export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
-	DESCRIPTORS_ALL[id];
+export const DESCRIPTORS_ALL = {
+	...DESCRIPTORS_RELAY,
+	...DESCRIPTORS_ASSET_HUB,
+} as const satisfies Record<ChainId, Descriptors>;
+
+export const getDescriptors = (id: ChainId): Descriptors => DESCRIPTORS_ALL[id];
 
 export type Chain<Id = ChainId> = {
 	id: Id;

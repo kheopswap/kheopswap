@@ -116,6 +116,9 @@ importers:
       tailwind-merge:
         specifier: ^2.5.2
         version: 2.5.2
+      type-fest:
+        specifier: ^4.26.0
+        version: 4.26.0
       url-join:
         specifier: ^5.0.0
         version: 5.0.0
@@ -2801,8 +2804,8 @@ packages:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
 
-  type-fest@4.25.0:
-    resolution: {integrity: sha512-bRkIGlXsnGBRBQRAY56UXBm//9qH4bmJfFvq83gSz41N282df+fjy8ofcEgc1sM8geNt5cl6mC2g9Fht1cs8Aw==}
+  type-fest@4.26.0:
+    resolution: {integrity: sha512-OduNjVJsFbifKb57UqZ2EMP1i4u64Xwow3NYXUtBbD4vIwJdQd4+xl8YDou1dlm4DVrtwT/7Ky8z8WyCULVfxw==}
     engines: {node: '>=16'}
 
   typescript@5.5.4:
@@ -5038,7 +5041,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.24.7
       index-to-position: 0.1.2
-      type-fest: 4.25.0
+      type-fest: 4.26.0
 
   parse-ms@4.0.0: {}
 
@@ -5207,7 +5210,7 @@ snapshots:
       '@types/normalize-package-data': 2.4.4
       normalize-package-data: 6.0.2
       parse-json: 8.1.0
-      type-fest: 4.25.0
+      type-fest: 4.26.0
       unicorn-magic: 0.1.0
 
   readdirp@3.6.0:
@@ -5489,7 +5492,7 @@ snapshots:
 
   type-fest@0.21.3: {}
 
-  type-fest@4.25.0: {}
+  type-fest@4.26.0: {}
 
   typescript@5.5.4: {}
 
@@ -5683,7 +5686,7 @@ snapshots:
       deepmerge-ts: 7.1.0
       read-pkg: 9.0.1
       sort-keys: 5.0.0
-      type-fest: 4.25.0
+      type-fest: 4.26.0
       write-json-file: 6.0.0
 
   ws@8.17.1: {}

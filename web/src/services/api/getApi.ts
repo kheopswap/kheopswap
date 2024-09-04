@@ -16,9 +16,9 @@ import {
 import { getSetting } from "src/services/settings";
 import { logger } from "src/util";
 
-type ApiBase<Id extends ChainId> = TypedApi<Descriptors<Id>>;
+type ApiBase = TypedApi<Descriptors>;
 
-export type Api<Id extends ChainId> = ApiBase<Id> & {
+export type Api<Id extends ChainId> = ApiBase & {
 	chainId: Id;
 	waitReady: Promise<void>;
 };
