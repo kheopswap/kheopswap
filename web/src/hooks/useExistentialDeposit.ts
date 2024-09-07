@@ -18,6 +18,7 @@ export const useExistentialDeposit = ({
 
 			return getExistentialDeposit(tokenId);
 		},
+		structuralSharing: false,
 	});
 
 	return query;

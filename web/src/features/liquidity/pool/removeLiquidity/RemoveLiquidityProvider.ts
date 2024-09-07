@@ -61,6 +61,7 @@ const useRemoveLiquidityProvider = () => {
 				withdraw_to: account.address,
 			});
 		},
+		structuralSharing: false,
 	});
 
 	const onReset = useCallback(() => {

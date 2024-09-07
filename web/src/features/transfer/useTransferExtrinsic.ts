@@ -23,5 +23,6 @@ export const useTransferExtrinsic = ({
 			return getTransferExtrinsic(tokenId, plancks, recipient);
 		},
 		refetchInterval: false,
+		structuralSharing: false,
 	});
 };

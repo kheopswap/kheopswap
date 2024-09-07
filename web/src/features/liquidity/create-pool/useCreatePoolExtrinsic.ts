@@ -40,6 +40,7 @@ export const useCreatePoolExtrinsic = ({
 			return getCreatePoolExtrinsic(tokenId1, tokenId2, liquidityToAdd, mintTo);
 		},
 		refetchInterval: false,
+		structuralSharing: false,
 	});
 };
 
