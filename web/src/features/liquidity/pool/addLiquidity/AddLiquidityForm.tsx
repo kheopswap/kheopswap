@@ -1,5 +1,4 @@
 import {
-	type ChangeEventHandler,
 	type FC,
 	type FormEventHandler,
 	useCallback,
@@ -49,13 +48,13 @@ const AddLiquidityEditor: FC = () => {
 	const refInput1 = useRef<HTMLInputElement>(null);
 	const refInput2 = useRef<HTMLInputElement>(null);
 
-	const handleChange = useCallback(
-		(tokenIdx: "token1" | "token2"): ChangeEventHandler<HTMLInputElement> =>
+	const handleTokensInput = useCallback(
+		(tokenIdx: "token1" | "token2"): FormEventHandler<HTMLInputElement> =>
 			(e) => {
-				const val = Number(e.target.value);
+				const val = Number(e.currentTarget.value);
 
 				if (
-					!e.target.value ||
+					!e.currentTarget.value ||
 					!nativeToken ||
 					!assetToken ||
 					Number.isNaN(val) ||
@@ -73,13 +72,13 @@ const AddLiquidityEditor: FC = () => {
 					// empty pool, can't derive 2nd value
 					if (tokenIdx === "token1")
 						setLiquidityToAdd([
-							tokensToPlancks(e.target.value, nativeToken.decimals),
+							tokensToPlancks(e.currentTarget.value, nativeToken.decimals),
 							liquidityToAdd?.[1] ?? 0n,
 						]);
 					else
 						setLiquidityToAdd([
 							liquidityToAdd?.[0] ?? 0n,
-							tokensToPlancks(e.target.value, assetToken.decimals),
+							tokensToPlancks(e.currentTarget.value, assetToken.decimals),
 						]);
 					return;
 				}
@@ -87,7 +86,7 @@ const AddLiquidityEditor: FC = () => {
 				try {
 					if (tokenIdx === "token1") {
 						const nativePlancks = tokensToPlancks(
-							e.target.value,
+							e.currentTarget.value,
 							nativeToken.decimals,
 						);
 						const assetPlancks = (nativePlancks * reserves[1]) / reserves[0];
@@ -99,7 +98,7 @@ const AddLiquidityEditor: FC = () => {
 							);
 					} else {
 						const assetPlancks = tokensToPlancks(
-							e.target.value,
+							e.currentTarget.value,
 							assetToken.decimals,
 						);
 						const nativePlancks = (assetPlancks * reserves[0]) / reserves[1];
@@ -204,7 +203,7 @@ const AddLiquidityEditor: FC = () => {
 				inputProps={{
 					ref: refInput1,
 					inputMode: "decimal",
-					onChange: handleChange("token1"),
+					onInput: handleTokensInput("token1"),
 					formNoValidate: true,
 				}}
 				tokenId={nativeToken?.id}
@@ -222,7 +221,7 @@ const AddLiquidityEditor: FC = () => {
 				inputProps={{
 					ref: refInput2,
 					inputMode: "decimal",
-					onChange: handleChange("token2"),
+					onInput: handleTokensInput("token2"),
 					formNoValidate: true,
 				}}
 				tokenId={assetToken?.id}

@@ -79,5 +79,6 @@ export const useSwapExtrinsic = ({
 			});
 		},
 		refetchInterval: false,
+		structuralSharing: false,
 	});
 };

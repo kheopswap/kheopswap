@@ -25,6 +25,7 @@ export const useExistentialDeposits = ({
 				),
 			) as Record<TokenId, bigint | null>;
 		},
+		structuralSharing: false,
 	});
 
 	return query;

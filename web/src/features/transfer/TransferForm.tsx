@@ -62,13 +62,12 @@ export const TransferForm = () => {
 		[onSubmit],
 	);
 
-	const handleAmountChange: React.ChangeEventHandler<HTMLInputElement> =
-		useCallback(
-			(e) => {
-				onAmountChange(e.target.value);
-			},
-			[onAmountChange],
-		);
+	const handleAmountInput: FormEventHandler<HTMLInputElement> = useCallback(
+		(e) => {
+			onAmountChange(e.currentTarget.value);
+		},
+		[onAmountChange],
+	);
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -106,7 +105,7 @@ export const TransferForm = () => {
 				<FormFieldContainer id="amount-and-token" label="Tokens">
 					<TokenAmountPicker
 						inputProps={{
-							onChange: handleAmountChange,
+							onInput: handleAmountInput,
 							value: formData.amount, // controlled because of send max button
 						}}
 						tokenId={token?.id}

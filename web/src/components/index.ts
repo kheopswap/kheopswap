@@ -14,7 +14,6 @@ export * from "./SearchInput";
 export * from "./StablePrice";
 export * from "./Shimmer";
 export * from "./TabTitle";
-export * from "./TokenAmountField";
 export * from "./TokenAmountPicker";
 export * from "./TokenLogo";
 export * from "./TokenSelectDrawer";

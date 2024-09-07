@@ -58,6 +58,7 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
 					<TokenBalancesSummary
 						token={nativeToken}
 						stableToken={stableToken}
+						isPrice
 						{...price}
 					/>
 				)}

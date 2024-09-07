@@ -22,6 +22,7 @@ export const useAssetConvertionLPFee = ({
 			stop();
 			return res;
 		},
+		structuralSharing: false,
 	});
 
 	return query;

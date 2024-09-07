@@ -38,5 +38,6 @@ export const useTeleportExtrinsic = ({
 			return getTeleportExtrinsic(tokenIdIn, plancksIn, tokenIdOut, recipient);
 		},
 		refetchInterval: false,
+		structuralSharing: false,
 	});
 };

@@ -21,5 +21,6 @@ export const useApi = <Id extends ChainId>({ chainId }: UseApiProps<Id>) => {
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
 		refetchOnReconnect: false,
+		structuralSharing: false,
 	});
 };
