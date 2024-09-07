@@ -30,5 +30,6 @@ export const useAddLiquidityExtrinsic = (props: UseAddLiquidityExtrinsic) => {
 
 			return addLiquidityCall ?? null;
 		},
+		structuralSharing: false,
 	});
 };

@@ -30,5 +30,6 @@ export const useEstimateFee = ({
 		},
 		retry: 1,
 		refetchInterval: false,
+		structuralSharing: false,
 	});
 };
