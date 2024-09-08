@@ -22,6 +22,8 @@ import {
 
 import { useSetting } from "./useSetting";
 
+import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
+import { wcAccounts$ } from "src/features/connect/wallet-connect/accounts.state";
 import { getSetting$, setSetting } from "src/services/settings";
 import {
 	type InjectedAccountId,
@@ -95,36 +97,43 @@ const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
 		const accounts: Record<string, InjectedPolkadotAccount[]> = {};
 		const subscriptions: Record<string, () => void> = {};
 
-		return connectedExtensions$.subscribe((extensions) => {
-			for (const extension of extensions)
-				if (!subscriptions[extension.name]) {
-					try {
-						// required because some wallets dont always fire subscription callbacks
-						accounts[extension.name] = extension.getAccounts();
-						subscriber.next({ ...accounts });
+		return combineLatest([connectedExtensions$, wcAccounts$]).subscribe(
+			([extensions, wcAccounts]) => {
+				const wcAccountsMap: Record<string, InjectedPolkadotAccount[]> =
+					wcAccounts.length ? { [WALLET_CONNECT_NAME]: wcAccounts } : {};
 
-						subscriptions[extension.name] = extension.subscribe(
-							(extensionAccounts) => {
-								accounts[extension.name] = extensionAccounts;
-								subscriber.next({ ...accounts });
-							},
-						);
-					} catch (err) {
-						console.error("Failed to subscribe to %s", extension.name, { err });
+				for (const extension of extensions)
+					if (!subscriptions[extension.name]) {
+						try {
+							// required because some wallets dont always fire subscription callbacks
+							accounts[extension.name] = extension.getAccounts();
+							subscriber.next({ ...accounts, ...wcAccountsMap });
+
+							subscriptions[extension.name] = extension.subscribe(
+								(extensionAccounts) => {
+									accounts[extension.name] = extensionAccounts;
+									subscriber.next({ ...accounts, ...wcAccountsMap });
+								},
+							);
+						} catch (err) {
+							console.error("Failed to subscribe to %s", extension.name, {
+								err,
+							});
+						}
 					}
-				}
 
-			for (const [name, unsub] of entries(subscriptions))
-				if (!extensions.some((ext) => ext.name === name)) {
-					unsub();
-					delete subscriptions[name];
-					delete accounts[name];
-					subscriber.next({ ...accounts });
-				}
+				for (const [name, unsub] of entries(subscriptions))
+					if (!extensions.some((ext) => ext.name === name)) {
+						unsub();
+						delete subscriptions[name];
+						delete accounts[name];
+						subscriber.next({ ...accounts, ...wcAccountsMap });
+					}
 
-			// init empty if no extensions
-			if (!extensions.length) subscriber.next({});
-		});
+				// init empty if no extensions
+				if (!extensions.length) subscriber.next(wcAccountsMap);
+			},
+		);
 	},
 ).pipe(
 	map(
