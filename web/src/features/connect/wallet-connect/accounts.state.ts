@@ -1,10 +1,10 @@
 import type { SessionTypes } from "@walletconnect/types";
 import { isEqual, uniq } from "lodash";
-import type { PolkadotSigner, SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import { distinctUntilChanged, map, tap } from "rxjs";
 import { logger } from "src/util";
-import { normalizeAccountId } from "src/util/normalizeAccountId";
+import { getWcPolkadotSigner } from "./getWcPolkedotSigner";
 import { wcSession$ } from "./session.store";
 
 export const wcAccounts$ = wcSession$.pipe(
@@ -32,8 +32,8 @@ export const wcAccounts$ = wcSession$.pipe(
 			(address) =>
 				({
 					name: address,
-					address: normalizeAccountId(address),
-					polkadotSigner: getPolkadotSigner(address),
+					address, //: normalizeAccountId(address),
+					polkadotSigner: getWcPolkadotSigner(address),
 				}) as InjectedPolkadotAccount,
 		);
 	}),
@@ -45,8 +45,3 @@ export const wcAccounts$ = wcSession$.pipe(
 wcAccounts$.subscribe((accounts) => {
 	logger.debug("[Wallet Connect] accounts$ updated", { accounts });
 });
-
-const getPolkadotSigner = (_address: string): PolkadotSigner => {
-	// TODO
-	return null as unknown as PolkadotSigner;
-};

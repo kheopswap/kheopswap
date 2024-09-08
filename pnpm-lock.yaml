@@ -47,6 +47,18 @@ importers:
       '@polkadot-api/json-rpc-provider-proxy':
         specifier: ^0.2.0
         version: 0.2.0
+      '@polkadot-api/metadata-builders':
+        specifier: ^0.7.0
+        version: 0.7.0
+      '@polkadot-api/polkadot-signer':
+        specifier: ^0.1.4
+        version: 0.1.4
+      '@polkadot-api/substrate-bindings':
+        specifier: ^0.7.0
+        version: 0.7.0
+      '@polkadot-api/utils':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@polkadot-ui/assets':
         specifier: 0.0.1-alpha.2
         version: 0.0.1-alpha.2

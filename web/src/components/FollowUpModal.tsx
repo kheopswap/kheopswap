@@ -15,6 +15,7 @@ import { Styles } from "./styles";
 
 import { getChainById } from "src/config/chains";
 import type { Token } from "src/config/tokens";
+import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
 import { type InjectedAccount, useInjectedExtension } from "src/hooks";
 import {
 	type TxEvents,
@@ -146,11 +147,12 @@ const FollowUpModalInner: FC<{
 		if (signed?.type === "signed")
 			return ["Submitting transaction...", false, "loading"];
 
-		return [
-			`Approve in ${extension?.extension?.title ?? followUp.account?.wallet}`,
-			false,
-			"loading",
-		];
+		const extensionName =
+			followUp.account.wallet === WALLET_CONNECT_NAME
+				? "Wallet Connect"
+				: extension?.extension?.title ?? followUp.account?.wallet;
+
+		return [`Approve in ${extensionName}`, false, "loading"];
 	}, [followUp, extension, error]);
 
 	const [individualEvents, errorMessage, isPendingFinalization, isFinalized] =
