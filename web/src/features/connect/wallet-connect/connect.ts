@@ -1,7 +1,6 @@
 import { WalletConnectModal } from "@walletconnect/modal";
 import { firstValueFrom } from "rxjs";
 import { WALLET_CONNECT_PROJECT_ID } from "src/config/constants";
-import { setSetting } from "src/services/settings";
 import { logger, notifyError } from "src/util";
 import {
 	WALLET_CONNECT_CHAINS,
@@ -61,10 +60,7 @@ export const connectWalletConnect = async () => {
 			}),
 		]);
 
-		if (session) {
-			wcSession$.next(session);
-			setSetting("hasWalletConnectSession", true);
-		}
+		if (session) wcSession$.next(session);
 
 		logger.debug("[Wallet Connect] after aproval", { session });
 

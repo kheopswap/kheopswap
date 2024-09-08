@@ -1,6 +1,6 @@
 import type { SessionTypes } from "@walletconnect/types";
 import { isEqual, uniq } from "lodash";
-import type { PolkadotSigner } from "polkadot-api";
+import type { PolkadotSigner, SS58String } from "polkadot-api";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import { distinctUntilChanged, map, tap } from "rxjs";
 import { logger } from "src/util";
@@ -26,6 +26,7 @@ export const wcAccounts$ = wcSession$.pipe(
 
 		return uniq(addresses);
 	}),
+	distinctUntilChanged<SS58String[]>(isEqual),
 	map((addresses) => {
 		return addresses.map(
 			(address) =>

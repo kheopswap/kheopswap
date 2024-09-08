@@ -1,7 +1,6 @@
 import UniversalProvider from "@walletconnect/universal-provider";
 import {} from "@walletconnect/universal-provider";
 import { Observable, firstValueFrom, shareReplay } from "rxjs";
-import { getSetting$ } from "src/services/settings";
 import { logger } from "src/util";
 import { WALLET_CONNECT_PROVIDER_OPTS } from "./constants";
 import { wcSession$ } from "./session.store";
@@ -28,7 +27,7 @@ export const wcProvider$ = new Observable<UniversalProvider>((subscriber) => {
 
 	promProvider
 		.then((provider) => {
-			wcSession$.next(provider.session ?? null);
+			logger.debug("[Wallet Connect] init provider", { provider });
 			provider.on("session_update", onSessionUpdate);
 			provider.on("session_delete", onSessionDelete);
 			provider.on("session_ping", onSessionPing);
@@ -44,7 +43,6 @@ export const wcProvider$ = new Observable<UniversalProvider>((subscriber) => {
 	return () => {
 		promProvider
 			.then((provider) => {
-				wcSession$.next(null);
 				provider.off("session_update", onSessionUpdate);
 				provider.off("session_delete", onSessionDelete);
 				provider.off("session_ping", onSessionPing);
@@ -61,22 +59,20 @@ export const wcProvider$ = new Observable<UniversalProvider>((subscriber) => {
 }).pipe(shareReplay(1));
 
 // auto reconnect
-firstValueFrom(getSetting$("hasWalletConnectSession")).then(
-	(hasWalletConnectSession) => {
-		if (hasWalletConnectSession) {
-			firstValueFrom(wcProvider$)
-				.then((provider) => {
-					logger.debug("[Wallet Connect] init provider for auto reconnect", {
-						provider,
-					});
-				})
-				.catch((err) => {
-					// failed to init provider
-					logger.debug(
-						"[Wallet Connect] failed to init provider for auto reconnect",
-						{ err },
-					);
+firstValueFrom(wcSession$).then((session) => {
+	if (session) {
+		firstValueFrom(wcProvider$)
+			.then((provider) => {
+				logger.debug("[Wallet Connect] init provider for auto reconnect", {
+					provider,
 				});
-		}
-	},
-);
+			})
+			.catch((err) => {
+				// failed to init provider
+				logger.debug(
+					"[Wallet Connect] failed to init provider for auto reconnect",
+					{ err },
+				);
+			});
+	}
+});

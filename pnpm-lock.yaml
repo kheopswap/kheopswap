@@ -80,6 +80,9 @@ importers:
       '@walletconnect/universal-provider':
         specifier: ^2.16.0
         version: 2.16.0
+      '@walletconnect/utils':
+        specifier: ^2.16.0
+        version: 2.16.0
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

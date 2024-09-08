@@ -7,7 +7,6 @@ import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 export type Settings = {
 	connectedExtensionIds: string[];
-	hasWalletConnectSession: boolean;
 	defaultAccountId: string | null;
 	relayId: string;
 	lightClients: boolean;
@@ -18,7 +17,6 @@ export type Settings = {
 
 const DEFAULT_SETTINGS: Settings = {
 	connectedExtensionIds: [],
-	hasWalletConnectSession: false,
 	defaultAccountId: null,
 	relayId: "polkadot",
 	lightClients: true,

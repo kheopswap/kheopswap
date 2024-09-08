@@ -33,6 +33,7 @@
 		"@walletconnect/modal": "^2.6.2",
 		"@walletconnect/types": "^2.16.0",
 		"@walletconnect/universal-provider": "^2.16.0",
+		"@walletconnect/utils": "^2.16.0",
 		"clsx": "^2.1.1",
 		"framer-motion": "^11.5.4",
 		"lodash": "^4.17.21",
