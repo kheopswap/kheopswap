@@ -216,10 +216,6 @@ const AccountSelectDrawerContent: FC<{
 		injectedExtensionIds: injectedWallets,
 	} = useWallets();
 
-	// const [hasWalletConnectSession, setHasWalletConnectSession] = useSetting(
-	// 	"hasWalletConnectSession",
-	// );
-
 	const wcAccounts = useWalletConnectAccounts();
 
 	const { stableToken } = useRelayChains();
@@ -287,7 +283,6 @@ const AccountSelectDrawerContent: FC<{
 		try {
 			if (wcAccounts.length) await walletConnect.disconnect();
 			else {
-				//setHasWalletConnectSession(true);
 				const accounts = await walletConnect.connect();
 				logger.log("Wallet Connect", { accounts });
 			}

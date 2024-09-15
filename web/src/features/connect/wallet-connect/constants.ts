@@ -28,9 +28,8 @@ export const WALLET_CONNECT_PROVIDER_OPTS: UniversalProviderOpts = {
 export const WALLET_CONNECT_CONNECT_PARAMS: EngineTypes.ConnectParams = {
 	requiredNamespaces: {
 		polkadot: {
-			methods: ["polkadot_signTransaction", "polkadot_signMessage"],
 			chains: WALLET_CONNECT_CHAINS,
-			//events: ['chainChanged", "accountsChanged'],
+			methods: ["polkadot_signTransaction", "polkadot_signMessage"],
 			events: ["chainChanged", "accountsChanged"],
 		},
 	},

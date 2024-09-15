@@ -5,8 +5,6 @@ import { getPolkadotSignerFromPjs } from "./pjs-signer/from-pjs-account";
 import { wcProvider$ } from "./provider.state";
 import { wcSession$ } from "./session.store";
 
-//let requestId = 0;
-
 export const getWcPolkadotSigner = (address: string): PolkadotSigner => {
 	return getPolkadotSignerFromPjs(
 		address,
@@ -39,6 +37,8 @@ export const getWcPolkadotSigner = (address: string): PolkadotSigner => {
 		},
 		async (_payload) => {
 			throw new Error("signRaw not implemented");
+
+			// Code below should work but we don't have any feature that requires raw signing atm, so it's untested
 
 			// const provider = await firstValueFrom(wcProvider$);
 			// if (!provider) throw new Error("Provider not found");

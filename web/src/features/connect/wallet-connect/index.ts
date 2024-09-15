@@ -8,7 +8,6 @@ export { WALLET_CONNECT_NAME } from "./constants";
 export const walletConnect = {
 	connect: connectWalletConnect,
 	disconnect: disconnectWalletConnect,
-	accounts$: wcAccounts$,
 };
 
-export const [useWalletConnectAccounts] = bind(walletConnect.accounts$);
+export const [useWalletConnectAccounts] = bind(wcAccounts$);
