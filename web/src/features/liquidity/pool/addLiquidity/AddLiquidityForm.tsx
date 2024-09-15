@@ -130,7 +130,7 @@ const AddLiquidityEditor: FC = () => {
 				return;
 
 			if (tokenIdx === "token1") {
-				const fee = feeToken?.id === nativeToken.id ? feeEstimate ?? 0n : 0n;
+				const fee = feeToken?.id === nativeToken.id ? (feeEstimate ?? 0n) : 0n;
 				const nativeMargin = 2n * fee + (nativeExistentialDeposit ?? 0n);
 				const maxNative =
 					accountBalances[0] < nativeMargin
@@ -149,7 +149,7 @@ const AddLiquidityEditor: FC = () => {
 					assetToken.decimals,
 				);
 			} else {
-				const fee = feeToken?.id === assetToken.id ? feeEstimate ?? 0n : 0n;
+				const fee = feeToken?.id === assetToken.id ? (feeEstimate ?? 0n) : 0n;
 				const assetMargin = 2n * fee + (assetExistentialDeposit ?? 0n);
 				const maxAsset =
 					accountBalances[1] < assetMargin

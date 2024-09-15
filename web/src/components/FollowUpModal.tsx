@@ -150,7 +150,7 @@ const FollowUpModalInner: FC<{
 		const extensionName =
 			followUp.account.wallet === WALLET_CONNECT_NAME
 				? "Wallet Connect"
-				: extension?.extension?.title ?? followUp.account?.wallet;
+				: (extension?.extension?.title ?? followUp.account?.wallet);
 
 		return [`Approve in ${extensionName}`, false, "loading"];
 	}, [followUp, extension, error]);
@@ -165,7 +165,7 @@ const FollowUpModalInner: FC<{
 			);
 
 			const errorMessage = error
-				? (error as Error).message ?? error.toString() ?? "Unknown error"
+				? ((error as Error).message ?? error.toString() ?? "Unknown error")
 				: null;
 			const txFailedErrorMessage = followUp.txEvents.some(
 				(e) =>
