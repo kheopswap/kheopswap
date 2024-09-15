@@ -30,9 +30,10 @@ export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
 			/>
 
 			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+			{/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
 			<div
-				onClick={onDismiss}
 				role="presentation"
+				onClick={onDismiss}
 				className={cn(
 					"fixed inset-0 z-30",
 					"flex min-h-full items-center justify-center p-4 text-center",
@@ -40,12 +41,13 @@ export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
 				)}
 			>
 				{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+				{/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
 				<div
+					role="presentation"
 					className="cursor-default"
 					onClick={(e) => {
 						e.stopPropagation();
 					}}
-					role="presentation"
 				>
 					<TransitionChild
 						as="div"
