@@ -218,7 +218,7 @@ const useTeleportProvider = () => {
 	const onMaxClick = useCallback(() => {
 		if (tokenIn && balanceIn && feeToken) {
 			let plancks = balanceIn;
-			const fees = feeToken.id === tokenIn.id ? feeEstimate ?? 0n : 0n;
+			const fees = feeToken.id === tokenIn.id ? (feeEstimate ?? 0n) : 0n;
 			const ed = existentialDepositIn ?? 0n;
 
 			if (tokenIn.type === "native" && plancks > 2n * fees + ed)

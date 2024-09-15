@@ -154,7 +154,7 @@ export const ErrorBoundaryPage = () => {
 	);
 
 	return (
-		<div role="alert" className="mt-20 text-center">
+		<div className="mt-20 text-center">
 			<h1 className="text-4xl font-bold text-neutral-300 sm:text-5xl">Ouch!</h1>
 			<p className="mt-4 text-xl text-neutral-500">
 				Something terrible happened

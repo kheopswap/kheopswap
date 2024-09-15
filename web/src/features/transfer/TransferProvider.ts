@@ -207,7 +207,7 @@ const useTransferProvider = () => {
 			let plancks = balanceSender;
 
 			const nativeMargin =
-				2n * (feeToken?.id === token?.id ? feeEstimate ?? 0n : 0n) +
+				2n * (feeToken?.id === token?.id ? (feeEstimate ?? 0n) : 0n) +
 				(edTokenIn ?? 0n);
 
 			if (token.type === "native" && nativeMargin <= plancks)

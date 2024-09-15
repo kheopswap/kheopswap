@@ -130,7 +130,7 @@ const AddLiquidityEditor: FC = () => {
 			if (tokenIdx === "token1") {
 				if (accountBalances[0] === undefined) return;
 
-				const fee = feeToken?.id === token1.id ? feeEstimate ?? 0n : 0n;
+				const fee = feeToken?.id === token1.id ? (feeEstimate ?? 0n) : 0n;
 				const margin = 2n * fee + (token1ExistentialDeposit ?? 0n);
 				const maxToken1 =
 					accountBalances[0] < margin
@@ -145,7 +145,7 @@ const AddLiquidityEditor: FC = () => {
 			} else {
 				if (accountBalances[1] === undefined) return;
 
-				const fee = feeToken?.id === token2.id ? feeEstimate ?? 0n : 0n;
+				const fee = feeToken?.id === token2.id ? (feeEstimate ?? 0n) : 0n;
 				const margin = 2n * fee + (token2ExistentialDeposit ?? 0n);
 				const maxToken2 =
 					accountBalances[1] < margin

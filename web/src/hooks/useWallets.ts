@@ -1,5 +1,5 @@
 import { bind } from "@react-rxjs/core";
-import { entries, isEqual } from "lodash";
+import { entries, fromPairs, isEqual } from "lodash";
 import type { SS58String } from "polkadot-api";
 import {
 	type InjectedExtension,
@@ -22,6 +22,8 @@ import {
 
 import { useSetting } from "./useSetting";
 
+import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
+import { wcAccounts$ } from "src/features/connect/wallet-connect/accounts.state";
 import { getSetting$, setSetting } from "src/services/settings";
 import {
 	type InjectedAccountId,
@@ -90,43 +92,34 @@ const connectedExtensions$ = combineLatest([
 	}),
 );
 
-const accounts$ = new Observable<Record<string, InjectedPolkadotAccount[]>>(
-	(subscriber) => {
-		const accounts: Record<string, InjectedPolkadotAccount[]> = {};
-		const subscriptions: Record<string, () => void> = {};
-
-		return connectedExtensions$.subscribe((extensions) => {
-			for (const extension of extensions)
-				if (!subscriptions[extension.name]) {
-					try {
-						// required because some wallets dont always fire subscription callbacks
-						accounts[extension.name] = extension.getAccounts();
-						subscriber.next({ ...accounts });
-
-						subscriptions[extension.name] = extension.subscribe(
-							(extensionAccounts) => {
-								accounts[extension.name] = extensionAccounts;
-								subscriber.next({ ...accounts });
-							},
-						);
-					} catch (err) {
-						console.error("Failed to subscribe to %s", extension.name, { err });
-					}
-				}
-
-			for (const [name, unsub] of entries(subscriptions))
-				if (!extensions.some((ext) => ext.name === name)) {
-					unsub();
-					delete subscriptions[name];
-					delete accounts[name];
-					subscriber.next({ ...accounts });
-				}
-
-			// init empty if no extensions
-			if (!extensions.length) subscriber.next({});
+const getExtensionAccounts$ = (extension: InjectedExtension) =>
+	new Observable<InjectedPolkadotAccount[]>((subscriber) => {
+		const accounts = extension.getAccounts();
+		subscriber.next(accounts);
+		return extension.subscribe((newAccounts) => {
+			subscriber.next(newAccounts);
 		});
-	},
-).pipe(
+	});
+
+const accountsByExtension$ = connectedExtensions$.pipe(
+	mergeMap((extensions) => {
+		return combineLatest(
+			extensions.map((extension) => getExtensionAccounts$(extension)),
+		).pipe(
+			map((arExtensionAccounts) =>
+				fromPairs(
+					extensions.map((ext, i) => [ext.name, arExtensionAccounts[i]]),
+				),
+			),
+		);
+	}),
+);
+
+const accounts$ = combineLatest([accountsByExtension$, wcAccounts$]).pipe(
+	map(([accountsByExtension, wcAccounts]) => ({
+		...accountsByExtension,
+		[WALLET_CONNECT_NAME]: wcAccounts,
+	})),
 	map(
 		(connectedAccounts) =>
 			entries(connectedAccounts).flatMap(([wallet, accounts]) =>

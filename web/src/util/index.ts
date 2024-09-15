@@ -27,3 +27,4 @@ export * from "./getTokenTypeLabel";
 export * from "./serialization";
 export * from "./getTokenDescription";
 export * from "./firstThenDebounceTime";
+export * from "./normalizeAccountId";

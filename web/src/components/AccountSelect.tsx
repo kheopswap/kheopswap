@@ -1,5 +1,4 @@
 import { Polkicon } from "@polkadot-ui/react";
-import WalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
 import { type FC, useCallback, useMemo } from "react";
 
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
@@ -8,13 +7,9 @@ import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 
 import type { TokenId } from "src/config/tokens";
-import {
-	type InjectedAccount,
-	useInjectedExtension,
-	useOpenClose,
-	useWallets,
-} from "src/hooks";
+import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
 import { cn } from "src/util";
+import { WalletIcon } from "./WalletIcon";
 
 const AddressRow: FC<{ address: string; className?: string }> = ({
 	address,
@@ -41,30 +36,22 @@ const AddressRow: FC<{ address: string; className?: string }> = ({
 const AccountRow: FC<{ account: InjectedAccount; className?: string }> = ({
 	account,
 	className,
-}) => {
-	const { Icon } = useInjectedExtension(account.wallet);
-
-	return (
-		<div
-			className={cn(
-				"flex grow items-center gap-2 overflow-hidden text-left",
-				className,
-			)}
-		>
-			<InjectedAccountIcon className="size-6" account={account} />
-			<div className="flex grow items-center overflow-hidden">
-				<span className="truncate">{account.name}</span>
-				<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
-					{Icon ? (
-						<Icon className="shrink-0" />
-					) : (
-						<WalletIcon className="size-4 shrink-0 stroke-current" />
-					)}
-				</span>
-			</div>
+}) => (
+	<div
+		className={cn(
+			"flex grow items-center gap-2 overflow-hidden text-left",
+			className,
+		)}
+	>
+		<InjectedAccountIcon className="size-6" account={account} />
+		<div className="flex grow items-center overflow-hidden">
+			<span className="truncate">{account.name}</span>
+			<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
+				<WalletIcon wallet={account.wallet} className="size-4" />
+			</span>
 		</div>
-	);
-};
+	</div>
+);
 
 const AccountSelectButton: FC<{
 	id?: string;
