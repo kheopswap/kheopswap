@@ -2,8 +2,8 @@ import type { SessionTypes } from "@walletconnect/types";
 import { isEqual, uniq } from "lodash";
 import type { SS58String } from "polkadot-api";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
-import { distinctUntilChanged, map, tap } from "rxjs";
-import { logger } from "src/util";
+import { distinctUntilChanged, map } from "rxjs";
+import { logger, normalizeAccountId, shortenAddress } from "src/util";
 import { getWcPolkadotSigner } from "./getWcPolkedotSigner";
 import { wcSession$ } from "./session.store";
 
@@ -21,24 +21,22 @@ export const wcAccounts$ = wcSession$.pipe(
 		// grab account addresses from CAIP account formatted accounts
 		const addresses = wcAccounts.map((wcAccount) => {
 			const address = wcAccount.split(":")[2] as string;
-			return address;
+			return normalizeAccountId(address);
 		});
 
 		return uniq(addresses);
 	}),
 	distinctUntilChanged<SS58String[]>(isEqual),
 	map((addresses) => {
+		logger.debug("[Wallet Connect] accounts$ updated", { addresses });
 		return addresses.map(
 			(address) =>
 				({
-					name: address,
-					address, //: normalizeAccountId(address),
+					name: `WalletConnect ${shortenAddress(address, 6)}`,
+					address,
 					polkadotSigner: getWcPolkadotSigner(address),
 				}) as InjectedPolkadotAccount,
 		);
-	}),
-	tap((accounts) => {
-		logger.debug("[Wallet Connect] accounts$ updated", { accounts });
 	}),
 );
 
