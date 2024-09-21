@@ -39,7 +39,3 @@ export const wcAccounts$ = wcSession$.pipe(
 		);
 	}),
 );
-
-wcAccounts$.subscribe((accounts) => {
-	logger.debug("[Wallet Connect] accounts$ updated", { accounts });
-});

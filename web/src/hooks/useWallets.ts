@@ -1,5 +1,5 @@
 import { bind } from "@react-rxjs/core";
-import { entries, fromPairs, isEqual } from "lodash";
+import { type Dictionary, entries, fromPairs, isEqual } from "lodash";
 import type { SS58String } from "polkadot-api";
 import {
 	type InjectedExtension,
@@ -75,7 +75,7 @@ const connectedExtensions$ = combineLatest([
 							name,
 						)) as InjectedExtension;
 						stop();
-						return connected;
+						return connected ?? null;
 					} catch (err) {
 						console.error("Failed to connect wallet %s", name, { err });
 						connectedExtensions.delete(name);
@@ -103,6 +103,9 @@ const getExtensionAccounts$ = (extension: InjectedExtension) =>
 
 const accountsByExtension$ = connectedExtensions$.pipe(
 	mergeMap((extensions) => {
+		if (!extensions.length)
+			return of({} as Dictionary<InjectedPolkadotAccount[] | undefined>);
+
 		return combineLatest(
 			extensions.map((extension) => getExtensionAccounts$(extension)),
 		).pipe(
