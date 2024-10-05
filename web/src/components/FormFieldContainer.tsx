@@ -9,7 +9,6 @@ export const FormFieldContainer: FC<{
 	return (
 		<div>
 			<div className="mb-1 flex w-full justify-between">
-				{/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
 				<label htmlFor={id}>{label}</label>
 				{topRight && <div>{topRight}</div>}
 			</div>
