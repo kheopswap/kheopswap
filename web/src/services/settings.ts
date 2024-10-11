@@ -2,8 +2,8 @@ import { isEqual } from "lodash";
 import merge from "lodash/merge";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
-import { safeParse, safeStringify } from "src/util";
-import { getLocalStorageKey } from "src/util/getLocalStorageKey";
+import { safeParse, safeStringify } from "@kheopswap/utils";
+import { getLocalStorageKey } from "@kheopswap/utils";
 
 export type Settings = {
 	connectedExtensionIds: string[];

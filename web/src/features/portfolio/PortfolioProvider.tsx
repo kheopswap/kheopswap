@@ -1,3 +1,4 @@
+import { provideContext } from "@kheopswap/utils";
 import { values } from "lodash";
 import { useMemo } from "react";
 import { TRADABLE_TOKEN_TYPES } from "src/config/tokens";
@@ -8,7 +9,6 @@ import {
 	useWallets,
 } from "src/hooks";
 import { useTokenPrices } from "src/hooks/useTokenPrices";
-import { provideContext } from "src/util";
 
 export const usePortfolioProvider = () => {
 	const { accounts } = useWallets();

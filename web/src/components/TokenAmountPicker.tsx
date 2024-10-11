@@ -15,6 +15,7 @@ import { maskitoNumberOptionsGenerator } from "@maskito/kit";
 import { useMaskito } from "@maskito/react";
 import type { Dictionary } from "lodash";
 
+import { cn, isBigInt } from "@kheopswap/utils";
 import {
 	StablePrice,
 	Tokens,
@@ -24,7 +25,6 @@ import {
 } from "src/components";
 import type { Token, TokenId } from "src/config/tokens";
 import type { InjectedAccount } from "src/hooks";
-import { cn, isBigInt } from "src/util";
 
 const TokenInput = forwardRef<
 	HTMLInputElement,

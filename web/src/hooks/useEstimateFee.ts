@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String, Transaction } from "polkadot-api";
 
-import { safeQueryKeyPart } from "src/util";
+import { safeQueryKeyPart } from "@kheopswap/utils";
 import type { KheopswapTxOptions } from "src/util/getTxOptions";
 
 type UseEstimateFeeProps = {

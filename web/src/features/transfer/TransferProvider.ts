@@ -3,6 +3,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { TransferFormInputs } from "./schema";
 import { useTransferExtrinsic } from "./useTransferExtrinsic";
 
+import {
+	getAddressFromAccountField,
+	isNumber,
+	plancksToTokens,
+	provideContext,
+	tokensToPlancks,
+} from "@kheopswap/utils";
 import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "src/config/tokens";
 import {
 	useAllTokens,
@@ -19,14 +26,7 @@ import {
 	useTokenChain,
 	useWalletAccount,
 } from "src/hooks";
-import {
-	getAddressFromAccountField,
-	getFeeAssetLocation,
-	isNumber,
-	plancksToTokens,
-	provideContext,
-	tokensToPlancks,
-} from "src/util";
+import { getFeeAssetLocation } from "src/util";
 import { getTxOptions } from "src/util/getTxOptions";
 
 const useDefaultValues = () => {

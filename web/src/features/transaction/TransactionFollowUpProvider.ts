@@ -1,9 +1,9 @@
 import { useCallback, useDeferredValue, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { provideContext } from "@kheopswap/utils";
 import type { FollowUpData } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { provideContext } from "src/util";
 
 const useTransactionFollowUpProvider = () => {
 	const [followUp, setFollowUp] = useState<FollowUpData | null>(null);

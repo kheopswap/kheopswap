@@ -1,8 +1,8 @@
 import { isEqual } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
+import { firstThenDebounceTime } from "@kheopswap/utils";
 import type { ChainId } from "src/config/chains";
-import { firstThenDebounceTime } from "src/util";
 
 type TokensByChainSubscriptionRequest = {
 	id: string;

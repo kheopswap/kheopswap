@@ -3,9 +3,9 @@ import { useCallback, useMemo, useState } from "react";
 
 import { useAddLiquidityExtrinsic } from "./useAddLiquidityExtrinsic";
 
+import { provideContext } from "@kheopswap/utils";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { useExistentialDeposit } from "src/hooks";
-import { provideContext } from "src/util";
 
 const useAddLiquidityProvider = () => {
 	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(

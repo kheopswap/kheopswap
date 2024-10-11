@@ -4,9 +4,9 @@ import { useFeeTokens } from "./useFeeTokens";
 import { useNativeToken } from "./useNativeToken";
 import { useSetting } from "./useSetting";
 
+import { getAddressFromAccountField } from "@kheopswap/utils";
 import { type ChainId, getChainById } from "src/config/chains";
 import type { TokenId } from "src/config/tokens";
-import { getAddressFromAccountField } from "src/util";
 
 type UsePreferredFeeToken = {
 	accountId: string | null | undefined;

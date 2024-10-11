@@ -5,8 +5,8 @@ import { poolSuppliesSubscriptions$ } from "./subscriptions";
 import type { PoolSupplyId, PoolSupplyState, StoredPoolSupply } from "./types";
 import { poolSuppliesStatuses$ } from "./watchers";
 
+import { logger } from "@kheopswap/utils";
 import type { LoadingStatus } from "src/services/common";
-import { logger } from "src/util";
 
 const combineState = (
 	poolSupplyIds: string[],

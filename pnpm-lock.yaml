@@ -18,13 +18,47 @@ importers:
   packages/typescript-config: {}
 
   packages/utils:
+    dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      polkadot-api:
+        specifier: ^1.4.1
+        version: 1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+      tailwind-merge:
+        specifier: ^2.5.3
+        version: 2.5.3
+      viem:
+        specifier: ^2.21.22
+        version: 2.21.22(typescript@5.6.3)(zod@3.23.8)
+      vite:
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.5)
     devDependencies:
       '@kheopswap/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/react':
+        specifier: ^18.3.11
+        version: 18.3.11
+      '@types/webfontloader':
+        specifier: ^1.6.38
+        version: 1.6.38
+      react-toastify:
+        specifier: ^10.0.5
+        version: 10.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       typescript:
         specifier: ^5.6.3
         version: 5.6.3
+      webfontloader:
+        specifier: ^1.6.28
+        version: 1.6.28
 
   web:
     dependencies:

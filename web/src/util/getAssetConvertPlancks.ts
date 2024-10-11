@@ -1,5 +1,5 @@
-import { isBigInt } from "./isBigInt";
-import { plancksToTokens } from "./plancks";
+import { isBigInt } from "../../../packages/utils/src/isBigInt";
+import { plancksToTokens } from "../../../packages/utils/src/plancks";
 
 import type { Token } from "src/config/tokens";
 

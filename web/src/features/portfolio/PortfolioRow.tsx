@@ -3,9 +3,10 @@ import { type FC, useMemo } from "react";
 import { TokenBalancesSummary } from "./PortfolioDataCell";
 import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 
+import { cn } from "@kheopswap/utils";
 import { Styles, TokenLogo } from "src/components";
 import { useNativeToken, useRelayChains } from "src/hooks";
-import { cn, getTokenDescription } from "src/util";
+import { getTokenDescription } from "src/util";
 
 type PortfolioRowProps = PortfolioRowData & {
 	visibleCol: PortfolioVisibleCol;

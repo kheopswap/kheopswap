@@ -1,5 +1,6 @@
 import type { SS58String } from "polkadot-api";
 
+import { getAddressFromAccountField } from "@kheopswap/utils";
 import { getChainById } from "src/config/chains";
 import {
 	type TokenId,
@@ -7,10 +8,7 @@ import {
 	parseTokenId,
 } from "src/config/tokens";
 import { getApi, isApiAssetHub } from "src/services/api";
-import {
-	getAddressFromAccountField,
-	getXcmV3MultilocationFromTokenId,
-} from "src/util";
+import { getXcmV3MultilocationFromTokenId } from "src/util";
 
 export const getSwapExtrinsic = async (
 	tokenIdIn: TokenId,

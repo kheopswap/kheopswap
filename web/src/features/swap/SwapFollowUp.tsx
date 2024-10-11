@@ -1,10 +1,10 @@
 import { type FC, useMemo } from "react";
 
+import { type TxEvents, cn, isBigInt } from "@kheopswap/utils";
 import { type FollowUpData, Tokens } from "src/components";
 import type { Token } from "src/config/tokens";
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
-import { type TxEvents, cn, isBigInt } from "src/util";
 
 type SwapFollowUpData = FollowUpData<{
 	swapPlancksOut: bigint;

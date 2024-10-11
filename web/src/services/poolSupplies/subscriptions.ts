@@ -4,8 +4,8 @@ import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import type { PoolSupplyId } from "./types";
 import { getPoolSupplyId } from "./utils";
 
+import { firstThenDebounceTime } from "@kheopswap/utils";
 import type { TokenIdsPair } from "src/config/tokens";
-import { firstThenDebounceTime } from "src/util";
 
 type PoolSupplySubscriptionRequest = {
 	id: string;

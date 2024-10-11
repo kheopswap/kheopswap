@@ -6,8 +6,8 @@ import {
 	isValidGetAddLiquidityExtrinsicProps,
 } from "./getAddLiquidityExtrinsic";
 
+import { safeQueryKeyPart } from "@kheopswap/utils";
 import type { TokenId } from "src/config/tokens";
-import { safeQueryKeyPart } from "src/util";
 
 type UseAddLiquidityExtrinsic = {
 	tokenIdNative: TokenId | undefined;

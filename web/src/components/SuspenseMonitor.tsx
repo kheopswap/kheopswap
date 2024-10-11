@@ -1,7 +1,7 @@
+import { logger } from "@kheopswap/utils";
 import { type FC, useEffect } from "react";
 
 import { DEV } from "src/config/constants";
-import { logger } from "src/util";
 
 export const SuspenseMonitor: FC<{ label: string }> = ({ label }) => {
 	useEffect(() => {

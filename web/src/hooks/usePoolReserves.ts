@@ -2,8 +2,8 @@ import { useMemo } from "react";
 
 import { useBalance } from "./useBalance";
 
+import { isBigInt } from "@kheopswap/utils";
 import type { Pool } from "src/services/pools";
-import { isBigInt } from "src/util";
 
 type UsePoolReservesProps = {
 	pool: Pool | null | undefined;

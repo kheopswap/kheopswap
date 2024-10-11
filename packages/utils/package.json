@@ -3,13 +3,24 @@
 	"version": "0.0.0",
 	"private": true,
 	"exports": {
-		".": "./src/index.ts",
-		"./substract": "./src/substract.ts",
-		"./sortBigInt": "./src/sortBigInt.ts"
+		".": "./src/index.ts"
 	},
 	"scripts": {},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
-		"typescript": "^5.6.3"
+		"@types/react": "^18.3.11",
+		"@types/webfontloader": "^1.6.38",
+		"react-toastify": "^10.0.5",
+		"typescript": "^5.6.3",
+		"webfontloader": "^1.6.28"
+	},
+	"dependencies": {
+		"clsx": "^2.1.1",
+		"polkadot-api": "^1.4.1",
+		"react": "^18.3.1",
+		"rxjs": "^7.8.1",
+		"tailwind-merge": "^2.5.3",
+		"viem": "^2.21.22",
+		"vite": "^5.4.8"
 	}
 }

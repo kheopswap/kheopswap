@@ -1,5 +1,5 @@
 {
-	"extends": "@kheopswap/typescript-config/base.json",
+	"extends": "@kheopswap/typescript-config/vite.json",
 	"include": ["."],
 	"exclude": ["node_modules"]
 }

@@ -3,9 +3,9 @@ import { type FC, type ReactNode, useMemo } from "react";
 import { Shimmer } from "./Shimmer";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
+import { cn, formatDecimals } from "@kheopswap/utils";
 import type { TokenId } from "src/config/tokens";
 import { useStablePrice } from "src/hooks";
-import { cn, formatDecimals } from "src/util";
 
 export const StablePrice: FC<{
 	plancks: bigint | null | undefined;

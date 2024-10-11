@@ -5,6 +5,7 @@ import { poolsStore$ } from "./store";
 import { poolsByChainSubscriptions$ } from "./subscriptions";
 import type { AssetConvertionPoolDef } from "./types";
 
+import { logger, sleep, throwAfter } from "@kheopswap/utils";
 import {
 	type Chain,
 	type ChainId,
@@ -18,8 +19,7 @@ import {
 import type { TokenIdsPair } from "src/config/tokens";
 import { getApi } from "src/services/api";
 import { pollChainStatus } from "src/services/pollChainStatus";
-import { getTokenIdFromXcmV3Multilocation, logger, throwAfter } from "src/util";
-import { sleep } from "src/util/sleep";
+import { getTokenIdFromXcmV3Multilocation } from "src/util";
 
 export const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("poolsByChainStatuses", POOLS_CACHE_DURATION);

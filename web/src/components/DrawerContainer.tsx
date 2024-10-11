@@ -1,7 +1,7 @@
 import CloseIcon from "@w3f/polkadot-icons/solid/Close";
 import { type FC, type ReactNode, useEffect, useRef } from "react";
 
-import { cn } from "src/util";
+import { cn } from "@kheopswap/utils";
 
 export const DrawerContainer: FC<{
 	title: ReactNode;

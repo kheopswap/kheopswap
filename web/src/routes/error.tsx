@@ -1,10 +1,10 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useRouteError } from "react-router-dom";
 
+import { cn } from "@kheopswap/utils";
 import { ModalDialog } from "src/components";
 import { DEV } from "src/config/constants";
 import { useOpenClose } from "src/hooks";
-import { cn } from "src/util";
 
 const ReportIssueButton: FC<{ error: unknown }> = ({ error }) => {
 	const { open, close, isOpen } = useOpenClose();

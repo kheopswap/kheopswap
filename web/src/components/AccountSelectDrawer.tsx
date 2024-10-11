@@ -9,6 +9,13 @@ import { Tokens } from "./Tokens";
 import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 
+import {
+	cn,
+	isBigInt,
+	isValidAddress,
+	logger,
+	shortenAddress,
+} from "@kheopswap/utils";
 import type { Token } from "src/config/tokens";
 import {
 	WALLET_CONNECT_NAME,
@@ -24,7 +31,6 @@ import {
 	useWallets,
 } from "src/hooks";
 import type { BalanceWithStableSummary } from "src/types";
-import { cn, isBigInt, isValidAddress, logger, shortenAddress } from "src/util";
 import { WalletIcon } from "./WalletIcon";
 
 const ExtensionButtonBase: FC<{

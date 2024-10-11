@@ -10,6 +10,7 @@ import {
 import { useAddLiquidity } from "./AddLiquidityProvider";
 import { AddLiquiditySummary } from "./AddLiquiditySummary";
 
+import { plancksToTokens, tokensToPlancks } from "@kheopswap/utils";
 import { keyBy } from "lodash";
 import {
 	FormFieldContainer,
@@ -19,7 +20,6 @@ import {
 import type { Token } from "src/config/tokens";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { plancksToTokens, tokensToPlancks } from "src/util";
 
 const AddLiquidityEditor: FC = () => {
 	const {

@@ -1,6 +1,4 @@
-import { DEV } from "src/config/constants";
-
-const isDevMode = true || DEV; // TODO remove true
+const isDevMode = import.meta.env.DEV;
 
 const NO_OP = () => {};
 

@@ -10,10 +10,10 @@ import { Subscribe } from "@react-rxjs/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 
+import { preloadFont } from "../../packages/utils/src/preloadFont";
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
 import { Toasts } from "./components/Toasts";
 import { router } from "./routes";
-import { preloadFont } from "./util/preloadFont";
 
 preloadFont();
 

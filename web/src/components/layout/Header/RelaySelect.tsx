@@ -1,6 +1,7 @@
 import { type ChangeEvent, type FC, useCallback } from "react";
 import { useMatches, useNavigate } from "react-router-dom";
 
+import { cn } from "@kheopswap/utils";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
 import {
@@ -9,7 +10,6 @@ import {
 	isChainIdRelay,
 } from "src/config/chains";
 import { useOpenClose, useRelayChains, useSetting } from "src/hooks";
-import { cn } from "src/util";
 
 const ChainButton: FC<{
 	onClick: () => void;

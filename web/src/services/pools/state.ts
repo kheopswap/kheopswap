@@ -5,9 +5,9 @@ import { poolsStore$ } from "./store";
 import type { Pool } from "./types";
 import { chainPoolsStatuses$ } from "./watchers";
 
+import { logger } from "@kheopswap/utils";
 import type { ChainId } from "src/config/chains";
 import type { LoadingStatus } from "src/services/common";
-import { logger } from "src/util";
 
 const combineState = (
 	statusByChain: Record<ChainId, LoadingStatus>,

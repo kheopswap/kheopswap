@@ -1,7 +1,7 @@
 import numeral from "numeral";
 import type { FC } from "react";
 
-import { cn } from "src/util";
+import { cn } from "@kheopswap/utils";
 
 export const PriceImpact: FC<{ value: number; className?: string }> = ({
 	value,

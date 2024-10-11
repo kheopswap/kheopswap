@@ -1,3 +1,4 @@
+import { isBigInt } from "@kheopswap/utils";
 import {
 	FormSummary,
 	FormSummaryRow,
@@ -5,7 +6,6 @@ import {
 } from "src/components";
 import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { isBigInt } from "src/util";
 
 export const TeleportSummary = () => {
 	const { feeEstimate: estimateFee, feeToken } = useTransaction();

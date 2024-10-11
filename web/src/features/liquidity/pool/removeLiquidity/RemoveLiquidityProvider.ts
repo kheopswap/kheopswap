@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
+import { provideContext, safeQueryKeyPart } from "@kheopswap/utils";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { getApi, isApiAssetHub } from "src/services/api";
-import {
-	getXcmV3MultilocationFromTokenId,
-	provideContext,
-	safeQueryKeyPart,
-} from "src/util";
+import { getXcmV3MultilocationFromTokenId } from "src/util";
 
 const useRemoveLiquidityProvider = () => {
 	const { assetHub, nativeToken, assetToken, position, lpSlippage, account } =

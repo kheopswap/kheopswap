@@ -2,8 +2,8 @@ import { type FC, useCallback } from "react";
 
 import type { LiquidityPoolsSortMode } from "./types";
 
+import { cn } from "@kheopswap/utils";
 import { ColumnHeaderButton } from "src/components/ColumnHeaderButton";
-import { cn } from "src/util";
 import type { LiquidityPoolRowData } from "./useLiquidityPools";
 
 export const LiquidityPoolsHeaderRow: FC<{

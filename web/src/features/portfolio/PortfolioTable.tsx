@@ -11,10 +11,10 @@ import type {
 } from "./types";
 import { usePortfolioRows } from "./usePortfolioRows";
 
+import { isBigInt, sortBigInt } from "@kheopswap/utils";
 import { SearchInput } from "src/components";
 import type { TokenId } from "src/config/tokens";
 import type { BalanceWithStable } from "src/types";
-import { isBigInt, sortBigInt } from "src/util";
 
 const sortByValue = (a: BalanceWithStable, b: BalanceWithStable) => {
 	if (isBigInt(a.stablePlancks) && isBigInt(b.stablePlancks))

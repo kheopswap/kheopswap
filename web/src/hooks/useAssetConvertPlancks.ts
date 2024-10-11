@@ -5,8 +5,8 @@ import { usePoolReservesByTokenIds } from "./usePoolReservesByTokenIds";
 import { useToken } from "./useToken";
 import { useTokenChain } from "./useTokenChain";
 
+import { isBigInt, plancksToTokens } from "@kheopswap/utils";
 import type { TokenId } from "src/config/tokens";
-import { isBigInt, plancksToTokens } from "src/util";
 import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
 
 type UseAssetConvertPlancks = {

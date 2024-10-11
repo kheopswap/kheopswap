@@ -9,7 +9,7 @@ import {
 	useState,
 } from "react";
 
-import { cn, logger } from "src/util";
+import { cn, logger } from "@kheopswap/utils";
 
 type Location = "TOP_LEFT" | "BOTTOM_LEFT" | "BOTTOM_RIGHT" | "TOP_RIGHT";
 

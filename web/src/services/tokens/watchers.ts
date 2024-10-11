@@ -4,6 +4,7 @@ import { distinctUntilChanged, filter } from "rxjs";
 import { tokensStore$ } from "./store";
 import { tokensByChainSubscriptions$ } from "./subscriptions";
 
+import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
 import {
 	type Chain,
 	type ChainId,
@@ -23,8 +24,6 @@ import {
 } from "src/config/tokens";
 import { getApi } from "src/services/api";
 import { pollChainStatus } from "src/services/pollChainStatus";
-import { logger, safeStringify, throwAfter } from "src/util";
-import { sleep } from "src/util/sleep";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);
@@ -70,9 +69,9 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					(m) => safeStringify(m.keyArgs[0]) === safeStringify(d.keyArgs[0]),
 				)?.value,
 			}))
-			.map(
-				({ id, location, metadata }) =>
-					({
+			.map(({ id, location, metadata }) =>
+				Object.assign(
+					{
 						id,
 						type: "foreign-asset",
 						chainId: chain.id,
@@ -82,9 +81,10 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 						name: metadata?.name.asText(),
 						logo: "./img/tokens/asset.svg",
 						verified: false,
-						...KNOWN_TOKENS_MAP[id],
-						...TOKENS_OVERRIDES_MAP[id],
-					}) as Token,
+					} as Token,
+					KNOWN_TOKENS_MAP[id],
+					TOKENS_OVERRIDES_MAP[id],
+				),
 			)
 			.filter((token) => {
 				if (!token.symbol || !isNumber(token.decimals) || !token.name) {
@@ -199,9 +199,9 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					assetId: d.assetId,
 				}),
 			}))
-			.map(
-				({ id, assetId, symbol, decimals, name }) =>
-					({
+			.map(({ id, assetId, symbol, decimals, name }) =>
+				Object.assign(
+					{
 						id,
 						type: "asset",
 						chainId: chain.id,
@@ -212,9 +212,10 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 						logo: "./img/tokens/asset.svg",
 						verified: false,
 						isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
-						...KNOWN_TOKENS_MAP[id],
-						...TOKENS_OVERRIDES_MAP[id],
-					}) as Token,
+					} as Token,
+					KNOWN_TOKENS_MAP[id],
+					TOKENS_OVERRIDES_MAP[id],
+				),
 			);
 
 		const currentTokens = values(tokensStore$.value);

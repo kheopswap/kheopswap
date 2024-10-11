@@ -1,7 +1,7 @@
 import { isEqual } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
-import { firstThenDebounceTime } from "src/util";
+import { firstThenDebounceTime } from "@kheopswap/utils";
 import type { BalanceDef, BalanceId } from "./types";
 import { getBalanceId } from "./utils";
 

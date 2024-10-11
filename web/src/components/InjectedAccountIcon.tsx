@@ -2,8 +2,8 @@ import { Polkicon } from "@polkadot-ui/react";
 import { TalismanOrb } from "@talismn/orb";
 import type { FC } from "react";
 
+import { cn } from "@kheopswap/utils";
 import type { InjectedAccount } from "src/hooks";
-import { cn } from "src/util";
 
 export const InjectedAccountIcon: FC<{
 	account: InjectedAccount;

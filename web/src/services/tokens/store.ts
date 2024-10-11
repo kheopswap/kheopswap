@@ -1,5 +1,11 @@
 import { BehaviorSubject, debounceTime } from "rxjs";
 
+import {
+	getLocalStorageKey,
+	logger,
+	safeParse,
+	safeStringify,
+} from "@kheopswap/utils";
 import { type Dictionary, entries, keyBy, values } from "lodash";
 import { DEV_IGNORE_STORAGE } from "src/config/constants";
 import {
@@ -8,8 +14,6 @@ import {
 	TOKENS_OVERRIDES_MAP,
 	type Token,
 } from "src/config/tokens";
-import { logger, safeParse, safeStringify } from "src/util";
-import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 // cleanup old keys
 localStorage.removeItem(getLocalStorageKey("tokens"));

@@ -3,7 +3,7 @@ import { getEvmNetworkName } from "src/config/evmNetworks";
 import { getParachainName } from "src/config/parachains";
 import type { Token } from "src/config/tokens";
 import type { TokenForeignAsset } from "src/config/tokens/types";
-import { logger } from "./logger";
+import { logger } from "../../../packages/utils/src/logger";
 
 const getForeignTokenOrigin = (token: TokenForeignAsset) => {
 	const interior = token.location.interior;

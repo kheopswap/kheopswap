@@ -10,6 +10,7 @@ import {
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
 
+import { cn, isBigInt, shortenAddress, sortBigInt } from "@kheopswap/utils";
 import { useNavigate } from "react-router-dom";
 import {
 	AccountSelectDrawer,
@@ -42,13 +43,7 @@ import {
 } from "src/hooks";
 import { useTokenInfo } from "src/hooks/useTokenInfo";
 import type { BalanceWithStable, BalanceWithStableSummary } from "src/types";
-import {
-	cn,
-	getTokenTypeLabel,
-	isBigInt,
-	shortenAddress,
-	sortBigInt,
-} from "src/util";
+import { getTokenTypeLabel } from "src/util";
 
 const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
 	if (isBigInt(a.tokenPlancks) && isBigInt(b.tokenPlancks))
