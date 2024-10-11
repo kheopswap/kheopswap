@@ -3,7 +3,7 @@ import { getAccount } from "./common/accounts";
 import { getApi } from "./common/apis";
 import { createAssetAndPool } from "./tasks/createAssetAndPool";
 
-const assetHub = await getApi("rah");
+const assetHub = await getApi("wah");
 
 const mnemonic = process.env.KHEOPSWAP_MNEMONIC;
 const derivationPath = process.env.KHEOPSWAP_DERIVATION_PATH;

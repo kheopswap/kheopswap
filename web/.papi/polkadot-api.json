@@ -14,10 +14,6 @@
 			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
 			"metadata": ".papi/scale/wah.scale"
 		},
-		"rah": {
-			"wsUrl": "wss://rococo-asset-hub-rpc.polkadot.io",
-			"metadata": ".papi/scale/rah.scale"
-		},
 		"polkadot": {
 			"wsUrl": "wss://rpc.ibp.network/polkadot",
 			"metadata": ".papi/scale/polkadot.scale"
@@ -25,10 +21,6 @@
 		"kusama": {
 			"wsUrl": "wss://rpc.ibp.network/kusama",
 			"metadata": ".papi/scale/kusama.scale"
-		},
-		"rococo": {
-			"wsUrl": "wss://rococo-rpc.polkadot.io",
-			"metadata": ".papi/scale/rococo.scale"
 		},
 		"westend": {
 			"wsUrl": "wss://westend-rpc.polkadot.io",

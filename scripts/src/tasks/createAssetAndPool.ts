@@ -17,7 +17,7 @@ import { getAssetTokenLocation, getNativeTokenLocation } from "../common/xcm";
 // const POOL_ASSET2_AMOUNT = 1_000_000_000_000_000_000_000n; // 1M tokens
 
 export const createAssetAndPoolCalls = async (
-	api: Api<"rah" | "wah" | "devah">,
+	api: Api<"wah" | "devah">,
 	id: number,
 	symbol: string,
 	name: string,
@@ -77,7 +77,7 @@ export const createAssetAndPoolCalls = async (
 };
 
 export const createAssetAndPool = async (
-	api: Api<"rah" | "wah" | "devah">,
+	api: Api<"wah" | "devah">,
 	id: number,
 	symbol: string,
 	name: string,

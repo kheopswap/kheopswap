@@ -18,17 +18,10 @@
 			"wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
 			"metadata": ".papi/scale/wah.scale"
 		},
-		"rah": {
-			"wsUrl": "wss://rococo-asset-hub-rpc.polkadot.io",
-			"metadata": ".papi/scale/rah.scale"
-		},
+
 		"pah": {
 			"wsUrl": "wss://statemint-rpc.dwellir.com",
 			"metadata": ".papi/scale/pah.scale"
-		},
-		"rococo": {
-			"wsUrl": "wss://rococo-rpc.polkadot.io",
-			"metadata": ".papi/scale/rococo.scale"
 		},
 		"westend": {
 			"wsUrl": "wss://westend-rpc.polkadot.io",

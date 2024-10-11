@@ -2,11 +2,9 @@ import type { ChainId } from "src/config/chains";
 
 const KNOWN_CHAIN_SPECS_IDS = [
 	"kusama",
-	"rococo",
 	"westend",
 	"polkadot",
 	"kah",
-	"rah",
 	"wah",
 	"pah",
 ] as const;
@@ -25,17 +23,12 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 		switch (chainId) {
 			case "kusama":
 				return (await import("polkadot-api/chains/ksmcc3")).chainSpec;
-			case "rococo":
-				return (await import("polkadot-api/chains/rococo_v2_2")).chainSpec;
 			case "westend":
 				return (await import("polkadot-api/chains/westend2")).chainSpec;
 			case "polkadot":
 				return (await import("polkadot-api/chains/polkadot")).chainSpec;
 			case "kah":
 				return (await import("polkadot-api/chains/ksmcc3_asset_hub")).chainSpec;
-			case "rah":
-				return (await import("polkadot-api/chains/rococo_v2_2_asset_hub"))
-					.chainSpec;
 			case "wah":
 				return (await import("polkadot-api/chains/westend2_asset_hub"))
 					.chainSpec;

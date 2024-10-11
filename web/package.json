@@ -9,7 +9,7 @@
 		"build": "papi --whitelist papi-whitelist.ts && tsc && vite build",
 		"preview": "vite preview",
 		"lint": "eslint ./src/**/*",
-		"papi:update": "papi update polkadot,kusama,rococo,westend,kah,pah,wah,rah"
+		"papi:update": "papi update polkadot,kusama,westend,kah,pah,wah"
 	},
 	"dependencies": {
 		"@floating-ui/react": "^0.26.24",

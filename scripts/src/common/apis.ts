@@ -3,8 +3,6 @@ import {
 	devrelay,
 	kah,
 	pah,
-	rah,
-	rococo,
 	wah,
 	westend,
 } from "@polkadot-api/descriptors";
@@ -14,12 +12,10 @@ import papiConfig from "../../.papi/polkadot-api.json";
 
 const descriptors = {
 	devrelay,
-	rococo,
 	westend,
 	devah,
 	wah,
 	kah,
-	rah,
 	pah,
 } as const;
 
@@ -27,8 +23,8 @@ type Descriptors = typeof descriptors;
 
 export type ChainId = keyof Descriptors;
 
-export type AssetHubChainId = "devah" | "wah" | "rah" | "pah" | "kah";
-export type RelayChainId = "devrelay" | "rococo" | "westend";
+export type AssetHubChainId = "devah" | "wah" | "pah" | "kah";
+export type RelayChainId = "devrelay" | "westend";
 
 export type Api<Id extends ChainId> = TypedApi<Descriptors[Id]>;
 
