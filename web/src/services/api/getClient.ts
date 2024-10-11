@@ -53,7 +53,7 @@ const getRelayChainClient = async (
 	const chainSpec = await getChainSpec(chain.id);
 
 	// use substrate-connect if available
-	if (chain.relay !== "rococo" && (await isScAvailableScProvider()))
+	if (await isScAvailableScProvider())
 		return createClient(getScChainProvider({ chainId: chain.id, chainSpec }));
 
 	// fallback to smoldot
@@ -81,7 +81,7 @@ const getParaChainClient = async (chain: Chain, options: ClientOptions) => {
 	] as const);
 
 	// use substrate-connect if available
-	if (relayChainId !== "rococo" && (await isScAvailableScProvider()))
+	if (await isScAvailableScProvider())
 		return createClient(
 			getScChainProvider({
 				chainId: chain.id,

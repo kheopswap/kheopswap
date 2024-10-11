@@ -13,8 +13,6 @@ const getWellKnownChain = (chainId: ChainId): WellKnownChain | null => {
 	switch (chainId) {
 		case "polkadot":
 			return WellKnownChain.polkadot;
-		case "rococo":
-			return WellKnownChain.rococo_v2_2;
 		case "westend":
 			return WellKnownChain.westend2;
 		case "kusama":

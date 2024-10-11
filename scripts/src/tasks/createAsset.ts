@@ -7,7 +7,7 @@ import { waitTransactionComplete } from "../common/waitTransactionComplete";
 import { getAssetTokenLocation, getNativeTokenLocation } from "../common/xcm";
 
 export const createAssetCalls = async (
-	api: Api<"rah" | "wah" | "devah">,
+	api: Api<"wah" | "devah">,
 	id: number,
 	symbol: string,
 	name: string,
@@ -61,7 +61,7 @@ export const createAssetCalls = async (
 };
 
 export const createAsset = async (
-	api: Api<"rah" | "wah" | "devah">,
+	api: Api<"wah" | "devah">,
 	id: number,
 	symbol: string,
 	name: string,

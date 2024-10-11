@@ -5,8 +5,6 @@ import {
 	kusama,
 	pah,
 	polkadot,
-	rah,
-	rococo,
 	wah,
 	westend,
 } from "@polkadot-api/descriptors";
@@ -16,7 +14,6 @@ import { DEV } from "src/config/constants";
 const DESCRIPTORS_RELAY = {
 	polkadot,
 	kusama,
-	rococo,
 	westend,
 	devrelay,
 } as const;
@@ -24,7 +21,6 @@ const DESCRIPTORS_RELAY = {
 const DESCRIPTORS_ASSET_HUB = {
 	pah,
 	kah,
-	rah,
 	wah,
 	devah,
 } as const;
@@ -55,7 +51,7 @@ export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 export type Chain<Id = ChainId> = {
 	id: Id;
 	name: string;
-	wsUrl: string;
+	wsUrl: string[];
 	relay: ChainIdRelay | null;
 	paraId: number | null;
 	logo: string;
@@ -71,20 +67,20 @@ const DEV_CHAINS: Chain[] = [
 	{
 		id: "devrelay",
 		name: "Zombienet",
-		wsUrl: "ws://127.0.0.1:42069",
+		wsUrl: ["ws://127.0.0.1:42069"],
 		relay: "devrelay",
 		paraId: null,
-		logo: "./img/tokens/ROC.svg",
+		logo: "./img/tokens/WND.svg",
 		stableTokenId: "native::devrelay",
 		blockExplorerUrl: "https://perdu.com",
 	},
 	{
 		id: "devah",
 		name: "Zombienet Asset Hub",
-		wsUrl: "ws://127.0.0.1:42070",
+		wsUrl: ["ws://127.0.0.1:42070"],
 		relay: "devrelay",
 		paraId: 1000,
-		logo: "./img/chains/rah.svg",
+		logo: "./img/chains/WND.svg",
 		stableTokenId: "native::devah",
 		blockExplorerUrl: "https://perdu.com",
 	},
@@ -94,7 +90,19 @@ const PROD_CHAINS: Chain[] = [
 	{
 		id: "polkadot",
 		name: "Polkadot",
-		wsUrl: "wss://polkadot-rpc.dwellir.com",
+		wsUrl: [
+			"wss://polkadot-rpc.dwellir.com",
+			"wss://rpc.ibp.network/polkadot",
+			"wss://rpc.dotters.network/polkadot",
+			"wss://1rpc.io/dot",
+			"wss://polkadot-rpc-tn.dwellir.com",
+			"wss://polkadot-rpc.publicnode.com",
+			"wss://polkadot-public-rpc.blockops.network/ws",
+			"wss://rpc-polkadot.luckyfriday.io",
+			"wss://polkadot.public.curie.radiumblock.co/ws",
+			"wss://rockx-dot.w3node.com/polka-public-dot/ws",
+			"wss://dot-rpc.stakeworld.io",
+		],
 		relay: "polkadot",
 		paraId: null,
 		logo: "./img/tokens/DOT.svg",
@@ -104,7 +112,19 @@ const PROD_CHAINS: Chain[] = [
 	{
 		id: "pah",
 		name: "Polkadot Asset Hub",
-		wsUrl: "wss://statemint-rpc.dwellir.com",
+		wsUrl: [
+			"wss://sys.ibp.network/statemint",
+			"wss://sys.dotters.network/statemint",
+			"wss://sys.ibp.network/asset-hub-polkadot",
+			"wss://sys.dotters.network/asset-hub-polkadot",
+			"wss://asset-hub-polkadot-rpc.dwellir.com",
+			"wss://statemint-rpc-tn.dwellir.com",
+			"wss://rpc-asset-hub-polkadot.luckyfriday.io",
+			"wss://polkadot-asset-hub-rpc.polkadot.io",
+			"wss://statemint.public.curie.radiumblock.co/ws",
+			"wss://dot-rpc.stakeworld.io/assethub",
+			"wss://statemint-rpc.dwellir.com",
+		],
 		relay: "polkadot",
 		paraId: 1000,
 		logo: "./img/chains/pah.svg",
@@ -114,7 +134,19 @@ const PROD_CHAINS: Chain[] = [
 	{
 		id: "kusama",
 		name: "Kusama",
-		wsUrl: "wss://kusama-rpc.polkadot.io",
+		wsUrl: [
+			"wss://kusama-rpc.polkadot.io",
+			"wss://rpc.ibp.network/kusama",
+			"wss://rpc.dotters.network/kusama",
+			"wss://1rpc.io/ksm",
+			"wss://kusama-rpc.dwellir.com",
+			"wss://kusama-rpc-tn.dwellir.com",
+			"wss://kusama-rpc.publicnode.com",
+			"wss://rpc-kusama.luckyfriday.io",
+			"wss://kusama.public.curie.radiumblock.co/ws",
+			"wss://rockx-ksm.w3node.com/polka-public-ksm/ws",
+			"wss://ksm-rpc.stakeworld.io",
+		],
 		relay: "kusama",
 		paraId: null,
 		logo: "./img/tokens/KSM.svg",
@@ -124,7 +156,16 @@ const PROD_CHAINS: Chain[] = [
 	{
 		id: "kah",
 		name: "Kusama Asset Hub",
-		wsUrl: "wss://kusama-asset-hub-rpc.polkadot.io",
+		wsUrl: [
+			"wss://sys.ibp.network/statemine",
+			"wss://kusama-asset-hub-rpc.polkadot.io",
+			"wss://sys.dotters.network/statemine",
+			"wss://asset-hub-kusama-rpc.dwellir.com",
+			"wss://statemine-rpc-tn.dwellir.com",
+			"wss://rpc-asset-hub-kusama.luckyfriday.io",
+			"wss://statemine.public.curie.radiumblock.co/ws",
+			"wss://ksm-rpc.stakeworld.io/assethub",
+		],
 		relay: "kusama",
 		paraId: 1000,
 		logo: "./img/chains/kah.svg",
@@ -132,29 +173,16 @@ const PROD_CHAINS: Chain[] = [
 		blockExplorerUrl: "https://assethub-kusama.subscan.io",
 	},
 	{
-		id: "rococo",
-		name: "Rococo",
-		wsUrl: "wss://rococo-rpc.polkadot.io",
-		relay: "rococo",
-		paraId: null,
-		logo: "./img/tokens/ROC.svg",
-		stableTokenId: null,
-		blockExplorerUrl: "https://rococo.subscan.io",
-	},
-	{
-		id: "rah",
-		name: "Rococo Asset Hub",
-		wsUrl: "wss://rococo-asset-hub-rpc.polkadot.io",
-		relay: "rococo",
-		paraId: 1000,
-		logo: "./img/chains/rah.svg",
-		stableTokenId: "native::rah",
-		blockExplorerUrl: "https://assethub-rococo.subscan.io",
-	},
-	{
 		id: "westend",
 		name: "Westend",
-		wsUrl: "wss://westend-rpc.polkadot.io",
+		wsUrl: [
+			"wss://rpc.ibp.network/westend",
+			"wss://rpc.dotters.network/westend",
+			"wss://westend-rpc.dwellir.com",
+			"wss://westend-rpc-tn.dwellir.com",
+			"wss://westend-rpc.polkadot.io",
+			"wss://westend.public.curie.radiumblock.co/ws",
+		],
 		relay: "westend",
 		paraId: null,
 		logo: "./img/tokens/WND.svg",
@@ -164,7 +192,13 @@ const PROD_CHAINS: Chain[] = [
 	{
 		id: "wah",
 		name: "Westend Asset Hub",
-		wsUrl: "wss://westend-asset-hub-rpc.polkadot.io",
+		wsUrl: [
+			"wss://sys.ibp.network/westmint",
+			"wss://sys.dotters.network/westmint",
+			"wss://asset-hub-westend-rpc.dwellir.com",
+			"wss://westmint-rpc-tn.dwellir.com",
+			"wss://westend-asset-hub-rpc.polkadot.io",
+		],
 		relay: "westend",
 		paraId: 1000,
 		logo: "./img/chains/wah.svg",

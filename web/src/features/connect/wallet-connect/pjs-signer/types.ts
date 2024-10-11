@@ -1,11 +1,5 @@
 import type { PolkadotSigner } from "@polkadot-api/polkadot-signer";
 
-declare global {
-	interface Window {
-		injectedWeb3?: InjectedWeb3;
-	}
-}
-
 type HexString = string;
 export interface SignerPayloadJSON {
 	/**
@@ -89,14 +83,6 @@ export interface SignerPayloadJSON {
 	 */
 	withSignedTransaction?: boolean;
 }
-
-export type InjectedWeb3 = Record<
-	string,
-	| {
-			enable: () => Promise<PjsInjectedExtension>;
-	  }
-	| undefined
->;
 
 export type KeypairType = "ed25519" | "sr25519" | "ecdsa";
 

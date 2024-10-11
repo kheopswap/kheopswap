@@ -305,7 +305,7 @@ const AccountSelectDrawerContent: FC<{
 			<div>
 				{!!injectedWallets?.length && (
 					<>
-						<h4 className="mb-1">Connected wallets</h4>
+						<h4 className="mb-1">Installed wallets</h4>
 						<ul className="flex flex-col gap-2">
 							{injectedWallets.map((wallet) => (
 								<li key={wallet}>
