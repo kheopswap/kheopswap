@@ -9,18 +9,18 @@
 		"preinstall": "npx only-allow bun"
 	},
 	"devDependencies": {
-		"@types/bun": "^1.1.6",
-		"@biomejs/biome": "^1.8.3"
+		"@types/bun": "^1.1.11",
+		"@biomejs/biome": "^1.9.3"
 	},
 	"peerDependencies": {
-		"typescript": "^5.5.4"
+		"typescript": "^5.6.3"
 	},
 	"dependencies": {
 		"@polkadot-api/descriptors": "file:.papi/descriptors",
-		"@polkadot-labs/hdkd": "^0.0.6",
-		"@polkadot-labs/hdkd-helpers": "^0.0.6",
-		"polkadot-api": "^0.13.2",
+		"@polkadot-labs/hdkd": "^0.0.8",
+		"@polkadot-labs/hdkd-helpers": "^0.0.8",
+		"polkadot-api": "^1.4.1",
 		"rxjs": "^7.8.1",
-		"viem": "^2.18.2"
+		"viem": "^2.21.22"
 	}
 }
