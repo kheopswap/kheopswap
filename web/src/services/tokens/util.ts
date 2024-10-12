@@ -1,4 +1,4 @@
-import type { Token } from "src/config/tokens";
+import type { Token } from "@kheopswap/registry";
 
 export const sortTokens = (t1: Token, t2: Token) => {
 	if (t1.type === "native" && t2.type !== "native") return -1;

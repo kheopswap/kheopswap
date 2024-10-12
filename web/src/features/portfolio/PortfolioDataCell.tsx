@@ -1,8 +1,8 @@
 import type { FC } from "react";
 
+import type { Token } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { Shimmer, Tokens } from "src/components";
-import type { Token } from "src/config/tokens";
 import type { BalanceWithStableSummary } from "src/types";
 
 export const TokenBalancesSummary: FC<

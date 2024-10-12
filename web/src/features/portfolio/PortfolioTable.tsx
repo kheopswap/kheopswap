@@ -11,9 +11,9 @@ import type {
 } from "./types";
 import { usePortfolioRows } from "./usePortfolioRows";
 
+import type { TokenId } from "@kheopswap/registry";
 import { isBigInt, sortBigInt } from "@kheopswap/utils";
 import { SearchInput } from "src/components";
-import type { TokenId } from "src/config/tokens";
 import type { BalanceWithStable } from "src/types";
 
 const sortByValue = (a: BalanceWithStable, b: BalanceWithStable) => {

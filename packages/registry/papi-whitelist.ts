@@ -1,7 +1,7 @@
 import type {
 	KahWhitelistEntry,
 	PolkadotWhitelistEntry,
-} from "@polkadot-api/descriptors";
+} from "@kheopswap/registry";
 
 type WhiteListEntry = KahWhitelistEntry | PolkadotWhitelistEntry;
 

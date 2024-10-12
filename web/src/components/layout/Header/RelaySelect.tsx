@@ -1,14 +1,14 @@
 import { type ChangeEvent, type FC, useCallback } from "react";
 import { useMatches, useNavigate } from "react-router-dom";
 
-import { cn } from "@kheopswap/utils";
-import { Drawer, DrawerContainer, Styles } from "src/components";
-import { ActionRightIcon } from "src/components/icons";
 import {
 	type ChainIdRelay,
 	getChains,
 	isChainIdRelay,
-} from "src/config/chains";
+} from "@kheopswap/registry";
+import { cn } from "@kheopswap/utils";
+import { Drawer, DrawerContainer, Styles } from "src/components";
+import { ActionRightIcon } from "src/components/icons";
 import { useOpenClose, useRelayChains, useSetting } from "src/hooks";
 
 const ChainButton: FC<{

@@ -1,6 +1,6 @@
+import type { TokenId } from "@kheopswap/registry";
 import { isEqual } from "lodash";
 import { distinctUntilChanged, map, tap } from "rxjs";
-import type { TokenId } from "src/config/tokens";
 import { tokenInfosState$ } from "./state";
 import {
 	addTokenInfosSubscription,

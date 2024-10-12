@@ -16,10 +16,10 @@ import type {
 } from "./types";
 
 import { safeParse, safeStringify } from "@kheopswap/utils";
-import { type ChainId, getChainById } from "src/config/chains";
-import { getEvmNetworkById, getEvmNetworkName } from "src/config/evmNetworks";
-import { getParachainName } from "src/config/parachains";
-import type { XcmV3Multilocation } from "src/types";
+import { type ChainId, getChainById } from "../chains";
+import { getEvmNetworkById, getEvmNetworkName } from "../evmNetworks";
+import { getParachainName } from "../parachains";
+import type { XcmV3Multilocation } from "../types";
 
 export const isTokenIdNative = (
 	tokenId: TokenId | null | undefined,

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { TeleportFormInputs } from "./schema";
 import { useTeleportExtrinsic } from "./useTeleportExtrinsic";
 
+import { type TokenId, getTokenId, parseTokenId } from "@kheopswap/registry";
 import {
 	getAddressFromAccountField,
 	plancksToTokens,
@@ -10,7 +11,6 @@ import {
 	tokensToPlancks,
 } from "@kheopswap/utils";
 import { keyBy } from "lodash";
-import { type TokenId, getTokenId, parseTokenId } from "src/config/tokens";
 import {
 	useBalance,
 	useCanAccountReceive,

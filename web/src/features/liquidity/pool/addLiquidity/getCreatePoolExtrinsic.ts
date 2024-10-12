@@ -1,9 +1,9 @@
-import { getChainById, isAssetHub } from "src/config/chains";
+import { getChainById, isAssetHub } from "@kheopswap/registry";
 import {
 	type TokenId,
 	getChainIdFromTokenId,
 	parseTokenId,
-} from "src/config/tokens";
+} from "@kheopswap/registry";
 import { getApi } from "src/services/api";
 import { getXcmV3MultilocationFromTokenId } from "src/util";
 

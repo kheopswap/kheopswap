@@ -1,6 +1,7 @@
 import { type Dictionary, values } from "lodash";
 import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
 
+import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { Drawer } from "src/components/Drawer";
 import { DrawerContainer } from "src/components/DrawerContainer";
@@ -10,7 +11,6 @@ import { TokenLogo } from "src/components/TokenLogo";
 import { Tokens } from "src/components/Tokens";
 import { ActionRightIcon } from "src/components/icons";
 import { Styles } from "src/components/styles";
-import type { Token, TokenId } from "src/config/tokens";
 import {
 	type InjectedAccount,
 	useBalancesByTokenSummary,

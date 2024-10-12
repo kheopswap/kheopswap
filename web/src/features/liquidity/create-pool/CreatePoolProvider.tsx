@@ -1,15 +1,15 @@
 import {
+	POOL_TOKEN2_TOKEN_TYPES,
+	type Token,
+	type TokenId,
+} from "@kheopswap/registry";
+import {
 	getAddressFromAccountField,
 	isBigInt,
 	provideContext,
 } from "@kheopswap/utils";
 import { type Dictionary, fromPairs, toPairs } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-	POOL_TOKEN2_TOKEN_TYPES,
-	type Token,
-	type TokenId,
-} from "src/config/tokens";
 import {
 	useAllTokens,
 	useBalance,

@@ -1,8 +1,8 @@
 import { type FC, useMemo } from "react";
 
+import type { Token } from "@kheopswap/registry";
 import { type TxEvents, cn, isBigInt } from "@kheopswap/utils";
 import { type FollowUpData, Tokens } from "src/components";
-import type { Token } from "src/config/tokens";
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
 

@@ -8,7 +8,7 @@ import {
 } from "./subscriptions";
 import type { Pool } from "./types";
 
-import type { ChainId } from "src/config/chains";
+import type { ChainId } from "@kheopswap/registry";
 import type { LoadingStatus } from "src/services/common";
 import { setLoadingStatus } from "./watchers";
 

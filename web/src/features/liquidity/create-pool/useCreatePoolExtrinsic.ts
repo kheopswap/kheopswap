@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 
-import { safeQueryKeyPart } from "@kheopswap/utils";
-import { getChainById, isAssetHub } from "src/config/chains";
+import { getChainById, isAssetHub } from "@kheopswap/registry";
 import {
 	POOL_TOKEN2_TOKEN_TYPES,
 	type TokenId,
 	parseTokenId,
-} from "src/config/tokens";
+} from "@kheopswap/registry";
+import { safeQueryKeyPart } from "@kheopswap/utils";
 import { getApi } from "src/services/api";
 import { getXcmV3MultilocationFromTokenId } from "src/util";
 

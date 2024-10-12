@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { type Observable, catchError, of, shareReplay } from "rxjs";
 
+import { type ChainId, getChainById } from "@kheopswap/registry";
+import type { Token, TokenId } from "@kheopswap/registry";
 import {
 	formatTxError,
 	isBigInt,
@@ -12,8 +14,6 @@ import {
 	provideContext,
 } from "@kheopswap/utils";
 import type { FollowUpTxEvent } from "src/components";
-import { type ChainId, getChainById } from "src/config/chains";
-import type { Token, TokenId } from "src/config/tokens";
 import {
 	type InjectedAccount,
 	useAssetConvertPlancks,

@@ -10,8 +10,8 @@ import {
 import { useNativeToken } from "./useNativeToken";
 import { useRelayChains } from "./useRelayChains";
 
+import { TRADABLE_TOKEN_TYPES } from "@kheopswap/registry";
 import { isBigInt } from "@kheopswap/utils";
-import { TRADABLE_TOKEN_TYPES } from "src/config/tokens";
 import type { BalanceWithStableSummary } from "src/types";
 import { getAssetHubMirrorTokenId } from "src/util";
 

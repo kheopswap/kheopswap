@@ -1,6 +1,6 @@
-import { XcmV3Junction, XcmV3Junctions } from "@polkadot-api/descriptors";
+import { XcmV3Junction, XcmV3Junctions } from "@kheopswap/registry";
 
-import type { Token } from "src/config/tokens";
+import type { Token } from "@kheopswap/registry";
 
 export const getFeeAssetLocation = (feeToken: Token) => {
 	if (!feeToken.isSufficient)

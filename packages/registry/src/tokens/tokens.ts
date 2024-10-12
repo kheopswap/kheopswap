@@ -1,3 +1,4 @@
+import { DEV } from "@kheopswap/constants";
 import { getTokenId } from "./helpers";
 import tokensOverridesJson from "./tokens-overrides.json";
 import tokensJson from "./tokens.json";
@@ -9,7 +10,7 @@ const TOKENS_OVERRIDES = tokensOverridesJson as ({
 } & Partial<TokenNoId>)[];
 
 export const KNOWN_TOKENS_LIST = TOKENS.filter(
-	(t) => import.meta.env.DEV || !["devrelay", "devah"].includes(t.chainId),
+	(t) => DEV || !["devrelay", "devah"].includes(t.chainId),
 ).map(
 	(token) =>
 		({

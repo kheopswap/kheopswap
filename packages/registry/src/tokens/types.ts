@@ -1,5 +1,4 @@
-import type { ChainId } from "src/config/chains";
-import type { XcmV3Multilocation } from "src/types";
+import type { ChainId, XcmV3Multilocation } from "@kheopswap/registry";
 
 export type TokenTypeNative = "native";
 export type TokenTypeAsset = "asset";

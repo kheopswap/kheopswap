@@ -1,4 +1,4 @@
-import type { Token } from "src/config/tokens";
+import type { Token } from "@kheopswap/registry";
 import type { BalanceState } from "src/hooks";
 import type { Pool } from "src/services/pools";
 

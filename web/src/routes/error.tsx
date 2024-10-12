@@ -1,9 +1,9 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useRouteError } from "react-router-dom";
 
+import { DEV } from "@kheopswap/constants";
 import { cn } from "@kheopswap/utils";
 import { ModalDialog } from "src/components";
-import { DEV } from "src/config/constants";
 import { useOpenClose } from "src/hooks";
 
 const ReportIssueButton: FC<{ error: unknown }> = ({ error }) => {

@@ -1,7 +1,7 @@
+import { WALLET_CONNECT_PROJECT_ID } from "@kheopswap/constants";
 import { logger, notifyError } from "@kheopswap/utils";
 import { WalletConnectModal } from "@walletconnect/modal";
 import { firstValueFrom } from "rxjs";
-import { WALLET_CONNECT_PROJECT_ID } from "src/config/constants";
 import {
 	WALLET_CONNECT_CHAINS,
 	WALLET_CONNECT_CONNECT_PARAMS,

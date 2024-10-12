@@ -4,6 +4,8 @@ import type { SwapFormInputs } from "./schema";
 import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
+import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "@kheopswap/constants";
+import { type TokenId, getTokenId, parseTokenId } from "@kheopswap/registry";
 import {
 	isBigInt,
 	isNumber,
@@ -12,8 +14,6 @@ import {
 	tokensToPlancks,
 } from "@kheopswap/utils";
 import { keyBy, values } from "lodash";
-import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "src/config/constants";
-import { type TokenId, getTokenId, parseTokenId } from "src/config/tokens";
 import {
 	useAssetConvertPlancks,
 	useBalance,

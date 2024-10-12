@@ -1,8 +1,8 @@
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 
+import { getTokenId } from "@kheopswap/registry";
 import { isBigInt } from "@kheopswap/utils";
-import { getTokenId } from "src/config/tokens";
 import { useBalance, usePoolSupply } from "src/hooks";
 import type { Pool } from "src/services/pools";
 

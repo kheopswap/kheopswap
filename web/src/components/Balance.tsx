@@ -3,8 +3,8 @@ import type { FC } from "react";
 import { Shimmer } from "./Shimmer";
 import { Tokens } from "./Tokens";
 
+import type { TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
-import type { TokenId } from "src/config/tokens";
 import { useBalance, useToken } from "src/hooks";
 
 export const Balance: FC<{

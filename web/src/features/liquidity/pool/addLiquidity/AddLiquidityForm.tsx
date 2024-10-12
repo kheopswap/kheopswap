@@ -10,6 +10,7 @@ import {
 import { useAddLiquidity } from "./AddLiquidityProvider";
 import { AddLiquiditySummary } from "./AddLiquiditySummary";
 
+import type { Token } from "@kheopswap/registry";
 import { plancksToTokens, tokensToPlancks } from "@kheopswap/utils";
 import { keyBy } from "lodash";
 import {
@@ -17,7 +18,6 @@ import {
 	MagicButton,
 	TokenAmountPicker,
 } from "src/components";
-import type { Token } from "src/config/tokens";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 

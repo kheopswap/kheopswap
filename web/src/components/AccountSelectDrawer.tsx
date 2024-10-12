@@ -9,6 +9,7 @@ import { Tokens } from "./Tokens";
 import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 
+import type { Token } from "@kheopswap/registry";
 import {
 	cn,
 	isBigInt,
@@ -16,7 +17,6 @@ import {
 	logger,
 	shortenAddress,
 } from "@kheopswap/utils";
-import type { Token } from "src/config/tokens";
 import {
 	WALLET_CONNECT_NAME,
 	useWalletConnectAccounts,

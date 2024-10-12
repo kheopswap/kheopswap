@@ -8,6 +8,7 @@
 	"scripts": {},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
+		"@kheopswap/constants": "workspace:*",
 		"@types/react": "^18.3.11",
 		"@types/webfontloader": "^1.6.38",
 		"react-toastify": "^10.0.5",

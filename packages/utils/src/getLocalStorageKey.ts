@@ -1,4 +1,4 @@
-const APP_KEY = "kheopswap"; // TODO pick from constants
+import { APP_KEY } from "@kheopswap/constants";
 
 export const getLocalStorageKey = (key: string) => {
 	return `${APP_KEY}::${key}`;

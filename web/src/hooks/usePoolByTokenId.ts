@@ -3,10 +3,7 @@ import { useMemo } from "react";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useRelayChains } from "./useRelayChains";
 
-import type {
-	TokenIdAsset,
-	TokenIdForeignAsset,
-} from "src/config/tokens/types";
+import type { TokenIdAsset, TokenIdForeignAsset } from "@kheopswap/registry";
 import type { Pool } from "src/services/pools";
 
 type UsePoolByTokenIdProps = {

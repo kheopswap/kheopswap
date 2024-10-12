@@ -1,10 +1,10 @@
 import type { Dictionary } from "lodash";
 import { type FC, useCallback, useMemo } from "react";
 
+import type { Token, TokenId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
 import { TokenLogo, TokenSelectDrawer } from "src/components";
 import { Styles } from "src/components/styles";
-import type { Token, TokenId } from "src/config/tokens";
 import { type InjectedAccount, useChainName, useOpenClose } from "src/hooks";
 
 const TokenButton: FC<{

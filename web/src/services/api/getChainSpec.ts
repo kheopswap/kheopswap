@@ -1,4 +1,4 @@
-import type { ChainId } from "src/config/chains";
+import type { ChainId } from "@kheopswap/registry";
 
 const KNOWN_CHAIN_SPECS_IDS = [
 	"kusama",

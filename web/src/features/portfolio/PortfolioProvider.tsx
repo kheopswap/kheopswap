@@ -1,7 +1,7 @@
+import { TRADABLE_TOKEN_TYPES } from "@kheopswap/registry";
 import { provideContext } from "@kheopswap/utils";
 import { values } from "lodash";
 import { useMemo } from "react";
-import { TRADABLE_TOKEN_TYPES } from "src/config/tokens";
 import {
 	useAllTokens,
 	useAssetHubTVL,

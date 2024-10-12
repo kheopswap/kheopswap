@@ -1,4 +1,4 @@
-import type { ChainId, ChainIdRelay } from "src/config/chains";
+import type { ChainId, ChainIdRelay } from "../chains";
 
 export type Parachain = {
 	relay: ChainIdRelay | null;

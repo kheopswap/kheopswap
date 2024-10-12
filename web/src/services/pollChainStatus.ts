@@ -2,8 +2,8 @@ import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import type { LoadingStatus } from "./common";
 
+import { type ChainId, getChains } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import { type ChainId, getChains } from "src/config/chains";
 
 /**
  * For services that need to poll/refresh data every x seconds and keep track of the loading status

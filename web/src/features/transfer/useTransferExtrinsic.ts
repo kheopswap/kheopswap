@@ -3,7 +3,7 @@ import type { SS58String } from "polkadot-api";
 
 import { getTransferExtrinsic } from "./getTransferExtrinsic";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 
 type UseTransferExtrinsicProps = {
 	tokenId: TokenId | null | undefined;

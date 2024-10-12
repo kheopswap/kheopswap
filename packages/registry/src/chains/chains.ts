@@ -9,7 +9,7 @@ import {
 	westend,
 } from "@polkadot-api/descriptors";
 
-import { DEV } from "src/config/constants";
+import { DEV } from "@kheopswap/constants";
 
 const DESCRIPTORS_RELAY = {
 	polkadot,
@@ -25,7 +25,7 @@ const DESCRIPTORS_ASSET_HUB = {
 	devah,
 } as const;
 
-export const DESCRIPTORS_ALL = {
+const DESCRIPTORS_ALL = {
 	...DESCRIPTORS_RELAY,
 	...DESCRIPTORS_ASSET_HUB,
 } as const;

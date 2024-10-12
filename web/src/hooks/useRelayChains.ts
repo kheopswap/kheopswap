@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 
 import { useToken } from "./useToken";
 
-import { provideContext } from "@kheopswap/utils";
 import {
 	type Chain,
 	type ChainAssetHub,
@@ -11,7 +10,8 @@ import {
 	type ChainRelay,
 	getChains,
 	isChainIdRelay,
-} from "src/config/chains";
+} from "@kheopswap/registry";
+import { provideContext } from "@kheopswap/utils";
 
 const useRelayId = (): ChainIdRelay => {
 	const { relayId } = useParams();

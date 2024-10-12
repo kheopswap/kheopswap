@@ -12,8 +12,8 @@ import {
 	removeTokensByChainSubscription,
 } from "./subscriptions";
 
-import type { ChainId } from "src/config/chains";
-import { type TokenId, getChainIdFromTokenId } from "src/config/tokens";
+import type { ChainId } from "@kheopswap/registry";
+import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
 
 const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
 	status: "stale",

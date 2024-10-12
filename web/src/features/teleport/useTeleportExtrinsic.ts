@@ -3,7 +3,7 @@ import type { SS58String } from "polkadot-api";
 
 import { getTeleportExtrinsic } from "./extrinsics";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 
 type UseTeleportExtrinsicProps = {
 	tokenIdIn: TokenId | null | undefined;

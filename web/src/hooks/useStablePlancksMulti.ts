@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useAssetConvertMulti } from "./useAssetConvertMulti";
 import { useRelayChains } from "./useRelayChains";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 import { getAssetHubMirrorTokenId } from "src/util";
 
 type UseStablePlancksProps = {

@@ -1,6 +1,6 @@
-import type { ChainId } from "src/config/chains";
-import { KNOWN_TOKENS_LIST } from "src/config/tokens";
-import type { TokenNative } from "src/config/tokens/types";
+import type { ChainId } from "@kheopswap/registry";
+import { KNOWN_TOKENS_LIST } from "@kheopswap/registry";
+import type { TokenNative } from "@kheopswap/registry";
 
 export const getNativeToken = (chainId: ChainId) => {
 	const nativeToken = KNOWN_TOKENS_LIST.find(

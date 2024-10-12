@@ -12,7 +12,7 @@ import {
 	type ChainRelay,
 	getChainById,
 	isRelay,
-} from "src/config/chains";
+} from "@kheopswap/registry";
 type ClientOptions = {
 	lightClients: boolean;
 };

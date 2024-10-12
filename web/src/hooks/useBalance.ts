@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import { useBalances } from "./useBalances";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 
 type UseBalanceProps = {
 	address: SS58String | null | undefined;

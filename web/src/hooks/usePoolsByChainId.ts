@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 
-import type { ChainId } from "src/config/chains";
+import type { ChainId } from "@kheopswap/registry";
 import { type Pool, getPoolsByChain$ } from "src/services/pools";
 
 type UsePoolsProps = {

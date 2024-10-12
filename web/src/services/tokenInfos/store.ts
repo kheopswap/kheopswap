@@ -1,5 +1,7 @@
 import { BehaviorSubject, debounceTime } from "rxjs";
 
+import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
+import type { TokenInfo } from "@kheopswap/registry";
 import {
 	getLocalStorageKey,
 	logger,
@@ -7,8 +9,6 @@ import {
 	safeStringify,
 } from "@kheopswap/utils";
 import { type Dictionary, keyBy, values } from "lodash";
-import { DEV_IGNORE_STORAGE } from "src/config/constants";
-import type { TokenInfo } from "src/config/tokens";
 
 const STORAGE_KEY = getLocalStorageKey("token-infos");
 

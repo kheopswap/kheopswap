@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 import { getExistentialDeposit } from "src/helpers/getExistentialDeposit";
 
 type UseExistentialDepositsProps = {

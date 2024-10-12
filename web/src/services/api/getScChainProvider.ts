@@ -6,7 +6,7 @@ import {
 	createScClient,
 } from "@substrate/connect";
 
-import type { ChainId, ChainIdRelay } from "src/config/chains";
+import type { ChainId, ChainIdRelay } from "@kheopswap/registry";
 
 // No intellisense on WellKnownChain ?
 const getWellKnownChain = (chainId: ChainId): WellKnownChain | null => {

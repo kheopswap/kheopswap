@@ -4,24 +4,24 @@ import { distinctUntilChanged, filter } from "rxjs";
 import { tokensStore$ } from "./store";
 import { tokensByChainSubscriptions$ } from "./subscriptions";
 
-import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
+import {
+	STORAGE_QUERY_TIMEOUT,
+	TOKENS_CACHE_DURATION,
+} from "@kheopswap/constants";
 import {
 	type Chain,
 	type ChainId,
 	getChainById,
 	hasAssetPallet,
 	isAssetHub,
-} from "src/config/chains";
-import {
-	STORAGE_QUERY_TIMEOUT,
-	TOKENS_CACHE_DURATION,
-} from "src/config/constants";
+} from "@kheopswap/registry";
 import {
 	KNOWN_TOKENS_MAP,
 	TOKENS_OVERRIDES_MAP,
 	type Token,
 	getTokenId,
-} from "src/config/tokens";
+} from "@kheopswap/registry";
+import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
 import { getApi } from "src/services/api";
 import { pollChainStatus } from "src/services/pollChainStatus";
 

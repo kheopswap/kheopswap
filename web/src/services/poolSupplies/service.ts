@@ -9,7 +9,7 @@ import {
 import type { PoolSupplyState } from "./types";
 import { getPoolSupplyId } from "./utils";
 
-import type { TokenIdsPair } from "src/config/tokens";
+import type { TokenIdsPair } from "@kheopswap/registry";
 
 const DEFAULT_POOL_SUPPLY_STATE: PoolSupplyState = {
 	supply: undefined,

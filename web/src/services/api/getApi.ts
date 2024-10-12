@@ -3,7 +3,6 @@ import { firstValueFrom } from "rxjs";
 
 import { getClient } from "./getClient";
 
-import { logger } from "@kheopswap/utils";
 import {
 	type ChainId,
 	type ChainIdAssetHub,
@@ -13,7 +12,8 @@ import {
 	getDescriptors,
 	isChainIdAssetHub,
 	isChainIdRelay,
-} from "src/config/chains";
+} from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 import { getSetting } from "src/services/settings";
 
 type ApiBase<Id extends ChainId> = TypedApi<Descriptors<Id>>;

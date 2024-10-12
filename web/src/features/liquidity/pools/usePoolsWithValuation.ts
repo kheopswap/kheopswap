@@ -2,8 +2,8 @@ import { useMemo } from "react";
 
 import { useBalances } from "../../../hooks/useBalances";
 
+import type { Token } from "@kheopswap/registry";
 import type { Dictionary } from "lodash";
-import type { Token } from "src/config/tokens";
 
 import { isBigInt } from "@kheopswap/utils";
 import { getPoolReserves } from "src/helpers/getPoolReserves";

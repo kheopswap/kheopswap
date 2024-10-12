@@ -1,6 +1,6 @@
+import { WALLET_CONNECT_PROJECT_ID } from "@kheopswap/constants";
 import type { EngineTypes } from "@walletconnect/types";
 import type { UniversalProviderOpts } from "@walletconnect/universal-provider";
-import { WALLET_CONNECT_PROJECT_ID } from "src/config/constants";
 
 export const WALLET_CONNECT_CHAINS = [
 	"polkadot:91b171bb158e2d3848fa23a9f1c25182", // Polkadot

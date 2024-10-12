@@ -10,6 +10,13 @@ import {
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
 
+import {
+	type DisplayProperty,
+	type Token,
+	type TokenId,
+	getTokenDisplayProperties,
+} from "@kheopswap/registry";
+import type { TokenAsset, TokenForeignAsset } from "@kheopswap/registry";
 import { cn, isBigInt, shortenAddress, sortBigInt } from "@kheopswap/utils";
 import { useNavigate } from "react-router-dom";
 import {
@@ -27,13 +34,6 @@ import {
 	TooltipTrigger,
 } from "src/components";
 import { Pulse } from "src/components/Pulse";
-import {
-	type DisplayProperty,
-	type Token,
-	type TokenId,
-	getTokenDisplayProperties,
-} from "src/config/tokens";
-import type { TokenAsset, TokenForeignAsset } from "src/config/tokens/types";
 import {
 	useNativeToken,
 	useOpenClose,

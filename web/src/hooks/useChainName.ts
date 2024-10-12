@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
+import { type ChainId, getChainById } from "@kheopswap/registry";
 import { shortenChainName } from "@kheopswap/utils";
-import { type ChainId, getChainById } from "src/config/chains";
 
 type UseChainNameProps = {
 	chainId: ChainId | null | undefined;

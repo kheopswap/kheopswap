@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { TransferFormInputs } from "./schema";
 import { useTransferExtrinsic } from "./useTransferExtrinsic";
 
+import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "@kheopswap/registry";
 import {
 	getAddressFromAccountField,
 	isNumber,
@@ -10,7 +11,6 @@ import {
 	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
-import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "src/config/tokens";
 import {
 	useAllTokens,
 	useAssetConvertPlancks,

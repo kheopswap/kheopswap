@@ -1,4 +1,4 @@
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 
 export type CreatePoolFormInputs = {
 	token2Id: TokenId;
