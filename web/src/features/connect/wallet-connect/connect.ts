@@ -40,7 +40,7 @@ export const connectWalletConnect = async () => {
 		if (!uri) throw new Error("No URI");
 	} catch (cause) {
 		logger.error("Failed to connect to wallet connect", { cause });
-		notifyError(new Error("Failed to connect", { cause }));
+		notifyError(new Error("Failed to connect"));
 		return;
 	}
 
