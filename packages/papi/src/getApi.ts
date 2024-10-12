@@ -13,8 +13,8 @@ import {
 	isChainIdAssetHub,
 	isChainIdRelay,
 } from "@kheopswap/registry";
+import { getSetting } from "@kheopswap/settings";
 import { logger } from "@kheopswap/utils";
-import { getSetting } from "src/services/settings";
 
 type ApiBase<Id extends ChainId> = TypedApi<Descriptors<Id>>;
 

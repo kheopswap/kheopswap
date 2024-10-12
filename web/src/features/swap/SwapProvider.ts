@@ -6,6 +6,7 @@ import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
 import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "@kheopswap/constants";
 import { type TokenId, getTokenId, parseTokenId } from "@kheopswap/registry";
+import { setSetting } from "@kheopswap/settings";
 import {
 	isBigInt,
 	isNumber,
@@ -33,7 +34,6 @@ import {
 	useTokensByChainId,
 	useWalletAccount,
 } from "src/hooks";
-import { setSetting } from "src/services/settings";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 
 const useDefaultValues = () => {

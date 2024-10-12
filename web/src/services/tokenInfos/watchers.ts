@@ -2,6 +2,7 @@ import { BehaviorSubject, type Subscription } from "rxjs";
 
 import { tokenInfosSubscriptions$ } from "./subscriptions";
 
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
 import {
 	type TokenId,
@@ -16,7 +17,6 @@ import type {
 } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
-import { getApi, isApiAssetHub } from "src/services/api";
 import type { LoadingStatus } from "src/services/common";
 import { tokenInfosStore$ } from "./store";
 

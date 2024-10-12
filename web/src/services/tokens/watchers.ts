@@ -8,6 +8,7 @@ import {
 	STORAGE_QUERY_TIMEOUT,
 	TOKENS_CACHE_DURATION,
 } from "@kheopswap/constants";
+import { getApi } from "@kheopswap/papi";
 import {
 	type Chain,
 	type ChainId,
@@ -22,7 +23,6 @@ import {
 	getTokenId,
 } from "@kheopswap/registry";
 import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
-import { getApi } from "src/services/api";
 import { pollChainStatus } from "src/services/pollChainStatus";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =

@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
 import { provideContext, safeQueryKeyPart } from "@kheopswap/utils";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
-import { getApi, isApiAssetHub } from "src/services/api";
 import { getXcmV3MultilocationFromTokenId } from "src/util";
 
 const useRemoveLiquidityProvider = () => {

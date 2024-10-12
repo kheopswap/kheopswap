@@ -4,10 +4,10 @@ import type { SS58String } from "polkadot-api";
 import { getSwapExtrinsic } from "./getSwapTransaction";
 
 import { APP_FEE_ADDRESS } from "@kheopswap/constants";
+import { getApi } from "@kheopswap/papi";
 import { getChainById, isAssetHub } from "@kheopswap/registry";
 import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
 import { getTransferExtrinsic } from "src/features/transfer/getTransferExtrinsic";
-import { getApi } from "src/services/api";
 
 type UseSwapExtrinsic = {
 	tokenIdIn: TokenId | null | undefined;

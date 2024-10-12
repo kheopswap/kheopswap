@@ -9,6 +9,7 @@ import {
 } from "@kheopswap/registry";
 import { AccountId, Binary, type SS58String } from "polkadot-api";
 
+import { type Api, getApi, isApiAssetHub, isApiRelay } from "@kheopswap/papi";
 import {
 	type ChainIdAssetHub,
 	type ChainIdRelay,
@@ -17,7 +18,6 @@ import {
 	isRelay,
 } from "@kheopswap/registry";
 import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
-import { type Api, getApi, isApiAssetHub, isApiRelay } from "src/services/api";
 
 const encodeAccount = AccountId().enc;
 

@@ -9,6 +9,7 @@ import {
 	POOLS_CACHE_DURATION,
 	STORAGE_QUERY_TIMEOUT,
 } from "@kheopswap/constants";
+import { getApi } from "@kheopswap/papi";
 import {
 	type Chain,
 	type ChainId,
@@ -17,7 +18,6 @@ import {
 } from "@kheopswap/registry";
 import type { TokenIdsPair } from "@kheopswap/registry";
 import { logger, sleep, throwAfter } from "@kheopswap/utils";
-import { getApi } from "src/services/api";
 import { pollChainStatus } from "src/services/pollChainStatus";
 import { getTokenIdFromXcmV3Multilocation } from "src/util";
 

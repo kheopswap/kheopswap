@@ -5,11 +5,11 @@ import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
 
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
 import { parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
-import { getApi, isApiAssetHub } from "src/services/api";
 import type { LoadingStatus } from "src/services/common";
 
 const statusByBalanceId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});

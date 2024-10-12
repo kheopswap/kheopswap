@@ -4,6 +4,7 @@ import type { TeleportFormInputs } from "./schema";
 import { useTeleportExtrinsic } from "./useTeleportExtrinsic";
 
 import { type TokenId, getTokenId, parseTokenId } from "@kheopswap/registry";
+import { setSetting } from "@kheopswap/settings";
 import {
 	getAddressFromAccountField,
 	plancksToTokens,
@@ -22,7 +23,6 @@ import {
 	useSetting,
 	useWalletAccount,
 } from "src/hooks";
-import { setSetting } from "src/services/settings";
 
 const useDefaultValues = () => {
 	const [defaultAccountId] = useSetting("defaultAccountId");
