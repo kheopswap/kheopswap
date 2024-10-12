@@ -93,6 +93,9 @@ importers:
 
   packages/utils:
     dependencies:
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../constants
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -102,22 +105,28 @@ importers:
       react:
         specifier: ^18.3.1
         version: 18.3.1
+      react-toastify:
+        specifier: ^10.0.5
+        version: 10.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
       tailwind-merge:
         specifier: ^2.5.3
         version: 2.5.3
+      url-join:
+        specifier: ^5.0.0
+        version: 5.0.0
       viem:
         specifier: ^2.21.22
         version: 2.21.22(typescript@5.6.3)(zod@3.23.8)
       vite:
         specifier: ^5.4.8
         version: 5.4.8(@types/node@22.7.5)
+      webfontloader:
+        specifier: ^1.6.28
+        version: 1.6.28
     devDependencies:
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@kheopswap/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -127,15 +136,9 @@ importers:
       '@types/webfontloader':
         specifier: ^1.6.38
         version: 1.6.38
-      react-toastify:
-        specifier: ^10.0.5
-        version: 10.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       typescript:
         specifier: ^5.6.3
         version: 5.6.3
-      webfontloader:
-        specifier: ^1.6.28
-        version: 1.6.28
 
   web:
     dependencies:

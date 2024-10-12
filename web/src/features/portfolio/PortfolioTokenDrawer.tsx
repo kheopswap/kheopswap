@@ -17,7 +17,13 @@ import {
 	getTokenDisplayProperties,
 } from "@kheopswap/registry";
 import type { TokenAsset, TokenForeignAsset } from "@kheopswap/registry";
-import { cn, isBigInt, shortenAddress, sortBigInt } from "@kheopswap/utils";
+import {
+	cn,
+	getBlockExplorerUrl,
+	isBigInt,
+	shortenAddress,
+	sortBigInt,
+} from "@kheopswap/utils";
 import { useNavigate } from "react-router-dom";
 import {
 	AccountSelectDrawer,
@@ -217,13 +223,7 @@ const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
 
 const DisplayPropertyValue: FC<DisplayProperty> = ({ value, format, url }) => {
 	if (format === "address")
-		return (
-			<AddressDisplay
-				address={value}
-				blockExporerUrl={url}
-				iconClassName="size-5"
-			/>
-		);
+		return <AddressDisplay address={value} url={url} iconClassName="size-5" />;
 
 	const formatted = useMemo(() => {
 		if (format === "address") return shortenAddress(value);
@@ -326,7 +326,11 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 				{tokenInfo ? (
 					<AddressDisplay
 						address={tokenInfo.owner}
-						blockExporerUrl={chain.blockExplorerUrl}
+						url={getBlockExplorerUrl(
+							chain?.blockExplorerUrl,
+							tokenInfo.owner,
+							"account",
+						)}
 						pulse={isLoading}
 						iconClassName="size-5"
 					/>
@@ -338,27 +342,39 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 				<TokenDetailsRow label="Admin">
 					<AddressDisplay
 						address={tokenInfo.admin}
-						blockExporerUrl={chain.blockExplorerUrl}
+						url={getBlockExplorerUrl(
+							chain?.blockExplorerUrl,
+							tokenInfo.admin,
+							"account",
+						)}
 						iconClassName="size-5"
 						pulse={isLoading}
 					/>
 				</TokenDetailsRow>
 			)}
-			{tokenInfo && tokenInfo.admin !== tokenInfo?.owner && (
+			{tokenInfo && tokenInfo.issuer !== tokenInfo?.owner && (
 				<TokenDetailsRow label="Issuer">
 					<AddressDisplay
 						address={tokenInfo.issuer}
-						blockExporerUrl={chain.blockExplorerUrl}
+						url={getBlockExplorerUrl(
+							chain?.blockExplorerUrl,
+							tokenInfo.issuer,
+							"account",
+						)}
 						iconClassName="size-5"
 						pulse={isLoading}
 					/>
 				</TokenDetailsRow>
 			)}
-			{tokenInfo && tokenInfo.admin !== tokenInfo?.owner && (
+			{tokenInfo && tokenInfo.freezer !== tokenInfo?.owner && (
 				<TokenDetailsRow label="Freezer">
 					<AddressDisplay
 						address={tokenInfo.freezer}
-						blockExporerUrl={chain.blockExplorerUrl}
+						url={getBlockExplorerUrl(
+							chain?.blockExplorerUrl,
+							tokenInfo.freezer,
+							"account",
+						)}
 						iconClassName="size-5"
 						pulse={isLoading}
 					/>

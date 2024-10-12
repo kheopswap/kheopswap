@@ -1,5 +1,4 @@
 import lzs from "lz-string";
-import urlJoin from "url-join";
 
 import type {
 	Token,
@@ -15,7 +14,11 @@ import type {
 	TokenTypePoolAsset,
 } from "./types";
 
-import { safeParse, safeStringify } from "@kheopswap/utils";
+import {
+	getBlockExplorerUrl,
+	safeParse,
+	safeStringify,
+} from "@kheopswap/utils";
 import { type ChainId, getChainById } from "../chains";
 import { getEvmNetworkById, getEvmNetworkName } from "../evmNetworks";
 import { getParachainName } from "../parachains";
@@ -140,7 +143,7 @@ export type DisplayProperty = {
 	label: string;
 	value: string;
 	format?: "address";
-	url?: string;
+	url?: string | null;
 };
 
 export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
@@ -188,13 +191,11 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 						label: "Contract address",
 						value: interior.value[1].value.key.asHex(),
 						format: "address",
-						url: network?.explorerUrl
-							? urlJoin(
-									network.explorerUrl,
-									"address",
-									interior.value[1].value.key.asHex(),
-								)
-							: undefined,
+						url: getBlockExplorerUrl(
+							network?.explorerUrl,
+							interior.value[1].value.key.asHex(),
+							"address",
+						),
 					},
 				];
 			}
