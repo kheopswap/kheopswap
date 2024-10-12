@@ -7,7 +7,7 @@ import { chainPoolsStatuses$ } from "./watchers";
 
 import type { ChainId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import type { LoadingStatus } from "src/services/common";
+import type { LoadingStatus } from "../common";
 
 const combineState = (
 	statusByChain: Record<ChainId, LoadingStatus>,

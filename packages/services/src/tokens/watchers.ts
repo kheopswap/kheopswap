@@ -23,7 +23,7 @@ import {
 	getTokenId,
 } from "@kheopswap/registry";
 import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
-import { pollChainStatus } from "src/services/pollChainStatus";
+import { pollChainStatus } from "../pollChainStatus";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);

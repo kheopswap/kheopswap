@@ -3,7 +3,7 @@ import { useObservable } from "react-rx";
 import { map } from "rxjs";
 
 import type { TokenIdsPair } from "@kheopswap/registry";
-import { getPoolSupplies$ } from "src/services/poolSupplies";
+import { getPoolSupplies$ } from "@kheopswap/services/poolSupplies";
 
 type UsePoolSuppliesProps = {
 	pairs: TokenIdsPair[] | undefined;

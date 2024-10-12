@@ -14,12 +14,12 @@ import {
 	type Chain,
 	type ChainId,
 	getChainById,
+	getTokenIdFromXcmV3Multilocation,
 	isAssetHub,
 } from "@kheopswap/registry";
 import type { TokenIdsPair } from "@kheopswap/registry";
 import { logger, sleep, throwAfter } from "@kheopswap/utils";
-import { pollChainStatus } from "src/services/pollChainStatus";
-import { getTokenIdFromXcmV3Multilocation } from "src/util";
+import { pollChainStatus } from "../pollChainStatus";
 
 export const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("poolsByChainStatuses", POOLS_CACHE_DURATION);

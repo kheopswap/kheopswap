@@ -1,6 +1,6 @@
 import type { Token } from "@kheopswap/registry";
+import type { Pool } from "@kheopswap/services/pools";
 import type { BalanceState } from "src/hooks";
-import type { Pool } from "src/services/pools";
 
 export const getPoolReserves = (
 	pools: Pool[] | null | undefined,

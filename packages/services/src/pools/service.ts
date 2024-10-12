@@ -9,7 +9,7 @@ import {
 import type { Pool } from "./types";
 
 import type { ChainId } from "@kheopswap/registry";
-import type { LoadingStatus } from "src/services/common";
+import type { LoadingStatus } from "../common";
 import { setLoadingStatus } from "./watchers";
 
 type PoolsByChainState = {

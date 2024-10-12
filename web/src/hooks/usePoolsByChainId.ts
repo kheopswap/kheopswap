@@ -3,7 +3,7 @@ import { useObservable } from "react-rx";
 import { map } from "rxjs";
 
 import type { ChainId } from "@kheopswap/registry";
-import { type Pool, getPoolsByChain$ } from "src/services/pools";
+import { type Pool, getPoolsByChain$ } from "@kheopswap/services/pools";
 
 type UsePoolsProps = {
 	chainId: ChainId | null | undefined;

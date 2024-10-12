@@ -17,7 +17,7 @@ import type {
 } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
-import type { LoadingStatus } from "src/services/common";
+import type { LoadingStatus } from "../common";
 import { tokenInfosStore$ } from "./store";
 
 const statusByTokenId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});

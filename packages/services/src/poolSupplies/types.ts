@@ -1,4 +1,4 @@
-import type { LoadingStatus } from "src/services/common";
+import type { LoadingStatus } from "../common";
 
 export type PoolSupplyId = string; // `${TokenId}||${TokenId}`; sorted
 

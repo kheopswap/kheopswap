@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 
-import { getTokenInfos$ } from "src/services/tokenInfos";
+import { getTokenInfos$ } from "@kheopswap/services/tokenInfos";
 
 type UseTokenInfosProps = {
 	tokenIds: TokenId[] | undefined;

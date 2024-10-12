@@ -17,6 +17,7 @@
 		"@kheopswap/utils": "workspace:*",
 		"@kheopswap/settings": "workspace:*",
 		"@kheopswap/papi": "workspace:*",
+		"@kheopswap/services": "workspace:*",
 		"@kheopswap/typescript-config": "workspace:*",
 		"@floating-ui/react": "^0.26.24",
 		"@fontsource-variable/lexend-deca": "^5.1.0",

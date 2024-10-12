@@ -15,7 +15,7 @@ import { chainTokensStatuses$ } from "./watchers";
 import type { ChainId } from "@kheopswap/registry";
 import type { Token } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import type { LoadingStatus } from "src/services/common";
+import type { LoadingStatus } from "../common";
 
 export type ChainTokensState = {
 	status: LoadingStatus;

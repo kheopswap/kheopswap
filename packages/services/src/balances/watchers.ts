@@ -10,7 +10,7 @@ import { getChainById } from "@kheopswap/registry";
 import { parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
-import type { LoadingStatus } from "src/services/common";
+import type { LoadingStatus } from "../common";
 
 const statusByBalanceId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
 

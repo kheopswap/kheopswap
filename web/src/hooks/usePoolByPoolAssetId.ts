@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useRelayChains } from "./useRelayChains";
 
-import type { Pool } from "src/services/pools";
+import type { Pool } from "@kheopswap/services/pools";
 
 type UsePoolByPoolAssetIdProps = {
 	poolAssetId: number | null | undefined;

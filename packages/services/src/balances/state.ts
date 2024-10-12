@@ -7,7 +7,7 @@ import { balanceStatuses$ } from "./watchers";
 
 import { logger } from "@kheopswap/utils";
 import { type Dictionary, fromPairs, keys } from "lodash";
-import type { LoadingStatus } from "src/services/common";
+import type { LoadingStatus } from "../common";
 
 const combineState = (
 	balanceIds: BalanceId[],

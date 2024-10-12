@@ -6,6 +6,7 @@ import { type Observable, catchError, of, shareReplay } from "rxjs";
 
 import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { Token, TokenId } from "@kheopswap/registry";
+import type { BalanceDef } from "@kheopswap/services/balances";
 import {
 	formatTxError,
 	isBigInt,
@@ -26,7 +27,6 @@ import {
 	useNonce,
 	useWalletAccount,
 } from "src/hooks";
-import type { BalanceDef } from "src/services/balances";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 
 export type CallSpendings = Partial<

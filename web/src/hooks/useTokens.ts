@@ -2,9 +2,9 @@ import { type Dictionary, keyBy, values } from "lodash";
 import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
+import { getTokensById$ } from "@kheopswap/services/tokens";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
-import { getTokensById$ } from "src/services/tokens";
 
 type UseTokensProps = { tokenIds: TokenId[] };
 

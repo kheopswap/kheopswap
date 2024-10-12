@@ -4,3 +4,4 @@ export * from "./tokens";
 export * from "./parachains";
 export * from "./evmNetworks";
 export * from "./types";
+export * from "./utils";

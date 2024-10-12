@@ -129,6 +129,40 @@ importers:
         specifier: ^1.6.28
         version: 1.6.28
 
+  packages/services:
+    dependencies:
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../constants
+      '@kheopswap/papi':
+        specifier: workspace:*
+        version: link:../papi
+      '@kheopswap/registry':
+        specifier: workspace:*
+        version: link:../registry
+      '@kheopswap/utils':
+        specifier: workspace:*
+        version: link:../utils
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      polkadot-api:
+        specifier: ^1.4.1
+        version: 1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+    devDependencies:
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/lodash':
+        specifier: ^4.17.10
+        version: 4.17.10
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+
   packages/settings:
     dependencies:
       '@kheopswap/constants':
@@ -231,6 +265,9 @@ importers:
       '@kheopswap/registry':
         specifier: workspace:*
         version: link:../packages/registry
+      '@kheopswap/services':
+        specifier: workspace:*
+        version: link:../packages/services
       '@kheopswap/settings':
         specifier: workspace:*
         version: link:../packages/settings

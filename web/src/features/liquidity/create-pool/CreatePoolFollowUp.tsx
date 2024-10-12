@@ -1,10 +1,10 @@
+import { refreshPools } from "@kheopswap/services/pools";
 import { type TxEvents, cn } from "@kheopswap/utils";
 import { isNumber } from "lodash";
 import { type FC, useEffect, useMemo } from "react";
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
 import { useRelayChains } from "src/hooks";
-import { refreshPools } from "src/services/pools";
 
 const OutcomeFollowUpInner: FC = () => {
 	const { followUp, setRedirectUrl } = useTransactionFollowUp();

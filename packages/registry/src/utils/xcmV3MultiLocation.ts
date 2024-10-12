@@ -1,12 +1,7 @@
-import {
-	XcmV3Junction,
-	XcmV3Junctions,
-	type XcmV3Multilocation,
-} from "@kheopswap/registry";
-
-import { type ChainId, isChainIdAssetHub } from "@kheopswap/registry";
-import { type TokenId, getTokenId, parseTokenId } from "@kheopswap/registry";
-import type {} from "src/types";
+import { XcmV3Junction, XcmV3Junctions } from "@polkadot-api/descriptors";
+import { type ChainId, isChainIdAssetHub } from "../chains";
+import { type TokenId, getTokenId, parseTokenId } from "../tokens";
+import type { XcmV3Multilocation } from "../types";
 
 type Multilocation<T> = T extends TokenId ? XcmV3Multilocation : null;
 

@@ -5,7 +5,7 @@ import { map } from "rxjs";
 
 import type { ChainId } from "@kheopswap/registry";
 import type { Token } from "@kheopswap/registry";
-import { getTokensByChains$ } from "src/services/tokens";
+import { getTokensByChains$ } from "@kheopswap/services/tokens";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];

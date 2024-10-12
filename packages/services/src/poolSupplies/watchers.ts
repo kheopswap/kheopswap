@@ -16,8 +16,8 @@ import { parsePoolSupplyId } from "./utils";
 import { getApi } from "@kheopswap/papi";
 import { getChainById, isAssetHub } from "@kheopswap/registry";
 import { parseTokenId } from "@kheopswap/registry";
-import type { LoadingStatus } from "src/services/common";
-import { type Pool, getPoolsByChain$ } from "src/services/pools";
+import type { LoadingStatus } from "../common";
+import { type Pool, getPoolsByChain$ } from "../pools";
 
 const statusByPoolSupplyId$ = new BehaviorSubject<
 	Record<PoolSupplyId, LoadingStatus>

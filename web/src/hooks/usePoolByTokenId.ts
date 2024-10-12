@@ -4,7 +4,7 @@ import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useRelayChains } from "./useRelayChains";
 
 import type { TokenIdAsset, TokenIdForeignAsset } from "@kheopswap/registry";
-import type { Pool } from "src/services/pools";
+import type { Pool } from "@kheopswap/services/pools";
 
 type UsePoolByTokenIdProps = {
 	tokenId: TokenIdAsset | TokenIdForeignAsset | null | undefined;
