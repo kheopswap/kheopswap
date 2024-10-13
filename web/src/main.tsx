@@ -10,6 +10,7 @@ import { Subscribe } from "@react-rxjs/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 
+import { DEV } from "@kheopswap/constants";
 import { preloadFont } from "../../packages/utils/src/preloadFont";
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
 import { Toasts } from "./components/Toasts";
@@ -33,4 +34,4 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 	</React.StrictMode>,
 );
 
-// if (import.meta.env.DEV) import("./devImports");
+if (DEV) import("./devImports");

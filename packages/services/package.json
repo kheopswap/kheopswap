@@ -3,6 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"exports": {
+		".": "./src/index.ts",
 		"./pools": "./src/pools/index.ts",
 		"./balances": "./src/balances/index.ts",
 		"./tokens": "./src/tokens/index.ts",
