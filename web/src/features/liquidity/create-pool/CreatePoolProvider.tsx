@@ -1,10 +1,15 @@
-import { type Dictionary, fromPairs, toPairs } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	POOL_TOKEN2_TOKEN_TYPES,
 	type Token,
 	type TokenId,
-} from "src/config/tokens";
+} from "@kheopswap/registry";
+import {
+	getAddressFromAccountField,
+	isBigInt,
+	provideContext,
+} from "@kheopswap/utils";
+import { type Dictionary, fromPairs, toPairs } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	useAllTokens,
 	useBalance,
@@ -16,7 +21,6 @@ import {
 	useSetting,
 	useWalletAccount,
 } from "src/hooks";
-import { getAddressFromAccountField, isBigInt, provideContext } from "src/util";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 

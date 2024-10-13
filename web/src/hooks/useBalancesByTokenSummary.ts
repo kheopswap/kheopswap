@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { useBalancesWithStables } from "./useBalancesWithStables";
 
-import type { Token, TokenId } from "src/config/tokens";
+import type { Token, TokenId } from "@kheopswap/registry";
 import type {
 	AccountBalanceWithStable,
 	BalanceWithStableSummary,

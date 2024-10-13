@@ -8,7 +8,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
-import { cn } from "src/util";
+import { cn } from "@kheopswap/utils";
 
 type DrawerAnchor = "top" | "right" | "bottom" | "left";
 

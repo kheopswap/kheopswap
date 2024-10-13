@@ -13,16 +13,12 @@ import { Tokens } from "./Tokens";
 import { SpinnerIcon } from "./icons";
 import { Styles } from "./styles";
 
-import { getChainById } from "src/config/chains";
-import type { Token } from "src/config/tokens";
+import { getChainById } from "@kheopswap/registry";
+import type { Token } from "@kheopswap/registry";
+import { cn, isBigInt } from "@kheopswap/utils";
+import { type TxEvents, getErrorMessageFromTxEvents } from "@kheopswap/utils";
 import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
 import { type InjectedAccount, useInjectedExtension } from "src/hooks";
-import {
-	type TxEvents,
-	cn,
-	getErrorMessageFromTxEvents,
-	isBigInt,
-} from "src/util";
 import { Pulse } from "./Pulse";
 
 export type FollowUpTxEvent =

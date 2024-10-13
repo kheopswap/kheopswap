@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import { useRelayChains } from "./useRelayChains";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
+import type { TokenType } from "@kheopswap/registry";
 import { keyBy, values } from "lodash";
-import type { TokenType } from "src/config/tokens/types";
 
 type UseAllTokensProps = {
 	types?: TokenType[];

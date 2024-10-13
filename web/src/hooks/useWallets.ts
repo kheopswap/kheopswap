@@ -22,15 +22,15 @@ import {
 
 import { useSetting } from "./useSetting";
 
-import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
-import { wcAccounts$ } from "src/features/connect/wallet-connect/accounts.state";
-import { getSetting$, setSetting } from "src/services/settings";
+import { getSetting$, setSetting } from "@kheopswap/settings";
 import {
 	type InjectedAccountId,
 	getInjectedAccountId,
 	logger,
 	sortWallets,
-} from "src/util";
+} from "@kheopswap/utils";
+import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
+import { wcAccounts$ } from "src/features/connect/wallet-connect/accounts.state";
 
 export type InjectedAccount = InjectedPolkadotAccount & {
 	id: InjectedAccountId;

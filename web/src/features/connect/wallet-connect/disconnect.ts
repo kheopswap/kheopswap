@@ -1,7 +1,7 @@
+import { logger } from "@kheopswap/utils";
 import type { EngineTypes } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 import { firstValueFrom } from "rxjs";
-import { logger } from "src/util";
 import { wcProvider$ } from "./provider.state";
 import { wcSession$ } from "./session.store";
 

@@ -1,10 +1,10 @@
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 
-import { getTokenId } from "src/config/tokens";
+import { getTokenId } from "@kheopswap/registry";
+import type { Pool } from "@kheopswap/services/pools";
+import { isBigInt } from "@kheopswap/utils";
 import { useBalance, usePoolSupply } from "src/hooks";
-import type { Pool } from "src/services/pools";
-import { isBigInt } from "src/util";
 
 type UsePoolPositionProps = {
 	pool: Pool | null;

@@ -1,17 +1,14 @@
 import type { SS58String } from "polkadot-api";
 
-import { getChainById, isAssetHub } from "src/config/chains";
+import { getApi } from "@kheopswap/papi";
+import { getChainById, isAssetHub } from "@kheopswap/registry";
 import {
 	type TokenId,
 	getChainIdFromTokenId,
 	parseTokenId,
-} from "src/config/tokens";
-import { getApi } from "src/services/api";
-import {
-	getAddressFromAccountField,
-	getXcmV3MultilocationFromTokenId,
-	isBigInt,
-} from "src/util";
+} from "@kheopswap/registry";
+import { getAddressFromAccountField, isBigInt } from "@kheopswap/utils";
+import { getXcmV3MultilocationFromTokenId } from "src/util";
 
 export type GetAddLiquidityExtrinsicProps = {
 	tokenIdNative: TokenId;

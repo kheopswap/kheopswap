@@ -1,6 +1,8 @@
 import { type Dictionary, values } from "lodash";
 import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
 
+import type { Token, TokenId } from "@kheopswap/registry";
+import { cn, isBigInt } from "@kheopswap/utils";
 import { Drawer } from "src/components/Drawer";
 import { DrawerContainer } from "src/components/DrawerContainer";
 import { SearchInput } from "src/components/SearchInput";
@@ -9,14 +11,13 @@ import { TokenLogo } from "src/components/TokenLogo";
 import { Tokens } from "src/components/Tokens";
 import { ActionRightIcon } from "src/components/icons";
 import { Styles } from "src/components/styles";
-import type { Token, TokenId } from "src/config/tokens";
 import {
 	type InjectedAccount,
 	useBalancesByTokenSummary,
 	useRelayChains,
 } from "src/hooks";
 import type { BalanceWithStableSummary } from "src/types";
-import { cn, getTokenDescription, isBigInt } from "src/util";
+import { getTokenDescription } from "src/util";
 import { Pulse } from "./Pulse";
 
 const TokenButton = forwardRef<

@@ -2,7 +2,7 @@ import { Transition, TransitionChild } from "@headlessui/react";
 import { type FC, Fragment, type ReactNode } from "react";
 import { useScrollLock } from "usehooks-ts";
 
-import { cn } from "src/util";
+import { cn } from "@kheopswap/utils";
 
 type Modal = {
 	isOpen: boolean;

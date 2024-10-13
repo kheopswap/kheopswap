@@ -1,5 +1,6 @@
+import { cn, formatDecimals, logger } from "@kheopswap/utils";
+import { plancksToTokens } from "@kheopswap/utils";
 import { type FC, forwardRef, useMemo } from "react";
-import { cn, formatDecimals, logger, plancksToTokens } from "src/util";
 
 type PricePartProps = {
 	isSub: boolean;

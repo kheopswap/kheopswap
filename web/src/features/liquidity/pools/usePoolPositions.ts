@@ -2,10 +2,10 @@ import { isEqual } from "lodash";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 
-import { getTokenId } from "src/config/tokens";
+import { getTokenId } from "@kheopswap/registry";
+import type { BalanceDef } from "@kheopswap/services/balances";
+import { isBigInt } from "@kheopswap/utils";
 import { useBalances, usePoolSupplies } from "src/hooks";
-import type { BalanceDef } from "src/services/balances";
-import { isBigInt } from "src/util";
 import type { PoolWithValuation } from "./usePoolsWithValuation";
 
 type UsePoolWithPositionsProps = {

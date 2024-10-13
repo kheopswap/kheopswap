@@ -15,6 +15,197 @@ importers:
         specifier: ^1.7.18
         version: 1.7.18
 
+  packages/constants:
+    dependencies:
+      vite:
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.5)
+    devDependencies:
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^18.3.11
+        version: 18.3.11
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+
+  packages/papi:
+    dependencies:
+      '@kheopswap/registry':
+        specifier: workspace:*
+        version: link:../registry
+      '@kheopswap/settings':
+        specifier: workspace:*
+        version: link:../settings
+      '@kheopswap/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@polkadot-api/json-rpc-provider-proxy':
+        specifier: ^0.2.3
+        version: 0.2.3
+      '@substrate/connect':
+        specifier: ^1.3.0
+        version: 1.3.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      polkadot-api:
+        specifier: ^1.4.1
+        version: 1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+      vite:
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.5)
+    devDependencies:
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/lodash':
+        specifier: ^4.17.10
+        version: 4.17.10
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+
+  packages/registry:
+    dependencies:
+      '@polkadot-api/descriptors':
+        specifier: file:.papi/descriptors
+        version: file:packages/registry/.papi/descriptors(polkadot-api@1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
+      lz-string:
+        specifier: ^1.5.0
+        version: 1.5.0
+      polkadot-api:
+        specifier: ^1.4.1
+        version: 1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
+    devDependencies:
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../constants
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@kheopswap/utils':
+        specifier: workspace:*
+        version: link:../utils
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+
+  packages/services:
+    dependencies:
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../constants
+      '@kheopswap/papi':
+        specifier: workspace:*
+        version: link:../papi
+      '@kheopswap/registry':
+        specifier: workspace:*
+        version: link:../registry
+      '@kheopswap/utils':
+        specifier: workspace:*
+        version: link:../utils
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      polkadot-api:
+        specifier: ^1.4.1
+        version: 1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+    devDependencies:
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/lodash':
+        specifier: ^4.17.10
+        version: 4.17.10
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+
+  packages/settings:
+    dependencies:
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../constants
+      '@kheopswap/utils':
+        specifier: workspace:*
+        version: link:../utils
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+    devDependencies:
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/lodash':
+        specifier: ^4.17.10
+        version: 4.17.10
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+
+  packages/typescript-config: {}
+
+  packages/utils:
+    dependencies:
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../constants
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      polkadot-api:
+        specifier: ^1.4.1
+        version: 1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-toastify:
+        specifier: ^10.0.5
+        version: 10.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+      tailwind-merge:
+        specifier: ^2.5.3
+        version: 2.5.3
+      url-join:
+        specifier: ^5.0.0
+        version: 5.0.0
+      viem:
+        specifier: ^2.21.22
+        version: 2.21.22(typescript@5.6.3)(zod@3.23.8)
+      vite:
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.5)
+      webfontloader:
+        specifier: ^1.6.28
+        version: 1.6.28
+    devDependencies:
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^18.3.11
+        version: 18.3.11
+      '@types/webfontloader':
+        specifier: ^1.6.38
+        version: 1.6.38
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+
   web:
     dependencies:
       '@floating-ui/react':
@@ -32,6 +223,27 @@ importers:
       '@heroicons/react':
         specifier: ^2.1.5
         version: 2.1.5(react@18.3.1)
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../packages/constants
+      '@kheopswap/papi':
+        specifier: workspace:*
+        version: link:../packages/papi
+      '@kheopswap/registry':
+        specifier: workspace:*
+        version: link:../packages/registry
+      '@kheopswap/services':
+        specifier: workspace:*
+        version: link:../packages/services
+      '@kheopswap/settings':
+        specifier: workspace:*
+        version: link:../packages/settings
+      '@kheopswap/typescript-config':
+        specifier: workspace:*
+        version: link:../packages/typescript-config
+      '@kheopswap/utils':
+        specifier: workspace:*
+        version: link:../packages/utils
       '@maskito/core':
         specifier: ^3.1.0
         version: 3.1.0
@@ -41,12 +253,6 @@ importers:
       '@maskito/react':
         specifier: ^3.1.0
         version: 3.1.0(@maskito/core@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@polkadot-api/descriptors':
-        specifier: file:.papi/descriptors
-        version: file:web/.papi/descriptors(polkadot-api@1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))
-      '@polkadot-api/json-rpc-provider-proxy':
-        specifier: ^0.2.3
-        version: 0.2.3
       '@polkadot-api/metadata-builders':
         specifier: ^0.8.1
         version: 0.8.1
@@ -68,12 +274,6 @@ importers:
       '@react-rxjs/core':
         specifier: ^0.10.7
         version: 0.10.7(react@18.3.1)(rxjs@7.8.1)
-      '@react-rxjs/utils':
-        specifier: ^0.9.7
-        version: 0.9.7(@react-rxjs/core@0.10.7(react@18.3.1)(rxjs@7.8.1))(react@18.3.1)(rxjs@7.8.1)
-      '@substrate/connect':
-        specifier: ^1.3.0
-        version: 1.3.0
       '@talismn/orb':
         specifier: 0.0.0-pr1364-20240325022411
         version: 0.0.0-pr1364-20240325022411(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -95,18 +295,12 @@ importers:
       '@walletconnect/utils':
         specifier: ^2.17.1
         version: 2.17.1
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
       framer-motion:
         specifier: ^11.11.8
         version: 11.11.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      lz-string:
-        specifier: ^1.5.0
-        version: 1.5.0
       numeral:
         specifier: ^2.0.6
         version: 2.0.6
@@ -137,9 +331,6 @@ importers:
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
-      tailwind-merge:
-        specifier: ^2.5.3
-        version: 2.5.3
       url-join:
         specifier: ^5.0.0
         version: 5.0.0
@@ -152,9 +343,6 @@ importers:
       vite-plugin-biome:
         specifier: ^1.0.12
         version: 1.0.12(@biomejs/biome@1.9.3)
-      webfontloader:
-        specifier: ^1.6.28
-        version: 1.6.28
       yaml:
         specifier: ^2.5.1
         version: 2.5.1
@@ -985,8 +1173,8 @@ packages:
   '@polkadot-api/codegen@0.12.3':
     resolution: {integrity: sha512-/SiDo/nsse9h+9NZ32GzHbErQRDMKfn7qmxImMl5dFnibcTA6S55RyL1Hq2fz5bC9097uFJDIB0ZPJGxyQXFww==}
 
-  '@polkadot-api/descriptors@file:web/.papi/descriptors':
-    resolution: {directory: web/.papi/descriptors, type: directory}
+  '@polkadot-api/descriptors@file:packages/registry/.papi/descriptors':
+    resolution: {directory: packages/registry/.papi/descriptors, type: directory}
     peerDependencies:
       polkadot-api: '*'
 
@@ -1182,13 +1370,6 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
       rxjs: '>=7'
-
-  '@react-rxjs/utils@0.9.7':
-    resolution: {integrity: sha512-m9CUTdRsglObvUAlYfB24QvN+QH4XqCGEKnCdSILIeOx7mMqSi9TTFp2zrj5XqtMiLnj4ReAdDxrXegLPB73bQ==}
-    peerDependencies:
-      '@react-rxjs/core': '>=0.1.0'
-      react: '>=16.8.0'
-      rxjs: '>=6'
 
   '@react-stately/utils@3.10.4':
     resolution: {integrity: sha512-gBEQEIMRh5f60KCm7QKQ2WfvhB2gLUr9b72sqUdIZ2EG+xuPgaIlCBeSicvjmjBvYZwOjoOEnmIkcx2GHp/HWw==}
@@ -4506,7 +4687,7 @@ snapshots:
       '@polkadot-api/substrate-bindings': 0.9.1
       '@polkadot-api/utils': 0.1.2
 
-  '@polkadot-api/descriptors@file:web/.papi/descriptors(polkadot-api@1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))':
+  '@polkadot-api/descriptors@file:packages/registry/.papi/descriptors(polkadot-api@1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1))':
     dependencies:
       polkadot-api: 1.4.1(@swc/core@1.7.35(@swc/helpers@0.5.13))(jiti@2.3.3)(postcss@8.4.47)(rxjs@7.8.1)(smoldot@2.0.30)(yaml@2.5.1)
 
@@ -4758,12 +4939,6 @@ snapshots:
       react: 18.3.1
       rxjs: 7.8.1
       use-sync-external-store: 1.2.2(react@18.3.1)
-
-  '@react-rxjs/utils@0.9.7(@react-rxjs/core@0.10.7(react@18.3.1)(rxjs@7.8.1))(react@18.3.1)(rxjs@7.8.1)':
-    dependencies:
-      '@react-rxjs/core': 0.10.7(react@18.3.1)(rxjs@7.8.1)
-      react: 18.3.1
-      rxjs: 7.8.1
 
   '@react-stately/utils@3.10.4(react@18.3.1)':
     dependencies:

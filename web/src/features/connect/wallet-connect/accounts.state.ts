@@ -1,9 +1,9 @@
+import { logger, normalizeAccountId, shortenAddress } from "@kheopswap/utils";
 import type { SessionTypes } from "@walletconnect/types";
 import { isEqual, uniq } from "lodash";
 import type { SS58String } from "polkadot-api";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import { distinctUntilChanged, map } from "rxjs";
-import { logger, normalizeAccountId, shortenAddress } from "src/util";
 import { getWcPolkadotSigner } from "./getWcPolkedotSigner";
 import { wcSession$ } from "./session.store";
 

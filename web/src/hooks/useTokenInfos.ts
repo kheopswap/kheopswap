@@ -1,9 +1,9 @@
+import type { TokenId, TokenInfo } from "@kheopswap/registry";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
-import type { TokenId, TokenInfo } from "src/config/tokens";
 
-import { getTokenInfos$ } from "src/services/tokenInfos";
+import { getTokenInfos$ } from "@kheopswap/services/tokenInfos";
 
 type UseTokenInfosProps = {
 	tokenIds: TokenId[] | undefined;

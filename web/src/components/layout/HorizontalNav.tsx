@@ -1,8 +1,8 @@
 import type { ComponentProps, FC } from "react";
 import { NavLink, useParams } from "react-router-dom";
 
+import { cn } from "@kheopswap/utils";
 import { useWallets } from "src/hooks";
-import { cn } from "src/util";
 
 const NavItem: FC<ComponentProps<typeof NavLink>> = ({ to, children }) => {
 	return (

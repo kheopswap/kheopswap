@@ -4,7 +4,7 @@ import { usePoolReserves } from "./usePoolReserves";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useToken } from "./useToken";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 
 type UsePoolReservesByTokenIdsProps = {
 	tokenId1: TokenId | null | undefined;

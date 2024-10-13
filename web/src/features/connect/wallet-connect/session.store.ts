@@ -1,8 +1,7 @@
+import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
+import { getLocalStorageKey, logger } from "@kheopswap/utils";
 import type { SessionTypes } from "@walletconnect/types";
 import { BehaviorSubject, debounceTime, tap } from "rxjs";
-import { DEV_IGNORE_STORAGE } from "src/config/constants";
-import { logger } from "src/util";
-import { getLocalStorageKey } from "src/util/getLocalStorageKey";
 
 const STORAGE_KEY = getLocalStorageKey("wallet-connect-session");
 

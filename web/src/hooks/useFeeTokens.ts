@@ -2,8 +2,8 @@ import { useMemo } from "react";
 
 import { useTokensByChainId } from "./useTokensByChainId";
 
+import type { ChainId } from "@kheopswap/registry";
 import { values } from "lodash";
-import type { ChainId } from "src/config/chains";
 
 type UseFeeTokensProps = {
 	chainId: ChainId | null | undefined;

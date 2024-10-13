@@ -1,13 +1,13 @@
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/24/solid";
+import { cn, logger, shortenAddress } from "@kheopswap/utils";
+import { notifyError } from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { TalismanOrb } from "@talismn/orb";
 import { type CSSProperties, type FC, useCallback, useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { toast } from "react-toastify";
 import { useWallets } from "src/hooks";
-import { cn, logger, notifyError, shortenAddress } from "src/util";
-import urlJoin from "url-join";
 import { useCopyToClipboard } from "usehooks-ts";
 import { isAddress as isEvmAddress } from "viem";
 import { Pulse } from "./Pulse";
@@ -54,11 +54,11 @@ const AddressAvatar: FC<{ address: string; className?: string }> = ({
 
 export const AddressDisplay: FC<{
 	address: string;
-	blockExporerUrl?: string | null;
+	url?: string | null;
 	className?: string;
 	iconClassName?: string;
 	pulse?: boolean;
-}> = ({ address, blockExporerUrl, pulse, className, iconClassName }) => {
+}> = ({ address, url, pulse, className, iconClassName }) => {
 	const { accounts } = useWallets();
 	const [, copyToClipboard] = useCopyToClipboard();
 
@@ -93,9 +93,9 @@ export const AddressDisplay: FC<{
 				</TooltipTrigger>
 				<TooltipContent>{address}</TooltipContent>
 			</Tooltip>
-			{blockExporerUrl ? (
+			{url ? (
 				<a
-					href={urlJoin(blockExporerUrl, "account", address)}
+					href={url}
 					target="_blank"
 					rel="noopener noreferrer"
 					className={iconClassName}

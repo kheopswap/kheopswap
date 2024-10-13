@@ -6,18 +6,18 @@ import {
 	XcmV3WeightLimit,
 	XcmVersionedAssets,
 	XcmVersionedLocation,
-} from "@polkadot-api/descriptors";
+} from "@kheopswap/registry";
 import { AccountId, Binary, type SS58String } from "polkadot-api";
 
+import { type Api, getApi, isApiAssetHub, isApiRelay } from "@kheopswap/papi";
 import {
 	type ChainIdAssetHub,
 	type ChainIdRelay,
 	getChainById,
 	isAssetHub,
 	isRelay,
-} from "src/config/chains";
-import { type TokenId, getChainIdFromTokenId } from "src/config/tokens";
-import { type Api, getApi, isApiAssetHub, isApiRelay } from "src/services/api";
+} from "@kheopswap/registry";
+import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
 
 const encodeAccount = AccountId().enc;
 

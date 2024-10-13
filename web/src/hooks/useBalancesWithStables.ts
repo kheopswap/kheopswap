@@ -1,9 +1,9 @@
 import type { InjectedAccount } from "polkadot-api/dist/reexports/pjs-signer";
 import { useMemo } from "react";
 
-import type { Token, TokenId } from "src/config/tokens";
+import type { Token, TokenId } from "@kheopswap/registry";
+import type { BalanceDef } from "@kheopswap/services/balances";
 import { useBalances, useStablePlancksMulti } from "src/hooks";
-import type { BalanceDef } from "src/services/balances";
 import type { AccountBalanceWithStable } from "src/types";
 
 type UseAccountBalancesWithStablesProps = {

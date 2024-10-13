@@ -1,0 +1,5 @@
+{
+	"extends": "@kheopswap/typescript-config/vite.json",
+	"include": [".", "papi-whitelist.ts"],
+	"exclude": ["node_modules"]
+}

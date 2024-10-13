@@ -2,9 +2,9 @@ import { useMemo } from "react";
 
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
+import type { ChainId } from "@kheopswap/registry";
+import type { Token } from "@kheopswap/registry";
 import type { Dictionary } from "lodash";
-import type { ChainId } from "src/config/chains";
-import type { Token } from "src/config/tokens";
 
 type UseTokensProps = {
 	chainId: ChainId | null | undefined;

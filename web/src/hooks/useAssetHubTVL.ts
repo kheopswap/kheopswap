@@ -7,8 +7,8 @@ import { useRelayChains } from "./useRelayChains";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
+import { isBigInt } from "@kheopswap/utils";
 import type { BalanceWithStableSummary } from "src/types";
-import { isBigInt } from "src/util";
 
 type UseAssetHubTVLResult = {
 	isLoading: boolean;

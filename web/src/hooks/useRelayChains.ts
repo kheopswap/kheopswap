@@ -10,8 +10,8 @@ import {
 	type ChainRelay,
 	getChains,
 	isChainIdRelay,
-} from "src/config/chains";
-import { provideContext } from "src/util";
+} from "@kheopswap/registry";
+import { provideContext } from "@kheopswap/utils";
 
 const useRelayId = (): ChainIdRelay => {
 	const { relayId } = useParams();

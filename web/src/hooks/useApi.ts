@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useSetting } from "./useSetting";
 
-import type { ChainId } from "src/config/chains";
-import { getApi } from "src/services/api";
+import { getApi } from "@kheopswap/papi";
+import type { ChainId } from "@kheopswap/registry";
 
 type UseApiProps<Id extends ChainId> = { chainId: Id | null | undefined };
 

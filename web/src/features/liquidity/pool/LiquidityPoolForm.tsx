@@ -5,6 +5,7 @@ import { AddLiquidity } from "./addLiquidity/AddLiquidity";
 import { RemoveLiquidity } from "./removeLiquidity/RemoveLiquidity";
 import { usePoolValuation } from "./usePoolValuation";
 
+import { cn, isBigInt } from "@kheopswap/utils";
 import {
 	AccountSelect,
 	FormFieldContainer,
@@ -14,7 +15,6 @@ import {
 } from "src/components";
 import { Pulse } from "src/components/Pulse";
 import { useStablePlancks } from "src/hooks";
-import { cn, isBigInt } from "src/util";
 
 const PoolReserves: FC = () => {
 	const { reserves, isLoadingReserves, nativeToken, assetToken } =

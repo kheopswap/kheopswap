@@ -1,5 +1,5 @@
-import { type TokenId, parseTokenId } from "src/config/tokens";
-import { getApi, isApiAssetHub } from "src/services/api";
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { type TokenId, parseTokenId } from "@kheopswap/registry";
 
 export const getExistentialDeposit = async (tokenId: TokenId) => {
 	const token = parseTokenId(tokenId);

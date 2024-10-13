@@ -4,9 +4,9 @@ import { PriceImpact } from "./PriceImpact";
 import { Slippage } from "./Slippage";
 import { useSwap } from "./SwapProvider";
 
+import { isBigInt } from "@kheopswap/utils";
 import { Tokens } from "src/components";
 import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
-import { isBigInt } from "src/util";
 
 const SummaryRow: FC<{ label: ReactNode; value: ReactNode }> = ({
 	label,

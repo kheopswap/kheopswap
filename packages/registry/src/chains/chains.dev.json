@@ -1,0 +1,22 @@
+[
+	{
+		"id": "devrelay",
+		"name": "Zombienet",
+		"wsUrl": ["ws://127.0.0.1:42069"],
+		"relay": "devrelay",
+		"paraId": null,
+		"logo": "./img/tokens/WND.svg",
+		"stableTokenId": "native::devrelay",
+		"blockExplorerUrl": "https://perdu.com"
+	},
+	{
+		"id": "devah",
+		"name": "Zombienet Asset Hub",
+		"wsUrl": ["ws://127.0.0.1:42070"],
+		"relay": "devrelay",
+		"paraId": 1000,
+		"logo": "./img/chains/WND.svg",
+		"stableTokenId": "native::devah",
+		"blockExplorerUrl": "https://perdu.com"
+	}
+]

@@ -3,8 +3,8 @@ import { useMemo } from "react";
 
 import { useExistentialDeposit } from "./useExistentialDeposit";
 
+import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
 import { keyBy, values } from "lodash";
-import { type TokenId, getChainIdFromTokenId } from "src/config/tokens";
 import { getNativeToken } from "src/util";
 import { useBalances } from "./useBalances";
 import { useTokensByChainId } from "./useTokensByChainId";

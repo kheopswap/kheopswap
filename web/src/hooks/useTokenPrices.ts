@@ -10,9 +10,10 @@ import {
 import { useNativeToken } from "./useNativeToken";
 import { useRelayChains } from "./useRelayChains";
 
-import { TRADABLE_TOKEN_TYPES } from "src/config/tokens";
+import { TRADABLE_TOKEN_TYPES } from "@kheopswap/registry";
+import { isBigInt } from "@kheopswap/utils";
 import type { BalanceWithStableSummary } from "src/types";
-import { getAssetHubMirrorTokenId, isBigInt } from "src/util";
+import { getAssetHubMirrorTokenId } from "src/util";
 
 export const useTokenPrices = () => {
 	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({

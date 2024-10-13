@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { useApi } from "./useApi";
 
-import type { ChainId } from "src/config/chains";
+import type { ChainId } from "@kheopswap/registry";
 
 type UseNonceProps = {
 	account: SS58String | null | undefined;

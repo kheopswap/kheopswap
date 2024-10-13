@@ -1,9 +1,9 @@
 import { type FC, useMemo } from "react";
 
-import { getChainById } from "src/config/chains";
-import type { Token, TokenId } from "src/config/tokens";
+import { getChainById } from "@kheopswap/registry";
+import type { Token, TokenId } from "@kheopswap/registry";
+import { cn } from "@kheopswap/utils";
 import { useToken } from "src/hooks";
-import { cn } from "src/util";
 
 const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 	token,

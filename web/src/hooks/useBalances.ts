@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 
-import { type BalanceDef, getBalances$ } from "src/services/balances";
+import { type BalanceDef, getBalances$ } from "@kheopswap/services/balances";
 
 type UseBalancesProps = {
 	balanceDefs: BalanceDef[] | undefined;

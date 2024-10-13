@@ -1,8 +1,8 @@
+import { tokensToPlancks } from "@kheopswap/utils";
 import { type FC, useMemo } from "react";
 import { Tokens } from "src/components";
 import { Pulse } from "src/components/Pulse";
 import { useBalance, useStablePrice } from "src/hooks";
-import { tokensToPlancks } from "src/util";
 import type { LiquidityPoolRowData } from "./useLiquidityPools";
 
 export const LiquidityPoolBalances: FC<{

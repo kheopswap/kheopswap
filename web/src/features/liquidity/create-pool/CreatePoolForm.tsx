@@ -1,3 +1,4 @@
+import { plancksToTokens, tokensToPlancks } from "@kheopswap/utils";
 import { keyBy } from "lodash";
 import {
 	type FC,
@@ -15,7 +16,6 @@ import {
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { useToken } from "src/hooks";
-import { plancksToTokens, tokensToPlancks } from "src/util";
 import { useCreatePool } from "./CreatePoolProvider";
 import { CreatePoolSummary } from "./CreatePoolSummary";
 

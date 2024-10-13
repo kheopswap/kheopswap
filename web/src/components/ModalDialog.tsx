@@ -7,7 +7,7 @@ import {
 } from "@headlessui/react";
 import { type FC, Fragment, type ReactNode, useCallback } from "react";
 
-import { cn } from "src/util";
+import { cn } from "@kheopswap/utils";
 
 type ModalDialog = {
 	isOpen: boolean;

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
-import type { ChainId } from "src/config/chains";
+import { getApi } from "@kheopswap/papi";
+import type { ChainId } from "@kheopswap/registry";
 import { useRelayChains, useSetting } from "src/hooks";
-import { getApi } from "src/services/api";
 
 const waitChainReady = async (chainId: ChainId) => {
 	const api = await getApi(chainId, false);

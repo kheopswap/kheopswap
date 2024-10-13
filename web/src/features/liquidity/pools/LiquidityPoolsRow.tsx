@@ -1,8 +1,9 @@
 import { type FC, useMemo } from "react";
 
+import { cn } from "@kheopswap/utils";
 import { Link } from "react-router-dom";
 import { Styles, TokenLogo } from "src/components";
-import { cn, getTokenDescription } from "src/util";
+import { getTokenDescription } from "src/util";
 import { LiquidityPoolBalances } from "./LiquidityPoolBalance";
 import type { LiquidityPoolsVisibleCol } from "./types";
 import type { LiquidityPoolRowData } from "./useLiquidityPools";

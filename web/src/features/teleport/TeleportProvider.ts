@@ -3,8 +3,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { TeleportFormInputs } from "./schema";
 import { useTeleportExtrinsic } from "./useTeleportExtrinsic";
 
+import { type TokenId, getTokenId, parseTokenId } from "@kheopswap/registry";
+import { setSetting } from "@kheopswap/settings";
+import {
+	getAddressFromAccountField,
+	plancksToTokens,
+	provideContext,
+	tokensToPlancks,
+} from "@kheopswap/utils";
 import { keyBy } from "lodash";
-import { type TokenId, getTokenId, parseTokenId } from "src/config/tokens";
 import {
 	useBalance,
 	useCanAccountReceive,
@@ -16,13 +23,6 @@ import {
 	useSetting,
 	useWalletAccount,
 } from "src/hooks";
-import { setSetting } from "src/services/settings";
-import {
-	getAddressFromAccountField,
-	plancksToTokens,
-	provideContext,
-	tokensToPlancks,
-} from "src/util";
 
 const useDefaultValues = () => {
 	const [defaultAccountId] = useSetting("defaultAccountId");

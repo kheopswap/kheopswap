@@ -2,8 +2,8 @@ import { type FC, useMemo } from "react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
-import type { Token } from "src/config/tokens";
-import { cn, formatDecimals, plancksToTokens } from "src/util";
+import type { Token } from "@kheopswap/registry";
+import { cn, formatDecimals, plancksToTokens } from "@kheopswap/utils";
 import { Pulse } from "./Pulse";
 import { Price } from "./SmallNumber";
 

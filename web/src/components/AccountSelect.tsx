@@ -6,9 +6,9 @@ import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
+import { cn } from "@kheopswap/utils";
 import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
-import { cn } from "src/util";
 import { WalletIcon } from "./WalletIcon";
 
 const AddressRow: FC<{ address: string; className?: string }> = ({

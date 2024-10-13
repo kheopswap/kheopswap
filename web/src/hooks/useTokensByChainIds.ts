@@ -3,9 +3,9 @@ import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 
-import type { ChainId } from "src/config/chains";
-import type { Token } from "src/config/tokens";
-import { getTokensByChains$ } from "src/services/tokens";
+import type { ChainId } from "@kheopswap/registry";
+import type { Token } from "@kheopswap/registry";
+import { getTokensByChains$ } from "@kheopswap/services/tokens";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];

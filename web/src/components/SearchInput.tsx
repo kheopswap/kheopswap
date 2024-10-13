@@ -10,7 +10,7 @@ import {
 
 import { Styles } from "./styles";
 
-import { cn } from "src/util";
+import { cn } from "@kheopswap/utils";
 
 export const SearchInput: FC<{
 	className?: string;

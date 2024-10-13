@@ -6,7 +6,7 @@ import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useRelayChains } from "./useRelayChains";
 import { useTokens } from "./useTokens";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 import { getPoolReserves } from "src/helpers/getPoolReserves";
 import { getAssetConvertPlancks } from "src/util";
 

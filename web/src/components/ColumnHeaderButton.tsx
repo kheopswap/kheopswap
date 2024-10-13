@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 
-import { cn } from "src/util";
+import { cn } from "@kheopswap/utils";
 
 export const ColumnHeaderButton: FC<{
 	selected: boolean;

@@ -1,0 +1,29 @@
+{
+	"name": "@kheopswap/services",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts",
+		"./pools": "./src/pools/index.ts",
+		"./balances": "./src/balances/index.ts",
+		"./tokens": "./src/tokens/index.ts",
+		"./tokenInfos": "./src/tokenInfos/index.ts",
+		"./poolSupplies": "./src/poolSupplies/index.ts",
+		"./loadingStatusSummary": "./src/loadingStatusSummary.ts"
+	},
+	"scripts": {},
+	"devDependencies": {
+		"@kheopswap/typescript-config": "workspace:*",
+		"@types/lodash": "^4.17.10",
+		"typescript": "^5.6.3"
+	},
+	"dependencies": {
+		"@kheopswap/constants": "workspace:*",
+		"@kheopswap/utils": "workspace:*",
+		"@kheopswap/registry": "workspace:*",
+		"@kheopswap/papi": "workspace:*",
+		"polkadot-api": "^1.4.1",
+		"lodash": "^4.17.21",
+		"rxjs": "^7.8.1"
+	}
+}

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { Token, TokenId } from "src/config/tokens";
+import type { Token, TokenId } from "@kheopswap/registry";
 import { useTokens } from "./useTokens";
 
 type UseTokenProps = {

@@ -1,7 +1,7 @@
+import { WALLET_CONNECT_PROJECT_ID } from "@kheopswap/constants";
+import { logger, notifyError } from "@kheopswap/utils";
 import { WalletConnectModal } from "@walletconnect/modal";
 import { firstValueFrom } from "rxjs";
-import { WALLET_CONNECT_PROJECT_ID } from "src/config/constants";
-import { logger, notifyError } from "src/util";
 import {
 	WALLET_CONNECT_CHAINS,
 	WALLET_CONNECT_CONNECT_PARAMS,
@@ -40,7 +40,7 @@ export const connectWalletConnect = async () => {
 		if (!uri) throw new Error("No URI");
 	} catch (cause) {
 		logger.error("Failed to connect to wallet connect", { cause });
-		notifyError(new Error("Failed to connect", { cause }));
+		notifyError(new Error("Failed to connect"));
 		return;
 	}
 

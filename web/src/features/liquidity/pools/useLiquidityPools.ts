@@ -1,10 +1,10 @@
-import { uniq } from "lodash";
-import { useMemo } from "react";
 import type {
 	TokenAsset,
 	TokenForeignAsset,
 	TokenNative,
-} from "src/config/tokens/types";
+} from "@kheopswap/registry";
+import { uniq } from "lodash";
+import { useMemo } from "react";
 import {
 	useNativeToken,
 	usePoolsByChainId,

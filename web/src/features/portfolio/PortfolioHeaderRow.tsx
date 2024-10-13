@@ -2,8 +2,8 @@ import { type FC, useCallback } from "react";
 
 import type { PortfolioRowData, PortfolioSortMode } from "./types";
 
+import { cn } from "@kheopswap/utils";
 import { ColumnHeaderButton } from "src/components/ColumnHeaderButton";
-import { cn } from "src/util";
 
 export const PortfolioHeaderRow: FC<{
 	rows: PortfolioRowData[];

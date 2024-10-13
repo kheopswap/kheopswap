@@ -1,9 +1,9 @@
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 
+import type { Pool } from "@kheopswap/services/pools";
+import { isBigInt } from "@kheopswap/utils";
 import { useBalance } from "src/hooks";
-import type { Pool } from "src/services/pools";
-import { isBigInt } from "src/util";
 
 type AccountBalancesForPool = {
 	pool: Pool | null;

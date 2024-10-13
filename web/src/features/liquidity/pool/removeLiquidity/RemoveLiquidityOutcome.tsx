@@ -1,9 +1,9 @@
 import type { FC } from "react";
 
+import type { TokenId } from "@kheopswap/registry";
+import { cn } from "@kheopswap/utils";
 import { Styles, TokenLogo, Tokens } from "src/components";
-import type { TokenId } from "src/config/tokens";
 import { useToken } from "src/hooks";
-import { cn } from "src/util";
 
 const AssetRow = ({
 	tokenId,

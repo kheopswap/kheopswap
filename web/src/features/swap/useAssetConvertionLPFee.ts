@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { type Chain, isAssetHub } from "src/config/chains";
-import { getApi } from "src/services/api";
-import { logger } from "src/util";
+import { getApi } from "@kheopswap/papi";
+import { type Chain, isAssetHub } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 
 type UseAssetConvertionLPFeeProps = { chain: Chain };
 

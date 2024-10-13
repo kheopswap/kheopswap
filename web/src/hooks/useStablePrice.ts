@@ -4,7 +4,7 @@ import {
 } from "./useAssetConvertPlancks";
 import { useTokenChain } from "./useTokenChain";
 
-import type { TokenId } from "src/config/tokens";
+import type { TokenId } from "@kheopswap/registry";
 
 type UseStablePrice = {
 	tokenId: TokenId | null | undefined;
