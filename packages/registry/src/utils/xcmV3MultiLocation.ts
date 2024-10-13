@@ -5,7 +5,7 @@ import type { XcmV3Multilocation } from "../types";
 
 type Multilocation<T> = T extends TokenId ? XcmV3Multilocation : null;
 
-// TODO conditional result type
+// TODO take parent chain into account
 export const getXcmV3MultilocationFromTokenId = <
 	T extends TokenId | null | undefined,
 >(
