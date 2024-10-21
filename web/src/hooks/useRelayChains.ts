@@ -43,7 +43,10 @@ const useRelayChainsProvider = () => {
 	}, [relayId]);
 
 	const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
-	if (!stableToken) throw new Error("Stable token not found");
+	if (!stableToken)
+		throw new Error(
+			`Stable token not found ${assetHub.stableTokenId}`,
+		);
 
 	return {
 		relayId,

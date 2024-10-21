@@ -6,6 +6,9 @@
 		".": "./src/index.ts"
 	},
 	"scripts": {
+		"papi:update": "papi update",
+		"papi": "papi",
+		"postinstall": "papi",
 		"dev": "dev",
 		"build": "papi --whitelist papi-whitelist.ts "
 	},

@@ -3,17 +3,11 @@
 		"id": "polkadot",
 		"name": "Polkadot",
 		"wsUrl": [
-			"wss://polkadot-rpc.dwellir.com",
 			"wss://rpc.ibp.network/polkadot",
+			"wss://polkadot-rpc.dwellir.com",
 			"wss://rpc.dotters.network/polkadot",
-			"wss://1rpc.io/dot",
 			"wss://polkadot-rpc-tn.dwellir.com",
-			"wss://polkadot-rpc.publicnode.com",
-			"wss://polkadot-public-rpc.blockops.network/ws",
-			"wss://rpc-polkadot.luckyfriday.io",
-			"wss://polkadot.public.curie.radiumblock.co/ws",
-			"wss://rockx-dot.w3node.com/polka-public-dot/ws",
-			"wss://dot-rpc.stakeworld.io"
+			"wss://polkadot-rpc.publicnode.com"
 		],
 		"relay": "polkadot",
 		"paraId": null,
@@ -30,12 +24,25 @@
 			"wss://sys.ibp.network/asset-hub-polkadot",
 			"wss://sys.dotters.network/asset-hub-polkadot",
 			"wss://asset-hub-polkadot-rpc.dwellir.com",
-			"wss://statemint-rpc-tn.dwellir.com",
-			"wss://rpc-asset-hub-polkadot.luckyfriday.io",
-			"wss://polkadot-asset-hub-rpc.polkadot.io",
-			"wss://statemint.public.curie.radiumblock.co/ws",
-			"wss://dot-rpc.stakeworld.io/assethub",
-			"wss://statemint-rpc.dwellir.com"
+			"wss://polkadot-asset-hub-rpc.polkadot.io"
+		],
+		"relay": "polkadot",
+		"paraId": 1000,
+		"logo": "./img/chains/pah.svg",
+		"stableTokenId": "asset::pah::1337",
+		"blockExplorerUrl": "https://assethub-polkadot.subscan.io"
+	},
+	{
+		"id": "hydration",
+		"name": "Hydration",
+		"wsUrl": [
+			"wss://hydradx-rpc.dwellir.com",
+			"wss://hydration.ibp.network",
+			"wss://hydration.dotters.network",
+			"wss://rpc.hydradx.cloud",
+			"wss://rpc.helikon.io/hydradx",
+			"wss://hydradx.paras.ibp.network",
+			"wss://hydradx.paras.dotters.network"
 		],
 		"relay": "polkadot",
 		"paraId": 1000,

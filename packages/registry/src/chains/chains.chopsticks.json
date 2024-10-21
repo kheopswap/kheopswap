@@ -1,0 +1,14 @@
+[
+	{
+		"id": "polkadot",
+		"wsUrl": ["ws://localhost:8420"]
+	},
+	{
+		"id": "pah",
+		"wsUrl": ["ws://localhost:8421"]
+	},
+	{
+		"id": "hydration",
+		"wsUrl": ["ws://localhost:8422"]
+	}
+]

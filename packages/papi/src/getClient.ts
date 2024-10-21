@@ -13,6 +13,7 @@ import {
 	getChainById,
 	isRelay,
 } from "@kheopswap/registry";
+import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
 type ClientOptions = {
 	lightClients: boolean;
 };
@@ -48,7 +49,7 @@ const getRelayChainClient = async (
 ) => {
 	// force ws provider if light clients are disabled or chainSpec is not available
 	if (!options.lightClients || !hasChainSpec(chain.id))
-		return createClient(getWsProvider(chain.wsUrl));
+		return createClient(withPolkadotSdkCompat(getWsProvider(chain.wsUrl)));
 
 	const chainSpec = await getChainSpec(chain.id);
 
@@ -73,7 +74,7 @@ const getParaChainClient = async (chain: Chain, options: ClientOptions) => {
 		!hasChainSpec(paraChainId) ||
 		!hasChainSpec(relayChainId)
 	)
-		return createClient(getWsProvider(chain.wsUrl));
+		return createClient(withPolkadotSdkCompat(getWsProvider(chain.wsUrl)));
 
 	const [relayChainSpec, paraChainSpec] = await Promise.all([
 		getChainSpec(relayChainId),

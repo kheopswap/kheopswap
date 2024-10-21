@@ -7,8 +7,12 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "pnpm --filter web build",
 		"dev": "pnpm --filter web dev",
+		"dev:chopsticks": "pnpm --filter web dev:chopsticks",
 		"clean": "find . -name node_modules -type d -exec rm -r {} + && find . -name dist -type d -exec rm -r {} +",
-		"lint": "pnpm biome check --write"
+		"lint": "pnpm biome check --write",
+		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest xcm -r ./polkadot.yml -p ./pah.yml -p ./hydration.yml)",
+		"papi:update": "pnpm --filter @kheopswap/registry papi:update",
+		"papi": "pnpm --filter @kheopswap/registry papi"
 	},
 	"keywords": [],
 	"author": "Kheops",

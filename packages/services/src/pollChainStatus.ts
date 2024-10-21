@@ -12,7 +12,11 @@ import { logger } from "@kheopswap/utils";
  * @returns
  */
 export const pollChainStatus = (label: string, refreshTimeout: number) => {
-	logger.debug("pollChainStatus - %s - %dms", label, refreshTimeout);
+	logger.debug(
+		"pollChainStatus - %s - (refresh every %dms)",
+		label,
+		refreshTimeout,
+	);
 
 	const loadingStatusByChain$ = new BehaviorSubject<
 		Record<ChainId, LoadingStatus>

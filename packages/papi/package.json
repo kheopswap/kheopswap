@@ -12,6 +12,7 @@
 		"typescript": "^5.6.3"
 	},
 	"dependencies": {
+		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/registry": "workspace:*",
 		"@kheopswap/settings": "workspace:*",
 		"@kheopswap/utils": "workspace:*",

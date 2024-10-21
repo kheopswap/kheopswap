@@ -33,6 +33,9 @@ importers:
 
   packages/papi:
     dependencies:
+      '@kheopswap/constants':
+        specifier: workspace:*
+        version: link:../constants
       '@kheopswap/registry':
         specifier: workspace:*
         version: link:../registry

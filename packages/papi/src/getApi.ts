@@ -3,6 +3,7 @@ import { firstValueFrom } from "rxjs";
 
 import { getClient } from "./getClient";
 
+import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainId,
 	type ChainIdAssetHub,
@@ -76,7 +77,7 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 	waitReady = true,
 ): Promise<Papi> => {
-	const lightClients = getSetting("lightClients");
+	const lightClients = getSetting("lightClients") && !USE_CHOPSTICKS;
 	const cacheKey = getApiCacheId(id, lightClients);
 
 	if (!API_CACHE.has(cacheKey))
