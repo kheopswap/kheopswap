@@ -32,21 +32,19 @@ const useRelayChainsProvider = () => {
 			| undefined;
 		if (!relay) throw new Error("Relay not found");
 
-		const assetHub = chains.find(
+		const allChains = chains.filter((c) => c.relay === relayId) as Chain[];
+
+		const assetHub = allChains.find(
 			(c) => c.paraId === 1000 && c.relay === relayId,
 		) as ChainAssetHub | undefined;
 		if (!assetHub) throw new Error("Relay not found");
-
-		const allChains = [relay, assetHub] as Chain[];
 
 		return { relay, assetHub, allChains };
 	}, [relayId]);
 
 	const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
 	if (!stableToken)
-		throw new Error(
-			`Stable token not found ${assetHub.stableTokenId}`,
-		);
+		throw new Error(`Stable token not found ${assetHub.stableTokenId}`);
 
 	return {
 		relayId,

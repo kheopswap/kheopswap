@@ -45,7 +45,7 @@
 			"wss://hydradx.paras.dotters.network"
 		],
 		"relay": "polkadot",
-		"paraId": 1000,
+		"paraId": 2034,
 		"logo": "./img/chains/pah.svg",
 		"stableTokenId": "asset::pah::1337",
 		"blockExplorerUrl": "https://assethub-polkadot.subscan.io"
