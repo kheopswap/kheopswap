@@ -47,8 +47,8 @@
 		"relay": "polkadot",
 		"paraId": 2034,
 		"logo": "./img/chains/hydration.svg",
-		"stableTokenId": "asset::pah::1337",
-		"blockExplorerUrl": "https://assethub-polkadot.subscan.io"
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://hydration.subscan.io"
 	},
 	{
 		"id": "kusama",
