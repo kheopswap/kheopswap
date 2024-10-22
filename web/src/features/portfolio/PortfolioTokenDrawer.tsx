@@ -284,7 +284,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 	if (token.type === "native")
 		return (
 			<TokenDetailsRow label="Total Supply">
-				{tokenInfo?.supply ? (
+				{tokenInfo?.type === "native" && tokenInfo.supply ? (
 					<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
 				) : (
 					<Shimmer>000 TKN</Shimmer>
@@ -292,7 +292,11 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 			</TokenDetailsRow>
 		);
 
-	if (tokenInfo?.type === "native" || tokenInfo?.type === "pool-asset")
+	if (
+		tokenInfo?.type === "native" ||
+		tokenInfo?.type === "pool-asset" ||
+		tokenInfo?.type === "hydration-asset"
+	)
 		return null;
 
 	return (

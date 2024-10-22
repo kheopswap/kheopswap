@@ -35,6 +35,7 @@ export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
 	"native",
 	"asset",
 	"foreign-asset",
+	// "hydration-asset", TODO
 ];
 
 export const POOL_TOKEN2_TOKEN_TYPES: TokenType[] = ["asset", "foreign-asset"];
