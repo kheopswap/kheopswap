@@ -13,18 +13,18 @@
 		"papi:update": "papi update polkadot,kusama,westend,kah,pah,wah"
 	},
 	"dependencies": {
-		"@kheopswap/constants": "workspace:*",
-		"@kheopswap/registry": "workspace:*",
-		"@kheopswap/utils": "workspace:*",
-		"@kheopswap/settings": "workspace:*",
-		"@kheopswap/papi": "workspace:*",
-		"@kheopswap/services": "workspace:*",
-		"@kheopswap/typescript-config": "workspace:*",
 		"@floating-ui/react": "^0.26.24",
 		"@fontsource-variable/lexend-deca": "^5.1.0",
 		"@formkit/auto-animate": "^0.8.2",
 		"@headlessui/react": "^2.1.10",
 		"@heroicons/react": "^2.1.5",
+		"@kheopswap/constants": "workspace:*",
+		"@kheopswap/papi": "workspace:*",
+		"@kheopswap/registry": "workspace:*",
+		"@kheopswap/services": "workspace:*",
+		"@kheopswap/settings": "workspace:*",
+		"@kheopswap/typescript-config": "workspace:*",
+		"@kheopswap/utils": "workspace:*",
 		"@maskito/core": "^3.1.0",
 		"@maskito/kit": "^3.1.0",
 		"@maskito/react": "^3.1.0",
@@ -81,6 +81,7 @@
 		"vite": "^5.4.8",
 		"vite-plugin-checker": "^0.8.0",
 		"vite-plugin-eslint": "^1.8.1",
+		"vite-plugin-node-polyfills": "^0.22.0",
 		"vite-plugin-svgr": "^4.2.0"
 	},
 	"module": "index.ts"
