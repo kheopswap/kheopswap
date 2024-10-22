@@ -1,11 +1,14 @@
-endpoint:
-  - wss://rpc.ibp.network/polkadot
-  - wss://polkadot-rpc.dwellir.com
+endpoint: 
+ - wss://polkadot-rpc.dwellir.com
+#  - wss://rpc.ibp.network/polkadot
+#  - wss://rpc.dotters.network/polkadot
+#  - wss://polkadot-rpc-tn.dwellir.com
+#  - wss://polkadot-rpc.publicnode.com
 mock-signature-host: true
 block: ${env.POLKADOT_BLOCK_NUMBER}
-db: ./polkadot.db.sqlite
+#db: ./polkadot.db.sqlite
 runtime-log-level: 5
-port: 8420
+port: 3420
 # wasm-override: polkadot_runtime.compact.compressed.wasm
 
 import-storage:

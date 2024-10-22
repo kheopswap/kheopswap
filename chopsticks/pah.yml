@@ -1,8 +1,14 @@
-endpoint: wss://polkadot-asset-hub-rpc.polkadot.io
+endpoint: 
+- wss://sys.ibp.network/statemint
+- wss://sys.dotters.network/statemint
+- wss://sys.ibp.network/asset-hub-polkadot
+- wss://sys.dotters.network/asset-hub-polkadot
+- wss://asset-hub-polkadot-rpc.dwellir.com
+- wss://polkadot-asset-hub-rpc.polkadot.io
 mock-signature-host: true
 block: ${env.POLKADOT_ASSET_HUB_BLOCK_NUMBER}
-db: ./pah.db.sqlite
-port: 8421
+#db: ./pah.db.sqlite
+port: 3421
 
 import-storage:
   System:

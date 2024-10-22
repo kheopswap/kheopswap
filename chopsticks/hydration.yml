@@ -1,9 +1,16 @@
-endpoint: wss://hydradx-rpc.dwellir.com
+endpoint: 
+ - wss://hydradx-rpc.dwellir.com
+ - wss://hydration.ibp.network
+ - wss://hydration.dotters.network
+ - wss://rpc.hydradx.cloud
+ - wss://rpc.helikon.io/hydradx
+ - wss://hydradx.paras.ibp.network
+ - wss://hydradx.paras.dotters.network
 mock-signature-host: true
 block: ${env.HYDRADX_BLOCK_NUMBER}
-db: ./hydradx.db.sqlite
+#db: ./hydradx.db.sqlite
 runtime-log-level: 5
-port: 8422
+port: 3422
 # wasm-override: hydradx_runtime.compact.compressed.wasm
 
 import-storage:

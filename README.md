@@ -38,10 +38,9 @@ Chopsticks runs local copies of each network supported by Kheopswap with the fol
 
 | Network | Local RPC Url |
 |---------|---------------|
-|Polkadot|ws://localhost:8420|
-|Polkadot Asset Hub|ws://localhost:8421|
-|Hydration|ws://localhost:8422|
-
+|Polkadot|ws://localhost:3420|
+|Polkadot Asset Hub|ws://localhost:3421|
+|Hydration|ws://localhost:3422|
 > Note: To see your balances on these local networks in Talisman, customize each network in Talisman settings to use these RPCs.
 
 #### Terminal 2: Launch Kheopswap
