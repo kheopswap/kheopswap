@@ -422,7 +422,11 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 				</TokenDetailsRow>
 			) : null}
 			<TokenDetailsRow label="Price">
-				{!!price && <TokenDetailsRowValue {...price} token={nativeToken} />}
+				{price?.stablePlancks ? (
+					<TokenDetailsRowValue {...price} token={nativeToken} />
+				) : (
+					<span className="opacity-50">N/A</span>
+				)}
 			</TokenDetailsRow>
 			{!!tvl && (
 				<TokenDetailsRow label="TVL">
