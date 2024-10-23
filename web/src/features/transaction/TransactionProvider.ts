@@ -107,6 +107,17 @@ const useTransactionProvider = ({
 		options,
 	});
 
+	// console.log("TransactionProvider", {
+	// 	feeToken,
+	// 	feeTokens,
+	// 	options,
+	// 	call,
+	// 	fakeCall,
+	// 	account,
+	// 	feeEstimateNative,
+	// 	errorFeeEstimate,
+	// });
+
 	const { isLoading: isLoadingFeeEstimateConvert, plancksOut: feeEstimate } =
 		useAssetConvertPlancks({
 			tokenIdIn: nativeToken?.id,

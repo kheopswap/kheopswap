@@ -5,6 +5,7 @@ import chainsProdJson from "./chains.prod.json";
 import {
 	DESCRIPTORS_ALL,
 	DESCRIPTORS_ASSET_HUB,
+	DESCRIPTORS_HYDRATION,
 	DESCRIPTORS_RELAY,
 } from "./descriptors";
 import type {
@@ -13,10 +14,14 @@ import type {
 	ChainHydration,
 	ChainId,
 	ChainIdAssetHub,
+	ChainIdHydration,
 	ChainIdRelay,
 	ChainRelay,
 	Descriptors,
 } from "./types";
+
+export const PARA_ID_ASSET_HUB = 1000;
+export const PARA_ID_HYDRATION = 2034;
 
 const DEV_CHAINS = chainsDevJson as Chain[];
 const PROD_CHAINS = chainsProdJson as Chain[];
@@ -38,6 +43,8 @@ export const isChainIdAssetHub = (id: unknown): id is ChainIdAssetHub =>
 	typeof id === "string" && !!DESCRIPTORS_ASSET_HUB[id as ChainIdAssetHub];
 export const isChainIdRelay = (id: unknown): id is ChainIdRelay =>
 	typeof id === "string" && !!DESCRIPTORS_RELAY[id as ChainIdRelay];
+export const isChainIdHydration = (id: unknown): id is ChainIdHydration =>
+	typeof id === "string" && !!DESCRIPTORS_HYDRATION[id as ChainIdHydration];
 
 export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 	DESCRIPTORS_ALL[id];
@@ -51,7 +58,7 @@ export const getChainById = <T extends Chain>(id: ChainId): T => {
 };
 
 export const isAssetHub = (chain: Chain): chain is ChainAssetHub => {
-	return chain.paraId === 1000;
+	return chain.paraId === PARA_ID_ASSET_HUB;
 };
 
 export const isRelay = (chain: Chain): chain is ChainRelay => {
@@ -59,7 +66,7 @@ export const isRelay = (chain: Chain): chain is ChainRelay => {
 };
 
 export const isHydration = (chain: Chain): chain is ChainHydration => {
-	return chain.paraId === null;
+	return chain.paraId === PARA_ID_HYDRATION;
 };
 
 // TODO

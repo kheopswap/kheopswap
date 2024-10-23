@@ -1,7 +1,7 @@
 import { MultiAddress } from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
 
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
 import {
 	type TokenId,
@@ -38,6 +38,12 @@ export const getTransferExtrinsic = async (
 			});
 		}
 		case "native": {
+			if (isApiHydration(api))
+				return api.tx.Balances.transfer_keep_alive({
+					dest,
+					value: plancks,
+				});
+
 			return api.tx.Balances.transfer_keep_alive({
 				dest: MultiAddress.Id(dest),
 				value: plancks,

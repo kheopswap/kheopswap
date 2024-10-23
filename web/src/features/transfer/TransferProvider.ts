@@ -162,6 +162,13 @@ const useTransferProvider = () => {
 		plancks: feeEstimateNative,
 	});
 
+	// console.log("TransferProvider", {
+	// 	call,
+	// 	fakeCall,
+	// 	feeEstimateNative,
+	// 	feeEstimate,
+	// });
+
 	const { data: balanceSender, isLoading: isLoadingBalanceSender } = useBalance(
 		{
 			address: sender,
