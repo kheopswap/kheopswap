@@ -1,12 +1,13 @@
-import { type ChangeEvent, type FC, useCallback } from "react";
+import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
 import { useMatches, useNavigate } from "react-router-dom";
 
+import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainIdRelay,
 	getChains,
 	isChainIdRelay,
 } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
+import { cn, notifyError } from "@kheopswap/utils";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
 import { useOpenClose, useRelayChains, useSetting } from "src/hooks";
@@ -49,6 +50,12 @@ const DrawerContent: FC<{
 
 	const handleSetLightClients = useCallback(
 		async (e: ChangeEvent<HTMLInputElement>) => {
+			if (USE_CHOPSTICKS) {
+				notifyError(
+					new Error("Light clients are not supported in chopsticks mode"),
+				);
+				return false;
+			}
 			setLightClient(e.target.checked);
 			onClose();
 			window.location.reload();
@@ -56,22 +63,24 @@ const DrawerContent: FC<{
 		[onClose, setLightClient],
 	);
 
+	const relays = useMemo(
+		() => getChains().filter(({ id }) => isChainIdRelay(id)),
+		[],
+	);
+
 	return (
 		<div className="flex flex-col items-start gap-4">
 			<div className="flex w-full flex-col items-start gap-2">
 				<div>Relay network</div>
-				{getChains()
-					.filter(({ id }) => import.meta.env.DEV || id !== "devrelay")
-					.filter(({ id }) => isChainIdRelay(id))
-					.map((c) => (
-						<ChainButton
-							key={c.id}
-							onClick={handleClick(c.id as ChainIdRelay)}
-							logo={c.logo}
-							name={c.name}
-							selected={c.id === relayId}
-						/>
-					))}
+				{relays.map((c) => (
+					<ChainButton
+						key={c.id}
+						onClick={handleClick(c.id as ChainIdRelay)}
+						logo={c.logo}
+						name={c.name}
+						selected={c.id === relayId}
+					/>
+				))}
 			</div>
 			<div>
 				<label
@@ -80,13 +89,19 @@ const DrawerContent: FC<{
 				>
 					<div className="grow">Connect via light clients</div>
 
-					<div className="relative inline-flex cursor-pointer items-center">
+					<div
+						className={cn(
+							"relative inline-flex cursor-pointer items-center",
+							USE_CHOPSTICKS && "opacity-50 cursor-not-allowed",
+						)}
+					>
 						<input
 							id="cbLightClient"
 							type="checkbox"
 							className="peer sr-only"
-							defaultChecked={lightClient}
+							defaultChecked={lightClient && !USE_CHOPSTICKS}
 							onChange={handleSetLightClients}
+							disabled={USE_CHOPSTICKS}
 						/>
 						<div
 							className={cn(
@@ -98,19 +113,26 @@ const DrawerContent: FC<{
 					</div>
 				</label>
 				<div className="mt-1 text-sm text-neutral-500">
-					Light clients are blockchain nodes running in your browser. They
-					provide secure and uncensorable connections to Polkadot networks.
-					<br />
-					Pro-tip: get{" "}
-					<a
-						href="https://substrate.io/developers/substrate-connect/"
-						className="text-neutral-300 underline hover:text-neutral-200"
-						target="_blank"
-						rel="noreferrer"
-					>
-						Substrate Connect
-					</a>{" "}
-					browser extension to share light clients across all your browser apps.
+					{USE_CHOPSTICKS ? (
+						<>Light clients are not available when using Chopsticks</>
+					) : (
+						<>
+							Light clients are blockchain nodes running in your browser. They
+							provide secure and uncensorable connections to Polkadot networks.
+							<br />
+							Pro-tip: get{" "}
+							<a
+								href="https://substrate.io/developers/substrate-connect/"
+								className="text-neutral-300 underline hover:text-neutral-200"
+								target="_blank"
+								rel="noreferrer"
+							>
+								Substrate Connect
+							</a>{" "}
+							browser extension to share light clients across all your browser
+							apps.
+						</>
+					)}
 				</div>
 			</div>
 		</div>

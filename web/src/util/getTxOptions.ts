@@ -1,6 +1,5 @@
+import type { XcmV3Multilocation } from "@kheopswap/registry";
 import type { TxOptions } from "polkadot-api";
-
-import type { XcmV3Multilocation } from "src/types";
 
 export type KheopswapTxOptions = TxOptions<unknown> & {
 	asset?: XcmV3Multilocation;

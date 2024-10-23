@@ -1,2 +1,2 @@
 export * from "./service";
-export { type Pool } from "./types";
+export type { Pool } from "./types";

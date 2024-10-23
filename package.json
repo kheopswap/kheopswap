@@ -7,15 +7,19 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "pnpm --filter web build",
 		"dev": "pnpm --filter web dev",
+		"dev:chopsticks": "pnpm --filter web dev:chopsticks",
 		"clean": "find . -name node_modules -type d -exec rm -r {} + && find . -name dist -type d -exec rm -r {} +",
-		"lint": "pnpm biome check --write"
+		"lint": "pnpm biome check --write",
+		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest xcm -r ./polkadot.yml -p ./pah.yml -p ./hydration.yml)",
+		"papi:update": "pnpm --filter @kheopswap/registry papi:update",
+		"papi": "pnpm --filter @kheopswap/registry papi"
 	},
 	"keywords": [],
 	"author": "Kheops",
 	"license": "AGPL",
 	"packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4",
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.0",
-		"lefthook": "^1.7.18"
+		"@biomejs/biome": "^1.9.4",
+		"lefthook": "^1.8.1"
 	}
 }

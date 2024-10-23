@@ -5,11 +5,13 @@ import type {
 	TokenId,
 	TokenIdAsset,
 	TokenIdForeignAsset,
+	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 	TokenType,
 	TokenTypeAsset,
 	TokenTypeForeignAsset,
+	TokenTypeHydrationAsset,
 	TokenTypeNative,
 	TokenTypePoolAsset,
 } from "./types";
@@ -102,14 +104,17 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 			? TokenIdPoolAsset
 			: T extends TokenTypeForeignAsset
 				? TokenIdForeignAsset
-				: never;
+				: T extends TokenTypeHydrationAsset
+					? TokenIdHydrationAsset
+					: never;
 
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 	token:
 		| { type: TokenTypeNative; chainId: ChainId }
 		| { type: TokenTypeAsset; chainId: ChainId; assetId: number }
 		| { type: TokenTypePoolAsset; chainId: ChainId; poolAssetId: number }
-		| { type: TokenTypeForeignAsset; chainId: ChainId; location: unknown },
+		| { type: TokenTypeForeignAsset; chainId: ChainId; location: unknown }
+		| { type: TokenTypeHydrationAsset; chainId: ChainId; assetId: number },
 ): Result => {
 	switch (token.type) {
 		case "native":
@@ -120,6 +125,8 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 			return `pool-asset::${token.chainId}::${token.poolAssetId}` as Result;
 		case "foreign-asset":
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}` as Result;
+		case "hydration-asset":
+			return `hydration-asset::${token.chainId}::${token.assetId}` as Result;
 	}
 };
 

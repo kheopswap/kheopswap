@@ -3,14 +3,17 @@ import { firstValueFrom } from "rxjs";
 
 import { getClient } from "./getClient";
 
+import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainId,
 	type ChainIdAssetHub,
+	type ChainIdHydration,
 	type ChainIdRelay,
 	type Descriptors,
 	getChainById,
 	getDescriptors,
 	isChainIdAssetHub,
+	isChainIdHydration,
 	isChainIdRelay,
 } from "@kheopswap/registry";
 import { getSetting } from "@kheopswap/settings";
@@ -33,6 +36,12 @@ export const isApiRelay = (api: Api<ChainId>): api is Api<ChainIdRelay> => {
 	return isChainIdRelay(api.chainId);
 };
 
+export const isApiHydration = (
+	api: Api<ChainId>,
+): api is Api<ChainIdHydration> => {
+	return isChainIdHydration(api.chainId);
+};
+
 const getApiCacheId = (chainId: ChainId, lightClient: boolean): string =>
 	`${chainId}-${lightClient}`;
 
@@ -47,8 +56,6 @@ const getApiInner = async <Id extends ChainId>(
 	if (!descriptors)
 		throw new Error(`Could not find descriptors for chain ${chain.id}`);
 
-	const stop = logger.timer(`getApi ${chainId} - lightClient:${lightClients}`);
-
 	const client = await getClient(chainId, { lightClients });
 	if (!client)
 		throw new Error(
@@ -58,14 +65,12 @@ const getApiInner = async <Id extends ChainId>(
 	const api = client.getTypedApi(descriptors) as Api<Id>;
 	api.chainId = chainId as Id;
 	api.waitReady = new Promise<void>((resolve, reject) => {
-		const stop2 = logger.timer(`api ${chainId} ready`);
+		const stop = logger.timer(`api ${chainId} waitReady`);
 		firstValueFrom(client.bestBlocks$)
 			.then(() => resolve())
-			.catch(reject);
-		stop2();
+			.catch(reject)
+			.finally(stop);
 	});
-
-	stop();
 
 	return api;
 };
@@ -76,13 +81,13 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 	waitReady = true,
 ): Promise<Papi> => {
-	const lightClients = getSetting("lightClients");
+	const lightClients = getSetting("lightClients") && !USE_CHOPSTICKS;
 	const cacheKey = getApiCacheId(id, lightClients);
 
 	if (!API_CACHE.has(cacheKey))
 		API_CACHE.set(cacheKey, getApiInner(id, lightClients));
 
-	const api = (await API_CACHE.get(cacheKey)) as Api<ChainId>;
+	const api = (await API_CACHE.get(cacheKey)) as Api<Id>;
 
 	if (waitReady) await api.waitReady;
 
