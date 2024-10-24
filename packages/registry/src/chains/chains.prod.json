@@ -88,7 +88,7 @@
 			"wss://rpc.dotters.network/westend",
 			"wss://westend-rpc.dwellir.com",
 			"wss://westend-rpc-tn.dwellir.com",
-			"wss://westend-rpc.polkadot.io",
+			"wss://westend-rpc.polkadot.io"
 		],
 		"relay": "westend",
 		"paraId": null,
