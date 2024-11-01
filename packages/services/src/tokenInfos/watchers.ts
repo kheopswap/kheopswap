@@ -1,8 +1,8 @@
-import { BehaviorSubject, type Subscription } from "rxjs";
+import { BehaviorSubject, type Subscription, combineLatest, map } from "rxjs";
 
 import { tokenInfosSubscriptions$ } from "./subscriptions";
 
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
 import {
 	type TokenId,
@@ -12,6 +12,7 @@ import {
 import type {
 	TokenIdAsset,
 	TokenIdForeignAsset,
+	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 } from "@kheopswap/registry";
@@ -156,6 +157,40 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 					});
 			});
 		}
+
+		case "hydration-asset": {
+			if (!isApiHydration(api))
+				throw new Error(
+					`Cannot watch token infos for ${tokenId}. HydrationAssets are not supported on ${chain.id}`,
+				);
+
+			const tokenInfo$ = combineLatest(
+				api.query.AssetRegistry.Assets.watchValue(token.assetId, "best"),
+				api.query.Tokens.TotalIssuance.watchValue(token.assetId, "best"),
+			).pipe(
+				map(([asset, supply]) =>
+					asset
+						? {
+								minBalance: asset?.existential_deposit,
+								isSufficient: asset?.is_sufficient,
+								supply,
+							}
+						: null,
+				),
+			);
+
+			return tokenInfo$.subscribe((tokenInfos) => {
+				if (tokenInfos)
+					updateTokenInfo({
+						id: tokenId as TokenIdHydrationAsset,
+						type: "hydration-asset",
+						...tokenInfos,
+					});
+			});
+		}
+
+		default:
+			throw new Error(`Unsupported token type ${tokenId}`);
 	}
 };
 
@@ -172,7 +207,7 @@ tokenInfosSubscriptions$.subscribe((tokenIds) => {
 		const existingIds = Array.from(WATCHERS.keys());
 		const watchersToStop = existingIds.filter((id) => !tokenIds.includes(id));
 		for (const tokenId of watchersToStop) {
-			WATCHERS.get(tokenId)?.then((watcher) => watcher.unsubscribe());
+			WATCHERS.get(tokenId)?.then((watcher) => watcher?.unsubscribe());
 			WATCHERS.delete(tokenId);
 		}
 		statusByTokenId$.next({

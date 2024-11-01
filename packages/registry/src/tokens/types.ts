@@ -159,11 +159,9 @@ export type TokenInfoNative = {
 export type TokenInfoHydrationAsset = {
 	id: TokenIdHydrationAsset;
 	type: TokenTypeHydrationAsset;
-	// TODO
-	// supply: bigint;
-	// minBalance: bigint;
-	// accounts: number;
-	// status: string;
+	supply: bigint;
+	minBalance: bigint;
+	isSufficient: boolean;
 };
 
 export type TokenInfo =
