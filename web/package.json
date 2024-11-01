@@ -15,7 +15,6 @@
 	"dependencies": {
 		"@floating-ui/react": "^0.26.25",
 		"@fontsource-variable/lexend-deca": "^5.1.0",
-		"@formkit/auto-animate": "^0.8.2",
 		"@headlessui/react": "^2.2.0",
 		"@heroicons/react": "^2.1.5",
 		"@kheopswap/constants": "workspace:*",

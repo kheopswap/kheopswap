@@ -217,9 +217,6 @@ importers:
       '@fontsource-variable/lexend-deca':
         specifier: ^5.1.0
         version: 5.1.0
-      '@formkit/auto-animate':
-        specifier: ^0.8.2
-        version: 0.8.2
       '@headlessui/react':
         specifier: ^2.2.0
         version: 2.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -966,9 +963,6 @@ packages:
 
   '@fontsource-variable/lexend-deca@5.1.0':
     resolution: {integrity: sha512-5PyCCyrsvGEnHFkos9VCoIwY9uS0xoHrP6/f2ICwrmSAq1TXemyYDFs+XD4Zs0AmpQv3mLy83+99qAY3RpC+UA==}
-
-  '@formkit/auto-animate@0.8.2':
-    resolution: {integrity: sha512-SwPWfeRa5veb1hOIBMdzI+73te5puUBHmqqaF1Bu7FjvxlYSz/kJcZKSa9Cg60zL0uRNeJL2SbRxV6Jp6Q1nFQ==}
 
   '@headlessui/react@2.2.0':
     resolution: {integrity: sha512-RzCEg+LXsuI7mHiSomsu/gBJSjpupm6A1qIZ5sWjd7JhARNlMiSA4kKfJpCKwU9tE+zMRterhhrP74PvfJrpXQ==}
@@ -4776,8 +4770,6 @@ snapshots:
   '@floating-ui/utils@0.2.8': {}
 
   '@fontsource-variable/lexend-deca@5.1.0': {}
-
-  '@formkit/auto-animate@0.8.2': {}
 
   '@headlessui/react@2.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
