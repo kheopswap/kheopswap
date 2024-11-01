@@ -1,7 +1,7 @@
-import { isEqual, isNumber, keyBy, values } from "lodash";
+import { isNumber } from "lodash";
 import { distinctUntilChanged, filter } from "rxjs";
 
-import { tokensStore$ } from "./store";
+import { type StorageToken, updateTokensStore } from "./store";
 import { tokensByChainSubscriptions$ } from "./subscriptions";
 
 import {
@@ -15,6 +15,7 @@ import {
 	getChainById,
 	hasAssetPallet,
 	isAssetHub,
+	isHydration,
 } from "@kheopswap/registry";
 import {
 	KNOWN_TOKENS_MAP,
@@ -101,15 +102,7 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 
 		logger.info("foreign assets", foreignAssetTokens);
 
-		const currentTokens = values(tokensStore$.value);
-
-		const otherTokens = currentTokens.filter(
-			(t) => t.chainId !== chain.id || t.type !== "foreign-asset",
-		);
-
-		const newValue = keyBy([...otherTokens, ...foreignAssetTokens], "id");
-
-		if (!isEqual(currentTokens, newValue)) tokensStore$.next(newValue);
+		updateTokensStore(chain.id, "foreign-asset", foreignAssetTokens);
 	}
 };
 
@@ -155,15 +148,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					}) as Token,
 			);
 
-		const currentTokens = values(tokensStore$.value);
-
-		const otherTokens = currentTokens.filter(
-			(t) => t.chainId !== chain.id || t.type !== "pool-asset",
-		);
-
-		const newValue = keyBy([...otherTokens, ...assetTokens], "id");
-
-		if (!isEqual(currentTokens, newValue)) tokensStore$.next(newValue);
+		updateTokensStore(chain.id, "pool-asset", assetTokens);
 	}
 };
 
@@ -218,16 +203,62 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 				),
 			);
 
-		const currentTokens = values(tokensStore$.value);
-
-		const otherTokens = currentTokens.filter(
-			(t) => t.chainId !== chain.id || t.type !== "asset",
-		);
-
-		const newValue = keyBy([...otherTokens, ...assetTokens], "id");
-
-		if (!isEqual(currentTokens, newValue)) tokensStore$.next(newValue);
+		updateTokensStore(chain.id, "asset", assetTokens);
 	}
+};
+
+const fetchHydrationAssetTokens = async (chain: Chain, signal: AbortSignal) => {
+	if (!isHydration(chain)) return;
+
+	const api = await getApi(chain.id);
+	if (signal.aborted) return;
+
+	await api.waitReady;
+	if (signal.aborted) return;
+
+	const stop = logger.timer(
+		`chain.api.query.Hydration.Metadata.getEntries() - ${chain.id}`,
+	);
+
+	const locations = await api.query.AssetRegistry.AssetLocations.getEntries({
+		at: "best",
+		signal,
+	});
+
+	stop();
+
+	// consider only tokens from parachain 1000
+	const tokensRaw = locations
+		.filter(
+			(entry) =>
+				entry.value.parents === 1 &&
+				entry.value.interior.type === "X3" &&
+				entry.value.interior.value[0].type === "Parachain" &&
+				entry.value.interior.value[0].value === 1000 &&
+				entry.value.interior.value[1].type === "PalletInstance" &&
+				entry.value.interior.value[1].value === 50,
+		)
+		.map((entry) => ({
+			id: entry.keyArgs[0],
+			location: entry.value,
+		}))
+		.map((entry) => {
+			const id = getTokenId({
+				type: "hydration-asset",
+				chainId: "hydration",
+				assetId: entry.id,
+			});
+
+			return {
+				id,
+				type: "hydration-asset",
+				chainId: "hydration",
+				assetId: entry.id,
+				location: entry.location,
+			} as StorageToken;
+		});
+
+	updateTokensStore("hydration", "hydration-asset", tokensRaw);
 };
 
 const watchTokensByChain = (chainId: ChainId) => {
@@ -252,6 +283,7 @@ const watchTokensByChain = (chainId: ChainId) => {
 					fetchAssetTokens(chain, refreshController.signal),
 					fetchPoolAssetTokens(chain, refreshController.signal),
 					fetchForeignAssetTokens(chain, refreshController.signal),
+					fetchHydrationAssetTokens(chain, refreshController.signal),
 				]),
 				throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
 			]);

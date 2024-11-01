@@ -1,4 +1,4 @@
-import { TRADABLE_TOKEN_TYPES } from "@kheopswap/registry";
+import { PORTFOLIO_TOKEN_TYPES } from "@kheopswap/registry";
 import { provideContext } from "@kheopswap/utils";
 import { values } from "lodash";
 import { useMemo } from "react";
@@ -14,7 +14,7 @@ export const usePortfolioProvider = () => {
 	const { accounts } = useWallets();
 
 	const { data: tokensMap, isLoading: isLoadingTokens } = useAllTokens({
-		types: TRADABLE_TOKEN_TYPES,
+		types: PORTFOLIO_TOKEN_TYPES,
 	});
 
 	const tokens = useMemo(() => values(tokensMap), [tokensMap]);

@@ -5,12 +5,13 @@ import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
 
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
-import { getChainById } from "@kheopswap/registry";
+import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
+import { type ChainIdHydration, getChainById } from "@kheopswap/registry";
 import { parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
 import type { LoadingStatus } from "../common";
+import { getHydrationAssetsBalances$ } from "./hydration";
 
 const statusByBalanceId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
 
@@ -62,11 +63,12 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 		}
 		case "asset": {
-			if (!isApiAssetHub(api))
+			if (!isApiAssetHub(api)) {
+				console.warn("OOPS", { token, chain, balanceId });
 				throw new Error(
 					`Cannot watch balance for ${tokenId}. Assets are not supported on ${chain.id}`,
 				);
-
+			}
 			const account$ = api.query.Assets.Account.watchValue(
 				token.assetId,
 				address,
@@ -115,6 +117,25 @@ const watchBalance = async (balanceId: BalanceId) => {
 				updateBalance(balanceId, balance);
 			});
 		}
+		case "hydration-asset": {
+			if (!isApiHydration(api))
+				throw new Error(
+					`Cannot watch balance for ${tokenId}. HydrationAssets are not supported on ${chain.id}`,
+				);
+
+			return getHydrationAssetsBalances$(
+				chain.id as ChainIdHydration,
+				address,
+			).subscribe((results) => {
+				const balance =
+					results.find((result) => result.assetId === token.assetId)?.balance ??
+					0n;
+
+				updateBalance(balanceId, balance);
+			});
+		}
+		default:
+			throw new Error(`Unsupported token type ${tokenId}`);
 	}
 };
 

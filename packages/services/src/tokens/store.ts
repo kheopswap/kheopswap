@@ -1,11 +1,24 @@
-import { BehaviorSubject, debounceTime } from "rxjs";
+import {
+	BehaviorSubject,
+	debounceTime,
+	distinctUntilChanged,
+	map,
+	shareReplay,
+} from "rxjs";
 
 import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
 import {
+	type ChainId,
 	KNOWN_TOKENS_LIST,
 	KNOWN_TOKENS_MAP,
 	TOKENS_OVERRIDES_MAP,
 	type Token,
+	type TokenHydrationAsset,
+	type TokenType,
+	type XcmV3Multilocation,
+	getChainById,
+	getChains,
+	getTokenId,
 } from "@kheopswap/registry";
 import {
 	getLocalStorageKey,
@@ -13,7 +26,10 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
-import { type Dictionary, entries, keyBy, values } from "lodash";
+import { type Dictionary, entries, isEqual, keyBy, values } from "lodash";
+
+export type StorageToken = Pick<Token, "id" | "chainId" | "type"> &
+	Partial<Omit<Token, "id" | "chainId" | "type">>;
 
 // cleanup old keys
 localStorage.removeItem(getLocalStorageKey("tokens"));
@@ -21,7 +37,7 @@ localStorage.removeItem(getLocalStorageKey("tokens::v2"));
 
 const STORAGE_KEY = getLocalStorageKey("tokens::v3");
 
-const loadTokens = (): Dictionary<Token> => {
+const loadTokens = (): Dictionary<StorageToken> => {
 	try {
 		const strTokens = localStorage.getItem(STORAGE_KEY);
 		const tokensList: Token[] =
@@ -46,7 +62,7 @@ const loadTokens = (): Dictionary<Token> => {
 	}
 };
 
-const saveTokens = (tokens: Dictionary<Token>) => {
+const saveTokens = (tokens: Dictionary<StorageToken>) => {
 	try {
 		localStorage.setItem(STORAGE_KEY, safeStringify(values(tokens)));
 	} catch (err) {
@@ -55,10 +71,102 @@ const saveTokens = (tokens: Dictionary<Token>) => {
 };
 
 const stop = logger.timer("initializing tokens store");
-export const tokensStore$ = new BehaviorSubject<Dictionary<Token>>(
+const tokensStoreData$ = new BehaviorSubject<Dictionary<StorageToken>>(
 	loadTokens(),
 );
 stop();
 
 // save after updates
-tokensStore$.pipe(debounceTime(1_000)).subscribe(saveTokens);
+tokensStoreData$.pipe(debounceTime(1_000)).subscribe(saveTokens);
+
+export const updateTokensStore = (
+	chainId: ChainId,
+	type: TokenType,
+	tokens: StorageToken[],
+) => {
+	const currentTokens = values(tokensStoreData$.value);
+
+	const otherTokens = currentTokens.filter(
+		(t) => t.chainId !== chainId || t.type !== type,
+	);
+
+	const newValue = keyBy(
+		[
+			...otherTokens,
+			...tokens.filter((t) => t.id && t.type === type && t.chainId === chainId),
+		],
+		"id",
+	);
+
+	tokensStoreData$.next(newValue);
+};
+
+//store may contain incomplete information, such as for XC tokens whose symbol can only be found on the source chain
+export const tokensStore$ = tokensStoreData$.pipe(
+	distinctUntilChanged(isEqual),
+	map<Dictionary<StorageToken>, Dictionary<Token>>((storageTokensMap) => {
+		const stop = logger.timer("consolidate tokensStore$");
+		const storageTokens = values(storageTokensMap);
+
+		const chains = getChains();
+
+		const tokens = storageTokens
+			.map((token) => {
+				if (token.type === "hydration-asset") {
+					if (!token.chainId || !("location" in token)) return null;
+					const location = token.location as XcmV3Multilocation;
+
+					if (
+						location?.parents === 1 &&
+						location.interior.type === "X3" &&
+						location.interior.value[0].type === "Parachain" &&
+						location.interior.value[0].value === 1000 &&
+						location.interior.value[1].type === "PalletInstance" &&
+						location.interior.value[1].value === 50 &&
+						location.interior.value[2].type === "GeneralIndex"
+					) {
+						const assetHubAssetId = location.interior.value[2].value;
+						const hydration = getChainById(token.chainId);
+						const assetHub = chains.find(
+							(c) => c.relay === hydration.relay && c.paraId === 1000,
+						);
+						if (assetHub) {
+							const assetHubToken = storageTokens.find(
+								(t) =>
+									t.id ===
+									getTokenId({
+										type: "asset",
+										chainId: assetHub.id,
+										assetId: Number(assetHubAssetId),
+									}),
+							);
+							if (assetHubToken) {
+								const { symbol, decimals, name, logo, verified } =
+									assetHubToken;
+								return {
+									...token,
+									symbol,
+									decimals,
+									name,
+									logo,
+									verified,
+								} as TokenHydrationAsset;
+							}
+						}
+					}
+
+					return null; // ignore tokens for which we dont find the matching asset hub token
+				}
+
+				return token as Token;
+			})
+			.filter(Boolean) as Token[];
+
+		const tokensMap = keyBy(tokens, "id");
+
+		stop();
+
+		return tokensMap;
+	}),
+	shareReplay(1),
+);

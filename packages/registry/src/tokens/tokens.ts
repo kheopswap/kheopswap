@@ -25,6 +25,13 @@ export const TOKENS_OVERRIDES_MAP = Object.fromEntries(
 	TOKENS_OVERRIDES.map((a) => [a.id, a]),
 ) as Record<TokenId, Partial<Token>>;
 
+export const PORTFOLIO_TOKEN_TYPES: TokenType[] = [
+	"native",
+	"asset",
+	"foreign-asset",
+	"hydration-asset",
+];
+
 export const TRADABLE_TOKEN_TYPES: TokenType[] = [
 	"native",
 	"asset",

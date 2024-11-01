@@ -60,6 +60,11 @@ export const parseTokenId = (
 			type: "foreign-asset";
 			chainId: ChainId;
 			location: XcmV3Multilocation;
+	  }
+	| {
+			type: "hydration-asset";
+			chainId: ChainId;
+			assetId: number;
 	  } => {
 	try {
 		const parts = tokenId.split("::");
@@ -87,6 +92,11 @@ export const parseTokenId = (
 					lzs.decompressFromBase64(parts[2] as string),
 				);
 				return { type: "foreign-asset", chainId, location };
+			}
+			case "hydration-asset": {
+				const assetId = Number(parts[2]);
+				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
+				return { type: "hydration-asset", chainId, assetId };
 			}
 			default:
 				throw new Error(`Unsupported token type: ${tokenId}`);

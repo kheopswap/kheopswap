@@ -30,6 +30,6 @@ export type ChainRelay = Chain<ChainIdRelay> & { paraId: null };
 export type ChainAssetHub = Chain<ChainIdAssetHub> & {
 	paraId: ParaIdAssetHub;
 };
-export type ChainHydration = Chain<ChainIdAssetHub> & {
+export type ChainHydration = Chain<ChainIdHydration> & {
 	paraId: ParaIdHydration;
 };
