@@ -39,12 +39,16 @@ const getForeignTokenOrigin = (token: TokenForeignAsset) => {
 export const getTokenDescription = (token: Token) => {
 	const chain = getChainById(token.chainId);
 
-	if (token.type === "asset") return `Asset Hub - ${token.assetId}`;
-
-	if (token.type === "native") return chain.name;
-
-	if (token.type === "foreign-asset")
-		return `Foreign - ${getForeignTokenOrigin(token)}`;
-
-	return token.type;
+	switch (token.type) {
+		case "asset":
+			return `Asset Hub - ${token.assetId}`;
+		case "native":
+			return chain.name;
+		case "hydration-asset":
+			return `Hydration - ${token.assetId}`;
+		case "foreign-asset":
+			return `Foreign - ${getForeignTokenOrigin(token)}`;
+		default:
+			return token.type;
+	}
 };
