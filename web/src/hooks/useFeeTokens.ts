@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import type { ChainId, Token } from "@kheopswap/registry";
 import { getTokensByChain$ } from "@kheopswap/services/tokens";
+import { getCachedObservable$ } from "@kheopswap/utils";
 import { type Dictionary, isEqual, values } from "lodash";
 import { useObservable } from "react-rx";
 import {
@@ -23,16 +24,32 @@ type UseFeeTokensResult = {
 	data: Token[] | undefined;
 };
 
-const CACHE_FEE_TOKENS = new Map<string, Observable<Token[]>>();
+const DEFAULT_VALUES = {
+	isLoading: true,
+	data: undefined,
+};
+
+export const useFeeTokens = ({
+	chainId,
+	address,
+}: UseFeeTokensProps): UseFeeTokensResult => {
+	const feeTokens$ = useMemo(
+		() =>
+			getFeeTokens$(chainId, address).pipe(
+				map((tokens) => ({ isLoading: false, data: tokens })),
+			),
+		[chainId, address],
+	);
+
+	return useObservable(feeTokens$, DEFAULT_VALUES);
+};
 
 const getFeeTokens$ = (
 	chainId: ChainId | null | undefined,
 	address: string | null,
 ) => {
-	const cacheKey = `${chainId}||${address}`;
-
-	if (!CACHE_FEE_TOKENS.has(cacheKey)) {
-		const obs = new Observable<Token[]>((subscriber) => {
+	return getCachedObservable$("getFeeToken$", `::${chainId}::${address}`, () =>
+		new Observable<Token[]>((subscriber) => {
 			if (!chainId || !address) {
 				subscriber.next([]);
 				subscriber.complete();
@@ -82,30 +99,6 @@ const getFeeTokens$ = (
 			return () => {
 				sub.unsubscribe();
 			};
-		}).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
-
-		CACHE_FEE_TOKENS.set(cacheKey, obs);
-	}
-
-	return CACHE_FEE_TOKENS.get(cacheKey) as Observable<Token[]>;
-};
-
-const DEFAULT_VALUES = {
-	isLoading: true,
-	data: undefined,
-};
-
-export const useFeeTokens = ({
-	chainId,
-	address,
-}: UseFeeTokensProps): UseFeeTokensResult => {
-	const feeTokens$ = useMemo(
-		() =>
-			getFeeTokens$(chainId, address).pipe(
-				map((tokens) => ({ isLoading: false, data: tokens })),
-			),
-		[chainId, address],
+		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
 	);
-
-	return useObservable(feeTokens$, DEFAULT_VALUES);
 };

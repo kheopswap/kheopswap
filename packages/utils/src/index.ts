@@ -24,3 +24,5 @@ export * from "./notifyError";
 export * from "./notifyTxStatus";
 export * from "./preloadFont";
 export * from "./getBlockExplorerUrl";
+export * from "./getCachedObservable";
+export * from "./getCachedPromise";

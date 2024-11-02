@@ -1,6 +1,7 @@
 import { getSmProvider } from "polkadot-api/sm-provider";
 
 import type { ChainId } from "@kheopswap/registry";
+import { getCachedPromise } from "@kheopswap/utils";
 
 type Chain = Awaited<Parameters<typeof getSmProvider>[0]>;
 
@@ -9,23 +10,15 @@ type ChainDef = {
 	chainSpec: string;
 };
 
-const SMOLDOT_CHAINS_CACHE = new Map<string, Promise<Chain>>();
-
 const loadChain = async ({ chainId, chainSpec }: ChainDef, relay?: Chain) => {
-	// lazy load only if necessary
-	const { smoldot } = await import("./smoldot");
+	return getCachedPromise("loadChain", chainId, async () => {
+		const { smoldot } = await import("./smoldot");
 
-	if (!SMOLDOT_CHAINS_CACHE.has(chainId))
-		SMOLDOT_CHAINS_CACHE.set(
-			chainId,
-			smoldot.addChain({
-				chainSpec,
-				potentialRelayChains: relay ? [relay] : undefined,
-			}),
-		);
-
-	// biome-ignore lint/style/noNonNullAssertion: <explanation>
-	return SMOLDOT_CHAINS_CACHE.get(chainId)!;
+		return smoldot.addChain({
+			chainSpec,
+			potentialRelayChains: relay ? [relay] : undefined,
+		});
+	});
 };
 
 export const getSmChainProvider = async (
