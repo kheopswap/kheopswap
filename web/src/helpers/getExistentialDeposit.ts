@@ -1,4 +1,4 @@
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
 import { type TokenId, parseTokenId } from "@kheopswap/registry";
 
 export const getExistentialDeposit = async (tokenId: TokenId) => {
@@ -25,6 +25,17 @@ export const getExistentialDeposit = async (tokenId: TokenId) => {
 				{ at: "best" },
 			);
 			return asset?.min_balance ?? null;
+		}
+
+		case "hydration-asset": {
+			if (!isApiHydration(api)) throw new Error("Chain is not Hydration");
+			const asset = await api.query.AssetRegistry.Assets.getValue(
+				token.assetId,
+				{
+					at: "best",
+				},
+			);
+			return asset?.existential_deposit ?? null;
 		}
 
 		default:

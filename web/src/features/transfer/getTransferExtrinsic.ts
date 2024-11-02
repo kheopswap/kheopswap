@@ -60,5 +60,18 @@ export const getTransferExtrinsic = async (
 				target: MultiAddress.Id(dest),
 			});
 		}
+		case "hydration-asset": {
+			if (!isApiHydration(api))
+				throw new Error(
+					`Chain ${chain.name} does not have the ForeignAssets pallet`,
+				);
+			return api.tx.Tokens.transfer({
+				currency_id: token.assetId,
+				amount: plancks,
+				dest,
+			});
+		}
+		default:
+			throw new Error(`Unsupported token type ${tokenId}`);
 	}
 };
