@@ -20,17 +20,16 @@ import {
 
 import type { ChainId } from "@kheopswap/registry";
 import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
+import { getCachedObservable$ } from "@kheopswap/utils";
 
 const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
 	status: "stale",
 	tokens: {},
 };
 
-const CACHE_TOKENS_BY_CHAINS = new Map<ChainId, Observable<ChainTokensState>>();
-
 export const getTokensByChain$ = (chainId: ChainId) => {
-	if (!CACHE_TOKENS_BY_CHAINS.has(chainId)) {
-		const obs = new Observable<ChainTokensState>((subscriber) => {
+	return getCachedObservable$("getTokensByChain$", chainId, () =>
+		new Observable<ChainTokensState>((subscriber) => {
 			const subId = addTokensByChainSubscription([chainId]);
 
 			const sub = tokensByChainState$
@@ -47,12 +46,8 @@ export const getTokensByChain$ = (chainId: ChainId) => {
 				sub.unsubscribe();
 				removeTokensByChainSubscription(subId);
 			};
-		}).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
-
-		CACHE_TOKENS_BY_CHAINS.set(chainId, obs);
-	}
-
-	return CACHE_TOKENS_BY_CHAINS.get(chainId) as Observable<ChainTokensState>;
+		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+	);
 };
 
 export const getTokensByChains$ = (
@@ -71,11 +66,9 @@ const DEFAULT_VALUE_BY_TOKEN: TokenState = {
 	token: undefined,
 };
 
-const CACHE_TOKEN_BY_ID = new Map<TokenId, Observable<TokenState>>();
-
-const getTokenById$ = (tokenId: TokenId) => {
-	if (!CACHE_TOKEN_BY_ID.has(tokenId)) {
-		const obs = new Observable<TokenState>((subscriber) => {
+export const getTokenById$ = (tokenId: TokenId) => {
+	return getCachedObservable$("getTokenById$", tokenId, () =>
+		new Observable<TokenState>((subscriber) => {
 			const chainId = getChainIdFromTokenId(tokenId);
 			const subId = addTokensByChainSubscription([chainId]);
 
@@ -93,12 +86,8 @@ const getTokenById$ = (tokenId: TokenId) => {
 				sub.unsubscribe();
 				removeTokensByChainSubscription(subId);
 			};
-		}).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
-
-		CACHE_TOKEN_BY_ID.set(tokenId, obs);
-	}
-
-	return CACHE_TOKEN_BY_ID.get(tokenId) as Observable<TokenState>;
+		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+	);
 };
 
 export const getTokensById$ = (

@@ -1,43 +1,18 @@
-import { type Api, getApi } from "@kheopswap/papi";
+import { getApi$ } from "@kheopswap/papi";
 import type { ChainIdHydration } from "@kheopswap/registry";
+import { getCachedObservable$ } from "@kheopswap/utils";
 import type { SS58String } from "polkadot-api";
-import {
-	type Observable,
-	concat,
-	from,
-	map,
-	shareReplay,
-	switchMap,
-} from "rxjs";
-
-const CACHE_API = new Map<
-	ChainIdHydration,
-	Observable<Api<ChainIdHydration>>
->();
-
-const CACHE_BALANCES = new Map<
-	SS58String,
-	Observable<{ address: string; assetId: number; balance: bigint }[]>
->();
-
-const getHydrationChainApi$ = (chainId: ChainIdHydration) => {
-	if (!CACHE_API.has(chainId))
-		CACHE_API.set(chainId, from(getApi(chainId)).pipe(shareReplay(1)));
-
-	// biome-ignore lint/style/noNonNullAssertion: <explanation>
-	return CACHE_API.get(chainId)!;
-};
+import { concat, map, shareReplay, switchMap } from "rxjs";
 
 export const getHydrationAssetsBalances$ = (
 	chainId: ChainIdHydration,
 	address: SS58String,
 ) => {
-	const key = `${chainId}:${address}`;
-
-	if (!CACHE_BALANCES.has(key))
-		CACHE_BALANCES.set(
-			key,
-			getHydrationChainApi$(chainId).pipe(
+	return getCachedObservable$(
+		"getHydrationAssetsBalances$",
+		`${chainId}:${address}`,
+		() => {
+			return getApi$(chainId).pipe(
 				switchMap((api) =>
 					concat(
 						// block number subscription doesnt fire on chopsticks, workaround with a direct query
@@ -61,9 +36,7 @@ export const getHydrationAssetsBalances$ = (
 					})),
 				),
 				shareReplay({ refCount: true, bufferSize: 1 }),
-			),
-		);
-
-	// biome-ignore lint/style/noNonNullAssertion: <explanation>
-	return CACHE_BALANCES.get(key)!;
+			);
+		},
+	);
 };

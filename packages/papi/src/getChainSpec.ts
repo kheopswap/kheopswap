@@ -1,4 +1,5 @@
 import type { ChainId } from "@kheopswap/registry";
+import { getCachedPromise } from "@kheopswap/utils";
 
 const KNOWN_CHAIN_SPECS_IDS = [
 	"kusama",
@@ -16,8 +17,6 @@ export const hasChainSpec = (
 	chainId: ChainId,
 ): chainId is ChainIdWithChainSpec =>
 	KNOWN_CHAIN_SPECS_IDS.includes(chainId as ChainIdWithChainSpec);
-
-const CHAIN_SPECS_CACHE = new Map<ChainId, Promise<string>>();
 
 const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 	try {
@@ -51,8 +50,7 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 };
 
 export const getChainSpec = async (chainId: ChainIdWithChainSpec) => {
-	if (!CHAIN_SPECS_CACHE.has(chainId))
-		CHAIN_SPECS_CACHE.set(chainId, loadChainSpec(chainId));
-
-	return CHAIN_SPECS_CACHE.get(chainId) as Promise<string>;
+	return getCachedPromise("getChainSpec", chainId, () =>
+		loadChainSpec(chainId),
+	);
 };
