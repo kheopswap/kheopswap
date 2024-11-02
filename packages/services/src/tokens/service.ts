@@ -1,5 +1,11 @@
 import { type Dictionary, fromPairs, isEqual } from "lodash";
-import { distinctUntilChanged, map, tap } from "rxjs";
+import {
+	Observable,
+	combineLatest,
+	distinctUntilChanged,
+	map,
+	shareReplay,
+} from "rxjs";
 
 import {
 	type ChainTokensState,
@@ -20,56 +26,86 @@ const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
 	tokens: {},
 };
 
-export const getTokensByChains$ = (chainIds: ChainId[]) => {
-	let subId = "";
+const CACHE_TOKENS_BY_CHAINS = new Map<ChainId, Observable<ChainTokensState>>();
 
-	return tokensByChainState$.pipe(
-		tap({
-			subscribe: () => {
-				if (chainIds.length) subId = addTokensByChainSubscription(chainIds);
-			},
-			unsubscribe: () => {
-				if (chainIds.length) removeTokensByChainSubscription(subId);
-			},
-		}),
-		map((statusAndTokens) =>
-			Object.fromEntries(
-				chainIds.map((chainId) => [
-					chainId,
-					statusAndTokens[chainId] ?? DEFAULT_VALUE_BY_CHAIN,
-				]),
+const getTokensByChain$ = (chainId: ChainId) => {
+	if (!CACHE_TOKENS_BY_CHAINS.has(chainId)) {
+		const obs = new Observable<ChainTokensState>((subscriber) => {
+			const subId = addTokensByChainSubscription([chainId]);
+
+			const sub = tokensByChainState$
+				.pipe(
+					map(
+						(statusAndTokens) =>
+							statusAndTokens[chainId] ?? DEFAULT_VALUE_BY_CHAIN,
+					),
+					distinctUntilChanged<ChainTokensState>(isEqual),
+				)
+				.subscribe(subscriber);
+
+			return () => {
+				sub.unsubscribe();
+				removeTokensByChainSubscription(subId);
+			};
+		}).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+
+		CACHE_TOKENS_BY_CHAINS.set(chainId, obs);
+	}
+
+	return CACHE_TOKENS_BY_CHAINS.get(chainId) as Observable<ChainTokensState>;
+};
+
+export const getTokensByChains$ = (
+	chainIds: ChainId[],
+): Observable<Dictionary<ChainTokensState>> =>
+	combineLatest(chainIds.map(getTokensByChain$)).pipe(
+		map((arChainTokens) =>
+			fromPairs(
+				chainIds.map((chainId, index) => [chainId, arChainTokens[index]]),
 			),
 		),
-		distinctUntilChanged<Dictionary<ChainTokensState>>(isEqual),
 	);
-};
 
 const DEFAULT_VALUE_BY_TOKEN: TokenState = {
 	status: "stale",
 	token: undefined,
 };
 
-export const getTokensById$ = (tokenIds: TokenId[]) => {
-	const chainIds = tokenIds.map(getChainIdFromTokenId);
-	let subId = "";
+const CACHE_TOKEN_BY_ID = new Map<TokenId, Observable<TokenState>>();
 
-	return tokensByIdState$.pipe(
-		tap({
-			subscribe: () => {
-				if (chainIds.length) subId = addTokensByChainSubscription(chainIds);
-			},
-			unsubscribe: () => {
-				if (chainIds.length) removeTokensByChainSubscription(subId);
-			},
-		}),
-		map((statusAndTokens) =>
-			fromPairs(
-				tokenIds.map((tokenId) => [
-					tokenId,
-					statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
-				]),
-			),
-		),
-		distinctUntilChanged<Dictionary<TokenState>>(isEqual),
-	);
+const getTokenById$ = (tokenId: TokenId) => {
+	if (!CACHE_TOKEN_BY_ID.has(tokenId)) {
+		const obs = new Observable<TokenState>((subscriber) => {
+			const chainId = getChainIdFromTokenId(tokenId);
+			const subId = addTokensByChainSubscription([chainId]);
+
+			const sub = tokensByIdState$
+				.pipe(
+					map(
+						(statusAndTokens) =>
+							statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
+					),
+					distinctUntilChanged<TokenState>(isEqual),
+				)
+				.subscribe(subscriber);
+
+			return () => {
+				sub.unsubscribe();
+				removeTokensByChainSubscription(subId);
+			};
+		}).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+
+		CACHE_TOKEN_BY_ID.set(tokenId, obs);
+	}
+
+	return CACHE_TOKEN_BY_ID.get(tokenId) as Observable<TokenState>;
 };
+
+export const getTokensById$ = (
+	tokenIds: TokenId[],
+): Observable<Dictionary<TokenState>> =>
+	combineLatest(tokenIds.map(getTokenById$)).pipe(
+		map((arTokens) =>
+			fromPairs(tokenIds.map((tokenId, index) => [tokenId, arTokens[index]])),
+		),
+	);
