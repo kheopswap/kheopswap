@@ -1,5 +1,5 @@
 import type { TypedApi } from "polkadot-api";
-import { firstValueFrom } from "rxjs";
+import { type Observable, firstValueFrom, from } from "rxjs";
 
 import { getClient } from "./getClient";
 
@@ -75,7 +75,7 @@ const getApiInner = async <Id extends ChainId>(
 	return api;
 };
 
-const API_CACHE = new Map<string, Promise<Api<ChainId>>>();
+const CACHE_API = new Map<string, Promise<Api<ChainId>>>();
 
 export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
@@ -84,12 +84,21 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	const lightClients = getSetting("lightClients") && !USE_CHOPSTICKS;
 	const cacheKey = getApiCacheId(id, lightClients);
 
-	if (!API_CACHE.has(cacheKey))
-		API_CACHE.set(cacheKey, getApiInner(id, lightClients));
+	if (!CACHE_API.has(cacheKey))
+		CACHE_API.set(cacheKey, getApiInner(id, lightClients));
 
-	const api = (await API_CACHE.get(cacheKey)) as Api<Id>;
+	const api = (await CACHE_API.get(cacheKey)) as Api<Id>;
 
 	if (waitReady) await api.waitReady;
 
 	return api as Papi;
+};
+
+const CACHE_API_OBSERVABLE = new Map<string, Observable<Api<ChainId>>>();
+
+export const getApi$ = <Id extends ChainId, Papi = Api<Id>>(id: Id) => {
+	if (!CACHE_API_OBSERVABLE.has(id))
+		CACHE_API_OBSERVABLE.set(id, from(getApi(id as ChainId)));
+
+	return CACHE_API_OBSERVABLE.get(id) as Observable<Papi>;
 };

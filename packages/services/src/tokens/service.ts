@@ -28,7 +28,7 @@ const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
 
 const CACHE_TOKENS_BY_CHAINS = new Map<ChainId, Observable<ChainTokensState>>();
 
-const getTokensByChain$ = (chainId: ChainId) => {
+export const getTokensByChain$ = (chainId: ChainId) => {
 	if (!CACHE_TOKENS_BY_CHAINS.has(chainId)) {
 		const obs = new Observable<ChainTokensState>((subscriber) => {
 			const subId = addTokensByChainSubscription([chainId]);

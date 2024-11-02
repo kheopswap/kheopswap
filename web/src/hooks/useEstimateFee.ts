@@ -2,13 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import type { SS58String, Transaction } from "polkadot-api";
 
 import { safeQueryKeyPart } from "@kheopswap/utils";
-import type { KheopswapTxOptions } from "src/util/getTxOptions";
+import type { TxOptionsWithChargeAssetTxPayment } from "src/util/getTxOptions";
 
 type UseEstimateFeeProps = {
 	from: SS58String | null | undefined;
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	call: Transaction<any, any, any, any> | null | undefined;
-	options?: KheopswapTxOptions;
+	options?: TxOptionsWithChargeAssetTxPayment;
 };
 
 export const useEstimateFee = ({
