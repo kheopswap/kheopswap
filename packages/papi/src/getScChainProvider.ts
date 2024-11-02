@@ -1,4 +1,3 @@
-import { getSyncProvider } from "@polkadot-api/json-rpc-provider-proxy";
 import {
 	type Chain,
 	type ScClient,
@@ -7,6 +6,7 @@ import {
 } from "@substrate/connect";
 
 import type { ChainId, ChainIdRelay } from "@kheopswap/registry";
+import { getSmProvider } from "polkadot-api/sm-provider";
 
 // No intellisense on WellKnownChain ?
 const getWellKnownChain = (chainId: ChainId): WellKnownChain | null => {
@@ -22,14 +22,38 @@ const getWellKnownChain = (chainId: ChainId): WellKnownChain | null => {
 	}
 };
 
-const noop = () => {};
-
 let client: ScClient;
 
 type ScProviderProps = {
 	chainId: ChainId;
 	relayChainId?: ChainIdRelay;
 	chainSpec: string;
+};
+
+const getScChain = async ({
+	chainId,
+	relayChainId,
+	chainSpec,
+}: ScProviderProps) => {
+	const wellKnownChain = getWellKnownChain(chainId);
+	const wellKnownRelay = relayChainId ? getWellKnownChain(relayChainId) : null;
+
+	let chain: Chain;
+	try {
+		const relayChain = wellKnownRelay
+			? await client.addWellKnownChain(wellKnownRelay)
+			: undefined;
+		chain = relayChain
+			? await relayChain.addChain(chainSpec, { disableJsonRpc: true })
+			: wellKnownChain
+				? await client.addWellKnownChain(wellKnownChain)
+				: await client.addChain(chainSpec);
+	} catch (e) {
+		console.error(e);
+		throw e;
+	}
+
+	return chain;
 };
 
 export const getScChainProvider = ({
@@ -39,42 +63,5 @@ export const getScChainProvider = ({
 }: ScProviderProps) => {
 	client ??= createScClient();
 
-	const wellKnownChain = getWellKnownChain(chainId);
-	const wellKnownRelay = relayChainId ? getWellKnownChain(relayChainId) : null;
-
-	return getSyncProvider(async () => {
-		let listener: (message: string) => void = noop;
-
-		const onMessage = (msg: string): void => {
-			listener(msg);
-		};
-
-		let chain: Chain;
-		try {
-			const relayChain = wellKnownRelay
-				? await client.addWellKnownChain(wellKnownRelay)
-				: undefined;
-			chain = relayChain
-				? await relayChain.addChain(chainSpec, onMessage)
-				: wellKnownChain
-					? await client.addWellKnownChain(wellKnownChain, onMessage)
-					: await client.addChain(chainSpec, onMessage);
-		} catch (e) {
-			console.error(e);
-			throw e;
-		}
-
-		return (onMessage) => {
-			listener = onMessage;
-			return {
-				send(msg: string) {
-					chain.sendJsonRpc(msg);
-				},
-				disconnect() {
-					listener = noop;
-					chain.remove();
-				},
-			};
-		};
-	});
+	return getSmProvider(getScChain({ chainId, relayChainId, chainSpec }));
 };
