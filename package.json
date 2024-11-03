@@ -6,6 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "pnpm --filter web build",
+		"preview": "pnpm --filter web preview",
 		"dev": "pnpm --filter web dev",
 		"dev:chopsticks": "pnpm --filter web dev:chopsticks",
 		"clean": "pnpm -r exec rm -rf node_modules && pnpm -r exec rm -rf dist && pnpm -r exec rm -rf build",
