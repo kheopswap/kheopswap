@@ -21,9 +21,9 @@ export const logger = {
 
 	timer: isDevMode
 		? (label: string, logAtStart?: boolean) => {
-				const start = performance.now();
-
 				if (logAtStart) debug(`${label} starting`);
+
+				const start = performance.now();
 
 				return () =>
 					debug(`${label} - ${(performance.now() - start).toFixed(2)}ms`);

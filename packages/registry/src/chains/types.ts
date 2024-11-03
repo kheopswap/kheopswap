@@ -13,6 +13,7 @@ export type ChainIdHydration = keyof DescriptorsHydration;
 export type ChainIdAssetHub = keyof DescriptorsAssetHub;
 export type ChainIdRelay = keyof DescriptorsRelay;
 export type ChainId = ChainIdRelay | ChainIdAssetHub | ChainIdHydration;
+
 export type Descriptors<Id extends ChainId> = DescriptorsAll[Id];
 
 export type Chain<Id = ChainId> = {

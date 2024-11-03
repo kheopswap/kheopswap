@@ -120,18 +120,6 @@ const useTransactionProvider = ({
 			tokenId: feeToken?.id,
 		});
 
-	// console.log("check", {
-	// 	feeTokenBalance,
-	// 	isLoadingFeeTokenBalance,
-	// 	account,
-	// 	feeToken,
-	// 	feeEstimateNative,
-	// 	isLoadingFeeEstimateNative,
-	// 	errorFeeEstimate,
-	// 	feeEstimate,
-	// 	isLoadingFeeEstimateConvert,
-	// });
-
 	const onSubmit = useCallback(() => {
 		try {
 			logger.log("submit", { call });

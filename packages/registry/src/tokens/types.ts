@@ -62,10 +62,10 @@ export type TokenForeignAssetNoId = {
 export type TokenHydrationAssetNoId = {
 	type: TokenTypeHydrationAsset;
 	chainId: ChainId;
-	decimals: number; // TODO set to 0
-	symbol: string; // TODO remove
-	name: string; // TODO remove
-	logo: string; // TODO remove
+	decimals: number;
+	symbol: string;
+	name: string;
+	logo: string;
 	assetId: number;
 	location: XcmV3Multilocation;
 	verified: boolean;

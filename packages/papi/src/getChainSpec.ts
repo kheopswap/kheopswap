@@ -38,7 +38,6 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 			case "hydration": {
 				return (await import("./chainspec/hydration")).chainSpec;
 			}
-
 			default:
 				throw new Error(`Unknown chain: ${chainId}`);
 		}
