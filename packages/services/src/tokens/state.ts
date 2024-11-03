@@ -6,7 +6,7 @@ import {
 	toPairs,
 	values,
 } from "lodash";
-import { combineLatest, map } from "rxjs";
+import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 
 import { tokensStore$ } from "./store";
 import { sortTokens } from "./util";
@@ -53,6 +53,7 @@ export const tokensByChainState$ = combineLatest([
 	map(([statusByChain, tokens]) =>
 		combineStateByChainId(statusByChain, tokens),
 	),
+	shareReplay(1),
 );
 
 const combineStateByTokenId = (
@@ -79,7 +80,9 @@ export const tokensByIdState$ = combineLatest([
 	chainTokensStatuses$,
 	tokensStore$,
 ]).pipe(
+	throttleTime(100, undefined, { leading: true, trailing: true }),
 	map(([statusByChain, tokens]) =>
 		combineStateByTokenId(statusByChain, tokens),
 	),
+	shareReplay(1),
 );

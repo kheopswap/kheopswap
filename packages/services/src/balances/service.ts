@@ -1,12 +1,19 @@
 import isEqual from "lodash/isEqual";
-import { distinctUntilChanged, map, tap } from "rxjs";
+import {
+	Observable,
+	combineLatest,
+	distinctUntilChanged,
+	map,
+	shareReplay,
+} from "rxjs";
 
+import { getCachedObservable$ } from "@kheopswap/utils";
 import { balancesState$ } from "./state";
 import {
 	addBalancesSubscription,
 	removeBalancesSubscription,
 } from "./subscriptions";
-import type { Balance, BalanceDef, BalanceState } from "./types";
+import type { BalanceDef, BalanceState } from "./types";
 import { getBalanceId } from "./utils";
 
 const DEFAULT_BALANCE_STATE: BalanceState = {
@@ -14,28 +21,35 @@ const DEFAULT_BALANCE_STATE: BalanceState = {
 	status: "stale",
 };
 
+export const getBalance$ = (def: BalanceDef) => {
+	const balanceId = getBalanceId(def);
+
+	return getCachedObservable$("getBalance$", balanceId, () => {
+		return new Observable<BalanceState>((subscriber) => {
+			const subId = addBalancesSubscription([def]);
+
+			const sub = balancesState$
+				.pipe(
+					map((balances) => balances[balanceId] ?? DEFAULT_BALANCE_STATE),
+					distinctUntilChanged(isEqual),
+				)
+				.subscribe(subscriber);
+
+			return () => {
+				sub.unsubscribe();
+				removeBalancesSubscription(subId);
+			};
+		}).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+	});
+};
+
 export const getBalances$ = (defs: BalanceDef[]) => {
-	const balanceIds = defs.map(getBalanceId);
-
-	let subId = "";
-
-	return balancesState$.pipe(
-		tap({
-			subscribe: () => {
-				if (defs.length) subId = addBalancesSubscription(defs);
-			},
-			unsubscribe: () => {
-				if (defs.length) removeBalancesSubscription(subId);
-			},
-		}),
-		map((balances) =>
-			balanceIds.map(
-				(id, idx): Balance => ({
-					...(defs[idx] as BalanceDef),
-					...(balances[id] ?? DEFAULT_BALANCE_STATE),
-				}),
+	return getCachedObservable$(
+		"getBalances$",
+		defs.map(getBalanceId).join(","),
+		() =>
+			combineLatest(defs.map(getBalance$)).pipe(
+				shareReplay({ refCount: true, bufferSize: 1 }),
 			),
-		),
-		distinctUntilChanged<Balance[]>(isEqual),
 	);
 };

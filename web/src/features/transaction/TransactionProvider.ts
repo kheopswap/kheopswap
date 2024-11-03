@@ -1,4 +1,4 @@
-import { isNumber } from "lodash";
+import { isNumber, uniq } from "lodash";
 import type { Transaction } from "polkadot-api";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -199,7 +199,7 @@ const useTransactionProvider = ({
 		const allTokenIds = Object.keys(callSpendings)
 			.concat(feeToken?.id ?? "")
 			.filter(Boolean) as TokenId[];
-		return [...new Set(allTokenIds)];
+		return uniq(allTokenIds);
 	}, [callSpendings, feeToken?.id]);
 
 	// known spent balances + fee token balance

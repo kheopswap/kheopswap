@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
-import { useTokens } from "./useTokens";
+import { getTokenById$ } from "@kheopswap/services/tokens";
+import { getCachedObservable$ } from "@kheopswap/utils";
+import { useObservable } from "react-rx";
+import { map, of } from "rxjs";
 
 type UseTokenProps = {
 	tokenId: TokenId | null | undefined;
@@ -13,15 +16,25 @@ type UseTokenResult = {
 };
 
 export const useToken = ({ tokenId }: UseTokenProps): UseTokenResult => {
-	const tokenIds = useMemo(() => (tokenId ? [tokenId] : []), [tokenId]);
+	const token$ = useMemo(
+		() =>
+			getCachedObservable$("getToken$", tokenId ?? "null", () =>
+				tokenId
+					? getTokenById$(tokenId).pipe(
+							map(({ token, status }) => ({
+								data: token ?? null,
+								isLoading: status !== "loaded",
+							})),
+						)
+					: of({ data: null, isLoading: false }),
+			),
+		[tokenId],
+	);
 
-	const { data: tokens } = useTokens({ tokenIds });
+	const defaultValue = useMemo(
+		() => ({ data: null, isLoading: !!tokenId }),
+		[tokenId],
+	);
 
-	return useMemo(() => {
-		if (!tokenId) return { data: null, isLoading: false };
-		return {
-			data: tokens[tokenId]?.token ?? null,
-			isLoading: tokens[tokenId]?.isLoading ?? false,
-		};
-	}, [tokenId, tokens]);
+	return useObservable(token$, defaultValue);
 };

@@ -1,4 +1,4 @@
-import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map, shareReplay } from "rxjs";
 
 import type { LoadingStatus } from "./common";
 
@@ -70,6 +70,7 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 		return loadingStatusByChain$.pipe(
 			map((statusByChain) => statusByChain[chainId]),
 			distinctUntilChanged(),
+			shareReplay({ bufferSize: 1, refCount: true }),
 		);
 	};
 

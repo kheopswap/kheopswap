@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, uniq } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import type { TokenId } from "@kheopswap/registry";
@@ -18,7 +18,7 @@ const allTokenInfosSubscriptions$ = new BehaviorSubject<
 export const tokenInfosSubscriptions$ = allTokenInfosSubscriptions$.pipe(
 	firstThenDebounceTime(100),
 	map((subs) => subs.flatMap(({ tokenIds }) => tokenIds)),
-	map((tokenIds) => [...new Set(tokenIds)].sort() as TokenId[]),
+	map((tokenIds) => uniq(tokenIds).sort() as TokenId[]),
 	distinctUntilChanged<TokenId[]>(isEqual),
 );
 

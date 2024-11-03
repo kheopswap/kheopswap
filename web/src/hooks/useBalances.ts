@@ -25,12 +25,15 @@ export const useBalances = ({
 		() =>
 			getBalances$(balanceDefs).pipe(
 				map((balances) => ({
-					data: balances.map((bs) => ({
-						address: bs.address,
-						tokenId: bs.tokenId,
-						balance: bs.balance,
-						isLoading: bs.status !== "loaded",
-					})),
+					data: balanceDefs.map((bd, i) => {
+						const bs = balances[i];
+						return {
+							address: bd.address,
+							tokenId: bd.tokenId,
+							balance: bs.balance,
+							isLoading: bs.status !== "loaded",
+						};
+					}),
 					isLoading: balances.some((b) => b.status !== "loaded"),
 				})),
 			),

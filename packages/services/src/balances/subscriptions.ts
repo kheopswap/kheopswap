@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, uniq } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import { firstThenDebounceTime } from "@kheopswap/utils";
@@ -19,7 +19,7 @@ const allBalanceSubscriptions$ = new BehaviorSubject<
 export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
 	firstThenDebounceTime(100),
 	map((subs) => subs.flatMap(({ balanceIds }) => balanceIds)),
-	map((balanceIds) => [...new Set(balanceIds)].sort() as BalanceId[]),
+	map((balanceIds) => uniq(balanceIds).sort() as BalanceId[]),
 	distinctUntilChanged<BalanceId[]>(isEqual),
 );
 

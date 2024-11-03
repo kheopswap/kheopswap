@@ -46,7 +46,7 @@ export const getTokensByChain$ = (chainId: ChainId) => {
 				sub.unsubscribe();
 				removeTokensByChainSubscription(subId);
 			};
-		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+		}).pipe(shareReplay(1)),
 	);
 };
 
@@ -86,7 +86,7 @@ export const getTokenById$ = (tokenId: TokenId) => {
 				sub.unsubscribe();
 				removeTokensByChainSubscription(subId);
 			};
-		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+		}).pipe(shareReplay(1)),
 	);
 };
 
