@@ -1,1 +1,0 @@
-./bin/zombienet-macos-arm64 --provider native spawn ./small_network.toml

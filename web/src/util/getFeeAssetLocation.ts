@@ -2,8 +2,10 @@ import { XcmV3Junction, XcmV3Junctions } from "@kheopswap/registry";
 
 import type { Token } from "@kheopswap/registry";
 
+// TODO rename to something similar as the associated signed extension (ChargeAssetTxPayment)
+// and ensure this is called only if the chain has ChargeAssetTxPayment (add property on the chain type ?)
 export const getFeeAssetLocation = (feeToken: Token) => {
-	if (!feeToken.isSufficient)
+	if (feeToken.type !== "hydration-asset" && !feeToken.isSufficient)
 		throw new Error(
 			`Token ${feeToken.symbol} (${feeToken.id}) is not sufficient`,
 		);

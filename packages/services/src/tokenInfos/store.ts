@@ -36,6 +36,7 @@ const saveTokenInfos = (tokens: Dictionary<TokenInfo>) => {
 };
 
 const stop = logger.timer("initializing token infos store");
+// TODO dictionary
 export const tokenInfosStore$ = new BehaviorSubject<Dictionary<TokenInfo>>(
 	loadTokenInfos(),
 );

@@ -1,5 +1,5 @@
 import { groupBy } from "lodash";
-import { combineLatest, map } from "rxjs";
+import { combineLatest, map, shareReplay } from "rxjs";
 
 import { poolsStore$ } from "./store";
 import type { Pool } from "./types";
@@ -36,4 +36,5 @@ export const poolsByChainState$ = combineLatest([
 	poolsStore$,
 ]).pipe(
 	map(([statusByChain, allPools]) => combineState(statusByChain, allPools)),
+	shareReplay(1),
 );

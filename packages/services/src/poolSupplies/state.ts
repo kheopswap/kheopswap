@@ -1,4 +1,4 @@
-import { combineLatest, map, throttleTime } from "rxjs";
+import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 
 import { poolSuppliesStore$ } from "./store";
 import { poolSuppliesSubscriptions$ } from "./subscriptions";
@@ -52,4 +52,5 @@ export const poolSuppliesState$ = combineLatest([
 	map(([poolSupplyIds, statuses, poolSupplies]) =>
 		combineState(poolSupplyIds, statuses, poolSupplies),
 	),
+	shareReplay(1),
 );

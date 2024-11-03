@@ -1,9 +1,13 @@
 import type {
+	HydrationWhitelistEntry,
 	KahWhitelistEntry,
 	PolkadotWhitelistEntry,
 } from "@kheopswap/registry";
 
-type WhiteListEntry = KahWhitelistEntry | PolkadotWhitelistEntry;
+type WhiteListEntry =
+	| KahWhitelistEntry
+	| PolkadotWhitelistEntry
+	| HydrationWhitelistEntry;
 
 export const whitelist: WhiteListEntry[] = [
 	"tx.AssetConversion.swap_exact_tokens_for_tokens",
@@ -29,6 +33,11 @@ export const whitelist: WhiteListEntry[] = [
 	"query.ForeignAssets.Account",
 	"query.ForeignAssets.Metadata",
 	"query.Balances.TotalIssuance",
+	"query.AssetRegistry.AssetLocations",
+	"query.AssetRegistry.Assets",
+	"query.Tokens.Accounts",
+	"query.Tokens.TotalIssuance",
+	"query.System.Number",
 	"const.AssetConversion.LPFee",
 	"const.Balances.ExistentialDeposit",
 	"api.AssetConversionApi.*",

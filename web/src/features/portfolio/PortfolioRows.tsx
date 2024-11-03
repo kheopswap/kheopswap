@@ -1,4 +1,3 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { type FC, useCallback } from "react";
 
 import { PortfolioRow } from "./PortfolioRow";
@@ -14,8 +13,6 @@ export const PortfolioRows: FC<{
 	isLoading: boolean;
 	onTokenSelect: (tokenId: TokenId) => void;
 }> = ({ rows, visibleCol, isLoading, onTokenSelect }) => {
-	const [parent] = useAutoAnimate();
-
 	const handleRowClick = useCallback(
 		(tokenId: TokenId) => () => {
 			onTokenSelect(tokenId);
@@ -24,7 +21,7 @@ export const PortfolioRows: FC<{
 	);
 
 	return (
-		<div ref={parent} className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2">
 			{rows.map(({ token, balance, tvl, price }) => (
 				<PortfolioRow
 					key={token.id}

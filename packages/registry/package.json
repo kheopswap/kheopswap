@@ -6,6 +6,9 @@
 		".": "./src/index.ts"
 	},
 	"scripts": {
+		"papi:update": "papi update",
+		"papi": "papi",
+		"postinstall": "papi",
 		"dev": "dev",
 		"build": "papi --whitelist papi-whitelist.ts "
 	},
@@ -18,6 +21,6 @@
 	"dependencies": {
 		"@polkadot-api/descriptors": "file:.papi/descriptors",
 		"lz-string": "^1.5.0",
-		"polkadot-api": "^1.6.4"
+		"polkadot-api": "^1.6.7"
 	}
 }

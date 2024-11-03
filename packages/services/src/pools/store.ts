@@ -57,6 +57,7 @@ const savePools = (pools: Pool[]) => {
 };
 
 const stop = logger.timer("initializing pools store");
+// TODO dictionary
 export const poolsStore$ = new BehaviorSubject<Pool[]>(loadPools());
 stop();
 

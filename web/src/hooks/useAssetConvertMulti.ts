@@ -7,6 +7,7 @@ import { useRelayChains } from "./useRelayChains";
 import { useTokens } from "./useTokens";
 
 import type { TokenId } from "@kheopswap/registry";
+import { uniq } from "lodash";
 import { getPoolReserves } from "src/helpers/getPoolReserves";
 import { getAssetConvertPlancks } from "src/util";
 
@@ -37,13 +38,12 @@ export const useAssetConvertMulti = ({
 	const nativeToken = useNativeToken({ chain: assetHub });
 
 	const tokenIds = useMemo(
-		() => [
-			...new Set(
+		() =>
+			uniq(
 				inputs
 					.map(({ tokenIdIn }) => tokenIdIn)
 					.concat(inputs.map(({ tokenIdOut }) => tokenIdOut)),
 			),
-		],
 		[inputs],
 	);
 

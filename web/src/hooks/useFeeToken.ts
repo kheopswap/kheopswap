@@ -14,18 +14,23 @@ type UsePreferredFeeToken = {
 };
 
 const getKey = (
-	idOrAddress: string | null | undefined,
+	address: string | null,
 	chainId: ChainId | null | undefined,
 ) => {
-	if (!idOrAddress || !chainId) return "";
+	if (!address || !chainId) return "";
 
-	return `${chainId}||${getAddressFromAccountField(idOrAddress)}`;
+	return `${chainId}||${address}`;
 };
 
 export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 	const [feeTokensSettings, setFeeTokensSettings] = useSetting("feeTokens");
 
-	const key = useMemo(() => getKey(accountId, chainId), [accountId, chainId]);
+	const address = useMemo(
+		() => (accountId ? getAddressFromAccountField(accountId) : null),
+		[accountId],
+	);
+
+	const key = useMemo(() => getKey(address, chainId), [address, chainId]);
 
 	const setFeeTokenId = useCallback(
 		(feeTokenId: TokenId) => {
@@ -39,7 +44,7 @@ export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 		[key, setFeeTokensSettings],
 	);
 
-	const { isLoading, data: feeTokens } = useFeeTokens({ chainId });
+	const { isLoading, data: feeTokens } = useFeeTokens({ chainId, address });
 
 	const chain = useMemo(
 		() => (chainId ? getChainById(chainId) : null),
@@ -53,7 +58,7 @@ export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 		const token = feeTokens?.find(
 			(token) => token.id === feeTokenId && token.chainId === chainId,
 		);
-		return token?.isSufficient ? token : nativeToken;
+		return token ?? feeTokens?.[0] ?? nativeToken;
 	}, [feeTokensSettings, key, feeTokens, nativeToken, chainId]);
 
 	return { feeToken, feeTokens, setFeeTokenId, isLoading };

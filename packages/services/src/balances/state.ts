@@ -1,4 +1,4 @@
-import { combineLatest, map, throttleTime } from "rxjs";
+import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
@@ -6,7 +6,7 @@ import type { BalanceId, BalanceState, StoredBalance } from "./types";
 import { balanceStatuses$ } from "./watchers";
 
 import { logger } from "@kheopswap/utils";
-import { type Dictionary, fromPairs, keys } from "lodash";
+import { type Dictionary, fromPairs, keys, uniq } from "lodash";
 import type { LoadingStatus } from "../common";
 
 const combineState = (
@@ -15,9 +15,7 @@ const combineState = (
 	balances: Dictionary<StoredBalance>,
 ): Dictionary<BalanceState> => {
 	try {
-		const allBalanceIds = [
-			...new Set<BalanceId>(balanceIds.concat(keys(balances))),
-		];
+		const allBalanceIds = uniq(balanceIds.concat(keys(balances)));
 
 		return fromPairs(
 			allBalanceIds.map((balanceId) => {
@@ -44,4 +42,5 @@ export const balancesState$ = combineLatest([
 	map(([balanceIds, statuses, balances]) =>
 		combineState(balanceIds, statuses, balances),
 	),
+	shareReplay(1),
 );

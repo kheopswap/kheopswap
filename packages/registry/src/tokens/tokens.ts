@@ -1,4 +1,3 @@
-import { DEV } from "@kheopswap/constants";
 import { getTokenId } from "./helpers";
 import tokensOverridesJson from "./tokens-overrides.json";
 import tokensJson from "./tokens.json";
@@ -9,9 +8,7 @@ const TOKENS_OVERRIDES = tokensOverridesJson as ({
 	id: TokenId;
 } & Partial<TokenNoId>)[];
 
-export const KNOWN_TOKENS_LIST = TOKENS.filter(
-	(t) => DEV || !["devrelay", "devah"].includes(t.chainId),
-).map(
+export const KNOWN_TOKENS_LIST = TOKENS.map(
 	(token) =>
 		({
 			...token,
@@ -28,6 +25,13 @@ export const TOKENS_OVERRIDES_MAP = Object.fromEntries(
 	TOKENS_OVERRIDES.map((a) => [a.id, a]),
 ) as Record<TokenId, Partial<Token>>;
 
+export const PORTFOLIO_TOKEN_TYPES: TokenType[] = [
+	"native",
+	"asset",
+	"foreign-asset",
+	"hydration-asset",
+];
+
 export const TRADABLE_TOKEN_TYPES: TokenType[] = [
 	"native",
 	"asset",
@@ -38,6 +42,7 @@ export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
 	"native",
 	"asset",
 	"foreign-asset",
+	"hydration-asset",
 ];
 
 export const POOL_TOKEN2_TOKEN_TYPES: TokenType[] = ["asset", "foreign-asset"];

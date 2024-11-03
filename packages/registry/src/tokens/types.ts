@@ -4,11 +4,13 @@ export type TokenTypeNative = "native";
 export type TokenTypeAsset = "asset";
 export type TokenTypePoolAsset = "pool-asset";
 export type TokenTypeForeignAsset = "foreign-asset";
+export type TokenTypeHydrationAsset = "hydration-asset";
 export type TokenType =
 	| TokenTypeNative
 	| TokenTypeAsset
 	| TokenTypePoolAsset
-	| TokenTypeForeignAsset;
+	| TokenTypeForeignAsset
+	| TokenTypeHydrationAsset;
 
 export type TokenNativeNoId = {
 	type: TokenTypeNative;
@@ -57,18 +59,38 @@ export type TokenForeignAssetNoId = {
 	isSufficient: boolean;
 };
 
-export type TokenNoId = TokenNativeNoId | TokenAssetNoId | TokenPoolAssetNoId;
+export type TokenHydrationAssetNoId = {
+	type: TokenTypeHydrationAsset;
+	chainId: ChainId;
+	decimals: number;
+	symbol: string;
+	name: string;
+	logo: string;
+	assetId: number;
+	location: XcmV3Multilocation;
+	verified: boolean;
+	isSufficient: boolean;
+};
+
+export type TokenNoId =
+	| TokenNativeNoId
+	| TokenAssetNoId
+	| TokenPoolAssetNoId
+	| TokenForeignAssetNoId
+	| TokenHydrationAssetNoId;
 
 /* declaration */
 export type TokenIdNative = string; // `native::${ChainId}`;
 export type TokenIdAsset = string; // `asset::${ChainId}::${number}`;
 export type TokenIdPoolAsset = string; // `pool-asset::${ChainId}::${number}`;
 export type TokenIdForeignAsset = string; // `foreign-asset::${ChainId}::${multilocation}`;
+export type TokenIdHydrationAsset = string; // `hydration-asset::${ChainId}::${number}`;
 export type TokenId =
 	| TokenIdNative
 	| TokenIdAsset
 	| TokenIdPoolAsset
-	| TokenIdForeignAsset;
+	| TokenIdForeignAsset
+	| TokenIdHydrationAsset;
 
 export type TokenIdsPair = [TokenId, TokenId];
 
@@ -78,11 +100,15 @@ export type TokenPoolAsset = TokenPoolAssetNoId & { id: TokenIdPoolAsset };
 export type TokenForeignAsset = TokenForeignAssetNoId & {
 	id: TokenIdForeignAsset;
 };
+export type TokenHydrationAsset = TokenHydrationAssetNoId & {
+	id: TokenIdHydrationAsset;
+};
 export type Token =
 	| TokenNative
 	| TokenAsset
 	| TokenPoolAsset
-	| TokenForeignAsset;
+	| TokenForeignAsset
+	| TokenHydrationAsset;
 
 export type TokenInfoAsset = {
 	id: TokenIdAsset;
@@ -130,8 +156,17 @@ export type TokenInfoNative = {
 	supply: bigint;
 };
 
+export type TokenInfoHydrationAsset = {
+	id: TokenIdHydrationAsset;
+	type: TokenTypeHydrationAsset;
+	supply: bigint;
+	minBalance: bigint;
+	isSufficient: boolean;
+};
+
 export type TokenInfo =
 	| TokenInfoNative
 	| TokenInfoAsset
 	| TokenInfoPoolAsset
-	| TokenInfoForeignAsset;
+	| TokenInfoForeignAsset
+	| TokenInfoHydrationAsset;

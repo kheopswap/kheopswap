@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, uniq } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import type { ChainId } from "@kheopswap/registry";
@@ -15,7 +15,7 @@ const allTokensByChainSubscriptions$ = new BehaviorSubject<
 
 export const tokensByChainSubscriptions$ = allTokensByChainSubscriptions$.pipe(
 	firstThenDebounceTime(100),
-	map((subs) => [...new Set(subs.flatMap((sub) => sub.chainIds))].sort()),
+	map((subs) => uniq(subs.flatMap((sub) => sub.chainIds)).sort()),
 	distinctUntilChanged<ChainId[]>(isEqual),
 );
 

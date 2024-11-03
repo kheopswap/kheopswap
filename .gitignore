@@ -29,3 +29,5 @@ zombienet-linux-x64
 zombienet.log
 zombienet/bin/*
 !zombienet/bin/README.md
+
+chopsticks/*.db.sqlite*

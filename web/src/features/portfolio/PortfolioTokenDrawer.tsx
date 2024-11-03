@@ -281,10 +281,10 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 
 	if (token.type === "pool-asset") return null;
 
-	if (token.type === "native")
+	if (token.type === "native" || token.type === "hydration-asset")
 		return (
 			<TokenDetailsRow label="Total Supply">
-				{tokenInfo?.supply ? (
+				{tokenInfo && "supply" in tokenInfo ? (
 					<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
 				) : (
 					<Shimmer>000 TKN</Shimmer>
@@ -292,7 +292,11 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 			</TokenDetailsRow>
 		);
 
-	if (tokenInfo?.type === "native" || tokenInfo?.type === "pool-asset")
+	if (
+		tokenInfo?.type === "native" ||
+		tokenInfo?.type === "pool-asset" ||
+		tokenInfo?.type === "hydration-asset"
+	)
 		return null;
 
 	return (
@@ -422,7 +426,11 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 				</TokenDetailsRow>
 			) : null}
 			<TokenDetailsRow label="Price">
-				{!!price && <TokenDetailsRowValue {...price} token={nativeToken} />}
+				{price?.stablePlancks ? (
+					<TokenDetailsRowValue {...price} token={nativeToken} />
+				) : (
+					<span className="opacity-50">N/A</span>
+				)}
 			</TokenDetailsRow>
 			{!!tvl && (
 				<TokenDetailsRow label="TVL">

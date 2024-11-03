@@ -3,40 +3,66 @@ import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getTokensById$ } from "@kheopswap/services/tokens";
+import { getCachedObservable$ } from "@kheopswap/utils";
 import { useObservable } from "react-rx";
-import { map } from "rxjs";
+import { Observable, map, shareReplay } from "rxjs";
 
 type UseTokensProps = { tokenIds: TokenId[] };
 
+type TokenState = { token: Token; isLoading: boolean };
+
 type UseTokensResult = {
 	isLoading: boolean;
-	data: Dictionary<{ token: Token; isLoading: boolean }>;
+	data: Dictionary<TokenState>;
 };
-
-const DEFAULT_VALUE: UseTokensResult = { isLoading: true, data: {} };
 
 export const useTokens = ({ tokenIds }: UseTokensProps): UseTokensResult => {
 	const tokens$ = useMemo(
 		() =>
-			getTokensById$(tokenIds).pipe(
-				map(
-					(tokensById) =>
-						({
-							isLoading: values(tokensById).some(
-								(tokenState) => tokenState.status !== "loaded",
-							),
-							data: keyBy(
+			getTokens$(tokenIds).pipe(
+				map((data) => ({
+					isLoading: values(data).some((tokenState) => tokenState.isLoading),
+					data,
+				})),
+			),
+		[tokenIds],
+	);
+
+	const defaultValue = useMemo(
+		() => ({ isLoading: !!tokenIds.length, data: {} }),
+		[tokenIds],
+	);
+
+	return useObservable(tokens$, defaultValue);
+};
+
+const getTokens$ = (tokenIds: TokenId[]) => {
+	return getCachedObservable$("getTokens$", `${tokenIds.join("||")}`, () =>
+		new Observable<Dictionary<TokenState>>((subscriber) => {
+			if (!tokenIds.length) {
+				subscriber.next({});
+				subscriber.complete();
+				return () => {};
+			}
+
+			const sub = getTokensById$(tokenIds)
+				.pipe(
+					map(
+						(tokensById) =>
+							keyBy(
 								values(tokensById).map(({ token, status }) => ({
 									token,
 									isLoading: status !== "loaded",
 								})),
 								"token.id",
-							),
-						}) as UseTokensResult,
-				),
-			),
-		[tokenIds],
-	);
+							) as Dictionary<TokenState>,
+					),
+				)
+				.subscribe(subscriber);
 
-	return useObservable(tokens$, DEFAULT_VALUE);
+			return () => {
+				sub.unsubscribe();
+			};
+		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+	);
 };

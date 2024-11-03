@@ -1,4 +1,4 @@
-import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map, shareReplay } from "rxjs";
 
 import type { LoadingStatus } from "./common";
 
@@ -12,7 +12,11 @@ import { logger } from "@kheopswap/utils";
  * @returns
  */
 export const pollChainStatus = (label: string, refreshTimeout: number) => {
-	logger.debug("pollChainStatus - %s - %dms", label, refreshTimeout);
+	logger.debug(
+		"pollChainStatus - %s - (refresh every %dms)",
+		label,
+		refreshTimeout,
+	);
 
 	const loadingStatusByChain$ = new BehaviorSubject<
 		Record<ChainId, LoadingStatus>
@@ -66,6 +70,7 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 		return loadingStatusByChain$.pipe(
 			map((statusByChain) => statusByChain[chainId]),
 			distinctUntilChanged(),
+			shareReplay({ bufferSize: 1, refCount: true }),
 		);
 	};
 

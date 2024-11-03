@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, uniq } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import type { PoolSupplyId } from "./types";
@@ -21,7 +21,7 @@ const allPoolSupplySubscriptions$ = new BehaviorSubject<
 export const poolSuppliesSubscriptions$ = allPoolSupplySubscriptions$.pipe(
 	firstThenDebounceTime(100),
 	map((subs) => subs.flatMap(({ poolSupplyIds }) => poolSupplyIds)),
-	map((pollSupplyIds) => [...new Set(pollSupplyIds)].sort() as PoolSupplyId[]),
+	map((pollSupplyIds) => uniq(pollSupplyIds).sort() as PoolSupplyId[]),
 	distinctUntilChanged<PoolSupplyId[]>(isEqual),
 );
 

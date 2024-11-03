@@ -1,4 +1,4 @@
-import type { InjectedAccount } from "polkadot-api/dist/reexports/pjs-signer";
+import type { InjectedAccount } from "polkadot-api/pjs-signer";
 import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
@@ -28,11 +28,17 @@ export const useBalancesWithStables = ({
 		balanceDefs,
 	});
 
+	const inputs = useMemo(
+		() =>
+			rawBalances.map(({ tokenId, balance }) => ({
+				tokenId,
+				plancks: balance,
+			})),
+		[rawBalances],
+	);
+
 	const { data: stables, isLoading: isLoadingStables } = useStablePlancksMulti({
-		inputs: rawBalances.map(({ tokenId, balance }) => ({
-			tokenId,
-			plancks: balance,
-		})),
+		inputs,
 	});
 
 	const data = useMemo<AccountBalanceWithStable[]>(

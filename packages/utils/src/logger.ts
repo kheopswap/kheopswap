@@ -25,7 +25,8 @@ export const logger = {
 
 				const start = performance.now();
 
-				return () => debug(`${label} - ${performance.now() - start}ms`);
+				return () =>
+					debug(`${label} - ${(performance.now() - start).toFixed(2)}ms`);
 			}
 		: () => NO_OP,
 };

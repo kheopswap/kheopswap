@@ -1,7 +1,7 @@
 import { MultiAddress } from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
 
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
 import {
 	type TokenId,
@@ -38,6 +38,12 @@ export const getTransferExtrinsic = async (
 			});
 		}
 		case "native": {
+			if (isApiHydration(api))
+				return api.tx.Balances.transfer_keep_alive({
+					dest,
+					value: plancks,
+				});
+
 			return api.tx.Balances.transfer_keep_alive({
 				dest: MultiAddress.Id(dest),
 				value: plancks,
@@ -54,5 +60,18 @@ export const getTransferExtrinsic = async (
 				target: MultiAddress.Id(dest),
 			});
 		}
+		case "hydration-asset": {
+			if (!isApiHydration(api))
+				throw new Error(
+					`Chain ${chain.name} does not have the ForeignAssets pallet`,
+				);
+			return api.tx.Tokens.transfer({
+				currency_id: token.assetId,
+				amount: plancks,
+				dest,
+			});
+		}
+		default:
+			throw new Error(`Unsupported token type ${tokenId}`);
 	}
 };

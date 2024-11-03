@@ -1,4 +1,3 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import type { FC } from "react";
 
 import { LiquidityPoolsRow } from "./LiquidityPoolsRow";
@@ -14,10 +13,8 @@ export const LiquidityPoolsRows: FC<{
 	visibleCol: LiquidityPoolsVisibleCol;
 	isLoading: boolean;
 }> = ({ rows, visibleCol, isLoading }) => {
-	const [parent] = useAutoAnimate();
-
 	return (
-		<div ref={parent} className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2">
 			{rows.map((pool) => (
 				<LiquidityPoolsRow
 					key={pool.poolAssetId}

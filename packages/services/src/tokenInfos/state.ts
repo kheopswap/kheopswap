@@ -1,4 +1,4 @@
-import { combineLatest, map, throttleTime } from "rxjs";
+import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 
 import type { TokenId, TokenInfo } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
@@ -43,4 +43,5 @@ export const tokenInfosState$ = combineLatest([
 	map(([balanceIds, statuses, balances]) =>
 		combineState(balanceIds, statuses, balances),
 	),
+	shareReplay(1),
 );
