@@ -33,9 +33,12 @@ const save = (poolSupplies: StoredPoolSupply[]) => {
 };
 
 const stop = logger.timer("initializing poolSupplies store");
+
+// TODO change to a dictionary for faster lookups and updates
 export const poolSuppliesStore$ = new BehaviorSubject<StoredPoolSupply[]>(
 	load(),
 );
+
 stop();
 
 // save after updates

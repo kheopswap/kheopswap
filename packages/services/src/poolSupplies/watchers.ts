@@ -25,28 +25,32 @@ const statusByPoolSupplyId$ = new BehaviorSubject<
 
 const WATCHERS = new Map<PoolSupplyId, Promise<Subscription>>();
 
-const updateBalanceLoadingStatus = (
+const updatePoolSupplyLoadingStatus = (
 	poolSupplyId: PoolSupplyId,
 	status: LoadingStatus,
 ) => {
 	if (statusByPoolSupplyId$.value[poolSupplyId] === status) return;
 
-	statusByPoolSupplyId$.next({
-		...statusByPoolSupplyId$.value,
-		[poolSupplyId]: status,
-	});
+	statusByPoolSupplyId$.next(
+		Object.assign(statusByPoolSupplyId$.value, { [poolSupplyId]: status }),
+	);
 };
 
 const updatePoolSupply = (poolSupplyId: PoolSupplyId, supply: bigint) => {
-	const newBalances = poolSuppliesStore$.value
-		.filter((p) => p.id !== poolSupplyId)
-		.concat({ id: poolSupplyId, supply: supply.toString() });
+	// TODO change store to a dictionary
+	const existing = poolSuppliesStore$.value.find((p) => p.id === poolSupplyId);
 
-	// update balances store
-	poolSuppliesStore$.next(newBalances);
+	if (!existing || existing.supply !== supply.toString()) {
+		const newSupplies = poolSuppliesStore$.value
+			.filter((p) => p.id !== poolSupplyId)
+			.concat({ id: poolSupplyId, supply: supply.toString() });
+
+		// update balances store
+		poolSuppliesStore$.next(newSupplies);
+	}
 
 	// indicate it's loaded
-	updateBalanceLoadingStatus(poolSupplyId, "loaded");
+	updatePoolSupplyLoadingStatus(poolSupplyId, "loaded");
 };
 
 const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
@@ -61,7 +65,7 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 
 	const api = await getApi(chain.id);
 
-	updateBalanceLoadingStatus(poolSupplyId, "loading");
+	updatePoolSupplyLoadingStatus(poolSupplyId, "loading");
 
 	const chainPool$ = getPoolsByChain$(chain.id).pipe(
 		map((chainPools) =>
@@ -86,7 +90,7 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 
 	return new Subscription(() => {
 		supplySub.unsubscribe();
-		updateBalanceLoadingStatus(poolSupplyId, "stale");
+		updatePoolSupplyLoadingStatus(poolSupplyId, "stale");
 	});
 };
 
