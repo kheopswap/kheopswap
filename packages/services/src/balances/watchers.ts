@@ -23,20 +23,21 @@ const updateBalanceLoadingStatus = (
 ) => {
 	if (statusByBalanceId$.value[balanceId] === status) return;
 
-	statusByBalanceId$.next({
-		...statusByBalanceId$.value,
-		[balanceId]: status,
-	});
+	statusByBalanceId$.next(
+		Object.assign(statusByBalanceId$.value, { [balanceId]: status }),
+	);
 };
 
 const updateBalance = (balanceId: BalanceId, balance: bigint) => {
 	const { tokenId, address } = parseBalanceId(balanceId);
 
-	// update balances store
-	balancesStore$.next({
-		...balancesStore$.value,
-		[balanceId]: { address, tokenId, balance },
-	});
+	// update balances store if necessary
+	if (balancesStore$.value[balanceId]?.balance !== balance)
+		balancesStore$.next(
+			Object.assign(balancesStore$.value, {
+				[balanceId]: { address, tokenId, balance },
+			}),
+		);
 
 	// indicate it's loaded
 	updateBalanceLoadingStatus(balanceId, "loaded");
