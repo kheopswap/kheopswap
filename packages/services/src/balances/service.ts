@@ -10,7 +10,7 @@ import {
 import { getCachedObservable$ } from "@kheopswap/utils";
 import { balancesState$ } from "./state";
 import {
-	addBalancesSubscription,
+	addBalanceSubscription,
 	removeBalancesSubscription,
 } from "./subscriptions";
 import type { BalanceDef, BalanceState } from "./types";
@@ -26,7 +26,7 @@ export const getBalance$ = (def: BalanceDef) => {
 
 	return getCachedObservable$("getBalance$", balanceId, () => {
 		return new Observable<BalanceState>((subscriber) => {
-			const subId = addBalancesSubscription([def]);
+			const subId = addBalanceSubscription(balanceId);
 
 			const sub = balancesState$
 				.pipe(

@@ -1,41 +1,38 @@
-import { isEqual, uniq } from "lodash";
+import { type Dictionary, isEqual, uniq, values } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 import { firstThenDebounceTime } from "@kheopswap/utils";
-import type { BalanceDef, BalanceId } from "./types";
-import { getBalanceId } from "./utils";
-
-type BalanceSubscriptionRequest = {
-	id: string;
-	balanceIds: BalanceId[];
-};
+import type { BalanceId } from "./types";
 
 // represent the list of balances that must be watched
 const allBalanceSubscriptions$ = new BehaviorSubject<
-	BalanceSubscriptionRequest[]
->([]);
+	// key = subscripption id
+	// value = BalanceId
+	Dictionary<string>
+>({});
 
 // Unique active subscriptions (1 per token+address)
 export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
 	firstThenDebounceTime(100),
-	map((subs) => subs.flatMap(({ balanceIds }) => balanceIds)),
-	map((balanceIds) => uniq(balanceIds).sort() as BalanceId[]),
+	map((subs) => uniq(values(subs)).sort() as BalanceId[]),
 	distinctUntilChanged<BalanceId[]>(isEqual),
 );
 
-export const addBalancesSubscription = (requests: BalanceDef[]) => {
-	const request: BalanceSubscriptionRequest = {
-		id: crypto.randomUUID(),
-		balanceIds: requests.map(getBalanceId),
-	};
+export const addBalanceSubscription = (balanceId: string) => {
+	const subscriptionId = crypto.randomUUID();
 
-	allBalanceSubscriptions$.next([...allBalanceSubscriptions$.value, request]);
+	allBalanceSubscriptions$.next(
+		Object.assign(allBalanceSubscriptions$.value, {
+			[subscriptionId]: balanceId,
+		}),
+	);
 
-	return request.id;
+	return subscriptionId;
 };
 
 export const removeBalancesSubscription = (id: string) => {
-	allBalanceSubscriptions$.next(
-		allBalanceSubscriptions$.value.filter((sub) => sub.id !== id),
-	);
+	const current = allBalanceSubscriptions$.value;
+	delete current[id];
+
+	allBalanceSubscriptions$.next(current);
 };
