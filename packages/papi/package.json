@@ -8,7 +8,7 @@
 	"scripts": {},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
-		"@types/lodash": "^4.17.12",
+		"@types/lodash": "^4.17.13",
 		"typescript": "^5.6.3"
 	},
 	"dependencies": {
@@ -17,9 +17,9 @@
 		"@kheopswap/settings": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
 		"@polkadot-api/json-rpc-provider-proxy": "^0.2.3",
-		"@substrate/connect": "^2.0.0",
+		"@substrate/connect": "^2.0.1",
 		"lodash": "^4.17.21",
-		"polkadot-api": "^1.6.7",
+		"polkadot-api": "^1.7.2",
 		"rxjs": "^7.8.1",
 		"vite": "^5.4.10"
 	}
