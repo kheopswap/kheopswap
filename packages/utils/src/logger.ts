@@ -1,6 +1,8 @@
+import { DEV } from "@kheopswap/constants";
 import { interval } from "rxjs";
 
-const isDevMode = import.meta.env.DEV;
+const isDevMode = DEV;
+const printCumulativeTimers = true;
 
 const NO_OP = () => {};
 
@@ -63,6 +65,7 @@ const incrementCumulativeTimer = (label: string, duration: number) => {
 
 if (isDevMode) {
 	interval(5000).subscribe(() => {
+		if (!printCumulativeTimers) return;
 		const timers = CUMULATIVE_TIMERS.entries()
 			.toArray()
 			.map(([label, { count, duration }]) => ({
