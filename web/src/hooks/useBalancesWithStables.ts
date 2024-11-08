@@ -3,6 +3,7 @@ import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
+import { logger } from "@kheopswap/utils";
 import { useBalances, useStablePlancksMulti } from "src/hooks";
 import type { AccountBalanceWithStable } from "src/types";
 
@@ -15,6 +16,8 @@ export const useBalancesWithStables = ({
 	tokens,
 	accounts,
 }: UseAccountBalancesWithStablesProps) => {
+	const stop = logger.cumulativeTimer("useBalancesWithStables");
+
 	const balanceDefs: BalanceDef[] = useMemo(() => {
 		return (tokens ?? []).flatMap((token) =>
 			(accounts ?? []).map((acc) => ({
@@ -54,6 +57,8 @@ export const useBalancesWithStables = ({
 			})),
 		[rawBalances, stables],
 	);
+
+	stop();
 
 	return { data, isLoading: isLoadingBalances || isLoadingStables };
 };

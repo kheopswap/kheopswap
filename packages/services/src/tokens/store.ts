@@ -84,6 +84,8 @@ export const updateTokensStore = (
 	type: TokenType,
 	tokens: StorageToken[],
 ) => {
+	const stop = logger.cumulativeTimer("updateTokensStore");
+
 	const currentTokens = values(tokensStoreData$.value);
 
 	const otherTokens = currentTokens.filter(
@@ -99,6 +101,8 @@ export const updateTokensStore = (
 	);
 
 	tokensStoreData$.next(newValue);
+
+	stop();
 };
 
 //store may contain incomplete information, such as for XC tokens whose symbol can only be found on the source chain

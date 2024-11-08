@@ -1,3 +1,4 @@
+import { logger } from "@kheopswap/utils";
 import { isBigInt } from "../../../packages/utils/src/isBigInt";
 import { plancksToTokens } from "../../../packages/utils/src/plancks";
 
@@ -11,30 +12,36 @@ export const getAssetConvertPlancks = (
 	reservesNativeToTokenIn: [bigint, bigint],
 	reservesNativeToTokenOut: [bigint, bigint],
 ) => {
-	if (tokenIn.id === tokenOut.id) return plancks;
+	const stop = logger.cumulativeTimer("getAssetConvertPlancks");
 
-	if (nativeToken.id !== tokenOut.id && !reservesNativeToTokenOut)
-		return undefined;
+	try {
+		if (tokenIn.id === tokenOut.id) return plancks;
 
-	const [nativeToTokenOutReserveIn, nativeToTokenOutReserveOut] =
-		nativeToken.id !== tokenOut.id ? reservesNativeToTokenOut : [1n, 1n];
+		if (nativeToken.id !== tokenOut.id && !reservesNativeToTokenOut)
+			return undefined;
 
-	if (tokenIn.id === nativeToken.id) {
-		const stablePlancks =
-			(plancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
-		return stablePlancks;
+		const [nativeToTokenOutReserveIn, nativeToTokenOutReserveOut] =
+			nativeToken.id !== tokenOut.id ? reservesNativeToTokenOut : [1n, 1n];
+
+		if (tokenIn.id === nativeToken.id) {
+			const stablePlancks =
+				(plancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
+			return stablePlancks;
+		}
+
+		if (!reservesNativeToTokenIn || reservesNativeToTokenIn?.includes(0n))
+			return undefined;
+		const [nativeToTokenInReserveIn, nativeToTokenInReserveOut] =
+			reservesNativeToTokenIn;
+
+		const nativePlancks =
+			(plancks * nativeToTokenInReserveIn) / nativeToTokenInReserveOut;
+		const outPlancks =
+			(nativePlancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
+		return outPlancks;
+	} finally {
+		stop();
 	}
-
-	if (!reservesNativeToTokenIn || reservesNativeToTokenIn?.includes(0n))
-		return undefined;
-	const [nativeToTokenInReserveIn, nativeToTokenInReserveOut] =
-		reservesNativeToTokenIn;
-
-	const nativePlancks =
-		(plancks * nativeToTokenInReserveIn) / nativeToTokenInReserveOut;
-	const outPlancks =
-		(nativePlancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
-	return outPlancks;
 };
 
 // returns the number of tokens, as string (unsortable)
@@ -46,16 +53,22 @@ export const getConvertTokens = (
 	reservesNativeToTokenIn: [bigint, bigint],
 	reservesNativeToTokenOut: [bigint, bigint],
 ) => {
-	const outPlancks = getAssetConvertPlancks(
-		plancks,
-		tokenIn,
-		nativeToken,
-		tokenOut,
-		reservesNativeToTokenIn,
-		reservesNativeToTokenOut,
-	);
+	const stop = logger.cumulativeTimer("getConvertTokens");
 
-	return isBigInt(outPlancks)
-		? plancksToTokens(outPlancks, tokenOut.decimals)
-		: undefined;
+	try {
+		const outPlancks = getAssetConvertPlancks(
+			plancks,
+			tokenIn,
+			nativeToken,
+			tokenOut,
+			reservesNativeToTokenIn,
+			reservesNativeToTokenOut,
+		);
+
+		return isBigInt(outPlancks)
+			? plancksToTokens(outPlancks, tokenOut.decimals)
+			: undefined;
+	} finally {
+		stop();
+	}
 };

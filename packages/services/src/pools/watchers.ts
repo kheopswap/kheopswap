@@ -145,6 +145,6 @@ poolsByChainSubscriptions$.subscribe((chainIds) => {
 		WATCHERS.set(chainId, watchPoolsByChain(chainId));
 });
 
-export const chainPoolsStatuses$ = loadingStatusByChain$.asObservable();
+export const chainPoolsStatuses$ = loadingStatusByChain$;
 
 export const getPoolsWatchersCount = () => WATCHERS.size;

@@ -3,7 +3,8 @@ import { BehaviorSubject, distinctUntilChanged, map, shareReplay } from "rxjs";
 import type { LoadingStatus } from "./common";
 
 import { type ChainId, getChains } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
+import { getCachedObservable$, logger } from "@kheopswap/utils";
+import { fromPairs } from "lodash";
 
 /**
  * For services that need to poll/refresh data every x seconds and keep track of the loading status
@@ -18,24 +19,35 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 		refreshTimeout,
 	);
 
-	const loadingStatusByChain$ = new BehaviorSubject<
-		Record<ChainId, LoadingStatus>
-	>(
-		Object.fromEntries(
-			getChains().map((chain) => [chain.id, "stale"]),
-		) as Record<ChainId, LoadingStatus>,
+	const key = crypto.randomUUID();
+
+	const statusByChain$ = new BehaviorSubject<Record<ChainId, LoadingStatus>>(
+		fromPairs(getChains().map((chain) => [chain.id, "stale"])) as Record<
+			ChainId,
+			LoadingStatus
+		>,
 	);
+
+	const loadingStatusByChain$ = statusByChain$
+		.asObservable()
+		.pipe(shareReplay(1));
 
 	const setLoadingStatus = (
 		chainId: ChainId | ChainId[],
 		status: LoadingStatus,
 	) => {
+		const stop = logger.cumulativeTimer(`${label}.setLoadingStatus`);
 		const chainIds = Array.isArray(chainId) ? chainId : [chainId];
 
-		loadingStatusByChain$.next({
-			...loadingStatusByChain$.value,
-			...Object.fromEntries(chainIds.map((id) => [id, status])),
-		});
+		if (chainIds.some((id) => statusByChain$.value[id] !== status))
+			statusByChain$.next(
+				Object.assign(
+					statusByChain$.value,
+					fromPairs(chainIds.map((id) => [id, status])),
+				),
+			);
+
+		stop();
 	};
 
 	const staleWatchCache = new Map<ChainId, number>();
@@ -52,7 +64,7 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 					chainId,
 					setTimeout(() => {
 						if (staleWatchCache.has(chainId)) {
-							if (loadingStatusByChain$.value[chainId] === "loaded")
+							if (statusByChain[chainId] === "loaded")
 								setLoadingStatus(chainId, "stale");
 						}
 					}, refreshTimeout) as unknown as number, // tsconfig bug ?
@@ -67,10 +79,12 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 	});
 
 	const getLoadingStatus$ = (chainId: ChainId) => {
-		return loadingStatusByChain$.pipe(
-			map((statusByChain) => statusByChain[chainId]),
-			distinctUntilChanged(),
-			shareReplay({ bufferSize: 1, refCount: true }),
+		return getCachedObservable$("pollChainStatus", `${key}.${chainId}`, () =>
+			loadingStatusByChain$.pipe(
+				map((statusByChain) => statusByChain[chainId]),
+				distinctUntilChanged(),
+				shareReplay({ bufferSize: 1, refCount: true }),
+			),
 		);
 	};
 

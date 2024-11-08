@@ -13,6 +13,8 @@ const combineState = (
 	statuses: Record<string, LoadingStatus>,
 	poolSupplies: StoredPoolSupply[],
 ): Record<PoolSupplyId, PoolSupplyState> => {
+	const stop = logger.cumulativeTimer("poolSupplies.combineState");
+
 	try {
 		const supplyByPoolSupplyId = new Map<PoolSupplyId, string>(
 			poolSupplies.map((s) => [s.id, s.supply] as const),
@@ -40,6 +42,8 @@ const combineState = (
 	} catch (err) {
 		logger.error("Failed to merge pool supplies state", { err });
 		return {};
+	} finally {
+		stop();
 	}
 };
 

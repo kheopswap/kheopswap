@@ -7,7 +7,7 @@ import { useRelayChains } from "./useRelayChains";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
-import { isBigInt } from "@kheopswap/utils";
+import { isBigInt, logger } from "@kheopswap/utils";
 import type { BalanceWithStableSummary } from "src/types";
 
 type UseAssetHubTVLResult = {
@@ -16,6 +16,8 @@ type UseAssetHubTVLResult = {
 };
 
 export const useAssetHubTVL = (): UseAssetHubTVLResult => {
+	const stop = logger.cumulativeTimer("useAssetHubTVL");
+
 	const { assetHub } = useRelayChains();
 	const { data: tokens, isLoading: isLoadingTokens } = useTokensByChainIds({
 		chainIds: [assetHub.id],
@@ -64,7 +66,7 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 			inputs: lockedTokens,
 		});
 
-	return useMemo(
+	const tvl = useMemo(
 		() => ({
 			isLoading:
 				isLoadingTokens ||
@@ -98,4 +100,8 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 			tokens,
 		],
 	);
+
+	stop();
+
+	return tvl;
 };

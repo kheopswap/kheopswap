@@ -11,11 +11,13 @@ import { useNativeToken } from "./useNativeToken";
 import { useRelayChains } from "./useRelayChains";
 
 import { TRADABLE_TOKEN_TYPES } from "@kheopswap/registry";
-import { isBigInt } from "@kheopswap/utils";
+import { isBigInt, logger } from "@kheopswap/utils";
 import type { BalanceWithStableSummary } from "src/types";
 import { getAssetHubMirrorTokenId } from "src/util";
 
 export const useTokenPrices = () => {
+	const stop = logger.cumulativeTimer("useTokenPrices");
+
 	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
 		types: TRADABLE_TOKEN_TYPES,
 	});
@@ -71,6 +73,8 @@ export const useTokenPrices = () => {
 			};
 		});
 	}, [nativePrices, stablePrices, tokens]);
+
+	stop();
 
 	return {
 		data,

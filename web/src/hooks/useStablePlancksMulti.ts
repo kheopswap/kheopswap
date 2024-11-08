@@ -4,6 +4,7 @@ import { useAssetConvertMulti } from "./useAssetConvertMulti";
 import { useRelayChains } from "./useRelayChains";
 
 import type { TokenId } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 import { getAssetHubMirrorTokenId } from "src/util";
 
 type UseStablePlancksProps = {
@@ -18,6 +19,8 @@ type UseStablePlancksResult = {
 export const useStablePlancksMulti = ({
 	inputs,
 }: UseStablePlancksProps): UseStablePlancksResult => {
+	const stop = logger.cumulativeTimer("useStablePlancksMulti");
+
 	const { stableToken } = useRelayChains();
 
 	const convertInputs = useMemo(
@@ -42,6 +45,8 @@ export const useStablePlancksMulti = ({
 			})),
 		[outputs],
 	);
+
+	stop();
 
 	return { data, isLoading };
 };

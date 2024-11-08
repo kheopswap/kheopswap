@@ -13,6 +13,8 @@ const combineState = (
 	statusByChain: Record<ChainId, LoadingStatus>,
 	allPools: Pool[],
 ): Record<ChainId, { status: LoadingStatus; pools: Pool[] }> => {
+	const stop = logger.cumulativeTimer("pools.combineState");
+
 	try {
 		const poolsByChain = groupBy(allPools, "chainId");
 
@@ -28,6 +30,8 @@ const combineState = (
 	} catch (err) {
 		logger.error("Failed to merge pools state", { err });
 		return {} as Record<ChainId, { status: LoadingStatus; pools: Pool[] }>;
+	} finally {
+		stop();
 	}
 };
 

@@ -1,5 +1,5 @@
 import { PORTFOLIO_TOKEN_TYPES } from "@kheopswap/registry";
-import { provideContext } from "@kheopswap/utils";
+import { logger, provideContext } from "@kheopswap/utils";
 import { values } from "lodash";
 import { useMemo } from "react";
 import {
@@ -11,6 +11,8 @@ import {
 import { useTokenPrices } from "src/hooks/useTokenPrices";
 
 export const usePortfolioProvider = () => {
+	const stop = logger.cumulativeTimer("usePortfolioProvicer");
+
 	const { accounts } = useWallets();
 
 	const { data: tokensMap, isLoading: isLoadingTokens } = useAllTokens({
@@ -25,6 +27,8 @@ export const usePortfolioProvider = () => {
 		useBalancesWithStables({ tokens, accounts });
 
 	const { data: prices, isLoading: isLoadingPrices } = useTokenPrices();
+
+	stop();
 
 	return {
 		isLoading: isLoadingTokens || isLoadingBalances || isLoadingPrices,

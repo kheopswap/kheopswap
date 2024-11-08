@@ -28,6 +28,7 @@ const combineStateByChainId = (
 	statusByChain: Record<ChainId, LoadingStatus>,
 	tokens: Dictionary<Token>,
 ): Dictionary<ChainTokensState> => {
+	const stop = logger.cumulativeTimer("tokens.combineStateByChainId");
 	try {
 		const tokensByChain = groupBy(values(tokens).sort(sortTokens), "chainId");
 
@@ -43,6 +44,8 @@ const combineStateByChainId = (
 	} catch (err) {
 		logger.error("Failed to merge tokens by chain state", { err });
 		return {} as Record<ChainId, ChainTokensState>;
+	} finally {
+		stop();
 	}
 };
 
@@ -53,6 +56,7 @@ export const tokensByChainState$ = combineLatest([
 	map(([statusByChain, tokens]) =>
 		combineStateByChainId(statusByChain, tokens),
 	),
+
 	shareReplay(1),
 );
 
@@ -60,6 +64,7 @@ const combineStateByTokenId = (
 	statusByChain: Record<ChainId, LoadingStatus>,
 	tokens: Dictionary<Token>,
 ): Dictionary<TokenState> => {
+	const stop = logger.cumulativeTimer("tokens.combineStateByTokenId");
 	try {
 		return fromPairs(
 			toPairs(tokens).map(([tokenId, token]) => [
@@ -73,6 +78,8 @@ const combineStateByTokenId = (
 	} catch (err) {
 		logger.error("Failed to merge tokens state", { err });
 		return {};
+	} finally {
+		stop();
 	}
 };
 

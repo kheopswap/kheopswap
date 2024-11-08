@@ -14,6 +14,8 @@ const combineState = (
 	statuses: Dictionary<LoadingStatus>,
 	balances: Dictionary<StoredBalance>,
 ): Dictionary<BalanceState> => {
+	const stop = logger.cumulativeTimer("balances.combineState");
+
 	try {
 		const allBalanceIds = uniq(balanceIds.concat(keys(balances)));
 
@@ -30,6 +32,8 @@ const combineState = (
 	} catch (err) {
 		logger.error("Failed to merge balances state", { err });
 		return {};
+	} finally {
+		stop();
 	}
 };
 

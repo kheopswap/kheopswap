@@ -7,6 +7,7 @@ import { useRelayChains } from "./useRelayChains";
 import { useTokens } from "./useTokens";
 
 import type { TokenId } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 import { uniq } from "lodash";
 import { getPoolReserves } from "src/helpers/getPoolReserves";
 import { getAssetConvertPlancks } from "src/util";
@@ -34,6 +35,8 @@ type AssetConvertMultiResult = {
 export const useAssetConvertMulti = ({
 	inputs,
 }: UseAssetConvertMultiProps): AssetConvertMultiResult => {
+	const stop = logger.cumulativeTimer("useAssetConvertMulti");
+
 	const { assetHub } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
 
@@ -69,7 +72,9 @@ export const useAssetConvertMulti = ({
 		balanceDefs: poolsBalanceDefs,
 	});
 
-	return useMemo(() => {
+	const outputs = useMemo(() => {
+		const stop = logger.cumulativeTimer("useAssetConvertMulti.outputs");
+
 		const data = inputs.map<AssetConvertResult>((input) => {
 			const { tokenIdIn, plancksIn, tokenIdOut } = input;
 			const tokenIn = tokens[tokenIdIn]?.token;
@@ -115,6 +120,8 @@ export const useAssetConvertMulti = ({
 			};
 		});
 
+		stop();
+
 		return { data, isLoading: data.some(({ isLoading }) => isLoading) };
 	}, [
 		inputs,
@@ -126,4 +133,8 @@ export const useAssetConvertMulti = ({
 		reserves,
 		tokens,
 	]);
+
+	stop();
+
+	return outputs;
 };

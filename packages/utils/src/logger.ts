@@ -1,3 +1,5 @@
+import { interval } from "rxjs";
+
 const isDevMode = import.meta.env.DEV;
 
 const NO_OP = () => {};
@@ -29,4 +31,48 @@ export const logger = {
 					debug(`${label} - ${(performance.now() - start).toFixed(2)}ms`);
 			}
 		: () => NO_OP,
+
+	cumulativeTimer: isDevMode
+		? (label: string) => {
+				const start = performance.now();
+
+				return () => {
+					const duration = performance.now() - start;
+					incrementCumulativeTimer(label, duration);
+				};
+			}
+		: () => NO_OP,
 };
+
+const CUMULATIVE_TIMERS = new Map<
+	string,
+	{ count: number; duration: number }
+>();
+
+const incrementCumulativeTimer = (label: string, duration: number) => {
+	if (!CUMULATIVE_TIMERS.has(label))
+		CUMULATIVE_TIMERS.set(label, { count: 1, duration });
+	else {
+		const existing = CUMULATIVE_TIMERS.get(label);
+		if (existing) {
+			existing.count++;
+			existing.duration += duration;
+		}
+	}
+};
+
+if (isDevMode) {
+	interval(5000).subscribe(() => {
+		const timers = CUMULATIVE_TIMERS.entries()
+			.toArray()
+			.map(([label, { count, duration }]) => ({
+				label,
+				duration: Math.round(duration),
+				count,
+				tpr: duration / count,
+			}))
+			.sort((t1, t2) => t2.duration - t1.duration);
+
+		if (timers.length) console.table(timers);
+	});
+}
