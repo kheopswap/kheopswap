@@ -2,7 +2,7 @@ import { DEV } from "@kheopswap/constants";
 import { interval } from "rxjs";
 
 const isDevMode = DEV;
-const printCumulativeTimers = true;
+const printCumulativeTimers = false;
 
 const NO_OP = () => {};
 

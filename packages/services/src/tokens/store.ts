@@ -113,11 +113,14 @@ export const tokensStore$ = tokensStoreData$.pipe(
 		const storageTokens = values(storageTokensMap);
 
 		const chains = getChains();
+		const availableChainIds = chains.map((c) => c.id);
 
 		const tokens = storageTokens
 			.map((token) => {
 				if (token.type === "hydration-asset") {
 					if (!token.chainId || !("location" in token)) return null;
+					if (!availableChainIds.includes(token.chainId)) return null;
+
 					const location = token.location as XcmV3Multilocation;
 
 					if (
@@ -131,6 +134,7 @@ export const tokensStore$ = tokensStoreData$.pipe(
 					) {
 						const assetHubAssetId = location.interior.value[2].value;
 						const hydration = getChainById(token.chainId);
+
 						const assetHub = chains.find(
 							(c) => c.relay === hydration.relay && c.paraId === 1000,
 						);
