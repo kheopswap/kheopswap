@@ -56,7 +56,6 @@ export const tokensByChainState$ = combineLatest([
 	map(([statusByChain, tokens]) =>
 		combineStateByChainId(statusByChain, tokens),
 	),
-
 	shareReplay(1),
 );
 

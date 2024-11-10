@@ -17,22 +17,6 @@ type UseStablePlancksResult = {
 	data: { stablePlancks: bigint | null; isLoadingStablePlancks: boolean }[];
 };
 
-// const getStablePlanck$ = (tokenId: TokenId, plancks: bigint | undefined) => {
-// 	stableToken$.pipe(
-// 		map((stableToken) => ({
-// 			tokenIdIn: getAssetHubMirrorTokenId(tokenId),
-// 			plancksIn: plancks ?? 0n,
-// 			tokenIdOut: stableToken.id,
-// 		})),
-// 		switchMap(getAssetConvert$), // includes throttling
-// 		map(({ plancksOut, isLoading }) => ({
-// 			stablePlancks: plancksOut,
-// 			isLoadingStablePlancks: isLoading,
-// 		})),
-// 		shareReplay({ bufferSize: 1, refCount: true }),
-// 	);
-// };
-
 const getStablePlancksMulti$ = (
 	inputs: { tokenId: TokenId; plancks: bigint | undefined }[],
 ): Observable<UseStablePlancksResult> => {

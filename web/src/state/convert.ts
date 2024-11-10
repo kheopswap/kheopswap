@@ -12,7 +12,7 @@ import {
 	shareReplay,
 	throttleTime,
 } from "rxjs";
-import { getAssetConvertPlancksNew } from "src/util";
+import { getAssetConvertPlancks } from "src/util";
 import { getPoolReserves$ } from "./pools";
 
 type AssetConvertInput = {
@@ -56,7 +56,7 @@ export const getAssetConvert$ = ({
 			if (!chainId1 || !chainId2 || chainId1 !== chainId2)
 				return of(returnValue(null, false));
 
-			const nativeTokenId = getTokenId({ type: "native", chainId: chainId1 }); // getNativeToken(chainId1);
+			const nativeTokenId = getTokenId({ type: "native", chainId: chainId1 });
 
 			const getReserves$ = (tid1: TokenId, tid2: TokenId) => {
 				if (tid1 === tid2)
@@ -71,7 +71,6 @@ export const getAssetConvert$ = ({
 				getReserves$(nativeTokenId, tokenIdIn),
 				getReserves$(nativeTokenId, tokenIdOut),
 			]).pipe(
-				//	throttleTime(100, undefined, { leading: true, trailing: true }),
 				map(
 					([
 						{ reserves: reserveNativeToTokenIn, isLoading: isLoadingPool1 },
@@ -81,7 +80,7 @@ export const getAssetConvert$ = ({
 							return returnValue(null, isLoadingPool1 || isLoadingPool2);
 
 						const plancksOut =
-							getAssetConvertPlancksNew(
+							getAssetConvertPlancks(
 								plancksIn,
 								tokenIdIn,
 								nativeTokenId,
@@ -107,6 +106,5 @@ export const getAssetConvertMulti$ = (
 			data,
 			isLoading: data.some(({ isLoading }) => isLoading),
 		})),
-		//shareReplay({ bufferSize: 1, refCount: true }), // necessary ?
 	);
 };

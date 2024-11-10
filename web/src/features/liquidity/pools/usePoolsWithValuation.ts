@@ -6,7 +6,7 @@ import type { Token } from "@kheopswap/registry";
 import type { Dictionary } from "lodash";
 
 import type { Pool } from "@kheopswap/services/pools";
-import { isBigInt } from "@kheopswap/utils";
+import { isBigInt, logger } from "@kheopswap/utils";
 import { getPoolReserves } from "src/helpers/getPoolReserves";
 import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
 
@@ -27,6 +27,8 @@ export const usePoolsWithValuation = ({
 	nativeToken,
 	stableToken,
 }: UsePoolsWithValuationProps) => {
+	const stop = logger.cumulativeTimer("usePoolsWithValuation");
+
 	const poolsBalanceDefs = useMemo(
 		() =>
 			pools?.flatMap((pool) =>
@@ -74,9 +76,9 @@ export const usePoolsWithValuation = ({
 
 				return getAssetConvertPlancks(
 					balance,
-					token,
-					nativeToken,
-					stableToken,
+					token.id,
+					nativeToken.id,
+					stableToken.id,
 					reservesNativeToToken,
 					reservesNativeToStable,
 				);
@@ -97,6 +99,8 @@ export const usePoolsWithValuation = ({
 		stableToken,
 		tokens,
 	]);
+
+	stop();
 
 	return { data: poolsWithStablePrices, isLoading };
 };

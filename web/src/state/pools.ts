@@ -88,66 +88,6 @@ export const getAssetHubPoolReserves$ = (
 		},
 	);
 
-// export const getPoolWithReserves$ = (
-// 	tokenId1: TokenId | null | undefined,
-// 	tokenId2: TokenId | null | undefined,
-// ): Observable<{ reserves: [bigint, bigint] | null; isLoading: boolean }> =>
-// 	getCachedObservable$(
-// 		"getPoolReservesByTokenIds$",
-// 		[tokenId1, tokenId2].join(","),
-// 		() => {
-// 			if (!tokenId1 || !tokenId2)
-// 				return of({ isLoading: false, reserves: null });
-
-// 			const chainId1 = getChainIdFromTokenId(tokenId1);
-// 			const chainId2 = getChainIdFromTokenId(tokenId2);
-
-// 			if (!chainId1 || !chainId2 || chainId1 !== chainId2)
-// 				return of({
-// 					isLoading: false,
-// 					reserves: null,
-// 				});
-
-// 			return combineLatest([
-// 				getTokenById$(tokenId1),
-// 				getTokenById$(tokenId2),
-// 				getPool$(tokenId1, tokenId2),
-// 			]).pipe(
-// 				switchMap(
-// 					([
-// 						{ token: token1, status: statusToken1 },
-// 						{ token: token2, status: statusToken2 },
-// 						{ pool, status: statusPool },
-// 					]) => {
-// 						const isLoading = getIsLoading(
-// 							statusToken1,
-// 							statusToken2,
-// 							statusPool,
-// 						);
-// 						if (!token1 || !token2 || !pool)
-// 							return of({
-// 								isLoading,
-// 								reserves: null,
-// 							});
-
-// 						return getAssetHubPoolReserves$(pool).pipe(
-// 							map(({ reserves, isLoading }) => ({
-// 								isLoading,
-// 								reserves:
-// 									reserves && token1
-// 										? token1.type === "native"
-// 											? reserves // native to asset
-// 											: (reserves.slice().reverse() as [bigint, bigint]) // asset to native
-// 										: null,
-// 							})),
-// 						);
-// 					},
-// 				),
-// 				shareReplay({ bufferSize: 1, refCount: true }),
-// 			);
-// 		},
-// 	);
-
 export const getPoolReserves$ = (
 	tokenId1: TokenId | null | undefined,
 	tokenId2: TokenId | null | undefined,

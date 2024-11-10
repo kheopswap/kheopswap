@@ -46,7 +46,7 @@ const useLiquidityPoolPageProvider = () => {
 	const { data: position, isLoading: isLoadingPosition } = usePoolPosition({
 		pool,
 		address,
-		reserves,
+		reserves: reserves ?? null,
 		isLoadingReserves,
 	});
 

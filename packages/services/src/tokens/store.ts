@@ -135,7 +135,6 @@ export const tokensStore$ = tokensStoreData$.pipe(
 					) {
 						const assetHubAssetId = location.interior.value[2].value;
 						const hydration = getChainById(token.chainId);
-
 						const assetHub = chains.find(
 							(c) =>
 								c.relay === hydration.relay && c.paraId === PARA_ID_ASSET_HUB,

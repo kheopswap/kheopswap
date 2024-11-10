@@ -28,28 +28,4 @@ export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
 	stop();
 
 	return res;
-
-	// const { data: reserveNative, isLoading: isLoadingNative } = useBalance({
-	// 	address: pool?.owner,
-	// 	tokenId: pool?.tokenIds[0],
-	// });
-	// const { data: reserveAsset, isLoading: isLoadingAsset } = useBalance({
-	// 	address: pool?.owner,
-	// 	tokenId: pool?.tokenIds[1],
-	// });
-
-	// const output = useMemo(
-	// 	() => ({
-	// 		data:
-	// 			isBigInt(reserveNative) && isBigInt(reserveAsset)
-	// 				? ([reserveNative, reserveAsset] as [bigint, bigint])
-	// 				: null,
-	// 		isLoading: isLoadingNative || isLoadingAsset,
-	// 	}),
-	// 	[isLoadingAsset, isLoadingNative, reserveAsset, reserveNative],
-	// );
-
-	// stop();
-
-	// return output;
 };
