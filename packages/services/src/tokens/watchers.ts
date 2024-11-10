@@ -12,6 +12,7 @@ import { getApi } from "@kheopswap/papi";
 import {
 	type Chain,
 	type ChainId,
+	PARA_ID_ASSET_HUB,
 	getChainById,
 	hasAssetPallet,
 	isAssetHub,
@@ -234,7 +235,7 @@ const fetchHydrationAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 				entry.value.parents === 1 &&
 				entry.value.interior.type === "X3" &&
 				entry.value.interior.value[0].type === "Parachain" &&
-				entry.value.interior.value[0].value === 1000 &&
+				entry.value.interior.value[0].value === PARA_ID_ASSET_HUB &&
 				entry.value.interior.value[1].type === "PalletInstance" &&
 				entry.value.interior.value[1].value === 50,
 		)

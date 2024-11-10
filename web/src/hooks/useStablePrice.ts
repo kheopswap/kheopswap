@@ -1,3 +1,4 @@
+import { logger } from "@kheopswap/utils";
 import {
 	useAssetConvertPlancks,
 	useAssetConvertPrice,
@@ -12,13 +13,15 @@ type UseStablePrice = {
 };
 
 export const useStablePlancks = ({ tokenId, plancks }: UseStablePrice) => {
+	const stop = logger.cumulativeTimer("useStablePlancks");
+
 	const chain = useTokenChain({ tokenId });
 	const { isLoading, tokenIn, tokenOut, plancksOut } = useAssetConvertPlancks({
 		tokenIdIn: tokenId,
 		tokenIdOut: chain?.stableTokenId,
 		plancks,
 	});
-
+	stop();
 	return {
 		isLoading,
 		token: tokenIn,
@@ -28,6 +31,7 @@ export const useStablePlancks = ({ tokenId, plancks }: UseStablePrice) => {
 };
 
 export const useStablePrice = ({ tokenId, plancks }: UseStablePrice) => {
+	const stop = logger.cumulativeTimer("useStablePrice");
 	const chain = useTokenChain({ tokenId });
 	const { isLoading, price, tokenIn, tokenOut } = useAssetConvertPrice({
 		tokenIdIn: tokenId,
@@ -35,6 +39,7 @@ export const useStablePrice = ({ tokenId, plancks }: UseStablePrice) => {
 		plancks,
 	});
 
+	stop();
 	return {
 		isLoading,
 		token: tokenIn,

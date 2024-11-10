@@ -3,11 +3,11 @@ import { useMemo } from "react";
 
 import { useBalances } from "./useBalances";
 import { usePoolsByChainId } from "./usePoolsByChainId";
-import { useRelayChains } from "./useRelayChains";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
 import { isBigInt, logger } from "@kheopswap/utils";
+import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 
 type UseAssetHubTVLResult = {

@@ -26,10 +26,10 @@ import {
 	type InjectedAccount,
 	useBalancesWithStables,
 	useInjectedExtension,
-	useRelayChains,
 	useToken,
 	useWallets,
 } from "src/hooks";
+import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 import { WalletIcon } from "./WalletIcon";
 

@@ -1,60 +1,73 @@
-import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+// import {
+// 	type Chain,
+// 	type ChainAssetHub,
+// 	type ChainRelay,
+// 	PARA_ID_ASSET_HUB,
+// 	type Token,
+// 	getChains,
+// } from "@kheopswap/registry";
+// import { getTokenById$ } from "@kheopswap/services/tokens";
+// import { bind } from "@react-rxjs/core";
+// import { isEqual } from "lodash";
+// import {
+// 	distinctUntilChanged,
+// 	distinctUntilKeyChanged,
+// 	map,
+// 	switchMap,
+// } from "rxjs";
+// import { relayId$ } from "src/state/location";
 
-import { useToken } from "./useToken";
+// export const [useRelayChains, relayChains$] = bind(
+// 	relayId$.pipe(
+// 		map((relayId) => {
+// 			const chains = getChains();
 
-import {
-	type Chain,
-	type ChainAssetHub,
-	type ChainIdRelay,
-	type ChainRelay,
-	getChains,
-	isChainIdRelay,
-} from "@kheopswap/registry";
-import { provideContext } from "@kheopswap/utils";
+// 			const relay = chains.find(
+// 				(c) => c.id === relayId && c.relay === relayId,
+// 			) as ChainRelay | undefined;
+// 			if (!relay) throw new Error("Relay not found");
 
-const useRelayId = (): ChainIdRelay => {
-	const { relayId } = useParams();
+// 			const allChains = chains.filter((c) => c.relay === relayId) as Chain[];
 
-	return useMemo<ChainIdRelay>(() => {
-		return isChainIdRelay(relayId) ? relayId : "polkadot";
-	}, [relayId]);
-};
+// 			const assetHub = allChains.find(
+// 				(c) => c.paraId === PARA_ID_ASSET_HUB && c.relay === relayId,
+// 			) as ChainAssetHub | undefined;
+// 			if (!assetHub) throw new Error("Relay not found");
 
-const useRelayChainsProvider = () => {
-	const relayId = useRelayId();
+// 			return { relayId, relay, assetHub, allChains };
+// 		}),
+// 		switchMap(({ relayId, relay, assetHub, allChains }) => {
+// 			if (!assetHub.stableTokenId) throw new Error("Stable token not found");
+// 			return getTokenById$(assetHub.stableTokenId).pipe(
+// 				distinctUntilKeyChanged("token", isEqual),
+// 				map(({ token: stableToken }) => {
+// 					if (!stableToken)
+// 						throw new Error(
+// 							`Stable token not found: ${assetHub.stableTokenId}`,
+// 						);
+// 					return {
+// 						relayId,
+// 						relay,
+// 						assetHub,
+// 						allChains,
+// 						stableToken, //always defined by config
+// 					};
+// 				}),
+// 			);
+// 		}),
+// 	),
+// );
 
-	const { relay, assetHub, allChains } = useMemo(() => {
-		const chains = getChains();
+// export const [useAssetHub, assetHub$] = bind(
+// 	relayChains$.pipe(
+// 		map(({ assetHub }) => assetHub),
+// 		distinctUntilChanged(),
+// 	),
+// );
 
-		const relay = chains.find((c) => c.id === relayId && c.relay === relayId) as
-			| ChainRelay
-			| undefined;
-		if (!relay) throw new Error("Relay not found");
-
-		const allChains = chains.filter((c) => c.relay === relayId) as Chain[];
-
-		const assetHub = allChains.find(
-			(c) => c.paraId === 1000 && c.relay === relayId,
-		) as ChainAssetHub | undefined;
-		if (!assetHub) throw new Error("Relay not found");
-
-		return { relay, assetHub, allChains };
-	}, [relayId]);
-
-	const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
-	if (!stableToken)
-		throw new Error(`Stable token not found ${assetHub.stableTokenId}`);
-
-	return {
-		relayId,
-		relay,
-		assetHub,
-		allChains,
-		stableToken,
-	};
-};
-
-export const [RelayChainsProvider, useRelayChains] = provideContext(
-	useRelayChainsProvider,
-);
+// export const [useStableToken, stableToken$] = bind(
+// 	relayChains$.pipe(
+// 		map(({ stableToken }) => stableToken),
+// 		distinctUntilChanged(),
+// 	),
+// );

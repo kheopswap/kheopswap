@@ -19,10 +19,10 @@ import {
 	useExistentialDeposit,
 	useFeeToken,
 	useNativeToken,
-	useRelayChains,
 	useSetting,
 	useWalletAccount,
 } from "src/hooks";
+import { useRelayChains } from "src/state";
 
 const useDefaultValues = () => {
 	const [defaultAccountId] = useSetting("defaultAccountId");

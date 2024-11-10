@@ -3,13 +3,14 @@ import { useMemo } from "react";
 import { useBalance } from "./useBalance";
 
 import type { Pool } from "@kheopswap/services/pools";
-import { isBigInt } from "@kheopswap/utils";
+import { isBigInt, logger } from "@kheopswap/utils";
 
 type UsePoolReservesProps = {
 	pool: Pool | null | undefined;
 };
 
 export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
+	const stop = logger.cumulativeTimer("usePoolReserves");
 	const { data: reserveNative, isLoading: isLoadingNative } = useBalance({
 		address: pool?.owner,
 		tokenId: pool?.tokenIds[0],
@@ -19,7 +20,7 @@ export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
 		tokenId: pool?.tokenIds[1],
 	});
 
-	return useMemo(
+	const output = useMemo(
 		() => ({
 			data:
 				isBigInt(reserveNative) && isBigInt(reserveAsset)
@@ -29,4 +30,8 @@ export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
 		}),
 		[isLoadingAsset, isLoadingNative, reserveAsset, reserveNative],
 	);
+
+	stop();
+
+	return output;
 };

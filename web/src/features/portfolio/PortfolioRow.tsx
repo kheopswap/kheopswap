@@ -5,7 +5,8 @@ import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 
 import { cn } from "@kheopswap/utils";
 import { Styles, TokenLogo } from "src/components";
-import { useNativeToken, useRelayChains } from "src/hooks";
+import { useNativeToken } from "src/hooks";
+import { useRelayChains } from "src/state";
 import { getTokenDescription } from "src/util";
 
 type PortfolioRowProps = PortfolioRowData & {

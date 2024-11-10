@@ -1,11 +1,8 @@
 import { values } from "lodash";
 import { useMemo } from "react";
 
-import {
-	usePoolsByChainId,
-	useRelayChains,
-	useTokensByChainId,
-} from "src/hooks";
+import { usePoolsByChainId, useTokensByChainId } from "src/hooks";
+import { useRelayChains } from "src/state";
 
 export const useAssetHubTokensWithPool = () => {
 	const { assetHub } = useRelayChains();

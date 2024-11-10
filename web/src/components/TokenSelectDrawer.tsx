@@ -11,11 +11,8 @@ import { TokenLogo } from "src/components/TokenLogo";
 import { Tokens } from "src/components/Tokens";
 import { ActionRightIcon } from "src/components/icons";
 import { Styles } from "src/components/styles";
-import {
-	type InjectedAccount,
-	useBalancesByTokenSummary,
-	useRelayChains,
-} from "src/hooks";
+import { type InjectedAccount, useBalancesByTokenSummary } from "src/hooks";
+import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 import { getTokenDescription } from "src/util";
 import { Pulse } from "./Pulse";

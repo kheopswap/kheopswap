@@ -17,10 +17,10 @@ import {
 	useFeeToken,
 	useNativeToken,
 	usePoolsByChainId,
-	useRelayChains,
 	useSetting,
 	useWalletAccount,
 } from "src/hooks";
+import { useRelayChains } from "src/state";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 

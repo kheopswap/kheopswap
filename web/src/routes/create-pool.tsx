@@ -4,7 +4,8 @@ import { NavLink, Navigate, useParams } from "react-router-dom";
 
 import { Layout, PageContent, PageTitle, TabTitle } from "src/components";
 import { CreatePool } from "src/features/liquidity/create-pool";
-import { useNativeToken, useRelayChains, useToken } from "src/hooks";
+import { useNativeToken, useToken } from "src/hooks";
+import { useRelayChains } from "src/state";
 
 export const CreateLiquidityPoolPage = () => {
 	const { relayId, tokenId } = useParams();

@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
 import { usePoolsByChainId } from "./usePoolsByChainId";
-import { useRelayChains } from "./useRelayChains";
 
 import type { Pool } from "@kheopswap/services/pools";
+import { useRelayChains } from "src/state";
 
 type UsePoolByPoolAssetIdProps = {
 	poolAssetId: number | null | undefined;

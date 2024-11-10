@@ -44,10 +44,10 @@ import {
 	useNativeToken,
 	useOpenClose,
 	usePoolByTokenId,
-	useRelayChains,
 	useTokenChain,
 } from "src/hooks";
 import { useTokenInfo } from "src/hooks/useTokenInfo";
+import { useRelayChains } from "src/state";
 import type { BalanceWithStable, BalanceWithStableSummary } from "src/types";
 import { getTokenTypeLabel } from "src/util";
 

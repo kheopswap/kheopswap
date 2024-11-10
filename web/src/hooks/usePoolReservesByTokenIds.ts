@@ -5,6 +5,7 @@ import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useToken } from "./useToken";
 
 import type { TokenId } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 
 type UsePoolReservesByTokenIdsProps = {
 	tokenId1: TokenId | null | undefined;
@@ -15,6 +16,8 @@ export const usePoolReservesByTokenIds = ({
 	tokenId1,
 	tokenId2,
 }: UsePoolReservesByTokenIdsProps) => {
+	const stop = logger.cumulativeTimer("usePoolReservesByTokenIds");
+
 	const { data: token1, isLoading: isLoadingToken1 } = useToken({
 		tokenId: tokenId1,
 	});
@@ -38,7 +41,7 @@ export const usePoolReservesByTokenIds = ({
 		pool,
 	});
 
-	return useMemo(
+	const output = useMemo(
 		() => ({
 			isLoading:
 				isLoadingToken1 ||
@@ -61,4 +64,8 @@ export const usePoolReservesByTokenIds = ({
 			token1,
 		],
 	);
+
+	stop();
+
+	return output;
 };

@@ -27,13 +27,13 @@ import {
 	usePoolReservesByTokenIds,
 	usePoolSupplies,
 	usePoolsByChainId,
-	useRelayChains,
 	useSetting,
 	useToken,
 	useTokenChain,
 	useTokensByChainId,
 	useWalletAccount,
 } from "src/hooks";
+import { useRelayChains } from "src/state";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 
 const useDefaultValues = () => {

@@ -6,7 +6,7 @@ import { useToken } from "./useToken";
 import { useTokenChain } from "./useTokenChain";
 
 import type { TokenId } from "@kheopswap/registry";
-import { isBigInt, plancksToTokens } from "@kheopswap/utils";
+import { isBigInt, logger, plancksToTokens } from "@kheopswap/utils";
 import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
 
 type UseAssetConvertPlancks = {
@@ -15,11 +15,68 @@ type UseAssetConvertPlancks = {
 	plancks: bigint | null | undefined;
 };
 
+// const getAssetHubConvertPlancks$ = ({
+// 	tokenIdIn,
+// 	tokenIdOut,
+// 	plancks,
+// }: UseAssetConvertPlancks) =>
+// 	getCachedObservable$(
+// 		"getAssetHubConvertPlancks$",
+// 		[tokenIdIn, tokenIdOut, plancks?.toString()].join(","),
+// 		() => {
+// 			if (!tokenIdIn || !tokenIdOut) return of(null);
+
+// 			if (!plancks) return of(null);
+
+// 			const chainId = getChainIdFromTokenId(tokenIdIn);
+// 			if (!chainId) return of(null);
+
+// 			const nativeToken = getNativeToken(chainId);
+// 			if (!nativeToken) return of(null);
+
+// 			return of(null);
+
+// 			// return combineLatest([getTokenById$(tokenIdIn), getTokenById$(tokenIdOut)]).pipe(
+// 			// 	switchMap(([tokenInState, tokenOutState]) => {
+
+// 			// 	})
+// 			// )
+
+// 			// const tokenIn = getTokenById$(tokenIdIn)
+
+// 			// // TODO if tokens exist
+// 			// // if(plancks === 0n) return of(0n)
+
+// 			// return relayChains$.pipe(
+// 			// 	switchMap(({ allChains }) =>
+// 			// 		getPoolsByChainIds$(allChains.map((chain) => chain.id)),
+// 			// 	),
+// 			// 	map((dicChainsPoolsState) => {
+// 			// 		const allStates = values(dicChainsPoolsState);
+// 			// 		const isLoading = allStates.some(
+// 			// 			(state) => state.status !== "loaded",
+// 			// 		);
+// 			// 		const arrPools = allStates
+// 			// 			.flatMap((state) => values(state.pools))
+// 			// 			.filter(
+// 			// 				(pool) =>
+// 			// 					pool.tokenIds.includes(tokenIdIn) &&
+// 			// 					pool.tokenIds.includes(tokenIdOut),
+// 			// 			);
+// 			// 		const dicPools = keyBy(arrPools, "id");
+// 			// 		return { isLoading, data: dicPools };
+// 			// 	}),
+// 			// 	shareReplay({ bufferSize: 1, refCount: true }),
+// 			// );
+// 		},
+// 	);
+
 export const useAssetConvertPlancks = ({
 	tokenIdIn,
 	tokenIdOut,
 	plancks,
 }: UseAssetConvertPlancks) => {
+	const stop = logger.cumulativeTimer("useAssetConvertPlancks");
 	const chain = useTokenChain({ tokenId: tokenIdIn });
 	const nativeToken = useNativeToken({ chain });
 	const { data: tokenIn } = useToken({ tokenId: tokenIdIn });
@@ -68,6 +125,8 @@ export const useAssetConvertPlancks = ({
 		!isBigInt(plancksOut) &&
 		(qNativeToTokenIn.isLoading || qNativeToTokenOut.isLoading);
 
+	stop();
+
 	// 2 dependant queries, and sometimes they may be invalid or unused. can't provide useQuery result accurately
 	return {
 		isLoading,
@@ -82,19 +141,27 @@ export const useAssetConvertPrice = ({
 	tokenIdOut,
 	plancks,
 }: UseAssetConvertPlancks) => {
+	const stop = logger.cumulativeTimer("useAssetConvertPrice");
 	const { plancksOut, isLoading, tokenIn, tokenOut } = useAssetConvertPlancks({
 		tokenIdIn,
 		tokenIdOut,
 		plancks,
 	});
 
-	return {
-		isLoading,
-		price:
-			isBigInt(plancksOut) && tokenOut
-				? plancksToTokens(plancksOut, tokenOut.decimals)
-				: undefined,
-		tokenIn,
-		tokenOut,
-	};
+	const output = useMemo(
+		() => ({
+			isLoading,
+			price:
+				isBigInt(plancksOut) && tokenOut
+					? plancksToTokens(plancksOut, tokenOut.decimals)
+					: undefined,
+			tokenIn,
+			tokenOut,
+		}),
+		[isLoading, plancksOut, tokenIn, tokenOut],
+	);
+
+	stop();
+
+	return output;
 };

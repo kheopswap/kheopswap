@@ -4,7 +4,7 @@ import { isNumber } from "lodash";
 import { type FC, useEffect, useMemo } from "react";
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
-import { useRelayChains } from "src/hooks";
+import { useRelayChains } from "src/state";
 
 const OutcomeFollowUpInner: FC = () => {
 	const { followUp, setRedirectUrl } = useTransactionFollowUp();
