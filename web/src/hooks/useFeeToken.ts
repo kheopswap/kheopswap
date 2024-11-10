@@ -6,7 +6,7 @@ import { useSetting } from "./useSetting";
 
 import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { TokenId } from "@kheopswap/registry";
-import { getAddressFromAccountField } from "@kheopswap/utils";
+import { getAddressFromAccountField, logger } from "@kheopswap/utils";
 
 type UsePreferredFeeToken = {
 	accountId: string | null | undefined;
@@ -23,6 +23,8 @@ const getKey = (
 };
 
 export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
+	const stop = logger.cumulativeTimer("useFeeToken");
+
 	const [feeTokensSettings, setFeeTokensSettings] = useSetting("feeTokens");
 
 	const address = useMemo(
@@ -60,6 +62,8 @@ export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 		);
 		return token ?? feeTokens?.[0] ?? nativeToken;
 	}, [feeTokensSettings, key, feeTokens, nativeToken, chainId]);
+
+	stop();
 
 	return { feeToken, feeTokens, setFeeTokenId, isLoading };
 };

@@ -5,11 +5,38 @@ import { getAllTokens$ } from "./tokens";
 
 import { assetHub$, stableToken$ } from "./relay";
 
-import { type Token, type TokenType, getTokenId } from "@kheopswap/registry";
+import {
+	type Token,
+	type TokenId,
+	type TokenType,
+	getTokenId,
+} from "@kheopswap/registry";
 import { getCachedObservable$, isBigInt } from "@kheopswap/utils";
-import { combineLatest, map, shareReplay, switchMap } from "rxjs";
+import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
 import { getAssetConvert$ } from "src/state/convert";
 import { getAssetHubMirrorTokenId } from "src/util";
+
+export const getStablePlancks$ = (
+	tokenId: TokenId,
+	plancks: bigint | undefined,
+) => {
+	if (plancks === 0n)
+		return of({ stablePlancks: 0n, isLoadingStablePlancks: false });
+
+	return stableToken$.pipe(
+		map((stableToken) => ({
+			tokenIdIn: getAssetHubMirrorTokenId(tokenId),
+			plancksIn: plancks ?? 0n,
+			tokenIdOut: stableToken.id,
+		})),
+		switchMap(getAssetConvert$), // includes throttling
+		map(({ plancksOut, isLoading }) => ({
+			stablePlancks: plancksOut,
+			isLoadingStablePlancks: isLoading,
+		})),
+		shareReplay({ bufferSize: 1, refCount: true }),
+	);
+};
 
 const getTokenPrice$ = (token: Token) => {
 	return getCachedObservable$(

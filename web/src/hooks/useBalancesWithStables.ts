@@ -2,9 +2,18 @@ import type { InjectedAccount } from "polkadot-api/pjs-signer";
 import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
-import type { BalanceDef } from "@kheopswap/services/balances";
-import { logger } from "@kheopswap/utils";
-import { useBalances, useStablePlancksMulti } from "src/hooks";
+import { getBalance$ } from "@kheopswap/services/balances";
+import { getCachedObservable$, logger } from "@kheopswap/utils";
+import { useObservable } from "react-rx";
+import {
+	type Observable,
+	combineLatest,
+	map,
+	of,
+	shareReplay,
+	switchMap,
+} from "rxjs";
+import { getStablePlancks$ } from "src/state";
 import type { AccountBalanceWithStable } from "src/types";
 
 type UseAccountBalancesWithStablesProps = {
@@ -12,53 +21,65 @@ type UseAccountBalancesWithStablesProps = {
 	accounts: InjectedAccount[] | string[] | null | undefined;
 };
 
+const getBalanceWithStable$ = (
+	tokenId: TokenId,
+	address: string,
+): Observable<AccountBalanceWithStable> => {
+	return getCachedObservable$(
+		"getBalanceWithStable$",
+		`${address},${tokenId}`,
+		() =>
+			getBalance$({ address, tokenId }).pipe(
+				switchMap(({ balance, status }) =>
+					getStablePlancks$(tokenId, balance).pipe(
+						map(({ stablePlancks, isLoadingStablePlancks }) => ({
+							address,
+							tokenId,
+							tokenPlancks: balance ?? null,
+							isLoadingTokenPlancks: status !== "loaded",
+							stablePlancks,
+							isLoadingStablePlancks,
+						})),
+					),
+				),
+				shareReplay({ bufferSize: 1, refCount: true }),
+			),
+	);
+};
+
+const DEFAULT_VALUE = { data: [], isLoading: true };
+
 export const useBalancesWithStables = ({
 	tokens,
 	accounts,
 }: UseAccountBalancesWithStablesProps) => {
 	const stop = logger.cumulativeTimer("useBalancesWithStables");
 
-	const balanceDefs: BalanceDef[] = useMemo(() => {
-		return (tokens ?? []).flatMap((token) =>
-			(accounts ?? []).map((acc) => ({
-				address: typeof acc === "string" ? acc : acc.address,
-				tokenId: typeof token === "string" ? token : token.id,
+	const obs = useMemo(() => {
+		if (!tokens?.length || !accounts?.length) return of(DEFAULT_VALUE);
+
+		const observables = (tokens ?? []).flatMap((token) =>
+			(accounts ?? []).map((acc) => {
+				const address = typeof acc === "string" ? acc : acc.address;
+				const tokenId = typeof token === "string" ? token : token.id;
+				return getBalanceWithStable$(tokenId, address);
+			}),
+		);
+
+		return combineLatest(observables).pipe(
+			map((data) => ({
+				data,
+				isLoading: data.some(
+					({ isLoadingTokenPlancks, isLoadingStablePlancks }) =>
+						isLoadingTokenPlancks || isLoadingStablePlancks,
+				),
 			})),
 		);
 	}, [accounts, tokens]);
 
-	const { data: rawBalances, isLoading: isLoadingBalances } = useBalances({
-		balanceDefs,
-	});
-
-	const inputs = useMemo(
-		() =>
-			rawBalances.map(({ tokenId, balance }) => ({
-				tokenId,
-				plancks: balance,
-			})),
-		[rawBalances],
-	);
-
-	const { data: stables, isLoading: isLoadingStables } = useStablePlancksMulti({
-		inputs,
-	});
-
-	const data = useMemo<AccountBalanceWithStable[]>(
-		() =>
-			rawBalances.map(({ address, tokenId, balance, isLoading }, idx) => ({
-				address,
-				tokenId,
-				tokenPlancks: balance ?? null,
-				isLoadingTokenPlancks: isLoading,
-				// biome-ignore lint/style/noNonNullAssertion: <explanation>
-				// biome-ignore lint/suspicious/noExtraNonNullAssertion: <explanation>
-				...stables[idx]!,
-			})),
-		[rawBalances, stables],
-	);
+	const res = useObservable(obs, DEFAULT_VALUE);
 
 	stop();
 
-	return { data, isLoading: isLoadingBalances || isLoadingStables };
+	return res;
 };

@@ -52,7 +52,7 @@ const getPool$ = (
 		);
 	});
 
-const getAssetHubPoolReserves$ = (
+export const getAssetHubPoolReserves$ = (
 	pool: AssetConvertionPoolDef | null,
 ): Observable<{ reserves: [bigint, bigint] | null; isLoading: boolean }> =>
 	getCachedObservable$(

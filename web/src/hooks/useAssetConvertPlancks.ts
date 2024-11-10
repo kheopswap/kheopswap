@@ -1,13 +1,16 @@
 import { useMemo } from "react";
 
-import { useNativeToken } from "./useNativeToken";
-import { usePoolReservesByTokenIds } from "./usePoolReservesByTokenIds";
-import { useToken } from "./useToken";
-import { useTokenChain } from "./useTokenChain";
-
 import type { TokenId } from "@kheopswap/registry";
-import { isBigInt, logger, plancksToTokens } from "@kheopswap/utils";
-import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
+import { getTokenById$ } from "@kheopswap/services/tokens";
+import {
+	getCachedObservable$,
+	isBigInt,
+	logger,
+	plancksToTokens,
+} from "@kheopswap/utils";
+import { useObservable } from "react-rx";
+import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
+import { getAssetConvert$ } from "src/state";
 
 type UseAssetConvertPlancks = {
 	tokenIdIn: TokenId | null | undefined;
@@ -15,61 +18,12 @@ type UseAssetConvertPlancks = {
 	plancks: bigint | null | undefined;
 };
 
-// const getAssetHubConvertPlancks$ = ({
-// 	tokenIdIn,
-// 	tokenIdOut,
-// 	plancks,
-// }: UseAssetConvertPlancks) =>
-// 	getCachedObservable$(
-// 		"getAssetHubConvertPlancks$",
-// 		[tokenIdIn, tokenIdOut, plancks?.toString()].join(","),
-// 		() => {
-// 			if (!tokenIdIn || !tokenIdOut) return of(null);
-
-// 			if (!plancks) return of(null);
-
-// 			const chainId = getChainIdFromTokenId(tokenIdIn);
-// 			if (!chainId) return of(null);
-
-// 			const nativeToken = getNativeToken(chainId);
-// 			if (!nativeToken) return of(null);
-
-// 			return of(null);
-
-// 			// return combineLatest([getTokenById$(tokenIdIn), getTokenById$(tokenIdOut)]).pipe(
-// 			// 	switchMap(([tokenInState, tokenOutState]) => {
-
-// 			// 	})
-// 			// )
-
-// 			// const tokenIn = getTokenById$(tokenIdIn)
-
-// 			// // TODO if tokens exist
-// 			// // if(plancks === 0n) return of(0n)
-
-// 			// return relayChains$.pipe(
-// 			// 	switchMap(({ allChains }) =>
-// 			// 		getPoolsByChainIds$(allChains.map((chain) => chain.id)),
-// 			// 	),
-// 			// 	map((dicChainsPoolsState) => {
-// 			// 		const allStates = values(dicChainsPoolsState);
-// 			// 		const isLoading = allStates.some(
-// 			// 			(state) => state.status !== "loaded",
-// 			// 		);
-// 			// 		const arrPools = allStates
-// 			// 			.flatMap((state) => values(state.pools))
-// 			// 			.filter(
-// 			// 				(pool) =>
-// 			// 					pool.tokenIds.includes(tokenIdIn) &&
-// 			// 					pool.tokenIds.includes(tokenIdOut),
-// 			// 			);
-// 			// 		const dicPools = keyBy(arrPools, "id");
-// 			// 		return { isLoading, data: dicPools };
-// 			// 	}),
-// 			// 	shareReplay({ bufferSize: 1, refCount: true }),
-// 			// );
-// 		},
-// 	);
+const DEFAULT_VALUE_PLANCKS = {
+	plancksOut: undefined,
+	isLoading: true,
+	tokenIn: undefined,
+	tokenOut: undefined,
+};
 
 export const useAssetConvertPlancks = ({
 	tokenIdIn,
@@ -77,63 +31,24 @@ export const useAssetConvertPlancks = ({
 	plancks,
 }: UseAssetConvertPlancks) => {
 	const stop = logger.cumulativeTimer("useAssetConvertPlancks");
-	const chain = useTokenChain({ tokenId: tokenIdIn });
-	const nativeToken = useNativeToken({ chain });
-	const { data: tokenIn } = useToken({ tokenId: tokenIdIn });
-	const { data: tokenOut } = useToken({ tokenId: tokenIdOut });
 
-	const qNativeToTokenIn = usePoolReservesByTokenIds({
-		tokenId1: nativeToken?.id,
-		tokenId2: tokenIn?.id,
-	});
-	const qNativeToTokenOut = usePoolReservesByTokenIds({
-		tokenId1: nativeToken?.id,
-		tokenId2: tokenOut?.id,
-	});
+	const obs = useMemo(
+		() => getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks),
+		[tokenIdIn, tokenIdOut, plancks],
+	);
 
-	const plancksOut = useMemo(() => {
-		if (!plancks || !tokenOut || !nativeToken || !tokenIn) return undefined;
-
-		const reserveNativeToToken =
-			nativeToken.id !== tokenIn.id ? qNativeToTokenIn.data : [1n, 1n];
-		const reserveNativeToStable =
-			nativeToken.id !== tokenOut.id ? qNativeToTokenOut.data : [1n, 1n];
-
-		if (!reserveNativeToToken || !reserveNativeToStable) return undefined;
-
-		if ([...reserveNativeToStable, ...reserveNativeToToken].includes(0n))
-			return undefined;
-
-		return getAssetConvertPlancks(
-			plancks,
-			tokenIn,
-			nativeToken,
-			tokenOut,
-			reserveNativeToToken as [bigint, bigint],
-			reserveNativeToStable as [bigint, bigint],
-		);
-	}, [
-		nativeToken,
-		plancks,
-		qNativeToTokenOut.data,
-		qNativeToTokenIn.data,
-		tokenOut,
-		tokenIn,
-	]);
-
-	const isLoading =
-		!isBigInt(plancksOut) &&
-		(qNativeToTokenIn.isLoading || qNativeToTokenOut.isLoading);
+	const out = useObservable(obs, DEFAULT_VALUE_PLANCKS);
 
 	stop();
 
-	// 2 dependant queries, and sometimes they may be invalid or unused. can't provide useQuery result accurately
-	return {
-		isLoading,
-		plancksOut,
-		tokenIn,
-		tokenOut,
-	};
+	return out;
+};
+
+const DEFAULT_VALUE_PRICE = {
+	price: undefined,
+	isLoading: true,
+	tokenIn: undefined,
+	tokenOut: undefined,
 };
 
 export const useAssetConvertPrice = ({
@@ -142,26 +57,90 @@ export const useAssetConvertPrice = ({
 	plancks,
 }: UseAssetConvertPlancks) => {
 	const stop = logger.cumulativeTimer("useAssetConvertPrice");
-	const { plancksOut, isLoading, tokenIn, tokenOut } = useAssetConvertPlancks({
-		tokenIdIn,
-		tokenIdOut,
-		plancks,
-	});
 
-	const output = useMemo(
-		() => ({
-			isLoading,
-			price:
-				isBigInt(plancksOut) && tokenOut
-					? plancksToTokens(plancksOut, tokenOut.decimals)
-					: undefined,
-			tokenIn,
-			tokenOut,
-		}),
-		[isLoading, plancksOut, tokenIn, tokenOut],
+	const obs = useMemo(
+		() => getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
+		[tokenIdIn, tokenIdOut, plancks],
 	);
+
+	const out = useObservable(obs, DEFAULT_VALUE_PRICE);
 
 	stop();
 
-	return output;
+	return out;
+};
+
+const NO_TOKEN_RESULT = { token: null, status: "loaded" };
+
+const getAssetConvertPlancks$ = (
+	tokenIdIn: TokenId | null | undefined,
+	tokenIdOut: TokenId | null | undefined,
+	plancks: bigint | null | undefined,
+) => {
+	return getCachedObservable$(
+		"getAssetConvertPlancks",
+		`${tokenIdIn},${tokenIdOut},${plancks}`,
+		() => {
+			return combineLatest([
+				tokenIdIn ? getTokenById$(tokenIdIn) : of(NO_TOKEN_RESULT),
+				tokenIdOut ? getTokenById$(tokenIdOut) : of(NO_TOKEN_RESULT),
+			]).pipe(
+				switchMap(
+					([
+						{ token: tokenIn, status: statusTokenIn },
+						{ token: tokenOut, status: statusTokenOut },
+					]) => {
+						const isLoading = [statusTokenIn, statusTokenOut].some(
+							(status) => status !== "loaded",
+						);
+
+						if (!tokenIdIn || !tokenIdOut)
+							return of({ plancksOut: null, isLoading, tokenIn, tokenOut });
+
+						if (!plancks)
+							return of({ plancksOut: 0n, isLoading, tokenIn, tokenOut });
+
+						return getAssetConvert$({
+							tokenIdIn,
+							tokenIdOut,
+							plancksIn: plancks,
+						}).pipe(
+							map(({ plancksOut, isLoading }) => ({
+								plancksOut,
+								isLoading,
+								tokenIn,
+								tokenOut,
+							})),
+						);
+					},
+				),
+				shareReplay({ bufferSize: 1, refCount: true }),
+			);
+		},
+	);
+};
+
+const getAssetConvertTokens$ = (
+	tokenIdIn: TokenId | null | undefined,
+	tokenIdOut: TokenId | null | undefined,
+	plancks: bigint | null | undefined,
+) => {
+	return getCachedObservable$(
+		"getAssetConvertTokens$",
+		`${tokenIdIn},${tokenIdOut},${plancks}`,
+		() => {
+			return getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks).pipe(
+				map(({ plancksOut, isLoading, tokenIn, tokenOut }) => ({
+					isLoading,
+					price:
+						isBigInt(plancksOut) && tokenOut
+							? plancksToTokens(plancksOut, tokenOut.decimals)
+							: undefined,
+					tokenIn,
+					tokenOut,
+				})),
+				shareReplay({ bufferSize: 1, refCount: true }),
+			);
+		},
+	);
 };

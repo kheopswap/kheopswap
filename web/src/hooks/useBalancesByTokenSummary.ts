@@ -1,10 +1,11 @@
 import { groupBy, keys } from "lodash";
-import type { InjectedAccount } from "polkadot-api/dist/reexports/pjs-signer";
+import type { InjectedAccount } from "polkadot-api/pjs-signer";
 import { useMemo } from "react";
 
 import { useBalancesWithStables } from "./useBalancesWithStables";
 
 import type { Token, TokenId } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 import type {
 	AccountBalanceWithStable,
 	BalanceWithStableSummary,
@@ -66,12 +67,16 @@ export const useBalancesByTokenSummary = ({
 	tokens,
 	accounts,
 }: UseBalancesByTokenSummaryProps) => {
+	const stop = logger.cumulativeTimer("useBalancesByTokenSummary");
+
 	const { data: balances, isLoading } = useBalancesWithStables({
 		tokens,
 		accounts,
 	});
 
 	const data = useMemo(() => getBalancesByTokenSummary(balances), [balances]);
+
+	stop();
 
 	return { data, isLoading };
 };
