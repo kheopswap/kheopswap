@@ -8,7 +8,7 @@ import {
 	useBalancesWithStables,
 	useWallets,
 } from "src/hooks";
-import { useTokenPrices } from "src/hooks/useTokenPrices";
+import { useTokenPrices } from "src/hooks";
 
 export const usePortfolioProvider = () => {
 	const stop = logger.cumulativeTimer("usePortfolioProvicer");

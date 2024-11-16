@@ -11,7 +11,7 @@ import { cn } from "@kheopswap/utils";
 import { ModalDialog } from "src/components";
 import { DiscordIcon, GitHubIcon, XDotComIcon } from "src/components/icons";
 import { useOpenClose } from "src/hooks";
-import { useLoadingStatusSummary } from "src/hooks/useLoadingStatusSummary";
+import { useLoadingStatusSummary } from "src/hooks";
 
 const LoadingStatus = () => {
 	const { loaded, total } = useDeferredValue(useLoadingStatusSummary());

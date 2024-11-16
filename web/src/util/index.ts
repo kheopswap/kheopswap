@@ -6,3 +6,4 @@ export * from "../../../packages/registry/src/utils/xcmV3MultiLocation";
 export * from "./getAssetHubMirrorTokenId";
 export * from "./getTokenTypeLabel";
 export * from "./getTokenDescription";
+export * from "./getXcmMessageFromDryRun";

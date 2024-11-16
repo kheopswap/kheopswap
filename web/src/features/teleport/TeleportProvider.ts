@@ -20,9 +20,13 @@ import {
 	useFeeToken,
 	useNativeToken,
 	useSetting,
+	useToken,
 	useWalletAccount,
 } from "src/hooks";
+import { useEstimateDeliveryFee } from "src/hooks";
+import { useEstimateDestinationFee } from "src/hooks";
 import { useRelayChains } from "src/state";
+import { getAssetHubMirrorTokenId } from "src/util";
 
 const useDefaultValues = () => {
 	const [defaultAccountId] = useSetting("defaultAccountId");
@@ -123,10 +127,6 @@ const useTeleportProvider = () => {
 		}
 	}, [formData.amountIn, tokenIn]);
 
-	const [plancksOut, amountOut] = useMemo(() => {
-		return [plancksIn, formData.amountIn]; // TODO account for destination fee
-	}, [formData.amountIn, plancksIn]);
-
 	const account = useWalletAccount({ id: formData.from });
 
 	const sender = useMemo(() => account?.address ?? null, [account?.address]);
@@ -154,6 +154,57 @@ const useTeleportProvider = () => {
 		recipient,
 	});
 
+	const {
+		data: deliveryFeeEstimate,
+		isLoading: isLoadingDeliveryFeeEstimate,
+		error: errorDeliveryFeeEstimate,
+	} = useEstimateDeliveryFee({
+		call: extrinsic?.call ?? fakeExtrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	const {
+		data: destFeeEstimate,
+		isLoading: isLoadingDestFeeEstimate,
+		error: errorDestFeeEstimate,
+	} = useEstimateDestinationFee({
+		call: extrinsic?.call ?? fakeExtrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	const destFeeToken = useToken({ tokenId: destFeeEstimate?.tokenId });
+
+	const [plancksOut, amountOut] = useMemo(() => {
+		// assume target token is same value as source
+		// fee token might be different
+
+		if (!plancksIn || !destFeeEstimate || !destFeeToken)
+			return [null, null] as const;
+
+		if (
+			getAssetHubMirrorTokenId(tokenIn.id) ===
+			getAssetHubMirrorTokenId(tokenOut.id)
+		) {
+			if (plancksIn <= destFeeEstimate.plancks) return [null, null] as const;
+			const plancksOut = plancksIn - destFeeEstimate.plancks;
+			return [plancksOut, plancksToTokens(plancksOut, tokenOut.decimals)] as [
+				bigint,
+				string,
+			];
+		}
+
+		return [plancksIn, formData.amountIn] as [bigint, string];
+	}, [
+		formData.amountIn,
+		plancksIn,
+		destFeeEstimate,
+		destFeeToken,
+		tokenIn,
+		tokenOut,
+	]);
+
 	const { feeToken } = useFeeToken({
 		chainId: tokenIn?.chainId,
 		accountId: sender,
@@ -173,12 +224,11 @@ const useTeleportProvider = () => {
 		tokenId: tokenOut?.id,
 	});
 
-	const { data: checkCanAccountReceive, isLoading: isCheckingRecipient } =
-		useCanAccountReceive({
-			address: recipient,
-			tokenId: tokenOut?.id,
-			plancks: plancksOut,
-		});
+	const { data: checkCanAccountReceive } = useCanAccountReceive({
+		address: recipient,
+		tokenId: tokenOut?.id,
+		plancks: plancksOut,
+	});
 
 	const outputErrorMessage = useMemo(
 		() => checkCanAccountReceive?.reason,
@@ -216,20 +266,32 @@ const useTeleportProvider = () => {
 	}, []);
 
 	const onMaxClick = useCallback(() => {
-		if (tokenIn && balanceIn && feeToken) {
+		if (tokenIn && balanceIn && feeToken && deliveryFeeEstimate) {
 			let plancks = balanceIn;
 			const fees = feeToken.id === tokenIn.id ? (feeEstimate ?? 0n) : 0n;
+			const deliveryFees =
+				deliveryFeeEstimate.tokenId === tokenIn.id
+					? (deliveryFeeEstimate.plancks ?? 0n)
+					: 0n;
 			const ed = existentialDepositIn ?? 0n;
 
-			if (tokenIn.type === "native" && plancks > 2n * fees + ed)
-				plancks -= 2n * fees + ed;
+			const total = fees + deliveryFees + ed;
+
+			if (tokenIn.type === "native" && plancks >= total) plancks -= total;
 
 			setFormData((prev) => ({
 				...prev,
 				amountIn: plancksToTokens(plancks, tokenIn.decimals),
 			}));
 		}
-	}, [tokenIn, balanceIn, feeToken, feeEstimate, existentialDepositIn]);
+	}, [
+		tokenIn,
+		balanceIn,
+		feeToken,
+		feeEstimate,
+		deliveryFeeEstimate,
+		existentialDepositIn,
+	]);
 
 	const onReset = useCallback(() => {
 		setFormData((prev) => ({ ...prev, amountIn: "" }));
@@ -254,8 +316,16 @@ const useTeleportProvider = () => {
 		balanceOut,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
+		destFeeEstimate,
+		isLoadingDestFeeEstimate,
+		errorDestFeeEstimate,
+		deliveryFeeEstimate,
+		isLoadingDeliveryFeeEstimate,
+		errorDeliveryFeeEstimate,
 		call:
-			outputErrorMessage || isCheckingRecipient ? undefined : extrinsic?.call,
+			outputErrorMessage || !checkCanAccountReceive?.canReceive
+				? undefined
+				: extrinsic?.call,
 		fakeCall: fakeExtrinsic?.call,
 		outputErrorMessage,
 		onFromChange,

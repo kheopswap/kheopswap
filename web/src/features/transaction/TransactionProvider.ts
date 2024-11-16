@@ -1,5 +1,4 @@
 import { isNumber, uniq } from "lodash";
-import type { Transaction } from "polkadot-api";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { type Observable, catchError, of, shareReplay } from "rxjs";
@@ -27,6 +26,7 @@ import {
 	useNonce,
 	useWalletAccount,
 } from "src/hooks";
+import type { AnyTransaction } from "src/types";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 
 export type CallSpendings = Partial<
@@ -34,10 +34,8 @@ export type CallSpendings = Partial<
 >;
 
 type UseTransactionProviderProps = {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	call: Transaction<any, any, any, any> | null | undefined;
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	fakeCall: Transaction<any, any, any, any> | null | undefined; // used as backup for calculating fees without all the inputs
+	call: AnyTransaction | null | undefined;
+	fakeCall: AnyTransaction | null | undefined; // used as backup for calculating fees without all the inputs
 	signer: string | null | undefined; // accountkey
 	chainId: ChainId | null | undefined;
 	callSpendings?: CallSpendings; // tokens to be spent as part of the call
@@ -46,8 +44,7 @@ type UseTransactionProviderProps = {
 };
 
 type FollowUpInputs = {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	call: Transaction<any, any, any, any> | null | undefined;
+	call: AnyTransaction | null | undefined;
 	obsTxEvents: Observable<FollowUpTxEvent>;
 	account: InjectedAccount;
 	feeEstimate: bigint;
@@ -283,6 +280,7 @@ const useTransactionProvider = ({
 	]);
 
 	const canSubmit = useMemo(() => {
+		// TODO add a flag to allow parent form to force another isLoading state
 		return (
 			!!call &&
 			!!account &&
