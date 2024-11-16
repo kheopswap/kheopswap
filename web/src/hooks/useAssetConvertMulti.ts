@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 
 import type { TokenId } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
 import { useObservable } from "react-rx";
 import { getAssetConvertMulti$ } from "src/state/convert";
 
@@ -30,13 +29,7 @@ const DEFAULT_VALUE = { data: [], isLoading: true };
 export const useAssetConvertMulti = ({
 	inputs,
 }: UseAssetConvertMultiProps): AssetConvertMultiResult => {
-	const stop = logger.cumulativeTimer("useAssetConvertMulti");
-
 	const obs = useMemo(() => getAssetConvertMulti$(inputs), [inputs]);
 
-	const outputs = useObservable(obs, DEFAULT_VALUE);
-
-	stop();
-
-	return outputs;
+	return useObservable(obs, DEFAULT_VALUE);
 };

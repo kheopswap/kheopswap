@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getBalance$ } from "@kheopswap/services/balances";
-import { getCachedObservable$, logger } from "@kheopswap/utils";
+import { getCachedObservable$ } from "@kheopswap/utils";
 import { useObservable } from "react-rx";
 import {
 	type Observable,
@@ -53,8 +53,6 @@ export const useBalancesWithStables = ({
 	tokens,
 	accounts,
 }: UseAccountBalancesWithStablesProps) => {
-	const stop = logger.cumulativeTimer("useBalancesWithStables");
-
 	const obs = useMemo(() => {
 		if (!tokens?.length || !accounts?.length) return of(DEFAULT_VALUE);
 
@@ -77,9 +75,5 @@ export const useBalancesWithStables = ({
 		);
 	}, [accounts, tokens]);
 
-	const res = useObservable(obs, DEFAULT_VALUE);
-
-	stop();
-
-	return res;
+	return useObservable(obs, DEFAULT_VALUE);
 };

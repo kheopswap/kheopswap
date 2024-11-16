@@ -30,8 +30,6 @@ import { pollChainStatus } from "../pollChainStatus";
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);
 
-export const chainTokensStatuses$ = loadingStatusByChain$;
-
 const WATCHERS = new Map<ChainId, () => void>();
 
 const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
@@ -332,5 +330,7 @@ tokensByChainSubscriptions$.subscribe((chainIds) => {
 	for (const chainId of chainIds.filter((id) => !WATCHERS.has(id)))
 		WATCHERS.set(chainId, watchTokensByChain(chainId));
 });
+
+export const chainTokensStatuses$ = loadingStatusByChain$;
 
 export const getTokensWatchersCount = () => WATCHERS.size;

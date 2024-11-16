@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 
 import type { Pool } from "@kheopswap/services/pools";
-import { logger } from "@kheopswap/utils";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 import { getAssetHubPoolReserves$ } from "src/state";
@@ -13,8 +12,6 @@ type UsePoolReservesProps = {
 const DEFAULT_VALUE = { data: undefined, isLoading: true };
 
 export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
-	const stop = logger.cumulativeTimer("usePoolReserves");
-
 	const obs = useMemo(
 		() =>
 			getAssetHubPoolReserves$(pool ?? null).pipe(
@@ -23,9 +20,5 @@ export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
 		[pool],
 	);
 
-	const res = useObservable(obs, DEFAULT_VALUE);
-
-	stop();
-
-	return res;
+	return useObservable(obs, DEFAULT_VALUE);
 };

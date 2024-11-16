@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 
 import type { TokenId } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
 import { useObservable } from "react-rx";
 import { type Observable, map, switchMap } from "rxjs";
 import { getAssetConvertMulti$ } from "src/state/convert";
@@ -44,13 +43,7 @@ const DEFAULT_VALUE = { isLoading: true, data: [] };
 export const useStablePlancksMulti = ({
 	inputs,
 }: UseStablePlancksProps): UseStablePlancksResult => {
-	const stop = logger.cumulativeTimer("useStablePlancksMulti");
-
 	const obs = useMemo(() => getStablePlancksMulti$(inputs), [inputs]);
 
-	const res = useObservable(obs, DEFAULT_VALUE);
-
-	stop();
-
-	return res;
+	return useObservable(obs, DEFAULT_VALUE);
 };

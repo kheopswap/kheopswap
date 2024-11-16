@@ -5,7 +5,6 @@ import { getTokenById$ } from "@kheopswap/services/tokens";
 import {
 	getCachedObservable$,
 	isBigInt,
-	logger,
 	plancksToTokens,
 } from "@kheopswap/utils";
 import { useObservable } from "react-rx";
@@ -30,18 +29,12 @@ export const useAssetConvertPlancks = ({
 	tokenIdOut,
 	plancks,
 }: UseAssetConvertPlancks) => {
-	const stop = logger.cumulativeTimer("useAssetConvertPlancks");
-
 	const obs = useMemo(
 		() => getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks),
 		[tokenIdIn, tokenIdOut, plancks],
 	);
 
-	const out = useObservable(obs, DEFAULT_VALUE_PLANCKS);
-
-	stop();
-
-	return out;
+	return useObservable(obs, DEFAULT_VALUE_PLANCKS);
 };
 
 const DEFAULT_VALUE_PRICE = {
@@ -56,18 +49,12 @@ export const useAssetConvertPrice = ({
 	tokenIdOut,
 	plancks,
 }: UseAssetConvertPlancks) => {
-	const stop = logger.cumulativeTimer("useAssetConvertPrice");
-
 	const obs = useMemo(
 		() => getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
 		[tokenIdIn, tokenIdOut, plancks],
 	);
 
-	const out = useObservable(obs, DEFAULT_VALUE_PRICE);
-
-	stop();
-
-	return out;
+	return useObservable(obs, DEFAULT_VALUE_PRICE);
 };
 
 const NO_TOKEN_RESULT = { token: null, status: "loaded" };
