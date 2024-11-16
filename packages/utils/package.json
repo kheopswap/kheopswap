@@ -15,14 +15,14 @@
 	"dependencies": {
 		"@kheopswap/constants": "workspace:*",
 		"clsx": "^2.1.1",
-		"polkadot-api": "^1.7.3",
+		"polkadot-api": "^1.7.4",
 		"react": "^18.3.1",
 		"react-toastify": "^10.0.6",
 		"rxjs": "^7.8.1",
 		"tailwind-merge": "^2.5.4",
 		"url-join": "^5.0.0",
-		"viem": "^2.21.43",
-		"vite": "^5.4.10",
+		"viem": "^2.21.45",
+		"vite": "^5.4.11",
 		"webfontloader": "^1.6.28"
 	}
 }
