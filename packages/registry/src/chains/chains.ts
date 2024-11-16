@@ -39,6 +39,9 @@ const CHAINS = USE_CHOPSTICKS
 
 const CHAINS_MAP = Object.fromEntries(CHAINS.map((chain) => [chain.id, chain]));
 
+export const getRelayIds = () =>
+	CHAINS.filter((chain) => chain.relay === chain.id).map((chain) => chain.id);
+
 export const isChainIdAssetHub = (id: unknown): id is ChainIdAssetHub =>
 	typeof id === "string" && !!DESCRIPTORS_ASSET_HUB[id as ChainIdAssetHub];
 export const isChainIdRelay = (id: unknown): id is ChainIdRelay =>

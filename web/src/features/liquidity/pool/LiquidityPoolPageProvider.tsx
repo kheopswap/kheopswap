@@ -9,11 +9,11 @@ import {
 	useNativeToken,
 	usePoolByPoolAssetId,
 	usePoolReserves,
-	useRelayChains,
 	useSetting,
 	useToken,
 	useWalletAccount,
 } from "src/hooks";
+import { useRelayChains } from "src/state";
 
 // provides informations that are common between add & remove liquidity pages
 const useLiquidityPoolPageProvider = () => {
@@ -46,7 +46,7 @@ const useLiquidityPoolPageProvider = () => {
 	const { data: position, isLoading: isLoadingPosition } = usePoolPosition({
 		pool,
 		address,
-		reserves,
+		reserves: reserves ?? null,
 		isLoadingReserves,
 	});
 

@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
 import { usePoolsByChainId } from "./usePoolsByChainId";
-import { useRelayChains } from "./useRelayChains";
 
 import type { TokenIdAsset, TokenIdForeignAsset } from "@kheopswap/registry";
 import type { Pool } from "@kheopswap/services/pools";
+import { useRelayChains } from "src/state";
 
 type UsePoolByTokenIdProps = {
 	tokenId: TokenIdAsset | TokenIdForeignAsset | null | undefined;

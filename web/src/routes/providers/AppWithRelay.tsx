@@ -3,7 +3,6 @@ import { Navigate, Outlet, useParams } from "react-router-dom";
 
 import { isChainIdRelay } from "@kheopswap/registry";
 import { ChainInitNotification } from "src/components";
-import { RelayChainsProvider } from "src/hooks";
 
 const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
 	const { relayId } = useParams();
@@ -18,10 +17,8 @@ const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
 export const AppWithRelay: FC = () => {
 	return (
 		<RelayPathCheck>
-			<RelayChainsProvider>
-				<Outlet />
-				<ChainInitNotification />
-			</RelayChainsProvider>
+			<Outlet />
+			<ChainInitNotification />
 		</RelayPathCheck>
 	);
 };

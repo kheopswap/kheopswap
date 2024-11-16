@@ -11,7 +11,7 @@
 			"metadata": ".papi/scale/pah.scale"
 		},
 		"hydration": {
-			"wsUrl": "wss://hydration.ibp.network",
+			"wsUrl": "wss://rpc.hydradx.cloud",
 			"metadata": ".papi/scale/hydration.scale"
 		},
 

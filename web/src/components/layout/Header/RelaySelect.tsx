@@ -10,7 +10,8 @@ import {
 import { cn, notifyError } from "@kheopswap/utils";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
-import { useOpenClose, useRelayChains, useSetting } from "src/hooks";
+import { useOpenClose, useSetting } from "src/hooks";
+import { useRelayChains } from "src/state";
 
 const ChainButton: FC<{
 	onClick: () => void;

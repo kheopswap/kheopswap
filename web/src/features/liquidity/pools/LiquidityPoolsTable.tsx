@@ -76,7 +76,7 @@ export const LiquidityPoolsTable = () => {
 		<div>
 			<SearchInput
 				className="mb-4 "
-				placeholder="Search for more tokens"
+				placeholder="Search"
 				onChange={setRawSearch}
 			/>
 			<LiquidityPoolsHeaderRow
@@ -84,7 +84,6 @@ export const LiquidityPoolsTable = () => {
 				isLoading={isLoading}
 				sortByCol={sortByCol}
 				withPositions={!!accounts.length}
-				//hasPositions={!!balances.length}
 				onColumnHeaderClick={handleSortClick}
 			/>
 			<LiquidityPoolsRows

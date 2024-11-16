@@ -8,11 +8,11 @@ import { useMemo } from "react";
 import {
 	useNativeToken,
 	usePoolsByChainId,
-	useRelayChains,
 	useToken,
 	useTokensByChainId,
 	useWallets,
 } from "src/hooks";
+import { useRelayChains } from "src/state";
 import {
 	type PoolWithPositions,
 	usePoolWithPositions,

@@ -14,6 +14,8 @@ const combineState = (
 	statuses: Dictionary<LoadingStatus>,
 	tokenInfos: Dictionary<TokenInfo>,
 ): Dictionary<TokenInfoState> => {
+	const stop = logger.cumulativeTimer("tokenInfos.combineState");
+
 	try {
 		const allTokenIds = [
 			...new Set<TokenId>(tokenIds.concat(keys(tokenInfos))),
@@ -31,6 +33,8 @@ const combineState = (
 	} catch (err) {
 		logger.error("Failed to merge balances state", { err });
 		return {};
+	} finally {
+		stop();
 	}
 };
 

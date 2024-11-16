@@ -22,7 +22,6 @@ export * from "./usePoolsByChainId";
 export * from "./usePoolByTokenId";
 export * from "./usePoolSupplies";
 export * from "./usePoolSupply";
-export * from "./useRelayChains";
 export * from "./useSetting";
 export * from "./useStablePrice";
 export * from "./useStablePlancksMulti";

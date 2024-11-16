@@ -21,11 +21,11 @@ import {
 	useFeeToken,
 	useNativeToken,
 	useNonce,
-	useRelayChains,
 	useSetting,
 	useTokenChain,
 	useWalletAccount,
 } from "src/hooks";
+import { useRelayChains } from "src/state";
 import { getFeeAssetLocation } from "src/util";
 import { getTxOptions } from "src/util/getTxOptions";
 

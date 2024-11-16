@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 
-import { useRelayChains } from "./useRelayChains";
-
 import type { Chain } from "@kheopswap/registry";
 import { type TokenId, parseTokenId } from "@kheopswap/registry";
+import { useRelayChains } from "src/state";
 
 type UseTokenChainProps<T extends TokenId | null | undefined> = {
 	tokenId: T;

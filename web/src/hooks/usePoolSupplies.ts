@@ -37,5 +37,10 @@ export const usePoolSupplies = ({
 		[pairs],
 	);
 
-	return useObservable(poolSupplies$, { isLoading: !pairs?.length, data: [] });
+	const defaultValue = useMemo(
+		() => ({ isLoading: !pairs?.length, data: [] }),
+		[pairs],
+	);
+
+	return useObservable(poolSupplies$, defaultValue);
 };

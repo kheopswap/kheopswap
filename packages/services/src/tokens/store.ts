@@ -11,6 +11,7 @@ import {
 	type ChainId,
 	KNOWN_TOKENS_LIST,
 	KNOWN_TOKENS_MAP,
+	PARA_ID_ASSET_HUB,
 	TOKENS_OVERRIDES_MAP,
 	type Token,
 	type TokenHydrationAsset,
@@ -84,6 +85,8 @@ export const updateTokensStore = (
 	type: TokenType,
 	tokens: StorageToken[],
 ) => {
+	const stop = logger.cumulativeTimer("updateTokensStore");
+
 	const currentTokens = values(tokensStoreData$.value);
 
 	const otherTokens = currentTokens.filter(
@@ -99,6 +102,8 @@ export const updateTokensStore = (
 	);
 
 	tokensStoreData$.next(newValue);
+
+	stop();
 };
 
 //store may contain incomplete information, such as for XC tokens whose symbol can only be found on the source chain
@@ -109,18 +114,21 @@ export const tokensStore$ = tokensStoreData$.pipe(
 		const storageTokens = values(storageTokensMap);
 
 		const chains = getChains();
+		const availableChainIds = chains.map((c) => c.id);
 
 		const tokens = storageTokens
 			.map((token) => {
 				if (token.type === "hydration-asset") {
 					if (!token.chainId || !("location" in token)) return null;
+					if (!availableChainIds.includes(token.chainId)) return null;
+
 					const location = token.location as XcmV3Multilocation;
 
 					if (
 						location?.parents === 1 &&
 						location.interior.type === "X3" &&
 						location.interior.value[0].type === "Parachain" &&
-						location.interior.value[0].value === 1000 &&
+						location.interior.value[0].value === PARA_ID_ASSET_HUB &&
 						location.interior.value[1].type === "PalletInstance" &&
 						location.interior.value[1].value === 50 &&
 						location.interior.value[2].type === "GeneralIndex"
@@ -128,7 +136,8 @@ export const tokensStore$ = tokensStoreData$.pipe(
 						const assetHubAssetId = location.interior.value[2].value;
 						const hydration = getChainById(token.chainId);
 						const assetHub = chains.find(
-							(c) => c.relay === hydration.relay && c.paraId === 1000,
+							(c) =>
+								c.relay === hydration.relay && c.paraId === PARA_ID_ASSET_HUB,
 						);
 						if (assetHub) {
 							const assetHubToken = storageTokens.find(

@@ -4,12 +4,8 @@ import { NavLink, Navigate, useParams } from "react-router-dom";
 
 import { Layout, PageContent, PageTitle, TabTitle } from "src/components";
 import { LiquidityPool } from "src/features/liquidity";
-import {
-	useNativeToken,
-	usePoolByPoolAssetId,
-	useRelayChains,
-	useToken,
-} from "src/hooks";
+import { useNativeToken, usePoolByPoolAssetId, useToken } from "src/hooks";
+import { useRelayChains } from "src/state";
 
 const usePoolName = () => {
 	const { assetHub } = useRelayChains();
