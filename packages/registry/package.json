@@ -11,8 +11,7 @@
 		"papi": "papi",
 		"postinstall": "papi",
 		"dev": "dev",
-		"build": "papi --whitelist papi-whitelist.ts",
-		
+		"build": "papi --whitelist papi-whitelist.ts"
 	},
 	"devDependencies": {
 		"@kheopswap/constants": "workspace:*",
