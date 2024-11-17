@@ -30,8 +30,8 @@ export const useBalances = ({
 						return {
 							address: bd.address,
 							tokenId: bd.tokenId,
-							balance: bs.balance,
-							isLoading: bs.status !== "loaded",
+							balance: bs?.balance ?? undefined,
+							isLoading: bs?.status !== "loaded",
 						};
 					}),
 					isLoading: balances.some((b) => b.status !== "loaded"),

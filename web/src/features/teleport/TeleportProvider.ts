@@ -205,7 +205,13 @@ const useTeleportProvider = () => {
 	const [plancksOut, amountOut] = useMemo(() => {
 		const effDestFeeEstimate = destFeeEstimate ?? fakeDestFeeEstimate;
 
-		if (!plancksIn || !effDestFeeEstimate || !destFeeToken)
+		if (
+			!plancksIn ||
+			!effDestFeeEstimate ||
+			!destFeeToken ||
+			!tokenIn ||
+			!tokenOut
+		)
 			return [null, null] as const;
 
 		if (

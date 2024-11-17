@@ -18,6 +18,7 @@ import type {
 
 import {
 	getBlockExplorerUrl,
+	logger,
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
@@ -102,6 +103,7 @@ export const parseTokenId = (
 				throw new Error(`Unsupported token type: ${tokenId}`);
 		}
 	} catch (cause) {
+		logger.error(`Failed to parse token id: ${tokenId}`, { cause });
 		throw new Error(`Failed to parse token id: ${tokenId}`, { cause });
 	}
 };

@@ -70,7 +70,8 @@ export const useEstimateDeliveryFee = ({
 				if (!assets) throw new Error("Failed to estimate");
 				if (assets.length !== 1) throw new Error("Failed to estimate");
 				const fee = deliveryFee.value.value[0];
-				if (fee.fun.type !== "Fungible") throw new Error("Unexpected fee type");
+				if (fee?.fun.type !== "Fungible")
+					throw new Error("Unexpected fee type");
 
 				const tokenId = getTokenIdFromXcmV3Multilocation(
 					chainId,

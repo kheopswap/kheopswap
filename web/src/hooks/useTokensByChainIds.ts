@@ -5,7 +5,10 @@ import { map } from "rxjs";
 
 import type { ChainId } from "@kheopswap/registry";
 import type { Token } from "@kheopswap/registry";
-import { getTokensByChains$ } from "@kheopswap/services/tokens";
+import {
+	type ChainTokensState,
+	getTokensByChains$,
+} from "@kheopswap/services/tokens";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];
@@ -22,14 +25,19 @@ export const useTokensByChainIds = ({
 	const tokens$ = useMemo(
 		() =>
 			getTokensByChains$(chainIds).pipe(
-				map((tokensByChains) => ({
-					isLoading: values(tokensByChains).some(
-						(statusAndTokens) => statusAndTokens.status !== "loaded",
-					),
-					data: values(tokensByChains)
-						.map((chainTokens) => chainTokens.tokens)
-						.reduce((acc, tokens) => Object.assign(acc, tokens), {}),
-				})),
+				map((tokensByChains) => {
+					const states = values(tokensByChains).filter(
+						(v: unknown): v is ChainTokensState => !!v,
+					);
+					return {
+						isLoading: states.some(
+							(statusAndTokens) => statusAndTokens.status !== "loaded",
+						),
+						data: states
+							.map((chainTokens) => chainTokens.tokens)
+							.reduce((acc, tokens) => Object.assign(acc, tokens), {}),
+					};
+				}),
 			),
 		[chainIds],
 	);
