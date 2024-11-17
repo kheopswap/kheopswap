@@ -13,5 +13,13 @@ jobs:
         uses: biomejs/setup-biome@v2
         with:
           version: latest
+      - name: Enable corepack
+        run: corepack enable
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
       - name: Run Biome
         run: biome ci .
+      - name: Check typings
+        run: pnpm typecheck

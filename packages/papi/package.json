@@ -5,11 +5,15 @@
 	"exports": {
 		".": "./src/index.ts"
 	},
-	"scripts": {},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check --write"
+	},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
 		"@types/lodash": "^4.17.13",
-		"typescript": "^5.6.3"
+		"typescript": "^5.6.3",
+		"vite": "^5.4.11"
 	},
 	"dependencies": {
 		"@kheopswap/constants": "workspace:*",
@@ -20,7 +24,6 @@
 		"@substrate/connect": "^2.0.1",
 		"lodash": "^4.17.21",
 		"polkadot-api": "^1.7.4",
-		"rxjs": "^7.8.1",
-		"vite": "^5.4.11"
+		"rxjs": "^7.8.1"
 	}
 }

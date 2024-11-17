@@ -5,7 +5,10 @@
 	"exports": {
 		".": "./src/index.ts"
 	},
-	"scripts": {},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check --write"
+	},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
 		"@types/react": "^18.3.12",

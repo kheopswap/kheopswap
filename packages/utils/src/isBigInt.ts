@@ -1,2 +1,2 @@
-export const isBigInt = <T>(value: T | bigint): value is bigint =>
+export const isBigInt = (value: unknown): value is bigint =>
 	typeof value === "bigint";

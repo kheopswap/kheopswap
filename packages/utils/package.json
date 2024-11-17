@@ -5,12 +5,16 @@
 	"exports": {
 		".": "./src/index.ts"
 	},
-	"scripts": {},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check --write"
+	},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
 		"@types/react": "^18.3.12",
 		"@types/webfontloader": "^1.6.38",
-		"typescript": "^5.6.3"
+		"typescript": "^5.6.3",
+		"vite": "^5.4.11"
 	},
 	"dependencies": {
 		"@kheopswap/constants": "workspace:*",
@@ -22,7 +26,6 @@
 		"tailwind-merge": "^2.5.4",
 		"url-join": "^5.0.0",
 		"viem": "^2.21.45",
-		"vite": "^5.4.11",
 		"webfontloader": "^1.6.28"
 	}
 }

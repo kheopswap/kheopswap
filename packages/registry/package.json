@@ -5,18 +5,22 @@
 	"exports": {
 		".": "./src/index.ts"
 	},
+
 	"scripts": {
 		"papi:update": "papi update",
 		"papi": "papi",
 		"postinstall": "papi",
 		"dev": "dev",
-		"build": "papi --whitelist papi-whitelist.ts "
+		"build": "papi --whitelist papi-whitelist.ts",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check --write"
 	},
 	"devDependencies": {
 		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/typescript-config": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
-		"typescript": "^5.6.3"
+		"typescript": "^5.6.3",
+		"vite": "^5.4.11"
 	},
 	"dependencies": {
 		"@polkadot-api/descriptors": "file:.papi/descriptors",
