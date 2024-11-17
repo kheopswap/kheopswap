@@ -11,10 +11,7 @@
 		"./poolSupplies": "./src/poolSupplies/index.ts",
 		"./loadingStatusSummary": "./src/loadingStatusSummary.ts"
 	},
-	"scripts": {
-		"typecheck": "tsc --noEmit",
-		"lint": "biome check --write"
-	},
+	"scripts": {},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
 		"@types/lodash": "^4.17.13",

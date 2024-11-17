@@ -9,8 +9,7 @@
 		"dev:chopsticks": "vite --mode chopsticks",
 		"build": "(cd ../packages/registry && papi --whitelist papi-whitelist.ts) && tsc && vite build",
 		"preview": "vite preview",
-		"typecheck": "tsc --noEmit",
-		"lint": "biome check --write",
+		"typecheck": "tsc --noEmit -p tsconfig.app.json",
 		"papi:update": "papi update polkadot,kusama,westend,kah,pah,wah"
 	},
 	"dependencies": {
