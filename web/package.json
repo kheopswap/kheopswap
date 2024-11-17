@@ -10,7 +10,6 @@
 		"build": "(cd ../packages/registry && papi --whitelist papi-whitelist.ts) && tsc && vite build",
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit",
-		"biome": "biome check --write",
 		"lint": "biome check --write",
 		"papi:update": "papi update polkadot,kusama,westend,kah,pah,wah"
 	},

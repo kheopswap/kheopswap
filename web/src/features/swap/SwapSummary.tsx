@@ -7,6 +7,7 @@ import { useSwap } from "./SwapProvider";
 import { isBigInt } from "@kheopswap/utils";
 import { Tokens } from "src/components";
 import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
+import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 
 const SummaryRow: FC<{ label: ReactNode; value: ReactNode }> = ({
 	label,
@@ -80,6 +81,14 @@ export const SwapSummary = () => {
 					</div>
 					<div>
 						<SummaryRow
+							label="Simulation"
+							value={<TransactionDryRunSummaryValue />}
+						/>
+						<SummaryRow
+							label="Transaction fee"
+							value={<TransactionFeeSummaryValue />}
+						/>
+						<SummaryRow
 							label="Kheopswap commission"
 							value={
 								!!tokenIn &&
@@ -98,10 +107,6 @@ export const SwapSummary = () => {
 									<Tokens plancks={protocolCommission} token={tokenIn} />
 								)
 							}
-						/>
-						<SummaryRow
-							label="Transaction fee"
-							value={<TransactionFeeSummaryValue />}
 						/>
 					</div>
 				</>

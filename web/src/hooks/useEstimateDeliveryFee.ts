@@ -26,7 +26,11 @@ export const useEstimateDeliveryFee = ({
 	from,
 	call,
 }: UseEstimateDeliveryFeeProps) => {
-	const { data: dryRun } = useDryRun({ chainId, from, call });
+	const { data: dryRun, isLoading: dryRunIsLoading } = useDryRun({
+		chainId,
+		from,
+		call,
+	});
 
 	return useQuery({
 		queryKey: [
@@ -79,8 +83,6 @@ export const useEstimateDeliveryFee = ({
 					plancks: fee.fun.value,
 				};
 
-				logger.debug("[useEstimateDeliveryFee]", { result });
-
 				return result;
 			} catch (err) {
 				logger.error("[useEstimateDeliveryFee]", { err });
@@ -90,6 +92,6 @@ export const useEstimateDeliveryFee = ({
 		retry: 1,
 		refetchInterval: false,
 		structuralSharing: false,
-		enabled: !!dryRun,
+		enabled: !dryRunIsLoading,
 	});
 };

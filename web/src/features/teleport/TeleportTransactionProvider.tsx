@@ -10,18 +10,29 @@ import {
 export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
-	const { call, fakeCall, formData, tokenIn, plancksIn, onReset } =
-		useTeleport();
+	const {
+		call,
+		fakeCall,
+		formData,
+		tokenIn,
+		plancksIn,
+		onReset,
+		deliveryFeeEstimate,
+	} = useTeleport();
 
-	const callSpendings = useMemo<CallSpendings>(
-		() =>
-			tokenIn && !!plancksIn
-				? {
-						[tokenIn.id]: { plancks: plancksIn, allowDeath: false },
-					}
-				: {},
-		[plancksIn, tokenIn],
-	);
+	const callSpendings = useMemo<CallSpendings>(() => {
+		if (!tokenIn || !plancksIn) return {};
+
+		const tokenInPlancks =
+			plancksIn +
+			(deliveryFeeEstimate?.tokenId === tokenIn.id
+				? deliveryFeeEstimate.plancks
+				: 0n);
+
+		return {
+			[tokenIn.id]: { plancks: tokenInPlancks, allowDeath: false },
+		};
+	}, [plancksIn, tokenIn, deliveryFeeEstimate]);
 
 	return (
 		<TransactionProvider

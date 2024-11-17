@@ -10,6 +10,7 @@ import {
 import { Pulse } from "src/components/Pulse";
 import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
 import { useToken } from "src/hooks";
+import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { useTeleport } from "./TeleportProvider";
 
 const FeeSummaryValue: FC<{
@@ -23,7 +24,7 @@ const FeeSummaryValue: FC<{
 
 	if (error) return <span className="text-error">{error.message}</span>;
 
-	if (isLoading && !fee) return <Shimmer>0.0000 USDC</Shimmer>;
+	if (isLoading && !fee) return <Shimmer className="h-4">0.0000 USDC</Shimmer>;
 
 	if (fee && feeToken)
 		return (
@@ -48,6 +49,10 @@ export const TeleportSummary = () => {
 	return (
 		<FormSummary>
 			<FormSummarySection>
+				<FormSummaryRow
+					label="Simulation"
+					value={<TransactionDryRunSummaryValue />}
+				/>
 				<FormSummaryRow
 					label="Transaction fee"
 					value={<TransactionFeeSummaryValue />}

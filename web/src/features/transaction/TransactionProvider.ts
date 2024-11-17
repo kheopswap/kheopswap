@@ -8,7 +8,6 @@ import type { Token, TokenId } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
 import {
 	formatTxError,
-	isBigInt,
 	logger,
 	notifyError,
 	provideContext,
@@ -19,6 +18,7 @@ import {
 	useAssetConvertPlancks,
 	useBalance,
 	useBalances,
+	useDryRun,
 	useEstimateFee,
 	useExistentialDeposits,
 	useFeeToken,
@@ -216,8 +216,6 @@ const useTransactionProvider = ({
 			const allSpendings = Object.fromEntries(
 				tokenIds.map((tokenId) => {
 					const callSpending = callSpendings[tokenId]?.plancks ?? 0n;
-					if (tokenId === feeToken?.id && isBigInt(feeEstimate))
-						return [tokenId, callSpending + feeEstimate];
 					return [tokenId, callSpending];
 				}),
 			);
@@ -226,7 +224,7 @@ const useTransactionProvider = ({
 				const balance =
 					balances.find((b) => b.tokenId === tokenId)?.balance ?? 0n;
 				const ed = existentialDeposits[tokenId] ?? 0n;
-				const fee = tokenId === feeToken.id ? feeEstimate : 0n; // double the amount just in case
+				const fee = tokenId === feeToken.id ? feeEstimate : 0n;
 				const spendings = allSpendings[tokenId] ?? 0n;
 				const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
 
@@ -234,7 +232,7 @@ const useTransactionProvider = ({
 				else if (balance < spendings + fee)
 					result[tokenId] = "Insufficient balance to pay for fee";
 				else if (!allowDeath && balance < spendings + fee + ed)
-					result[tokenId] = "Insufficient balance to keep acount alive";
+					result[tokenId] = "Insufficient balance to keep account alive";
 			}
 		}
 
@@ -265,21 +263,37 @@ const useTransactionProvider = ({
 		],
 	);
 
+	const {
+		data: dryRun,
+		isLoading: isLoadingDryRun,
+		error: errorDryRun,
+	} = useDryRun({
+		chainId,
+		from: account?.address,
+		call,
+	});
+
 	const isLoading = useMemo(() => {
 		return (
 			isLoadingBalances ||
 			isLoadingExistentialDeposits ||
 			isLoadingFeeEstimate ||
-			isLoadingFeeTokenBalance
+			isLoadingFeeTokenBalance ||
+			isLoadingDryRun
 		);
 	}, [
 		isLoadingBalances,
 		isLoadingExistentialDeposits,
 		isLoadingFeeEstimate,
 		isLoadingFeeTokenBalance,
+		isLoadingDryRun,
 	]);
 
 	const canSubmit = useMemo(() => {
+		// if available and there is no specific fee asset, dryRun is the truth
+		if (!options?.asset && dryRun?.success)
+			return dryRun.value.execution_result.success;
+
 		// TODO add a flag to allow parent form to force another isLoading state
 		return (
 			!!call &&
@@ -300,6 +314,7 @@ const useTransactionProvider = ({
 		insufficientBalances,
 		isLoading,
 		options,
+		dryRun,
 	]);
 
 	const onFeeTokenChange = useCallback(
@@ -342,6 +357,10 @@ const useTransactionProvider = ({
 		isLoading,
 
 		onCloseFollowUp,
+
+		dryRun,
+		isLoadingDryRun,
+		errorDryRun,
 	};
 };
 

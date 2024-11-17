@@ -15,6 +15,7 @@ import { keyBy } from "lodash";
 import {
 	useBalance,
 	useCanAccountReceive,
+	useDryRun,
 	useEstimateFee,
 	useExistentialDeposit,
 	useFeeToken,
@@ -155,11 +156,24 @@ const useTeleportProvider = () => {
 	});
 
 	const {
+		data: dryRun,
+		isLoading: isLoadingDryRun,
+		error: errorDryRun,
+	} = useDryRun({
+		call: extrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	const {
 		data: deliveryFeeEstimate,
 		isLoading: isLoadingDeliveryFeeEstimate,
 		error: errorDeliveryFeeEstimate,
 	} = useEstimateDeliveryFee({
-		call: extrinsic?.call ?? fakeExtrinsic?.call,
+		call:
+			dryRun?.success && dryRun.value.execution_result.success
+				? extrinsic?.call
+				: fakeExtrinsic?.call,
 		chainId: tokenIn?.chainId,
 		from: account?.address,
 	});
@@ -169,26 +183,37 @@ const useTeleportProvider = () => {
 		isLoading: isLoadingDestFeeEstimate,
 		error: errorDestFeeEstimate,
 	} = useEstimateDestinationFee({
-		call: extrinsic?.call ?? fakeExtrinsic?.call,
+		call:
+			dryRun?.success && dryRun.value.execution_result.success
+				? extrinsic?.call
+				: fakeExtrinsic?.call,
 		chainId: tokenIn?.chainId,
 		from: account?.address,
 	});
 
-	const destFeeToken = useToken({ tokenId: destFeeEstimate?.tokenId });
+	// leverage fake estimate as backup to prevent amountOut from flickering if real one returns null
+	const { data: fakeDestFeeEstimate } = useEstimateDestinationFee({
+		call: fakeExtrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	const destFeeToken = useToken({
+		tokenId: destFeeEstimate?.tokenId ?? fakeDestFeeEstimate?.tokenId,
+	});
 
 	const [plancksOut, amountOut] = useMemo(() => {
-		// assume target token is same value as source
-		// fee token might be different
+		const effDestFeeEstimate = destFeeEstimate ?? fakeDestFeeEstimate;
 
-		if (!plancksIn || !destFeeEstimate || !destFeeToken)
+		if (!plancksIn || !effDestFeeEstimate || !destFeeToken)
 			return [null, null] as const;
 
 		if (
 			getAssetHubMirrorTokenId(tokenIn.id) ===
 			getAssetHubMirrorTokenId(tokenOut.id)
 		) {
-			if (plancksIn <= destFeeEstimate.plancks) return [null, null] as const;
-			const plancksOut = plancksIn - destFeeEstimate.plancks;
+			if (plancksIn <= effDestFeeEstimate.plancks) return [null, null] as const;
+			const plancksOut = plancksIn - effDestFeeEstimate.plancks;
 			return [plancksOut, plancksToTokens(plancksOut, tokenOut.decimals)] as [
 				bigint,
 				string,
@@ -200,6 +225,7 @@ const useTeleportProvider = () => {
 		formData.amountIn,
 		plancksIn,
 		destFeeEstimate,
+		fakeDestFeeEstimate,
 		destFeeToken,
 		tokenIn,
 		tokenOut,
@@ -328,6 +354,9 @@ const useTeleportProvider = () => {
 				: extrinsic?.call,
 		fakeCall: fakeExtrinsic?.call,
 		outputErrorMessage,
+		dryRun,
+		isLoadingDryRun,
+		errorDryRun,
 		onFromChange,
 		onAmountInChange,
 		onTokenInChange,

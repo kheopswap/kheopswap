@@ -61,7 +61,11 @@ export const useEstimateDestinationFee = ({
 	from,
 	call,
 }: UseEstimateDestinationFeeProps) => {
-	const { data: dryRun } = useDryRun({ chainId, from, call });
+	const { data: dryRun, isLoading: dryRunIsLoading } = useDryRun({
+		chainId,
+		from,
+		call,
+	});
 
 	return useQuery({
 		queryKey: [
@@ -106,6 +110,7 @@ export const useEstimateDestinationFee = ({
 					}),
 				);
 				if (!fee.success) throw new Error("Failed to estimate");
+
 				return {
 					tokenId: getTokenId({ type: "native", chainId: destinationChain.id }),
 					plancks: fee.value,
@@ -118,6 +123,6 @@ export const useEstimateDestinationFee = ({
 		retry: 1,
 		refetchInterval: false,
 		structuralSharing: false,
-		enabled: !!dryRun,
+		enabled: !dryRunIsLoading,
 	});
 };
