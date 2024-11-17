@@ -34,7 +34,6 @@ const useDefaultValues = () => {
 	const account = useWalletAccount({ id: defaultAccountId });
 
 	const { relay, assetHub } = useRelayChains();
-
 	const relayNativeToken = useNativeToken({ chain: relay });
 	const assetHubNativeToken = useNativeToken({ chain: assetHub });
 
