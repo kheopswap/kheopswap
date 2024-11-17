@@ -41,4 +41,6 @@ export const whitelist: WhiteListEntry[] = [
 	"const.AssetConversion.LPFee",
 	"const.Balances.ExistentialDeposit",
 	"api.AssetConversionApi.*",
+	"api.DryRunApi.*",
+	"api.XcmPaymentApi.*",
 ];
