@@ -14,9 +14,9 @@ export const TransactionDryRunSummaryValue = () => {
 
 	const formattedError = useMemo(() => {
 		if (!dryRun?.success || dryRun.value.execution_result.success) return null;
-		return formatTxError(dryRun.value.execution_result.value.error);
+
+		return {} || formatTxError(dryRun.value.execution_result.value.error);
 	}, [dryRun]);
-	console.log("formattedError", formattedError);
 
 	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 
