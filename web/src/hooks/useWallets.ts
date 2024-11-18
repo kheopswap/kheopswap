@@ -26,6 +26,7 @@ import { getSetting$, setSetting } from "@kheopswap/settings";
 import {
 	type InjectedAccountId,
 	getInjectedAccountId,
+	isValidAddress,
 	logger,
 	sortWallets,
 } from "@kheopswap/utils";
@@ -126,11 +127,13 @@ const accounts$ = combineLatest([accountsByExtension$, wcAccounts$]).pipe(
 	map(
 		(connectedAccounts) =>
 			entries(connectedAccounts).flatMap(([wallet, accounts]) =>
-				accounts.map((account) => ({
-					id: getInjectedAccountId(wallet, account.address as SS58String),
-					...account,
-					wallet,
-				})),
+				accounts
+					.filter((account) => isValidAddress(account.address))
+					.map((account) => ({
+						id: getInjectedAccountId(wallet, account.address as SS58String),
+						...account,
+						wallet,
+					})),
 			) as InjectedAccount[],
 	),
 	shareReplay(1),
