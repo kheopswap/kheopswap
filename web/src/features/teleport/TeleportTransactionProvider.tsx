@@ -18,6 +18,7 @@ export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 		plancksIn,
 		onReset,
 		deliveryFeeEstimate,
+		followUpData,
 	} = useTeleport();
 
 	const callSpendings = useMemo<CallSpendings>(() => {
@@ -42,6 +43,7 @@ export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={tokenIn?.chainId}
 			signer={formData.from}
 			onReset={onReset}
+			followUpData={followUpData}
 		>
 			{children}
 		</TransactionProvider>

@@ -332,6 +332,11 @@ const useTeleportProvider = () => {
 		setFormData((prev) => ({ ...prev, amountIn }));
 	}, []);
 
+	const followUpData = useMemo(
+		() => ({ chainId: tokenIn?.chainId, deliveryFeeEstimate }),
+		[deliveryFeeEstimate, tokenIn],
+	);
+
 	return {
 		formData,
 		sender,
@@ -362,6 +367,7 @@ const useTeleportProvider = () => {
 		dryRun,
 		isLoadingDryRun,
 		errorDryRun,
+		followUpData,
 		onFromChange,
 		onAmountInChange,
 		onTokenInChange,
