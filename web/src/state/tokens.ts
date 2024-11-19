@@ -1,7 +1,10 @@
 import { relayChains$ } from "./relay";
 
 import type { TokenType } from "@kheopswap/registry";
-import { getTokensByChains$ } from "@kheopswap/services/tokens";
+import {
+	type ChainTokensState,
+	getTokensByChains$,
+} from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import { keyBy, values } from "lodash";
 import { map, shareReplay, switchMap } from "rxjs";
@@ -16,7 +19,9 @@ export const getAllTokens$ = (types?: TokenType[]) => {
 					getTokensByChains$(allChains.map((chain) => chain.id)),
 				),
 				map((dicChainsTokenState) => {
-					const allStates = values(dicChainsTokenState);
+					const allStates = values(dicChainsTokenState).filter(
+						(v): v is ChainTokensState => !!v,
+					);
 					const isLoading = allStates.some(
 						(state) => state.status !== "loaded",
 					);

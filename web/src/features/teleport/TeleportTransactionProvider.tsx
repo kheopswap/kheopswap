@@ -10,18 +10,30 @@ import {
 export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
-	const { call, fakeCall, formData, tokenIn, plancksIn, onReset } =
-		useTeleport();
+	const {
+		call,
+		fakeCall,
+		formData,
+		tokenIn,
+		plancksIn,
+		onReset,
+		deliveryFeeEstimate,
+		followUpData,
+	} = useTeleport();
 
-	const callSpendings = useMemo<CallSpendings>(
-		() =>
-			tokenIn && !!plancksIn
-				? {
-						[tokenIn.id]: { plancks: plancksIn, allowDeath: false },
-					}
-				: {},
-		[plancksIn, tokenIn],
-	);
+	const callSpendings = useMemo<CallSpendings>(() => {
+		if (!tokenIn || !plancksIn) return {};
+
+		const tokenInPlancks =
+			plancksIn +
+			(deliveryFeeEstimate?.tokenId === tokenIn.id
+				? deliveryFeeEstimate.plancks
+				: 0n);
+
+		return {
+			[tokenIn.id]: { plancks: tokenInPlancks, allowDeath: false },
+		};
+	}, [plancksIn, tokenIn, deliveryFeeEstimate]);
 
 	return (
 		<TransactionProvider
@@ -31,6 +43,7 @@ export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={tokenIn?.chainId}
 			signer={formData.from}
 			onReset={onReset}
+			followUpData={followUpData}
 		>
 			{children}
 		</TransactionProvider>

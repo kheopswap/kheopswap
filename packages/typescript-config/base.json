@@ -12,6 +12,7 @@
 		"moduleResolution": "Bundler",
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
+		"noUncheckedIndexedAccess": true,
 		"preserveWatchOutput": true,
 		"skipLibCheck": true,
 		"strict": true,

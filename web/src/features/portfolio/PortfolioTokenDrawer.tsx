@@ -46,7 +46,7 @@ import {
 	usePoolByTokenId,
 	useTokenChain,
 } from "src/hooks";
-import { useTokenInfo } from "src/hooks/useTokenInfo";
+import { useTokenInfo } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStable, BalanceWithStableSummary } from "src/types";
 import { getTokenTypeLabel } from "src/util";

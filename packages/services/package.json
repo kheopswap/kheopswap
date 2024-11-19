@@ -15,7 +15,8 @@
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
 		"@types/lodash": "^4.17.13",
-		"typescript": "^5.6.3"
+		"typescript": "^5.6.3",
+		"vite": "^5.4.11"
 	},
 	"dependencies": {
 		"@kheopswap/constants": "workspace:*",
@@ -23,7 +24,7 @@
 		"@kheopswap/registry": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
 		"lodash": "^4.17.21",
-		"polkadot-api": "^1.7.4",
+		"polkadot-api": "^1.7.5",
 		"rxjs": "^7.8.1"
 	}
 }

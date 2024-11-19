@@ -15,21 +15,25 @@ import { keyBy } from "lodash";
 import {
 	useBalance,
 	useCanAccountReceive,
+	useDryRun,
 	useEstimateFee,
 	useExistentialDeposit,
 	useFeeToken,
 	useNativeToken,
 	useSetting,
+	useToken,
 	useWalletAccount,
 } from "src/hooks";
+import { useEstimateDeliveryFee } from "src/hooks";
+import { useEstimateDestinationFee } from "src/hooks";
 import { useRelayChains } from "src/state";
+import { getAssetHubMirrorTokenId } from "src/util";
 
 const useDefaultValues = () => {
 	const [defaultAccountId] = useSetting("defaultAccountId");
 	const account = useWalletAccount({ id: defaultAccountId });
 
 	const { relay, assetHub } = useRelayChains();
-
 	const relayNativeToken = useNativeToken({ chain: relay });
 	const assetHubNativeToken = useNativeToken({ chain: assetHub });
 
@@ -123,10 +127,6 @@ const useTeleportProvider = () => {
 		}
 	}, [formData.amountIn, tokenIn]);
 
-	const [plancksOut, amountOut] = useMemo(() => {
-		return [plancksIn, formData.amountIn]; // TODO account for destination fee
-	}, [formData.amountIn, plancksIn]);
-
 	const account = useWalletAccount({ id: formData.from });
 
 	const sender = useMemo(() => account?.address ?? null, [account?.address]);
@@ -154,6 +154,88 @@ const useTeleportProvider = () => {
 		recipient,
 	});
 
+	const {
+		data: dryRun,
+		isLoading: isLoadingDryRun,
+		error: errorDryRun,
+	} = useDryRun({
+		call: extrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	const {
+		data: deliveryFeeEstimate,
+		isLoading: isLoadingDeliveryFeeEstimate,
+		error: errorDeliveryFeeEstimate,
+	} = useEstimateDeliveryFee({
+		call:
+			dryRun?.success && dryRun.value.execution_result.success
+				? extrinsic?.call
+				: fakeExtrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	const {
+		data: destFeeEstimate,
+		isLoading: isLoadingDestFeeEstimate,
+		error: errorDestFeeEstimate,
+	} = useEstimateDestinationFee({
+		call:
+			dryRun?.success && dryRun.value.execution_result.success
+				? extrinsic?.call
+				: fakeExtrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	// leverage fake estimate as backup to prevent amountOut from flickering if real one returns null
+	const { data: fakeDestFeeEstimate } = useEstimateDestinationFee({
+		call: fakeExtrinsic?.call,
+		chainId: tokenIn?.chainId,
+		from: account?.address,
+	});
+
+	const destFeeToken = useToken({
+		tokenId: destFeeEstimate?.tokenId ?? fakeDestFeeEstimate?.tokenId,
+	});
+
+	const [plancksOut, amountOut] = useMemo(() => {
+		const effDestFeeEstimate = destFeeEstimate ?? fakeDestFeeEstimate;
+
+		if (
+			!plancksIn ||
+			!effDestFeeEstimate ||
+			!destFeeToken ||
+			!tokenIn ||
+			!tokenOut
+		)
+			return [null, null] as const;
+
+		if (
+			getAssetHubMirrorTokenId(tokenIn.id) ===
+			getAssetHubMirrorTokenId(tokenOut.id)
+		) {
+			if (plancksIn <= effDestFeeEstimate.plancks) return [null, null] as const;
+			const plancksOut = plancksIn - effDestFeeEstimate.plancks;
+			return [plancksOut, plancksToTokens(plancksOut, tokenOut.decimals)] as [
+				bigint,
+				string,
+			];
+		}
+
+		return [plancksIn, formData.amountIn] as [bigint, string];
+	}, [
+		formData.amountIn,
+		plancksIn,
+		destFeeEstimate,
+		fakeDestFeeEstimate,
+		destFeeToken,
+		tokenIn,
+		tokenOut,
+	]);
+
 	const { feeToken } = useFeeToken({
 		chainId: tokenIn?.chainId,
 		accountId: sender,
@@ -173,12 +255,11 @@ const useTeleportProvider = () => {
 		tokenId: tokenOut?.id,
 	});
 
-	const { data: checkCanAccountReceive, isLoading: isCheckingRecipient } =
-		useCanAccountReceive({
-			address: recipient,
-			tokenId: tokenOut?.id,
-			plancks: plancksOut,
-		});
+	const { data: checkCanAccountReceive } = useCanAccountReceive({
+		address: recipient,
+		tokenId: tokenOut?.id,
+		plancks: plancksOut,
+	});
 
 	const outputErrorMessage = useMemo(
 		() => checkCanAccountReceive?.reason,
@@ -216,20 +297,32 @@ const useTeleportProvider = () => {
 	}, []);
 
 	const onMaxClick = useCallback(() => {
-		if (tokenIn && balanceIn && feeToken) {
+		if (tokenIn && balanceIn && feeToken && deliveryFeeEstimate) {
 			let plancks = balanceIn;
 			const fees = feeToken.id === tokenIn.id ? (feeEstimate ?? 0n) : 0n;
+			const deliveryFees =
+				deliveryFeeEstimate.tokenId === tokenIn.id
+					? (deliveryFeeEstimate.plancks ?? 0n)
+					: 0n;
 			const ed = existentialDepositIn ?? 0n;
 
-			if (tokenIn.type === "native" && plancks > 2n * fees + ed)
-				plancks -= 2n * fees + ed;
+			const total = fees + deliveryFees + ed;
+
+			if (tokenIn.type === "native" && plancks >= total) plancks -= total;
 
 			setFormData((prev) => ({
 				...prev,
 				amountIn: plancksToTokens(plancks, tokenIn.decimals),
 			}));
 		}
-	}, [tokenIn, balanceIn, feeToken, feeEstimate, existentialDepositIn]);
+	}, [
+		tokenIn,
+		balanceIn,
+		feeToken,
+		feeEstimate,
+		deliveryFeeEstimate,
+		existentialDepositIn,
+	]);
 
 	const onReset = useCallback(() => {
 		setFormData((prev) => ({ ...prev, amountIn: "" }));
@@ -238,6 +331,11 @@ const useTeleportProvider = () => {
 	const onAmountInChange = useCallback((amountIn: string) => {
 		setFormData((prev) => ({ ...prev, amountIn }));
 	}, []);
+
+	const followUpData = useMemo(
+		() => ({ chainId: tokenIn?.chainId, deliveryFeeEstimate }),
+		[deliveryFeeEstimate, tokenIn],
+	);
 
 	return {
 		formData,
@@ -254,10 +352,22 @@ const useTeleportProvider = () => {
 		balanceOut,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
+		destFeeEstimate,
+		isLoadingDestFeeEstimate,
+		errorDestFeeEstimate,
+		deliveryFeeEstimate,
+		isLoadingDeliveryFeeEstimate,
+		errorDeliveryFeeEstimate,
 		call:
-			outputErrorMessage || isCheckingRecipient ? undefined : extrinsic?.call,
+			outputErrorMessage || !checkCanAccountReceive?.canReceive
+				? undefined
+				: extrinsic?.call,
 		fakeCall: fakeExtrinsic?.call,
 		outputErrorMessage,
+		dryRun,
+		isLoadingDryRun,
+		errorDryRun,
+		followUpData,
 		onFromChange,
 		onAmountInChange,
 		onTokenInChange,

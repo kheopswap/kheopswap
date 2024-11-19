@@ -89,7 +89,7 @@ export const TeleportTokensEditor = () => {
 			<SwapTokensButton onClick={onSwapTokens} />
 			<TokenAmountPicker
 				inputProps={{
-					value: plancksOut && amountOut ? `< ${amountOut}` : "",
+					value: plancksOut && amountOut ? amountOut : "",
 					readOnly: true,
 				}}
 				tokenId={tokenOut?.id}

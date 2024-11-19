@@ -62,7 +62,6 @@ export const useCanAccountReceive = ({
 	);
 
 	const data = useMemo(() => {
-		if (isLoading) return undefined;
 		if (!plancks || !tokenId || !address || !nativeToken)
 			return { canReceive: false };
 		if (typeof existentialDeposit !== "bigint") return { canReceive: false };
@@ -94,7 +93,6 @@ export const useCanAccountReceive = ({
 	}, [
 		existentialDeposit,
 		plancks,
-		isLoading,
 		balances,
 		allTokens,
 		tokenId,

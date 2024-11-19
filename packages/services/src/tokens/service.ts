@@ -52,7 +52,7 @@ export const getTokensByChain$ = (chainId: ChainId) => {
 
 export const getTokensByChains$ = (
 	chainIds: ChainId[],
-): Observable<Dictionary<ChainTokensState>> =>
+): Observable<Dictionary<ChainTokensState | undefined>> =>
 	combineLatest(chainIds.map(getTokensByChain$)).pipe(
 		map((arChainTokens) =>
 			fromPairs(
@@ -92,7 +92,7 @@ export const getTokenById$ = (tokenId: TokenId) => {
 
 export const getTokensById$ = (
 	tokenIds: TokenId[],
-): Observable<Dictionary<TokenState>> =>
+): Observable<Dictionary<TokenState | undefined>> =>
 	combineLatest(tokenIds.map(getTokenById$)).pipe(
 		map((arTokens) =>
 			fromPairs(tokenIds.map((tokenId, index) => [tokenId, arTokens[index]])),

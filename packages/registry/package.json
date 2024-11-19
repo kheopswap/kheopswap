@@ -10,17 +10,18 @@
 		"papi": "papi",
 		"postinstall": "papi",
 		"dev": "dev",
-		"build": "papi --whitelist papi-whitelist.ts "
+		"build": "papi --whitelist papi-whitelist.ts"
 	},
 	"devDependencies": {
 		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/typescript-config": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
-		"typescript": "^5.6.3"
+		"typescript": "^5.6.3",
+		"vite": "^5.4.11"
 	},
 	"dependencies": {
 		"@polkadot-api/descriptors": "file:.papi/descriptors",
 		"lz-string": "^1.5.0",
-		"polkadot-api": "^1.7.4"
+		"polkadot-api": "^1.7.5"
 	}
 }

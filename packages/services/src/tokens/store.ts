@@ -127,11 +127,11 @@ export const tokensStore$ = tokensStoreData$.pipe(
 					if (
 						location?.parents === 1 &&
 						location.interior.type === "X3" &&
-						location.interior.value[0].type === "Parachain" &&
+						location.interior.value[0]?.type === "Parachain" &&
 						location.interior.value[0].value === PARA_ID_ASSET_HUB &&
-						location.interior.value[1].type === "PalletInstance" &&
+						location.interior.value[1]?.type === "PalletInstance" &&
 						location.interior.value[1].value === 50 &&
-						location.interior.value[2].type === "GeneralIndex"
+						location.interior.value[2]?.type === "GeneralIndex"
 					) {
 						const assetHubAssetId = location.interior.value[2].value;
 						const hydration = getChainById(token.chainId);

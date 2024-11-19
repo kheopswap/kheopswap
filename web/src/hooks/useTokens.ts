@@ -4,16 +4,17 @@ import { useMemo } from "react";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getTokensById$ } from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
+import type { TokenState } from "node_modules/@kheopswap/services/src/tokens/state";
 import { useObservable } from "react-rx";
 import { Observable, map, shareReplay } from "rxjs";
 
 type UseTokensProps = { tokenIds: TokenId[] };
 
-type TokenState = { token: Token; isLoading: boolean };
+type TokenWithLoadingState = { token: Token; isLoading: boolean };
 
 type UseTokensResult = {
 	isLoading: boolean;
-	data: Dictionary<TokenState>;
+	data: Dictionary<TokenWithLoadingState>;
 };
 
 export const useTokens = ({ tokenIds }: UseTokensProps): UseTokensResult => {
@@ -38,7 +39,7 @@ export const useTokens = ({ tokenIds }: UseTokensProps): UseTokensResult => {
 
 const getTokens$ = (tokenIds: TokenId[]) => {
 	return getCachedObservable$("getTokens$", `${tokenIds.join("||")}`, () =>
-		new Observable<Dictionary<TokenState>>((subscriber) => {
+		new Observable<Dictionary<TokenWithLoadingState>>((subscriber) => {
 			if (!tokenIds.length) {
 				subscriber.next({});
 				subscriber.complete();
@@ -50,12 +51,14 @@ const getTokens$ = (tokenIds: TokenId[]) => {
 					map(
 						(tokensById) =>
 							keyBy(
-								values(tokensById).map(({ token, status }) => ({
-									token,
-									isLoading: status !== "loaded",
-								})),
+								values(tokensById)
+									.filter((v: unknown): v is TokenState => !!v)
+									.map(({ token, status }) => ({
+										token,
+										isLoading: status !== "loaded",
+									})),
 								"token.id",
-							) as Dictionary<TokenState>,
+							) as Dictionary<TokenWithLoadingState>,
 					),
 				)
 				.subscribe(subscriber);
