@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  smoldot: 2.0.33
+
 importers:
 
   .:
@@ -3696,11 +3699,8 @@ packages:
   simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
 
-  smoldot@2.0.30:
-    resolution: {integrity: sha512-5/KaEdIlTHg4+Hs8YovrCkwI+Y9QsKtoyWkHRqz15kXMZFsePf+KdMAPpDgReINK+at6t+D+uEVrCkd+r9JpyQ==}
-
-  smoldot@2.0.32:
-    resolution: {integrity: sha512-1Cc0QJiKJr108GxTfG0aS/T7wbae7BJhPfs9B6etjKt2do75LdMtKhgx0Ou/BYmELGbmbhqoFlclPaubUK7PRA==}
+  smoldot@2.0.33:
+    resolution: {integrity: sha512-EnGqFb2oJSYjR04WsvL4tZNPrkdSiScBk3yQUhvWwJqpJ2bBu8Sq/hQgyVB20J1NxJ6FL0cgldjnGJmH1iQCTg==}
 
   snake-case@3.0.4:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
@@ -5121,7 +5121,7 @@ snapshots:
   '@polkadot-api/smoldot@0.3.6':
     dependencies:
       '@types/node': 22.9.0
-      smoldot: 2.0.32
+      smoldot: 2.0.33
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -5512,7 +5512,7 @@ snapshots:
       '@substrate/connect-extension-protocol': 2.2.1
       '@substrate/connect-known-chains': 1.7.0
       '@substrate/smoldot-discovery': 2.0.1
-      smoldot: 2.0.30
+      smoldot: 2.0.33
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7836,14 +7836,7 @@ snapshots:
     dependencies:
       is-arrayish: 0.3.2
 
-  smoldot@2.0.30:
-    dependencies:
-      ws: 8.18.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  smoldot@2.0.32:
+  smoldot@2.0.33:
     dependencies:
       ws: 8.18.0
     transitivePeerDependencies:
