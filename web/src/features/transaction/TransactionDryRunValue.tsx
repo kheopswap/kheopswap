@@ -7,16 +7,21 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "src/components";
+import { useDryRunError } from "src/hooks";
 import { useTransaction } from "./TransactionProvider";
 
 export const TransactionDryRunSummaryValue = () => {
-	const { dryRun, errorDryRun, isLoadingDryRun } = useTransaction();
+	const { chainId, dryRun, errorDryRun, isLoadingDryRun } = useTransaction();
+
+	const { data: errorMessage } = useDryRunError({ chainId, dryRun });
 
 	const formattedError = useMemo(() => {
+		if (errorMessage) return errorMessage;
+
 		if (!dryRun?.success || dryRun.value.execution_result.success) return null;
 
 		return formatTxError(dryRun.value.execution_result.value.error);
-	}, [dryRun]);
+	}, [dryRun, errorMessage]);
 
 	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 
