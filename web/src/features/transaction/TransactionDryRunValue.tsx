@@ -32,23 +32,25 @@ export const TransactionDryRunSummaryValue = () => {
 
 	return (
 		<Tooltip placement="bottom-end">
-			<TooltipTrigger
-				className={cn(
-					"flex gap-1 items-center",
-					!dryRun.value.execution_result.success && "text-warn",
-				)}
-			>
-				{dryRun.value.execution_result.success ? (
-					<>
-						<span>Success</span>
-						<InformationCircleIcon className="size-5 inline align-text-bottom" />
-					</>
-				) : (
-					<>
-						<span>Failed</span>
-						<InformationCircleIcon className="size-5 inline align-text-bottom" />
-					</>
-				)}
+			<TooltipTrigger asChild>
+				<div
+					className={cn(
+						"flex gap-1 items-center",
+						!dryRun.value.execution_result.success && "text-warn",
+					)}
+				>
+					{dryRun.value.execution_result.success ? (
+						<>
+							<span>Success</span>
+							<InformationCircleIcon className="size-5 inline align-text-bottom" />
+						</>
+					) : (
+						<>
+							<span>Failed</span>
+							<InformationCircleIcon className="size-5 inline align-text-bottom" />
+						</>
+					)}
+				</div>
 			</TooltipTrigger>
 			<TooltipContent>
 				<div className="max-w-72">
