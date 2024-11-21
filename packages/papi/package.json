@@ -20,7 +20,7 @@
 		"@polkadot-api/json-rpc-provider-proxy": "^0.2.4",
 		"@substrate/connect": "^2.0.1",
 		"lodash": "^4.17.21",
-		"polkadot-api": "^1.7.5",
+		"polkadot-api": "^1.7.6",
 		"rxjs": "^7.8.1"
 	}
 }

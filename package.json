@@ -23,10 +23,5 @@
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"lefthook": "^1.8.4"
-	},
-	"pnpm": {
-		"overrides": {
-			"smoldot": "2.0.33"
-		}
 	}
 }
