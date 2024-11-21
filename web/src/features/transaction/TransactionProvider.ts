@@ -333,6 +333,7 @@ const useTransactionProvider = ({
 	);
 
 	return {
+		chainId,
 		account,
 
 		feeToken,

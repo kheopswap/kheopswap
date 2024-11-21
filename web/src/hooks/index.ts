@@ -42,3 +42,4 @@ export * from "./useTokenInfo";
 export * from "./useTokenInfos";
 export * from "./useLoadingStatusSummary";
 export * from "./useTokenPrices";
+export * from "./useDryRunError";
