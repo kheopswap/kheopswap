@@ -2,14 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 
 import { getApi } from "@kheopswap/papi";
-import { getChainById, isAssetHub } from "@kheopswap/registry";
+import {
+	getChainById,
+	getXcmV3MultilocationFromTokenId,
+	isAssetHub,
+} from "@kheopswap/registry";
 import {
 	POOL_TOKEN2_TOKEN_TYPES,
 	type TokenId,
 	parseTokenId,
 } from "@kheopswap/registry";
 import { safeQueryKeyPart } from "@kheopswap/utils";
-import { getXcmV3MultilocationFromTokenId } from "src/util";
 
 type UseCreatePoolExtrinsicProps = {
 	tokenId1: TokenId | null | undefined;
