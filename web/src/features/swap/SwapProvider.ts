@@ -214,6 +214,9 @@ const useSwapProvider = () => {
 		return plancksToTokens(swapPlancksOut, tokenOut.decimals);
 	}, [swapPlancksOut, tokenOut]);
 
+	const isLoadingAmountOut =
+		!!swapPlancksIn && !!tokenIn && !!tokenOut && !swapPlancksOut && isLoading;
+
 	const { plancksOut: rawPlancksOut } = useAssetConvertPlancks({
 		tokenIdIn,
 		tokenIdOut,
@@ -495,6 +498,7 @@ const useSwapProvider = () => {
 		isLoadingTokens,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
+		isLoadingAmountOut,
 		tokenIn,
 		tokenOut,
 		slippage,
@@ -516,6 +520,7 @@ const useSwapProvider = () => {
 		protocolCommission,
 		outputErrorMessage,
 		followUpData,
+
 		setSlippage,
 		onFromChange,
 		onTokenInChange,

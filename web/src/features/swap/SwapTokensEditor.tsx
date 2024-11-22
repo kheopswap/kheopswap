@@ -42,6 +42,7 @@ export const SwapTokensEditor = () => {
 		balanceOut,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
+		isLoadingAmountOut,
 
 		onAmountInChange,
 		onTokenInChange,
@@ -101,6 +102,7 @@ export const SwapTokensEditor = () => {
 				errorMessage={outputErrorMessage}
 				balance={balanceOut}
 				isLoadingBalance={isLoadingBalanceOut}
+				isComputingValue={isLoadingAmountOut}
 			/>
 		</div>
 	);

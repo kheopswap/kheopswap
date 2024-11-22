@@ -136,12 +136,13 @@ const useTeleportProvider = () => {
 		[formData.to, sender],
 	);
 
-	const { data: extrinsic } = useTeleportExtrinsic({
-		tokenIdIn: tokenIn?.id,
-		tokenIdOut: tokenOut?.id,
-		plancksIn,
-		recipient,
-	});
+	const { data: extrinsic, isLoading: isLoadingExtrinsic } =
+		useTeleportExtrinsic({
+			tokenIdIn: tokenIn?.id,
+			tokenIdOut: tokenOut?.id,
+			plancksIn,
+			recipient,
+		});
 
 	const { data: existentialDepositIn } = useExistentialDeposit({
 		tokenId: tokenIn?.id,
@@ -197,7 +198,7 @@ const useTeleportProvider = () => {
 		from: account?.address,
 	});
 
-	const destFeeToken = useToken({
+	const { data: destFeeToken, isLoading: isLoadingDestFeeToken } = useToken({
 		tokenId: destFeeEstimate?.tokenId ?? fakeDestFeeEstimate?.tokenId,
 	});
 
@@ -235,6 +236,26 @@ const useTeleportProvider = () => {
 		tokenIn,
 		tokenOut,
 	]);
+
+	const isLoadingPlancksOut = useMemo(
+		() =>
+			!!plancksIn &&
+			plancksOut === null &&
+			(isLoadingDryRun ||
+				isLoadingDeliveryFeeEstimate ||
+				isLoadingDestFeeEstimate ||
+				isLoadingDestFeeToken ||
+				isLoadingExtrinsic),
+		[
+			plancksIn,
+			plancksOut,
+			isLoadingDryRun,
+			isLoadingDeliveryFeeEstimate,
+			isLoadingDestFeeEstimate,
+			isLoadingDestFeeToken,
+			isLoadingExtrinsic,
+		],
+	);
 
 	const { feeToken } = useFeeToken({
 		chainId: tokenIn?.chainId,
@@ -352,6 +373,7 @@ const useTeleportProvider = () => {
 		balanceOut,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
+		isLoadingPlancksOut,
 		destFeeEstimate,
 		isLoadingDestFeeEstimate,
 		errorDestFeeEstimate,
