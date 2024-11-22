@@ -40,6 +40,7 @@ export const TeleportTokensEditor = () => {
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
 		outputErrorMessage,
+		isLoadingPlancksOut,
 		onAmountInChange,
 		onTokenInChange,
 		onTokenOutChange,
@@ -101,6 +102,7 @@ export const TeleportTokensEditor = () => {
 				onTokenChange={onTokenOutChange}
 				balance={balanceOut}
 				isLoadingBalance={isLoadingBalanceOut}
+				isComputingValue={isLoadingPlancksOut}
 			/>
 		</div>
 	);

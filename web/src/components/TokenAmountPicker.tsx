@@ -68,6 +68,7 @@ export const TokenAmountPicker: FC<{
 	balance?: bigint | null | undefined; // TODO remove optional
 	isLoadingBalance?: boolean;
 	onMaxClick?: () => void;
+	isComputingValue?: boolean;
 }> = ({
 	inputProps,
 	tokenId,
@@ -82,6 +83,8 @@ export const TokenAmountPicker: FC<{
 	balance,
 	isLoadingBalance,
 	onMaxClick,
+
+	isComputingValue,
 }) => {
 	const token = useMemo(
 		() => (tokenId ? tokens?.[tokenId] : undefined),
@@ -96,7 +99,7 @@ export const TokenAmountPicker: FC<{
 				inputProps.readOnly && "focus-within:border-neutral-800",
 			)}
 		>
-			<div className="flex w-full">
+			<div className="flex w-full relative">
 				<TokenInput
 					decimals={token?.decimals}
 					{...inputProps}
@@ -107,6 +110,7 @@ export const TokenAmountPicker: FC<{
 					autoCorrect="off"
 					className={cn(
 						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left text-2xl font-semibold text-white placeholder:text-white/50 focus:border-none focus:outline-none focus:ring-0",
+						isComputingValue && "invisible",
 					)}
 				/>
 				<TokenSelectButton
@@ -122,9 +126,20 @@ export const TokenAmountPicker: FC<{
 					onChange={onTokenChange}
 					disabled={disableTokenButton}
 				/>
+				{isComputingValue && (
+					<Shimmer className={cn("absolute top-3 left-0 text-2xl")}>
+						0.000000000
+					</Shimmer>
+				)}
 			</div>
 			<div className="flex w-full overflow-hidden">
-				<div className={cn("grow truncate", !!errorMessage && "text-error")}>
+				<div
+					className={cn(
+						"grow truncate",
+						!!errorMessage && "text-error",
+						isComputingValue && "invisible",
+					)}
+				>
 					{errorMessage ? (
 						<Tooltip>
 							<TooltipTrigger className={cn("text-error")}>
