@@ -31,6 +31,10 @@
 		"wah": {
 			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
 			"metadata": ".papi/scale/wah.scale"
+		},
+		"mythos": {
+			"wsUrl": "wss://polkadot-mythos-rpc.polkadot.io/",
+			"metadata": ".papi/scale/mythos.scale"
 		}
 	}
 }
