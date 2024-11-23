@@ -1,7 +1,12 @@
 import { MultiAddress } from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
 
-import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
+import {
+	getApi,
+	isApiAssetHub,
+	isApiHydration,
+	isApiRelay,
+} from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
 import {
 	type TokenId,
@@ -44,10 +49,13 @@ export const getTransferExtrinsic = async (
 					value: plancks,
 				});
 
-			return api.tx.Balances.transfer_keep_alive({
-				dest: MultiAddress.Id(dest),
-				value: plancks,
-			});
+			if (isApiRelay(api) || isApiAssetHub(api))
+				return api.tx.Balances.transfer_keep_alive({
+					dest: MultiAddress.Id(dest),
+					value: plancks,
+				});
+
+			throw new Error("Unknown chain type");
 		}
 		case "foreign-asset": {
 			if (!isApiAssetHub(api))
