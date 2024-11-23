@@ -28,6 +28,8 @@ export type ChainId =
 
 export type Descriptors<Id extends ChainId> = DescriptorsAll[Id];
 
+type AccountAddressType = "ethereum" | "ss58";
+
 export type Chain<Id = ChainId> = {
 	id: Id;
 	name: string;
@@ -37,6 +39,7 @@ export type Chain<Id = ChainId> = {
 	logo: string;
 	stableTokenId: string | null;
 	blockExplorerUrl: string | null;
+	addressType: AccountAddressType;
 };
 
 export type ChainRelay = Chain<ChainIdRelay> & { paraId: null };
