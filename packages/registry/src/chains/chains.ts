@@ -6,6 +6,7 @@ import {
 	DESCRIPTORS_ALL,
 	DESCRIPTORS_ASSET_HUB,
 	DESCRIPTORS_HYDRATION,
+	DESCRIPTORS_MYTHOS,
 	DESCRIPTORS_RELAY,
 } from "./descriptors";
 import type {
@@ -15,6 +16,7 @@ import type {
 	ChainId,
 	ChainIdAssetHub,
 	ChainIdHydration,
+	ChainIdMythos,
 	ChainIdRelay,
 	ChainRelay,
 	Descriptors,
@@ -22,6 +24,7 @@ import type {
 
 export const PARA_ID_ASSET_HUB = 1000;
 export const PARA_ID_HYDRATION = 2034;
+export const PARA_ID_MYTHOS = 3369;
 
 const DEV_CHAINS = chainsDevJson as Chain[];
 const PROD_CHAINS = chainsProdJson as Chain[];
@@ -48,6 +51,8 @@ export const isChainIdRelay = (id: unknown): id is ChainIdRelay =>
 	typeof id === "string" && !!DESCRIPTORS_RELAY[id as ChainIdRelay];
 export const isChainIdHydration = (id: unknown): id is ChainIdHydration =>
 	typeof id === "string" && !!DESCRIPTORS_HYDRATION[id as ChainIdHydration];
+export const isChainIdMythos = (id: unknown): id is ChainIdMythos =>
+	typeof id === "string" && !!DESCRIPTORS_MYTHOS[id as ChainIdMythos];
 
 export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 	DESCRIPTORS_ALL[id];
@@ -70,6 +75,10 @@ export const isRelay = (chain: Chain): chain is ChainRelay => {
 
 export const isHydration = (chain: Chain): chain is ChainHydration => {
 	return chain.paraId === PARA_ID_HYDRATION;
+};
+
+export const isMythos = (chain: Chain): chain is ChainHydration => {
+	return chain.paraId === PARA_ID_MYTHOS;
 };
 
 // TODO

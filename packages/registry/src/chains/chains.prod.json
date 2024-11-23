@@ -59,6 +59,16 @@
 		"blockExplorerUrl": "https://hydration.subscan.io"
 	},
 	{
+		"id": "mythos",
+		"name": "Mythos",
+		"wsUrl": ["wss://polkadot-mythos-rpc.polkadot.io"],
+		"relay": "polkadot",
+		"paraId": 3369,
+		"logo": "./img/chains/mythos.webp?rounded",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://mythos.subscan.io"
+	},
+	{
 		"id": "kusama",
 		"name": "Kusama",
 		"wsUrl": [

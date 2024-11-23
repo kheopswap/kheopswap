@@ -10,5 +10,9 @@
 	{
 		"id": "hydration",
 		"wsUrl": ["ws://localhost:3422"]
+	},
+	{
+		"id": "mythos",
+		"wsUrl": ["ws://localhost:3423"]
 	}
 ]
