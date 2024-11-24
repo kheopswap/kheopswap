@@ -1,3 +1,4 @@
+import type { AccountAddressType } from "@kheopswap/utils";
 import type {
 	PARA_ID_ASSET_HUB,
 	PARA_ID_HYDRATION,
@@ -27,8 +28,6 @@ export type ChainId =
 	| ChainIdMythos;
 
 export type Descriptors<Id extends ChainId> = DescriptorsAll[Id];
-
-type AccountAddressType = "ethereum" | "ss58";
 
 export type Chain<Id = ChainId> = {
 	id: Id;
