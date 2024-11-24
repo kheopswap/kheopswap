@@ -14,5 +14,9 @@
 	{
 		"id": "mythos",
 		"wsUrl": ["ws://localhost:3423"]
+	},
+	{
+		"id": "moonbeam",
+		"wsUrl": ["ws://localhost:3424"]
 	}
 ]

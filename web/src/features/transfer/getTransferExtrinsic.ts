@@ -5,6 +5,7 @@ import {
 	getApi,
 	isApiAssetHub,
 	isApiHydration,
+	isApiMoonbeam,
 	isApiMythos,
 	isApiRelay,
 } from "@kheopswap/papi";
@@ -56,7 +57,7 @@ export const getTransferExtrinsic = async (
 					value: plancks,
 				});
 
-			if (isApiMythos(api))
+			if (isApiMoonbeam(api) || isApiMythos(api))
 				return api.tx.Balances.transfer_keep_alive({
 					dest,
 					value: plancks,

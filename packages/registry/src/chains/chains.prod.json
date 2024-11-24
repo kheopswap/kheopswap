@@ -73,6 +73,26 @@
 		"addressType": "ethereum"
 	},
 	{
+		"id": "moonbeam",
+		"name": "Moonbeam",
+		"wsUrl": [
+			"wss://moonbeam-rpc.dwellir.com",
+			"wss://moonbeam.ibp.network",
+			"wss://moonbeam.dotters.network",
+			"wss://moonbeam-rpc.publicnode.com",
+			"wss://wss.api.moonbeam.network",
+			"wss://moonbeam.public.curie.radiumblock.co/ws",
+			"wss://moonbeam.unitedbloc.com",
+			"wss://wss.api.moonbeam.network"
+		],
+		"relay": "polkadot",
+		"paraId": 2004,
+		"logo": "./img/chains/moonbeam.webp",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://moonbeam.subscan.io",
+		"addressType": "ethereum"
+	},
+	{
 		"id": "kusama",
 		"name": "Kusama",
 		"wsUrl": [
