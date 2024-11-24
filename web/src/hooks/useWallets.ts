@@ -121,7 +121,10 @@ const accountsByExtension$ = connectedExtensions$.pipe(
 	}),
 );
 
-const accounts$ = combineLatest([accountsByExtension$, wcAccounts$]).pipe(
+export const accounts$ = combineLatest([
+	accountsByExtension$,
+	wcAccounts$,
+]).pipe(
 	map(([accountsByExtension, wcAccounts]) => ({
 		...accountsByExtension,
 		[WALLET_CONNECT_NAME]: wcAccounts,
@@ -140,6 +143,13 @@ const accounts$ = combineLatest([accountsByExtension$, wcAccounts$]).pipe(
 	),
 	shareReplay(1),
 );
+
+export const getAccount$ = (id: string) => {
+	return accounts$.pipe(
+		map((accounts) => accounts.find((account) => account.id === id) ?? null),
+		distinctUntilChanged(),
+	);
+};
 
 accounts$.subscribe(console.log);
 

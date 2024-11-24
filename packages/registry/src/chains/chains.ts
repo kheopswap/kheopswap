@@ -39,9 +39,9 @@ const DEV_CHAINS_MAP = Object.fromEntries(
 
 // override with chopstick config if necessary
 const CHAINS = USE_CHOPSTICKS
-	? PROD_CHAINS.filter((chain) => !!DEV_CHAINS_MAP[chain.id]).map((chain) =>
-			Object.assign(chain, DEV_CHAINS_MAP[chain.id]),
-		)
+	? PROD_CHAINS.filter((chain) => !!DEV_CHAINS_MAP[chain.id])
+			.filter((chain) => chain.id !== "hydration") // TODO remove filter when ready
+			.map((chain) => Object.assign(chain, DEV_CHAINS_MAP[chain.id]))
 	: PROD_CHAINS.filter((chain) => chain.id !== "hydration"); // TODO remove filter when ready
 
 const CHAINS_MAP = Object.fromEntries(CHAINS.map((chain) => [chain.id, chain]));

@@ -32,7 +32,6 @@ export const SwapTokensEditor = () => {
 		totalIn,
 		tokenIn,
 		tokenOut,
-		swapPlancksOut,
 		amountOut,
 		tokens,
 		isLoadingTokens,
@@ -80,7 +79,6 @@ export const SwapTokensEditor = () => {
 					onInput: handleAmountInInput,
 				}}
 				tokenId={tokenIn?.id}
-				plancks={totalIn}
 				tokens={tokens}
 				accounts={tokenPickerAccounts}
 				isLoading={isLoadingTokens}
@@ -94,7 +92,6 @@ export const SwapTokensEditor = () => {
 			<TokenAmountPicker
 				inputProps={{ value: amountOut, readOnly: true }}
 				tokenId={tokenOut?.id}
-				plancks={swapPlancksOut}
 				tokens={tokens}
 				accounts={tokenPickerAccounts}
 				isLoading={isLoadingTokens}

@@ -109,7 +109,6 @@ export const TransferForm = () => {
 							value: formData.amount, // controlled because of send max button
 						}}
 						tokenId={token?.id}
-						plancks={plancks}
 						tokens={tokens}
 						accounts={tokenPickerAccounts}
 						isLoading={isLoadingTokens}

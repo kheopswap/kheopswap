@@ -203,7 +203,6 @@ const AddLiquidityEditor: FC = () => {
 					formNoValidate: true,
 				}}
 				tokenId={token1?.id}
-				plancks={liquidityToAdd?.[0]}
 				tokens={nativeTokens}
 				isLoading={false}
 				onTokenChange={() => {}}
@@ -222,7 +221,6 @@ const AddLiquidityEditor: FC = () => {
 				}}
 				accounts={accounts}
 				tokenId={token2?.id}
-				plancks={liquidityToAdd?.[1]}
 				tokens={tokensWithoutPool}
 				disableTokenButton
 				isLoading={isLoadingTokens}

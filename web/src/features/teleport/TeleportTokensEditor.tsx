@@ -77,7 +77,6 @@ export const TeleportTokensEditor = () => {
 					onInput: handleAmountInInput,
 				}}
 				tokenId={tokenIn?.id}
-				plancks={plancksIn}
 				tokens={tokens}
 				accounts={tokenPickerAccounts}
 				isLoading={isLoadingTokens}
@@ -94,7 +93,6 @@ export const TeleportTokensEditor = () => {
 					readOnly: true,
 				}}
 				tokenId={tokenOut?.id}
-				plancks={plancksOut}
 				tokens={tokens}
 				accounts={tokenPickerAccounts}
 				isLoading={isLoadingTokens}

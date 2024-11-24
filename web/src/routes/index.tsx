@@ -2,6 +2,7 @@ import { Navigate, createHashRouter } from "react-router-dom";
 
 import { CreateLiquidityPoolPage } from "./create-pool";
 import { ErrorBoundaryPage } from "./error";
+import { OperationPage } from "./operation";
 import { LiquidityPoolPage } from "./pool";
 import { LiquidityPoolsPage } from "./pools";
 import { PortfolioPage } from "./portfolio";
@@ -16,6 +17,10 @@ export const router = createHashRouter([
 		element: <AppWithRelay />,
 		errorElement: <ErrorBoundaryPage />,
 		children: [
+			{
+				path: "operation",
+				element: <OperationPage />,
+			},
 			{
 				path: "swap",
 				element: <SwapPage />,
