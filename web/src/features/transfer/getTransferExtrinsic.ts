@@ -5,6 +5,7 @@ import {
 	getApi,
 	isApiAssetHub,
 	isApiHydration,
+	isApiMythos,
 	isApiRelay,
 } from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
@@ -52,6 +53,12 @@ export const getTransferExtrinsic = async (
 			if (isApiRelay(api) || isApiAssetHub(api))
 				return api.tx.Balances.transfer_keep_alive({
 					dest: MultiAddress.Id(dest),
+					value: plancks,
+				});
+
+			if (isApiMythos(api))
+				return api.tx.Balances.transfer_keep_alive({
+					dest,
 					value: plancks,
 				});
 

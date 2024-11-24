@@ -6,6 +6,7 @@ import {
 	type ChainId,
 	type ChainIdAssetHub,
 	type ChainIdRelay,
+	DispatchRawOrigin,
 	PolkadotRuntimeOriginCaller,
 	isChainIdAssetHub,
 	isChainIdRelay,
@@ -35,10 +36,7 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 
 				// @ts-ignore
 				const dryRun = await api.apis.DryRunApi.dry_run_call(
-					PolkadotRuntimeOriginCaller.system({
-						type: "Signed",
-						value: from,
-					}),
+					PolkadotRuntimeOriginCaller.system(DispatchRawOrigin.Signed(from)),
 					call.decodedCall,
 					{ at: "best", signal },
 				);
