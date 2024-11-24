@@ -77,19 +77,15 @@ export const getChainById = <T extends Chain>(id: ChainId): T => {
 export const isAssetHub = (chain: Chain): chain is ChainAssetHub => {
 	return chain.paraId === PARA_ID_ASSET_HUB;
 };
-
 export const isRelay = (chain: Chain): chain is ChainRelay => {
 	return chain.paraId === null;
 };
-
 export const isHydration = (chain: Chain): chain is ChainHydration => {
 	return chain.paraId === PARA_ID_HYDRATION;
 };
-
 export const isMythos = (chain: Chain): chain is ChainHydration => {
 	return chain.paraId === PARA_ID_MYTHOS;
 };
-
 export const isMoonbeam = (chain: Chain): chain is ChainMoonbeam => {
 	return chain.paraId === PARA_ID_MOONBEAM;
 };
