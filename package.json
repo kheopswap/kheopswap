@@ -12,7 +12,7 @@
 		"clean": "pnpm -r exec rm -rf node_modules && pnpm -r exec rm -rf dist && pnpm -r exec rm -rf build",
 		"typecheck": "pnpm --filter web typecheck",
 		"lint": "biome check --write",
-		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest xcm -r ./polkadot.yml -p ./pah.yml -p ./hydration.yml -p ./mythos.yml)",
+		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest xcm -r ./polkadot.yml -p ./pah.yml -p ./hydration.yml -p ./mythos.yml -p moonbeam.yml)",
 		"papi:update": "pnpm --filter @kheopswap/registry papi:update",
 		"papi": "pnpm --filter @kheopswap/registry papi"
 	},

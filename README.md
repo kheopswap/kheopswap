@@ -42,6 +42,7 @@ Chopsticks runs local copies of each network supported by Kheopswap with the fol
 |Polkadot Asset Hub|ws://localhost:3421|
 |Hydration|ws://localhost:3422|
 |Mythos|ws://localhost:3423|
+|Moonbeam|ws://localhost:3424|
 
 > Note: To see your balances on these local networks in Talisman, customize each network in Talisman settings to use these RPCs.
 
