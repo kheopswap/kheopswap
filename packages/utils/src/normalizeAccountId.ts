@@ -1,4 +1,4 @@
-import { AccountId, type SS58String } from "polkadot-api";
+import { AccountId, type SS58String } from "polkadot-api-test";
 
 const codec = AccountId();
 

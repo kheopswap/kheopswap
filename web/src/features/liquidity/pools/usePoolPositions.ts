@@ -1,5 +1,5 @@
 import { isEqual } from "lodash";
-import type { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api-test";
 import { useMemo } from "react";
 
 import { getTokenId } from "@kheopswap/registry";

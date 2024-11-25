@@ -1,4 +1,4 @@
-import type { InjectedAccount } from "polkadot-api/pjs-signer";
+import type { InjectedAccount } from "polkadot-api-test/pjs-signer";
 import { useMemo } from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";

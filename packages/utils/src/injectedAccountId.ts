@@ -1,4 +1,4 @@
-import type { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api-test";
 
 import { isValidAddress } from "./isValidAddress";
 import { logger } from "./logger";

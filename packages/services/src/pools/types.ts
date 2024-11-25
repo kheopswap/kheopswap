@@ -1,4 +1,4 @@
-import type { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api-test";
 
 import type { ChainId } from "@kheopswap/registry";
 import type { TokenIdsPair } from "@kheopswap/registry";

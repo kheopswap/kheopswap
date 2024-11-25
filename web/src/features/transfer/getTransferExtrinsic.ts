@@ -1,5 +1,5 @@
 import { MultiAddress } from "@kheopswap/registry";
-import type { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api-test";
 
 import {
 	getApi,

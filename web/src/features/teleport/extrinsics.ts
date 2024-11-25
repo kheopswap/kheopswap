@@ -7,7 +7,7 @@ import {
 	XcmVersionedAssets,
 	XcmVersionedLocation,
 } from "@kheopswap/registry";
-import { AccountId, Binary, type SS58String } from "polkadot-api";
+import { AccountId, Binary, type SS58String } from "polkadot-api-test";
 
 import { type Api, getApi, isApiAssetHub, isApiRelay } from "@kheopswap/papi";
 import {

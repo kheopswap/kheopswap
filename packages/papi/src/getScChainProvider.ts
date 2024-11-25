@@ -6,7 +6,7 @@ import {
 } from "@substrate/connect";
 
 import type { ChainId, ChainIdRelay } from "@kheopswap/registry";
-import { getSmProvider } from "polkadot-api/sm-provider";
+import { getSmProvider } from "polkadot-api-test/sm-provider";
 
 // No intellisense on WellKnownChain ?
 const getWellKnownChain = (chainId: ChainId): WellKnownChain | null => {

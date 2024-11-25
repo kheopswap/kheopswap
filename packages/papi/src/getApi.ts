@@ -1,4 +1,4 @@
-import type { TypedApi } from "polkadot-api";
+import type { TypedApi } from "polkadot-api-test";
 import { type Observable, firstValueFrom, from } from "rxjs";
 
 import { getClient } from "./getClient";

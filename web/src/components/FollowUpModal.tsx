@@ -1,5 +1,5 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import type { TxEvent } from "polkadot-api";
+import type { TxEvent } from "polkadot-api-test";
 import {
 	type FC,
 	type PropsWithChildren,

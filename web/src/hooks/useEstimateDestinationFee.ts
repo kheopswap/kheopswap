@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Enum, type SS58String } from "polkadot-api";
+import { Enum, type SS58String } from "polkadot-api-test";
 
 import { getApi } from "@kheopswap/papi";
 import {

@@ -22,18 +22,19 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 	try {
 		switch (chainId) {
 			case "kusama":
-				return (await import("polkadot-api/chains/ksmcc3")).chainSpec;
+				return (await import("polkadot-api-test/chains/ksmcc3")).chainSpec;
 			case "westend":
-				return (await import("polkadot-api/chains/westend2")).chainSpec;
+				return (await import("polkadot-api-test/chains/westend2")).chainSpec;
 			case "polkadot":
-				return (await import("polkadot-api/chains/polkadot")).chainSpec;
+				return (await import("polkadot-api-test/chains/polkadot")).chainSpec;
 			case "kah":
-				return (await import("polkadot-api/chains/ksmcc3_asset_hub")).chainSpec;
+				return (await import("polkadot-api-test/chains/ksmcc3_asset_hub"))
+					.chainSpec;
 			case "wah":
-				return (await import("polkadot-api/chains/westend2_asset_hub"))
+				return (await import("polkadot-api-test/chains/westend2_asset_hub"))
 					.chainSpec;
 			case "pah":
-				return (await import("polkadot-api/chains/polkadot_asset_hub"))
+				return (await import("polkadot-api-test/chains/polkadot_asset_hub"))
 					.chainSpec;
 			case "hydration": {
 				return (await import("./chainspec/hydration")).chainSpec;

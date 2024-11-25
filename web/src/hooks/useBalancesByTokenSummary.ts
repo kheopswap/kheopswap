@@ -1,5 +1,5 @@
 import { groupBy, keys } from "lodash";
-import type { InjectedAccount } from "polkadot-api/pjs-signer";
+import type { InjectedAccount } from "polkadot-api-test/pjs-signer";
 import { useMemo } from "react";
 
 import { useBalancesWithStables } from "./useBalancesWithStables";

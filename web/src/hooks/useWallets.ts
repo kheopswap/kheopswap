@@ -1,12 +1,12 @@
 import { bind } from "@react-rxjs/core";
 import { type Dictionary, entries, fromPairs, isEqual } from "lodash";
-import type { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api-test";
 import {
 	type InjectedExtension,
 	type InjectedPolkadotAccount,
 	connectInjectedExtension,
 	getInjectedExtensions,
-} from "polkadot-api/pjs-signer";
+} from "polkadot-api-test/pjs-signer";
 import { useCallback } from "react";
 import {
 	BehaviorSubject,

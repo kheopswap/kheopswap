@@ -1,7 +1,7 @@
 import { getApi$ } from "@kheopswap/papi";
 import type { ChainIdHydration } from "@kheopswap/registry";
 import { getCachedObservable$ } from "@kheopswap/utils";
-import type { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api-test";
 import { concat, map, shareReplay, switchMap } from "rxjs";
 
 export const getHydrationAssetsBalances$ = (

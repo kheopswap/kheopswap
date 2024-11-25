@@ -1,4 +1,4 @@
-import { Binary } from "polkadot-api";
+import { Binary } from "polkadot-api-test";
 
 import { isBigInt } from "./isBigInt";
 import { isBinary } from "./isBinary";

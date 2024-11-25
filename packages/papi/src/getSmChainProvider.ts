@@ -1,4 +1,4 @@
-import { getSmProvider } from "polkadot-api/sm-provider";
+import { getSmProvider } from "polkadot-api-test/sm-provider";
 
 import type { ChainId } from "@kheopswap/registry";
 import { getCachedPromise } from "@kheopswap/utils";

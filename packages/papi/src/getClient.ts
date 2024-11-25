@@ -1,5 +1,5 @@
-import { type PolkadotClient, createClient } from "polkadot-api";
-import { getWsProvider } from "polkadot-api/ws-provider/web";
+import { type PolkadotClient, createClient } from "polkadot-api-test";
+import { getWsProvider } from "polkadot-api-test/ws-provider/web";
 
 import { getChainSpec, hasChainSpec } from "./getChainSpec";
 import { getScChainProvider } from "./getScChainProvider";
@@ -14,7 +14,7 @@ import {
 	isRelay,
 } from "@kheopswap/registry";
 import { getCachedPromise } from "@kheopswap/utils";
-import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
+import { withPolkadotSdkCompat } from "polkadot-api-test/polkadot-sdk-compat";
 type ClientOptions = {
 	lightClients: boolean;
 };

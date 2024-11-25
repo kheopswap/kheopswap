@@ -1,4 +1,4 @@
-import type { TxEvent } from "polkadot-api";
+import type { TxEvent } from "polkadot-api-test";
 import { type Id, toast } from "react-toastify";
 
 import { getErrorMessageFromTxEvents } from "./getErrorMessageFromTxEvents";

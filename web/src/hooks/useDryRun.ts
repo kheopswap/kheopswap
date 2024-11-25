@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api-test";
 
 import { type Api, getApi } from "@kheopswap/papi";
 import {

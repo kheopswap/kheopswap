@@ -54,9 +54,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      polkadot-api:
-        specifier: ^1.7.7
-        version: 1.7.7(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
+      polkadot-api-test:
+        specifier: ^0.1.0
+        version: 0.1.0(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -85,6 +85,9 @@ importers:
       polkadot-api:
         specifier: ^1.7.7
         version: 1.7.7(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
+      polkadot-api-test:
+        specifier: ^0.1.0
+        version: 0.1.0(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
     devDependencies:
       '@kheopswap/constants':
         specifier: workspace:*
@@ -119,9 +122,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      polkadot-api:
-        specifier: ^1.7.7
-        version: 1.7.7(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
+      polkadot-api-test:
+        specifier: ^0.1.0
+        version: 0.1.0(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -177,9 +180,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      polkadot-api:
-        specifier: ^1.7.7
-        version: 1.7.7(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
+      polkadot-api-test:
+        specifier: ^0.1.0
+        version: 0.1.0(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -313,9 +316,9 @@ importers:
       numeral:
         specifier: ^2.0.6
         version: 2.0.6
-      polkadot-api:
-        specifier: ^1.7.7
-        version: 1.7.7(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
+      polkadot-api-test:
+        specifier: ^0.1.0
+        version: 0.1.0(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -3411,6 +3414,12 @@ packages:
   pngjs@5.0.0:
     resolution: {integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==}
     engines: {node: '>=10.13.0'}
+
+  polkadot-api-test@0.1.0:
+    resolution: {integrity: sha512-Z+tc/9/2AzkwoVWGK47ikp9WDcMk3P00KnmVfzhc+pHYL2lZX4q47eWU1T5klr+Xw/jN2PiF/x/WTjQb1bG0uA==}
+    hasBin: true
+    peerDependencies:
+      rxjs: '>=7.8.0'
 
   polkadot-api@1.7.7:
     resolution: {integrity: sha512-W6YmA4LhPVv2xhp5dKHM/lZp0fclpaKvspR0h+TBANNdUpBp5aAxq6qdkPAZ4sWTC6Rfi+j5PZZP88oQweOHWg==}
@@ -7596,6 +7605,38 @@ snapshots:
       pathe: 1.1.2
 
   pngjs@5.0.0: {}
+
+  polkadot-api-test@0.1.0(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1):
+    dependencies:
+      '@polkadot-api/cli': 0.9.21(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(yaml@2.6.1)
+      '@polkadot-api/ink-contracts': 0.2.2
+      '@polkadot-api/json-rpc-provider': 0.0.4
+      '@polkadot-api/known-chains': 0.5.8
+      '@polkadot-api/logs-provider': 0.0.6
+      '@polkadot-api/metadata-builders': 0.9.2
+      '@polkadot-api/metadata-compatibility': 0.1.12
+      '@polkadot-api/observable-client': 0.6.3(@polkadot-api/substrate-client@0.3.0)(rxjs@7.8.1)
+      '@polkadot-api/pjs-signer': 0.6.1
+      '@polkadot-api/polkadot-sdk-compat': 2.3.1
+      '@polkadot-api/polkadot-signer': 0.1.6
+      '@polkadot-api/signer': 0.1.11
+      '@polkadot-api/sm-provider': 0.1.7(@polkadot-api/smoldot@0.3.7)
+      '@polkadot-api/smoldot': 0.3.7
+      '@polkadot-api/substrate-bindings': 0.9.4
+      '@polkadot-api/substrate-client': 0.3.0
+      '@polkadot-api/utils': 0.1.2
+      '@polkadot-api/ws-provider': 0.3.6
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - '@microsoft/api-extractor'
+      - '@swc/core'
+      - bufferutil
+      - jiti
+      - postcss
+      - supports-color
+      - tsx
+      - utf-8-validate
+      - yaml
 
   polkadot-api@1.7.7(@swc/core@1.7.39(@swc/helpers@0.5.13))(jiti@2.4.0)(postcss@8.4.49)(rxjs@7.8.1)(yaml@2.6.1):
     dependencies:
