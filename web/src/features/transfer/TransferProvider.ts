@@ -11,6 +11,8 @@ import {
 	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
+import { isEqual } from "lodash";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
 	useAllTokens,
 	useAssetConvertPlancks,
@@ -29,48 +31,59 @@ import { useRelayChains } from "src/state";
 import { getFeeAssetLocation } from "src/util";
 import { getTxOptions } from "src/util/getTxOptions";
 
-const useDefaultValues = () => {
-	const [defaultAccountId] = useSetting("defaultAccountId");
-
-	// account won't be available on first render
-	const account = useWalletAccount({ id: defaultAccountId });
-
-	// TODO token id from url for deep links, maybe recipient too
-
+const useFormData = () => {
 	const { relay } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: relay });
 
-	return useMemo<TransferFormInputs>(
+	const location = useLocation();
+	const navigate = useNavigate();
+
+	const [defaultAccountId, setDefaultAccountId] =
+		useSetting("defaultAccountId");
+
+	const account = useWalletAccount({ id: defaultAccountId });
+
+	const defaultValues = useMemo<TransferFormInputs>(
 		() => ({
 			from: account?.id ?? "",
 			tokenId: nativeToken?.id ?? "",
 			amount: "",
 			to: "",
+			...location.state,
 		}),
-		[account?.id, nativeToken?.id],
+		[account?.id, nativeToken?.id, location.state],
 	);
+
+	const [formData, setFormData] = useState<TransferFormInputs>(defaultValues);
+
+	useEffect(() => {
+		if (!isEqual(location.state, formData)) {
+			navigate(location, { state: formData, replace: true });
+		}
+	}, [formData, location, navigate]);
+
+	// account won't be available on first render
+	useEffect(() => {
+		if (!formData.from && defaultValues.from)
+			setFormData((prev) => ({ ...prev, from: defaultValues.from }));
+	}, [defaultValues.from, formData.from]);
+
+	useEffect(() => {
+		if (formData.from) setDefaultAccountId(formData.from);
+	}, [formData.from, setDefaultAccountId]);
+
+	return [formData, setFormData] as const;
 };
 
 const useTransferProvider = () => {
-	const defaultValues = useDefaultValues();
-	const [formData, setFormData] = useState<TransferFormInputs>(defaultValues);
+	const [formData, setFormData] = useFormData();
 
-	const [, setDefaultAccountId] = useSetting("defaultAccountId");
 	const { relay } = useRelayChains();
 	const defaultToken = useNativeToken({ chain: relay });
 
 	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
 		types: TRANSFERABLE_TOKEN_TYPES,
 	});
-
-	useEffect(() => {
-		if (formData.from) setDefaultAccountId(formData.from);
-	}, [formData.from, setDefaultAccountId]);
-
-	useEffect(() => {
-		if (!formData.from && defaultValues.from)
-			setFormData((prev) => ({ ...prev, from: defaultValues.from }));
-	}, [defaultValues.from, formData.from]);
 
 	const sender = useMemo(
 		() => getAddressFromAccountField(formData.from),
@@ -103,7 +116,7 @@ const useTransferProvider = () => {
 				tokenId: defaultToken.id,
 			}));
 		}
-	}, [defaultToken, relay.id, tokenChain?.relay]);
+	}, [defaultToken, relay.id, tokenChain?.relay, setFormData]);
 
 	const [
 		plancks,
@@ -186,21 +199,33 @@ const useTransferProvider = () => {
 		[checkCanAccountReceive?.reason],
 	);
 
-	const onTokenChange = useCallback((tokenId: TokenId) => {
-		setFormData((prev) => ({ ...prev, tokenId }));
-	}, []);
+	const onTokenChange = useCallback(
+		(tokenId: TokenId) => {
+			setFormData((prev) => ({ ...prev, tokenId }));
+		},
+		[setFormData],
+	);
 
-	const onFromChange = useCallback((accountId: string) => {
-		setFormData((prev) => ({ ...prev, from: accountId }));
-	}, []);
+	const onFromChange = useCallback(
+		(accountId: string) => {
+			setFormData((prev) => ({ ...prev, from: accountId }));
+		},
+		[setFormData],
+	);
 
-	const onToChange = useCallback((address: string) => {
-		setFormData((prev) => ({ ...prev, to: address }));
-	}, []);
+	const onToChange = useCallback(
+		(address: string) => {
+			setFormData((prev) => ({ ...prev, to: address }));
+		},
+		[setFormData],
+	);
 
-	const onAmountChange = useCallback((amount: string) => {
-		setFormData((prev) => ({ ...prev, amount }));
-	}, []);
+	const onAmountChange = useCallback(
+		(amount: string) => {
+			setFormData((prev) => ({ ...prev, amount }));
+		},
+		[setFormData],
+	);
 
 	const onMaxClick = useCallback(() => {
 		if (token && balanceSender) {
@@ -218,11 +243,11 @@ const useTransferProvider = () => {
 				amount: plancksToTokens(plancks, token.decimals),
 			}));
 		}
-	}, [balanceSender, edTokenIn, feeEstimate, feeToken?.id, token]);
+	}, [balanceSender, edTokenIn, feeEstimate, feeToken?.id, token, setFormData]);
 
 	const onReset = useCallback(() => {
 		setFormData((prev) => ({ ...prev, amount: "" }));
-	}, []);
+	}, [setFormData]);
 
 	return {
 		formData,
