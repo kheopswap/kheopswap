@@ -165,6 +165,38 @@
 		"decimals": 6,
 		"verified": true
 	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzKwA2KoBWZOSrAA4AFghSqognUpgATitegGYWwdKxStqIK0HBmHQnJwg+gP8AXUCgA",
+		"logo": "./img/tokens/KILT.webp",
+		"symbol": "KILT.e",
+		"name": "KILT (Snowbridge)",
+		"decimals": -15,
+		"verified": false
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ATicAZlKIAFYnGArkmBqAdgAWNoqxADNu9AgADkaWiDb0GoA2KwGW0pGKtrmA/wBdQKA==",
+		"logo": "./img/tokens/sUSDe.webp",
+		"symbol": "sUSDe.e",
+		"name": "Staked USDe (Snowbridge)",
+		"decimals": 18,
+		"verified": false
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IAGYATjKfJwB2HwAOWtqrZJha8p8AFgarMVqYMS6ugDYygFZ0LoAzGCt0WumxF0CAXUCgA",
+		"logo": "./img/tokens/sUSDS.webp",
+		"symbol": "sUSDS.e",
+		"name": "Savings USDS (Snowbridge)",
+		"decimals": 18,
+		"verified": false
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzKwA2KoBWZOSrAA4AFghSqognUpgATitegGYWwdKxStqIK0HBmHQnJwg+gP8AXUCgA",
+		"logo": "./img/tokens/AAVE.webp",
+		"symbol": "AAVE",
+		"name": "Aave Token (Snowbridge)",
+		"decimals": 18,
+		"verified": true
+	},
 
 	{
 		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA",

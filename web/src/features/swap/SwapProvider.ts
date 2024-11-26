@@ -14,7 +14,8 @@ import {
 	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
-import { keyBy, values } from "lodash";
+import { isEqual, keyBy, values } from "lodash";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
 	useAssetConvertPlancks,
 	useBalance,
@@ -36,27 +37,50 @@ import {
 import { useRelayChains } from "src/state";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 
-const useDefaultValues = () => {
-	const [defaultAccountId] = useSetting("defaultAccountId");
+const useFormData = () => {
+	const { relay } = useRelayChains();
+	const nativeToken = useNativeToken({ chain: relay });
+
+	const location = useLocation();
+	const navigate = useNavigate();
+
+	const [defaultAccountId, setDefaultAccountId] =
+		useSetting("defaultAccountId");
 
 	// account won't be available on first render
 	const account = useWalletAccount({ id: defaultAccountId });
 
-	// TODO token id from url for deep links, maybe recipient too
-
-	const { relay } = useRelayChains();
-	const nativeToken = useNativeToken({ chain: relay });
-
-	return useMemo<SwapFormInputs>(
+	const defaultValues = useMemo<SwapFormInputs>(
 		() => ({
 			from: account?.id ?? "",
 			to: "",
 			tokenIdIn: nativeToken?.id ?? "",
 			tokenIdOut: "",
 			amountIn: "",
+			...location.state,
 		}),
-		[account?.id, nativeToken?.id],
+		[account?.id, nativeToken?.id, location.state],
 	);
+
+	const [formData, setFormData] = useState<SwapFormInputs>(defaultValues);
+
+	useEffect(() => {
+		if (!isEqual(location.state, formData)) {
+			navigate(location, { state: formData, replace: true });
+		}
+	}, [formData, location, navigate]);
+
+	// account won't be available on first render
+	useEffect(() => {
+		if (!formData.from && defaultValues.from)
+			setFormData((prev) => ({ ...prev, from: defaultValues.from }));
+	}, [defaultValues.from, formData.from]);
+
+	useEffect(() => {
+		if (formData.from) setDefaultAccountId(formData.from);
+	}, [formData.from, setDefaultAccountId]);
+
+	return [formData, setFormData] as const;
 };
 
 type SwapInputsProps = {
@@ -103,8 +127,7 @@ const useSwapInputs = ({ tokenIdIn, amountIn }: SwapInputsProps) => {
 
 const useSwapProvider = () => {
 	const { assetHub } = useRelayChains();
-	const defaultValues = useDefaultValues();
-	const [formData, setFormData] = useState<SwapFormInputs>(defaultValues);
+	const [formData, setFormData] = useFormData();
 
 	const { data: allTokens, isLoading: isLoadingAllTokens } = useTokensByChainId(
 		{
@@ -367,21 +390,22 @@ const useSwapProvider = () => {
 				tokenIdOut: "",
 			}));
 		}
-	}, [assetHub, formData]);
+	}, [assetHub, formData, setFormData]);
 
-	useEffect(() => {
-		if (!formData.from && defaultValues.from)
-			setFormData((prev) => ({ ...prev, from: defaultValues.from }));
-	}, [defaultValues.from, formData.from]);
+	const onFromChange = useCallback(
+		(accountId: string) => {
+			setSetting("defaultAccountId", accountId);
+			setFormData((prev) => ({ ...prev, from: accountId }));
+		},
+		[setFormData],
+	);
 
-	const onFromChange = useCallback((accountId: string) => {
-		setSetting("defaultAccountId", accountId);
-		setFormData((prev) => ({ ...prev, from: accountId }));
-	}, []);
-
-	const onAmountInChange = useCallback((amountIn: string) => {
-		setFormData((prev) => ({ ...prev, amountIn }));
-	}, []);
+	const onAmountInChange = useCallback(
+		(amountIn: string) => {
+			setFormData((prev) => ({ ...prev, amountIn }));
+		},
+		[setFormData],
+	);
 
 	const followUpData = useMemo(() => {
 		return { slippage, tokenOut, minPlancksOut, swapPlancksOut };
@@ -451,7 +475,7 @@ const useSwapProvider = () => {
 					tokenIdOut: tokenId,
 				}));
 		},
-		[assetHub.id, tokenIdIn],
+		[assetHub.id, tokenIdIn, setFormData],
 	);
 
 	const onSwapTokens = useCallback(() => {
@@ -460,7 +484,7 @@ const useSwapProvider = () => {
 			tokenIdIn: prev.tokenIdOut,
 			tokenIdOut: prev.tokenIdIn,
 		}));
-	}, []);
+	}, [setFormData]);
 
 	const onMaxClick = useCallback(() => {
 		if (tokenIn && balanceIn && isBigInt(edTokenIn) && isBigInt(feeEstimate)) {
@@ -476,11 +500,11 @@ const useSwapProvider = () => {
 				amountIn: plancksToTokens(plancks, tokenIn.decimals),
 			}));
 		}
-	}, [balanceIn, feeEstimate, edTokenIn, tokenIn]);
+	}, [balanceIn, feeEstimate, edTokenIn, tokenIn, setFormData]);
 
 	const onReset = useCallback(() => {
 		setFormData((prev) => ({ ...prev, amountIn: "" }));
-	}, []);
+	}, [setFormData]);
 
 	const res = {
 		formData,
