@@ -8,6 +8,8 @@ export const getAssetHubMirrorTokenId = (tokenId: TokenId) => {
 			return "native::kah";
 		case "native::westend":
 			return "native::wah";
+		case "native::paseo":
+			return "native::pasah";
 		default:
 			return tokenId;
 	}
