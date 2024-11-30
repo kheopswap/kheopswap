@@ -1,39 +1,18 @@
+import {
+	type Token,
+	type TokenType,
+	isChainIdAssetHub,
+} from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { getAddressFromAccountField, tokensToPlancks } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import type { TokenState } from "node_modules/@kheopswap/services/src/tokens/state";
 import { combineLatest, map, of, switchMap } from "rxjs";
 import { type InjectedAccount, getAccount$ } from "src/hooks";
-import { operationFormData$ } from "./formData";
+import { type OperationFormData, operationFormData$ } from "./formData";
 
-// type OperationFormData = {
-// 	tokenIdIn?: TokenId;
-// 	tokenIdOut?: TokenId;
-// 	accountId?: string;
-// 	recipient?: string;
-// 	amountIn?: string;
-// };
-
-// const operationFormData$ = new BehaviorSubject<OperationFormData>({});
-
-// export const resetOperationFormData = () => {
-// 	operationFormData$.next({});
-// };
-
-// export const setOperationFormData = (
-// 	data: OperationFormData | ((prev: OperationFormData) => OperationFormData),
-// ) => {
-// 	const newValue =
-// 		typeof data === "function"
-// 			? data(operationFormData$.value)
-// 			: { ...operationFormData$.value, ...data };
-
-// 	operationFormData$.next(consolidateFormData(newValue));
-// };
-
-// export const [useOperationFormData] = bind(operationFormData$);
-
-type OperationInputs = {
+export type OperationInputs = {
+	type: OperationType | null;
 	account: InjectedAccount | null;
 	tokenIn: TokenState | null;
 	tokenOut: TokenState | null;
@@ -42,29 +21,85 @@ type OperationInputs = {
 };
 
 export const operationInputs$ = operationFormData$.pipe(
-	switchMap((formData) =>
-		combineLatest([
-			formData.accountId ? getAccount$(formData.accountId) : of(null),
-			formData.tokenIdIn ? getTokenById$(formData.tokenIdIn) : of(null),
-			formData.tokenIdOut ? getTokenById$(formData.tokenIdOut) : of(null),
-		]).pipe(
-			map(
-				([account, tokenIn, tokenOut]): OperationInputs => ({
-					account,
-					tokenIn,
-					tokenOut,
-					recipient: getAddressFromAccountField(formData.recipient) ?? null,
-					plancksIn:
-						tokenIn?.token && !!formData.amountIn
-							? tokensToPlancks(formData.amountIn, tokenIn.token.decimals)
-							: null,
-				}),
-			),
-		),
-	),
+	switchMap((formData) => getOperationInputs$(formData)),
 );
 
+const getOperationInputs$ = (formData: OperationFormData) => {
+	const account$ = formData.accountId
+		? getAccount$(formData.accountId)
+		: of(null);
+	const tokenIn$ = formData.tokenIdIn
+		? getTokenById$(formData.tokenIdIn)
+		: of(null);
+	const tokenOut$ = formData.tokenIdOut
+		? getTokenById$(formData.tokenIdOut)
+		: of(null);
+
+	return combineLatest([account$, tokenIn$, tokenOut$]).pipe(
+		map(
+			([account, tokenIn, tokenOut]): OperationInputs => ({
+				type: getOperationType(tokenIn?.token, tokenOut?.token),
+				account,
+				tokenIn,
+				tokenOut,
+				recipient: getAddressFromAccountField(formData.recipient) ?? null,
+				plancksIn:
+					tokenIn?.token && !!formData.amountIn
+						? tokensToPlancks(formData.amountIn, tokenIn.token.decimals)
+						: null,
+			}),
+		),
+	);
+};
+
 export const [useOperationInputs] = bind(operationInputs$);
+
+type OperationType =
+	| "transfer"
+	| "asset-convert"
+	| "xcm"
+	| "invalid"
+	| "unknown";
+
+const getOperationType = (
+	tokenIn: Token | null | undefined,
+	tokenOut: Token | null | undefined,
+): OperationType => {
+	if (!tokenIn || !tokenOut) return "unknown";
+
+	if (tokenIn.id === tokenOut.id) return "transfer";
+
+	if (tokenIn.chainId !== tokenOut.chainId) return "xcm";
+
+	const types = [tokenIn.type, tokenOut.type];
+	if (
+		[tokenIn.chainId, tokenOut.chainId].every(isChainIdAssetHub) &&
+		types.some((type) => type === "native") &&
+		types.some((type) => ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES.includes(type))
+	)
+		return "asset-convert";
+
+	return "unknown";
+};
+
+const ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES: TokenType[] = [
+	"asset",
+	"foreign-asset",
+];
+
+// 	// need one native
+// 	if (!.includes("native")) return false;
+
+// 	// need one non-native
+// 	if (
+// 		![tokenIn.type, tokenOut.type].some((type) =>
+// 			ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES.includes(type),
+// 		)
+// 	)
+// 		return false;
+
+// 	return true;
+// };
 
 // const isRouteValid = (tokenIn: TokenId, tokenOut: TokenId): boolean => {
 // 	return true; // TODO

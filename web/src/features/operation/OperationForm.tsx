@@ -2,13 +2,16 @@ import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "@kheopswap/registry";
 import { cn, logger } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
+import { isEqual } from "lodash";
 import {
 	type FC,
 	type FormEvent,
 	type FormEventHandler,
 	useCallback,
 	useEffect,
+	useRef,
 } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { of, switchMap } from "rxjs";
 import {
 	AccountSelect,
@@ -30,9 +33,29 @@ const [useTokenPickerAccounts] = bind(
 	),
 );
 
+const useRetainOnRefresh = () => {
+	const formData = useOperationFormData();
+
+	const location = useLocation();
+	const navigate = useNavigate();
+
+	const refInit = useRef(false);
+
+	useEffect(() => {
+		if (!refInit.current && location.state) {
+			refInit.current = true;
+			updateOperationFormData(location.state);
+		}
+	}, [location.state]);
+
+	useEffect(() => {
+		if (!isEqual(location.state, formData))
+			navigate(location, { state: formData, replace: true });
+	}, [formData, location, navigate]);
+};
+
 export const OperationForm = () => {
-	// const { from, onFromChange, tokenIn } = useSwap();
-	// const { onSubmit, canSubmit } = useTransaction();
+	useRetainOnRefresh();
 	const { data: tokens } = useAllTokens({ types: TRANSFERABLE_TOKEN_TYPES });
 
 	const formData = useOperationFormData();

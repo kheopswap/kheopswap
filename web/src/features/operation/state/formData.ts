@@ -5,7 +5,7 @@ import {
 import { bind } from "@react-rxjs/core";
 import { BehaviorSubject } from "rxjs";
 
-type OperationFormData = {
+export type OperationFormData = {
 	tokenIdIn?: TokenId;
 	tokenIdOut?: TokenId;
 	accountId?: string;
