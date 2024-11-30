@@ -16,7 +16,7 @@ import { useMaskito } from "@maskito/react";
 import type { Dictionary } from "lodash";
 
 import type { Token, TokenId } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
+import { cn, isBigInt, tokensToPlancks } from "@kheopswap/utils";
 import {
 	StablePrice,
 	Tokens,
@@ -60,7 +60,7 @@ export const TokenAmountPicker: FC<{
 	tokenId: TokenId | null | undefined;
 	tokens?: Dictionary<Token> | undefined;
 	accounts?: InjectedAccount[] | string[];
-	plancks: bigint | null | undefined;
+	// plancks: bigint | null | undefined;
 	isLoading: boolean;
 	errorMessage?: string | null;
 	disableTokenButton?: boolean;
@@ -75,7 +75,7 @@ export const TokenAmountPicker: FC<{
 	tokens,
 	accounts,
 	isLoading,
-	plancks,
+
 	errorMessage,
 	onTokenChange,
 	disableTokenButton,
@@ -89,6 +89,14 @@ export const TokenAmountPicker: FC<{
 	const token = useMemo(
 		() => (tokenId ? tokens?.[tokenId] : undefined),
 		[tokenId, tokens],
+	);
+
+	const plancks = useMemo(
+		() =>
+			typeof inputProps.value === "string" && !inputProps.value && token
+				? tokensToPlancks(inputProps.value, token.decimals)
+				: null,
+		[inputProps.value, token],
 	);
 
 	return (

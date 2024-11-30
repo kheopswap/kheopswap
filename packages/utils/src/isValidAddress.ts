@@ -1,15 +1,8 @@
-import { AccountId, type SS58String } from "polkadot-api";
+import { isValidEthereumAddress } from "./isEthereumAddress";
+import { isSs58Address } from "./isSs58Address";
 
-const accountIdEncoder = AccountId().enc;
-
-export const isValidAddress = (
-	address: SS58String | string,
-): address is SS58String => {
-	try {
-		if (!address) return false;
-		accountIdEncoder(address);
-		return true;
-	} catch (_err) {
-		return false;
-	}
+export const isValidAddress = (address: string): boolean => {
+	return address.startsWith("0x")
+		? isValidEthereumAddress(address)
+		: isSs58Address(address);
 };

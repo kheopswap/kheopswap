@@ -8,12 +8,16 @@ import {
 	type ChainId,
 	type ChainIdAssetHub,
 	type ChainIdHydration,
+	type ChainIdMoonbeam,
+	type ChainIdMythos,
 	type ChainIdRelay,
 	type Descriptors,
 	getChainById,
 	getDescriptors,
 	isChainIdAssetHub,
 	isChainIdHydration,
+	isChainIdMoonbeam,
+	isChainIdMythos,
 	isChainIdRelay,
 } from "@kheopswap/registry";
 import { getSetting } from "@kheopswap/settings";
@@ -44,6 +48,14 @@ export const isApiHydration = (
 	api: Api<ChainId>,
 ): api is Api<ChainIdHydration> => {
 	return isChainIdHydration(api.chainId);
+};
+export const isApiMythos = (api: Api<ChainId>): api is Api<ChainIdMythos> => {
+	return isChainIdMythos(api.chainId);
+};
+export const isApiMoonbeam = (
+	api: Api<ChainId>,
+): api is Api<ChainIdMoonbeam> => {
+	return isChainIdMoonbeam(api.chainId);
 };
 
 const getApiInner = async <Id extends ChainId>(

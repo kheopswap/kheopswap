@@ -30,7 +30,10 @@ const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 					loading="lazy"
 					src={chain.logo}
 					alt={""}
-					className="absolute bottom-[-10%] left-[-10%] size-1/2"
+					className={cn(
+						"absolute bottom-[-10%] left-[-10%] size-1/2",
+						chain.logo.endsWith("?rounded") && "rounded-full",
+					)}
 				/>
 			)}
 		</div>

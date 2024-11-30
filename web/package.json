@@ -36,6 +36,7 @@
 		"@react-rxjs/core": "^0.10.7",
 		"@talismn/orb": "0.0.0-pr1364-20240325022411",
 		"@tanstack/react-query": "^5.61.0",
+		"@tanstack/react-virtual": "^3.10.9",
 		"@w3f/polkadot-icons": "^1.0.0",
 		"@walletconnect/modal": "^2.7.0",
 		"@walletconnect/types": "^2.17.2",

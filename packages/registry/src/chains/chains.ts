@@ -6,6 +6,8 @@ import {
 	DESCRIPTORS_ALL,
 	DESCRIPTORS_ASSET_HUB,
 	DESCRIPTORS_HYDRATION,
+	DESCRIPTORS_MOONBEAM,
+	DESCRIPTORS_MYTHOS,
 	DESCRIPTORS_RELAY,
 } from "./descriptors";
 import type {
@@ -15,13 +17,18 @@ import type {
 	ChainId,
 	ChainIdAssetHub,
 	ChainIdHydration,
+	ChainIdMoonbeam,
+	ChainIdMythos,
 	ChainIdRelay,
+	ChainMoonbeam,
 	ChainRelay,
 	Descriptors,
 } from "./types";
 
 export const PARA_ID_ASSET_HUB = 1000;
 export const PARA_ID_HYDRATION = 2034;
+export const PARA_ID_MYTHOS = 3369;
+export const PARA_ID_MOONBEAM = 2004;
 
 const DEV_CHAINS = chainsDevJson as Chain[];
 const PROD_CHAINS = chainsProdJson as Chain[];
@@ -32,9 +39,9 @@ const DEV_CHAINS_MAP = Object.fromEntries(
 
 // override with chopstick config if necessary
 const CHAINS = USE_CHOPSTICKS
-	? PROD_CHAINS.filter((chain) => !!DEV_CHAINS_MAP[chain.id]).map((chain) =>
-			Object.assign(chain, DEV_CHAINS_MAP[chain.id]),
-		)
+	? PROD_CHAINS.filter((chain) => !!DEV_CHAINS_MAP[chain.id])
+			.filter((chain) => chain.id !== "hydration") // TODO remove filter when ready
+			.map((chain) => Object.assign(chain, DEV_CHAINS_MAP[chain.id]))
 	: PROD_CHAINS.filter((chain) => chain.id !== "hydration"); // TODO remove filter when ready
 
 const CHAINS_MAP = Object.fromEntries(CHAINS.map((chain) => [chain.id, chain]));
@@ -48,6 +55,13 @@ export const isChainIdRelay = (id: unknown): id is ChainIdRelay =>
 	typeof id === "string" && !!DESCRIPTORS_RELAY[id as ChainIdRelay];
 export const isChainIdHydration = (id: unknown): id is ChainIdHydration =>
 	typeof id === "string" && !!DESCRIPTORS_HYDRATION[id as ChainIdHydration];
+export const isChainIdMythos = (id: unknown): id is ChainIdMythos =>
+	typeof id === "string" && !!DESCRIPTORS_MYTHOS[id as ChainIdMythos];
+export const isChainIdMoonbeam = (id: unknown): id is ChainIdMoonbeam =>
+	typeof id === "string" && !!DESCRIPTORS_MOONBEAM[id as ChainIdMoonbeam];
+
+export const isChainIdWithDryRun = (id: unknown) =>
+	isChainIdRelay(id) || isChainIdAssetHub(id) || isChainIdMoonbeam(id);
 
 export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 	DESCRIPTORS_ALL[id];
@@ -63,13 +77,17 @@ export const getChainById = <T extends Chain>(id: ChainId): T => {
 export const isAssetHub = (chain: Chain): chain is ChainAssetHub => {
 	return chain.paraId === PARA_ID_ASSET_HUB;
 };
-
 export const isRelay = (chain: Chain): chain is ChainRelay => {
 	return chain.paraId === null;
 };
-
 export const isHydration = (chain: Chain): chain is ChainHydration => {
 	return chain.paraId === PARA_ID_HYDRATION;
+};
+export const isMythos = (chain: Chain): chain is ChainHydration => {
+	return chain.paraId === PARA_ID_MYTHOS;
+};
+export const isMoonbeam = (chain: Chain): chain is ChainMoonbeam => {
+	return chain.paraId === PARA_ID_MOONBEAM;
 };
 
 // TODO
