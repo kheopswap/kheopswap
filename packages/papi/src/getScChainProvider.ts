@@ -17,6 +17,8 @@ const getWellKnownChain = (chainId: ChainId): WellKnownChain | null => {
 			return WellKnownChain.westend2;
 		case "kusama":
 			return WellKnownChain.ksmcc3;
+		case "paseo":
+			return WellKnownChain.paseo;
 		default:
 			return null;
 	}

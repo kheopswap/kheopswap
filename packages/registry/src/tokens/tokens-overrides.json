@@ -17,7 +17,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABnToAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0AZmwATCAgi0ARnmgVUZQAPADYAVgB2dBCAFmV4hMSk5JTUtPSEkHV1AF1soA",
 		"logo": "./img/tokens/EQD.svg",
-		"verified": true
+		"verified": false
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMygL6YB1WgHF4BDgGkYFOQu5kQ7eAHMEktA2wATCAgi0ARnmgVUZQAPZVD0UIjIqOiY2Lj46JANDQBdZKA===",
@@ -39,7 +39,7 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzp0AX3VA==",
 		"logo": "./img/tokens/EQ.svg",
-		"verified": true
+		"verified": false
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMAFgC+mAdVoBxeAQ4BJOABMYADzkLutAEY4A5ngSplITQF1NmoA==",
@@ -226,5 +226,9 @@
 	{
 		"id": "asset::pah::18",
 		"logo": "./img/tokens/DOTA.webp?rounded"
+	},
+	{
+		"id": "asset::pah::555",
+		"logo": "./img/tokens/GAME.svg?rounded"
 	}
 ]

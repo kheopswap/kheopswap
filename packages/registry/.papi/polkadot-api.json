@@ -39,6 +39,15 @@
 		"wah": {
 			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
 			"metadata": ".papi/scale/wah.scale"
+		},
+
+		"paseo": {
+			"wsUrl": "wss://pas-rpc.stakeworld.io",
+			"metadata": ".papi/scale/paseo.scale"
+		},
+		"pasah": {
+			"wsUrl": "wss://asset-hub-paseo.dotters.network",
+			"metadata": ".papi/scale/pasah.scale"
 		}
 	}
 }

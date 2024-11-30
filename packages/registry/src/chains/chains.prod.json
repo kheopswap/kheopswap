@@ -166,5 +166,41 @@
 		"stableTokenId": "native::wah",
 		"blockExplorerUrl": "https://assethub-westend.subscan.io",
 		"addressType": "ss58"
+	},
+
+	{
+		"id": "paseo",
+		"name": "Paseo",
+		"wsUrl": [
+			"wss://paseo-rpc.dwellir.com",
+			"wss://paseo.rpc.amforc.com",
+			"wss://rpc.ibp.network/paseo",
+			"wss://paseo.dotters.network",
+			"wss://pas-rpc.stakeworld.io",
+			"wss://api2.zondax.ch/pas/node/rpc"
+		],
+		"relay": "paseo",
+		"paraId": null,
+		"logo": "./img/chains/paseo.png",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://paseo.subscan.io",
+		"addressType": "ss58"
+	},
+	{
+		"id": "pasah",
+		"name": "Paseo Asset Hub",
+		"wsUrl": [
+			"wss://asset-hub-paseo-rpc.dwellir.com",
+			"wss://sys.ibp.network/asset-hub-paseo",
+			"wss://asset-hub-paseo.dotters.network",
+			"wss://pas-rpc.stakeworld.io/assethub",
+			"wss://sys.turboflakes.io/asset-hub-paseo"
+		],
+		"relay": "paseo",
+		"paraId": 1000,
+		"logo": "./img/chains/pasah.svg",
+		"stableTokenId": "native::pasah",
+		"blockExplorerUrl": "https://assethub-paseo.subscan.io",
+		"addressType": "ss58"
 	}
 ]
