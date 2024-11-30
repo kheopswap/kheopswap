@@ -3,6 +3,8 @@ import {
 	kah,
 	kusama,
 	pah,
+	pasah,
+	paseo,
 	polkadot,
 	wah,
 	westend,
@@ -12,12 +14,14 @@ export const DESCRIPTORS_RELAY = {
 	polkadot,
 	kusama,
 	westend,
+	paseo,
 } as const;
 
 export const DESCRIPTORS_ASSET_HUB = {
 	pah,
 	kah,
 	wah,
+	pasah,
 } as const;
 
 export const DESCRIPTORS_HYDRATION = {
