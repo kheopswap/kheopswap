@@ -1,5 +1,13 @@
 import type { TypedApi } from "polkadot-api";
-import { type Observable, firstValueFrom, from } from "rxjs";
+import {
+	type Observable,
+	catchError,
+	firstValueFrom,
+	from,
+	map,
+	of,
+	startWith,
+} from "rxjs";
 
 import { getClient } from "./getClient";
 
@@ -22,8 +30,12 @@ import {
 } from "@kheopswap/registry";
 import { getSetting } from "@kheopswap/settings";
 import {
+	type LoadableObsState,
 	getCachedObservable$,
 	getCachedPromise,
+	loadableStateData,
+	loadableStateError,
+	loadableStateLoading,
 	logger,
 } from "@kheopswap/utils";
 
@@ -103,6 +115,7 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	return api as Papi;
 };
 
+// TODO reemit if light clients change, and maybe if runtime changes ?
 export const getApi$ = <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 ): Observable<Papi> => {
@@ -110,5 +123,17 @@ export const getApi$ = <Id extends ChainId, Papi = Api<Id>>(
 		"getApi$",
 		id,
 		() => from(getApi(id as ChainId)) as Observable<Papi>,
+	);
+};
+
+export const getApiLoadable$ = <Id extends ChainId, Papi = Api<Id>>(
+	id: Id,
+): Observable<LoadableObsState<Papi>> => {
+	return getApi$(id).pipe(
+		map((api) => loadableStateData(api as Papi)),
+		catchError((cause) =>
+			of(loadableStateError<Papi>(new Error("Failed to get Api", { cause }))),
+		),
+		startWith(loadableStateLoading<Papi>()), // TODO test
 	);
 };

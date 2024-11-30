@@ -51,22 +51,22 @@ export const isTokenIdAsset = (
 	}
 };
 
-export const parseTokenId = (
-	tokenId: TokenId,
-):
-	| { type: "native"; chainId: ChainId }
-	| { type: "asset"; chainId: ChainId; assetId: number }
-	| { type: "pool-asset"; chainId: ChainId; poolAssetId: number }
+export type TokenSpec =
+	| { type: TokenTypeNative; chainId: ChainId }
+	| { type: TokenTypeAsset; chainId: ChainId; assetId: number }
+	| { type: TokenTypePoolAsset; chainId: ChainId; poolAssetId: number }
 	| {
-			type: "foreign-asset";
+			type: TokenTypeForeignAsset;
 			chainId: ChainId;
 			location: XcmV3Multilocation;
 	  }
 	| {
-			type: "hydration-asset";
+			type: TokenTypeHydrationAsset;
 			chainId: ChainId;
 			assetId: number;
-	  } => {
+	  };
+
+export const parseTokenId = (tokenId: TokenId): TokenSpec => {
 	try {
 		const parts = tokenId.split("::");
 
@@ -121,12 +121,7 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 					: never;
 
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
-	token:
-		| { type: TokenTypeNative; chainId: ChainId }
-		| { type: TokenTypeAsset; chainId: ChainId; assetId: number }
-		| { type: TokenTypePoolAsset; chainId: ChainId; poolAssetId: number }
-		| { type: TokenTypeForeignAsset; chainId: ChainId; location: unknown }
-		| { type: TokenTypeHydrationAsset; chainId: ChainId; assetId: number },
+	token: TokenSpec,
 ): Result => {
 	switch (token.type) {
 		case "native":
@@ -139,6 +134,8 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}` as Result;
 		case "hydration-asset":
 			return `hydration-asset::${token.chainId}::${token.assetId}` as Result;
+		default:
+			throw new Error("Unknown token spec");
 	}
 };
 

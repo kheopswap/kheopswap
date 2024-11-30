@@ -1,6 +1,16 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
-import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "@kheopswap/registry";
-import { cn, logger } from "@kheopswap/utils";
+import {
+	TRANSFERABLE_TOKEN_TYPES,
+	type TokenId,
+	getTokenId,
+} from "@kheopswap/registry";
+import {
+	cn,
+	getAddressFromAccountField,
+	isBigInt,
+	logger,
+	plancksToTokens,
+} from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { isEqual } from "lodash";
 import {
@@ -9,6 +19,7 @@ import {
 	type FormEventHandler,
 	useCallback,
 	useEffect,
+	useMemo,
 	useRef,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,6 +30,8 @@ import {
 	Styles,
 	TokenAmountPicker,
 } from "src/components";
+import { useChainAccount } from "src/helpers/getChainAccount";
+import { useExistentialDeposit } from "src/helpers/getExistentialDeposit";
 import { accounts$, useAllTokens } from "src/hooks";
 import {
 	operationInputs$,
@@ -26,6 +39,9 @@ import {
 	useOperationFormData,
 	useOperationInputs,
 } from "./state";
+import { useAssetConversionLPFee } from "./state/helpers/getAssetConversionLPFee";
+import { useOperationPlancksOut } from "./state/operation.plancksOut";
+import { useOperationTransaction } from "./state/operationTransaction";
 
 const [useTokenPickerAccounts] = bind(
 	operationInputs$.pipe(
@@ -60,6 +76,7 @@ export const OperationForm = () => {
 
 	const formData = useOperationFormData();
 	const inputs = useOperationInputs();
+	const transaction = useOperationTransaction();
 
 	const tokenPickerAccounts = useTokenPickerAccounts();
 
@@ -70,6 +87,10 @@ export const OperationForm = () => {
 	useEffect(() => {
 		logger.debug("[operation] inputs", inputs);
 	}, [inputs]);
+
+	useEffect(() => {
+		logger.debug("[operation] operation tx", transaction);
+	}, [transaction]);
 
 	const handleSwapTokensClick = useCallback(() => {
 		updateOperationFormData({
@@ -84,7 +105,43 @@ export const OperationForm = () => {
 		// onSubmit();
 	}, []);
 
-	const amountOut = ""; // TODO
+	const lpFee = useAssetConversionLPFee("pah");
+	useEffect(() => {
+		console.log("[debug] lpFee", lpFee);
+	}, [lpFee]);
+
+	const ed = useExistentialDeposit(
+		getTokenId({ type: "asset", chainId: "pah", assetId: 1337 }),
+	);
+	useEffect(() => {
+		console.log("[debug] ed", ed);
+	}, [ed]);
+
+	const chainAccount = useChainAccount(
+		"pah",
+		getAddressFromAccountField(formData.accountId),
+	);
+	useEffect(() => {
+		console.log("[debug] chainAccount", chainAccount);
+	}, [chainAccount]);
+
+	const plancksOut = useOperationPlancksOut();
+	useEffect(() => {
+		console.log("[debug] plancksOut", plancksOut);
+	}, [plancksOut]);
+
+	const [amountOut, isLoadingAmountOut] = useMemo(
+		() =>
+			isBigInt(plancksOut.data) && inputs.tokenOut?.token
+				? [
+						plancksToTokens(plancksOut.data, inputs.tokenOut.token.decimals),
+						plancksOut.isLoading,
+					]
+				: ["", plancksOut.isLoading],
+		[plancksOut, inputs.tokenOut?.token],
+	);
+
+	//const amountOut = ""; // TODO
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -120,7 +177,7 @@ export const OperationForm = () => {
 					<TokenAmountPicker
 						inputProps={{ value: amountOut ?? "", readOnly: true }}
 						tokenId={formData.tokenIdOut}
-						//plancks={plancksOut}
+						// plancks={null}
 						tokens={tokens}
 						accounts={tokenPickerAccounts}
 						isLoading={inputs.tokenOut?.status === "loading"}
@@ -128,7 +185,7 @@ export const OperationForm = () => {
 						// errorMessage={outputErrorMessage}
 						// balance={balanceOut}
 						// isLoadingBalance={isLoadingBalanceOut}
-						// isComputingValue={isLoadingAmountOut}
+						isComputingValue={isLoadingAmountOut}
 					/>
 				</div>
 

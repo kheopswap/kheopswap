@@ -93,7 +93,7 @@ export const TokenAmountPicker: FC<{
 
 	const plancks = useMemo(
 		() =>
-			typeof inputProps.value === "string" && !inputProps.value && token
+			typeof inputProps.value === "string" && inputProps.value && token
 				? tokensToPlancks(inputProps.value, token.decimals)
 				: null,
 		[inputProps.value, token],

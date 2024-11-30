@@ -30,3 +30,4 @@ export * from "./isEthereumAddress";
 export * from "./isSs58Address";
 export * from "./getAccountAddressType";
 export * from "./isValidAddress";
+export * from "./getLoadableObsState";

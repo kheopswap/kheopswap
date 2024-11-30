@@ -20,10 +20,6 @@ export type OperationInputs = {
 	plancksIn: bigint | null;
 };
 
-export const operationInputs$ = operationFormData$.pipe(
-	switchMap((formData) => getOperationInputs$(formData)),
-);
-
 const getOperationInputs$ = (formData: OperationFormData) => {
 	const account$ = formData.accountId
 		? getAccount$(formData.accountId)
@@ -52,7 +48,11 @@ const getOperationInputs$ = (formData: OperationFormData) => {
 	);
 };
 
-export const [useOperationInputs] = bind(operationInputs$);
+export const [useOperationInputs, operationInputs$] = bind(
+	operationFormData$.pipe(
+		switchMap((formData) => getOperationInputs$(formData)),
+	),
+);
 
 type OperationType =
 	| "transfer"
