@@ -55,8 +55,16 @@ export const getAssetConversionSwapTransaction$ = (
 		!isChainIdAssetHub(tokenIn.token.chainId) ||
 		!recipient ||
 		!isBigInt(plancksIn)
-	)
+	) {
+		console.log("[debug] getAssetConversionSwapTransaction$ null", {
+			account,
+			tokenIn,
+			tokenOut,
+			recipient,
+			plancksIn,
+		});
 		return of(loadableStateData(null));
+	}
 
 	return combineLatest([
 		getApi$(tokenIn.token.chainId),
@@ -84,7 +92,8 @@ export const getAssetConversionSwapTransaction$ = (
 					const isLoading = appFee.isLoading || output.isLoading;
 
 					if (output.error) throw output.error;
-					if (!isBigInt(output.data)) return [null, isLoading] as const;
+					if (!isBigInt(output.data?.plancksOut))
+						return [null, isLoading] as const;
 
 					const minPlancksOut = isBigInt(output.data?.plancksOut)
 						? getMinPlancksOut(output.data.plancksOut, slippage)
@@ -102,7 +111,7 @@ export const getAssetConversionSwapTransaction$ = (
 					);
 
 					const tx = appFeeTransferTx
-						? api.tx.Utility.batch({
+						? api.tx.Utility.batch_all({
 								calls: [swapTx.decodedCall, appFeeTransferTx.decodedCall],
 							})
 						: swapTx;

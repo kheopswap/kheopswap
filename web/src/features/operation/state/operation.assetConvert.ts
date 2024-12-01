@@ -93,7 +93,13 @@ export const getAssetConvertPlancksOut$ = (
 	plancksIn: bigint | null | undefined,
 ): Observable<LoadableObsState<bigint | null>> =>
 	getAssetConvertOutput$(tokenIn, tokenOut, plancksIn).pipe(
-		map((res) => loadableState({ ...res, data: res.data?.plancksOut })),
+		map((res) =>
+			loadableState(
+				res.data
+					? { ...res, data: res.data?.plancksOut }
+					: { ...res, data: undefined },
+			),
+		),
 	);
 
 export const getAssetConvertOperation$ = (inputs: OperationInputs) => {

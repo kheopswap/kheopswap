@@ -1,5 +1,5 @@
 import { isNumber, uniq } from "lodash";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { type Observable, catchError, of, shareReplay } from "rxjs";
 
@@ -63,6 +63,18 @@ const useTransactionProvider = ({
 	onReset,
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
 }: UseTransactionProviderProps) => {
+	useEffect(() => {
+		console.log("[debug] useTransactionProvider", {
+			call,
+			fakeCall,
+			signer,
+			chainId,
+			callSpendings,
+			onReset,
+			followUpData,
+		});
+	}, [call, fakeCall, signer, chainId, callSpendings, onReset, followUpData]);
+
 	const account = useWalletAccount({ id: signer });
 
 	const chain = useMemo(
@@ -331,6 +343,70 @@ const useTransactionProvider = ({
 		},
 		[onReset],
 	);
+
+	useEffect(() => {
+		console.log("[debug] useTransactionProvider OUT", {
+			chainId,
+			account,
+
+			feeToken,
+			feeTokens,
+			isLoadingFeeTokens,
+			onFeeTokenChange,
+
+			feeEstimate,
+			errorFeeEstimate,
+			isLoadingFeeEstimate,
+
+			feeTokenBalance,
+			isLoadingFeeTokenBalance,
+
+			insufficientBalances,
+			followUpInputs,
+
+			onSubmit,
+			canSubmit,
+
+			error,
+			isLoading,
+
+			onCloseFollowUp,
+
+			dryRun,
+			isLoadingDryRun,
+			errorDryRun,
+		});
+	}, [
+		chainId,
+		account,
+
+		feeToken,
+		feeTokens,
+		isLoadingFeeTokens,
+		onFeeTokenChange,
+
+		feeEstimate,
+		errorFeeEstimate,
+		isLoadingFeeEstimate,
+
+		feeTokenBalance,
+		isLoadingFeeTokenBalance,
+
+		insufficientBalances,
+		followUpInputs,
+
+		onSubmit,
+		canSubmit,
+
+		error,
+		isLoading,
+
+		onCloseFollowUp,
+
+		dryRun,
+		isLoadingDryRun,
+		errorDryRun,
+	]);
 
 	return {
 		chainId,

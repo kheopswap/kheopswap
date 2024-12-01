@@ -27,12 +27,15 @@ import { of, switchMap } from "rxjs";
 import {
 	AccountSelect,
 	FormFieldContainer,
+	MagicButton,
 	Styles,
 	TokenAmountPicker,
 } from "src/components";
 import { useChainAccount } from "src/helpers/getChainAccount";
 import { useExistentialDeposit } from "src/helpers/getExistentialDeposit";
 import { accounts$, useAllTokens } from "src/hooks";
+import { useTransaction } from "../transaction/TransactionProvider";
+import { OperationSummary } from "./OperationSummary";
 import {
 	operationInputs$,
 	updateOperationFormData,
@@ -41,7 +44,10 @@ import {
 } from "./state";
 import { useAssetConversionLPFee } from "./state/helpers/getAssetConversionLPFee";
 import { useOperationPlancksOut } from "./state/operation.plancksOut";
-import { useOperationTransaction } from "./state/operationTransaction";
+import {
+	operationTransaction$,
+	useOperationTransaction,
+} from "./state/operationTransaction";
 
 const [useTokenPickerAccounts] = bind(
 	operationInputs$.pipe(
@@ -99,11 +105,20 @@ export const OperationForm = () => {
 		});
 	}, [formData.tokenIdIn, formData.tokenIdOut]);
 
-	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback((e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		// onSubmit();
-	}, []);
+	const { onSubmit, canSubmit } = useTransaction();
+
+	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
+		(e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			onSubmit();
+		},
+		[onSubmit],
+	);
+
+	useEffect(() => {
+		console.log("[debug] useTransaction", { onSubmit, canSubmit });
+	}, [onSubmit, canSubmit]);
 
 	const lpFee = useAssetConversionLPFee("pah");
 	useEffect(() => {
@@ -140,6 +155,13 @@ export const OperationForm = () => {
 				: ["", plancksOut.isLoading],
 		[plancksOut, inputs.tokenOut?.token],
 	);
+
+	const operationLabel = useMemo(() => {
+		if (inputs.type === "transfer") return "Transfer";
+		if (inputs.type === "asset-convert") return "Swap";
+		if (inputs.type === "xcm") return "Cross-chain transfer";
+		return "Invalid operation";
+	}, [inputs.type]);
 
 	//const amountOut = ""; // TODO
 
@@ -198,13 +220,17 @@ export const OperationForm = () => {
 					/>
 				</FormFieldContainer>
 
+				<MagicButton type="submit" disabled={!canSubmit}>
+					{operationLabel}
+				</MagicButton>
+
+				<OperationSummary />
+
 				{/* <FormFieldContainer label="Tokens">
 					<SwapTokensEditor />
 				</FormFieldContainer>
 
-				<MagicButton type="submit" disabled={!canSubmit}>
-					Swap
-				</MagicButton>
+				
 
 				<SwapSummary /> */}
 			</div>

@@ -1,8 +1,10 @@
+type DataOrError<T> =
+	| { data: T | undefined; error: undefined }
+	| { data: undefined; error: Error | undefined };
+
 export type LoadableObsState<T = unknown> = {
 	isLoading: boolean;
-	data: T | undefined;
-	error: Error | undefined;
-};
+} & DataOrError<T>;
 
 export const loadableState = <T>(
 	props: LoadableObsState<T>,
@@ -12,15 +14,14 @@ export const loadableState = <T>(
 	return props as LoadableObsState<T>;
 };
 
-export const loadableStateLoading = <T>({
-	data,
-	error,
-}: { data?: T; error?: Error } = {}): LoadableObsState<T> =>
+export const loadableStateLoading = <T>(
+	{ data, error }: DataOrError<T> = { data: undefined, error: undefined },
+): LoadableObsState<T> =>
 	loadableState({
 		isLoading: true,
 		data,
 		error,
-	});
+	} as LoadableObsState<T>);
 
 export const loadableStateData = <T>(
 	data: T,
