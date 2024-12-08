@@ -1,6 +1,6 @@
 import { type Token, isChainIdAssetHub } from "@kheopswap/registry";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	isBigInt,
 	loadableState,
 	loadableStateData,
@@ -12,7 +12,7 @@ import { type Observable, catchError, combineLatest, map, of } from "rxjs";
 import { getPoolReserves$ } from "src/state";
 import { getAssetConversionLPFee$ } from "./helpers/getAssetConversionLPFee";
 import { getSwapAppFee$ } from "./helpers/getSwapAppFee";
-import type { OperationInputs } from "./inputs.state";
+import type { OperationInputs } from "./operationInputs";
 
 type AssetConvertOutput = {
 	plancksOut: bigint;
@@ -42,7 +42,7 @@ export const getAssetConvertOutput$ = (
 	tokenIn: Token | null | undefined,
 	tokenOut: Token | null | undefined,
 	plancksIn: bigint | null | undefined,
-): Observable<LoadableObsState<AssetConvertOutput | null>> => {
+): Observable<LoadableState<AssetConvertOutput | null>> => {
 	if (
 		!isBigInt(plancksIn) ||
 		!isChainIdAssetHub(tokenIn?.chainId) ||
@@ -60,7 +60,7 @@ export const getAssetConvertOutput$ = (
 				poolReserves,
 				appFee,
 				lpFee,
-			]): LoadableObsState<AssetConvertOutput | null> => {
+			]): LoadableState<AssetConvertOutput | null> => {
 				if (!poolReserves.reserves || !lpFee.data || !isBigInt(appFee.data))
 					return loadableStateLoading();
 
@@ -91,7 +91,7 @@ export const getAssetConvertPlancksOut$ = (
 	tokenIn: Token | null | undefined,
 	tokenOut: Token | null | undefined,
 	plancksIn: bigint | null | undefined,
-): Observable<LoadableObsState<bigint | null>> =>
+): Observable<LoadableState<bigint | null>> =>
 	getAssetConvertOutput$(tokenIn, tokenOut, plancksIn).pipe(
 		map((res) =>
 			loadableState(

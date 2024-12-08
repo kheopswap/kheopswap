@@ -1,16 +1,30 @@
-import { getAddressFromAccountField, isBigInt } from "@kheopswap/utils";
-import { AddressDisplay, Tokens } from "src/components";
+import { isBigInt } from "@kheopswap/utils";
+import {
+	AddressDisplay,
+	FormSummary,
+	FormSummaryRow,
+	FormSummarySection,
+	Tokens,
+} from "src/components";
+import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
+import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { type OperationInputs, useOperationInputs } from "./state";
 import { useOperationPlancksOut } from "./state/operation.plancksOut";
 
 export const OperationSummary = () => {
 	const inputs = useOperationInputs();
 
+	// const ctx = useTransaction();
+	// useEffect(() => {
+	// 	console.log("[operation] context", ctx);
+	// }, [ctx]);
+
 	return (
-		<div className="flex flex-col gap-2">
+		<FormSummary>
 			{inputs.type === "asset-convert" && <SwapSummary {...inputs} />}
 			{inputs.type === "transfer" && <TransferSummary {...inputs} />}
-		</div>
+			<CommonSummary />
+		</FormSummary>
 	);
 };
 
@@ -51,4 +65,19 @@ const SwapSummary = (inputs: OperationInputs) => {
 			)}
 		</div>
 	) : null;
+};
+
+const CommonSummary = () => {
+	return (
+		<FormSummarySection>
+			<FormSummaryRow
+				label="Simulation"
+				value={<TransactionDryRunSummaryValue />}
+			/>
+			<FormSummaryRow
+				label="Transaction fee"
+				value={<TransactionFeeSummaryValue />}
+			/>
+		</FormSummarySection>
+	);
 };

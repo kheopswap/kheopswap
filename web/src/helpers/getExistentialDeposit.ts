@@ -13,7 +13,7 @@ import {
 	parseTokenId,
 } from "@kheopswap/registry";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	loadableState,
 	loadableStateData,
 	loadableStateError,
@@ -107,7 +107,7 @@ const getTokenExistentialDeposit = async (
 
 export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 	(tokenId: TokenId) =>
-		new Observable<LoadableObsState<bigint | null>>((subscriber) => {
+		new Observable<LoadableState<bigint | null>>((subscriber) => {
 			subscriber.next(loadableStateLoading());
 
 			console.log("[debug] tokenId", tokenId);

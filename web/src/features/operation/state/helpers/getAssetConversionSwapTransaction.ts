@@ -1,20 +1,14 @@
-import {
-	type Api,
-	getApi,
-	getApi$,
-	getApiLoadable$,
-	isApiAssetHub,
-} from "@kheopswap/papi";
+import { APP_FEE_ADDRESS } from "@kheopswap/constants";
+import { type Api, getApi$, isApiAssetHub } from "@kheopswap/papi";
 import {
 	type ChainId,
 	type Token,
-	TokenId,
 	getXcmV3MultilocationFromTokenId,
 	isChainIdAssetHub,
 } from "@kheopswap/registry";
 import { getSetting$ } from "@kheopswap/settings";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	isBigInt,
 	loadableStateData,
 	loadableStateError,
@@ -31,18 +25,15 @@ import {
 	switchMap,
 } from "rxjs";
 import type { AnyTransaction } from "src/types";
-import type { OperationInputs } from "../inputs.state";
 import { getAssetConvertOutput$ } from "../operation.assetConvert";
+import type { OperationInputs } from "../operationInputs";
 import { getMinPlancksOut } from "./getMinPlancksOut";
 import { getSwapAppFee$ } from "./getSwapAppFee";
-import {
-	getTransferTransaction$,
-	getTransferTxCall,
-} from "./getTransferTransaction";
+import { getTransferTxCall } from "./getTransferTransaction";
 
 export const getAssetConversionSwapTransaction$ = (
 	inputs: OperationInputs,
-): Observable<LoadableObsState<AnyTransaction | null>> => {
+): Observable<LoadableState<AnyTransaction | null>> => {
 	if (inputs.type !== "asset-convert") of(loadableStateData(null)); //throw new Error("Invalid operation type");
 	logger.debug("getAssetConversionSwapTransaction", { inputs });
 
@@ -55,16 +46,8 @@ export const getAssetConversionSwapTransaction$ = (
 		!isChainIdAssetHub(tokenIn.token.chainId) ||
 		!recipient ||
 		!isBigInt(plancksIn)
-	) {
-		console.log("[debug] getAssetConversionSwapTransaction$ null", {
-			account,
-			tokenIn,
-			tokenOut,
-			recipient,
-			plancksIn,
-		});
+	)
 		return of(loadableStateData(null));
-	}
 
 	return combineLatest([
 		getApi$(tokenIn.token.chainId),
@@ -76,7 +59,7 @@ export const getAssetConversionSwapTransaction$ = (
 			if (!tokenIn.token || !tokenOut.token) throw new Error("Token not found");
 
 			const appFeeTransferTx = isBigInt(appFee.data)
-				? getTransferTxCall(api, tokenIn.token, appFee.data, recipient)
+				? getTransferTxCall(api, tokenIn.token, appFee.data, APP_FEE_ADDRESS)
 				: null;
 
 			return getAssetConvertOutput$(

@@ -1,7 +1,7 @@
 import { getApi$ } from "@kheopswap/papi";
 import type { ChainId, Descriptors } from "@kheopswap/registry";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	loadableStateData,
 	loadableStateError,
 	loadableStateLoading,
@@ -25,7 +25,7 @@ export const [useChainAccount, getChainAccount$] = bind(
 	<Id extends ChainId, Res = ChainAccount<Id>>(
 		chainId: Id | null | undefined,
 		address: string | null | undefined,
-	): Observable<LoadableObsState<Res | null>> => {
+	): Observable<LoadableState<Res | null>> => {
 		if (!chainId || !address) return of(loadableStateData(null));
 
 		return getApi$(chainId).pipe(

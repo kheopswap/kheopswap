@@ -1,6 +1,6 @@
 import type { ChainId } from "@kheopswap/registry";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	loadableStateData,
 	loadableStateError,
 	loadableStateLoading,
@@ -11,7 +11,7 @@ import { getChainAccount$ } from "./getChainAccount";
 
 export const [useIsAccountSufficient, getIsAccountSufficient$] = bind(
 	(chainId: ChainId, address: string) =>
-		new Observable<LoadableObsState<boolean>>((subscriber) => {
+		new Observable<LoadableState<boolean>>((subscriber) => {
 			subscriber.next(loadableStateLoading());
 
 			return getChainAccount$(chainId, address).subscribe(

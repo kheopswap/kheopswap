@@ -1,4 +1,5 @@
 import { TabTitle } from "src/components";
+import { OperationFollowUp } from "./OperationFollowUp";
 import { OperationForm } from "./OperationForm";
 import { OperationTransactionProvider } from "./OperationTransactionProvider";
 
@@ -6,6 +7,7 @@ export const Operation = () => {
 	return (
 		<OperationTransactionProvider>
 			<OperationForm />
+			<OperationFollowUp />
 			<OperationTabTitle />
 		</OperationTransactionProvider>
 	);

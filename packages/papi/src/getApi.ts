@@ -30,7 +30,7 @@ import {
 } from "@kheopswap/registry";
 import { getSetting } from "@kheopswap/settings";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	getCachedObservable$,
 	getCachedPromise,
 	loadableStateData,
@@ -128,7 +128,7 @@ export const getApi$ = <Id extends ChainId, Papi = Api<Id>>(
 
 export const getApiLoadable$ = <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
-): Observable<LoadableObsState<Papi>> => {
+): Observable<LoadableState<Papi>> => {
 	return getApi$(id).pipe(
 		map((api) => loadableStateData(api as Papi)),
 		catchError((cause) =>

@@ -1,5 +1,5 @@
 import { isNumber, uniq } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { type Observable, catchError, of, shareReplay } from "rxjs";
 
@@ -63,17 +63,17 @@ const useTransactionProvider = ({
 	onReset,
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
 }: UseTransactionProviderProps) => {
-	useEffect(() => {
-		console.log("[debug] useTransactionProvider", {
-			call,
-			fakeCall,
-			signer,
-			chainId,
-			callSpendings,
-			onReset,
-			followUpData,
-		});
-	}, [call, fakeCall, signer, chainId, callSpendings, onReset, followUpData]);
+	// useEffect(() => {
+	// 	console.log("[debug] useTransactionProvider", {
+	// 		call,
+	// 		fakeCall,
+	// 		signer,
+	// 		chainId,
+	// 		callSpendings,
+	// 		onReset,
+	// 		followUpData,
+	// 	});
+	// }, [call, fakeCall, signer, chainId, callSpendings, onReset, followUpData]);
 
 	const account = useWalletAccount({ id: signer });
 
@@ -122,6 +122,13 @@ const useTransactionProvider = ({
 			tokenIdOut: feeToken?.id,
 			plancks: feeEstimateNative,
 		});
+
+	// useEffect(() => {
+	// 	console.log("[operation] transaction fee estimate", {
+	// 		feeEstimateNative,
+	// 		feeEstimate,
+	// 	});
+	// }, [feeEstimateNative, feeEstimate]);
 
 	const { data: feeTokenBalance, isLoading: isLoadingFeeTokenBalance } =
 		useBalance({
@@ -307,7 +314,7 @@ const useTransactionProvider = ({
 			return dryRun.value.execution_result.success;
 
 		// TODO add a flag to allow parent form to force another isLoading state
-		return (
+		const ok =
 			!!call &&
 			!!account &&
 			!!feeEstimate &&
@@ -315,8 +322,21 @@ const useTransactionProvider = ({
 			!!options &&
 			!error &&
 			!isLoading &&
-			!Object.keys(insufficientBalances).length
-		);
+			!Object.keys(insufficientBalances).length;
+
+		// if (!ok)
+		// 	console.log("[operation] canSubmit NOK", {
+		// 		call,
+		// 		account,
+		// 		feeEstimate,
+		// 		feeToken,
+		// 		options,
+		// 		error,
+		// 		isLoading,
+		// 		insufficientBalances,
+		// 	});
+
+		return ok;
 	}, [
 		account,
 		call,
@@ -344,69 +364,69 @@ const useTransactionProvider = ({
 		[onReset],
 	);
 
-	useEffect(() => {
-		console.log("[debug] useTransactionProvider OUT", {
-			chainId,
-			account,
+	// useEffect(() => {
+	// 	console.log("[debug] useTransactionProvider OUT", {
+	// 		chainId,
+	// 		account,
 
-			feeToken,
-			feeTokens,
-			isLoadingFeeTokens,
-			onFeeTokenChange,
+	// 		feeToken,
+	// 		feeTokens,
+	// 		isLoadingFeeTokens,
+	// 		onFeeTokenChange,
 
-			feeEstimate,
-			errorFeeEstimate,
-			isLoadingFeeEstimate,
+	// 		feeEstimate,
+	// 		errorFeeEstimate,
+	// 		isLoadingFeeEstimate,
 
-			feeTokenBalance,
-			isLoadingFeeTokenBalance,
+	// 		feeTokenBalance,
+	// 		isLoadingFeeTokenBalance,
 
-			insufficientBalances,
-			followUpInputs,
+	// 		insufficientBalances,
+	// 		followUpInputs,
 
-			onSubmit,
-			canSubmit,
+	// 		onSubmit,
+	// 		canSubmit,
 
-			error,
-			isLoading,
+	// 		error,
+	// 		isLoading,
 
-			onCloseFollowUp,
+	// 		onCloseFollowUp,
 
-			dryRun,
-			isLoadingDryRun,
-			errorDryRun,
-		});
-	}, [
-		chainId,
-		account,
+	// 		dryRun,
+	// 		isLoadingDryRun,
+	// 		errorDryRun,
+	// 	});
+	// }, [
+	// 	chainId,
+	// 	account,
 
-		feeToken,
-		feeTokens,
-		isLoadingFeeTokens,
-		onFeeTokenChange,
+	// 	feeToken,
+	// 	feeTokens,
+	// 	isLoadingFeeTokens,
+	// 	onFeeTokenChange,
 
-		feeEstimate,
-		errorFeeEstimate,
-		isLoadingFeeEstimate,
+	// 	feeEstimate,
+	// 	errorFeeEstimate,
+	// 	isLoadingFeeEstimate,
 
-		feeTokenBalance,
-		isLoadingFeeTokenBalance,
+	// 	feeTokenBalance,
+	// 	isLoadingFeeTokenBalance,
 
-		insufficientBalances,
-		followUpInputs,
+	// 	insufficientBalances,
+	// 	followUpInputs,
 
-		onSubmit,
-		canSubmit,
+	// 	onSubmit,
+	// 	canSubmit,
 
-		error,
-		isLoading,
+	// 	error,
+	// 	isLoading,
 
-		onCloseFollowUp,
+	// 	onCloseFollowUp,
 
-		dryRun,
-		isLoadingDryRun,
-		errorDryRun,
-	]);
+	// 	dryRun,
+	// 	isLoadingDryRun,
+	// 	errorDryRun,
+	// ]);
 
 	return {
 		chainId,

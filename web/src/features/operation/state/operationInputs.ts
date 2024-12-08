@@ -9,7 +9,10 @@ import { bind } from "@react-rxjs/core";
 import type { TokenState } from "node_modules/@kheopswap/services/src/tokens/state";
 import { combineLatest, map, of, switchMap } from "rxjs";
 import { type InjectedAccount, getAccount$ } from "src/hooks";
-import { type OperationFormData, operationFormData$ } from "./formData";
+import {
+	type OperationFormData,
+	operationFormData$,
+} from "./operationFormData";
 
 export type OperationInputs = {
 	type: OperationType | null;

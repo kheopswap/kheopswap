@@ -1,2 +1,2 @@
-export * from "./inputs.state";
-export * from "./formData";
+export * from "./operationInputs";
+export * from "./operationFormData";

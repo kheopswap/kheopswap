@@ -1,16 +1,6 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
-import {
-	TRANSFERABLE_TOKEN_TYPES,
-	type TokenId,
-	getTokenId,
-} from "@kheopswap/registry";
-import {
-	cn,
-	getAddressFromAccountField,
-	isBigInt,
-	logger,
-	plancksToTokens,
-} from "@kheopswap/utils";
+import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "@kheopswap/registry";
+import { cn, isBigInt, logger, plancksToTokens } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { isEqual } from "lodash";
 import {
@@ -31,9 +21,7 @@ import {
 	Styles,
 	TokenAmountPicker,
 } from "src/components";
-import { useChainAccount } from "src/helpers/getChainAccount";
-import { useExistentialDeposit } from "src/helpers/getExistentialDeposit";
-import { accounts$, useAllTokens } from "src/hooks";
+import { accounts$, useAllTokens, useBalance } from "src/hooks";
 import { useTransaction } from "../transaction/TransactionProvider";
 import { OperationSummary } from "./OperationSummary";
 import {
@@ -42,10 +30,10 @@ import {
 	useOperationFormData,
 	useOperationInputs,
 } from "./state";
-import { useAssetConversionLPFee } from "./state/helpers/getAssetConversionLPFee";
 import { useOperationPlancksOut } from "./state/operation.plancksOut";
+import { useOperationMaxPlancksIn } from "./state/operationMaxPlancksIn";
 import {
-	operationTransaction$,
+	useOperationFakeTransaction,
 	useOperationTransaction,
 } from "./state/operationTransaction";
 
@@ -83,7 +71,7 @@ export const OperationForm = () => {
 	const formData = useOperationFormData();
 	const inputs = useOperationInputs();
 	const transaction = useOperationTransaction();
-
+	const fakeTransaction = useOperationFakeTransaction();
 	const tokenPickerAccounts = useTokenPickerAccounts();
 
 	useEffect(() => {
@@ -95,8 +83,8 @@ export const OperationForm = () => {
 	}, [inputs]);
 
 	useEffect(() => {
-		logger.debug("[operation] operation tx", transaction);
-	}, [transaction]);
+		logger.debug("[operation] operation tx", { transaction, fakeTransaction });
+	}, [transaction, fakeTransaction]);
 
 	const handleSwapTokensClick = useCallback(() => {
 		updateOperationFormData({
@@ -116,34 +104,33 @@ export const OperationForm = () => {
 		[onSubmit],
 	);
 
-	useEffect(() => {
-		console.log("[debug] useTransaction", { onSubmit, canSubmit });
-	}, [onSubmit, canSubmit]);
+	// useEffect(() => {
+	// 	console.log("[debug] useTransaction", { onSubmit, canSubmit });
+	// }, [onSubmit, canSubmit]);
 
-	const lpFee = useAssetConversionLPFee("pah");
-	useEffect(() => {
-		console.log("[debug] lpFee", lpFee);
-	}, [lpFee]);
+	// useEffect(() => {
+	// 	console.log("[debug] lpFee", lpFee);
+	// }, [lpFee]);
 
-	const ed = useExistentialDeposit(
-		getTokenId({ type: "asset", chainId: "pah", assetId: 1337 }),
-	);
-	useEffect(() => {
-		console.log("[debug] ed", ed);
-	}, [ed]);
+	// const ed = useExistentialDeposit(
+	// 	getTokenId({ type: "asset", chainId: "pah", assetId: 1337 }),
+	// );
+	// useEffect(() => {
+	// 	console.log("[debug] ed", ed);
+	// }, [ed]);
 
-	const chainAccount = useChainAccount(
-		"pah",
-		getAddressFromAccountField(formData.accountId),
-	);
-	useEffect(() => {
-		console.log("[debug] chainAccount", chainAccount);
-	}, [chainAccount]);
+	// const chainAccount = useChainAccount(
+	// 	"pah",
+	// 	getAddressFromAccountField(formData.accountId),
+	// );
+	// useEffect(() => {
+	// 	console.log("[debug] chainAccount", chainAccount);
+	// }, [chainAccount]);
 
 	const plancksOut = useOperationPlancksOut();
-	useEffect(() => {
-		console.log("[debug] plancksOut", plancksOut);
-	}, [plancksOut]);
+	// useEffect(() => {
+	// 	console.log("[debug] plancksOut", plancksOut);
+	// }, [plancksOut]);
 
 	const [amountOut, isLoadingAmountOut] = useMemo(
 		() =>
@@ -163,7 +150,31 @@ export const OperationForm = () => {
 		return "Invalid operation";
 	}, [inputs.type]);
 
+	const { data: balanceIn, isLoading: isLoadingBalanceIn } = useBalance({
+		address: inputs.account?.address,
+		tokenId: inputs.tokenIn?.token?.id,
+	});
+	const { data: balanceOut, isLoading: isLoadingBalanceOut } = useBalance({
+		address: inputs.recipient,
+		tokenId: inputs.tokenOut?.token?.id,
+	});
+
 	//const amountOut = ""; // TODO
+	//const lpFee = useAssetConversionLPFee("pah");
+	const maxPlancksIn = useOperationMaxPlancksIn();
+
+	const onMaxClick = useCallback(() => {
+		if (!isBigInt(maxPlancksIn) || !inputs.tokenIn?.token) return;
+		updateOperationFormData({
+			amountIn: plancksToTokens(maxPlancksIn, inputs.tokenIn.token.decimals),
+		});
+
+		// TODO changing amountIn may change the fees, compute again
+
+		// in case of XCM operation, need the dry run to be available
+		// keep ED only if tokenIn is sufficient and there is no other sufficient asset
+		//	throw new Error("Not implemented");
+	}, [maxPlancksIn, inputs.tokenIn?.token]);
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -185,15 +196,14 @@ export const OperationForm = () => {
 							onInput: setAmountIn,
 						}}
 						tokenId={formData.tokenIdIn}
-						//plancks={inputs.plancksIn} // TODO shouldnt need this
 						tokens={tokens}
 						accounts={tokenPickerAccounts}
 						isLoading={inputs.tokenIn?.status === "loading"}
 						onTokenChange={setTokenIn}
 						// errorMessage={inputErrorMessage}
-						// balance={balanceIn}
-						// isLoadingBalance={isLoadingBalanceIn}
-						// onMaxClick={onMaxClick}
+						balance={balanceIn}
+						isLoadingBalance={isLoadingBalanceIn}
+						onMaxClick={onMaxClick}
 					/>
 					<SwapTokensButton onClick={handleSwapTokensClick} />
 					<TokenAmountPicker
@@ -205,8 +215,8 @@ export const OperationForm = () => {
 						isLoading={inputs.tokenOut?.status === "loading"}
 						onTokenChange={setTokenOut}
 						// errorMessage={outputErrorMessage}
-						// balance={balanceOut}
-						// isLoadingBalance={isLoadingBalanceOut}
+						balance={balanceOut}
+						isLoadingBalance={isLoadingBalanceOut}
 						isComputingValue={isLoadingAmountOut}
 					/>
 				</div>
@@ -225,14 +235,6 @@ export const OperationForm = () => {
 				</MagicButton>
 
 				<OperationSummary />
-
-				{/* <FormFieldContainer label="Tokens">
-					<SwapTokensEditor />
-				</FormFieldContainer>
-
-				
-
-				<SwapSummary /> */}
 			</div>
 		</form>
 	);

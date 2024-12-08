@@ -9,7 +9,7 @@ import {
 } from "@kheopswap/papi";
 import { type ChainId, MultiAddress, type Token } from "@kheopswap/registry";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	loadableStateData,
 	loadableStateError,
 	loadableStateLoading,
@@ -17,11 +17,11 @@ import {
 } from "@kheopswap/utils";
 import { type Observable, catchError, map, of } from "rxjs";
 import type { AnyTransaction } from "src/types";
-import type { OperationInputs } from "../inputs.state";
+import type { OperationInputs } from "../operationInputs";
 
 export const getTransferTransaction$ = (
 	inputs: OperationInputs,
-): Observable<LoadableObsState<AnyTransaction | null>> => {
+): Observable<LoadableState<AnyTransaction | null>> => {
 	if (inputs.type !== "transfer") of(loadableStateData(null)); //throw new Error("Invalid operation type");
 	logger.debug("getTransferTransaction$", { inputs });
 
@@ -45,7 +45,7 @@ export const getTransferTxCall$ = (
 	token: Token,
 	plancks: bigint,
 	dest: string,
-): Observable<LoadableObsState<AnyTransaction>> => {
+): Observable<LoadableState<AnyTransaction>> => {
 	return getApiLoadable$(token.chainId).pipe(
 		map(({ data: api, error, isLoading }) => {
 			if (isLoading) return loadableStateLoading<AnyTransaction>();

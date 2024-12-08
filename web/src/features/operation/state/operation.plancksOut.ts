@@ -1,8 +1,8 @@
 import { loadableStateData } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { of, switchMap } from "rxjs";
-import { operationInputs$ } from "./inputs.state";
 import { getAssetConvertPlancksOut$ } from "./operation.assetConvert";
+import { operationInputs$ } from "./operationInputs";
 
 export const [useOperationPlancksOut, operationPlancksOut$] = bind(
 	operationInputs$.pipe(

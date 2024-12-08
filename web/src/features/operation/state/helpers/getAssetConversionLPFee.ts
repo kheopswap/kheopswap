@@ -1,7 +1,7 @@
 import { getApi$ } from "@kheopswap/papi";
 import type { ChainIdAssetHub } from "@kheopswap/registry";
 import {
-	type LoadableObsState,
+	type LoadableState,
 	loadableStateData,
 	loadableStateError,
 	loadableStateLoading,
@@ -11,7 +11,7 @@ import { catchError, from, map, of, startWith, switchMap } from "rxjs";
 
 export const [useAssetConversionLPFee, getAssetConversionLPFee$] = bind<
 	[ChainIdAssetHub],
-	LoadableObsState<number>
+	LoadableState<number>
 >((chainId) =>
 	getApi$(chainId).pipe(
 		// tap({

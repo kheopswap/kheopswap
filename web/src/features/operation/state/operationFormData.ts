@@ -15,8 +15,10 @@ export type OperationFormData = {
 
 const formData$ = new BehaviorSubject<OperationFormData>({});
 
-export const resetOperationFormData = () => {
-	formData$.next({});
+export const [useOperationFormData, operationFormData$] = bind(formData$);
+
+export const resetOperationFormData = (values: OperationFormData = {}) => {
+	formData$.next(values);
 };
 
 export const updateOperationFormData = (
@@ -29,8 +31,6 @@ export const updateOperationFormData = (
 
 	formData$.next(consolidateFormData(newValue));
 };
-
-export const [useOperationFormData, operationFormData$] = bind(formData$);
 
 const consolidateFormData = (data: OperationFormData): OperationFormData => {
 	const newValue = structuredClone(data);
