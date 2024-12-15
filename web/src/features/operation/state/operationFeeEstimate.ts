@@ -1,11 +1,10 @@
 import {
 	type LoadableState,
-	loadableState,
 	loadableStateData,
 	loadableStateError,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
-import { type Observable, combineLatest, of, switchMap } from "rxjs";
+import { combineLatest, startWith, switchMap } from "rxjs";
 import { operationInputs$ } from "./operationInputs";
 import { operationTransaction$ } from "./operationTransaction";
 
@@ -24,5 +23,6 @@ export const [useOperationFeeEstimate, operationFeeEstimate$] = bind(
 				);
 			}
 		}),
+		startWith(loadableStateData(null)),
 	),
 );

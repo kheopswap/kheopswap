@@ -96,7 +96,7 @@ export const getAssetConvertPlancksOut$ = (
 		map((res) =>
 			loadableState(
 				res.data
-					? { ...res, data: res.data?.plancksOut }
+					? { ...res, data: res.data.plancksOut }
 					: { ...res, data: undefined },
 			),
 		),

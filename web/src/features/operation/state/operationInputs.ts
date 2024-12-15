@@ -70,19 +70,13 @@ const getOperationType = (
 ): OperationType => {
 	if (!tokenIn || !tokenOut) return "unknown";
 
-	if (tokenIn.id === tokenOut.id) return "transfer";
+	if (isTransfer(tokenIn, tokenOut)) return "transfer";
 
-	if (tokenIn.chainId !== tokenOut.chainId) return "xcm";
+	if (isAssetConvert(tokenIn, tokenOut)) return "asset-convert";
 
-	const types = [tokenIn.type, tokenOut.type];
-	if (
-		[tokenIn.chainId, tokenOut.chainId].every(isChainIdAssetHub) &&
-		types.some((type) => type === "native") &&
-		types.some((type) => ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES.includes(type))
-	)
-		return "asset-convert";
+	if (isXcm(tokenIn, tokenOut)) return "xcm";
 
-	return "unknown";
+	return "invalid";
 };
 
 const ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES: TokenType[] = [
@@ -90,106 +84,37 @@ const ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES: TokenType[] = [
 	"foreign-asset",
 ];
 
-// 	// need one native
-// 	if (!.includes("native")) return false;
+const isTransfer = (tokenIn: Token, tokenOut: Token): boolean => {
+	if (!tokenIn || !tokenOut) return false;
+	return tokenIn.id === tokenOut.id;
+};
 
-// 	// need one non-native
-// 	if (
-// 		![tokenIn.type, tokenOut.type].some((type) =>
-// 			ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES.includes(type),
-// 		)
-// 	)
-// 		return false;
+const isAssetConvert = (tokenIn: Token, tokenOut: Token): boolean => {
+	if (!tokenIn || !tokenOut) return false;
 
-// 	return true;
-// };
+	// must be on same chain
+	if (tokenIn.chainId !== tokenOut.chainId) return false;
 
-// const isRouteValid = (tokenIn: TokenId, tokenOut: TokenId): boolean => {
-// 	return true; // TODO
-// };
+	// must be on asset hub
+	if (!isChainIdAssetHub(tokenIn.chainId)) return false;
 
-// const consolidateFormData = (data: OperationFormData): OperationFormData => {
-// 	const newValue = structuredClone(data);
+	// need one native and one non-native
+	const types = [tokenIn.type, tokenOut.type];
+	if (
+		!types.includes("native") ||
+		!types.some((type) => ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES.includes(type))
+	)
+		return false;
 
-// 	if (
-// 		!!data.tokenIdIn &&
-// 		!data.tokenIdOut &&
-// 		(!data.recipient ||
-// 			isAccountCompatibleWithToken(data.recipient, data.tokenIdIn))
-// 	)
-// 		newValue.tokenIdOut = data.tokenIdIn;
+	// LGTM
+	return true;
+};
 
-// 	if (
-// 		!!data.tokenIdOut &&
-// 		!data.tokenIdIn &&
-// 		(!data.accountId ||
-// 			isAccountCompatibleWithToken(data.accountId, data.tokenIdOut))
-// 	)
-// 		newValue.tokenIdIn = data.tokenIdOut;
+const isXcm = (tokenIn: Token, tokenOut: Token): boolean => {
+	if (!tokenIn || !tokenOut) return false;
 
-// 	if (
-// 		!!data.accountId &&
-// 		!data.recipient &&
-// 		(!data.tokenIdOut ||
-// 			isAccountCompatibleWithToken(data.accountId, data.tokenIdOut))
-// 	)
-// 		newValue.recipient = data.accountId;
+	const tokenInOrigin = "origin" in tokenIn ? tokenIn.origin : null;
+	const tokenOutOrigin = "origin" in tokenOut ? tokenOut.origin : null;
 
-// 	return newValue;
-// };
-
-// const isOperationInputsValid = (
-// 	inputs: OperationFormData,
-// ): inputs is OperationInputs => {
-// 	return (
-// 		!!inputs.tokenIdIn &&
-// 		!!inputs.tokenIdOut &&
-// 		!!inputs.sender &&
-// 		!!inputs.recipient &&
-// 		!!inputs.amountIn &&
-// 		isRouteValid(inputs.tokenIdIn, inputs.tokenIdOut)
-// 	);
-// };
-
-// const operationCall$ = operationFormData$.pipe(
-// 	// map((inputs) => {
-// 	//     const isValid = isOperationInputsValid(inputs)
-// 	//     return {
-// 	//         isValid,
-// 	//         inputs: isValid ? inputs as OperationInputs : null
-// 	//     }}
-// 	//     ),
-// 	switchMap((inputs) => {
-// 		const isValid = isOperationInputsValid(inputs);
-
-// 		if (!isValid)
-// 			return of({
-// 				isValid: false,
-// 				call: null,
-// 			});
-
-// 		if (inputs.tokenIdIn === inputs.tokenIdOut)
-// 			return getTransferOperation$(
-// 				inputs.recipient,
-// 				inputs.tokenIdIn,
-// 				inputs.plancksIn,
-// 			);
-
-// 		throw new Error("TODO");
-// 	}),
-// );
-
-// const getOperation = (inputs: OperationInputs) => {
-// 	if (!isOperationInputsValid(inputs)) return { isValid: false, call: null };
-
-// 	if (!inputs.tokenIdIn || !inputs.tokenIdOut)
-// 		return { isValid: false, call: null };
-// };
-
-// const getTransferOperation$ = (
-// 	to: string,
-// 	tokenId: TokenId,
-// 	plancks: bigint,
-// ) => {
-// 	return getTokenById$(tokenId).pipe(map((token) => {}));
-// };
+	return tokenInOrigin === tokenOut.id || tokenOutOrigin === tokenIn.id;
+};

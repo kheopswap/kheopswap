@@ -20,6 +20,7 @@ import {
 	type ChainIdMoonbeam,
 	type ChainIdMythos,
 	type ChainIdRelay,
+	type ChainIdWithDryRun,
 	type Descriptors,
 	getChainById,
 	getDescriptors,
@@ -29,6 +30,7 @@ import {
 	isChainIdMoonbeam,
 	isChainIdMythos,
 	isChainIdRelay,
+	isChainIdWithDryRun,
 } from "@kheopswap/registry";
 import { getSetting } from "@kheopswap/settings";
 import {
@@ -48,10 +50,30 @@ export type Api<Id extends ChainId> = ApiBase<Id> & {
 	waitReady: Promise<void>;
 };
 
+export const isApiOf = <Id extends ChainId>(
+	api: unknown,
+	chainId: Id,
+): api is Api<Id> => {
+	return !!api && (api as Api<ChainId>).chainId === chainId;
+};
+
+export const isApiIn = <Id extends ChainId, Ids extends ChainId[] = Id[]>(
+	api: unknown,
+	chainIds: Id[],
+): api is Api<Ids[number]> => {
+	return chainIds.some((chainId) => isApiOf(api, chainId));
+};
+
 export const isApiAssetHub = (
 	api: Api<ChainId>,
 ): api is Api<ChainIdAssetHub> => {
 	return isChainIdAssetHub(api.chainId);
+};
+
+export const isApiWithDryRun = (
+	api: Api<ChainId>,
+): api is Api<ChainIdWithDryRun> => {
+	return isChainIdWithDryRun(api.chainId);
 };
 
 export const isApiRelay = (api: Api<ChainId>): api is Api<ChainIdRelay> => {

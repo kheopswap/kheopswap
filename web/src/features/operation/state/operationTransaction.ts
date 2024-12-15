@@ -4,6 +4,7 @@ import { type Observable, of, switchMap } from "rxjs";
 import type { AnyTransaction } from "src/types";
 import { getAssetConversionSwapTransaction$ } from "./helpers/getAssetConversionSwapTransaction";
 import { getTransferTransaction$ } from "./helpers/getTransferTransaction";
+import { getXcmTransaction$ } from "./helpers/getXcmTransaction";
 import { operationFakeInputs$ } from "./operationFakeInputs";
 import { type OperationInputs, operationInputs$ } from "./operationInputs";
 
@@ -17,6 +18,8 @@ const getOperationTransaction$ = (
 			return getTransferTransaction$(inputs);
 		case "asset-convert":
 			return getAssetConversionSwapTransaction$(inputs);
+		case "xcm":
+			return getXcmTransaction$(inputs);
 		default:
 			return of(loadableStateData(null));
 	}

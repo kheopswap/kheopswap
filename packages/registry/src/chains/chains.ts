@@ -69,7 +69,13 @@ export const isChainIdBifrostPolkadot = (
 	typeof id === "string" &&
 	!!DESCRIPTORS_BIFROST_POLKADOT[id as ChainIdBifrostPolkadot];
 
-export const isChainIdWithDryRun = (id: unknown) =>
+export type ChainIdWithDryRun =
+	| ChainIdRelay
+	| ChainIdAssetHub
+	| ChainIdMoonbeam
+	| ChainIdBifrostPolkadot;
+
+export const isChainIdWithDryRun = (id: unknown): id is ChainIdWithDryRun =>
 	isChainIdRelay(id) ||
 	isChainIdAssetHub(id) ||
 	isChainIdMoonbeam(id) ||
