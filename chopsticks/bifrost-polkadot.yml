@@ -26,7 +26,7 @@ import-storage:
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
           - Token2: 0 # DOT
-        - free: '100000000000000000000000000000'
+        - free: '10000000000000000'
       -
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
@@ -36,7 +36,7 @@ import-storage:
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
           - Token2: 2 # USDT
-        - free: '100000000000000000000000000000'
+        - free: '1000000000000'
       -
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
@@ -51,7 +51,7 @@ import-storage:
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
           - Token2: 5 # USDC
-        - free: '100000000000000000000000000000'
+        - free: '1000000000000'
       -
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
@@ -61,7 +61,7 @@ import-storage:
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
           - Token2: 7 # INTR
-        - free: '100000000000000000000000000000'
+        - free: '100000000000000000000000'
       -
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
@@ -81,12 +81,12 @@ import-storage:
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
           - Token2: 11 # DED
-        - free: '100000000000000000000000000000'
+        - free: '10000000000000000000'
       -
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
           - VToken2: 0 # vDOT
-        - free: '100000000000000000000000000000'
+        - free: '10000000000000000'
       -
         -
           - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY

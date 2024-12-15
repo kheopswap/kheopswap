@@ -124,6 +124,16 @@ export const getTransferTxCall = (
 				dest,
 			});
 		}
+		case "x-token": {
+			if (!isApiBifrostPolkadot(api))
+				throw new Error(`Chain ${api.chainId} does not have the Tokens pallet`);
+
+			return api.tx.Tokens.transfer({
+				currency_id: token.key,
+				amount: plancks,
+				dest: MultiAddress.Id(dest),
+			});
+		}
 		default:
 			throw new Error(`Unsupported token type ${token.id}`);
 	}

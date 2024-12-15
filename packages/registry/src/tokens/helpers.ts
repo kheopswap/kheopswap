@@ -8,12 +8,15 @@ import type {
 	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
+	TokenIdXToken,
 	TokenType,
 	TokenTypeAsset,
 	TokenTypeForeignAsset,
 	TokenTypeHydrationAsset,
 	TokenTypeNative,
 	TokenTypePoolAsset,
+	TokenTypeXToken,
+	XTokenKey,
 } from "./types";
 
 import {
@@ -22,6 +25,7 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
+
 import { type ChainId, getChainById } from "../chains";
 import { getEvmNetworkById, getEvmNetworkName } from "../evmNetworks";
 import { getParachainName } from "../parachains";
@@ -64,6 +68,11 @@ export type TokenSpec =
 			type: TokenTypeHydrationAsset;
 			chainId: ChainId;
 			assetId: number;
+	  }
+	| {
+			type: TokenTypeXToken;
+			chainId: ChainId;
+			key: XTokenKey;
 	  };
 
 export const parseTokenId = (tokenId: TokenId): TokenSpec => {
@@ -99,6 +108,13 @@ export const parseTokenId = (tokenId: TokenId): TokenSpec => {
 				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
 				return { type: "hydration-asset", chainId, assetId };
 			}
+			case "x-token": {
+				if (parts.length < 3) throw new Error("Invalid x-token token id");
+				const key = safeParse<XTokenKey>(
+					lzs.decompressFromBase64(parts[2] as string),
+				);
+				return { type: "x-token", chainId, key };
+			}
 			default:
 				throw new Error(`Unsupported token type: ${tokenId}`);
 		}
@@ -118,7 +134,9 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 				? TokenIdForeignAsset
 				: T extends TokenTypeHydrationAsset
 					? TokenIdHydrationAsset
-					: never;
+					: T extends TokenTypeXToken
+						? TokenIdXToken
+						: never;
 
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 	token: TokenSpec,
@@ -134,6 +152,8 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}` as Result;
 		case "hydration-asset":
 			return `hydration-asset::${token.chainId}::${token.assetId}` as Result;
+		case "x-token":
+			return `x-token::${token.chainId}::${lzs.compressToBase64(safeStringify(token.key))}` as Result;
 		default:
 			throw new Error("Unknown token spec");
 	}

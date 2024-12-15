@@ -169,8 +169,6 @@ export const OperationForm = () => {
 			amountIn: plancksToTokens(maxPlancksIn, inputs.tokenIn.token.decimals),
 		});
 
-		// TODO changing amountIn may change the fees, compute again
-
 		// in case of XCM operation, need the dry run to be available
 		// keep ED only if tokenIn is sufficient and there is no other sufficient asset
 		//	throw new Error("Not implemented");
@@ -179,7 +177,7 @@ export const OperationForm = () => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-3">
-				<FormFieldContainer id="sender-account" label="Sender Account">
+				<FormFieldContainer id="sender-account" label="From">
 					<AccountSelect
 						id="sender-account"
 						idOrAddress={formData.accountId}
@@ -221,7 +219,7 @@ export const OperationForm = () => {
 					/>
 				</div>
 
-				<FormFieldContainer id="recipient-account" label="Recipient Account">
+				<FormFieldContainer id="recipient-account" label="Recipient">
 					<AccountSelect
 						id="recipient-account"
 						idOrAddress={formData.recipient}
