@@ -10,5 +10,17 @@
 	{
 		"id": "hydration",
 		"wsUrl": ["ws://localhost:3422"]
+	},
+	{
+		"id": "mythos",
+		"wsUrl": ["ws://localhost:3423"]
+	},
+	{
+		"id": "moonbeam",
+		"wsUrl": ["ws://localhost:3424"]
+	},
+	{
+		"id": "bifrostPolkadot",
+		"wsUrl": ["ws://localhost:3425"]
 	}
 ]

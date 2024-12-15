@@ -452,6 +452,10 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 const DrawerContent: FC<{
 	tokenRow: PortfolioRowData;
 }> = ({ tokenRow }) => {
+	useEffect(() => {
+		console.log("Token Details", tokenRow);
+	}, [tokenRow]);
+
 	return (
 		<div>
 			<Header token={tokenRow.token} />

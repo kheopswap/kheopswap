@@ -14,6 +14,18 @@
 			"wsUrl": "wss://rpc.hydradx.cloud",
 			"metadata": ".papi/scale/hydration.scale"
 		},
+		"mythos": {
+			"wsUrl": "wss://polkadot-mythos-rpc.polkadot.io/",
+			"metadata": ".papi/scale/mythos.scale"
+		},
+		"moonbeam": {
+			"wsUrl": "wss://wss.api.moonbeam.network/",
+			"metadata": ".papi/scale/moonbeam.scale"
+		},
+		"bifrostPolkadot": {
+			"wsUrl": "wss://bifrost-polkadot-rpc.dwellir.com",
+			"metadata": ".papi/scale/bifrost-polkadot.scale"
+		},
 
 		"kusama": {
 			"wsUrl": "wss://rpc.ibp.network/kusama",

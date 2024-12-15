@@ -1,9 +1,7 @@
-import type { ChainIdAssetHub, ChainIdRelay } from "@kheopswap/registry";
-import type { DryRun } from "src/hooks";
+import type { ChainIdWithDryRun } from "@kheopswap/registry";
+import type { DryRun } from "./getDryRun";
 
-export const getXcmMessageFromDryRun = <
-	Id extends ChainIdRelay | ChainIdAssetHub,
->(
+export const getXcmMessageFromDryRun = <Id extends ChainIdWithDryRun>(
 	dryRun: DryRun<Id>,
 ) => {
 	if (!dryRun.success || !dryRun.value.execution_result.success)

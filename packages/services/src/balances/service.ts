@@ -4,9 +4,11 @@ import {
 	combineLatest,
 	distinctUntilChanged,
 	map,
+	of,
 	shareReplay,
 } from "rxjs";
 
+import { isAccountCompatibleWithToken } from "@kheopswap/registry";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import { balancesState$ } from "./state";
 import {
@@ -21,7 +23,15 @@ const DEFAULT_BALANCE_STATE: BalanceState = {
 	status: "stale",
 };
 
+const INVALID_BALANCE_STATE: BalanceState = {
+	balance: 0n,
+	status: "loaded",
+};
+
 export const getBalance$ = (def: BalanceDef) => {
+	if (!isAccountCompatibleWithToken(def.address, def.tokenId))
+		return of(INVALID_BALANCE_STATE);
+
 	const balanceId = getBalanceId(def);
 
 	return getCachedObservable$("getBalance$", balanceId, () => {

@@ -6,9 +6,9 @@ import {
 	type ChainId,
 	type ChainIdAssetHub,
 	type ChainIdRelay,
+	DispatchRawOrigin,
 	PolkadotRuntimeOriginCaller,
-	isChainIdAssetHub,
-	isChainIdRelay,
+	isChainIdWithDryRun,
 } from "@kheopswap/registry";
 import { logger, safeQueryKeyPart } from "@kheopswap/utils";
 import type { AnyTransaction } from "src/types";
@@ -28,17 +28,15 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 		queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
 		queryFn: async ({ signal }) => {
 			if (!chainId || !from || !call) return null;
-			if (!isChainIdAssetHub(chainId) && !isChainIdRelay(chainId)) return null;
+
+			if (!isChainIdWithDryRun(chainId)) return null;
 
 			try {
 				const api = await getApi(chainId);
 
 				// @ts-ignore
 				const dryRun = await api.apis.DryRunApi.dry_run_call(
-					PolkadotRuntimeOriginCaller.system({
-						type: "Signed",
-						value: from,
-					}),
+					PolkadotRuntimeOriginCaller.system(DispatchRawOrigin.Signed(from)),
 					call.decodedCall,
 					{ at: "best", signal },
 				);

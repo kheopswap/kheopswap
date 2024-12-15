@@ -63,6 +63,18 @@ const useTransactionProvider = ({
 	onReset,
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
 }: UseTransactionProviderProps) => {
+	// useEffect(() => {
+	// 	console.log("[debug] useTransactionProvider", {
+	// 		call,
+	// 		fakeCall,
+	// 		signer,
+	// 		chainId,
+	// 		callSpendings,
+	// 		onReset,
+	// 		followUpData,
+	// 	});
+	// }, [call, fakeCall, signer, chainId, callSpendings, onReset, followUpData]);
+
 	const account = useWalletAccount({ id: signer });
 
 	const chain = useMemo(
@@ -110,6 +122,13 @@ const useTransactionProvider = ({
 			tokenIdOut: feeToken?.id,
 			plancks: feeEstimateNative,
 		});
+
+	// useEffect(() => {
+	// 	console.log("[operation] transaction fee estimate", {
+	// 		feeEstimateNative,
+	// 		feeEstimate,
+	// 	});
+	// }, [feeEstimateNative, feeEstimate]);
 
 	const { data: feeTokenBalance, isLoading: isLoadingFeeTokenBalance } =
 		useBalance({
@@ -295,7 +314,7 @@ const useTransactionProvider = ({
 			return dryRun.value.execution_result.success;
 
 		// TODO add a flag to allow parent form to force another isLoading state
-		return (
+		const ok =
 			!!call &&
 			!!account &&
 			!!feeEstimate &&
@@ -303,8 +322,21 @@ const useTransactionProvider = ({
 			!!options &&
 			!error &&
 			!isLoading &&
-			!Object.keys(insufficientBalances).length
-		);
+			!Object.keys(insufficientBalances).length;
+
+		// if (!ok)
+		// 	console.log("[operation] canSubmit NOK", {
+		// 		call,
+		// 		account,
+		// 		feeEstimate,
+		// 		feeToken,
+		// 		options,
+		// 		error,
+		// 		isLoading,
+		// 		insufficientBalances,
+		// 	});
+
+		return ok;
 	}, [
 		account,
 		call,
@@ -331,6 +363,70 @@ const useTransactionProvider = ({
 		},
 		[onReset],
 	);
+
+	// useEffect(() => {
+	// 	console.log("[debug] useTransactionProvider OUT", {
+	// 		chainId,
+	// 		account,
+
+	// 		feeToken,
+	// 		feeTokens,
+	// 		isLoadingFeeTokens,
+	// 		onFeeTokenChange,
+
+	// 		feeEstimate,
+	// 		errorFeeEstimate,
+	// 		isLoadingFeeEstimate,
+
+	// 		feeTokenBalance,
+	// 		isLoadingFeeTokenBalance,
+
+	// 		insufficientBalances,
+	// 		followUpInputs,
+
+	// 		onSubmit,
+	// 		canSubmit,
+
+	// 		error,
+	// 		isLoading,
+
+	// 		onCloseFollowUp,
+
+	// 		dryRun,
+	// 		isLoadingDryRun,
+	// 		errorDryRun,
+	// 	});
+	// }, [
+	// 	chainId,
+	// 	account,
+
+	// 	feeToken,
+	// 	feeTokens,
+	// 	isLoadingFeeTokens,
+	// 	onFeeTokenChange,
+
+	// 	feeEstimate,
+	// 	errorFeeEstimate,
+	// 	isLoadingFeeEstimate,
+
+	// 	feeTokenBalance,
+	// 	isLoadingFeeTokenBalance,
+
+	// 	insufficientBalances,
+	// 	followUpInputs,
+
+	// 	onSubmit,
+	// 	canSubmit,
+
+	// 	error,
+	// 	isLoading,
+
+	// 	onCloseFollowUp,
+
+	// 	dryRun,
+	// 	isLoadingDryRun,
+	// 	errorDryRun,
+	// ]);
 
 	return {
 		chainId,
