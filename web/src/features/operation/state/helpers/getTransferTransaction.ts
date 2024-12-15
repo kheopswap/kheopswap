@@ -2,6 +2,7 @@ import {
 	type Api,
 	getApiLoadable$,
 	isApiAssetHub,
+	isApiBifrostPolkadot,
 	isApiHydration,
 	isApiMoonbeam,
 	isApiMythos,
@@ -85,7 +86,7 @@ export const getTransferTxCall = (
 					value: plancks,
 				});
 
-			if (isApiRelay(api) || isApiAssetHub(api))
+			if (isApiRelay(api) || isApiAssetHub(api) || isApiBifrostPolkadot(api))
 				return api.tx.Balances.transfer_keep_alive({
 					dest: MultiAddress.Id(dest),
 					value: plancks,

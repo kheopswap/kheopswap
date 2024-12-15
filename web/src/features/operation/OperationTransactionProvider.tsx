@@ -1,10 +1,14 @@
-import { type FC, type PropsWithChildren, useMemo } from "react";
+import { type FC, type PropsWithChildren, useCallback, useMemo } from "react";
 
 import {
 	type CallSpendings,
 	TransactionProvider,
 } from "src/features/transaction/TransactionProvider";
-import { resetOperationFormData, useOperationInputs } from "./state";
+import {
+	resetOperationFormData,
+	updateOperationFormData,
+	useOperationInputs,
+} from "./state";
 import { useOperationTransaction } from "./state/operationTransaction";
 
 export const OperationTransactionProvider: FC<PropsWithChildren> = ({
@@ -26,6 +30,13 @@ export const OperationTransactionProvider: FC<PropsWithChildren> = ({
 		[tokenIn?.token, plancksIn],
 	);
 
+	const handleReset = useCallback(() => {
+		updateOperationFormData((prev) => ({
+			...prev,
+			amountIn: undefined,
+		}));
+	}, []);
+
 	return (
 		<TransactionProvider
 			call={call}
@@ -33,7 +44,7 @@ export const OperationTransactionProvider: FC<PropsWithChildren> = ({
 			callSpendings={callSpendings}
 			chainId={tokenIn?.token?.chainId}
 			signer={account?.id}
-			onReset={resetOperationFormData}
+			onReset={handleReset}
 			followUpData={undefined} // needs to be snapshot on submit
 		>
 			{children}

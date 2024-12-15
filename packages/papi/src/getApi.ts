@@ -15,6 +15,7 @@ import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainId,
 	type ChainIdAssetHub,
+	type ChainIdBifrostPolkadot,
 	type ChainIdHydration,
 	type ChainIdMoonbeam,
 	type ChainIdMythos,
@@ -23,6 +24,7 @@ import {
 	getChainById,
 	getDescriptors,
 	isChainIdAssetHub,
+	isChainIdBifrostPolkadot,
 	isChainIdHydration,
 	isChainIdMoonbeam,
 	isChainIdMythos,
@@ -68,6 +70,11 @@ export const isApiMoonbeam = (
 	api: Api<ChainId>,
 ): api is Api<ChainIdMoonbeam> => {
 	return isChainIdMoonbeam(api.chainId);
+};
+export const isApiBifrostPolkadot = (
+	api: Api<ChainId>,
+): api is Api<ChainIdBifrostPolkadot> => {
+	return isChainIdBifrostPolkadot(api.chainId);
 };
 
 const getApiInner = async <Id extends ChainId>(

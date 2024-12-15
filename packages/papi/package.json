@@ -18,9 +18,9 @@
 		"@kheopswap/settings": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
 		"@polkadot-api/json-rpc-provider-proxy": "^0.2.4",
-		"@substrate/connect": "^2.0.1",
+		"@substrate/connect": "^2.1.0",
 		"lodash": "^4.17.21",
-		"polkadot-api": "^1.7.7",
+		"polkadot-api": "^1.7.8",
 		"rxjs": "^7.8.1"
 	}
 }

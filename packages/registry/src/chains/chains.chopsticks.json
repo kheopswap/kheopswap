@@ -18,5 +18,9 @@
 	{
 		"id": "moonbeam",
 		"wsUrl": ["ws://localhost:3424"]
+	},
+	{
+		"id": "bifrostPolkadot",
+		"wsUrl": ["ws://localhost:3425"]
 	}
 ]

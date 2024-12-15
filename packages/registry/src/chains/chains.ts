@@ -5,6 +5,7 @@ import chainsProdJson from "./chains.prod.json";
 import {
 	DESCRIPTORS_ALL,
 	DESCRIPTORS_ASSET_HUB,
+	DESCRIPTORS_BIFROST_POLKADOT,
 	DESCRIPTORS_HYDRATION,
 	DESCRIPTORS_MOONBEAM,
 	DESCRIPTORS_MYTHOS,
@@ -13,9 +14,11 @@ import {
 import type {
 	Chain,
 	ChainAssetHub,
+	ChainBifrostPolkadot,
 	ChainHydration,
 	ChainId,
 	ChainIdAssetHub,
+	ChainIdBifrostPolkadot,
 	ChainIdHydration,
 	ChainIdMoonbeam,
 	ChainIdMythos,
@@ -29,6 +32,7 @@ export const PARA_ID_ASSET_HUB = 1000;
 export const PARA_ID_HYDRATION = 2034;
 export const PARA_ID_MYTHOS = 3369;
 export const PARA_ID_MOONBEAM = 2004;
+export const PARA_ID_BIFROST_POLKADOT = 2030;
 
 const DEV_CHAINS = chainsDevJson as Chain[];
 const PROD_CHAINS = chainsProdJson as Chain[];
@@ -59,9 +63,17 @@ export const isChainIdMythos = (id: unknown): id is ChainIdMythos =>
 	typeof id === "string" && !!DESCRIPTORS_MYTHOS[id as ChainIdMythos];
 export const isChainIdMoonbeam = (id: unknown): id is ChainIdMoonbeam =>
 	typeof id === "string" && !!DESCRIPTORS_MOONBEAM[id as ChainIdMoonbeam];
+export const isChainIdBifrostPolkadot = (
+	id: unknown,
+): id is ChainIdBifrostPolkadot =>
+	typeof id === "string" &&
+	!!DESCRIPTORS_BIFROST_POLKADOT[id as ChainIdBifrostPolkadot];
 
 export const isChainIdWithDryRun = (id: unknown) =>
-	isChainIdRelay(id) || isChainIdAssetHub(id) || isChainIdMoonbeam(id);
+	isChainIdRelay(id) ||
+	isChainIdAssetHub(id) ||
+	isChainIdMoonbeam(id) ||
+	isChainIdBifrostPolkadot(id);
 
 export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 	DESCRIPTORS_ALL[id];
@@ -88,6 +100,11 @@ export const isMythos = (chain: Chain): chain is ChainHydration => {
 };
 export const isMoonbeam = (chain: Chain): chain is ChainMoonbeam => {
 	return chain.paraId === PARA_ID_MOONBEAM;
+};
+export const isBifrostPolkadot = (
+	chain: Chain,
+): chain is ChainBifrostPolkadot => {
+	return chain.paraId === PARA_ID_BIFROST_POLKADOT;
 };
 
 // TODO

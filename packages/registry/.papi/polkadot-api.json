@@ -22,6 +22,10 @@
 			"wsUrl": "wss://wss.api.moonbeam.network/",
 			"metadata": ".papi/scale/moonbeam.scale"
 		},
+		"bifrostPolkadot": {
+			"wsUrl": "wss://bifrost-polkadot-rpc.dwellir.com",
+			"metadata": ".papi/scale/bifrost-polkadot.scale"
+		},
 
 		"kusama": {
 			"wsUrl": "wss://rpc.ibp.network/kusama",

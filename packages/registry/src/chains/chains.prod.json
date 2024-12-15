@@ -93,6 +93,23 @@
 		"addressType": "ethereum"
 	},
 	{
+		"id": "bifrostPolkadot",
+		"name": "Bifrost Polkadot",
+		"wsUrl": [
+			"wss://bifrost-polkadot-rpc.dwellir.com",
+			"wss://bifrost-polkadot.ibp.network",
+			"wss://bifrost-polkadot.dotters.network",
+			"wss://hk.p.bifrost-rpc.liebi.com/ws",
+			"wss://eu.bifrost-polkadot-rpc.liebi.com/ws"
+		],
+		"relay": "polkadot",
+		"paraId": 2030,
+		"logo": "./img/chains/bifrost-polkadot.svg",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://bifrost.subscan.io",
+		"addressType": "ss58"
+	},
+	{
 		"id": "kusama",
 		"name": "Kusama",
 		"wsUrl": [
