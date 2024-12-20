@@ -230,5 +230,9 @@
 	{
 		"id": "asset::pah::555",
 		"logo": "./img/tokens/GAME.svg?rounded"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQHYADAF8NQA",
+		"logo": "./img/tokens/LAOS.svg"
 	}
 ]
