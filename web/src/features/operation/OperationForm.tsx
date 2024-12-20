@@ -2,7 +2,7 @@ import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "@kheopswap/registry";
 import { cn, isBigInt, logger, plancksToTokens } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
-import { isEqual } from "lodash";
+import { fromPairs, isEqual } from "lodash";
 import {
 	type FC,
 	type FormEvent,
@@ -30,6 +30,7 @@ import {
 	useOperationFormData,
 	useOperationInputs,
 } from "./state";
+import { usePossibleRoutesFromToken } from "./state/helpers/getPossibleRoutesForToken";
 import { useOperationPlancksOut } from "./state/operation.plancksOut";
 import { useOperationMaxPlancksIn } from "./state/operationMaxPlancksIn";
 import {
@@ -174,6 +175,14 @@ export const OperationForm = () => {
 		//	throw new Error("Not implemented");
 	}, [maxPlancksIn, inputs.tokenIn?.token]);
 
+	//const tokenIn = useToken({ tokenId: formData.tokenIdIn });
+	const { data: targetTokens, isLoading: isLoadingTargetTokens } =
+		usePossibleRoutesFromToken(inputs.tokenIn?.token);
+	const dicTargetTokens = useMemo(
+		() => fromPairs((targetTokens ?? []).map((token) => [token.id, token])),
+		[targetTokens],
+	);
+
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-3">
@@ -208,9 +217,9 @@ export const OperationForm = () => {
 						inputProps={{ value: amountOut ?? "", readOnly: true }}
 						tokenId={formData.tokenIdOut}
 						// plancks={null}
-						tokens={tokens}
+						tokens={dicTargetTokens}
 						accounts={tokenPickerAccounts}
-						isLoading={inputs.tokenOut?.status === "loading"}
+						isLoading={isLoadingTargetTokens}
 						onTokenChange={setTokenOut}
 						// errorMessage={outputErrorMessage}
 						balance={balanceOut}

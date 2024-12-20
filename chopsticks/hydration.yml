@@ -1,11 +1,11 @@
 endpoint: 
- - wss://hydradx.paras.ibp.network
- - wss://hydradx.paras.dotters.network
  - wss://rpc.hydradx.cloud
  - wss://hydradx-rpc.dwellir.com
  - wss://hydration.ibp.network
  - wss://hydration.dotters.network
  - wss://rpc.helikon.io/hydradx
+ - wss://hydradx.paras.ibp.network
+ - wss://hydradx.paras.dotters.network
 mock-signature-host: true
 block: ${env.HYDRADX_BLOCK_NUMBER}
 #db: ./hydradx.db.sqlite

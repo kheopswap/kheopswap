@@ -1,14 +1,13 @@
-import {
-	type Token,
-	type TokenType,
-	isChainIdAssetHub,
-} from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { getAddressFromAccountField, tokensToPlancks } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import type { TokenState } from "node_modules/@kheopswap/services/src/tokens/state";
 import { combineLatest, map, of, switchMap } from "rxjs";
 import { type InjectedAccount, getAccount$ } from "src/hooks";
+import {
+	type OperationType,
+	getOperationType,
+} from "./helpers/getOperationType";
 import {
 	type OperationFormData,
 	operationFormData$,
@@ -56,65 +55,3 @@ export const [useOperationInputs, operationInputs$] = bind(
 		switchMap((formData) => getOperationInputs$(formData)),
 	),
 );
-
-type OperationType =
-	| "transfer"
-	| "asset-convert"
-	| "xcm"
-	| "invalid"
-	| "unknown";
-
-const getOperationType = (
-	tokenIn: Token | null | undefined,
-	tokenOut: Token | null | undefined,
-): OperationType => {
-	if (!tokenIn || !tokenOut) return "unknown";
-
-	if (isTransfer(tokenIn, tokenOut)) return "transfer";
-
-	if (isAssetConvert(tokenIn, tokenOut)) return "asset-convert";
-
-	if (isXcm(tokenIn, tokenOut)) return "xcm";
-
-	return "invalid";
-};
-
-const ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES: TokenType[] = [
-	"asset",
-	"foreign-asset",
-];
-
-const isTransfer = (tokenIn: Token, tokenOut: Token): boolean => {
-	if (!tokenIn || !tokenOut) return false;
-	return tokenIn.id === tokenOut.id;
-};
-
-const isAssetConvert = (tokenIn: Token, tokenOut: Token): boolean => {
-	if (!tokenIn || !tokenOut) return false;
-
-	// must be on same chain
-	if (tokenIn.chainId !== tokenOut.chainId) return false;
-
-	// must be on asset hub
-	if (!isChainIdAssetHub(tokenIn.chainId)) return false;
-
-	// need one native and one non-native
-	const types = [tokenIn.type, tokenOut.type];
-	if (
-		!types.includes("native") ||
-		!types.some((type) => ASSET_CONVERT_NON_NATIVE_TOKEN_TYPES.includes(type))
-	)
-		return false;
-
-	// LGTM
-	return true;
-};
-
-const isXcm = (tokenIn: Token, tokenOut: Token): boolean => {
-	if (!tokenIn || !tokenOut) return false;
-
-	const tokenInOrigin = "origin" in tokenIn ? tokenIn.origin : null;
-	const tokenOutOrigin = "origin" in tokenOut ? tokenOut.origin : null;
-
-	return tokenInOrigin === tokenOut.id || tokenOutOrigin === tokenIn.id;
-};
