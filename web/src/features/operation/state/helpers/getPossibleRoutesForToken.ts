@@ -1,29 +1,72 @@
 import type { Token } from "@kheopswap/registry";
-import { getCachedObservable$, loadableStateData } from "@kheopswap/utils";
+import {
+	type LoadableState,
+	loadableStateData,
+	loadableStateError,
+} from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { values } from "lodash";
-import { map } from "rxjs";
+import {
+	type Observable,
+	catchError,
+	combineLatest,
+	map,
+	of,
+	switchMap,
+} from "rxjs";
 import { getAllTokens$ } from "src/state";
-import { getOperationType, isValidOperation } from "./getOperationType";
+import { getOperationType$, isValidOperation } from "./getOperationType";
 
-export const getPossibleRoutesFromToken = (allTokens: Token[], from: Token) => {
-	return allTokens.filter((to) => {
-		const opType = getOperationType(from, to);
-		return isValidOperation(opType);
-	});
-};
+// export const getPossibleRoutesFromToken$ = (
+// 	allTokens: Token[],
+// 	from: Token,
+// ): Observable<LoadableState<Token[]>> => {
+// 	return combineLatest(allTokens.map((to) => getOperationType$(from, to))).pipe(
+// 		map((states) => {
+// 			const targets = states
+// 				.map(({ data }, index) => {
+// 					const isValid = data && isValidOperation(data);
+// 					return isValid ? allTokens[index] : null;
+// 				})
+// 				.filter((t): t is Token => !!t);
+
+// 			const isLoading = states.some(({ isLoading }) => isLoading);
+
+// 			return loadableStateData(targets, isLoading);
+// 		}),
+// 	);
+
+// };
 
 export const [usePossibleRoutesFromToken, getPossibleRoutesFromToken$] = bind(
 	(token: Token | null | undefined) =>
-		getCachedObservable$("getPossibleRoute$", token?.id ?? "none", () =>
-			getAllTokens$().pipe(
-				map(({ isLoading, data }) => {
-					return loadableStateData(
-						token ? getPossibleRoutesFromToken(values(data), token) : [],
-						isLoading,
+		getAllTokens$().pipe(
+			switchMap(
+				({
+					data: allTokens,
+					isLoading,
+				}): Observable<LoadableState<Token[]>> => {
+					const arTokens = values(allTokens);
+					return combineLatest(
+						arTokens.map((to) => getOperationType$(token, to)),
+					).pipe(
+						map((states) => {
+							const targets = states
+								.map(({ data }, index) => {
+									const isValid = data && isValidOperation(data);
+									return isValid ? arTokens[index] : null;
+								})
+								.filter((t): t is Token => !!t);
+
+							return loadableStateData(
+								targets,
+								isLoading || states.some(({ isLoading }) => isLoading),
+							);
+						}),
 					);
-				}),
+				},
 			),
+			catchError((err) => of(loadableStateError<Token[]>(err))),
 		),
 	(token) => loadableStateData<Token[]>(token ? [token] : []),
 );

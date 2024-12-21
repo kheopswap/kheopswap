@@ -3,6 +3,13 @@ import {
 	type TokenType,
 	isChainIdAssetHub,
 } from "@kheopswap/registry";
+import {
+	type LoadableState,
+	getCachedObservable$,
+	loadableStateData,
+} from "@kheopswap/utils";
+import { type Observable, catchError, map, of, startWith } from "rxjs";
+import { getPoolReserves$ } from "src/state";
 
 export type OperationType =
 	| "transfer"
@@ -24,6 +31,40 @@ export const getOperationType = (
 	if (isXcm(tokenIn, tokenOut)) return "xcm";
 
 	return "invalid";
+};
+
+export const getOperationType$ = (
+	tokenIn: Token | null | undefined,
+	tokenOut: Token | null | undefined,
+): Observable<LoadableState<OperationType>> => {
+	return getCachedObservable$(
+		"getOperationType$",
+		`${tokenIn?.id}-${tokenOut?.id}`,
+		() => {
+			if (!tokenIn || !tokenOut)
+				return of(loadableStateData<OperationType>("unknown"));
+
+			if (isTransfer(tokenIn, tokenOut))
+				return of(loadableStateData<OperationType>("transfer"));
+
+			if (isAssetConvert(tokenIn, tokenOut))
+				return getPoolReserves$(tokenIn.id, tokenOut.id).pipe(
+					map(({ isLoading, reserves }) =>
+						loadableStateData<OperationType>(
+							reserves ? "asset-convert" : "unknown",
+							isLoading,
+						),
+					),
+					startWith(loadableStateData<OperationType>("unknown")),
+					catchError(() => of(loadableStateData<OperationType>("unknown"))),
+				);
+
+			if (isXcm(tokenIn, tokenOut))
+				return of(loadableStateData<OperationType>("xcm"));
+
+			return of(loadableStateData<OperationType>("invalid"));
+		},
+	);
 };
 
 export const isValidOperation = (type: OperationType): boolean => {
