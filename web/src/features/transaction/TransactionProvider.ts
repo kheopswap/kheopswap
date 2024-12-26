@@ -7,6 +7,7 @@ import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { Token, TokenId } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
 import {
+	type TxEvents,
 	formatTxError,
 	logger,
 	notifyError,
@@ -29,6 +30,14 @@ import {
 import type { AnyTransaction } from "src/types";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 
+export type ExpectedEventResult<T = unknown> = {
+	label: string;
+	tokenId: TokenId;
+	plancks: bigint;
+	getEffectiveValue: (events: TxEvents) => T | null;
+	component?: string;
+};
+
 export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
 >;
@@ -40,6 +49,7 @@ type UseTransactionProviderProps = {
 	chainId: ChainId | null | undefined;
 	callSpendings?: CallSpendings; // tokens to be spent as part of the call
 	followUpData?: object;
+	expectedEventResults?: ExpectedEventResult[];
 	onReset: () => void;
 };
 
@@ -49,10 +59,12 @@ type FollowUpInputs = {
 	account: InjectedAccount;
 	feeEstimate: bigint;
 	feeToken: Token;
+	expectedEventResults: ExpectedEventResult[];
 };
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
 const DEFAULT_FOLLOW_UP_DATA = {};
+const DEFAULT_EXPECTED_EVENT_RESULTS: ExpectedEventResult[] = [];
 
 const useTransactionProvider = ({
 	call,
@@ -62,19 +74,8 @@ const useTransactionProvider = ({
 	callSpendings = DEFAULT_CALL_SPENDINGS,
 	onReset,
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
+	expectedEventResults = DEFAULT_EXPECTED_EVENT_RESULTS,
 }: UseTransactionProviderProps) => {
-	// useEffect(() => {
-	// 	console.log("[debug] useTransactionProvider", {
-	// 		call,
-	// 		fakeCall,
-	// 		signer,
-	// 		chainId,
-	// 		callSpendings,
-	// 		onReset,
-	// 		followUpData,
-	// 	});
-	// }, [call, fakeCall, signer, chainId, callSpendings, onReset, followUpData]);
-
 	const account = useWalletAccount({ id: signer });
 
 	const chain = useMemo(
@@ -123,13 +124,6 @@ const useTransactionProvider = ({
 			plancks: feeEstimateNative,
 		});
 
-	// useEffect(() => {
-	// 	console.log("[operation] transaction fee estimate", {
-	// 		feeEstimateNative,
-	// 		feeEstimate,
-	// 	});
-	// }, [feeEstimateNative, feeEstimate]);
-
 	const { data: feeTokenBalance, isLoading: isLoadingFeeTokenBalance } =
 		useBalance({
 			address: account?.address,
@@ -158,6 +152,7 @@ const useTransactionProvider = ({
 				feeEstimate,
 				feeToken,
 				call,
+				expectedEventResults,
 			});
 
 			const sub = obsTxEvents.subscribe((x) => {
@@ -197,7 +192,15 @@ const useTransactionProvider = ({
 		} catch (err) {
 			notifyError(err);
 		}
-	}, [account, call, feeEstimate, feeToken, followUpData, options]);
+	}, [
+		account,
+		call,
+		feeEstimate,
+		feeToken,
+		followUpData,
+		options,
+		expectedEventResults,
+	]);
 
 	const tokenIds = useMemo(() => {
 		const allTokenIds = Object.keys(callSpendings)

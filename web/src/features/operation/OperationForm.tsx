@@ -216,7 +216,6 @@ export const OperationForm = () => {
 					<TokenAmountPicker
 						inputProps={{ value: amountOut ?? "", readOnly: true }}
 						tokenId={formData.tokenIdOut}
-						// plancks={null}
 						tokens={dicTargetTokens}
 						accounts={tokenPickerAccounts}
 						isLoading={isLoadingTargetTokens}

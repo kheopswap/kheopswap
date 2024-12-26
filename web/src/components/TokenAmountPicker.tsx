@@ -60,7 +60,6 @@ export const TokenAmountPicker: FC<{
 	tokenId: TokenId | null | undefined;
 	tokens?: Dictionary<Token> | undefined;
 	accounts?: InjectedAccount[] | string[];
-	// plancks: bigint | null | undefined;
 	isLoading: boolean;
 	errorMessage?: string | null;
 	disableTokenButton?: boolean;

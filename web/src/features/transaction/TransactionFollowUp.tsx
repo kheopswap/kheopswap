@@ -20,7 +20,7 @@ const FollowUp: FC<PropsWithChildren> = ({ children }) => {
 export const TransactionFollowUp: FC<PropsWithChildren> = ({ children }) => {
 	return (
 		<TransactionFollowUpProvider>
-			<FollowUp> {children}</FollowUp>
+			<FollowUp>{children}</FollowUp>
 		</TransactionFollowUpProvider>
 	);
 };

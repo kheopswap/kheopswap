@@ -13,6 +13,7 @@ import {
 } from "./operationTransaction";
 import { operationTxOptions$ } from "./operationTxOptions";
 
+// TODO make loadable
 const feeEstimate$ = combineLatest([
 	operationInputs$,
 	operationTransaction$,

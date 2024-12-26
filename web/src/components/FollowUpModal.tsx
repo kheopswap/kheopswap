@@ -15,11 +15,30 @@ import { Styles } from "./styles";
 
 import { getChainById } from "@kheopswap/registry";
 import type { Token } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
+import { cn, isBigInt, isNumber } from "@kheopswap/utils";
 import { type TxEvents, getErrorMessageFromTxEvents } from "@kheopswap/utils";
 import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
-import { type InjectedAccount, useInjectedExtension } from "src/hooks";
+import type { ExpectedEventResult } from "src/features/transaction/TransactionProvider";
+import {
+	type InjectedAccount,
+	useInjectedExtension,
+	useToken,
+} from "src/hooks";
 import { Pulse } from "./Pulse";
+
+export const FollowUpModal: FC<{
+	followUp: FollowUpData | null;
+	onClose: () => void;
+	children?: ReactNode;
+}> = ({ followUp, onClose, children }) => (
+	<Modal isOpen={!!followUp}>
+		{followUp && (
+			<FollowUpModalInner followUp={followUp} onClose={onClose}>
+				{children}
+			</FollowUpModalInner>
+		)}
+	</Modal>
+);
 
 export type FollowUpTxEvent =
 	| TxEvent
@@ -32,12 +51,13 @@ export type FollowUpData<T = unknown> = {
 	account: InjectedAccount;
 	feeEstimate: bigint;
 	feeToken: Token;
+	expectedEventResults: ExpectedEventResult[];
 } & T;
 
 export const FollowUpRow: FC<
 	PropsWithChildren & { label: string; className?: string }
 > = ({ label, className, children }) => (
-	<div className="flex flex-wrap justify-between">
+	<div className="flex flex-wrap justify-between text-sm">
 		<div className="text-neutral">{label}</div>
 		<div className={cn("text-right font-medium", className)}>{children}</div>
 	</div>
@@ -77,7 +97,11 @@ const FollowUpModalInner: FC<{
 	followUp: FollowUpData;
 	onClose: () => void;
 	children?: ReactNode;
-}> = ({ followUp, onClose, children }) => {
+}> = ({
+	followUp,
+	onClose,
+	//	, children
+}) => {
 	const extension = useInjectedExtension(followUp.account.wallet);
 
 	const chain = useMemo(
@@ -180,16 +204,16 @@ const FollowUpModalInner: FC<{
 			];
 		}, [followUp.txEvents, result, error]);
 
-	const effectiveFee = useMemo(() => {
-		if (result !== "success") return null;
-		const actualFee = individualEvents.find(
-			(e) =>
-				(e.type === "TransactionPayment" &&
-					e.value.type === "TransactionFeePaid") ||
-				(e.type === "AssetTxPayment" && e.value.type === "AssetTxFeePaid"),
-		)?.value.value.actual_fee;
-		return actualFee ? BigInt(actualFee) : null;
-	}, [individualEvents, result]);
+	// const effectiveFee = useMemo(() => {
+	// 	if (result !== "success") return null;
+	// 	const actualFee = individualEvents.find(
+	// 		(e) =>
+	// 			(e.type === "TransactionPayment" &&
+	// 				e.value.type === "TransactionFeePaid") ||
+	// 			(e.type === "AssetTxPayment" && e.value.type === "AssetTxFeePaid"),
+	// 	)?.value.value.actual_fee;
+	// 	return actualFee ? BigInt(actualFee) : null;
+	// }, [individualEvents, result]);
 
 	return (
 		<div
@@ -214,7 +238,16 @@ const FollowUpModalInner: FC<{
 			</Pulse>
 			<div className="my-10 flex w-96 max-w-full grow flex-col justify-center gap-4 text-center">
 				{!!errorMessage && <div className="text-error">{errorMessage}</div>}
-				{children && <div>{children}</div>}
+				{(isPendingFinalization || isFinalized) &&
+					followUp.expectedEventResults.map((expectedEventResult, i) => (
+						<ExpectedResultFollowUp
+							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+							key={i}
+							expectedEventResult={expectedEventResult}
+							events={individualEvents}
+						/>
+					))}
+				{/* {children && <div>{children}</div>}
 				<div className={cn(effectiveFee ? "block" : "hidden")}>
 					<FollowUpRow label="Estimated fee" className="text-neutral-500">
 						<Tokens plancks={followUp.feeEstimate} token={followUp.feeToken} />
@@ -232,7 +265,7 @@ const FollowUpModalInner: FC<{
 							/>
 						)}
 					</FollowUpRow>
-				</div>
+				</div> */}
 			</div>
 			<div className="space-y-2">
 				<button
@@ -262,16 +295,125 @@ const FollowUpModalInner: FC<{
 	);
 };
 
-export const FollowUpModal: FC<{
-	followUp: FollowUpData | null;
-	onClose: () => void;
-	children?: ReactNode;
-}> = ({ followUp, onClose, children }) => (
-	<Modal isOpen={!!followUp}>
-		{followUp && (
-			<FollowUpModalInner followUp={followUp} onClose={onClose}>
-				{children}
-			</FollowUpModalInner>
-		)}
-	</Modal>
-);
+const ExpectedResultFollowUp: FC<{
+	expectedEventResult: ExpectedEventResult;
+	events: TxEvents;
+}> = ({ expectedEventResult, events }) => {
+	const Component = useMemo(() => {
+		switch (expectedEventResult.component) {
+			// case "TokenValue":
+			// 	return FollowUpRowTokenValue;
+			// case "Value":
+			// 	return FollowUpRowValue;
+			case "asset-convert":
+				return FollowUpRowAssetConvert;
+			default:
+				return FollowUpRowTokenValue;
+		}
+	}, [expectedEventResult]);
+
+	return (
+		<Component expectedEventResult={expectedEventResult} events={events} />
+	);
+};
+
+const FollowUpRowTokenValue: FC<{
+	expectedEventResult: ExpectedEventResult;
+	events: TxEvents;
+}> = ({ expectedEventResult, events }) => {
+	const { data: token } = useToken({ tokenId: expectedEventResult.tokenId });
+
+	const value = useMemo(
+		() => expectedEventResult.getEffectiveValue(events) as bigint | null,
+		[expectedEventResult, events],
+	);
+
+	if (!token || !isBigInt(value)) return null;
+
+	return (
+		<div>
+			<FollowUpRow label={`Estimated ${expectedEventResult.label}`}>
+				<Tokens
+					plancks={expectedEventResult.plancks}
+					token={token}
+					className="text-neutral-500"
+				/>
+			</FollowUpRow>
+			<FollowUpRow label={`Effective ${expectedEventResult.label}`}>
+				{value ? (
+					<Tokens
+						plancks={BigInt(value)}
+						token={token}
+						className={cn(
+							expectedEventResult.plancks === value
+								? "text-success"
+								: "text-warn",
+						)}
+					/>
+				) : (
+					<span className="text-neutral-500">Unknown</span>
+				)}
+			</FollowUpRow>
+		</div>
+	);
+};
+
+const FollowUpRowAssetConvert: FC<{
+	expectedEventResult: ExpectedEventResult;
+	events: TxEvents;
+}> = ({ expectedEventResult, events }) => {
+	const { data: token } = useToken({ tokenId: expectedEventResult.tokenId });
+
+	const value = useMemo(
+		() => expectedEventResult.getEffectiveValue(events) as bigint | null,
+		[expectedEventResult, events],
+	);
+
+	const slippage = useMemo(() => {
+		if (!isBigInt(value)) return null;
+		return (
+			Number(
+				(10000n * (expectedEventResult.plancks - value)) /
+					expectedEventResult.plancks,
+			) / 100
+		);
+	}, [value, expectedEventResult.plancks]);
+
+	if (!token || !isBigInt(value) || !isNumber(slippage)) return null;
+
+	return (
+		<div>
+			<FollowUpRow label={`Estimated ${expectedEventResult.label}`}>
+				<Tokens
+					plancks={expectedEventResult.plancks}
+					token={token}
+					className="text-neutral-500"
+				/>
+			</FollowUpRow>
+			<FollowUpRow label={`Effective ${expectedEventResult.label}`}>
+				{value ? (
+					<Tokens
+						plancks={BigInt(value)}
+						token={token}
+						className={cn(
+							expectedEventResult.plancks === value
+								? "text-success"
+								: "text-warn",
+						)}
+					/>
+				) : (
+					<span className="text-neutral-500">Unknown</span>
+				)}
+			</FollowUpRow>
+			<FollowUpRow label="Slippage">
+				<div
+					className={cn(
+						value >= expectedEventResult.plancks ? "text-success" : "text-warn",
+					)}
+				>
+					{typeof slippage === "number" ? `${slippage?.toFixed(2)}%` : null}
+				</div>
+			</FollowUpRow>
+		</div>
+	);
+};

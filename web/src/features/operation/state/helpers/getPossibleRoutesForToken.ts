@@ -17,27 +17,6 @@ import {
 import { getAllTokens$ } from "src/state";
 import { getOperationType$, isValidOperation } from "./getOperationType";
 
-// export const getPossibleRoutesFromToken$ = (
-// 	allTokens: Token[],
-// 	from: Token,
-// ): Observable<LoadableState<Token[]>> => {
-// 	return combineLatest(allTokens.map((to) => getOperationType$(from, to))).pipe(
-// 		map((states) => {
-// 			const targets = states
-// 				.map(({ data }, index) => {
-// 					const isValid = data && isValidOperation(data);
-// 					return isValid ? allTokens[index] : null;
-// 				})
-// 				.filter((t): t is Token => !!t);
-
-// 			const isLoading = states.some(({ isLoading }) => isLoading);
-
-// 			return loadableStateData(targets, isLoading);
-// 		}),
-// 	);
-
-// };
-
 export const [usePossibleRoutesFromToken, getPossibleRoutesFromToken$] = bind(
 	(token: Token | null | undefined) =>
 		getAllTokens$().pipe(

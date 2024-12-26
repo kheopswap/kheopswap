@@ -1,8 +1,20 @@
 import type { ChainId, Token } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { getSetting$ } from "@kheopswap/settings";
-import { isBigInt } from "@kheopswap/utils";
-import { combineLatest, map, of, switchMap } from "rxjs";
+import {
+	type LoadableState,
+	isBigInt,
+	loadableStateData,
+	loadableStateError,
+} from "@kheopswap/utils";
+import {
+	type Observable,
+	catchError,
+	combineLatest,
+	map,
+	of,
+	switchMap,
+} from "rxjs";
 import { getAssetConvert$ } from "src/state";
 import { getNativeToken } from "src/util";
 import { operationFeeEstimate$ } from "./operationFeeEstimate";
@@ -36,40 +48,59 @@ export const operationFeeToken$ = operationInputs$.pipe(
 			inputs.tokenIn.token.chainId,
 			inputs.account?.address ?? null,
 		);
-		// const feeTokenKey = getKey(
-
-		// 	inputs.tokenIn.token.chainId,
-		//     inputs.account?.address ?? null,
-		// );
-		// const feeTokenId = feeTokens[feeTokenKey];
-		// if (!feeTokenId) return of(getNativeToken(inputs.tokenIn.token.chainId));
-		// return getTokenById$(feeTokenId).pipe(map((ts) => ts.token ?? null));
 	}),
 );
+
+type FeeWithToken = {
+	token: Token;
+	value: bigint;
+};
 
 export const operationFeeEstimateWithToken$ = combineLatest([
 	operationInputs$,
 	operationFeeToken$,
 	operationFeeEstimate$,
 ]).pipe(
-	switchMap(([inputs, feeToken, feeEstimate]) => {
-		if (!feeToken || !isBigInt(feeEstimate) || !inputs.tokenIn?.token)
-			return of(null);
+	switchMap(
+		([inputs, feeToken, feeEstimate]): Observable<
+			LoadableState<FeeWithToken | null>
+		> => {
+			if (!feeToken || !isBigInt(feeEstimate.data) || !inputs.tokenIn?.token)
+				return of(
+					loadableStateData<FeeWithToken | null>(null, feeEstimate.isLoading),
+				);
 
-		const token = feeToken as Token;
+			const token = feeToken as Token;
 
-		if (feeToken.type === "native")
-			return of({ value: feeEstimate?.data ?? null, token });
+			if (feeToken.type === "native")
+				return of(
+					loadableStateData(
+						{ value: feeEstimate.data, token },
+						feeEstimate.isLoading,
+					),
+				);
 
-		return getAssetConvert$({
-			tokenIdIn: inputs.tokenIn.token.id,
-			tokenIdOut: feeToken.id,
-			plancksIn: feeEstimate,
-		}).pipe(
-			map((r) => ({
-				token,
-				value: r.plancksOut,
-			})),
-		);
-	}),
+			return getAssetConvert$({
+				tokenIdIn: inputs.tokenIn.token.id,
+				tokenIdOut: feeToken.id,
+				plancksIn: feeEstimate.data,
+			}).pipe(
+				map((r) =>
+					isBigInt(r.plancksOut)
+						? loadableStateData<FeeWithToken | null>(
+								{
+									token,
+									value: r.plancksOut,
+								},
+								feeEstimate.isLoading || r.isLoading,
+							)
+						: loadableStateData<FeeWithToken | null>(
+								null,
+								feeEstimate.isLoading || r.isLoading,
+							),
+				),
+			);
+		},
+	),
+	catchError((err) => of(loadableStateError<FeeWithToken | null>(err))),
 );
