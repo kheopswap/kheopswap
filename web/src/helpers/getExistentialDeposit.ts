@@ -14,7 +14,6 @@ import {
 } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableState,
 	loadableStateData,
 	loadableStateError,
 	loadableStateLoading,
@@ -110,8 +109,6 @@ export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 		new Observable<LoadableState<bigint | null>>((subscriber) => {
 			subscriber.next(loadableStateLoading());
 
-			console.log("[debug] tokenId", tokenId);
-
 			const token = parseTokenId(tokenId);
 			if (!token)
 				subscriber.next(
@@ -139,4 +136,5 @@ export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 					subscriber.next(res);
 				});
 		}),
+	() => loadableStateLoading<bigint | null>(),
 );

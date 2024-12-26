@@ -6,16 +6,14 @@ import {
 	loadableStateError,
 	loadableStateLoading,
 } from "@kheopswap/utils";
-import { bind, state, useStateObservable } from "@react-rxjs/core";
+import { bind } from "@react-rxjs/core";
 import {
 	type Observable,
-	Subscription,
 	catchError,
 	map,
 	of,
 	startWith,
 	switchMap,
-	tap,
 } from "rxjs";
 
 export type ChainAccount<Id extends ChainId> =
@@ -29,14 +27,14 @@ export const [useChainAccount, getChainAccount$] = bind(
 		if (!chainId || !address) return of(loadableStateData(null));
 
 		return getApi$(chainId).pipe(
-			tap({
-				subscribe: () => {
-					console.log("[debug] subscribe getChainAccount$", chainId, address);
-				},
-				unsubscribe: () => {
-					console.log("[debug] unsubscribe getChainAccount$", chainId, address);
-				},
-			}),
+			// tap({
+			// 	subscribe: () => {
+			// 		console.log("[debug] subscribe getChainAccount$", chainId, address);
+			// 	},
+			// 	unsubscribe: () => {
+			// 		console.log("[debug] unsubscribe getChainAccount$", chainId, address);
+			// 	},
+			// }),
 			switchMap((api) => api.query.System.Account.watchValue(address)),
 			map((account) => loadableStateData(account as Res)),
 			catchError((cause) =>
@@ -49,6 +47,7 @@ export const [useChainAccount, getChainAccount$] = bind(
 			startWith(loadableStateLoading<Res>()),
 		);
 	},
+	//loadableStateLoading(),
 	//loadableStateLoading(),
 );
 

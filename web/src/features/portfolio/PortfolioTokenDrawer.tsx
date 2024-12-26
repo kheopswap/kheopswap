@@ -21,6 +21,7 @@ import {
 	cn,
 	getBlockExplorerUrl,
 	isBigInt,
+	logger,
 	shortenAddress,
 	sortBigInt,
 } from "@kheopswap/utils";
@@ -453,7 +454,7 @@ const DrawerContent: FC<{
 	tokenRow: PortfolioRowData;
 }> = ({ tokenRow }) => {
 	useEffect(() => {
-		console.log("Token Details", tokenRow);
+		logger.info("Token Details", tokenRow);
 	}, [tokenRow]);
 
 	return (

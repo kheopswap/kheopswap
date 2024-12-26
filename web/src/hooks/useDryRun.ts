@@ -4,8 +4,7 @@ import type { SS58String } from "polkadot-api";
 import { type Api, getApi } from "@kheopswap/papi";
 import {
 	type ChainId,
-	type ChainIdAssetHub,
-	type ChainIdRelay,
+	type ChainIdWithDryRun,
 	DispatchRawOrigin,
 	PolkadotRuntimeOriginCaller,
 	isChainIdWithDryRun,
@@ -19,7 +18,7 @@ type UseDryRunProps = {
 	call: AnyTransaction | null | undefined;
 };
 
-export type DryRun<Id extends ChainIdRelay | ChainIdAssetHub> = Awaited<
+export type DryRun<Id extends ChainIdWithDryRun> = Awaited<
 	ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_call"]>
 >;
 

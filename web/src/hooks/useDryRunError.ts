@@ -1,8 +1,4 @@
-import type {
-	ChainId,
-	ChainIdAssetHub,
-	ChainIdRelay,
-} from "@kheopswap/registry";
+import type { ChainId, ChainIdWithDryRun } from "@kheopswap/registry";
 import { safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -11,7 +7,7 @@ import type { DryRun } from "./useDryRun";
 
 type UseDryRunError = {
 	chainId: ChainId | null | undefined;
-	dryRun: DryRun<ChainIdRelay | ChainIdAssetHub> | null | undefined;
+	dryRun: DryRun<ChainIdWithDryRun> | null | undefined;
 };
 
 export const useDryRunError = ({ chainId, dryRun }: UseDryRunError) => {
