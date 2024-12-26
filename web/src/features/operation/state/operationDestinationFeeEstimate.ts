@@ -85,9 +85,10 @@ const getDestinationFeeEstimate$ = <Id extends ChainId>(
 					api.apis.XcmPaymentApi.query_weight_to_asset_fee(
 						weight,
 						XcmVersionedAssetId.V4({
-							parents: isChainIdRelay(destinationChain) ? 0 : 1, // TODO pas bon
+							parents: isChainIdRelay(destinationChain.id) ? 0 : 1,
 							interior: XcmV3Junctions.Here(),
 						}),
+						{ at: "best" },
 					),
 				),
 				map((fee) => {
