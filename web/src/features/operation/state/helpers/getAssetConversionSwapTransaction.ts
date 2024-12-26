@@ -13,7 +13,6 @@ import {
 	loadableStateData,
 	loadableStateError,
 	loadableStateLoading,
-	logger,
 } from "@kheopswap/utils";
 import {
 	type Observable,
@@ -35,7 +34,6 @@ export const getAssetConversionSwapTransaction$ = (
 	inputs: OperationInputs,
 ): Observable<LoadableState<AnyTransaction | null>> => {
 	if (inputs.type !== "asset-convert") of(loadableStateData(null)); //throw new Error("Invalid operation type");
-	logger.debug("getAssetConversionSwapTransaction", { inputs });
 
 	const { account, tokenIn, tokenOut, recipient, plancksIn } = inputs;
 

@@ -45,17 +45,20 @@ export const operationDryRun$ = combineLatest([
 	operationTransaction$,
 ]).pipe(
 	switchMap(
-		([inputs, transaction]): Observable<
+		([{ data: inputs, isLoading }, transaction]): Observable<
 			LoadableState<DryRun<ChainId> | null>
 		> => {
 			if (transaction.error)
 				return of(
-					loadableStateError<DryRun<ChainId> | null>(transaction.error),
+					loadableStateError<DryRun<ChainId> | null>(
+						transaction.error,
+						isLoading,
+					),
 				);
 			if (!transaction.data)
-				return of(loadableStateData(null, transaction.isLoading));
-			if (!inputs.tokenIn?.token?.chainId || !inputs.account?.address)
-				return of(loadableStateData(null));
+				return of(loadableStateData(null, isLoading || transaction.isLoading));
+			if (!inputs?.tokenIn?.token?.chainId || !inputs.account?.address)
+				return of(loadableStateData(null, isLoading));
 			return getDryRun$(
 				inputs.tokenIn.token.chainId,
 				inputs.account.address,

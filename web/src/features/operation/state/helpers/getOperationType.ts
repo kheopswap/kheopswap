@@ -18,21 +18,6 @@ export type OperationType =
 	| "invalid"
 	| "unknown";
 
-export const getOperationType = (
-	tokenIn: Token | null | undefined,
-	tokenOut: Token | null | undefined,
-): OperationType => {
-	if (!tokenIn || !tokenOut) return "unknown";
-
-	if (isTransfer(tokenIn, tokenOut)) return "transfer";
-
-	if (isAssetConvert(tokenIn, tokenOut)) return "asset-convert";
-
-	if (isXcm(tokenIn, tokenOut)) return "xcm";
-
-	return "invalid";
-};
-
 export const getOperationType$ = (
 	tokenIn: Token | null | undefined,
 	tokenOut: Token | null | undefined,
@@ -51,7 +36,7 @@ export const getOperationType$ = (
 				return getPoolReserves$(tokenIn.id, tokenOut.id).pipe(
 					map(({ isLoading, reserves }) =>
 						loadableStateData<OperationType>(
-							reserves ? "asset-convert" : "unknown",
+							reserves?.[0] ? "asset-convert" : "invalid",
 							isLoading,
 						),
 					),

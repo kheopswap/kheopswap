@@ -40,10 +40,13 @@ import {
 
 const [useTokenPickerAccounts] = bind(
 	operationInputs$.pipe(
-		switchMap((inputs) => (inputs.account ? of([inputs.account]) : accounts$)),
+		switchMap(({ data: inputs }) =>
+			inputs?.account ? of([inputs.account]) : accounts$,
+		),
 	),
 );
 
+// keeps the form data in the location state so user can refresh page without losing inputs
 const useRetainOnRefresh = () => {
 	const formData = useOperationFormData();
 
@@ -67,10 +70,12 @@ const useRetainOnRefresh = () => {
 
 export const OperationForm = () => {
 	useRetainOnRefresh();
-	const { data: tokens } = useAllTokens({ types: TRANSFERABLE_TOKEN_TYPES });
+	const { data: tokens, isLoading: isLoadingAllTokens } = useAllTokens({
+		types: TRANSFERABLE_TOKEN_TYPES,
+	});
 
 	const formData = useOperationFormData();
-	const inputs = useOperationInputs();
+	const { data: inputs } = useOperationInputs();
 	const transaction = useOperationTransaction();
 	const fakeTransaction = useOperationFakeTransaction();
 	const tokenPickerAccounts = useTokenPickerAccounts();
@@ -135,29 +140,29 @@ export const OperationForm = () => {
 
 	const [amountOut, isLoadingAmountOut] = useMemo(
 		() =>
-			isBigInt(plancksOut.data) && inputs.tokenOut?.token
+			isBigInt(plancksOut.data) && inputs?.tokenOut?.token
 				? [
 						plancksToTokens(plancksOut.data, inputs.tokenOut.token.decimals),
 						plancksOut.isLoading,
 					]
 				: ["", plancksOut.isLoading],
-		[plancksOut, inputs.tokenOut?.token],
+		[plancksOut, inputs?.tokenOut?.token],
 	);
 
 	const operationLabel = useMemo(() => {
-		if (inputs.type === "transfer") return "Transfer";
-		if (inputs.type === "asset-convert") return "Swap";
-		if (inputs.type === "xcm") return "Cross-chain transfer";
+		if (inputs?.type === "transfer") return "Transfer";
+		if (inputs?.type === "asset-convert") return "Swap";
+		if (inputs?.type === "xcm") return "Cross-chain transfer";
 		return "Invalid operation";
-	}, [inputs.type]);
+	}, [inputs?.type]);
 
 	const { data: balanceIn, isLoading: isLoadingBalanceIn } = useBalance({
-		address: inputs.account?.address,
-		tokenId: inputs.tokenIn?.token?.id,
+		address: inputs?.account?.address,
+		tokenId: inputs?.tokenIn?.token?.id,
 	});
 	const { data: balanceOut, isLoading: isLoadingBalanceOut } = useBalance({
-		address: inputs.recipient,
-		tokenId: inputs.tokenOut?.token?.id,
+		address: inputs?.recipient,
+		tokenId: inputs?.tokenOut?.token?.id,
 	});
 
 	//const amountOut = ""; // TODO
@@ -165,7 +170,7 @@ export const OperationForm = () => {
 	const maxPlancksIn = useOperationMaxPlancksIn();
 
 	const onMaxClick = useCallback(() => {
-		if (!isBigInt(maxPlancksIn) || !inputs.tokenIn?.token) return;
+		if (!isBigInt(maxPlancksIn) || !inputs?.tokenIn?.token) return;
 		updateOperationFormData({
 			amountIn: plancksToTokens(maxPlancksIn, inputs.tokenIn.token.decimals),
 		});
@@ -173,11 +178,11 @@ export const OperationForm = () => {
 		// in case of XCM operation, need the dry run to be available
 		// keep ED only if tokenIn is sufficient and there is no other sufficient asset
 		//	throw new Error("Not implemented");
-	}, [maxPlancksIn, inputs.tokenIn?.token]);
+	}, [maxPlancksIn, inputs?.tokenIn?.token]);
 
 	//const tokenIn = useToken({ tokenId: formData.tokenIdIn });
 	const { data: targetTokens, isLoading: isLoadingTargetTokens } =
-		usePossibleRoutesFromToken(inputs.tokenIn?.token);
+		usePossibleRoutesFromToken(inputs?.tokenIn?.token);
 	const dicTargetTokens = useMemo(
 		() => fromPairs((targetTokens ?? []).map((token) => [token.id, token])),
 		[targetTokens],
@@ -205,7 +210,7 @@ export const OperationForm = () => {
 						tokenId={formData.tokenIdIn}
 						tokens={tokens}
 						accounts={tokenPickerAccounts}
-						isLoading={inputs.tokenIn?.status === "loading"}
+						isLoading={isLoadingAllTokens}
 						onTokenChange={setTokenIn}
 						// errorMessage={inputErrorMessage}
 						balance={balanceIn}

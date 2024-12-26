@@ -126,11 +126,11 @@ export const [
 ] = bind(
 	combineLatest([operationInputs$, operationDryRun$]).pipe(
 		switchMap(
-			([inputs, dryRunState]): Observable<
+			([{ data: inputs, isLoading }, dryRunState]): Observable<
 				LoadableState<DestinationFee | null>
 			> => {
-				const chainId = inputs.tokenIn?.token?.chainId;
-				if (!chainId) return of(loadableStateData(null));
+				const chainId = inputs?.tokenIn?.token?.chainId;
+				if (!chainId) return of(loadableStateData(null, isLoading));
 
 				if (inputs.type !== "xcm") return of(loadableStateData(null));
 				if (dryRunState.error)

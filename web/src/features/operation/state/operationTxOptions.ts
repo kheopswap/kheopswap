@@ -16,8 +16,8 @@ const getNonce$ = (chainId: ChainId, address: string) => {
 };
 
 export const operationNonce$ = operationInputs$.pipe(
-	switchMap((inputs) => {
-		if (!inputs.account || !inputs.tokenIn?.token) return of(null);
+	switchMap(({ data: inputs }) => {
+		if (!inputs?.account || !inputs.tokenIn?.token) return of(null);
 		return getNonce$(inputs.tokenIn.token.chainId, inputs.account.address);
 	}),
 );

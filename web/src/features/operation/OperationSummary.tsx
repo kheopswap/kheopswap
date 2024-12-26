@@ -42,7 +42,9 @@ const FeeSummaryValue: FC<{
 };
 
 export const OperationSummary = () => {
-	const inputs = useOperationInputs();
+	const { data: inputs } = useOperationInputs();
+
+	if (!inputs) return null;
 
 	return (
 		<FormSummary>
@@ -136,7 +138,9 @@ const DestinationFeeRow = () => {
 };
 
 const CommonSummary = () => {
-	const inputs = useOperationInputs();
+	const { data: inputs } = useOperationInputs();
+
+	if (!inputs) return null;
 
 	return (
 		<FormSummarySection>

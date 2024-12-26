@@ -10,19 +10,23 @@ import { operationTransaction$ } from "./operationTransaction";
 
 export const [useOperationFeeEstimate, operationFeeEstimate$] = bind(
 	combineLatest([operationInputs$, operationTransaction$]).pipe(
-		switchMap(async ([inputs, ts]): Promise<LoadableState<bigint | null>> => {
-			if (!inputs.account) return loadableStateData(null);
-			try {
-				const fee = await ts.data?.getEstimatedFees(inputs.account.address, {
-					at: "best",
-				});
-				return loadableStateData(fee ?? null, ts.isLoading);
-			} catch (cause) {
-				return loadableStateError(
-					new Error("Failed to get fee estimate", { cause }),
-				);
-			}
-		}),
+		switchMap(
+			async ([{ data: inputs, isLoading }, ts]): Promise<
+				LoadableState<bigint | null>
+			> => {
+				if (!inputs?.account) return loadableStateData(null, isLoading);
+				try {
+					const fee = await ts.data?.getEstimatedFees(inputs.account.address, {
+						at: "best",
+					});
+					return loadableStateData(fee ?? null, isLoading || ts.isLoading);
+				} catch (cause) {
+					return loadableStateError(
+						new Error("Failed to get fee estimate", { cause }),
+					);
+				}
+			},
+		),
 		startWith(loadableStateData(null)),
 	),
 );

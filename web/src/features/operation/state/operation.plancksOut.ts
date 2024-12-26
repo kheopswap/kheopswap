@@ -11,37 +11,46 @@ import { operationInputs$ } from "./operationInputs";
 
 export const [useOperationPlancksOut, operationPlancksOut$] = bind(
 	operationInputs$.pipe(
-		switchMap((inputs): Observable<LoadableState<bigint | null>> => {
-			switch (inputs.type) {
-				case "transfer":
-					// TODO existential deposit checks both sides
-					return of(loadableStateData(inputs.plancksIn));
+		switchMap(
+			({
+				data: inputs,
+				isLoading,
+			}): Observable<LoadableState<bigint | null>> => {
+				switch (inputs?.type) {
+					case "transfer":
+						// TODO existential deposit checks both sides
+						return of(loadableStateData(inputs.plancksIn, isLoading));
 
-				case "asset-convert": {
-					const { tokenIn, tokenOut, plancksIn } = inputs;
-					return getAssetConvertPlancksOut$(
-						tokenIn?.token,
-						tokenOut?.token,
-						plancksIn,
-					);
+					case "asset-convert": {
+						const { tokenIn, tokenOut, plancksIn } = inputs;
+						return getAssetConvertPlancksOut$(
+							tokenIn?.token,
+							tokenOut?.token,
+							plancksIn,
+						);
+					}
+
+					case "xcm": {
+						if (!inputs.plancksIn)
+							return of(loadableStateData(null, isLoading));
+						return operationDryRun$.pipe(
+							map((dryRunState) => {
+								if (dryRunState.error)
+									return loadableStateError(dryRunState.error, isLoading);
+								if (!dryRunState.data)
+									return loadableStateData(
+										null,
+										isLoading || dryRunState.isLoading,
+									);
+								return loadableStateData(inputs.plancksIn, isLoading); // TODO substract fee
+							}),
+						);
+					}
+
+					default:
+						return of(loadableStateData(null));
 				}
-
-				case "xcm": {
-					if (!inputs.plancksIn) return of(loadableStateData(null));
-					return operationDryRun$.pipe(
-						map((dryRunState) => {
-							if (dryRunState.error)
-								return loadableStateError(dryRunState.error);
-							if (!dryRunState.data)
-								return loadableStateData(null, dryRunState.isLoading);
-							return loadableStateData(inputs.plancksIn); // TODO substract fee
-						}),
-					);
-				}
-
-				default:
-					return of(loadableStateData(null));
-			}
-		}),
+			},
+		),
 	),
 );

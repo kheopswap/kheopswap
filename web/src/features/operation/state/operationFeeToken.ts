@@ -42,8 +42,8 @@ export const getFeeToken$ = (chainId: ChainId, address: string | null) => {
 };
 
 export const operationFeeToken$ = operationInputs$.pipe(
-	switchMap((inputs) => {
-		if (!inputs.tokenIn?.token) return of(null);
+	switchMap(({ data: inputs }) => {
+		if (!inputs?.tokenIn?.token) return of(null);
 		return getFeeToken$(
 			inputs.tokenIn.token.chainId,
 			inputs.account?.address ?? null,
@@ -62,10 +62,10 @@ export const operationFeeEstimateWithToken$ = combineLatest([
 	operationFeeEstimate$,
 ]).pipe(
 	switchMap(
-		([inputs, feeToken, feeEstimate]): Observable<
+		([{ data: inputs }, feeToken, feeEstimate]): Observable<
 			LoadableState<FeeWithToken | null>
 		> => {
-			if (!feeToken || !isBigInt(feeEstimate.data) || !inputs.tokenIn?.token)
+			if (!feeToken || !isBigInt(feeEstimate.data) || !inputs?.tokenIn?.token)
 				return of(
 					loadableStateData<FeeWithToken | null>(null, feeEstimate.isLoading),
 				);

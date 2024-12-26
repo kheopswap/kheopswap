@@ -27,18 +27,21 @@ import { useOperationTransaction } from "./state/operationTransaction";
 export const OperationTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
-	const { tokenIn, plancksIn, account } = useOperationInputs();
+	const { data: inputs } = useOperationInputs();
 	const { data: call } = useOperationTransaction();
 	const { data: expectedEventResults } = useOperationExpectedEventResults();
 
 	const callSpendings = useMemo<CallSpendings>(
 		() =>
-			tokenIn?.token && !!plancksIn
+			inputs?.tokenIn?.token && !!inputs?.plancksIn
 				? {
-						[tokenIn.token?.id]: { plancks: plancksIn, allowDeath: true },
+						[inputs.tokenIn.token.id]: {
+							plancks: inputs.plancksIn,
+							allowDeath: true,
+						},
 					}
 				: {},
-		[tokenIn?.token, plancksIn],
+		[inputs?.tokenIn?.token, inputs?.plancksIn],
 	);
 
 	const handleReset = useCallback(() => {
@@ -53,8 +56,8 @@ export const OperationTransactionProvider: FC<PropsWithChildren> = ({
 			call={call}
 			fakeCall={call} // TODO
 			callSpendings={callSpendings}
-			chainId={tokenIn?.token?.chainId}
-			signer={account?.id}
+			chainId={inputs?.tokenIn?.token?.chainId}
+			signer={inputs?.account?.id}
 			onReset={handleReset}
 			followUpData={undefined} // needs to be snapshot on submit
 			expectedEventResults={expectedEventResults}
@@ -72,11 +75,11 @@ const [useOperationExpectedEventResults] = bind(
 		operationDeliveryFeeEstimate$,
 	]).pipe(
 		map(
-			([inputs, opPlancksOut, opFee, delFee]): LoadableState<
+			([{ data: inputs }, opPlancksOut, opFee, delFee]): LoadableState<
 				ExpectedEventResult[]
 			> => {
-				if (!inputs.tokenIn?.token)
-					return loadableStateData([], inputs.tokenIn?.status !== "loaded");
+				if (!inputs?.tokenIn?.token)
+					return loadableStateData([], inputs?.tokenIn?.status !== "loaded");
 				if (!inputs.tokenOut?.token)
 					return loadableStateData([], inputs.tokenIn?.status !== "loaded");
 				if (!inputs.account) return loadableStateData([]);

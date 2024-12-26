@@ -156,7 +156,7 @@ export const RelaySelect = () => {
 					`/${relayId}`,
 				);
 				navigate(newPath);
-			} else navigate(`/${relayId}/swap`);
+			} else navigate(`/${relayId}/operation`);
 			close();
 		},
 		[matches, navigate, close],

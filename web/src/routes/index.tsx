@@ -51,13 +51,13 @@ export const router = createHashRouter([
 			},
 			{
 				path: "",
-				element: <Navigate to="swap" replace />,
+				element: <Navigate to="operation" replace />,
 			},
 			{
 				path: "*",
-				element: <Navigate to="swap" replace />,
+				element: <Navigate to="operation" replace />,
 			},
 		],
 	},
-	{ path: "/", element: <Navigate to="/polkadot/swap" replace /> },
+	{ path: "/", element: <Navigate to="/polkadot/operation" replace /> },
 ]);

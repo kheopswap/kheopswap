@@ -102,19 +102,25 @@ export const [useOperationDeliveryFeeEstimate, operationDeliveryFeeEstimate$] =
 	bind(
 		combineLatest([operationInputs$, operationDryRun$]).pipe(
 			switchMap(
-				([inputs, dryRunState]): Observable<
+				([{ data: inputs, isLoading }, dryRunState]): Observable<
 					LoadableState<DeliveryFee | null>
 				> => {
-					const chainId = inputs.tokenIn?.token?.chainId;
-					if (!chainId) return of(loadableStateData(null));
+					const chainId = inputs?.tokenIn?.token?.chainId;
+					if (!chainId) return of(loadableStateData(null, isLoading));
 
-					if (inputs.type !== "xcm") return of(loadableStateData(null));
+					if (inputs.type !== "xcm")
+						return of(loadableStateData(null, isLoading));
 					if (dryRunState.error)
 						return of(
-							loadableStateError<DeliveryFee | null>(dryRunState.error),
+							loadableStateError<DeliveryFee | null>(
+								dryRunState.error,
+								isLoading,
+							),
 						);
 					if (!dryRunState.data)
-						return of(loadableStateData(null, dryRunState.isLoading));
+						return of(
+							loadableStateData(null, isLoading || dryRunState.isLoading),
+						);
 
 					return getDeliveryFeeEstimate$(chainId, dryRunState.data);
 				},

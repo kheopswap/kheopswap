@@ -8,10 +8,13 @@ import { getXcmTransaction$ } from "./helpers/getXcmTransaction";
 import { operationFakeInputs$ } from "./operationFakeInputs";
 import { type OperationInputs, operationInputs$ } from "./operationInputs";
 
-const getOperationTransaction$ = (
-	inputs: OperationInputs | null,
-): Observable<LoadableState<AnyTransaction | null>> => {
-	if (!inputs) return of(loadableStateData(null));
+const getOperationTransaction$ = ({
+	data: inputs,
+	isLoading,
+}: LoadableState<OperationInputs | null>): Observable<
+	LoadableState<AnyTransaction | null>
+> => {
+	if (!inputs) return of(loadableStateData(null, isLoading));
 
 	switch (inputs.type) {
 		case "transfer":

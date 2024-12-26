@@ -20,30 +20,33 @@ const feeEstimate$ = combineLatest([
 	operationFakeTransaction$,
 	operationTxOptions$,
 ]).pipe(
-	switchMap(async ([inputs, ts, fts, options]): Promise<bigint | null> => {
-		if (!inputs?.account || !options) return null;
-		try {
-			// fallback to fake transaction if real transaction is not available
-			const fee = await (ts.data ?? fts.data)?.getEstimatedFees(
-				inputs.account.address,
-				{
-					at: "best",
-					...options,
-				},
-			);
-			return fee ?? null;
-		} catch {
-			return null;
-		}
-	}),
+	switchMap(
+		async ([{ data: inputs }, ts, fts, options]): Promise<bigint | null> => {
+			if (!inputs?.account || !options) return null;
+			try {
+				// fallback to fake transaction if real transaction is not available
+				const fee = await (ts.data ?? fts.data)?.getEstimatedFees(
+					inputs.account.address,
+					{
+						at: "best",
+						...options,
+					},
+				);
+				return fee ?? null;
+			} catch {
+				return null;
+			}
+		},
+	),
 );
 
 const maxPlancksIn$ = combineLatest([
 	operationInputs$,
 	operationFeeToken$,
 ]).pipe(
-	switchMap(([inputs, feeToken]) => {
-		if (!inputs.tokenIn?.token || !inputs.account || !feeToken) return of(null);
+	switchMap(([{ data: inputs }, feeToken]) => {
+		if (!inputs?.tokenIn?.token || !inputs.account || !feeToken)
+			return of(null);
 
 		const balance$ = getBalance$({
 			address: inputs.account.address,

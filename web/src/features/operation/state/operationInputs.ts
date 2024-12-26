@@ -1,12 +1,18 @@
 import { getTokenById$ } from "@kheopswap/services/tokens";
-import { getAddressFromAccountField, tokensToPlancks } from "@kheopswap/utils";
+import {
+	type LoadableState,
+	getAddressFromAccountField,
+	loadableStateData,
+	loadableStateLoading,
+	tokensToPlancks,
+} from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import type { TokenState } from "node_modules/@kheopswap/services/src/tokens/state";
-import { combineLatest, map, of, switchMap } from "rxjs";
+import { type Observable, combineLatest, map, of, switchMap } from "rxjs";
 import { type InjectedAccount, getAccount$ } from "src/hooks";
 import {
 	type OperationType,
-	getOperationType,
+	getOperationType$,
 } from "./helpers/getOperationType";
 import {
 	type OperationFormData,
@@ -34,18 +40,44 @@ const getOperationInputs$ = (formData: OperationFormData) => {
 		: of(null);
 
 	return combineLatest([account$, tokenIn$, tokenOut$]).pipe(
-		map(
-			([account, tokenIn, tokenOut]): OperationInputs => ({
-				type: getOperationType(tokenIn?.token, tokenOut?.token),
-				account,
-				tokenIn,
-				tokenOut,
-				recipient: getAddressFromAccountField(formData.recipient) ?? null,
-				plancksIn:
-					tokenIn?.token && !!formData.amountIn
-						? tokensToPlancks(formData.amountIn, tokenIn.token.decimals)
-						: null,
-			}),
+		switchMap(
+			([account, tokenIn, tokenOut]): Observable<
+				LoadableState<OperationInputs>
+			> => {
+				return getOperationType$(tokenIn?.token, tokenOut?.token).pipe(
+					map((type): LoadableState<OperationInputs> => {
+						return loadableStateData<OperationInputs>(
+							{
+								type: type.data ?? "unknown",
+								account,
+								tokenIn,
+								tokenOut,
+								recipient:
+									getAddressFromAccountField(formData.recipient) ?? null,
+								plancksIn:
+									tokenIn?.token && !!formData.amountIn
+										? tokensToPlancks(formData.amountIn, tokenIn.token.decimals)
+										: null,
+							},
+							type.isLoading ||
+								tokenIn?.status !== "loaded" ||
+								tokenOut?.status !== "loaded",
+						);
+					}),
+				);
+
+				// return {
+				// 	type: getOperationType(tokenIn?.token, tokenOut?.token),
+				// 	account,
+				// 	tokenIn,
+				// 	tokenOut,
+				// 	recipient: getAddressFromAccountField(formData.recipient) ?? null,
+				// 	plancksIn:
+				// 		tokenIn?.token && !!formData.amountIn
+				// 			? tokensToPlancks(formData.amountIn, tokenIn.token.decimals)
+				// 			: null,
+				// };
+			},
 		),
 	);
 };
@@ -54,4 +86,5 @@ export const [useOperationInputs, operationInputs$] = bind(
 	operationFormData$.pipe(
 		switchMap((formData) => getOperationInputs$(formData)),
 	),
+	loadableStateLoading<OperationInputs>(),
 );
