@@ -19,7 +19,6 @@ import {
 	useAssetConvertPlancks,
 	useBalance,
 	useBalances,
-	useDryRun,
 	useEstimateFee,
 	useExistentialDeposits,
 	useFeeToken,
@@ -28,6 +27,7 @@ import {
 	useWalletAccount,
 	useXcmDryRun,
 } from "src/hooks";
+import { useDryRunCall } from "src/state/dryRunCall";
 import type { AnyTransaction } from "src/types";
 import {
 	getDestinationChain,
@@ -295,11 +295,7 @@ const useTransactionProvider = ({
 		data: dryRun,
 		isLoading: isLoadingDryRun,
 		error: errorDryRun,
-	} = useDryRun({
-		chainId,
-		from: account?.address,
-		call,
-	});
+	} = useDryRunCall(chainId, account?.address, call?.decodedCall);
 
 	const [destChainId, xcm] = useMemo(() => {
 		if (!dryRun || !chainId) return [null, null];

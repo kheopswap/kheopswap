@@ -191,6 +191,9 @@ export const OperationForm = () => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-3">
+				<div className="text-neutral-500">
+					Swap, transfer, or cross-chain transfer using this single form
+				</div>
 				<FormFieldContainer id="sender-account" label="From">
 					<AccountSelect
 						id="sender-account"

@@ -3,6 +3,7 @@ import {
 	type LoadableState,
 	loadableStateData,
 	loadableStateError,
+	tapDebug,
 } from "@kheopswap/utils";
 import { type Observable, combineLatest, of, switchMap } from "rxjs";
 import { getDryRunCall$ } from "src/state/dryRunCall";
@@ -33,7 +34,7 @@ export const operationDryRun$ = combineLatest([
 				inputs.tokenIn.token.chainId,
 				inputs.account.address,
 				transaction.data.decodedCall,
-			);
+			).pipe(tapDebug("operationDryRun$"));
 		},
 	),
 );

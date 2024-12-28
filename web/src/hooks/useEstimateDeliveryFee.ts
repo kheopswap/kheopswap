@@ -11,14 +11,14 @@ import {
 	isChainIdRelay,
 } from "@kheopswap/registry";
 import { logger, safeQueryKeyPart } from "@kheopswap/utils";
+import { useDryRunCall } from "src/state/dryRunCall";
 import type { AnyTransaction } from "src/types";
 import { getXcmMessageFromDryRun } from "src/util";
-import { useDryRun } from "./useDryRun";
 
 type UseEstimateDeliveryFeeProps = {
 	chainId: ChainId | null | undefined;
 	from: SS58String | null | undefined;
-	call: AnyTransaction | null | undefined;
+	call: AnyTransaction["decodedCall"] | null | undefined;
 };
 
 export const useEstimateDeliveryFee = ({
@@ -26,18 +26,18 @@ export const useEstimateDeliveryFee = ({
 	from,
 	call,
 }: UseEstimateDeliveryFeeProps) => {
-	const { data: dryRun, isLoading: dryRunIsLoading } = useDryRun({
+	const { data: dryRun, isLoading: dryRunIsLoading } = useDryRunCall(
 		chainId,
 		from,
 		call,
-	});
+	);
 
 	return useQuery({
 		queryKey: [
 			"useEstimateDeliveryFee",
 			chainId,
 			from,
-			safeQueryKeyPart(call?.decodedCall),
+			safeQueryKeyPart(call),
 			safeQueryKeyPart(dryRun),
 		],
 		queryFn: async ({ signal }) => {

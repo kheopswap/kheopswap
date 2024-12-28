@@ -15,7 +15,6 @@ import { keyBy } from "lodash";
 import {
 	useBalance,
 	useCanAccountReceive,
-	useDryRun,
 	useEstimateFee,
 	useExistentialDeposit,
 	useFeeToken,
@@ -27,6 +26,7 @@ import {
 import { useEstimateDeliveryFee } from "src/hooks";
 import { useEstimateDestinationFee } from "src/hooks";
 import { useRelayChains } from "src/state";
+import { useDryRunCall } from "src/state/dryRunCall";
 import { getAssetHubMirrorTokenId } from "src/util";
 
 const useDefaultValues = () => {
@@ -159,11 +159,11 @@ const useTeleportProvider = () => {
 		data: dryRun,
 		isLoading: isLoadingDryRun,
 		error: errorDryRun,
-	} = useDryRun({
-		call: extrinsic?.call,
-		chainId: tokenIn?.chainId,
-		from: account?.address,
-	});
+	} = useDryRunCall(
+		tokenIn?.chainId,
+		account?.address,
+		extrinsic?.call.decodedCall,
+	);
 
 	const {
 		data: deliveryFeeEstimate,
@@ -172,8 +172,8 @@ const useTeleportProvider = () => {
 	} = useEstimateDeliveryFee({
 		call:
 			dryRun?.success && dryRun.value.execution_result.success
-				? extrinsic?.call
-				: fakeExtrinsic?.call,
+				? extrinsic?.call.decodedCall
+				: fakeExtrinsic?.call.decodedCall,
 		chainId: tokenIn?.chainId,
 		from: account?.address,
 	});
@@ -185,15 +185,15 @@ const useTeleportProvider = () => {
 	} = useEstimateDestinationFee({
 		call:
 			dryRun?.success && dryRun.value.execution_result.success
-				? extrinsic?.call
-				: fakeExtrinsic?.call,
+				? extrinsic?.call.decodedCall
+				: fakeExtrinsic?.call.decodedCall,
 		chainId: tokenIn?.chainId,
 		from: account?.address,
 	});
 
 	// leverage fake estimate as backup to prevent amountOut from flickering if real one returns null
 	const { data: fakeDestFeeEstimate } = useEstimateDestinationFee({
-		call: fakeExtrinsic?.call,
+		call: fakeExtrinsic?.call.decodedCall,
 		chainId: tokenIn?.chainId,
 		from: account?.address,
 	});
