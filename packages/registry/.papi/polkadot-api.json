@@ -11,7 +11,7 @@
 			"metadata": ".papi/scale/pah.scale"
 		},
 		"hydration": {
-			"wsUrl": "wss://rpc.hydradx.cloud",
+			"wsUrl": "wss://hydradx-rpc.dwellir.com",
 			"metadata": ".papi/scale/hydration.scale"
 		},
 		"mythos": {
