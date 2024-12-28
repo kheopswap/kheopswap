@@ -53,6 +53,7 @@ export const useEstimateDeliveryFee = ({
 			if (!isChainIdAssetHub(chainId) && !isChainIdRelay(chainId)) return null;
 
 			const xcm = getXcmMessageFromDryRun(dryRun);
+			if (!xcm) return null;
 
 			try {
 				const api = await getApi(chainId);

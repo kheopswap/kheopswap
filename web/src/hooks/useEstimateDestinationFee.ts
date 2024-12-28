@@ -89,6 +89,7 @@ export const useEstimateDestinationFee = ({
 
 			try {
 				const xcm = getXcmMessageFromDryRun(dryRun);
+				if (!xcm) return null;
 
 				const destinationChain = getDestinationChain(chainId, xcm.destination);
 

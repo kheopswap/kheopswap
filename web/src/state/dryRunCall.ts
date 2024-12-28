@@ -1,4 +1,3 @@
-import { getApiLoadable$ } from "@kheopswap/papi";
 import type { ChainId } from "@kheopswap/registry";
 import {
 	type LoadableState,
@@ -13,16 +12,15 @@ import type { SS58String } from "polkadot-api";
 import {
 	type Observable,
 	catchError,
-	combineLatest,
 	from,
 	map,
 	of,
-	startWith,
+	shareReplay,
 	switchMap,
 } from "rxjs";
 import type { AnyTransaction } from "src/types";
 import { type DryRun, getDryRun } from "src/util";
-import { getBlockNumber$ } from "./blockNumber";
+import { getApiEachBlock$ } from "./blockNumber";
 
 const STR_SPLITTER = "||";
 
@@ -35,52 +33,42 @@ export const getDryRunCall$ = (
 	fromAddress: SS58String,
 	call: AnyTransaction["decodedCall"],
 ) =>
-	combineLatest([getApiLoadable$(chainId), getBlockNumber$(chainId)]).pipe(
-		switchMap(
-			([
-				{ data: api, isLoading: isLoadingApi, error: errorApi },
-				{
-					data: blockNumber,
-					isLoading: isLoadingBlockNumber,
-					error: errorBlockNumber,
-				},
-			]): Observable<LoadableState<DryRun<ChainId> | null>> => {
-				if (errorApi) return of(loadableStateError<DryRun<ChainId>>(errorApi));
-				if (errorBlockNumber)
-					return of(loadableStateError<DryRun<ChainId>>(errorBlockNumber));
-				if (!blockNumber && !isLoadingBlockNumber)
-					return of(
-						loadableStateError<DryRun<ChainId>>(
-							new Error(`Block number not found - ${chainId}`),
-						),
-					);
-				if (!api && !isLoadingApi)
-					return of(
-						loadableStateError<DryRun<ChainId>>(
-							new Error(`Api not found - ${chainId}`),
-						),
-					);
-				if (!blockNumber || !api)
-					return of(loadableStateLoading<DryRun<ChainId>>());
+	getCachedObservable$(
+		"getDryRunCall$",
+		serializeParams(chainId, fromAddress, call),
+		() => {
+			return getApiEachBlock$(chainId).pipe(
+				switchMap(
+					({
+						data: api,
+						isLoading: isLoadingApi,
+						error: errorApi,
+					}): Observable<LoadableState<DryRun<ChainId> | null>> => {
+						if (errorApi)
+							return of(loadableStateError<DryRun<ChainId>>(errorApi));
+						if (!api && !isLoadingApi)
+							return of(
+								loadableStateError<DryRun<ChainId>>(
+									new Error(`Api not found - ${chainId}`),
+								),
+							);
+						if (!api) return of(loadableStateLoading<DryRun<ChainId>>());
 
-				return getCachedObservable$(
-					"getDryRunCall$",
-					serializeParams(chainId, blockNumber, fromAddress, call),
-					() =>
-						from(
+						return from(
 							getDryRun(
 								api,
 								fromAddress,
 								call,
 							) as Promise<DryRun<ChainId> | null>,
-						).pipe(map((dryRun) => loadableStateData(dryRun))),
-				);
-			},
-		),
-		catchError((error) =>
-			of(loadableStateError<DryRun<ChainId> | null>(error)),
-		),
-		startWith(loadableStateLoading<DryRun<ChainId> | null>()),
+						).pipe(map((dryRun) => loadableStateData(dryRun)));
+					},
+				),
+				catchError((error) =>
+					of(loadableStateError<DryRun<ChainId> | null>(error)),
+				),
+				shareReplay({ refCount: true, bufferSize: 1 }),
+			);
+		},
 	);
 
 export const [useDryRunCall] = bind(

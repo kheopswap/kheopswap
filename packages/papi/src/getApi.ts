@@ -6,6 +6,7 @@ import {
 	from,
 	map,
 	of,
+	shareReplay,
 	startWith,
 } from "rxjs";
 
@@ -158,11 +159,14 @@ export const getApi$ = <Id extends ChainId, Papi = Api<Id>>(
 export const getApiLoadable$ = <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 ): Observable<LoadableState<Papi>> => {
-	return getApi$(id).pipe(
-		map((api) => loadableStateData(api as Papi)),
-		catchError((cause) =>
-			of(loadableStateError<Papi>(new Error("Failed to get Api", { cause }))),
+	return getCachedObservable$("getCachedObservable$", id, () =>
+		getApi$(id).pipe(
+			map((api) => loadableStateData(api as Papi)),
+			catchError((cause) =>
+				of(loadableStateError<Papi>(new Error("Failed to get Api", { cause }))),
+			),
+			startWith(loadableStateLoading<Papi>()), // TODO test
+			shareReplay(1),
 		),
-		startWith(loadableStateLoading<Papi>()), // TODO test
 	);
 };

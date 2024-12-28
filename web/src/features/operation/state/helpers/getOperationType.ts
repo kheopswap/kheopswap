@@ -40,8 +40,8 @@ export const getOperationType$ = (
 							isLoading,
 						),
 					),
-					startWith(loadableStateData<OperationType>("unknown")),
 					catchError(() => of(loadableStateData<OperationType>("unknown"))),
+					startWith(loadableStateData<OperationType>("unknown")),
 				);
 
 			if (isXcm(tokenIn, tokenOut))

@@ -1,9 +1,7 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import type { TokenId } from "@kheopswap/registry";
-import { isBigInt } from "@kheopswap/utils";
 import type { FC } from "react";
 import {
-	AddressDisplay,
 	FormSummary,
 	FormSummaryRow,
 	FormSummarySection,
@@ -18,8 +16,7 @@ import { useToken } from "src/hooks";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { TransactionXcmDryRunSummaryValue } from "../transaction/TransactionXcmDryRunValue";
-import { type OperationInputs, useOperationInputs } from "./state";
-import { useOperationPlancksOut } from "./state/operation.plancksOut";
+import { useOperationInputs } from "./state";
 import { useOperationDeliveryFeeEstimate } from "./state/operationDeliveryFeeEstimate";
 import { useOperationDestinationFeeEstimate } from "./state/operationDestinationFeeEstimate";
 
@@ -53,52 +50,52 @@ export const OperationSummary = () => {
 
 	return (
 		<FormSummary>
-			{inputs.type === "asset-convert" && <SwapSummary {...inputs} />}
-			{inputs.type === "transfer" && <TransferSummary {...inputs} />}
+			{/* {inputs.type === "asset-convert" && <SwapSummary {...inputs} />}
+			{inputs.type === "transfer" && <TransferSummary {...inputs} />} */}
 			{/* {inputs.type === "xcm" && <XcmSummary {...inputs} />} */}
 			<CommonSummary />
 		</FormSummary>
 	);
 };
 
-const TransferSummary = (inputs: OperationInputs) => {
-	return isBigInt(inputs.plancksIn) &&
-		inputs.tokenIn?.token &&
-		inputs.recipient ? (
-		<div>
-			Transfer{" "}
-			<Tokens plancks={inputs.plancksIn} token={inputs.tokenIn?.token} /> to{" "}
-			<AddressDisplay address={inputs.recipient} className="items-baseline" />
-		</div>
-	) : null;
-};
+// const TransferSummary = (inputs: OperationInputs) => {
+// 	return isBigInt(inputs.plancksIn) &&
+// 		inputs.tokenIn?.token &&
+// 		inputs.recipient ? (
+// 		<div>
+// 			Transfer{" "}
+// 			<Tokens plancks={inputs.plancksIn} token={inputs.tokenIn?.token} /> to{" "}
+// 			<AddressDisplay address={inputs.recipient} className="items-baseline" />
+// 		</div>
+// 	) : null;
+// };
 
-const SwapSummary = (inputs: OperationInputs) => {
-	const plancksOut = useOperationPlancksOut();
+// const SwapSummary = (inputs: OperationInputs) => {
+// 	const plancksOut = useOperationPlancksOut();
 
-	return isBigInt(inputs.plancksIn) &&
-		inputs.tokenIn?.token &&
-		inputs.tokenOut?.token &&
-		isBigInt(plancksOut.data) &&
-		inputs.account &&
-		inputs.recipient ? (
-		<div>
-			Swap <Tokens plancks={inputs.plancksIn} token={inputs.tokenIn?.token} />{" "}
-			for <Tokens plancks={plancksOut.data} token={inputs.tokenOut?.token} />
-			{inputs.recipient !== inputs.account.address && (
-				<>
-					{" "}
-					with{" "}
-					<AddressDisplay
-						address={inputs.recipient}
-						className="items-baseline"
-					/>{" "}
-					as recipient
-				</>
-			)}
-		</div>
-	) : null;
-};
+// 	return isBigInt(inputs.plancksIn) &&
+// 		inputs.tokenIn?.token &&
+// 		inputs.tokenOut?.token &&
+// 		isBigInt(plancksOut.data) &&
+// 		inputs.account &&
+// 		inputs.recipient ? (
+// 		<div>
+// 			Swap <Tokens plancks={inputs.plancksIn} token={inputs.tokenIn?.token} />{" "}
+// 			for <Tokens plancks={plancksOut.data} token={inputs.tokenOut?.token} />
+// 			{inputs.recipient !== inputs.account.address && (
+// 				<>
+// 					{" "}
+// 					with{" "}
+// 					<AddressDisplay
+// 						address={inputs.recipient}
+// 						className="items-baseline"
+// 					/>{" "}
+// 					as recipient
+// 				</>
+// 			)}
+// 		</div>
+// 	) : null;
+// };
 
 const DeliveryFeeRow = () => {
 	const {

@@ -147,7 +147,8 @@ export const accounts$ = combineLatest([
 export const getAccount$ = (id: string) => {
 	return accounts$.pipe(
 		map((accounts) => accounts.find((account) => account.id === id) ?? null),
-		distinctUntilChanged(),
+		distinctUntilChanged((a1, a2) => a1?.address === a2?.address),
+		shareReplay({ refCount: true, bufferSize: 1 }),
 	);
 };
 
