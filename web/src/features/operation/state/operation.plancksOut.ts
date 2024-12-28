@@ -1,12 +1,13 @@
 import {
 	type LoadableState,
+	isBigInt,
 	loadableStateData,
 	loadableStateError,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { type Observable, map, of, switchMap } from "rxjs";
 import { getAssetConvertPlancksOut$ } from "./operation.assetConvert";
-import { operationDryRun$ } from "./operationDryRun";
+import { operationDestinationFeeEstimate$ } from "./operationDestinationFeeEstimate";
 import { operationInputs$ } from "./operationInputs";
 
 export const [useOperationPlancksOut, operationPlancksOut$] = bind(
@@ -33,16 +34,34 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind(
 					case "xcm": {
 						if (!inputs.plancksIn)
 							return of(loadableStateData(null, isLoading));
-						return operationDryRun$.pipe(
-							map((dryRunState) => {
-								if (dryRunState.error)
-									return loadableStateError(dryRunState.error, isLoading);
-								if (!dryRunState.data)
+
+						return operationDestinationFeeEstimate$.pipe(
+							map((opDestFee) => {
+								if (opDestFee.error)
+									return loadableStateError(opDestFee.error, isLoading); // TODO FIX
+								if (!opDestFee.data)
 									return loadableStateData(
 										null,
-										isLoading || dryRunState.isLoading,
+										isLoading || opDestFee.isLoading,
 									);
-								return loadableStateData(inputs.plancksIn, isLoading); // TODO substract fee
+
+								// substract dest fee if possible
+								if (
+									isBigInt(inputs.plancksIn) &&
+									opDestFee.data.tokenId === inputs.tokenOut?.token?.id
+								) {
+									// TODO check if after dest fees are paid, there is enough for existential deposit
+
+									if (opDestFee.data.plancks < inputs.plancksIn)
+										return loadableStateData(
+											inputs.plancksIn - opDestFee.data.plancks,
+											isLoading,
+										);
+									//not enough to pay for fee
+									return loadableStateData(null, isLoading);
+								}
+
+								return loadableStateData(inputs.plancksIn, isLoading);
 							}),
 						);
 					}

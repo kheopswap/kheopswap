@@ -43,3 +43,5 @@ export * from "./useTokenInfos";
 export * from "./useLoadingStatusSummary";
 export * from "./useTokenPrices";
 export * from "./useDryRunError";
+export * from "./useXcmDryRun";
+export * from "./useXcmDryRunError";

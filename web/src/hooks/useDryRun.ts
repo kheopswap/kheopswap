@@ -1,15 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 
-import { type Api, getApi } from "@kheopswap/papi";
-import {
-	type ChainId,
-	type ChainIdWithDryRun,
-	DispatchRawOrigin,
-	PolkadotRuntimeOriginCaller,
-	isChainIdWithDryRun,
-} from "@kheopswap/registry";
-import { logger, safeQueryKeyPart } from "@kheopswap/utils";
+import type { ChainId } from "@kheopswap/registry";
+import { useDryRunCall } from "src/state/dryRunCall";
 import type { AnyTransaction } from "src/types";
 
 type UseDryRunProps = {
@@ -18,38 +10,44 @@ type UseDryRunProps = {
 	call: AnyTransaction | null | undefined;
 };
 
-export type DryRun<Id extends ChainIdWithDryRun> = Awaited<
-	ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_call"]>
->;
-
 export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
-	return useQuery({
-		queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
-		queryFn: async ({ signal }) => {
-			if (!chainId || !from || !call) return null;
+	return useDryRunCall(chainId, from, call?.decodedCall);
+	// return useQuery({
+	// 	queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
+	// 	queryFn: async ({ signal }) => {
+	// 		if (!chainId || !from || !call) return null;
 
-			if (!isChainIdWithDryRun(chainId)) return null;
+	// 		if (!isChainIdWithDryRun(chainId)) return null;
 
-			try {
-				const api = await getApi(chainId);
+	// 		try {
+	// 			//return await firstValueFrom(getDryRun(chainId, from, call.decodedCall, signal));
+	// 			const api = await getApi(chainId);
 
-				// @ts-ignore
-				const dryRun = await api.apis.DryRunApi.dry_run_call(
-					PolkadotRuntimeOriginCaller.system(DispatchRawOrigin.Signed(from)),
-					call.decodedCall,
-					{ at: "best", signal },
-				);
+	// 			return await getDryRun(api, from, call.decodedCall, signal);
 
-				logger.debug("[dry run]", { dryRun, call: call.decodedCall });
+	// 			// logger.debug("[api call] DryRunApi.dry_run_call", {
+	// 			// 	chainId,
+	// 			// 	from,
+	// 			// 	decoded: call.decodedCall,
+	// 			// });
 
-				return dryRun;
-			} catch (err) {
-				logger.error("[dry run]", { err, call: call.decodedCall });
-				throw err;
-			}
-		},
-		retry: 1,
-		refetchInterval: false,
-		structuralSharing: false,
-	});
+	// 			// // @ts-ignore
+	// 			// const dryRun = await api.apis.DryRunApi.dry_run_call(
+	// 			// 	PolkadotRuntimeOriginCaller.system(DispatchRawOrigin.Signed(from)),
+	// 			// 	call.decodedCall,
+	// 			// 	{ at: "best", signal },
+	// 			// );
+
+	// 			// logger.debug("[dry run]", { dryRun, call: call.decodedCall });
+
+	// 			// return dryRun;
+	// 		} catch (err) {
+	// 			logger.error("[dry run]", { err, call: call.decodedCall });
+	// 			throw err;
+	// 		}
+	// 	},
+	// 	retry: 1,
+	// 	refetchInterval: false,
+	// 	structuralSharing: false,
+	// });
 };

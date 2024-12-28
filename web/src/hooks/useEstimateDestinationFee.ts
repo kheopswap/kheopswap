@@ -96,11 +96,22 @@ export const useEstimateDestinationFee = ({
 					destinationChain.id as ChainIdRelay | ChainIdAssetHub,
 				);
 
+				logger.debug("[api call] XcmPaymentApi.query_xcm_weight", {
+					chainId,
+					xcm,
+				});
+
 				const weight = await api.apis.XcmPaymentApi.query_xcm_weight(
 					Enum("V4", xcm.message as XcmV4Instruction[]),
 					{ at: "best", signal },
 				);
 				if (!weight.success) throw new Error("Failed to estimate");
+
+				logger.debug("[api call] XcmPaymentApi.query_weight_to_asset_fee", {
+					chainId,
+					xcm,
+					weight,
+				});
 
 				const fee = await api.apis.XcmPaymentApi.query_weight_to_asset_fee(
 					weight.value,

@@ -57,6 +57,11 @@ export const useEstimateDeliveryFee = ({
 			try {
 				const api = await getApi(chainId);
 
+				logger.debug("[api call] XcmPaymentApi.query_delivery_fees", {
+					chainId,
+					xcm,
+				});
+
 				const deliveryFee = await api.apis.XcmPaymentApi.query_delivery_fees(
 					Enum("V4", xcm.destination),
 					Enum("V4", xcm.message as XcmV4Instruction[]),

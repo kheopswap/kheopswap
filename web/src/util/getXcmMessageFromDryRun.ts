@@ -18,3 +18,5 @@ export const getXcmMessageFromDryRun = <Id extends ChainIdWithDryRun>(
 
 	throw new Error("XCM message not found");
 };
+
+export type XcmMessage = ReturnType<typeof getXcmMessageFromDryRun>;

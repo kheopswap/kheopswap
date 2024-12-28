@@ -1,3 +1,4 @@
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import type { TokenId } from "@kheopswap/registry";
 import { isBigInt } from "@kheopswap/utils";
 import type { FC } from "react";
@@ -8,11 +9,15 @@ import {
 	FormSummarySection,
 	Shimmer,
 	Tokens,
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
 } from "src/components";
 import { Pulse } from "src/components/Pulse";
 import { useToken } from "src/hooks";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
+import { TransactionXcmDryRunSummaryValue } from "../transaction/TransactionXcmDryRunValue";
 import { type OperationInputs, useOperationInputs } from "./state";
 import { useOperationPlancksOut } from "./state/operation.plancksOut";
 import { useOperationDeliveryFeeEstimate } from "./state/operationDeliveryFeeEstimate";
@@ -117,11 +122,60 @@ const DeliveryFeeRow = () => {
 };
 
 const DestinationFeeRow = () => {
+	const { data: inputs, isLoading: inputsIsLoading } = useOperationInputs();
+
 	const {
 		data: destinationFee,
 		error: destinationFeeError,
 		isLoading: destinationFeeIsLoading,
 	} = useOperationDestinationFeeEstimate();
+
+	// useEffect(() => {
+	// 	console.log("DestinationFeeRow", {
+	// 		inputsIsLoading,
+	// 		destinationFeeIsLoading,
+	// 		inputs,
+	// 		destinationFee,
+	// 	});
+	// }, [inputsIsLoading, destinationFeeIsLoading, inputs, destinationFee]);
+
+	if (
+		!inputsIsLoading &&
+		!destinationFeeIsLoading &&
+		inputs?.tokenOut?.token?.id &&
+		destinationFee?.tokenId &&
+		inputs?.tokenOut?.token?.id !== destinationFee?.tokenId
+	)
+		return (
+			<FormSummaryRow
+				label="XCM Destination Fee"
+				value={
+					<Tooltip placement="bottom-end">
+						<TooltipTrigger asChild>
+							<div className="flex gap-1 items-center">
+								<FeeSummaryValue
+									fee={destinationFee}
+									isLoading={destinationFeeIsLoading}
+									error={destinationFeeError}
+								/>
+								<InformationCircleIcon className="size-5 inline align-text-bottom" />
+							</div>
+						</TooltipTrigger>
+						<TooltipContent>
+							<div className="max-w-72">
+								<p>
+									The destination chain will automatically convert this amount
+									to {inputs.tokenOut.token.symbol} and it will be taken from
+									the transfered amount.
+									<br />
+									Kheopswap is unable to determine this converted amount.
+								</p>
+							</div>
+						</TooltipContent>
+					</Tooltip>
+				}
+			/>
+		);
 
 	return (
 		<FormSummaryRow
@@ -140,20 +194,28 @@ const DestinationFeeRow = () => {
 const CommonSummary = () => {
 	const { data: inputs } = useOperationInputs();
 
+	const isXcm = inputs?.type === "xcm";
+
 	if (!inputs) return null;
 
 	return (
 		<FormSummarySection>
 			<FormSummaryRow
-				label="Simulation"
+				label={isXcm ? "Origin chain simulation" : "Simulation"}
 				value={<TransactionDryRunSummaryValue />}
 			/>
+			{isXcm && (
+				<FormSummaryRow
+					label="Dest. chain simulation"
+					value={<TransactionXcmDryRunSummaryValue />}
+				/>
+			)}
 			<FormSummaryRow
 				label="Transaction fee"
 				value={<TransactionFeeSummaryValue />}
 			/>
-			{inputs.type === "xcm" && <DeliveryFeeRow />}
-			{inputs.type === "xcm" && <DestinationFeeRow />}
+			{isXcm && <DeliveryFeeRow />}
+			{isXcm && <DestinationFeeRow />}
 		</FormSummarySection>
 	);
 };

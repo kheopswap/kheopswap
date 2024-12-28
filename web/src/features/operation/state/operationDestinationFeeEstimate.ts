@@ -2,11 +2,8 @@ import { getApiLoadable$, isApiIn, isApiWithDryRun } from "@kheopswap/papi";
 import {
 	type ChainId,
 	XcmV3Junctions,
-	type XcmV3Multilocation,
 	type XcmV4Instruction,
 	XcmVersionedAssetId,
-	getChainById,
-	getChains,
 	getTokenId,
 	isChainIdRelay,
 } from "@kheopswap/registry";
@@ -29,7 +26,11 @@ import {
 	startWith,
 	switchMap,
 } from "rxjs";
-import { type DryRun, getXcmMessageFromDryRun } from "src/util";
+import {
+	type DryRun,
+	getDestinationChain,
+	getXcmMessageFromDryRun,
+} from "src/util";
 import { operationDryRun$ } from "./operationDryRun";
 import { operationInputs$ } from "./operationInputs";
 
@@ -66,6 +67,11 @@ const getDestinationFeeEstimate$ = <Id extends ChainId>(
 			)
 				return of(loadableStateData(null));
 
+			logger.debug("[api call] XcmPaymentApi.query_xcm_weight", {
+				chainId,
+				xcm,
+			});
+
 			return from(
 				api.apis.XcmPaymentApi.query_xcm_weight(
 					Enum("V4", xcm.message as XcmV4Instruction[]),
@@ -81,16 +87,22 @@ const getDestinationFeeEstimate$ = <Id extends ChainId>(
 					}
 					return resWeight.value;
 				}),
-				switchMap((weight) =>
-					api.apis.XcmPaymentApi.query_weight_to_asset_fee(
+				switchMap((weight) => {
+					logger.debug("[api call] XcmPaymentApi.query_weight_to_asset_fee", {
+						chainId,
+						weight,
+						destinationChain,
+					});
+
+					return api.apis.XcmPaymentApi.query_weight_to_asset_fee(
 						weight,
 						XcmVersionedAssetId.V4({
 							parents: isChainIdRelay(destinationChain.id) ? 0 : 1,
 							interior: XcmV3Junctions.Here(),
 						}),
 						{ at: "best" },
-					),
-				),
+					);
+				}),
 				map((fee) => {
 					if (!fee.success) {
 						logger.error(
@@ -148,31 +160,31 @@ export const [
 	),
 );
 
-const getDestinationChain = (
-	originChainId: ChainId,
-	location: XcmV3Multilocation,
-) => {
-	const originChain = getChainById(originChainId);
+// const getDestinationChain = (
+// 	originChainId: ChainId,
+// 	location: XcmV3Multilocation,
+// ) => {
+// 	const originChain = getChainById(originChainId);
 
-	if (
-		location.interior.type === "X1" &&
-		location.interior.value.type === "Parachain"
-	) {
-		const paraId = location.interior.value.value;
-		if (paraId) {
-			const chain = getChains().find(
-				(chain) => chain.relay === originChain.relay && chain.paraId === paraId,
-			);
-			if (chain) return chain;
-		}
-	}
+// 	if (
+// 		location.interior.type === "X1" &&
+// 		location.interior.value.type === "Parachain"
+// 	) {
+// 		const paraId = location.interior.value.value;
+// 		if (paraId) {
+// 			const chain = getChains().find(
+// 				(chain) => chain.relay === originChain.relay && chain.paraId === paraId,
+// 			);
+// 			if (chain) return chain;
+// 		}
+// 	}
 
-	if (
-		originChain.relay &&
-		location.parents === 1 &&
-		location.interior.type === "Here"
-	)
-		return getChainById(originChain.relay);
+// 	if (
+// 		originChain.relay &&
+// 		location.parents === 1 &&
+// 		location.interior.type === "Here"
+// 	)
+// 		return getChainById(originChain.relay);
 
-	throw new Error("Unexpected destination chain");
-};
+// 	throw new Error("Unexpected destination chain");
+// };

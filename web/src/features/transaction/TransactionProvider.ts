@@ -26,9 +26,15 @@ import {
 	useNativeToken,
 	useNonce,
 	useWalletAccount,
+	useXcmDryRun,
 } from "src/hooks";
 import type { AnyTransaction } from "src/types";
-import { getFeeAssetLocation, getTxOptions } from "src/util";
+import {
+	getDestinationChain,
+	getFeeAssetLocation,
+	getTxOptions,
+	getXcmMessageFromDryRun,
+} from "src/util";
 
 export type ExpectedEventResult<T = unknown> = {
 	label: string;
@@ -295,6 +301,26 @@ const useTransactionProvider = ({
 		call,
 	});
 
+	const [destChainId, xcm] = useMemo(() => {
+		if (!dryRun || !chainId) return [null, null];
+		const xcm = getXcmMessageFromDryRun(dryRun);
+		if (!xcm) return [null, null];
+		const destinationChain = getDestinationChain(chainId, xcm.destination);
+		if (!destinationChain) return [null, null];
+
+		return [destinationChain.id, xcm];
+	}, [dryRun, chainId]);
+
+	const {
+		data: xcmDryRun,
+		isLoading: isLoadingXcmDryRun,
+		error: errorXcmDryRun,
+	} = useXcmDryRun({
+		chainId: destChainId,
+		originChainId: chainId,
+		xcm,
+	});
+
 	const isLoading = useMemo(() => {
 		return (
 			isLoadingBalances ||
@@ -461,6 +487,10 @@ const useTransactionProvider = ({
 		dryRun,
 		isLoadingDryRun,
 		errorDryRun,
+
+		xcmDryRun,
+		isLoadingXcmDryRun,
+		errorXcmDryRun,
 	};
 };
 

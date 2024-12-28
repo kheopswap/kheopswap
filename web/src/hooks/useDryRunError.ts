@@ -2,8 +2,7 @@ import type { ChainId, ChainIdWithDryRun } from "@kheopswap/registry";
 import { safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { getDispatchErrorMessage } from "src/util";
-import type { DryRun } from "./useDryRun";
+import { type DryRun, getDispatchErrorMessage } from "src/util";
 
 type UseDryRunError = {
 	chainId: ChainId | null | undefined;

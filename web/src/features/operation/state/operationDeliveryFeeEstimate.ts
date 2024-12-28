@@ -10,6 +10,7 @@ import {
 	loadableStateData,
 	loadableStateError,
 	loadableStateLoading,
+	logger,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { Enum } from "polkadot-api";
@@ -56,6 +57,11 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 				])
 			)
 				return of(loadableStateData(null));
+
+			logger.debug("[api call] XcmPaymentApi.query_delivery_fees", {
+				chainId,
+				xcm,
+			});
 
 			return from(
 				api.apis.XcmPaymentApi.query_delivery_fees(
