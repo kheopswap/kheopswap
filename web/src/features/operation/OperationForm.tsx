@@ -235,7 +235,7 @@ export const OperationForm = () => {
 				<FormFieldContainer id="recipient-account" label="Recipient">
 					<AccountSelect
 						id="recipient-account"
-						idOrAddress={formData.recipient}
+						idOrAddress={inputs?.recipient ? formData.recipient : null}
 						tokenId={formData.tokenIdOut}
 						onChange={onRecipientChange}
 					/>

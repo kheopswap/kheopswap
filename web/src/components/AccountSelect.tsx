@@ -7,7 +7,7 @@ import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 
 import type { TokenId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
+import { cn, isValidAddress } from "@kheopswap/utils";
 import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
 import { WalletIcon } from "./WalletIcon";
 
@@ -90,7 +90,7 @@ const AccountSelectButton: FC<{
 				<div>Connect Wallet</div>
 			) : account ? (
 				<AccountRow account={account} className="grow overflow-hidden" />
-			) : !ownedOnly && idOrAddress ? (
+			) : !ownedOnly && !!idOrAddress && isValidAddress(idOrAddress) ? (
 				<AddressRow address={idOrAddress} className="grow overflow-hidden" />
 			) : (
 				<div>Select Account</div>
