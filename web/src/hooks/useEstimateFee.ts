@@ -25,7 +25,6 @@ export const useEstimateFee = ({
 		],
 		queryFn: () => {
 			if (!from || !call) return null;
-			//console.log("[operation] getEstimateFees options", options);
 			return call.getEstimatedFees(from, options);
 		},
 		retry: 1,

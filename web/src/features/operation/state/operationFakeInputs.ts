@@ -43,41 +43,6 @@ const getOperationFakeInputs$ = ({
 	);
 };
 
-// const getOperationFakeInputs$ = (
-// 	inputs: OperationInputs,
-// ): Observable<LoadableState<OperationInputs | null>> => {
-// 	if (
-// 		!inputs.account ||
-// 		!inputs.tokenIn?.token ||
-// 		!inputs.tokenOut?.token ||
-// 		!inputs.recipient
-// 	)
-// 		return of(loadableStateData(null));
-
-// 	return combineLatest([
-// 		getExistentialDeposit$(inputs.tokenIn.token.id),
-// 		getBalance$({
-// 			address: inputs.account.address,
-// 			tokenId: inputs.tokenIn.token.id,
-// 		}),
-// 	]).pipe(
-// 		map(([eds, bs]) => {
-// 			if (eds.error)
-// 				return loadableStateError<OperationInputs | null>(
-// 					new Error("Failed to get existential deposit", { cause: eds.error }),
-// 				);
-
-// 			if (isBigInt(bs.balance) && isBigInt(eds.data) && bs.balance < eds.data)
-// 				return loadableStateData(null, bs.status !== "loaded" || eds.isLoading);
-
-// 			return loadableStateData(
-// 				isBigInt(eds.data) ? { ...inputs, plancksIn: eds.data } : null,
-// 				eds.isLoading,
-// 			);
-// 		}),
-// 	);
-// };
-
 export const [useOperationFakeInputs, operationFakeInputs$] = bind(
 	operationInputs$.pipe(switchMap(getOperationFakeInputs$)),
 	loadableStateData<OperationInputs | null>(null),

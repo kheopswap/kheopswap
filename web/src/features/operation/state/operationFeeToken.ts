@@ -30,7 +30,7 @@ const getKey = (
 };
 
 // TODO move somewhere else
-export const getFeeToken$ = (chainId: ChainId, address: string | null) => {
+const getFeeToken$ = (chainId: ChainId, address: string | null) => {
 	const key = getKey(chainId, address);
 	return getSetting$("feeTokens").pipe(
 		switchMap((feeTokens) => {

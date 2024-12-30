@@ -1,7 +1,10 @@
+import { getChainById } from "@kheopswap/registry";
+import { useMemo } from "react";
 import { TabTitle } from "src/components";
 import { OperationFollowUp } from "./OperationFollowUp";
 import { OperationForm } from "./OperationForm";
 import { OperationTransactionProvider } from "./OperationTransactionProvider";
+import { useOperationInputs } from "./state";
 
 export const Operation = () => {
 	return (
@@ -14,19 +17,27 @@ export const Operation = () => {
 };
 
 const OperationTabTitle = () => {
-	// const { tokenIn, tokenOut } = useSwap();
+	const { data: inputs } = useOperationInputs();
 
-	// const title = useMemo(
-	// 	() =>
-	// 		tokenIn && tokenOut
-	// 			? `${tokenIn.symbol}/${tokenOut.symbol} Swap`
-	// 			: "Swap",
-	// 	[tokenIn, tokenOut],
-	// );
+	const title = useMemo(() => {
+		const tokenIn = inputs?.tokenIn?.token;
+		const tokenOut = inputs?.tokenOut?.token;
+		if (!tokenIn || !tokenOut) return "Operation";
 
-	// TODO
+		const chainIn = getChainById(tokenIn.chainId);
+		const chainOut = getChainById(tokenOut.chainId);
 
-	const title = "Operation";
+		switch (inputs?.type) {
+			case "transfer":
+				return `Transfer ${tokenIn.symbol}`;
+			case "asset-convert":
+				return `Swap ${tokenIn.symbol} to ${tokenOut.symbol}`;
+			case "xcm":
+				return `Transfer ${tokenIn.symbol} from ${chainIn.name} to ${chainOut.name}`;
+		}
+
+		return "Operation";
+	}, [inputs]);
 
 	return <TabTitle title={title} />;
 };

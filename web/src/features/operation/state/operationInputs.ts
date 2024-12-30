@@ -65,18 +65,6 @@ const getOperationInputs$ = (formData: OperationFormData) => {
 						);
 					}),
 				);
-
-				// return {
-				// 	type: getOperationType(tokenIn?.token, tokenOut?.token),
-				// 	account,
-				// 	tokenIn,
-				// 	tokenOut,
-				// 	recipient: getAddressFromAccountField(formData.recipient) ?? null,
-				// 	plancksIn:
-				// 		tokenIn?.token && !!formData.amountIn
-				// 			? tokensToPlancks(formData.amountIn, tokenIn.token.decimals)
-				// 			: null,
-				// };
 			},
 		),
 	);

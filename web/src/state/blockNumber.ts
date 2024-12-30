@@ -19,27 +19,6 @@ import {
 	switchMap,
 } from "rxjs";
 
-// export const [useBlockNumber, getBlockNumber$] = bind(
-// 	(chainId: ChainId) => {
-// 		return getApiLoadable$(chainId).pipe(
-// 			switchMap(({ data: api, isLoading, error }) => {
-// 				if (error) return of(loadableStateError<number>(error));
-// 				if (!api && !isLoading)
-// 					return of(
-// 						loadableStateError<number>(new Error(`Api not found - ${chainId}`)),
-// 					);
-// 				if (!api) return of(loadableStateLoading<number>());
-// 				return api.query.System.Number.watchValue("best").pipe(
-// 					map((blockNumber) => loadableStateData(blockNumber)),
-// 					catchError((error) => of(loadableStateError<number>(error))),
-// 				);
-// 			}),
-// 			shareReplay({ bufferSize: 1, refCount: true }),
-// 		);
-// 	},
-// 	() => loadableStateLoading<number>(),
-// );
-
 export const getApiEachBlock$ = <
 	Id extends ChainId,
 	ChainApi = Api<Id>,

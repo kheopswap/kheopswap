@@ -103,27 +103,17 @@ export const getAssetConvertPlancksOut$ = (
 	);
 
 export const getAssetConvertOperation$ = (inputs: OperationInputs) => {
-	if (inputs.type !== "transfer") of(null); // throw new Error("Invalid operation type");
+	if (inputs.type !== "transfer") of(null);
 	logger.debug("getTransferOperation", { inputs });
 
 	const { tokenIn, tokenOut, plancksIn } = inputs;
 
-	//if (!inputs.tokenIn?.token || !inputs.tokenOut?.token) return of(null);
 	if (
 		!isBigInt(plancksIn) ||
 		!isChainIdAssetHub(tokenIn?.token?.chainId) ||
 		!isChainIdAssetHub(tokenOut?.token?.chainId)
 	)
 		return of(null);
-
-	// const chainPools = getPoolsByChain$(inputs.tokenIn?.token?.chainId)
-
-	// const poolReserves$ = getPoolReserves$(
-	// 	tokenIn.token.id,
-	// 	tokenOut.token.id,
-	// );
-	// const slippage$ = getSetting$("slippage");
-	// const lpFee = getAssetConvertionLPFee$(tokenIn.token.chainId);
 
 	return getAssetConvertPlancksOut$(tokenIn.token, tokenOut.token, plancksIn);
 };

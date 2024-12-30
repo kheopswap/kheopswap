@@ -7,9 +7,6 @@ import { LiquidityPoolPage } from "./pool";
 import { LiquidityPoolsPage } from "./pools";
 import { PortfolioPage } from "./portfolio";
 import { AppWithRelay } from "./providers/AppWithRelay";
-import { SwapPage } from "./swap";
-import { TeleportPage } from "./teleport";
-import { TransferPage } from "./transfer";
 
 export const router = createHashRouter([
 	{
@@ -22,20 +19,8 @@ export const router = createHashRouter([
 				element: <OperationPage />,
 			},
 			{
-				path: "swap",
-				element: <SwapPage />,
-			},
-			{
 				path: "portfolio",
 				element: <PortfolioPage />,
-			},
-			{
-				path: "teleport",
-				element: <TeleportPage />,
-			},
-			{
-				path: "transfer",
-				element: <TransferPage />,
 			},
 			{
 				path: "pools/create/:tokenId",

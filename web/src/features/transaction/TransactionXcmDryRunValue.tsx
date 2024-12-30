@@ -12,14 +12,6 @@ import { useTransaction } from "./TransactionProvider";
 export const TransactionXcmDryRunSummaryValue = () => {
 	const { xcmDryRun, errorXcmDryRun, isLoadingXcmDryRun } = useTransaction();
 
-	// useEffect(() => {
-	// 	console.log("XCM DRY RUN", {
-	// 		xcmDryRun,
-	// 		errorXcmDryRun,
-	// 		isLoadingXcmDryRun,
-	// 	});
-	// }, [xcmDryRun, errorXcmDryRun, isLoadingXcmDryRun]);
-
 	const [success, error] = useMemo(() => {
 		if (!xcmDryRun?.success) return [false, null];
 		switch (xcmDryRun.value.execution_result.type) {
@@ -29,21 +21,6 @@ export const TransactionXcmDryRunSummaryValue = () => {
 				return [false, xcmDryRun.value.execution_result.value.error.type];
 		}
 	}, [xcmDryRun]);
-
-	// const { data: errorMessage } = useXcmDryRunError({
-	// 	chainId,
-	// 	xcmDryRun,
-	// });
-
-	// const formattedError = null;
-
-	// const formattedError = useMemo(() => {
-	// 	if (errorMessage) return errorMessage;
-
-	// 	if (!dryRun?.success || dryRun.value.execution_result.success) return null;
-
-	// 	return formatTxError(dryRun.value.execution_result.value.error);
-	// }, [dryRun, errorMessage]);
 
 	if (isLoadingXcmDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 

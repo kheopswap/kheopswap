@@ -97,11 +97,7 @@ const FollowUpModalInner: FC<{
 	followUp: FollowUpData;
 	onClose: () => void;
 	children?: ReactNode;
-}> = ({
-	followUp,
-	onClose,
-	//	, children
-}) => {
+}> = ({ followUp, onClose, children }) => {
 	const extension = useInjectedExtension(followUp.account.wallet);
 
 	const chain = useMemo(
@@ -204,17 +200,6 @@ const FollowUpModalInner: FC<{
 			];
 		}, [followUp.txEvents, result, error]);
 
-	// const effectiveFee = useMemo(() => {
-	// 	if (result !== "success") return null;
-	// 	const actualFee = individualEvents.find(
-	// 		(e) =>
-	// 			(e.type === "TransactionPayment" &&
-	// 				e.value.type === "TransactionFeePaid") ||
-	// 			(e.type === "AssetTxPayment" && e.value.type === "AssetTxFeePaid"),
-	// 	)?.value.value.actual_fee;
-	// 	return actualFee ? BigInt(actualFee) : null;
-	// }, [individualEvents, result]);
-
 	return (
 		<div
 			className={cn(
@@ -247,25 +232,7 @@ const FollowUpModalInner: FC<{
 							events={individualEvents}
 						/>
 					))}
-				{/* {children && <div>{children}</div>}
-				<div className={cn(effectiveFee ? "block" : "hidden")}>
-					<FollowUpRow label="Estimated fee" className="text-neutral-500">
-						<Tokens plancks={followUp.feeEstimate} token={followUp.feeToken} />
-					</FollowUpRow>
-					<FollowUpRow label="Effective fee">
-						{isBigInt(effectiveFee) && (
-							<Tokens
-								plancks={effectiveFee}
-								token={followUp.feeToken}
-								className={cn(
-									effectiveFee <= followUp.feeEstimate
-										? "text-success"
-										: "text-warn",
-								)}
-							/>
-						)}
-					</FollowUpRow>
-				</div> */}
+				{children && <div className="mt-10">{children}</div>}
 			</div>
 			<div className="space-y-2">
 				<button
@@ -301,10 +268,6 @@ const ExpectedResultFollowUp: FC<{
 }> = ({ expectedEventResult, events }) => {
 	const Component = useMemo(() => {
 		switch (expectedEventResult.component) {
-			// case "TokenValue":
-			// 	return FollowUpRowTokenValue;
-			// case "Value":
-			// 	return FollowUpRowValue;
 			case "asset-convert":
 				return FollowUpRowAssetConvert;
 			default:

@@ -338,7 +338,6 @@ const useTransactionProvider = ({
 		if (!options?.asset && dryRun?.success)
 			return dryRun.value.execution_result.success;
 
-		// TODO add a flag to allow parent form to force another isLoading state
 		const ok =
 			!!call &&
 			!!account &&
@@ -348,18 +347,6 @@ const useTransactionProvider = ({
 			!error &&
 			!isLoading &&
 			!Object.keys(insufficientBalances).length;
-
-		// if (!ok)
-		// 	console.log("[operation] canSubmit NOK", {
-		// 		call,
-		// 		account,
-		// 		feeEstimate,
-		// 		feeToken,
-		// 		options,
-		// 		error,
-		// 		isLoading,
-		// 		insufficientBalances,
-		// 	});
 
 		return ok;
 	}, [
@@ -388,70 +375,6 @@ const useTransactionProvider = ({
 		},
 		[onReset],
 	);
-
-	// useEffect(() => {
-	// 	console.log("[debug] useTransactionProvider OUT", {
-	// 		chainId,
-	// 		account,
-
-	// 		feeToken,
-	// 		feeTokens,
-	// 		isLoadingFeeTokens,
-	// 		onFeeTokenChange,
-
-	// 		feeEstimate,
-	// 		errorFeeEstimate,
-	// 		isLoadingFeeEstimate,
-
-	// 		feeTokenBalance,
-	// 		isLoadingFeeTokenBalance,
-
-	// 		insufficientBalances,
-	// 		followUpInputs,
-
-	// 		onSubmit,
-	// 		canSubmit,
-
-	// 		error,
-	// 		isLoading,
-
-	// 		onCloseFollowUp,
-
-	// 		dryRun,
-	// 		isLoadingDryRun,
-	// 		errorDryRun,
-	// 	});
-	// }, [
-	// 	chainId,
-	// 	account,
-
-	// 	feeToken,
-	// 	feeTokens,
-	// 	isLoadingFeeTokens,
-	// 	onFeeTokenChange,
-
-	// 	feeEstimate,
-	// 	errorFeeEstimate,
-	// 	isLoadingFeeEstimate,
-
-	// 	feeTokenBalance,
-	// 	isLoadingFeeTokenBalance,
-
-	// 	insufficientBalances,
-	// 	followUpInputs,
-
-	// 	onSubmit,
-	// 	canSubmit,
-
-	// 	error,
-	// 	isLoading,
-
-	// 	onCloseFollowUp,
-
-	// 	dryRun,
-	// 	isLoadingDryRun,
-	// 	errorDryRun,
-	// ]);
 
 	return {
 		chainId,

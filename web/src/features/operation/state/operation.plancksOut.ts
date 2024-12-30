@@ -22,7 +22,6 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 			}): Observable<LoadableState<bigint | null>> => {
 				switch (inputs?.type) {
 					case "transfer":
-						// TODO existential deposit checks both sides
 						return of(loadableStateData(inputs.plancksIn, isLoading));
 
 					case "asset-convert": {
@@ -53,8 +52,6 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 									isBigInt(inputs.plancksIn) &&
 									opDestFee.data.tokenId === inputs.tokenOut?.token?.id
 								) {
-									// TODO check if after dest fees are paid, there is enough for existential deposit
-
 									if (opDestFee.data.plancks < inputs.plancksIn)
 										return loadableStateData(
 											inputs.plancksIn - opDestFee.data.plancks,

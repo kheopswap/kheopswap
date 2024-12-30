@@ -111,33 +111,7 @@ export const OperationForm = () => {
 		[onSubmit],
 	);
 
-	// useEffect(() => {
-	// 	console.log("[debug] useTransaction", { onSubmit, canSubmit });
-	// }, [onSubmit, canSubmit]);
-
-	// useEffect(() => {
-	// 	console.log("[debug] lpFee", lpFee);
-	// }, [lpFee]);
-
-	// const ed = useExistentialDeposit(
-	// 	getTokenId({ type: "asset", chainId: "pah", assetId: 1337 }),
-	// );
-	// useEffect(() => {
-	// 	console.log("[debug] ed", ed);
-	// }, [ed]);
-
-	// const chainAccount = useChainAccount(
-	// 	"pah",
-	// 	getAddressFromAccountField(formData.accountId),
-	// );
-	// useEffect(() => {
-	// 	console.log("[debug] chainAccount", chainAccount);
-	// }, [chainAccount]);
-
 	const plancksOut = useOperationPlancksOut();
-	// useEffect(() => {
-	// 	console.log("[debug] plancksOut", plancksOut);
-	// }, [plancksOut]);
 
 	const [amountOut, isLoadingAmountOut] = useMemo(
 		() =>
@@ -166,8 +140,6 @@ export const OperationForm = () => {
 		tokenId: inputs?.tokenOut?.token?.id,
 	});
 
-	//const amountOut = ""; // TODO
-	//const lpFee = useAssetConversionLPFee("pah");
 	const maxPlancksIn = useOperationMaxPlancksIn();
 
 	const onMaxClick = useCallback(() => {

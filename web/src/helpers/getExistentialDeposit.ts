@@ -106,6 +106,7 @@ const getTokenExistentialDeposit = async (
 
 export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 	(tokenId: TokenId) =>
+		// TODO get rid of observable wrapper
 		new Observable<LoadableState<bigint | null>>((subscriber) => {
 			subscriber.next(loadableStateLoading());
 
@@ -114,8 +115,6 @@ export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 				subscriber.next(
 					loadableStateError(new Error(`Token not found ${tokenId}`)),
 				);
-
-			// TODO try get rid of observable wrapper, just need a startWith ?
 
 			// assume getApi& emits again if runtime changes
 			return getApi$(token.chainId)
