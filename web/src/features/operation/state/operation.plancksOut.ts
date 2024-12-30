@@ -3,14 +3,17 @@ import {
 	isBigInt,
 	loadableStateData,
 	loadableStateError,
+	loadableStateLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
-import { type Observable, map, of, switchMap } from "rxjs";
+import { type Observable, catchError, map, of, switchMap } from "rxjs";
 import { getAssetConvertPlancksOut$ } from "./operation.assetConvert";
 import { operationDestinationFeeEstimate$ } from "./operationDestinationFeeEstimate";
 import { operationInputs$ } from "./operationInputs";
 
-export const [useOperationPlancksOut, operationPlancksOut$] = bind(
+export const [useOperationPlancksOut, operationPlancksOut$] = bind<
+	LoadableState<bigint | null>
+>(
 	operationInputs$.pipe(
 		switchMap(
 			({
@@ -71,5 +74,7 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind(
 				}
 			},
 		),
+		catchError((err) => of(loadableStateError<bigint | null>(err))),
 	),
+	loadableStateLoading(),
 );

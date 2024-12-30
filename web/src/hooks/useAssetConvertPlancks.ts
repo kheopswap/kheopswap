@@ -77,6 +77,14 @@ const getAssetConvertPlancks$ = (
 						{ token: tokenIn, status: statusTokenIn },
 						{ token: tokenOut, status: statusTokenOut },
 					]) => {
+						if (!isBigInt(plancks))
+							return of({
+								plancksOut: null,
+								isLoading: false,
+								tokenIn,
+								tokenOut,
+							});
+
 						const isLoading = [statusTokenIn, statusTokenOut].some(
 							(status) => status !== "loaded",
 						);

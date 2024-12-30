@@ -1,8 +1,11 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import type { TokenId } from "@kheopswap/registry";
-import type { FC } from "react";
+import { cn, isNumber } from "@kheopswap/utils";
+import numeral from "numeral";
+import { type FC, useMemo } from "react";
 import {
 	FormSummary,
+	FormSummaryError,
 	FormSummaryRow,
 	FormSummarySection,
 	Shimmer,
@@ -12,13 +15,17 @@ import {
 	TooltipTrigger,
 } from "src/components";
 import { Pulse } from "src/components/Pulse";
-import { useToken } from "src/hooks";
+import { useSetting, useToken } from "src/hooks";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { TransactionXcmDryRunSummaryValue } from "../transaction/TransactionXcmDryRunValue";
+import { Slippage } from "./Slippage";
 import { useOperationInputs } from "./state";
+import { useAssetConversionSwapParams } from "./state/helpers/getAssetConversionSwapTransaction";
 import { useOperationDeliveryFeeEstimate } from "./state/operationDeliveryFeeEstimate";
 import { useOperationDestinationFeeEstimate } from "./state/operationDestinationFeeEstimate";
+import { useOperationPriceImpact } from "./state/operationPriceImpact";
+import { useOperationTransaction } from "./state/operationTransaction";
 
 const FeeSummaryValue: FC<{
 	isLoading: boolean;
@@ -50,52 +57,62 @@ export const OperationSummary = () => {
 
 	return (
 		<FormSummary>
-			{/* {inputs.type === "asset-convert" && <SwapSummary {...inputs} />}
-			{inputs.type === "transfer" && <TransferSummary {...inputs} />} */}
-			{/* {inputs.type === "xcm" && <XcmSummary {...inputs} />} */}
-			<CommonSummary />
+			<SwapOutputSection />
+			<SimulationsSection />
+			<FeesSection />
 		</FormSummary>
 	);
 };
 
-// const TransferSummary = (inputs: OperationInputs) => {
-// 	return isBigInt(inputs.plancksIn) &&
-// 		inputs.tokenIn?.token &&
-// 		inputs.recipient ? (
-// 		<div>
-// 			Transfer{" "}
-// 			<Tokens plancks={inputs.plancksIn} token={inputs.tokenIn?.token} /> to{" "}
-// 			<AddressDisplay address={inputs.recipient} className="items-baseline" />
-// 		</div>
-// 	) : null;
-// };
+const SimulationsSection = () => {
+	const { data: inputs } = useOperationInputs();
+	const isXcm = inputs?.type === "xcm";
 
-// const SwapSummary = (inputs: OperationInputs) => {
-// 	const plancksOut = useOperationPlancksOut();
+	if (!inputs) return null;
 
-// 	return isBigInt(inputs.plancksIn) &&
-// 		inputs.tokenIn?.token &&
-// 		inputs.tokenOut?.token &&
-// 		isBigInt(plancksOut.data) &&
-// 		inputs.account &&
-// 		inputs.recipient ? (
-// 		<div>
-// 			Swap <Tokens plancks={inputs.plancksIn} token={inputs.tokenIn?.token} />{" "}
-// 			for <Tokens plancks={plancksOut.data} token={inputs.tokenOut?.token} />
-// 			{inputs.recipient !== inputs.account.address && (
-// 				<>
-// 					{" "}
-// 					with{" "}
-// 					<AddressDisplay
-// 						address={inputs.recipient}
-// 						className="items-baseline"
-// 					/>{" "}
-// 					as recipient
-// 				</>
-// 			)}
-// 		</div>
-// 	) : null;
-// };
+	return (
+		<FormSummarySection>
+			<FormSummaryRow
+				label={isXcm ? "Origin chain simulation" : "Simulation"}
+				value={<TransactionDryRunSummaryValue />}
+			/>
+			{isXcm && (
+				<FormSummaryRow
+					label="Dest. chain simulation"
+					value={<TransactionXcmDryRunSummaryValue />}
+				/>
+			)}
+		</FormSummarySection>
+	);
+};
+
+const FeesSection = () => {
+	const { data: inputs } = useOperationInputs();
+	const { data: tx } = useOperationTransaction();
+	const isXcm = inputs?.type === "xcm";
+	const isSwap = inputs?.type === "asset-convert";
+
+	return (
+		<FormSummarySection>
+			<FormSummaryRow
+				label="Transaction fee"
+				value={!!tx && <TransactionFeeSummaryValue />}
+			/>
+			{isSwap && (
+				<>
+					<AppFeeRow />
+					<LiquidityPoolFeeRow />
+				</>
+			)}
+			{isXcm && (
+				<>
+					<DeliveryFeeRow />
+					<DestinationFeeRow />
+				</>
+			)}
+		</FormSummarySection>
+	);
+};
 
 const DeliveryFeeRow = () => {
 	const {
@@ -118,6 +135,52 @@ const DeliveryFeeRow = () => {
 	);
 };
 
+const AppFeeRow = () => {
+	const { data: inputs } = useOperationInputs();
+	const {
+		data: swapParams,
+		isLoading,
+		error,
+	} = useAssetConversionSwapParams(inputs);
+
+	const fee = useMemo(() => {
+		if (!inputs?.tokenIn?.token?.id || !swapParams) return null;
+		return { tokenId: inputs.tokenIn.token.id, plancks: swapParams.appFee };
+	}, [inputs, swapParams]);
+
+	if (!inputs || !swapParams) return null;
+
+	return (
+		<FormSummaryRow
+			label="Kheospwap fee"
+			value={<FeeSummaryValue fee={fee} isLoading={isLoading} error={error} />}
+		/>
+	);
+};
+
+const LiquidityPoolFeeRow = () => {
+	const { data: inputs } = useOperationInputs();
+	const {
+		data: swapParams,
+		isLoading,
+		error,
+	} = useAssetConversionSwapParams(inputs);
+
+	const fee = useMemo(() => {
+		if (!inputs?.tokenIn?.token?.id || !swapParams) return null;
+		return { tokenId: inputs.tokenIn.token.id, plancks: swapParams.poolFee };
+	}, [inputs, swapParams]);
+
+	if (!inputs || !swapParams) return null;
+
+	return (
+		<FormSummaryRow
+			label="Liquidity pool fee"
+			value={<FeeSummaryValue fee={fee} isLoading={isLoading} error={error} />}
+		/>
+	);
+};
+
 const DestinationFeeRow = () => {
 	const { data: inputs, isLoading: inputsIsLoading } = useOperationInputs();
 
@@ -126,15 +189,6 @@ const DestinationFeeRow = () => {
 		error: destinationFeeError,
 		isLoading: destinationFeeIsLoading,
 	} = useOperationDestinationFeeEstimate();
-
-	// useEffect(() => {
-	// 	console.log("DestinationFeeRow", {
-	// 		inputsIsLoading,
-	// 		destinationFeeIsLoading,
-	// 		inputs,
-	// 		destinationFee,
-	// 	});
-	// }, [inputsIsLoading, destinationFeeIsLoading, inputs, destinationFee]);
 
 	if (
 		!inputsIsLoading &&
@@ -188,31 +242,74 @@ const DestinationFeeRow = () => {
 	);
 };
 
-const CommonSummary = () => {
+const SwapOutputSection = () => {
 	const { data: inputs } = useOperationInputs();
 
-	const isXcm = inputs?.type === "xcm";
-
-	if (!inputs) return null;
+	if (inputs?.type !== "asset-convert") return null;
 
 	return (
 		<FormSummarySection>
-			<FormSummaryRow
-				label={isXcm ? "Origin chain simulation" : "Simulation"}
-				value={<TransactionDryRunSummaryValue />}
-			/>
-			{isXcm && (
-				<FormSummaryRow
-					label="Dest. chain simulation"
-					value={<TransactionXcmDryRunSummaryValue />}
-				/>
-			)}
-			<FormSummaryRow
-				label="Transaction fee"
-				value={<TransactionFeeSummaryValue />}
-			/>
-			{isXcm && <DeliveryFeeRow />}
-			{isXcm && <DestinationFeeRow />}
+			<PriceImpactRow />
+			<SlippageRow />
+			<MinReceivedRow />
 		</FormSummarySection>
+	);
+};
+
+const PriceImpactRow = () => {
+	const { data: priceImpact, isLoading, error } = useOperationPriceImpact();
+
+	return (
+		<FormSummaryRow
+			label="Price impact"
+			value={
+				isNumber(priceImpact) ? (
+					<span
+						className={cn(
+							priceImpact < -0.01 && "text-warn-500",
+							priceImpact < -0.05 && "text-error-500",
+						)}
+					>
+						{numeral(priceImpact * 100).format("0.[00]")}%
+					</span>
+				) : isLoading ? (
+					<Shimmer>-0.00%</Shimmer>
+				) : error ? (
+					<FormSummaryError label="Error">{error.message}</FormSummaryError>
+				) : null
+			}
+		/>
+	);
+};
+
+const SlippageRow = () => {
+	const [slippage] = useSetting("slippage");
+
+	return (
+		<FormSummaryRow
+			label="Slippage tolerance"
+			value={<Slippage value={slippage} />}
+		/>
+	);
+};
+
+const MinReceivedRow = () => {
+	const { data: inputs } = useOperationInputs();
+	const { data: swapParams, isLoading } = useAssetConversionSwapParams(inputs);
+
+	return (
+		<FormSummaryRow
+			label="Min. received"
+			value={
+				!!swapParams?.minPlancksOut &&
+				!!inputs?.tokenOut?.token && (
+					<Tokens
+						pulse={isLoading}
+						plancks={swapParams.minPlancksOut}
+						token={inputs.tokenOut.token}
+					/>
+				)
+			}
+		/>
 	);
 };

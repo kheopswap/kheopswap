@@ -75,9 +75,11 @@ export type TokenSpec =
 			key: XTokenKey;
 	  };
 
-export const parseTokenId = (tokenId: TokenId): TokenSpec => {
+export type TokenSpecWithId = TokenSpec & { id: TokenId };
+
+export const parseTokenId = (id: TokenId): TokenSpecWithId => {
 	try {
-		const parts = tokenId.split("::");
+		const parts = id.split("::");
 
 		const chainId = parts[1] as ChainId;
 		if (!getChainById(chainId))
@@ -85,43 +87,47 @@ export const parseTokenId = (tokenId: TokenId): TokenSpec => {
 
 		switch (parts[0]) {
 			case "native":
-				return { type: "native", chainId };
+				return { id, type: "native", chainId };
 			case "asset": {
 				const assetId = Number(parts[2]);
 				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
-				return { type: "asset", chainId, assetId };
+				return { id, type: "asset", chainId, assetId };
 			}
 			case "pool-asset": {
 				const poolAssetId = Number(parts[2]);
 				if (Number.isNaN(poolAssetId)) throw new Error("Invalid poolAssetId");
-				return { type: "pool-asset", chainId, poolAssetId };
+				return { id, type: "pool-asset", chainId, poolAssetId };
 			}
 			case "foreign-asset": {
 				if (parts.length < 3) throw new Error("Invalid foreign-asset token id");
 				const location = safeParse<XcmV3Multilocation>(
 					lzs.decompressFromBase64(parts[2] as string),
 				);
-				return { type: "foreign-asset", chainId, location };
+				return { id, type: "foreign-asset", chainId, location };
 			}
 			case "hydration-asset": {
 				const assetId = Number(parts[2]);
 				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
-				return { type: "hydration-asset", chainId, assetId };
+				return { id, type: "hydration-asset", chainId, assetId };
 			}
 			case "x-token": {
 				if (parts.length < 3) throw new Error("Invalid x-token token id");
 				const key = safeParse<XTokenKey>(
 					lzs.decompressFromBase64(parts[2] as string),
 				);
-				return { type: "x-token", chainId, key };
+				return { id, type: "x-token", chainId, key };
 			}
 			default:
-				throw new Error(`Unsupported token type: ${tokenId}`);
+				throw new Error(`Unsupported token type: ${id}`);
 		}
 	} catch (cause) {
-		logger.error(`Failed to parse token id: ${tokenId}`, { cause });
-		throw new Error(`Failed to parse token id: ${tokenId}`, { cause });
+		logger.error(`Failed to parse token id: ${id}`, { cause });
+		throw new Error(`Failed to parse token id: ${id}`, { cause });
 	}
+};
+
+export const getTokenSpecs = (tokenOrId: Token | TokenId): TokenSpecWithId => {
+	return typeof tokenOrId === "string" ? parseTokenId(tokenOrId) : tokenOrId;
 };
 
 type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative

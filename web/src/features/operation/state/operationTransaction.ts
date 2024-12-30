@@ -30,8 +30,10 @@ const getOperationTransaction$ = ({
 
 export const [useOperationTransaction, operationTransaction$] = bind(
 	operationInputs$.pipe(switchMap(getOperationTransaction$)),
+	loadableStateData(null),
 );
 
 export const [useOperationFakeTransaction, operationFakeTransaction$] = bind(
 	operationFakeInputs$.pipe(switchMap(getOperationTransaction$)),
+	loadableStateData(null),
 );

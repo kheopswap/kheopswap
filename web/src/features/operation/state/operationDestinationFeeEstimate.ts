@@ -155,9 +155,9 @@ export const [
 				return getDestinationFeeEstimate$(chainId, dryRunState.data);
 			},
 		),
-		startWith(loadableStateLoading<DestinationFee | null>()),
 		catchError((error) => of(loadableStateError<DestinationFee | null>(error))),
 	),
+	loadableStateLoading<DestinationFee | null>(),
 );
 
 // const getDestinationChain = (

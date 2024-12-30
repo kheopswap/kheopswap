@@ -80,4 +80,5 @@ const getOperationFakeInputs$ = ({
 
 export const [useOperationFakeInputs, operationFakeInputs$] = bind(
 	operationInputs$.pipe(switchMap(getOperationFakeInputs$)),
+	loadableStateData<OperationInputs | null>(null),
 );

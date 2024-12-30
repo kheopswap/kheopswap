@@ -44,6 +44,7 @@ const [useTokenPickerAccounts] = bind(
 			inputs?.account ? of([inputs.account]) : accounts$,
 		),
 	),
+	[],
 );
 
 // keeps the form data in the location state so user can refresh page without losing inputs
@@ -192,7 +193,7 @@ export const OperationForm = () => {
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-3">
 				<div className="text-neutral-500">
-					Swap, transfer, or cross-chain transfer using this single form
+					Swap, transfer, or cross-chain transfer
 				</div>
 				<FormFieldContainer id="sender-account" label="From">
 					<AccountSelect

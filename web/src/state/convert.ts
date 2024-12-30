@@ -1,11 +1,22 @@
 import {
+	type Token,
 	type TokenId,
 	getChainIdFromTokenId,
 	getTokenId,
+	getTokenSpecs,
 } from "@kheopswap/registry";
-import { getCachedObservable$ } from "@kheopswap/utils";
+import {
+	type LoadableState,
+	getCachedObservable$,
+	isBigInt,
+	loadableStateData,
+	loadableStateError,
+	loadableStateLoading,
+} from "@kheopswap/utils";
+import { bind } from "@react-rxjs/core";
 import {
 	type Observable,
+	catchError,
 	combineLatest,
 	map,
 	of,
@@ -108,3 +119,71 @@ export const getAssetConvertMulti$ = (
 		})),
 	);
 };
+
+// raw converted value based on reserves, without taking account any app or lp fee
+export const [useAssetConvertLoadable, getAssetConvertLoadable$] = bind(
+	(
+		tokenIn: Token | TokenId | null | undefined,
+		tokenOut: Token | TokenId | null | undefined,
+		plancksIn: bigint | null | undefined,
+	): Observable<LoadableState<bigint | null>> => {
+		if (!tokenIn || !tokenOut || !isBigInt(plancksIn))
+			return of(loadableStateData(null));
+
+		const tokenInSpecs = getTokenSpecs(tokenIn);
+		const tokenOutSpecs = getTokenSpecs(tokenOut);
+
+		if (
+			!tokenInSpecs.chainId ||
+			!tokenOutSpecs.chainId ||
+			tokenInSpecs.chainId !== tokenOutSpecs.chainId
+		)
+			return of(loadableStateData(null));
+
+		const nativeTokenId = getTokenId({
+			type: "native",
+			chainId: tokenInSpecs.chainId,
+		});
+
+		const getReserves$ = (tid1: TokenId, tid2: TokenId) => {
+			if (tid1 === tid2)
+				return of({
+					reserves: [1n, 1n] as [bigint, bigint],
+					isLoading: false,
+				});
+			return getPoolReserves$(tid1, tid2);
+		};
+
+		return combineLatest([
+			getReserves$(nativeTokenId, tokenInSpecs.id),
+			getReserves$(nativeTokenId, tokenOutSpecs.id),
+		]).pipe(
+			map(
+				([
+					{ reserves: reserveNativeToTokenIn, isLoading: isLoadingPool1 },
+					{ reserves: reserveNativeToTokenOut, isLoading: isLoadingPool2 },
+				]) => {
+					if (!reserveNativeToTokenIn || !reserveNativeToTokenOut)
+						return loadableStateData(null, isLoadingPool1 || isLoadingPool2);
+
+					const plancksOut =
+						getAssetConvertPlancks(
+							plancksIn,
+							tokenInSpecs.id,
+							nativeTokenId,
+							tokenOutSpecs.id,
+							reserveNativeToTokenIn,
+							reserveNativeToTokenOut,
+						) ?? null;
+
+					return loadableStateData(
+						plancksOut,
+						isLoadingPool1 || isLoadingPool2,
+					);
+				},
+			),
+			catchError((err) => of(loadableStateError<bigint | null>(err))),
+		);
+	},
+	loadableStateLoading<bigint | null>(),
+);

@@ -131,7 +131,8 @@ export const [useOperationDeliveryFeeEstimate, operationDeliveryFeeEstimate$] =
 					return getDeliveryFeeEstimate$(chainId, dryRunState.data);
 				},
 			),
-			startWith(loadableStateLoading<DeliveryFee | null>()),
+
 			catchError((error) => of(loadableStateError<DeliveryFee | null>(error))),
 		),
+		loadableStateLoading<DeliveryFee | null>(),
 	);

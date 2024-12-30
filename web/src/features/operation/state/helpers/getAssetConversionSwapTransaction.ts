@@ -1,5 +1,5 @@
 import { APP_FEE_ADDRESS } from "@kheopswap/constants";
-import { type Api, getApi$, isApiAssetHub } from "@kheopswap/papi";
+import { type Api, getApiLoadable$, isApiAssetHub } from "@kheopswap/papi";
 import {
 	type ChainId,
 	type Token,
@@ -14,6 +14,7 @@ import {
 	loadableStateError,
 	loadableStateLoading,
 } from "@kheopswap/utils";
+import { bind } from "@react-rxjs/core";
 import {
 	type Observable,
 	catchError,
@@ -30,82 +31,132 @@ import { getMinPlancksOut } from "./getMinPlancksOut";
 import { getSwapAppFee$ } from "./getSwapAppFee";
 import { getTransferTxCall } from "./getTransferTransaction";
 
+type SwapParams = {
+	swapPlancksIn: bigint;
+	minPlancksOut: bigint;
+	appFee: bigint;
+	poolFee: bigint;
+};
+
+export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
+	bind(
+		(
+			inputs: OperationInputs | null | undefined,
+		): Observable<LoadableState<SwapParams | null>> => {
+			if (inputs?.type !== "asset-convert") return of(loadableStateData(null)); //throw new Error("Invalid operation type");
+
+			const { tokenIn, tokenOut, recipient, plancksIn } = inputs;
+
+			if (
+				!tokenIn?.token?.id ||
+				!tokenOut?.token?.id ||
+				!isChainIdAssetHub(tokenIn.token.chainId) ||
+				!recipient ||
+				!isBigInt(plancksIn)
+			)
+				return of(loadableStateData(null));
+
+			return combineLatest([
+				getSwapAppFee$(tokenIn.token, plancksIn),
+				getSetting$("slippage"),
+			]).pipe(
+				switchMap(([appFee, slippage]) => {
+					const swapPlancksIn = plancksIn - (appFee.data ?? 0n);
+
+					return getAssetConvertOutput$(
+						tokenIn.token,
+						tokenOut.token,
+						swapPlancksIn,
+					).pipe(
+						map((output): LoadableState<SwapParams | null> => {
+							const isLoading = appFee.isLoading || output.isLoading;
+
+							if (output.error) throw output.error;
+							if (!isBigInt(output.data?.plancksOut))
+								return loadableStateData(null, isLoading);
+
+							const minPlancksOut = isBigInt(output.data?.plancksOut)
+								? getMinPlancksOut(output.data.plancksOut, slippage)
+								: null;
+
+							if (!isBigInt(minPlancksOut))
+								return loadableStateData(null, isLoading);
+
+							return loadableStateData(
+								{
+									swapPlancksIn,
+									minPlancksOut,
+									appFee: appFee.data ?? 0n,
+									poolFee: output.data.poolFee,
+								},
+								isLoading,
+							);
+						}),
+					);
+				}),
+				startWith(loadableStateLoading<SwapParams | null>()),
+				catchError((error) => of(loadableStateError<SwapParams | null>(error))),
+			);
+		},
+		() => loadableStateLoading<SwapParams | null>(),
+	);
+
 export const getAssetConversionSwapTransaction$ = (
 	inputs: OperationInputs,
 ): Observable<LoadableState<AnyTransaction | null>> => {
-	if (inputs.type !== "asset-convert") of(loadableStateData(null)); //throw new Error("Invalid operation type");
+	return getAssetConversionSwapParams$(inputs).pipe(
+		switchMap((lsParams) => {
+			if (!lsParams.data || !inputs.tokenIn?.token?.chainId)
+				return of(loadableStateData(null, lsParams.isLoading));
 
-	const { account, tokenIn, tokenOut, recipient, plancksIn } = inputs;
+			const { tokenIn, tokenOut, plancksIn, recipient } = inputs;
+			const { minPlancksOut, appFee } = lsParams.data;
 
-	if (
-		!account ||
-		!tokenIn?.token?.id ||
-		!tokenOut?.token?.id ||
-		!isChainIdAssetHub(tokenIn.token.chainId) ||
-		!recipient ||
-		!isBigInt(plancksIn)
-	)
-		return of(loadableStateData(null));
+			if (
+				//!account ||
+				!tokenIn?.token?.id ||
+				!tokenOut?.token?.id ||
+				!isChainIdAssetHub(tokenIn.token.chainId) ||
+				!recipient ||
+				!isBigInt(plancksIn)
+			)
+				return of(loadableStateData(null, lsParams.isLoading));
 
-	return combineLatest([
-		getApi$(tokenIn.token.chainId),
-		getSwapAppFee$(tokenIn.token, plancksIn),
-		getSetting$("slippage"),
-	]).pipe(
-		switchMap(([api, appFee, slippage]) => {
-			// ts hack to avoid null assertion which has already been checked
-			if (!tokenIn.token || !tokenOut.token) throw new Error("Token not found");
+			return getApiLoadable$(tokenIn.token.chainId).pipe(
+				map((lsApi) => {
+					if (!lsApi.data || !tokenIn.token || !tokenOut.token)
+						return loadableStateData(null, lsParams.isLoading);
 
-			const appFeeTransferTx = isBigInt(appFee.data)
-				? getTransferTxCall(api, tokenIn.token, appFee.data, APP_FEE_ADDRESS)
-				: null;
-
-			return getAssetConvertOutput$(
-				tokenIn.token,
-				tokenOut.token,
-				plancksIn - (appFee.data ?? 0n),
-			).pipe(
-				map((output) => {
-					// ts hack to avoid null assertion which has already been checked
-					if (!tokenIn.token || !tokenOut.token)
-						throw new Error("Token not found");
-
-					const isLoading = appFee.isLoading || output.isLoading;
-
-					if (output.error) throw output.error;
-					if (!isBigInt(output.data?.plancksOut))
-						return [null, isLoading] as const;
-
-					const minPlancksOut = isBigInt(output.data?.plancksOut)
-						? getMinPlancksOut(output.data.plancksOut, slippage)
+					const appFeeTransferTx = appFee
+						? getTransferTxCall(
+								lsApi.data,
+								tokenIn.token,
+								appFee,
+								APP_FEE_ADDRESS,
+							)
 						: null;
 
-					if (!isBigInt(minPlancksOut)) return [null, isLoading] as const;
-
 					const swapTx = getAssetConversionSwapTxCall(
-						api,
+						lsApi.data,
 						tokenIn.token,
 						tokenOut.token,
-						plancksIn - (appFee.data ?? 0n),
+						plancksIn - appFee,
 						minPlancksOut,
 						recipient,
 					);
 
 					const tx = appFeeTransferTx
-						? api.tx.Utility.batch_all({
+						? lsApi.data.tx.Utility.batch_all({
 								calls: [swapTx.decodedCall, appFeeTransferTx.decodedCall],
 							})
 						: swapTx;
 
-					return [tx, isLoading] as const;
+					return loadableStateData(tx, lsParams.isLoading);
 				}),
 			);
 		}),
-		map(([tx, isLoading]) =>
-			loadableStateData<AnyTransaction | null>(tx, isLoading),
-		),
-		startWith(loadableStateLoading<AnyTransaction>()),
 		catchError((error) => of(loadableStateError<AnyTransaction>(error))),
+		startWith(loadableStateLoading<AnyTransaction>()),
 	);
 };
 

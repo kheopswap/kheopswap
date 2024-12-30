@@ -22,6 +22,9 @@
 					"level": "warn",
 					"fix": "none"
 				}
+			},
+			"style": {
+				"noParameterAssign": "off"
 			}
 		}
 	}

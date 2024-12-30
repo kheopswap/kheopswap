@@ -111,5 +111,8 @@ const maxPlancksIn$ = combineLatest([
 	}),
 );
 
-export const [useOperationMaxPlancksIn, operationMaxPlancksIn$] =
-	bind(maxPlancksIn$);
+// TODO loadable
+export const [useOperationMaxPlancksIn, operationMaxPlancksIn$] = bind(
+	maxPlancksIn$,
+	null,
+);
