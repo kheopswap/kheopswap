@@ -2,9 +2,9 @@ import { getApi$ } from "@kheopswap/papi";
 import type { ChainIdAssetHub } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { catchError, from, map, of, switchMap } from "rxjs";
@@ -16,14 +16,14 @@ export const [useAssetConversionLPFee, getAssetConversionLPFee$] = bind<
 	(chainId) =>
 		getApi$(chainId).pipe(
 			switchMap((api) => from(api.constants.AssetConversion.LPFee())),
-			map((lpFee) => loadableStateData(lpFee)),
+			map((lpFee) => loadableData(lpFee)),
 			catchError((cause) =>
 				of(
-					loadableStateError<number>(
+					loadableError<number>(
 						new Error(`Failed to get LP Fee for chain ${chainId}`, { cause }),
 					),
 				),
 			),
 		),
-	() => loadableStateLoading(),
+	() => lodableLoading(),
 );

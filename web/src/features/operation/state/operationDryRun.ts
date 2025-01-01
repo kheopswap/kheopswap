@@ -1,9 +1,8 @@
 import type { ChainId } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	tapDebug,
+	loadableData,
+	loadableError,
 } from "@kheopswap/utils";
 import { type Observable, combineLatest, of, switchMap } from "rxjs";
 import { getDryRunCall$ } from "src/state/dryRunCall";
@@ -21,20 +20,17 @@ export const operationDryRun$ = combineLatest([
 		> => {
 			if (transaction.error)
 				return of(
-					loadableStateError<DryRun<ChainId> | null>(
-						transaction.error,
-						isLoading,
-					),
+					loadableError<DryRun<ChainId> | null>(transaction.error, isLoading),
 				);
 			if (!transaction.data)
-				return of(loadableStateData(null, isLoading || transaction.isLoading));
+				return of(loadableData(null, isLoading || transaction.isLoading));
 			if (!inputs?.tokenIn?.token?.chainId || !inputs.account?.address)
-				return of(loadableStateData(null, isLoading));
+				return of(loadableData(null, isLoading));
 			return getDryRunCall$(
 				inputs.tokenIn.token.chainId,
 				inputs.account.address,
 				transaction.data.decodedCall,
-			).pipe(tapDebug("operationDryRun$"));
+			);
 		},
 	),
 );

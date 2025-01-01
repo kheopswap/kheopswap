@@ -2,8 +2,8 @@ import { getTokenById$ } from "@kheopswap/services/tokens";
 import {
 	type LoadableState,
 	getAddressFromAccountField,
-	loadableStateData,
-	loadableStateLoading,
+	loadableData,
+	lodableLoading,
 	tokensToPlancks,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
@@ -46,7 +46,7 @@ const getOperationInputs$ = (formData: OperationFormData) => {
 			> => {
 				return getOperationType$(tokenIn?.token, tokenOut?.token).pipe(
 					map((type): LoadableState<OperationInputs> => {
-						return loadableStateData<OperationInputs>(
+						return loadableData<OperationInputs>(
 							{
 								type: type.data ?? "unknown",
 								account,
@@ -74,5 +74,5 @@ export const [useOperationInputs, operationInputs$] = bind(
 	operationFormData$.pipe(
 		switchMap((formData) => getOperationInputs$(formData)),
 	),
-	loadableStateLoading<OperationInputs>(),
+	lodableLoading<OperationInputs>(),
 );

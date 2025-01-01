@@ -1,15 +1,17 @@
+import { getApiLoadable$ } from "@kheopswap/papi";
 import type { ChainId } from "@kheopswap/registry";
 import {
-	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	getCachedPromise,
+	loadableData,
+	loadableError,
+	lodableLoading,
+	objectHash,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import type { SS58String } from "polkadot-api";
 import {
-	type Observable,
 	catchError,
+	distinctUntilChanged,
 	from as fromRxjs,
 	map,
 	of,
@@ -17,7 +19,6 @@ import {
 } from "rxjs";
 import type { AnyTransaction } from "src/types";
 import { type DryRun, getDryRun } from "src/util";
-import { getApiEachBlock$ } from "./blockNumber";
 
 export const [useDryRunCall, getDryRunCall$] = bind(
 	(
@@ -26,34 +27,35 @@ export const [useDryRunCall, getDryRunCall$] = bind(
 		call: AnyTransaction["decodedCall"] | null | undefined,
 	) => {
 		if (!chainId || !from || !call)
-			return of(loadableStateData<DryRun<ChainId> | null>(null));
+			return of(loadableData<DryRun<ChainId> | null>(null));
 
-		return getApiEachBlock$(chainId).pipe(
-			switchMap(
-				({
-					data: api,
-					isLoading: isLoadingApi,
-					error: errorApi,
-				}): Observable<LoadableState<DryRun<ChainId> | null>> => {
-					if (errorApi)
-						return of(loadableStateError<DryRun<ChainId>>(errorApi));
-					if (!api && !isLoadingApi)
-						return of(
-							loadableStateError<DryRun<ChainId>>(
-								new Error(`Api not found - ${chainId}`),
+		return getApiLoadable$(chainId).pipe(
+			switchMap(({ data: api, isLoading, error }) => {
+				if (error) return of(loadableError<DryRun<ChainId> | null>(error));
+				if (!api && !isLoading)
+					return of(
+						loadableError<DryRun<ChainId>>(
+							new Error(`Api not found - ${chainId}`),
+						),
+					);
+				if (!api) return of(lodableLoading<DryRun<ChainId>>());
+
+				return api.query.System.Number.watchValue("best").pipe(
+					distinctUntilChanged<number>(),
+					switchMap((blockNumber) => {
+						return fromRxjs(
+							getCachedPromise(
+								"getDryRun",
+								objectHash([api, from, call, blockNumber]),
+								() =>
+									getDryRun(api, from, call) as Promise<DryRun<ChainId> | null>,
 							),
-						);
-					if (!api) return of(loadableStateLoading<DryRun<ChainId>>());
-
-					return fromRxjs(
-						getDryRun(api, from, call) as Promise<DryRun<ChainId> | null>,
-					).pipe(map((dryRun) => loadableStateData(dryRun)));
-				},
-			),
-			catchError((error) =>
-				of(loadableStateError<DryRun<ChainId> | null>(error)),
-			),
+						).pipe(map((dryRun) => loadableData(dryRun)));
+					}),
+				);
+			}),
+			catchError((error) => of(loadableError<DryRun<ChainId> | null>(error))),
 		);
 	},
-	() => loadableStateLoading<DryRun<ChainId> | null>(),
+	() => lodableLoading<DryRun<ChainId> | null>(),
 );

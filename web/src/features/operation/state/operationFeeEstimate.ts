@@ -1,7 +1,7 @@
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
+	loadableData,
+	loadableError,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { combineLatest, switchMap } from "rxjs";
@@ -14,19 +14,19 @@ export const [useOperationFeeEstimate, operationFeeEstimate$] = bind(
 			async ([{ data: inputs, isLoading }, ts]): Promise<
 				LoadableState<bigint | null>
 			> => {
-				if (!inputs?.account) return loadableStateData(null, isLoading);
+				if (!inputs?.account) return loadableData(null, isLoading);
 				try {
 					const fee = await ts.data?.getEstimatedFees(inputs.account.address, {
 						at: "best",
 					});
-					return loadableStateData(fee ?? null, isLoading || ts.isLoading);
+					return loadableData(fee ?? null, isLoading || ts.isLoading);
 				} catch (cause) {
-					return loadableStateError(
+					return loadableError(
 						new Error("Failed to get fee estimate", { cause }),
 					);
 				}
 			},
 		),
 	),
-	loadableStateData(null),
+	loadableData(null),
 );

@@ -7,9 +7,9 @@ import {
 } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 	logger,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
@@ -38,13 +38,13 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 	dryRun: DryRun<Id>,
 ): Observable<LoadableState<DeliveryFee | null>> => {
 	const xcm = getXcmMessageFromDryRun(dryRun);
-	if (!xcm) return of(loadableStateData(null));
+	if (!xcm) return of(loadableData(null));
 
 	return getApiLoadable$(chainId).pipe(
 		switchMap(({ data: api, isLoading, error }) => {
-			if (error) return of(loadableStateError<DeliveryFee | null>(error));
+			if (error) return of(loadableError<DeliveryFee | null>(error));
 			if (!api || !isApiWithDryRun(api))
-				return of(loadableStateData(null, isLoading));
+				return of(loadableData(null, isLoading));
 
 			if (
 				!isApiIn(api, [
@@ -56,7 +56,7 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 					"kah",
 				])
 			)
-				return of(loadableStateData(null));
+				return of(loadableData(null));
 
 			logger.debug("[api call] XcmPaymentApi.query_delivery_fees", {
 				chainId,
@@ -93,12 +93,10 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 						plancks: fee.fun.value,
 					};
 
-					return loadableStateData(result);
+					return loadableData(result);
 				}),
-				startWith(loadableStateLoading<DeliveryFee | null>()),
-				catchError((error) =>
-					of(loadableStateError<DeliveryFee | null>(error)),
-				),
+				startWith(lodableLoading<DeliveryFee | null>()),
+				catchError((error) => of(loadableError<DeliveryFee | null>(error))),
 			);
 		}),
 	);
@@ -112,27 +110,21 @@ export const [useOperationDeliveryFeeEstimate, operationDeliveryFeeEstimate$] =
 					LoadableState<DeliveryFee | null>
 				> => {
 					const chainId = inputs?.tokenIn?.token?.chainId;
-					if (!chainId) return of(loadableStateData(null, isLoading));
+					if (!chainId) return of(loadableData(null, isLoading));
 
-					if (inputs.type !== "xcm")
-						return of(loadableStateData(null, isLoading));
+					if (inputs.type !== "xcm") return of(loadableData(null, isLoading));
 					if (dryRunState.error)
 						return of(
-							loadableStateError<DeliveryFee | null>(
-								dryRunState.error,
-								isLoading,
-							),
+							loadableError<DeliveryFee | null>(dryRunState.error, isLoading),
 						);
 					if (!dryRunState.data)
-						return of(
-							loadableStateData(null, isLoading || dryRunState.isLoading),
-						);
+						return of(loadableData(null, isLoading || dryRunState.isLoading));
 
 					return getDeliveryFeeEstimate$(chainId, dryRunState.data);
 				},
 			),
 
-			catchError((error) => of(loadableStateError<DeliveryFee | null>(error))),
+			catchError((error) => of(loadableError<DeliveryFee | null>(error))),
 		),
-		loadableStateLoading<DeliveryFee | null>(),
+		lodableLoading<DeliveryFee | null>(),
 	);

@@ -1,9 +1,9 @@
 import {
 	type LoadableState,
 	isBigInt,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { type Observable, catchError, map, of, switchMap } from "rxjs";
@@ -22,7 +22,7 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 			}): Observable<LoadableState<bigint | null>> => {
 				switch (inputs?.type) {
 					case "transfer":
-						return of(loadableStateData(inputs.plancksIn, isLoading));
+						return of(loadableData(inputs.plancksIn, isLoading));
 
 					case "asset-convert": {
 						const { tokenIn, tokenOut, plancksIn } = inputs;
@@ -34,18 +34,14 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 					}
 
 					case "xcm": {
-						if (!inputs.plancksIn)
-							return of(loadableStateData(null, isLoading));
+						if (!inputs.plancksIn) return of(loadableData(null, isLoading));
 
 						return operationDestinationFeeEstimate$.pipe(
 							map((opDestFee) => {
 								if (opDestFee.error)
-									return loadableStateError(opDestFee.error, isLoading); // TODO FIX
+									return loadableError(opDestFee.error, isLoading); // TODO FIX
 								if (!opDestFee.data)
-									return loadableStateData(
-										null,
-										isLoading || opDestFee.isLoading,
-									);
+									return loadableData(null, isLoading || opDestFee.isLoading);
 
 								// substract dest fee if possible
 								if (
@@ -53,25 +49,25 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 									opDestFee.data.tokenId === inputs.tokenOut?.token?.id
 								) {
 									if (opDestFee.data.plancks < inputs.plancksIn)
-										return loadableStateData(
+										return loadableData(
 											inputs.plancksIn - opDestFee.data.plancks,
 											isLoading,
 										);
 									//not enough to pay for fee
-									return loadableStateData(null, isLoading);
+									return loadableData(null, isLoading);
 								}
 
-								return loadableStateData(inputs.plancksIn, isLoading);
+								return loadableData(inputs.plancksIn, isLoading);
 							}),
 						);
 					}
 
 					default:
-						return of(loadableStateData(null));
+						return of(loadableData(null));
 				}
 			},
 		),
-		catchError((err) => of(loadableStateError<bigint | null>(err))),
+		catchError((err) => of(loadableError<bigint | null>(err))),
 	),
-	loadableStateLoading(),
+	lodableLoading(),
 );

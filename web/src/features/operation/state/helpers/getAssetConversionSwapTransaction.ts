@@ -10,9 +10,9 @@ import { getSetting$ } from "@kheopswap/settings";
 import {
 	type LoadableState,
 	isBigInt,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import {
@@ -43,7 +43,7 @@ export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
 		(
 			inputs: OperationInputs | null | undefined,
 		): Observable<LoadableState<SwapParams | null>> => {
-			if (inputs?.type !== "asset-convert") return of(loadableStateData(null)); //throw new Error("Invalid operation type");
+			if (inputs?.type !== "asset-convert") return of(loadableData(null)); //throw new Error("Invalid operation type");
 
 			const { tokenIn, tokenOut, recipient, plancksIn } = inputs;
 
@@ -54,7 +54,7 @@ export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
 				!recipient ||
 				!isBigInt(plancksIn)
 			)
-				return of(loadableStateData(null));
+				return of(loadableData(null));
 
 			return combineLatest([
 				getSwapAppFee$(tokenIn.token, plancksIn),
@@ -73,16 +73,16 @@ export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
 
 							if (output.error) throw output.error;
 							if (!isBigInt(output.data?.plancksOut))
-								return loadableStateData(null, isLoading);
+								return loadableData(null, isLoading);
 
 							const minPlancksOut = isBigInt(output.data?.plancksOut)
 								? getMinPlancksOut(output.data.plancksOut, slippage)
 								: null;
 
 							if (!isBigInt(minPlancksOut))
-								return loadableStateData(null, isLoading);
+								return loadableData(null, isLoading);
 
-							return loadableStateData(
+							return loadableData(
 								{
 									swapPlancksIn,
 									minPlancksOut,
@@ -94,11 +94,11 @@ export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
 						}),
 					);
 				}),
-				startWith(loadableStateLoading<SwapParams | null>()),
-				catchError((error) => of(loadableStateError<SwapParams | null>(error))),
+				startWith(lodableLoading<SwapParams | null>()),
+				catchError((error) => of(loadableError<SwapParams | null>(error))),
 			);
 		},
-		() => loadableStateLoading<SwapParams | null>(),
+		() => lodableLoading<SwapParams | null>(),
 	);
 
 export const getAssetConversionSwapTransaction$ = (
@@ -107,7 +107,7 @@ export const getAssetConversionSwapTransaction$ = (
 	return getAssetConversionSwapParams$(inputs).pipe(
 		switchMap((lsParams) => {
 			if (!lsParams.data || !inputs.tokenIn?.token?.chainId)
-				return of(loadableStateData(null, lsParams.isLoading));
+				return of(loadableData(null, lsParams.isLoading));
 
 			const { tokenIn, tokenOut, plancksIn, recipient } = inputs;
 			const { minPlancksOut, appFee } = lsParams.data;
@@ -120,12 +120,12 @@ export const getAssetConversionSwapTransaction$ = (
 				!recipient ||
 				!isBigInt(plancksIn)
 			)
-				return of(loadableStateData(null, lsParams.isLoading));
+				return of(loadableData(null, lsParams.isLoading));
 
 			return getApiLoadable$(tokenIn.token.chainId).pipe(
 				map((lsApi) => {
 					if (!lsApi.data || !tokenIn.token || !tokenOut.token)
-						return loadableStateData(null, lsParams.isLoading);
+						return loadableData(null, lsParams.isLoading);
 
 					const appFeeTransferTx = appFee
 						? getTransferTxCall(
@@ -151,12 +151,12 @@ export const getAssetConversionSwapTransaction$ = (
 							})
 						: swapTx;
 
-					return loadableStateData(tx, lsParams.isLoading);
+					return loadableData(tx, lsParams.isLoading);
 				}),
 			);
 		}),
-		catchError((error) => of(loadableStateError<AnyTransaction>(error))),
-		startWith(loadableStateLoading<AnyTransaction>()),
+		catchError((error) => of(loadableError<AnyTransaction>(error))),
+		startWith(lodableLoading<AnyTransaction>()),
 	);
 };
 

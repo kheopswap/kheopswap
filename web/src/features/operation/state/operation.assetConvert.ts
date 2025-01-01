@@ -2,10 +2,10 @@ import { type Token, isChainIdAssetHub } from "@kheopswap/registry";
 import {
 	type LoadableState,
 	isBigInt,
+	loadableData,
+	loadableError,
 	loadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	lodableLoading,
 	logger,
 } from "@kheopswap/utils";
 import { type Observable, catchError, combineLatest, map, of } from "rxjs";
@@ -48,7 +48,7 @@ export const getAssetConvertOutput$ = (
 		!isChainIdAssetHub(tokenIn?.chainId) ||
 		!isChainIdAssetHub(tokenOut?.chainId)
 	)
-		return of(loadableStateData(null));
+		return of(loadableData(null));
 
 	return combineLatest([
 		getPoolReserves$(tokenIn.id, tokenOut.id),
@@ -62,7 +62,7 @@ export const getAssetConvertOutput$ = (
 				lpFee,
 			]): LoadableState<AssetConvertOutput | null> => {
 				if (!poolReserves.reserves || !lpFee.data || !isBigInt(appFee.data))
-					return loadableStateLoading();
+					return lodableLoading();
 
 				const tradeIn = plancksIn - appFee.data;
 
@@ -74,12 +74,12 @@ export const getAssetConvertOutput$ = (
 
 				const isLoading =
 					poolReserves.isLoading || lpFee.isLoading || appFee.isLoading;
-				return loadableStateData(output, isLoading);
+				return loadableData(output, isLoading);
 			},
 		),
 		catchError((cause) =>
 			of(
-				loadableStateError<AssetConvertOutput | null>(
+				loadableError<AssetConvertOutput | null>(
 					new Error("Failed to get AssetConvertOutput", { cause }),
 				),
 			),

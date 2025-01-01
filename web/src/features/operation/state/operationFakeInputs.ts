@@ -1,9 +1,5 @@
 import { getBalance$ } from "@kheopswap/services/balances";
-import {
-	type LoadableState,
-	isBigInt,
-	loadableStateData,
-} from "@kheopswap/utils";
+import { type LoadableState, isBigInt, loadableData } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { type Observable, combineLatest, map, of, switchMap } from "rxjs";
 import { getExistentialDeposit$ } from "src/helpers/getExistentialDeposit";
@@ -22,7 +18,7 @@ const getOperationFakeInputs$ = ({
 		!inputs.tokenOut?.token ||
 		!inputs.recipient
 	)
-		return of(loadableStateData(null, isLoading));
+		return of(loadableData(null, isLoading));
 
 	return combineLatest([
 		getExistentialDeposit$(inputs.tokenIn.token.id),
@@ -33,9 +29,9 @@ const getOperationFakeInputs$ = ({
 	]).pipe(
 		map(([eds, bs]) => {
 			if (!isBigInt(bs.balance) || !isBigInt(eds.data))
-				return loadableStateData(null, isLoading || eds.isLoading);
+				return loadableData(null, isLoading || eds.isLoading);
 
-			return loadableStateData(
+			return loadableData(
 				{ ...inputs, plancksIn: eds.data },
 				isLoading || eds.isLoading,
 			);
@@ -45,5 +41,5 @@ const getOperationFakeInputs$ = ({
 
 export const [useOperationFakeInputs, operationFakeInputs$] = bind(
 	operationInputs$.pipe(switchMap(getOperationFakeInputs$)),
-	loadableStateData<OperationInputs | null>(null),
+	loadableData<OperationInputs | null>(null),
 );

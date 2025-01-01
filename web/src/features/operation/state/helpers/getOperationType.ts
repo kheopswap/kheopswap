@@ -6,7 +6,7 @@ import {
 import {
 	type LoadableState,
 	getCachedObservable$,
-	loadableStateData,
+	loadableData,
 } from "@kheopswap/utils";
 import { type Observable, catchError, map, of, startWith } from "rxjs";
 import { getPoolReserves$ } from "src/state";
@@ -27,27 +27,27 @@ export const getOperationType$ = (
 		`${tokenIn?.id}-${tokenOut?.id}`,
 		() => {
 			if (!tokenIn || !tokenOut)
-				return of(loadableStateData<OperationType>("unknown"));
+				return of(loadableData<OperationType>("unknown"));
 
 			if (isTransfer(tokenIn, tokenOut))
-				return of(loadableStateData<OperationType>("transfer"));
+				return of(loadableData<OperationType>("transfer"));
 
 			if (isAssetConvert(tokenIn, tokenOut))
 				return getPoolReserves$(tokenIn.id, tokenOut.id).pipe(
 					map(({ isLoading, reserves }) =>
-						loadableStateData<OperationType>(
+						loadableData<OperationType>(
 							reserves?.[0] ? "asset-convert" : "invalid",
 							isLoading,
 						),
 					),
-					catchError(() => of(loadableStateData<OperationType>("unknown"))),
-					startWith(loadableStateData<OperationType>("unknown")),
+					catchError(() => of(loadableData<OperationType>("unknown"))),
+					startWith(loadableData<OperationType>("unknown")),
 				);
 
 			if (isXcm(tokenIn, tokenOut))
-				return of(loadableStateData<OperationType>("xcm"));
+				return of(loadableData<OperationType>("xcm"));
 
-			return of(loadableStateData<OperationType>("invalid"));
+			return of(loadableData<OperationType>("invalid"));
 		},
 	);
 };

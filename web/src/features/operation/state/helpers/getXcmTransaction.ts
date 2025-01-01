@@ -17,9 +17,9 @@ import {
 	type LoadableState,
 	isBigInt,
 	isNumber,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { AccountId, Binary, type SS58String } from "polkadot-api";
 import { type Observable, catchError, map, of, startWith } from "rxjs";
@@ -29,7 +29,7 @@ import type { OperationInputs } from "../operationInputs";
 export const getXcmTransaction$ = (
 	inputs: OperationInputs,
 ): Observable<LoadableState<AnyTransaction | null>> => {
-	if (inputs.type !== "xcm") of(loadableStateData(null)); //throw new Error("Invalid operation type");
+	if (inputs.type !== "xcm") of(loadableData(null)); //throw new Error("Invalid operation type");
 
 	const { account, recipient, plancksIn } = inputs;
 	const tokenIn = inputs.tokenIn?.token;
@@ -38,13 +38,13 @@ export const getXcmTransaction$ = (
 		inputs.tokenIn?.status !== "loaded" || inputs.tokenOut?.status !== "loaded";
 
 	if (!account || !tokenIn || !tokenOut || !recipient || !isBigInt(plancksIn))
-		return of(loadableStateData(null));
+		return of(loadableData(null));
 
 	return getApi$(tokenIn.chainId).pipe(
 		map((api) => getXcmCall(api, tokenIn, tokenOut, plancksIn, recipient)),
-		map((tx) => loadableStateData<AnyTransaction | null>(tx, isLoading)),
-		startWith(loadableStateLoading<AnyTransaction>()),
-		catchError((error) => of(loadableStateError<AnyTransaction>(error))),
+		map((tx) => loadableData<AnyTransaction | null>(tx, isLoading)),
+		startWith(lodableLoading<AnyTransaction>()),
+		catchError((error) => of(loadableError<AnyTransaction>(error))),
 	);
 };
 

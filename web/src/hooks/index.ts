@@ -8,8 +8,6 @@ export * from "./useBalancesByTokenSummary";
 export * from "./useCanAccountReceive";
 export * from "./useChainName";
 export * from "./useEstimateFee";
-export * from "./useEstimateDeliveryFee";
-export * from "./useEstimateDestinationFee";
 export * from "./useExistentialDeposit";
 export * from "./useExistentialDeposits";
 export * from "./useFeeToken";

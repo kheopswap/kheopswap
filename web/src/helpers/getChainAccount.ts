@@ -2,9 +2,9 @@ import { getApi$ } from "@kheopswap/papi";
 import type { ChainId, Descriptors } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { type Observable, catchError, map, of, switchMap } from "rxjs";
@@ -17,19 +17,19 @@ export const [useChainAccount, getChainAccount$] = bind(
 		chainId: Id | null | undefined,
 		address: string | null | undefined,
 	): Observable<LoadableState<Res | null>> => {
-		if (!chainId || !address) return of(loadableStateData(null));
+		if (!chainId || !address) return of(loadableData(null));
 
 		return getApi$(chainId).pipe(
 			switchMap((api) => api.query.System.Account.watchValue(address)),
-			map((account) => loadableStateData(account as Res)),
+			map((account) => loadableData(account as Res)),
 			catchError((cause) =>
 				of(
-					loadableStateError<Res>(
+					loadableError<Res>(
 						new Error("Subscription error for ChainAccount account", { cause }),
 					),
 				),
 			),
 		);
 	},
-	loadableStateLoading<ChainAccount<ChainId>>(),
+	lodableLoading<ChainAccount<ChainId>>(),
 );

@@ -1,8 +1,8 @@
 import type { Token } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
+	loadableData,
+	loadableError,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { values } from "lodash";
@@ -37,7 +37,7 @@ export const [usePossibleRoutesFromToken, getPossibleRoutesFromToken$] = bind(
 								})
 								.filter((t): t is Token => !!t);
 
-							return loadableStateData(
+							return loadableData(
 								targets,
 								isLoading || states.some(({ isLoading }) => isLoading),
 							);
@@ -45,7 +45,7 @@ export const [usePossibleRoutesFromToken, getPossibleRoutesFromToken$] = bind(
 					);
 				},
 			),
-			catchError((err) => of(loadableStateError<Token[]>(err))),
+			catchError((err) => of(loadableError<Token[]>(err))),
 		),
-	(token) => loadableStateData<Token[]>(token ? [token] : []),
+	(token) => loadableData<Token[]>(token ? [token] : []),
 );

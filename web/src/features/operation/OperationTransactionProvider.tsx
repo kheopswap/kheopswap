@@ -4,7 +4,7 @@ import {
 	type LoadableState,
 	type TxEvents,
 	isBigInt,
-	loadableStateData,
+	loadableData,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { get } from "lodash";
@@ -79,13 +79,13 @@ const [useOperationExpectedEventResults] = bind(
 				ExpectedEventResult[]
 			> => {
 				if (!inputs?.tokenIn?.token)
-					return loadableStateData([], inputs?.tokenIn?.status !== "loaded");
+					return loadableData([], inputs?.tokenIn?.status !== "loaded");
 				if (!inputs.tokenOut?.token)
-					return loadableStateData([], inputs.tokenIn?.status !== "loaded");
-				if (!inputs.account) return loadableStateData([]);
-				if (!inputs.recipient) return loadableStateData([]);
-				if (!isBigInt(inputs.plancksIn)) return loadableStateData([]);
-				if (!isBigInt(opPlancksOut.data)) return loadableStateData([]);
+					return loadableData([], inputs.tokenIn?.status !== "loaded");
+				if (!inputs.account) return loadableData([]);
+				if (!inputs.recipient) return loadableData([]);
+				if (!isBigInt(inputs.plancksIn)) return loadableData([]);
+				if (!isBigInt(opPlancksOut.data)) return loadableData([]);
 
 				const results: ExpectedEventResult[] = [];
 
@@ -211,11 +211,11 @@ const [useOperationExpectedEventResults] = bind(
 					}
 				}
 
-				return loadableStateData(results);
+				return loadableData(results);
 			},
 		),
 	),
-	loadableStateData([]),
+	loadableData([]),
 );
 
 const getEffectiveValueByNameAndPath =

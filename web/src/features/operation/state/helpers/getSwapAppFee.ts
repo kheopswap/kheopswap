@@ -1,7 +1,7 @@
 import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "@kheopswap/constants";
 import type { Token } from "@kheopswap/registry";
 import { getBalance$ } from "@kheopswap/services/balances";
-import { isBigInt, loadableStateData } from "@kheopswap/utils";
+import { isBigInt, loadableData } from "@kheopswap/utils";
 import { combineLatest, of, switchMap } from "rxjs";
 import { getExistentialDeposit$ } from "src/helpers/getExistentialDeposit";
 
@@ -24,7 +24,7 @@ export const getSwapAppFee$ = (tokenIn: Token, plancksIn: bigint) => {
 
 			if (treasuryBalance.balance)
 				return of(
-					loadableStateData(
+					loadableData(
 						getSwapAppFee(plancksIn),
 						treasuryBalance.status !== "loaded",
 					),
@@ -40,7 +40,7 @@ export const getSwapAppFee$ = (tokenIn: Token, plancksIn: bigint) => {
 					: 0n;
 
 			return of(
-				loadableStateData(
+				loadableData(
 					possibleCommission,
 					treasuryBalance.status !== "loaded" || existentialDeposit.isLoading,
 				),

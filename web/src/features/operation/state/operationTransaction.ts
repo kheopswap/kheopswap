@@ -1,4 +1,4 @@
-import { type LoadableState, loadableStateData } from "@kheopswap/utils";
+import { type LoadableState, loadableData } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { type Observable, of, switchMap } from "rxjs";
 import type { AnyTransaction } from "src/types";
@@ -14,7 +14,7 @@ const getOperationTransaction$ = ({
 }: LoadableState<OperationInputs | null>): Observable<
 	LoadableState<AnyTransaction | null>
 > => {
-	if (!inputs) return of(loadableStateData(null, isLoading));
+	if (!inputs) return of(loadableData(null, isLoading));
 
 	switch (inputs.type) {
 		case "transfer":
@@ -24,16 +24,16 @@ const getOperationTransaction$ = ({
 		case "xcm":
 			return getXcmTransaction$(inputs);
 		default:
-			return of(loadableStateData(null));
+			return of(loadableData(null));
 	}
 };
 
 export const [useOperationTransaction, operationTransaction$] = bind(
 	operationInputs$.pipe(switchMap(getOperationTransaction$)),
-	loadableStateData(null),
+	loadableData(null),
 );
 
 export const [useOperationFakeTransaction, operationFakeTransaction$] = bind(
 	operationFakeInputs$.pipe(switchMap(getOperationTransaction$)),
-	loadableStateData(null),
+	loadableData(null),
 );

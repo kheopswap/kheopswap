@@ -32,3 +32,4 @@ export * from "./getAccountAddressType";
 export * from "./isValidAddress";
 export * from "./getLoadableObsState";
 export * from "./tapDebug";
+export * from "./objectHash";

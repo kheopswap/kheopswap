@@ -38,9 +38,9 @@ import {
 	type LoadableState,
 	getCachedObservable$,
 	getCachedPromise,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 	logger,
 } from "@kheopswap/utils";
 
@@ -161,11 +161,11 @@ export const getApiLoadable$ = <Id extends ChainId, Papi = Api<Id>>(
 ): Observable<LoadableState<Papi>> => {
 	return getCachedObservable$("getCachedObservable$", id, () =>
 		getApi$(id).pipe(
-			map((api) => loadableStateData(api as Papi)),
+			map((api) => loadableData(api as Papi)),
 			catchError((cause) =>
-				of(loadableStateError<Papi>(new Error("Failed to get Api", { cause }))),
+				of(loadableError<Papi>(new Error("Failed to get Api", { cause }))),
 			),
-			startWith(loadableStateLoading<Papi>()), // TODO test
+			startWith(lodableLoading<Papi>()), // TODO test
 			shareReplay(1),
 		),
 	);

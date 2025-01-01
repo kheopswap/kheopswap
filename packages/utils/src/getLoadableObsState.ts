@@ -12,7 +12,7 @@ export const loadableState = <T>(props: LoadableState<T>): LoadableState<T> => {
 	return props as LoadableState<T>;
 };
 
-export const loadableStateLoading = <T>(
+export const lodableLoading = <T>(
 	{ data, error }: DataOrError<T> = { data: undefined, error: undefined },
 ): LoadableState<T> =>
 	loadableState({
@@ -21,12 +21,10 @@ export const loadableStateLoading = <T>(
 		error,
 	} as LoadableState<T>);
 
-export const loadableStateData = <T>(
-	data: T,
-	isLoading = false,
-): LoadableState<T> => loadableState<T>({ isLoading, data, error: undefined });
+export const loadableData = <T>(data: T, isLoading = false): LoadableState<T> =>
+	loadableState<T>({ isLoading, data, error: undefined });
 
-export const loadableStateError = <T>(
+export const loadableError = <T>(
 	error: Error,
 	isLoading = false,
 ): LoadableState<T> => loadableState<T>({ isLoading, data: undefined, error });

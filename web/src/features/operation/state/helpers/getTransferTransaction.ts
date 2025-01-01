@@ -11,9 +11,9 @@ import {
 import { type ChainId, MultiAddress, type Token } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 	logger,
 } from "@kheopswap/utils";
 import { type Observable, catchError, map, of } from "rxjs";
@@ -23,7 +23,7 @@ import type { OperationInputs } from "../operationInputs";
 export const getTransferTransaction$ = (
 	inputs: OperationInputs,
 ): Observable<LoadableState<AnyTransaction | null>> => {
-	if (inputs.type !== "transfer") of(loadableStateData(null)); //throw new Error("Invalid operation type");
+	if (inputs.type !== "transfer") of(loadableData(null)); //throw new Error("Invalid operation type");
 	logger.debug("getTransferTransaction$", { inputs });
 
 	if (
@@ -33,7 +33,7 @@ export const getTransferTransaction$ = (
 		!inputs.recipient ||
 		!inputs.plancksIn
 	)
-		return of(loadableStateData(null));
+		return of(loadableData(null));
 
 	return getTransferTxCall$(
 		inputs.tokenIn.token,
@@ -49,16 +49,16 @@ export const getTransferTxCall$ = (
 ): Observable<LoadableState<AnyTransaction>> => {
 	return getApiLoadable$(token.chainId).pipe(
 		map(({ data: api, error, isLoading }) => {
-			if (isLoading) return loadableStateLoading<AnyTransaction>();
-			if (error) return loadableStateError<AnyTransaction>(error);
+			if (isLoading) return lodableLoading<AnyTransaction>();
+			if (error) return loadableError<AnyTransaction>(error);
 			if (!api)
-				return loadableStateError<AnyTransaction>(
+				return loadableError<AnyTransaction>(
 					new Error(`No api found for chain${token.chainId}`),
 				);
 
-			return loadableStateData(getTransferTxCall(api, token, plancks, dest));
+			return loadableData(getTransferTxCall(api, token, plancks, dest));
 		}),
-		catchError((error) => of(loadableStateError<AnyTransaction>(error))),
+		catchError((error) => of(loadableError<AnyTransaction>(error))),
 	);
 };
 

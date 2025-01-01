@@ -4,8 +4,8 @@ import { getSetting$ } from "@kheopswap/settings";
 import {
 	type LoadableState,
 	isBigInt,
-	loadableStateData,
-	loadableStateError,
+	loadableData,
+	loadableError,
 } from "@kheopswap/utils";
 import {
 	type Observable,
@@ -67,14 +67,14 @@ export const operationFeeEstimateWithToken$ = combineLatest([
 		> => {
 			if (!feeToken || !isBigInt(feeEstimate.data) || !inputs?.tokenIn?.token)
 				return of(
-					loadableStateData<FeeWithToken | null>(null, feeEstimate.isLoading),
+					loadableData<FeeWithToken | null>(null, feeEstimate.isLoading),
 				);
 
 			const token = feeToken as Token;
 
 			if (feeToken.type === "native")
 				return of(
-					loadableStateData(
+					loadableData(
 						{ value: feeEstimate.data, token },
 						feeEstimate.isLoading,
 					),
@@ -87,14 +87,14 @@ export const operationFeeEstimateWithToken$ = combineLatest([
 			}).pipe(
 				map((r) =>
 					isBigInt(r.plancksOut)
-						? loadableStateData<FeeWithToken | null>(
+						? loadableData<FeeWithToken | null>(
 								{
 									token,
 									value: r.plancksOut,
 								},
 								feeEstimate.isLoading || r.isLoading,
 							)
-						: loadableStateData<FeeWithToken | null>(
+						: loadableData<FeeWithToken | null>(
 								null,
 								feeEstimate.isLoading || r.isLoading,
 							),
@@ -102,5 +102,5 @@ export const operationFeeEstimateWithToken$ = combineLatest([
 			);
 		},
 	),
-	catchError((err) => of(loadableStateError<FeeWithToken | null>(err))),
+	catchError((err) => of(loadableError<FeeWithToken | null>(err))),
 );

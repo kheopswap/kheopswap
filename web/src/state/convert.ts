@@ -9,9 +9,9 @@ import {
 	type LoadableState,
 	getCachedObservable$,
 	isBigInt,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import {
@@ -128,7 +128,7 @@ export const [useAssetConvertLoadable, getAssetConvertLoadable$] = bind(
 		plancksIn: bigint | null | undefined,
 	): Observable<LoadableState<bigint | null>> => {
 		if (!tokenIn || !tokenOut || !isBigInt(plancksIn))
-			return of(loadableStateData(null));
+			return of(loadableData(null));
 
 		const tokenInSpecs = getTokenSpecs(tokenIn);
 		const tokenOutSpecs = getTokenSpecs(tokenOut);
@@ -138,7 +138,7 @@ export const [useAssetConvertLoadable, getAssetConvertLoadable$] = bind(
 			!tokenOutSpecs.chainId ||
 			tokenInSpecs.chainId !== tokenOutSpecs.chainId
 		)
-			return of(loadableStateData(null));
+			return of(loadableData(null));
 
 		const nativeTokenId = getTokenId({
 			type: "native",
@@ -164,7 +164,7 @@ export const [useAssetConvertLoadable, getAssetConvertLoadable$] = bind(
 					{ reserves: reserveNativeToTokenOut, isLoading: isLoadingPool2 },
 				]) => {
 					if (!reserveNativeToTokenIn || !reserveNativeToTokenOut)
-						return loadableStateData(null, isLoadingPool1 || isLoadingPool2);
+						return loadableData(null, isLoadingPool1 || isLoadingPool2);
 
 					const plancksOut =
 						getAssetConvertPlancks(
@@ -176,14 +176,11 @@ export const [useAssetConvertLoadable, getAssetConvertLoadable$] = bind(
 							reserveNativeToTokenOut,
 						) ?? null;
 
-					return loadableStateData(
-						plancksOut,
-						isLoadingPool1 || isLoadingPool2,
-					);
+					return loadableData(plancksOut, isLoadingPool1 || isLoadingPool2);
 				},
 			),
-			catchError((err) => of(loadableStateError<bigint | null>(err))),
+			catchError((err) => of(loadableError<bigint | null>(err))),
 		);
 	},
-	loadableStateLoading<bigint | null>(),
+	lodableLoading<bigint | null>(),
 );

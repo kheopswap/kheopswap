@@ -1,9 +1,9 @@
 import {
 	type LoadableState,
 	isBigInt,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import {
@@ -25,17 +25,17 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 		switchMap((lsInputs): Observable<LoadableState<number | null>> => {
 			if (lsInputs.error)
 				return of(
-					loadableStateError<number | null>(lsInputs.error, lsInputs.isLoading),
+					loadableError<number | null>(lsInputs.error, lsInputs.isLoading),
 				);
 			if (lsInputs.data?.type !== "asset-convert")
-				return of(loadableStateData(null, lsInputs.isLoading));
+				return of(loadableData(null, lsInputs.isLoading));
 
 			const tokenIdIn = lsInputs.data.tokenIn?.token?.id;
 			const tokenIdOut = lsInputs.data.tokenOut?.token?.id;
 			const plancksIn = lsInputs.data.plancksIn;
 
 			if (!tokenIdIn || !tokenIdOut || !plancksIn)
-				return of(loadableStateData(null, lsInputs.isLoading));
+				return of(loadableData(null, lsInputs.isLoading));
 
 			return combineLatest([
 				operationPlancksOut$,
@@ -49,14 +49,14 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 
 					//   ratio difference between rawplancksout and swapplancksout
 					if (lsSwapPlancksOut.error)
-						return loadableStateError(lsSwapPlancksOut.error, isLoading);
+						return loadableError(lsSwapPlancksOut.error, isLoading);
 					if (lsRawPlancksOut.error)
-						return loadableStateError(lsRawPlancksOut.error, isLoading);
+						return loadableError(lsRawPlancksOut.error, isLoading);
 					if (
 						!isBigInt(lsRawPlancksOut.data) ||
 						!isBigInt(lsSwapPlancksOut.data)
 					)
-						return loadableStateData(null, isLoading);
+						return loadableData(null, isLoading);
 
 					const priceImpact =
 						-Number(
@@ -64,11 +64,11 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 								lsRawPlancksOut.data,
 						) / 10000;
 
-					return loadableStateData(priceImpact, isLoading);
+					return loadableData(priceImpact, isLoading);
 				}),
 			);
 		}),
-		catchError((err) => of(loadableStateError<number | null>(err))),
+		catchError((err) => of(loadableError<number | null>(err))),
 	),
-	loadableStateLoading(),
+	lodableLoading(),
 );

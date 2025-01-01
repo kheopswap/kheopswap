@@ -1,9 +1,9 @@
 import type { ChainId } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { Observable } from "rxjs";
@@ -12,17 +12,15 @@ import { getChainAccount$ } from "./getChainAccount";
 export const [useIsAccountSufficient, getIsAccountSufficient$] = bind(
 	(chainId: ChainId, address: string) =>
 		new Observable<LoadableState<boolean>>((subscriber) => {
-			subscriber.next(loadableStateLoading());
+			subscriber.next(lodableLoading());
 
 			return getChainAccount$(chainId, address).subscribe(
 				async (accountState) => {
 					try {
-						subscriber.next(
-							loadableStateData(!!accountState.data?.sufficients),
-						);
+						subscriber.next(loadableData(!!accountState.data?.sufficients));
 					} catch (cause) {
 						subscriber.next(
-							loadableStateError(
+							loadableError(
 								new Error("Failed to check account sufficiency", { cause }),
 							),
 						);

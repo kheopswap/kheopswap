@@ -9,9 +9,9 @@ import {
 } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 	logger,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
@@ -44,16 +44,16 @@ const getDestinationFeeEstimate$ = <Id extends ChainId>(
 	dryRun: DryRun<Id>,
 ): Observable<LoadableState<DestinationFee | null>> => {
 	const xcm = getXcmMessageFromDryRun(dryRun);
-	if (!xcm) return of(loadableStateData(null));
+	if (!xcm) return of(loadableData(null));
 
 	const destinationChain = getDestinationChain(chainId, xcm.destination);
-	if (!destinationChain) return of(loadableStateData(null));
+	if (!destinationChain) return of(loadableData(null));
 
 	return getApiLoadable$(destinationChain.id).pipe(
 		switchMap(({ data: api, isLoading, error }) => {
-			if (error) return of(loadableStateError<DestinationFee | null>(error));
+			if (error) return of(loadableError<DestinationFee | null>(error));
 			if (!api || !isApiWithDryRun(api))
-				return of(loadableStateData(null, isLoading));
+				return of(loadableData(null, isLoading));
 
 			if (
 				!isApiIn(api, [
@@ -65,7 +65,7 @@ const getDestinationFeeEstimate$ = <Id extends ChainId>(
 					"kah",
 				])
 			)
-				return of(loadableStateData(null));
+				return of(loadableData(null));
 
 			logger.debug("[api call] XcmPaymentApi.query_xcm_weight", {
 				chainId,
@@ -121,12 +121,10 @@ const getDestinationFeeEstimate$ = <Id extends ChainId>(
 						plancks: fee.value,
 					};
 
-					return loadableStateData(result);
+					return loadableData(result);
 				}),
-				startWith(loadableStateLoading<DestinationFee | null>()),
-				catchError((error) =>
-					of(loadableStateError<DestinationFee | null>(error)),
-				),
+				startWith(lodableLoading<DestinationFee | null>()),
+				catchError((error) => of(loadableError<DestinationFee | null>(error))),
 			);
 		}),
 	);
@@ -142,20 +140,18 @@ export const [
 				LoadableState<DestinationFee | null>
 			> => {
 				const chainId = inputs?.tokenIn?.token?.chainId;
-				if (!chainId) return of(loadableStateData(null, isLoading));
+				if (!chainId) return of(loadableData(null, isLoading));
 
-				if (inputs.type !== "xcm") return of(loadableStateData(null));
+				if (inputs.type !== "xcm") return of(loadableData(null));
 				if (dryRunState.error)
-					return of(
-						loadableStateError<DestinationFee | null>(dryRunState.error),
-					);
+					return of(loadableError<DestinationFee | null>(dryRunState.error));
 				if (!dryRunState.data)
-					return of(loadableStateData(null, dryRunState.isLoading));
+					return of(loadableData(null, dryRunState.isLoading));
 
 				return getDestinationFeeEstimate$(chainId, dryRunState.data);
 			},
 		),
-		catchError((error) => of(loadableStateError<DestinationFee | null>(error))),
+		catchError((error) => of(loadableError<DestinationFee | null>(error))),
 	),
-	loadableStateLoading<DestinationFee | null>(),
+	lodableLoading<DestinationFee | null>(),
 );

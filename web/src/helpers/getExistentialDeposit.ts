@@ -14,9 +14,9 @@ import {
 } from "@kheopswap/registry";
 import {
 	type LoadableState,
-	loadableStateData,
-	loadableStateError,
-	loadableStateLoading,
+	loadableData,
+	loadableError,
+	lodableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { Observable, catchError, map, of, switchMap } from "rxjs";
@@ -108,22 +108,20 @@ export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 	(tokenId: TokenId) =>
 		// TODO get rid of observable wrapper
 		new Observable<LoadableState<bigint | null>>((subscriber) => {
-			subscriber.next(loadableStateLoading());
+			subscriber.next(lodableLoading());
 
 			const token = parseTokenId(tokenId);
 			if (!token)
-				subscriber.next(
-					loadableStateError(new Error(`Token not found ${tokenId}`)),
-				);
+				subscriber.next(loadableError(new Error(`Token not found ${tokenId}`)));
 
 			// assume getApi& emits again if runtime changes
 			return getApi$(token.chainId)
 				.pipe(
 					switchMap((api) => getTokenExistentialDeposit(api, token)),
-					map((existentialDeposit) => loadableStateData(existentialDeposit)),
+					map((existentialDeposit) => loadableData(existentialDeposit)),
 					catchError((cause) =>
 						of(
-							loadableStateError<bigint | null>(
+							loadableError<bigint | null>(
 								new Error(`Failed to fetch existential for token ${tokenId}`, {
 									cause,
 								}),
@@ -135,5 +133,5 @@ export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 					subscriber.next(res);
 				});
 		}),
-	() => loadableStateLoading<bigint | null>(),
+	() => lodableLoading<bigint | null>(),
 );
