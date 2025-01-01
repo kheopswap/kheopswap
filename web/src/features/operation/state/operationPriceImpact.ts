@@ -24,9 +24,7 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 	operationInputs$.pipe(
 		switchMap((lsInputs): Observable<LoadableState<number | null>> => {
 			if (lsInputs.error)
-				return of(
-					loadableError<number | null>(lsInputs.error, lsInputs.isLoading),
-				);
+				return of(loadableError<number | null>(lsInputs.error));
 			if (lsInputs.data?.type !== "asset-convert")
 				return of(loadableData(null, lsInputs.isLoading));
 
@@ -49,9 +47,9 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 
 					//   ratio difference between rawplancksout and swapplancksout
 					if (lsSwapPlancksOut.error)
-						return loadableError(lsSwapPlancksOut.error, isLoading);
+						return loadableError(lsSwapPlancksOut.error);
 					if (lsRawPlancksOut.error)
-						return loadableError(lsRawPlancksOut.error, isLoading);
+						return loadableError(lsRawPlancksOut.error);
 					if (
 						!isBigInt(lsRawPlancksOut.data) ||
 						!isBigInt(lsSwapPlancksOut.data)

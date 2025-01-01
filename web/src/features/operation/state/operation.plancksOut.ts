@@ -38,8 +38,7 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 
 						return operationDestinationFeeEstimate$.pipe(
 							map((opDestFee) => {
-								if (opDestFee.error)
-									return loadableError(opDestFee.error, isLoading); // TODO FIX
+								if (opDestFee.error) return loadableError(opDestFee.error);
 								if (!opDestFee.data)
 									return loadableData(null, isLoading || opDestFee.isLoading);
 

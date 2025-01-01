@@ -19,9 +19,7 @@ export const operationDryRun$ = combineLatest([
 			LoadableState<DryRun<ChainId> | null>
 		> => {
 			if (transaction.error)
-				return of(
-					loadableError<DryRun<ChainId> | null>(transaction.error, isLoading),
-				);
+				return of(loadableError<DryRun<ChainId> | null>(transaction.error));
 			if (!transaction.data)
 				return of(loadableData(null, isLoading || transaction.isLoading));
 			if (!inputs?.tokenIn?.token?.chainId || !inputs.account?.address)

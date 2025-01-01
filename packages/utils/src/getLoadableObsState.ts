@@ -1,30 +1,23 @@
-type DataOrError<T> =
-	| { data: T | undefined; error: undefined }
-	| { data: undefined; error: Error | undefined };
+export type LoadableState<T = unknown> =
+	| { data: T; error: undefined; isLoading: boolean }
+	| { data: undefined; error: undefined; isLoading: true }
+	| { data: undefined; error: Error | undefined; isLoading: false };
 
-export type LoadableState<T = unknown> = {
-	isLoading: boolean;
-} & DataOrError<T>;
-
-export const loadableState = <T>(props: LoadableState<T>): LoadableState<T> => {
+export const loadableState = <T = unknown>(props: LoadableState<T>) => {
 	if (props.error !== undefined && props.data !== undefined)
 		throw new Error("Cannot have both data and error");
-	return props as LoadableState<T>;
+	return props;
 };
 
-export const lodableLoading = <T>(
-	{ data, error }: DataOrError<T> = { data: undefined, error: undefined },
-): LoadableState<T> =>
-	loadableState({
+export const lodableLoading = <T = unknown>() =>
+	loadableState<T>({
+		data: undefined,
 		isLoading: true,
-		data,
-		error,
-	} as LoadableState<T>);
+		error: undefined,
+	});
 
-export const loadableData = <T>(data: T, isLoading = false): LoadableState<T> =>
-	loadableState<T>({ isLoading, data, error: undefined });
+export const loadableData = <T = unknown>(data: T, isLoading = false) =>
+	loadableState<T>({ data, isLoading, error: undefined });
 
-export const loadableError = <T>(
-	error: Error,
-	isLoading = false,
-): LoadableState<T> => loadableState<T>({ isLoading, data: undefined, error });
+export const loadableError = <T = unknown>(error: Error) =>
+	loadableState<T>({ data: undefined, isLoading: false, error });

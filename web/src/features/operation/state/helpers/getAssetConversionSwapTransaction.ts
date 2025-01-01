@@ -43,7 +43,8 @@ export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
 		(
 			inputs: OperationInputs | null | undefined,
 		): Observable<LoadableState<SwapParams | null>> => {
-			if (inputs?.type !== "asset-convert") return of(loadableData(null)); //throw new Error("Invalid operation type");
+			if (inputs?.type !== "asset-convert")
+				return of(loadableData<SwapParams | null>(null)); //throw new Error("Invalid operation type");
 
 			const { tokenIn, tokenOut, recipient, plancksIn } = inputs;
 
@@ -54,7 +55,7 @@ export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
 				!recipient ||
 				!isBigInt(plancksIn)
 			)
-				return of(loadableData(null));
+				return of(loadableData<SwapParams | null>(null));
 
 			return combineLatest([
 				getSwapAppFee$(tokenIn.token, plancksIn),

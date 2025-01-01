@@ -114,9 +114,7 @@ export const [useOperationDeliveryFeeEstimate, operationDeliveryFeeEstimate$] =
 
 					if (inputs.type !== "xcm") return of(loadableData(null, isLoading));
 					if (dryRunState.error)
-						return of(
-							loadableError<DeliveryFee | null>(dryRunState.error, isLoading),
-						);
+						return of(loadableError<DeliveryFee | null>(dryRunState.error));
 					if (!dryRunState.data)
 						return of(loadableData(null, isLoading || dryRunState.isLoading));
 
