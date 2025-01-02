@@ -162,7 +162,7 @@ const useTransactionProvider = ({
 			});
 
 			const sub = obsTxEvents.subscribe((x) => {
-				logger.log("Transaction status update", x);
+				logger.log("[tx event]", x);
 
 				if (x.type === "broadcasted") isSubmitted = true;
 
