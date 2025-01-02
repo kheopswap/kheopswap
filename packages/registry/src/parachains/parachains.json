@@ -62,6 +62,12 @@
 		"parachainsInfoUrl": "https://parachains.info/details/bifrost_finance_polkadot"
 	},
 	{
+		"relay": "polkadot",
+		"paraId": 3370,
+		"name": "LAOS Network",
+		"parachainsInfoUrl": "https://parachains.info/details/laos"
+	},
+	{
 		"relay": "kusama",
 		"paraId": 2125,
 		"name": "Tinkernet",
