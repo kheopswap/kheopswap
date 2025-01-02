@@ -25,7 +25,6 @@ import { useAssetConversionSwapParams } from "./state/helpers/getAssetConversion
 import { useOperationDeliveryFeeEstimate } from "./state/operationDeliveryFeeEstimate";
 import { useOperationDestinationFeeEstimate } from "./state/operationDestinationFeeEstimate";
 import { useOperationPriceImpact } from "./state/operationPriceImpact";
-import { useOperationTransaction } from "./state/operationTransaction";
 
 const FeeSummaryValue: FC<{
 	isLoading: boolean;
@@ -88,7 +87,6 @@ const SimulationsSection = () => {
 
 const FeesSection = () => {
 	const { data: inputs } = useOperationInputs();
-	const { data: tx } = useOperationTransaction();
 	const isXcm = inputs?.type === "xcm";
 	const isSwap = inputs?.type === "asset-convert";
 
@@ -96,7 +94,7 @@ const FeesSection = () => {
 		<FormSummarySection>
 			<FormSummaryRow
 				label="Transaction fee"
-				value={!!tx && <TransactionFeeSummaryValue />}
+				value={<TransactionFeeSummaryValue />}
 			/>
 			{isSwap && (
 				<>

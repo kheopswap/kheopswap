@@ -22,13 +22,17 @@ import {
 import { operationPlancksOut$ } from "./state/operation.plancksOut";
 import { operationDeliveryFeeEstimate$ } from "./state/operationDeliveryFeeEstimate";
 import { operationFeeEstimateWithToken$ } from "./state/operationFeeToken";
-import { useOperationTransaction } from "./state/operationTransaction";
+import {
+	useOperationFakeTransaction,
+	useOperationTransaction,
+} from "./state/operationTransaction";
 
 export const OperationTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
 	const { data: inputs } = useOperationInputs();
 	const { data: call } = useOperationTransaction();
+	const { data: fakeCall } = useOperationFakeTransaction();
 	const { data: expectedEventResults } = useOperationExpectedEventResults();
 
 	const callSpendings = useMemo<CallSpendings>(
@@ -54,7 +58,7 @@ export const OperationTransactionProvider: FC<PropsWithChildren> = ({
 	return (
 		<TransactionProvider
 			call={call}
-			fakeCall={call} // TODO
+			fakeCall={fakeCall}
 			callSpendings={callSpendings}
 			chainId={inputs?.tokenIn?.token?.chainId}
 			signer={inputs?.account?.id}
