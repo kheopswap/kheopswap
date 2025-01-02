@@ -4,8 +4,8 @@ import {
 	isBigInt,
 	loadableData,
 	loadableError,
+	loadableLoading,
 	loadableState,
-	lodableLoading,
 	logger,
 } from "@kheopswap/utils";
 import { type Observable, catchError, combineLatest, map, of } from "rxjs";
@@ -62,7 +62,7 @@ export const getAssetConvertOutput$ = (
 				lpFee,
 			]): LoadableState<AssetConvertOutput | null> => {
 				if (!poolReserves.reserves || !lpFee.data || !isBigInt(appFee.data))
-					return lodableLoading();
+					return loadableLoading();
 
 				const tradeIn = plancksIn - appFee.data;
 

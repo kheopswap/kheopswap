@@ -161,6 +161,14 @@ export const OperationForm = () => {
 		[targetTokens],
 	);
 
+	const { insufficientBalances } = useTransaction();
+
+	const inputErrorMessage = useMemo(() => {
+		if (!!formData.amountIn && !isBigInt(inputs?.plancksIn))
+			return "Invalid amount";
+		insufficientBalances[formData.tokenIdIn ?? ""] || null;
+	}, [formData, insufficientBalances, inputs?.plancksIn]);
+
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-3">
@@ -188,7 +196,7 @@ export const OperationForm = () => {
 						accounts={tokenPickerAccounts}
 						isLoading={isLoadingAllTokens}
 						onTokenChange={setTokenIn}
-						// errorMessage={inputErrorMessage}
+						errorMessage={inputErrorMessage}
 						balance={balanceIn}
 						isLoadingBalance={isLoadingBalanceIn}
 						onMaxClick={onMaxClick}

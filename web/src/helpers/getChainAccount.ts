@@ -4,7 +4,7 @@ import {
 	type LoadableState,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { type Observable, catchError, map, of, switchMap } from "rxjs";
@@ -31,5 +31,5 @@ export const [useChainAccount, getChainAccount$] = bind(
 			),
 		);
 	},
-	lodableLoading<ChainAccount<ChainId>>(),
+	loadableLoading<ChainAccount<ChainId>>(),
 );

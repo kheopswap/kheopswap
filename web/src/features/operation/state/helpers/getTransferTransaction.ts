@@ -13,7 +13,7 @@ import {
 	type LoadableState,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 	logger,
 } from "@kheopswap/utils";
 import { type Observable, catchError, map, of } from "rxjs";
@@ -49,7 +49,7 @@ export const getTransferTxCall$ = (
 ): Observable<LoadableState<AnyTransaction>> => {
 	return getApiLoadable$(token.chainId).pipe(
 		map(({ data: api, error, isLoading }) => {
-			if (isLoading) return lodableLoading<AnyTransaction>();
+			if (isLoading) return loadableLoading<AnyTransaction>();
 			if (error) return loadableError<AnyTransaction>(error);
 			if (!api)
 				return loadableError<AnyTransaction>(

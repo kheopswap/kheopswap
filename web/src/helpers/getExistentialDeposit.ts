@@ -16,7 +16,7 @@ import {
 	type LoadableState,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { Observable, catchError, map, of, switchMap } from "rxjs";
@@ -108,7 +108,7 @@ export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 	(tokenId: TokenId) =>
 		// TODO get rid of observable wrapper
 		new Observable<LoadableState<bigint | null>>((subscriber) => {
-			subscriber.next(lodableLoading());
+			subscriber.next(loadableLoading());
 
 			const token = parseTokenId(tokenId);
 			if (!token)
@@ -133,5 +133,5 @@ export const [useExistentialDeposit, getExistentialDeposit$] = bind(
 					subscriber.next(res);
 				});
 		}),
-	() => lodableLoading<bigint | null>(),
+	() => loadableLoading<bigint | null>(),
 );

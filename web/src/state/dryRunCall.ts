@@ -4,7 +4,7 @@ import {
 	getCachedPromise,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 	objectHash,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
@@ -38,7 +38,7 @@ export const [useDryRunCall, getDryRunCall$] = bind(
 							new Error(`Api not found - ${chainId}`),
 						),
 					);
-				if (!api) return of(lodableLoading<DryRun<ChainId>>());
+				if (!api) return of(loadableLoading<DryRun<ChainId>>());
 
 				return api.query.System.Number.watchValue("best").pipe(
 					distinctUntilChanged<number>(),
@@ -57,5 +57,5 @@ export const [useDryRunCall, getDryRunCall$] = bind(
 			catchError((error) => of(loadableError<DryRun<ChainId> | null>(error))),
 		);
 	},
-	() => lodableLoading<DryRun<ChainId> | null>(),
+	() => loadableLoading<DryRun<ChainId> | null>(),
 );

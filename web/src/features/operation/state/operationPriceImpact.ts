@@ -3,7 +3,7 @@ import {
 	isBigInt,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import {
@@ -68,5 +68,5 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 		}),
 		catchError((err) => of(loadableError<number | null>(err))),
 	),
-	lodableLoading(),
+	loadableLoading(),
 );

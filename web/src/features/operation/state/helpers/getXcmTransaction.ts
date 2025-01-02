@@ -19,7 +19,7 @@ import {
 	isNumber,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 } from "@kheopswap/utils";
 import { AccountId, Binary, type SS58String } from "polkadot-api";
 import { type Observable, catchError, map, of, startWith } from "rxjs";
@@ -43,7 +43,7 @@ export const getXcmTransaction$ = (
 	return getApi$(tokenIn.chainId).pipe(
 		map((api) => getXcmCall(api, tokenIn, tokenOut, plancksIn, recipient)),
 		map((tx) => loadableData<AnyTransaction | null>(tx, isLoading)),
-		startWith(lodableLoading<AnyTransaction>()),
+		startWith(loadableLoading<AnyTransaction>()),
 		catchError((error) => of(loadableError<AnyTransaction>(error))),
 	);
 };

@@ -12,7 +12,7 @@ import {
 	isBigInt,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import {
@@ -95,11 +95,11 @@ export const [useAssetConversionSwapParams, getAssetConversionSwapParams$] =
 						}),
 					);
 				}),
-				startWith(lodableLoading<SwapParams | null>()),
+				startWith(loadableLoading<SwapParams | null>()),
 				catchError((error) => of(loadableError<SwapParams | null>(error))),
 			);
 		},
-		() => lodableLoading<SwapParams | null>(),
+		() => loadableLoading<SwapParams | null>(),
 	);
 
 export const getAssetConversionSwapTransaction$ = (
@@ -157,7 +157,7 @@ export const getAssetConversionSwapTransaction$ = (
 			);
 		}),
 		catchError((error) => of(loadableError<AnyTransaction>(error))),
-		startWith(lodableLoading<AnyTransaction>()),
+		startWith(loadableLoading<AnyTransaction>()),
 	);
 };
 

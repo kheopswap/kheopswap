@@ -16,7 +16,6 @@
 		"relay": "polkadot",
 		"paraId": null,
 		"logo": "./img/tokens/DOT.svg",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://polkadot.subscan.io",
 		"addressType": "ss58"
 	},
@@ -38,7 +37,6 @@
 		"relay": "polkadot",
 		"paraId": 1000,
 		"logo": "./img/chains/pah.svg",
-		"stableTokenId": "asset::pah::1337",
 		"blockExplorerUrl": "https://assethub-polkadot.subscan.io",
 		"addressType": "ss58"
 	},
@@ -57,7 +55,6 @@
 		"relay": "polkadot",
 		"paraId": 2034,
 		"logo": "./img/chains/hydration.svg",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://hydration.subscan.io",
 		"addressType": "ss58"
 	},
@@ -68,7 +65,6 @@
 		"relay": "polkadot",
 		"paraId": 3369,
 		"logo": "./img/chains/mythos.webp?rounded",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://mythos.subscan.io",
 		"addressType": "ethereum"
 	},
@@ -88,7 +84,6 @@
 		"relay": "polkadot",
 		"paraId": 2004,
 		"logo": "./img/chains/moonbeam.webp",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://moonbeam.subscan.io",
 		"addressType": "ethereum"
 	},
@@ -105,7 +100,6 @@
 		"relay": "polkadot",
 		"paraId": 2030,
 		"logo": "./img/chains/bifrost-polkadot.svg",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://bifrost.subscan.io",
 		"addressType": "ss58"
 	},
@@ -127,7 +121,6 @@
 		"relay": "kusama",
 		"paraId": null,
 		"logo": "./img/tokens/KSM.svg",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://kusama.subscan.io",
 		"addressType": "ss58"
 	},
@@ -146,7 +139,6 @@
 		"relay": "kusama",
 		"paraId": 1000,
 		"logo": "./img/chains/kah.svg",
-		"stableTokenId": "native::kah",
 		"blockExplorerUrl": "https://assethub-kusama.subscan.io",
 		"addressType": "ss58"
 	},
@@ -163,7 +155,6 @@
 		"relay": "westend",
 		"paraId": null,
 		"logo": "./img/tokens/WND.svg",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://westend.subscan.io",
 		"addressType": "ss58"
 	},
@@ -180,7 +171,6 @@
 		"relay": "westend",
 		"paraId": 1000,
 		"logo": "./img/chains/wah.svg",
-		"stableTokenId": "native::wah",
 		"blockExplorerUrl": "https://assethub-westend.subscan.io",
 		"addressType": "ss58"
 	},
@@ -199,7 +189,6 @@
 		"relay": "paseo",
 		"paraId": null,
 		"logo": "./img/chains/paseo.png",
-		"stableTokenId": null,
 		"blockExplorerUrl": "https://paseo.subscan.io",
 		"addressType": "ss58"
 	},
@@ -216,7 +205,6 @@
 		"relay": "paseo",
 		"paraId": 1000,
 		"logo": "./img/chains/pasah.svg",
-		"stableTokenId": "native::pasah",
 		"blockExplorerUrl": "https://assethub-paseo.subscan.io",
 		"addressType": "ss58"
 	}

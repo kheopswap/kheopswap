@@ -46,7 +46,6 @@ export type Chain<Id = ChainId> = {
 	relay: ChainIdRelay | null;
 	paraId: number | null;
 	logo: string;
-	stableTokenId: string | null;
 	blockExplorerUrl: string | null;
 	addressType: AccountAddressType;
 };

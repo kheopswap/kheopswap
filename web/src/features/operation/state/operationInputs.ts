@@ -3,7 +3,7 @@ import {
 	type LoadableState,
 	getAddressFromAccountField,
 	loadableData,
-	lodableLoading,
+	loadableLoading,
 	tokensToPlancks,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
@@ -74,5 +74,5 @@ export const [useOperationInputs, operationInputs$] = bind(
 	operationFormData$.pipe(
 		switchMap((formData) => getOperationInputs$(formData)),
 	),
-	lodableLoading<OperationInputs>(),
+	loadableLoading<OperationInputs>(),
 );

@@ -92,7 +92,7 @@ relayId$.subscribe((relayId) => {
 		case "paseo":
 			return updateOperationFormData({
 				tokenIdIn: "native::paseo",
-				tokenIdOut: "native::paseoah",
+				tokenIdOut: "native::pasah",
 			});
 
 		default: {

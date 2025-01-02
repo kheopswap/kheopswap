@@ -40,7 +40,7 @@ import {
 	getCachedPromise,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 	logger,
 } from "@kheopswap/utils";
 
@@ -165,7 +165,7 @@ export const getApiLoadable$ = <Id extends ChainId, Papi = Api<Id>>(
 			catchError((cause) =>
 				of(loadableError<Papi>(new Error("Failed to get Api", { cause }))),
 			),
-			startWith(lodableLoading<Papi>()), // TODO test
+			startWith(loadableLoading<Papi>()), // TODO test
 			shareReplay(1),
 		),
 	);

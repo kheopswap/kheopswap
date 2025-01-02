@@ -4,7 +4,7 @@ import {
 	type LoadableState,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { catchError, from, map, of, switchMap } from "rxjs";
@@ -25,5 +25,5 @@ export const [useAssetConversionLPFee, getAssetConversionLPFee$] = bind<
 				),
 			),
 		),
-	() => lodableLoading(),
+	() => loadableLoading(),
 );

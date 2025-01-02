@@ -3,7 +3,7 @@ import {
 	type LoadableState,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { Observable } from "rxjs";
@@ -12,7 +12,7 @@ import { getChainAccount$ } from "./getChainAccount";
 export const [useIsAccountSufficient, getIsAccountSufficient$] = bind(
 	(chainId: ChainId, address: string) =>
 		new Observable<LoadableState<boolean>>((subscriber) => {
-			subscriber.next(lodableLoading());
+			subscriber.next(loadableLoading());
 
 			return getChainAccount$(chainId, address).subscribe(
 				async (accountState) => {

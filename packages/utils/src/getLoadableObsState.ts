@@ -9,7 +9,7 @@ export const loadableState = <T = unknown>(props: LoadableState<T>) => {
 	return props;
 };
 
-export const lodableLoading = <T = unknown>() =>
+export const loadableLoading = <T = unknown>() =>
 	loadableState<T>({
 		data: undefined,
 		isLoading: true,

@@ -8,7 +8,6 @@ import { useMemo } from "react";
 import {
 	useNativeToken,
 	usePoolsByChainId,
-	useToken,
 	useTokensByChainId,
 	useWallets,
 } from "src/hooks";
@@ -25,9 +24,9 @@ export type LiquidityPoolRowData = PoolWithPositions & {
 };
 
 export const useLiquidityPoolsTable = () => {
-	const { assetHub } = useRelayChains();
+	// TODO get rid of the stable token, paseo doesnt have one and we do not handle it correctly on kusama yet
+	const { assetHub, stableToken } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
-	const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
 
 	const { data: allTokens, isLoading: isLoadingTokens } = useTokensByChainId({
 		chainId: assetHub.id,

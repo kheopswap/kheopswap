@@ -9,7 +9,7 @@ import {
 	type LoadableState,
 	loadableData,
 	loadableError,
-	lodableLoading,
+	loadableLoading,
 	logger,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
@@ -54,6 +54,8 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 					"moonbeam",
 					"kusama",
 					"kah",
+					"paseo",
+					"pasah",
 				])
 			)
 				return of(loadableData(null));
@@ -95,7 +97,7 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 
 					return loadableData(result);
 				}),
-				startWith(lodableLoading<DeliveryFee | null>()),
+				startWith(loadableLoading<DeliveryFee | null>()),
 				catchError((error) => of(loadableError<DeliveryFee | null>(error))),
 			);
 		}),
@@ -124,5 +126,5 @@ export const [useOperationDeliveryFeeEstimate, operationDeliveryFeeEstimate$] =
 
 			catchError((error) => of(loadableError<DeliveryFee | null>(error))),
 		),
-		lodableLoading<DeliveryFee | null>(),
+		loadableLoading<DeliveryFee | null>(),
 	);

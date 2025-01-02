@@ -1,10 +1,11 @@
+import { STABLE_ASSET_ID } from "@kheopswap/constants";
 import {
 	useAssetConvertPlancks,
 	useAssetConvertPrice,
 } from "./useAssetConvertPlancks";
-import { useTokenChain } from "./useTokenChain";
 
 import type { TokenId } from "@kheopswap/registry";
+import { useStableToken } from "src/state";
 
 type UseStablePrice = {
 	tokenId: TokenId | null | undefined;
@@ -12,11 +13,11 @@ type UseStablePrice = {
 };
 
 export const useStablePlancks = ({ tokenId, plancks }: UseStablePrice) => {
-	const chain = useTokenChain({ tokenId });
+	//const chain = useTokenChain({ tokenId });
 
 	const { isLoading, tokenIn, tokenOut, plancksOut } = useAssetConvertPlancks({
 		tokenIdIn: tokenId,
-		tokenIdOut: chain?.stableTokenId,
+		tokenIdOut: STABLE_ASSET_ID,
 		plancks,
 	});
 
@@ -29,11 +30,12 @@ export const useStablePlancks = ({ tokenId, plancks }: UseStablePrice) => {
 };
 
 export const useStablePrice = ({ tokenId, plancks }: UseStablePrice) => {
-	const chain = useTokenChain({ tokenId });
+	const stableToken = useStableToken();
+	//	const chain = useTokenChain({ tokenId });
 
 	const { isLoading, price, tokenIn, tokenOut } = useAssetConvertPrice({
 		tokenIdIn: tokenId,
-		tokenIdOut: chain?.stableTokenId,
+		tokenIdOut: stableToken.id, // "asset::pah::1337",
 		plancks,
 	});
 
