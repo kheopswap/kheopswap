@@ -11,6 +11,7 @@ const KNOWN_CHAIN_SPECS_IDS = [
 	"pah",
 	"pasah",
 	"hydration",
+	// "bifrostPolkadot",
 ] as const;
 
 type ChainIdWithChainSpec = (typeof KNOWN_CHAIN_SPECS_IDS)[number];
@@ -22,6 +23,7 @@ export const hasChainSpec = (
 
 const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 	try {
+		// non-papi ones are picked from https://github.com/paritytech/chainspecs
 		switch (chainId) {
 			case "kusama":
 				return (await import("polkadot-api/chains/ksmcc3")).chainSpec;
@@ -44,6 +46,10 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 			case "hydration": {
 				return (await import("./chainspec/hydration")).chainSpec;
 			}
+			// TODO waiting for wss endpoints
+			// case "bifrostPolkadot": {
+			// 	return (await import("./chainspec/bifrostPolkadot")).chainSpec;
+			// }
 			default:
 				throw new Error(`Unknown chain: ${chainId}`);
 		}
