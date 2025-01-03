@@ -26,14 +26,14 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 			if (lsInputs.error)
 				return of(loadableError<number | null>(lsInputs.error));
 			if (lsInputs.data?.type !== "asset-convert")
-				return of(loadableData(null, lsInputs.isLoading));
+				return of(loadableData(null));
 
 			const tokenIdIn = lsInputs.data.tokenIn?.token?.id;
 			const tokenIdOut = lsInputs.data.tokenOut?.token?.id;
 			const plancksIn = lsInputs.data.plancksIn;
 
 			if (!tokenIdIn || !tokenIdOut || !plancksIn)
-				return of(loadableData(null, lsInputs.isLoading));
+				return of(loadableData(null));
 
 			return combineLatest([
 				operationPlancksOut$,
