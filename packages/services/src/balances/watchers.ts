@@ -130,16 +130,16 @@ const watchBalance = async (balanceId: BalanceId) => {
 				updateBalance(balanceId, balance);
 			});
 		}
-		case "x-token": {
+		case "bifrost-asset": {
 			if (!isApiBifrostPolkadot(api))
 				throw new Error(
-					`Cannot watch balance for ${tokenId}. x-tokens are not supported on ${chain.id}`,
+					`Cannot watch balance for ${tokenId}. Bifrost tokens are not supported on ${chain.id}`,
 				);
 
 			const account$ = api.query.Tokens.Accounts.watchValue(
 				address,
 				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-				token.key as any,
+				token.currencyId as any,
 				"best",
 			);
 

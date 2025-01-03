@@ -124,12 +124,12 @@ export const getTransferTxCall = (
 				dest,
 			});
 		}
-		case "x-token": {
+		case "bifrost-asset": {
 			if (!isApiBifrostPolkadot(api))
 				throw new Error(`Chain ${api.chainId} does not have the Tokens pallet`);
 
 			return api.tx.Tokens.transfer({
-				currency_id: token.key,
+				currency_id: token.currencyId,
 				amount: plancks,
 				dest: MultiAddress.Id(dest),
 			});

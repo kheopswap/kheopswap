@@ -5,14 +5,14 @@ export type TokenTypeAsset = "asset";
 export type TokenTypePoolAsset = "pool-asset";
 export type TokenTypeForeignAsset = "foreign-asset";
 export type TokenTypeHydrationAsset = "hydration-asset";
-export type TokenTypeXToken = "x-token";
+export type TokenTypeBifrostAsset = "bifrost-asset";
 export type TokenType =
 	| TokenTypeNative
 	| TokenTypeAsset
 	| TokenTypePoolAsset
 	| TokenTypeForeignAsset
 	| TokenTypeHydrationAsset
-	| TokenTypeXToken;
+	| TokenTypeBifrostAsset;
 
 export type TokenNativeNoId = {
 	type: TokenTypeNative;
@@ -77,14 +77,14 @@ export type TokenHydrationAssetNoId = {
 	origin?: string;
 };
 
-export type TokenXTokenNoId = {
-	type: TokenTypeXToken;
+export type TokenBifrostAssetNoId = {
+	type: TokenTypeBifrostAsset;
 	chainId: ChainId;
 	decimals: number;
 	symbol: string;
 	name: string;
 	logo: string;
-	key: XTokenKey;
+	currencyId: BifrostAssetCurrencyId;
 	origin?: TokenId;
 	verified: boolean;
 	isSufficient: boolean;
@@ -96,7 +96,7 @@ export type TokenNoId =
 	| TokenPoolAssetNoId
 	| TokenForeignAssetNoId
 	| TokenHydrationAssetNoId
-	| TokenXTokenNoId;
+	| TokenBifrostAssetNoId;
 
 /* declaration */
 export type TokenIdNative = string; // `native::${ChainId}`;
@@ -104,17 +104,17 @@ export type TokenIdAsset = string; // `asset::${ChainId}::${number}`;
 export type TokenIdPoolAsset = string; // `pool-asset::${ChainId}::${number}`;
 export type TokenIdForeignAsset = string; // `foreign-asset::${ChainId}::${multilocation}`;
 export type TokenIdHydrationAsset = string; // `hydration-asset::${ChainId}::${number}`;
-export type TokenIdXToken = string; // `xtoken::${ChainId}::${key}`;
+export type TokenIdBifrostAsset = string; // `bifrost-asset::${ChainId}::${currencyId}`;
 export type TokenId =
 	| TokenIdNative
 	| TokenIdAsset
 	| TokenIdPoolAsset
 	| TokenIdForeignAsset
 	| TokenIdHydrationAsset
-	| TokenIdXToken;
+	| TokenIdBifrostAsset;
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export type XTokenKey = any;
+export type BifrostAssetCurrencyId = any;
 export type TokenIdsPair = [TokenId, TokenId];
 
 export type TokenNative = TokenNativeNoId & { id: TokenIdNative };
@@ -126,8 +126,8 @@ export type TokenForeignAsset = TokenForeignAssetNoId & {
 export type TokenHydrationAsset = TokenHydrationAssetNoId & {
 	id: TokenIdHydrationAsset;
 };
-export type TokenXToken = TokenXTokenNoId & {
-	id: TokenIdXToken;
+export type TokenBifrostAsset = TokenBifrostAssetNoId & {
+	id: TokenIdBifrostAsset;
 };
 export type Token =
 	| TokenNative
@@ -135,7 +135,7 @@ export type Token =
 	| TokenPoolAsset
 	| TokenForeignAsset
 	| TokenHydrationAsset
-	| TokenXToken;
+	| TokenBifrostAsset;
 
 export type TokenInfoAsset = {
 	id: TokenIdAsset;
@@ -191,9 +191,17 @@ export type TokenInfoHydrationAsset = {
 	isSufficient: boolean;
 };
 
+export type TokenInfoBifrostAsset = {
+	id: TokenIdBifrostAsset;
+	type: TokenTypeBifrostAsset;
+	supply: bigint;
+	minBalance: bigint;
+};
+
 export type TokenInfo =
 	| TokenInfoNative
 	| TokenInfoAsset
 	| TokenInfoPoolAsset
 	| TokenInfoForeignAsset
-	| TokenInfoHydrationAsset;
+	| TokenInfoHydrationAsset
+	| TokenInfoBifrostAsset;

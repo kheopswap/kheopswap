@@ -1,22 +1,22 @@
 import lzs from "lz-string";
 
 import type {
+	BifrostAssetCurrencyId,
 	Token,
 	TokenId,
 	TokenIdAsset,
+	TokenIdBifrostAsset,
 	TokenIdForeignAsset,
 	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
-	TokenIdXToken,
 	TokenType,
 	TokenTypeAsset,
+	TokenTypeBifrostAsset,
 	TokenTypeForeignAsset,
 	TokenTypeHydrationAsset,
 	TokenTypeNative,
 	TokenTypePoolAsset,
-	TokenTypeXToken,
-	XTokenKey,
 } from "./types";
 
 import {
@@ -70,9 +70,9 @@ export type TokenSpec =
 			assetId: number;
 	  }
 	| {
-			type: TokenTypeXToken;
+			type: TokenTypeBifrostAsset;
 			chainId: ChainId;
-			key: XTokenKey;
+			currencyId: BifrostAssetCurrencyId;
 	  };
 
 export type TokenSpecWithId = TokenSpec & { id: TokenId };
@@ -110,12 +110,12 @@ export const parseTokenId = (id: TokenId): TokenSpecWithId => {
 				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
 				return { id, type: "hydration-asset", chainId, assetId };
 			}
-			case "x-token": {
-				if (parts.length < 3) throw new Error("Invalid x-token token id");
-				const key = safeParse<XTokenKey>(
+			case "bifrost-asset": {
+				if (parts.length < 3) throw new Error("Invalid bifrost-asset token id");
+				const currencyId = safeParse<BifrostAssetCurrencyId>(
 					lzs.decompressFromBase64(parts[2] as string),
 				);
-				return { id, type: "x-token", chainId, key };
+				return { id, type: "bifrost-asset", chainId, currencyId };
 			}
 			default:
 				throw new Error(`Unsupported token type: ${id}`);
@@ -140,8 +140,8 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 				? TokenIdForeignAsset
 				: T extends TokenTypeHydrationAsset
 					? TokenIdHydrationAsset
-					: T extends TokenTypeXToken
-						? TokenIdXToken
+					: T extends TokenTypeBifrostAsset
+						? TokenIdBifrostAsset
 						: never;
 
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
@@ -158,8 +158,8 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}` as Result;
 		case "hydration-asset":
 			return `hydration-asset::${token.chainId}::${token.assetId}` as Result;
-		case "x-token":
-			return `x-token::${token.chainId}::${lzs.compressToBase64(safeStringify(token.key))}` as Result;
+		case "bifrost-asset":
+			return `bifrost-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.currencyId))}` as Result;
 		default:
 			throw new Error("Unknown token spec");
 	}

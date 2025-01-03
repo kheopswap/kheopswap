@@ -282,7 +282,11 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 
 	if (token.type === "pool-asset") return null;
 
-	if (token.type === "native" || token.type === "hydration-asset")
+	if (
+		token.type === "native" ||
+		token.type === "hydration-asset" ||
+		token.type === "bifrost-asset"
+	)
 		return (
 			<TokenDetailsRow label="Total Supply">
 				{tokenInfo && "supply" in tokenInfo ? (
@@ -296,7 +300,8 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 	if (
 		tokenInfo?.type === "native" ||
 		tokenInfo?.type === "pool-asset" ||
-		tokenInfo?.type === "hydration-asset"
+		tokenInfo?.type === "hydration-asset" ||
+		tokenInfo?.type === "bifrost-asset"
 	)
 		return null;
 
@@ -411,6 +416,11 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 			<TokenDetailsRow label="Type">
 				{getTokenTypeLabel(token.type)}
 			</TokenDetailsRow>
+			{token.type === "bifrost-asset" && (
+				<TokenDetailsRow label="Currency Id">
+					{token.currencyId.type}: {token.currencyId.value}
+				</TokenDetailsRow>
+			)}
 			{token.type === "asset" && (
 				<TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
 			)}

@@ -135,7 +135,7 @@ const [useOperationExpectedEventResults] = bind(
 								),
 							});
 
-						if (tokenIn.type === "x-token")
+						if (tokenIn.type === "bifrost-asset")
 							results.push({
 								tokenId: tokenIn.id,
 								plancks: plancksOut,

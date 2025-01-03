@@ -9,9 +9,11 @@ export const getTokenTypeLabel = (type: TokenType) => {
 		case "pool-asset":
 			return "Liquidity Pool Token";
 		case "foreign-asset":
-			return "Foreign Asset (Asset Hub)";
+			return "Foreign Token (Asset Hub)";
 		case "hydration-asset":
-			return "Hydration Asset";
+			return "Hydration Token";
+		case "bifrost-asset":
+			return "Bifrost Token";
 		default:
 			return type;
 	}
