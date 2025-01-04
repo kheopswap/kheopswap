@@ -19,5 +19,7 @@ export const loadableLoading = <T = unknown>() =>
 export const loadableData = <T = unknown>(data: T, isLoading = false) =>
 	loadableState<T>({ data, isLoading, error: undefined });
 
-export const loadableError = <T = unknown>(error: Error) =>
-	loadableState<T>({ data: undefined, isLoading: false, error });
+export const loadableError = <T = unknown>(error: Error) => {
+	console.error(error);
+	return loadableState<T>({ data: undefined, isLoading: false, error });
+};

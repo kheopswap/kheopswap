@@ -73,6 +73,15 @@ const getXcmCall = (
 			weight_limit: XcmV3WeightLimit.Unlimited(),
 		});
 
+	if (isApiIn(api, ["hydration"]))
+		return api.tx.PolkadotXcm.transfer_assets({
+			assets: getAssets(api.chainId, tokenIn, tokenOut, plancks),
+			dest: getDestLocation(api.chainId, tokenOut),
+			beneficiary: getBeneficiary(recipient),
+			fee_asset_item: 0,
+			weight_limit: XcmV3WeightLimit.Unlimited(),
+		});
+
 	throw new Error("Unsupported xcm transfer");
 };
 

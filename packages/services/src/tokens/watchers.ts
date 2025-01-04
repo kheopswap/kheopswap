@@ -13,7 +13,9 @@ import {
 	type Chain,
 	type ChainId,
 	PARA_ID_ASSET_HUB,
+	type XcmV3Multilocation,
 	getChainById,
+	getChains,
 	hasAssetPallet,
 	isAssetHub,
 	isHydration,
@@ -226,17 +228,29 @@ const fetchHydrationAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 
 	stop();
 
+	const allChains = getChains();
+	const assetHub = allChains.find(
+		(c) => isAssetHub(c) && c.relay === chain.relay,
+	);
+	if (!assetHub)
+		throw new Error(`Could not find asset hub for chain ${chain.id}`);
+
+	const getAssetId = (location: XcmV3Multilocation) => {
+		return location.parents === 1 &&
+			location.interior.type === "X3" &&
+			location.interior.value[0]?.type === "Parachain" &&
+			location.interior.value[0].value === PARA_ID_ASSET_HUB &&
+			location.interior.value[1]?.type === "PalletInstance" &&
+			location.interior.value[1].value === 50 &&
+			location.interior.value[2]?.type === "GeneralIndex" &&
+			location.interior.value[2].value
+			? Number(location.interior.value[2].value)
+			: null;
+	};
+
 	// consider only tokens from parachain 1000
 	const tokensRaw = locations
-		.filter(
-			(entry) =>
-				entry.value.parents === 1 &&
-				entry.value.interior.type === "X3" &&
-				entry.value.interior.value[0]?.type === "Parachain" &&
-				entry.value.interior.value[0].value === PARA_ID_ASSET_HUB &&
-				entry.value.interior.value[1]?.type === "PalletInstance" &&
-				entry.value.interior.value[1].value === 50,
-		)
+		.filter((entry) => isNumber(getAssetId(entry.value)))
 		.map((entry) => ({
 			id: entry.keyArgs[0],
 			location: entry.value,
@@ -254,6 +268,12 @@ const fetchHydrationAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 				chainId: "hydration",
 				assetId: entry.id,
 				location: entry.location,
+				origin: getTokenId({
+					type: "asset",
+					chainId: assetHub.id,
+					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					assetId: getAssetId(entry.location)!,
+				}),
 			} as StorageToken;
 		});
 

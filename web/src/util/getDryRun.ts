@@ -12,15 +12,15 @@ export type DryRun<Id extends ChainId> = Id extends ChainIdWithDryRun
 	? Awaited<ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_call"]>>
 	: never;
 
-export const getDryRun = <
+export const getDryRun = async <
 	Id extends ChainId,
-	Res = Promise<DryRun<ChainId> | null>,
+	Res = DryRun<ChainId> | null,
 >(
 	api: Api<Id>,
 	from: string,
 	decodedCall: AnyTransaction["decodedCall"],
 	signal?: AbortSignal,
-): Res => {
+): Promise<Res> => {
 	if (!isApiWithDryRun(api)) return null as Res;
 
 	logger.debug("[api call] DryRunApi.dry_run_call", {

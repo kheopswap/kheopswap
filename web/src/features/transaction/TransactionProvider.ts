@@ -410,6 +410,8 @@ const useTransactionProvider = ({
 		xcmDryRun,
 		isLoadingXcmDryRun,
 		errorXcmDryRun,
+
+		call,
 	};
 };
 

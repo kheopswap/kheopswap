@@ -56,6 +56,7 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 					"kah",
 					"paseo",
 					"pasah",
+					"hydration",
 				])
 			)
 				return of(loadableData(null));

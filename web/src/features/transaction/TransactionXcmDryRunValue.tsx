@@ -10,7 +10,8 @@ import {
 import { useTransaction } from "./TransactionProvider";
 
 export const TransactionXcmDryRunSummaryValue = () => {
-	const { xcmDryRun, errorXcmDryRun, isLoadingXcmDryRun } = useTransaction();
+	const { xcmDryRun, errorXcmDryRun, isLoadingXcmDryRun, call } =
+		useTransaction();
 
 	const [success, error] = useMemo(() => {
 		if (!xcmDryRun?.success) return [false, null];
@@ -22,12 +23,12 @@ export const TransactionXcmDryRunSummaryValue = () => {
 		}
 	}, [xcmDryRun]);
 
+	if (!call) return null;
+
 	if (isLoadingXcmDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 
-	if (errorXcmDryRun || (xcmDryRun && !xcmDryRun.success))
+	if (errorXcmDryRun || !xcmDryRun?.success)
 		return <span className="text-neutral-500">Unavailable</span>;
-
-	if (!xcmDryRun) return null;
 
 	return (
 		<Tooltip placement="bottom-end">
