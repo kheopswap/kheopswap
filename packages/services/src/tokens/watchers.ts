@@ -277,6 +277,32 @@ const fetchHydrationAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 			} as StorageToken;
 		});
 
+	const dotEntry = locations.find(
+		(entry) =>
+			entry.value.parents === 1 && entry.value.interior.type === "Here",
+	);
+	if (dotEntry && chain.relay) {
+		const {
+			keyArgs: [assetId],
+			value: location,
+		} = dotEntry;
+
+		const dotToken = {
+			id: getTokenId({
+				type: "hydration-asset",
+				chainId: "hydration",
+				assetId,
+			}),
+			type: "hydration-asset",
+			chainId: "hydration",
+			assetId,
+			location,
+			origin: getTokenId({ type: "native", chainId: chain.relay }),
+		} as StorageToken;
+
+		tokensRaw.push(dotToken);
+	}
+
 	updateTokensStore("hydration", "hydration-asset", tokensRaw);
 };
 
