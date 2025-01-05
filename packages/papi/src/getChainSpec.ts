@@ -11,6 +11,7 @@ const KNOWN_CHAIN_SPECS_IDS = [
 	"pah",
 	"pasah",
 	"hydration",
+	"mythos",
 	// "bifrostPolkadot",
 ] as const;
 
@@ -43,9 +44,11 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 					.chainSpec;
 			case "pasah":
 				return (await import("polkadot-api/chains/paseo_asset_hub")).chainSpec;
-			case "hydration": {
+			case "hydration":
 				return (await import("./chainspec/hydration")).chainSpec;
-			}
+			case "mythos":
+				return (await import("./chainspec/mythos")).chainSpec;
+
 			// TODO waiting for wss endpoints
 			// case "bifrostPolkadot": {
 			// 	return (await import("./chainspec/bifrostPolkadot")).chainSpec;

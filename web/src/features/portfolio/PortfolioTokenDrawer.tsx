@@ -464,8 +464,8 @@ const DrawerContent: FC<{
 	tokenRow: PortfolioRowData;
 }> = ({ tokenRow }) => {
 	useEffect(() => {
-		logger.info("Token Details", tokenRow);
-	}, [tokenRow]);
+		logger.info("Token Details", tokenRow.token);
+	}, [tokenRow.token]);
 
 	return (
 		<div>
