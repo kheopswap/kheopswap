@@ -106,8 +106,9 @@ export const AccountSelect: FC<{
 	tokenId?: TokenId;
 	ownedOnly?: boolean;
 	className?: string;
+	error?: string | null;
 	onChange: (idOrAddress: string) => void;
-}> = ({ id, ownedOnly, idOrAddress, tokenId, className, onChange }) => {
+}> = ({ id, ownedOnly, idOrAddress, tokenId, className, error, onChange }) => {
 	const { isOpen, open, close } = useOpenClose();
 
 	const handleChange = useCallback(
@@ -124,9 +125,10 @@ export const AccountSelect: FC<{
 				id={id}
 				ownedOnly={ownedOnly}
 				idOrAddress={idOrAddress}
-				className={className}
+				className={cn(className, error && "border-error")}
 				onClick={open}
 			/>
+			{error && <div className="text-error">{error}</div>}
 			<AccountSelectDrawer
 				isOpen={isOpen}
 				ownedOnly={ownedOnly}

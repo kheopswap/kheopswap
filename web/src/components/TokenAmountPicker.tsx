@@ -68,6 +68,7 @@ export const TokenAmountPicker: FC<{
 	isLoadingBalance?: boolean;
 	onMaxClick?: () => void;
 	isComputingValue?: boolean;
+	lessThan?: boolean;
 }> = ({
 	inputProps,
 	tokenId,
@@ -84,6 +85,7 @@ export const TokenAmountPicker: FC<{
 	onMaxClick,
 
 	isComputingValue,
+	lessThan,
 }) => {
 	const token = useMemo(
 		() => (tokenId ? tokens?.[tokenId] : undefined),
@@ -98,6 +100,11 @@ export const TokenAmountPicker: FC<{
 		[inputProps.value, token],
 	);
 
+	const showLessThan = useMemo(
+		() => isBigInt(plancks) && !isComputingValue && !!lessThan,
+		[isComputingValue, lessThan, plancks],
+	);
+
 	return (
 		<div
 			className={cn(
@@ -106,7 +113,8 @@ export const TokenAmountPicker: FC<{
 				inputProps.readOnly && "focus-within:border-neutral-800",
 			)}
 		>
-			<div className="flex w-full relative">
+			<div className="flex w-full relative items-center">
+				{showLessThan && <div className="text-2xl">&lt;&nbsp;</div>}
 				<TokenInput
 					decimals={token?.decimals}
 					{...inputProps}
@@ -159,6 +167,7 @@ export const TokenAmountPicker: FC<{
 							plancks={plancks}
 							tokenId={tokenId}
 							className="text-neutral-500"
+							prefix={showLessThan && "< "}
 						/>
 					)}
 				</div>

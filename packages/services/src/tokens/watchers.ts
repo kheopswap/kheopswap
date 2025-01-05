@@ -28,6 +28,7 @@ import {
 } from "@kheopswap/registry";
 import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
 import { pollChainStatus } from "../pollChainStatus";
+import { getForeignAssetOrigin } from "./util";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);
@@ -83,6 +84,7 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 						name: metadata?.name.asText(),
 						logo: "./img/tokens/asset.svg",
 						verified: false,
+						origin: getForeignAssetOrigin(chain, location) ?? undefined,
 					} as Token,
 					KNOWN_TOKENS_MAP[id],
 					TOKENS_OVERRIDES_MAP[id],

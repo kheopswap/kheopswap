@@ -17,11 +17,13 @@ import {
 	type LoadableState,
 	isBigInt,
 	isNumber,
+	isValidAddress,
+	isValidEthereumAddress,
 	loadableData,
 	loadableError,
 	loadableLoading,
 } from "@kheopswap/utils";
-import { AccountId, Binary, type SS58String } from "polkadot-api";
+import { AccountId, Binary, FixedSizeBinary } from "polkadot-api";
 import { type Observable, catchError, map, of, startWith } from "rxjs";
 import type { AnyTransaction } from "src/types";
 import type { OperationInputs } from "../operationInputs";
@@ -64,16 +66,17 @@ const getXcmCall = (
 			weight_limit: XcmV3WeightLimit.Unlimited(),
 		});
 
-	if (isApiIn(api, ["pah", "kah", "pasah", "bifrostPolkadot", "wah"]))
-		return api.tx.PolkadotXcm.transfer_assets({
-			assets: getAssets(api.chainId, tokenIn, tokenOut, plancks),
-			dest: getDestLocation(api.chainId, tokenOut),
-			beneficiary: getBeneficiary(recipient),
-			fee_asset_item: 0,
-			weight_limit: XcmV3WeightLimit.Unlimited(),
-		});
-
-	if (isApiIn(api, ["hydration"]))
+	if (
+		isApiIn(api, [
+			"pah",
+			"kah",
+			"pasah",
+			"bifrostPolkadot",
+			"wah",
+			"hydration",
+			"mythos",
+		])
+	)
 		return api.tx.PolkadotXcm.transfer_assets({
 			assets: getAssets(api.chainId, tokenIn, tokenOut, plancks),
 			dest: getDestLocation(api.chainId, tokenOut),
@@ -87,16 +90,26 @@ const getXcmCall = (
 
 const encodeAccount = AccountId().enc;
 
-const getBeneficiary = (address: SS58String) =>
-	XcmVersionedLocation.V4({
-		parents: 0,
-		interior: XcmV3Junctions.X1(
-			XcmV3Junction.AccountId32({
+const getBeneficiary = (address: string) => {
+	const junction = isValidEthereumAddress(address)
+		? XcmV3Junction.AccountKey20({
 				network: undefined,
-				id: Binary.fromBytes(encodeAccount(address)),
-			}),
-		),
+				key: FixedSizeBinary.fromHex(address),
+			})
+		: isValidAddress(address)
+			? XcmV3Junction.AccountId32({
+					network: undefined,
+					id: Binary.fromBytes(encodeAccount(address)),
+				})
+			: null;
+
+	if (!junction) throw new Error("Invalid address");
+
+	return XcmVersionedLocation.V4({
+		parents: 0,
+		interior: XcmV3Junctions.X1(junction),
 	});
+};
 
 const getAssets = (
 	fromChainId: ChainId,
@@ -112,6 +125,9 @@ const getAssets = (
 			id: getAssetLocation(fromChainId, token),
 			fun: XcmV3MultiassetFungibility.Fungible(plancks),
 		},
+		// when targeting hydration if the token isnt in omnipool, need to add an omnipool asset with enough to cover for fees, ex 50/1984 with 20000 plancks
+		// then need to set fee_asset_item to the index of that token in this array
+		// until we figure out how do this, only allow sufficient assets to be transfered to hydration
 	]);
 };
 

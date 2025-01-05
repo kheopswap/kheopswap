@@ -1,4 +1,4 @@
-import { getTokenId } from "@kheopswap/registry";
+import { getTokenId, isAccountCompatibleWithToken } from "@kheopswap/registry";
 import { getBalance$ } from "@kheopswap/services/balances";
 import { isBigInt } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
@@ -45,7 +45,15 @@ const maxPlancksIn$ = combineLatest([
 	operationFeeToken$,
 ]).pipe(
 	switchMap(([{ data: inputs }, feeToken]) => {
-		if (!inputs?.tokenIn?.token || !inputs.account || !feeToken)
+		if (
+			!inputs?.tokenIn?.token ||
+			!inputs.account ||
+			!feeToken ||
+			!isAccountCompatibleWithToken(
+				inputs.account.address,
+				inputs.tokenIn.token.id,
+			)
+		)
 			return of(null);
 
 		const balance$ = getBalance$({

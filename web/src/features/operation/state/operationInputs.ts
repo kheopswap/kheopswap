@@ -1,3 +1,4 @@
+import { isAccountCompatibleWithToken } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import {
 	type LoadableState,
@@ -44,6 +45,36 @@ const getOperationInputs$ = (formData: OperationFormData) => {
 			([account, tokenIn, tokenOut]): Observable<
 				LoadableState<OperationInputs>
 			> => {
+				const recipient =
+					getAddressFromAccountField(formData.recipient) ?? null;
+				const plancksIn =
+					tokenIn?.token && !!formData.amountIn
+						? tokensToPlancks(formData.amountIn, tokenIn.token.decimals)
+						: null;
+
+				// check account/token compatibility
+				if (
+					(account?.address &&
+						tokenIn?.token &&
+						!isAccountCompatibleWithToken(account.address, tokenIn.token)) ||
+					(recipient &&
+						tokenOut?.token &&
+						!isAccountCompatibleWithToken(recipient, tokenOut.token))
+				)
+					return of(
+						loadableData<OperationInputs>(
+							{
+								type: "invalid",
+								account,
+								tokenIn,
+								tokenOut,
+								recipient,
+								plancksIn,
+							},
+							false,
+						),
+					);
+
 				return getOperationType$(tokenIn?.token, tokenOut?.token).pipe(
 					map((type): LoadableState<OperationInputs> => {
 						return loadableData<OperationInputs>(

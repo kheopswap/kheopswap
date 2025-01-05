@@ -52,13 +52,14 @@ export const [useOperationPriceImpact, getPriceImpact$] = bind<
 						return loadableError(lsRawPlancksOut.error);
 					if (
 						!isBigInt(lsRawPlancksOut.data) ||
-						!isBigInt(lsSwapPlancksOut.data)
+						!isBigInt(lsSwapPlancksOut.data?.plancksOut)
 					)
 						return loadableData(null, isLoading);
 
 					const priceImpact =
 						-Number(
-							(10000n * (lsRawPlancksOut.data - lsSwapPlancksOut.data)) /
+							(10000n *
+								(lsRawPlancksOut.data - lsSwapPlancksOut.data.plancksOut)) /
 								lsRawPlancksOut.data,
 						) / 10000;
 

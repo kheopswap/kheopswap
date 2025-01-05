@@ -1,5 +1,9 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
-import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "@kheopswap/registry";
+import {
+	TRANSFERABLE_TOKEN_TYPES,
+	type TokenId,
+	isAccountCompatibleWithToken,
+} from "@kheopswap/registry";
 import { cn, isBigInt, logger, plancksToTokens } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import { fromPairs, isEqual } from "lodash";
@@ -115,9 +119,12 @@ export const OperationForm = () => {
 
 	const [amountOut, isLoadingAmountOut] = useMemo(
 		() =>
-			isBigInt(plancksOut.data) && inputs?.tokenOut?.token
+			isBigInt(plancksOut.data?.plancksOut) && inputs?.tokenOut?.token
 				? [
-						plancksToTokens(plancksOut.data, inputs.tokenOut.token.decimals),
+						plancksToTokens(
+							plancksOut.data.plancksOut,
+							inputs.tokenOut.token.decimals,
+						),
 						plancksOut.isLoading,
 					]
 				: ["", plancksOut.isLoading],
@@ -153,7 +160,6 @@ export const OperationForm = () => {
 		//	throw new Error("Not implemented");
 	}, [maxPlancksIn, inputs?.tokenIn?.token]);
 
-	//const tokenIn = useToken({ tokenId: formData.tokenIdIn });
 	const { data: targetTokens, isLoading: isLoadingTargetTokens } =
 		usePossibleRoutesFromToken(inputs?.tokenIn?.token);
 	const dicTargetTokens = useMemo(
@@ -169,6 +175,26 @@ export const OperationForm = () => {
 		insufficientBalances[formData.tokenIdIn ?? ""] || null;
 	}, [formData, insufficientBalances, inputs?.plancksIn]);
 
+	const accountError = useMemo(() => {
+		if (
+			formData.accountId &&
+			formData.tokenIdIn &&
+			!isAccountCompatibleWithToken(formData.accountId, formData.tokenIdIn)
+		)
+			return "Account type and token are not compatible";
+		return null;
+	}, [formData.accountId, formData.tokenIdIn]);
+
+	const recipientError = useMemo(() => {
+		if (
+			formData.recipient &&
+			formData.tokenIdOut &&
+			!isAccountCompatibleWithToken(formData.recipient, formData.tokenIdOut)
+		)
+			return "Account type and token are not compatible";
+		return null;
+	}, [formData.recipient, formData.tokenIdOut]);
+
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-3">
@@ -182,6 +208,7 @@ export const OperationForm = () => {
 						tokenId={formData.tokenIdIn}
 						ownedOnly
 						onChange={onSenderChange}
+						error={accountError}
 					/>
 				</FormFieldContainer>
 
@@ -209,6 +236,7 @@ export const OperationForm = () => {
 						accounts={tokenPickerAccounts}
 						isLoading={isLoadingTargetTokens}
 						onTokenChange={setTokenOut}
+						lessThan={plancksOut.data?.lessThan}
 						// errorMessage={outputErrorMessage}
 						balance={balanceOut}
 						isLoadingBalance={isLoadingBalanceOut}
@@ -222,6 +250,7 @@ export const OperationForm = () => {
 						idOrAddress={inputs?.recipient ? formData.recipient : null}
 						tokenId={formData.tokenIdOut}
 						onChange={onRecipientChange}
+						error={recipientError}
 					/>
 				</FormFieldContainer>
 

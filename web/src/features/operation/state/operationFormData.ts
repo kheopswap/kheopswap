@@ -31,8 +31,46 @@ export const updateOperationFormData = (
 };
 
 const consolidateFormData = (data: OperationFormData): OperationFormData => {
+	//const oldValue = formData$.value;
 	const newValue = structuredClone(data);
 
+	// clear account if incompatible with tokenIn
+	// if (
+	// 	oldValue.accountId &&
+	// 	oldValue.tokenIdIn !== newValue.tokenIdIn &&
+	// 	newValue.tokenIdIn &&
+	// 	!isAccountCompatibleWithToken(oldValue.accountId, newValue.tokenIdIn)
+	// )
+	// 	newValue.accountId = undefined;
+
+	// // clear tokenIn if incompatible with account
+	// if (
+	// 	oldValue.tokenIdIn &&
+	// 	oldValue.accountId !== newValue.accountId &&
+	// 	newValue.accountId &&
+	// 	!isAccountCompatibleWithToken(newValue.accountId, oldValue.tokenIdIn)
+	// )
+	// 	newValue.tokenIdIn = undefined;
+
+	// // clear recipient if incompatible with tokenOut
+	// if (
+	// 	oldValue.recipient &&
+	// 	oldValue.tokenIdOut !== newValue.tokenIdOut &&
+	// 	newValue.tokenIdOut &&
+	// 	!isAccountCompatibleWithToken(oldValue.recipient, newValue.tokenIdOut)
+	// )
+	// 	newValue.recipient = undefined;
+
+	// // clear tokenOut if incompatible with recipient
+	// if (
+	// 	oldValue.tokenIdOut &&
+	// 	oldValue.recipient !== newValue.recipient &&
+	// 	newValue.recipient &&
+	// 	!isAccountCompatibleWithToken(newValue.recipient, oldValue.tokenIdOut)
+	// )
+	// 	newValue.tokenIdOut = undefined;
+
+	// set tokenOut same as tokenIn if not set
 	if (
 		!!data.tokenIdIn &&
 		!data.tokenIdOut &&
@@ -41,6 +79,7 @@ const consolidateFormData = (data: OperationFormData): OperationFormData => {
 	)
 		newValue.tokenIdOut = data.tokenIdIn;
 
+	// set tokenOut same as tokenIn if not set
 	if (
 		!!data.tokenIdOut &&
 		!data.tokenIdIn &&
@@ -49,6 +88,7 @@ const consolidateFormData = (data: OperationFormData): OperationFormData => {
 	)
 		newValue.tokenIdIn = data.tokenIdOut;
 
+	// set recipient same as account if not set
 	if (
 		!!data.accountId &&
 		!data.recipient &&

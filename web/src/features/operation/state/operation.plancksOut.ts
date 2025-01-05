@@ -11,18 +11,25 @@ import { getAssetConvertPlancksOut$ } from "./operation.assetConvert";
 import { operationDestinationFeeEstimate$ } from "./operationDestinationFeeEstimate";
 import { operationInputs$ } from "./operationInputs";
 
+type PlancksOutResult = { plancksOut: bigint | null; lessThan: boolean };
+
 export const [useOperationPlancksOut, operationPlancksOut$] = bind<
-	LoadableState<bigint | null>
+	LoadableState<PlancksOutResult>
 >(
 	operationInputs$.pipe(
 		switchMap(
 			({
 				data: inputs,
 				isLoading,
-			}): Observable<LoadableState<bigint | null>> => {
+			}): Observable<LoadableState<PlancksOutResult>> => {
 				switch (inputs?.type) {
 					case "transfer":
-						return of(loadableData(inputs.plancksIn, isLoading));
+						return of(
+							loadableData(
+								{ plancksOut: inputs.plancksIn, lessThan: false },
+								isLoading,
+							),
+						);
 
 					case "asset-convert": {
 						const { tokenIn, tokenOut, plancksIn } = inputs;
@@ -30,17 +37,30 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 							tokenIn?.token,
 							tokenOut?.token,
 							plancksIn,
+						).pipe(
+							map((lsPlancksOut) =>
+								loadableData(
+									{ plancksOut: lsPlancksOut.data ?? null, lessThan: false },
+									lsPlancksOut.isLoading || isLoading,
+								),
+							),
 						);
 					}
 
 					case "xcm": {
-						if (!inputs.plancksIn) return of(loadableData(null, isLoading));
+						if (!inputs.plancksIn)
+							return of(
+								loadableData({ plancksOut: null, lessThan: false }, isLoading),
+							);
 
 						return operationDestinationFeeEstimate$.pipe(
 							map((opDestFee) => {
 								if (opDestFee.error) return loadableError(opDestFee.error);
 								if (!opDestFee.data)
-									return loadableData(null, isLoading || opDestFee.isLoading);
+									return loadableData(
+										{ plancksOut: inputs.plancksIn, lessThan: true },
+										isLoading || opDestFee.isLoading,
+									);
 
 								// substract dest fee if possible
 								if (
@@ -49,24 +69,35 @@ export const [useOperationPlancksOut, operationPlancksOut$] = bind<
 								) {
 									if (opDestFee.data.plancks < inputs.plancksIn)
 										return loadableData(
-											inputs.plancksIn - opDestFee.data.plancks,
+											{
+												plancksOut: inputs.plancksIn - opDestFee.data.plancks,
+												lessThan: false,
+											},
 											isLoading,
 										);
 									//not enough to pay for fee
-									return loadableData(null, isLoading);
+									return loadableData(
+										{ plancksOut: null, lessThan: false },
+										isLoading,
+									);
 								}
 
-								return loadableData(inputs.plancksIn, isLoading);
+								return loadableData(
+									{ plancksOut: inputs.plancksIn, lessThan: true },
+									isLoading,
+								);
 							}),
 						);
 					}
 
 					default:
-						return of(loadableData(null));
+						return of(
+							loadableData({ plancksOut: null, lessThan: false }, false),
+						);
 				}
 			},
 		),
-		catchError((err) => of(loadableError<bigint | null>(err))),
+		catchError((err) => of(loadableError<PlancksOutResult>(err))),
 	),
 	loadableLoading(),
 );

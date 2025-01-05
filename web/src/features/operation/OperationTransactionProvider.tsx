@@ -89,13 +89,13 @@ const [useOperationExpectedEventResults] = bind(
 				if (!inputs.account) return loadableData([]);
 				if (!inputs.recipient) return loadableData([]);
 				if (!isBigInt(inputs.plancksIn)) return loadableData([]);
-				if (!isBigInt(opPlancksOut.data)) return loadableData([]);
+				if (!isBigInt(opPlancksOut.data?.plancksOut)) return loadableData([]);
 
 				const results: ExpectedEventResult[] = [];
 
 				const tokenIn = inputs.tokenIn.token;
 				const tokenOut = inputs.tokenOut.token;
-				const plancksOut = opPlancksOut.data;
+				const plancksOut = opPlancksOut.data.plancksOut;
 
 				switch (inputs.type) {
 					case "transfer": {
