@@ -44,6 +44,7 @@ Chopsticks runs local copies of each network supported by Kheopswap with the fol
 |Mythos|ws://localhost:3423|
 |Moonbeam|ws://localhost:3424|
 |Bifrost Polkadot|ws://localhost:3425|
+|Laos|ws://localhost:3426|
 
 > Note: To see your balances on these local networks in Talisman, customize each network in Talisman settings to use these RPCs.
 

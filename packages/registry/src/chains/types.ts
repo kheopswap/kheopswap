@@ -3,6 +3,7 @@ import type {
 	PARA_ID_ASSET_HUB,
 	PARA_ID_BIFROST_POLKADOT,
 	PARA_ID_HYDRATION,
+	PARA_ID_LAOS,
 	PARA_ID_MOONBEAM,
 	PARA_ID_MYTHOS,
 } from "./chains";
@@ -11,6 +12,7 @@ import type {
 	DescriptorsAssetHub,
 	DescriptorsBifrostPolkadot,
 	DescriptorsHydration,
+	DescriptorsLaos,
 	DescriptorsMoonbeam,
 	DescriptorsMythos,
 	DescriptorsRelay,
@@ -21,11 +23,14 @@ export type ParaIdHydration = typeof PARA_ID_HYDRATION;
 export type ParaIdMythos = typeof PARA_ID_MYTHOS;
 export type ParaIdMoonbeam = typeof PARA_ID_MOONBEAM;
 export type ParaIdBifrostPolkadot = typeof PARA_ID_BIFROST_POLKADOT;
+export type ParaIdLaos = typeof PARA_ID_LAOS;
 
 export type ChainIdBifrostPolkadot = keyof DescriptorsBifrostPolkadot;
 export type ChainIdMoonbeam = keyof DescriptorsMoonbeam;
 export type ChainIdMythos = keyof DescriptorsMythos;
 export type ChainIdHydration = keyof DescriptorsHydration;
+export type ChainIdLaos = keyof DescriptorsLaos;
+
 export type ChainIdAssetHub = keyof DescriptorsAssetHub;
 export type ChainIdRelay = keyof DescriptorsRelay;
 
@@ -35,7 +40,8 @@ export type ChainId =
 	| ChainIdHydration
 	| ChainIdBifrostPolkadot
 	| ChainIdMythos
-	| ChainIdMoonbeam;
+	| ChainIdMoonbeam
+	| ChainIdLaos;
 
 export type Descriptors<Id extends ChainId> = DescriptorsAll[Id];
 
@@ -65,4 +71,7 @@ export type ChainMoonbeam = Chain<ChainIdMoonbeam> & {
 };
 export type ChainBifrostPolkadot = Chain<ChainIdBifrostPolkadot> & {
 	paraId: ParaIdBifrostPolkadot;
+};
+export type ChainLaos = Chain<ChainIdLaos> & {
+	paraId: ParaIdLaos;
 };

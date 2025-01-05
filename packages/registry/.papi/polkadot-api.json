@@ -26,6 +26,10 @@
 			"wsUrl": "wss://bifrost-polkadot-rpc.dwellir.com",
 			"metadata": ".papi/scale/bifrost-polkadot.scale"
 		},
+		"laos": {
+			"wsUrl": "wss://rpc.laos.laosfoundation.io",
+			"metadata": ".papi/scale/laos.scale"
+		},
 
 		"kusama": {
 			"wsUrl": "wss://rpc.ibp.network/kusama",

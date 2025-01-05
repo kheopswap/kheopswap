@@ -7,6 +7,7 @@ import {
 	DESCRIPTORS_ASSET_HUB,
 	DESCRIPTORS_BIFROST_POLKADOT,
 	DESCRIPTORS_HYDRATION,
+	DESCRIPTORS_LAOS,
 	DESCRIPTORS_MOONBEAM,
 	DESCRIPTORS_MYTHOS,
 	DESCRIPTORS_RELAY,
@@ -20,9 +21,11 @@ import type {
 	ChainIdAssetHub,
 	ChainIdBifrostPolkadot,
 	ChainIdHydration,
+	ChainIdLaos,
 	ChainIdMoonbeam,
 	ChainIdMythos,
 	ChainIdRelay,
+	ChainLaos,
 	ChainMoonbeam,
 	ChainRelay,
 	Descriptors,
@@ -33,6 +36,7 @@ export const PARA_ID_HYDRATION = 2034;
 export const PARA_ID_MYTHOS = 3369;
 export const PARA_ID_MOONBEAM = 2004;
 export const PARA_ID_BIFROST_POLKADOT = 2030;
+export const PARA_ID_LAOS = 3370;
 
 const DEV_CHAINS = chainsDevJson as Chain[];
 const PROD_CHAINS = chainsProdJson as Chain[];
@@ -68,6 +72,8 @@ export const isChainIdBifrostPolkadot = (
 ): id is ChainIdBifrostPolkadot =>
 	typeof id === "string" &&
 	!!DESCRIPTORS_BIFROST_POLKADOT[id as ChainIdBifrostPolkadot];
+export const isChainIdLaos = (id: unknown): id is ChainIdLaos =>
+	typeof id === "string" && !!DESCRIPTORS_LAOS[id as ChainIdLaos];
 
 export type ChainIdWithDryRun =
 	| ChainIdRelay
@@ -111,6 +117,9 @@ export const isBifrostPolkadot = (
 	chain: Chain,
 ): chain is ChainBifrostPolkadot => {
 	return chain.paraId === PARA_ID_BIFROST_POLKADOT;
+};
+export const isLaos = (chain: Chain): chain is ChainLaos => {
+	return chain.paraId === PARA_ID_LAOS;
 };
 
 // TODO

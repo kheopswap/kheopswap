@@ -104,6 +104,15 @@
 		"addressType": "ss58"
 	},
 	{
+		"id": "laos",
+		"name": "LAOS Network",
+		"wsUrl": ["wss://rpc.laos.laosfoundation.io", "wss://laos-rpc.dwellir.com"],
+		"relay": "polkadot",
+		"paraId": 3370,
+		"logo": "./img/chains/laos.svg",
+		"addressType": "ethereum"
+	},
+	{
 		"id": "kusama",
 		"name": "Kusama",
 		"wsUrl": [

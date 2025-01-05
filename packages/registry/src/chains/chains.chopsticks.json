@@ -22,5 +22,9 @@
 	{
 		"id": "bifrostPolkadot",
 		"wsUrl": ["ws://localhost:3425"]
+	},
+	{
+		"id": "laos",
+		"wsUrl": ["ws://localhost:3426"]
 	}
 ]

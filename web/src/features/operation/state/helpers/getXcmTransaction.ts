@@ -75,6 +75,7 @@ const getXcmCall = (
 			"wah",
 			"hydration",
 			"mythos",
+			"laos",
 		])
 	)
 		return api.tx.PolkadotXcm.transfer_assets({
