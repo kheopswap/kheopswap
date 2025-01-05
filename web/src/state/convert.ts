@@ -86,10 +86,12 @@ const getAhTokenId$ = (
 
 	return getTokenById$(tokenIdIn).pipe(
 		switchMap(({ status: status1, token }) => {
-			if (token && "origin" in token && token.origin) {
-				const specs = getTokenSpecs(token.origin);
+			const tokenOrigin = token && "origin" in token && token.origin;
+
+			if (tokenOrigin) {
+				const specs = getTokenSpecs(tokenOrigin);
 				if (isChainIdAssetHub(specs.chainId))
-					return of(loadableData(token.origin));
+					return of(loadableData(tokenOrigin));
 			}
 
 			const chain = getChainById(chainId);
@@ -103,7 +105,9 @@ const getAhTokenId$ = (
 			return getTokensByChain$(ah.id).pipe(
 				map(({ status: status2, tokens }) => {
 					const ahToken = values(tokens).find(
-						(t) => "origin" in t && t.origin === tokenIdIn,
+						(t) =>
+							"origin" in t &&
+							(t.origin === tokenIdIn || t.origin === tokenOrigin),
 					);
 					if (ahToken) return loadableData(ahToken.id);
 
