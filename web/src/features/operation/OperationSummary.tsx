@@ -25,13 +25,14 @@ import { useAssetConversionSwapParams } from "./state/helpers/getAssetConversion
 import { useOperationDeliveryFeeEstimate } from "./state/operationDeliveryFeeEstimate";
 import { useOperationDestinationFeeEstimate } from "./state/operationDestinationFeeEstimate";
 import { useOperationPriceImpact } from "./state/operationPriceImpact";
+import { useOperationTransaction } from "./state/operationTransaction";
 
 const FeeSummaryValue: FC<{
 	isLoading: boolean;
 	error: Error | null | undefined;
 	fee: { tokenId: TokenId; plancks: bigint } | null | undefined;
-	unknown?: boolean;
-}> = ({ isLoading, error, fee, unknown }) => {
+	warnIfUnknown?: boolean;
+}> = ({ isLoading, error, fee, warnIfUnknown }) => {
 	const { data: feeToken } = useToken({
 		tokenId: fee?.tokenId,
 	});
@@ -47,7 +48,7 @@ const FeeSummaryValue: FC<{
 			</Pulse>
 		);
 
-	if (unknown) return <span className="text-warn">Unknown</span>;
+	if (warnIfUnknown) return <span className="text-warn">Unknown</span>;
 
 	return null;
 };
@@ -116,6 +117,8 @@ const FeesSection = () => {
 };
 
 const DeliveryFeeRow = () => {
+	const { data: tx } = useOperationTransaction();
+
 	const {
 		data: deliveryFee,
 		error: deliveryFeeError,
@@ -126,12 +129,14 @@ const DeliveryFeeRow = () => {
 		<FormSummaryRow
 			label="XCM Delivery Fee"
 			value={
-				<FeeSummaryValue
-					fee={deliveryFee}
-					isLoading={deliveryFeeIsLoading}
-					error={deliveryFeeError}
-					unknown
-				/>
+				!!tx && (
+					<FeeSummaryValue
+						fee={deliveryFee}
+						isLoading={deliveryFeeIsLoading}
+						error={deliveryFeeError}
+						warnIfUnknown
+					/>
+				)
 			}
 		/>
 	);
@@ -185,6 +190,7 @@ const LiquidityPoolFeeRow = () => {
 
 const DestinationFeeRow = () => {
 	const { data: inputs, isLoading: inputsIsLoading } = useOperationInputs();
+	const { data: tx } = useOperationTransaction();
 
 	const {
 		data: destinationFee,
@@ -193,6 +199,7 @@ const DestinationFeeRow = () => {
 	} = useOperationDestinationFeeEstimate();
 
 	if (
+		tx &&
 		!inputsIsLoading &&
 		!destinationFeeIsLoading &&
 		inputs?.tokenOut?.token?.id &&
@@ -210,7 +217,7 @@ const DestinationFeeRow = () => {
 									fee={destinationFee}
 									isLoading={destinationFeeIsLoading}
 									error={destinationFeeError}
-									unknown
+									warnIfUnknown={!!tx}
 								/>
 								<InformationCircleIcon className="size-5 inline align-text-bottom" />
 							</div>
@@ -235,12 +242,14 @@ const DestinationFeeRow = () => {
 		<FormSummaryRow
 			label="XCM Destination Fee"
 			value={
-				<FeeSummaryValue
-					fee={destinationFee}
-					isLoading={destinationFeeIsLoading}
-					error={destinationFeeError}
-					unknown
-				/>
+				!!tx && (
+					<FeeSummaryValue
+						fee={destinationFee}
+						isLoading={destinationFeeIsLoading}
+						error={destinationFeeError}
+						warnIfUnknown
+					/>
+				)
 			}
 		/>
 	);
