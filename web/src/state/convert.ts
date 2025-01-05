@@ -1,13 +1,16 @@
 import {
-	type ChainIdAssetHub,
-	KNOWN_TOKENS_LIST,
-	KNOWN_TOKENS_MAP,
-	type Token,
+	type ChainAssetHub,
+	PARA_ID_ASSET_HUB,
 	type TokenId,
+	getChainById,
+	getChainIdFromTokenId,
+	getChains,
 	getTokenId,
 	getTokenSpecs,
+	isChainIdAssetHub,
 } from "@kheopswap/registry";
 
+import { getTokenById$, getTokensByChain$ } from "@kheopswap/services/tokens";
 import {
 	type LoadableState,
 	isBigInt,
@@ -16,12 +19,14 @@ import {
 	loadableLoading,
 } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
+import { values } from "lodash";
 import {
 	type Observable,
 	catchError,
 	combineLatest,
 	map,
 	of,
+	switchMap,
 	throttleTime,
 } from "rxjs";
 import { getAssetConvertPlancks } from "src/util";
@@ -71,27 +76,45 @@ export const getAssetConvertMulti$ = (
 	);
 };
 
-// returns the token from the assetHub chain that matches the provided tokenId
-// unwraps token origins (which are all harcoded) until finding the
-// ex : pah's KSM representation of native KSM on Kusama (KSM => kah KSM => pah KSM)
-const getAhTokenId = (
-	tokenId: TokenId,
-	ahChainId: ChainIdAssetHub,
-): TokenId | null => {
-	const specs = getTokenSpecs(tokenId);
-	if (specs.chainId === ahChainId) return tokenId;
+const getAhTokenId$ = (
+	tokenIdIn: TokenId | null | undefined,
+): Observable<LoadableState<TokenId | null>> => {
+	if (!tokenIdIn) return of(loadableData(null));
 
-	const knownToken = KNOWN_TOKENS_MAP[tokenId];
-	if (knownToken && "origin" in knownToken && knownToken.origin) {
-		const target = getAhTokenId(knownToken.origin, ahChainId);
-		if (target) return target;
-	}
+	const chainId = getChainIdFromTokenId(tokenIdIn);
+	if (isChainIdAssetHub(chainId)) return of(loadableData(tokenIdIn));
 
-	const ahToken = KNOWN_TOKENS_LIST.find(
-		(t) => "origin" in t && t.origin === tokenId && t.chainId === ahChainId,
-	) as Token;
+	return getTokenById$(tokenIdIn).pipe(
+		switchMap(({ status: status1, token }) => {
+			if (token && "origin" in token && token.origin) {
+				const specs = getTokenSpecs(token.origin);
+				if (isChainIdAssetHub(specs.chainId))
+					return of(loadableData(token.origin));
+			}
 
-	return ahToken?.id ?? null;
+			const chain = getChainById(chainId);
+			if (!chain) return of(loadableData(null));
+
+			const ah = getChains().find(
+				(c) => c.paraId === PARA_ID_ASSET_HUB && c.relay === chain.relay,
+			) as ChainAssetHub;
+			if (!ah) return of(loadableData(null));
+
+			return getTokensByChain$(ah.id).pipe(
+				map(({ status: status2, tokens }) => {
+					const ahToken = values(tokens).find(
+						(t) => "origin" in t && t.origin === tokenIdIn,
+					);
+					if (ahToken) return loadableData(ahToken.id);
+
+					return loadableData(
+						null,
+						status1 !== "loaded" || status2 !== "loaded",
+					);
+				}),
+			);
+		}),
+	);
 };
 
 // raw converted value based on AH reserves, without taking account any app or lp fee
@@ -106,32 +129,6 @@ export const [useAssetConvertLoadable, getAssetConvertLoadable$] = bind(
 
 		if (tokenIdIn === tokenIdOut) return of(loadableData(plancksIn));
 
-		// const assetHubId =
-
-		const ahTokenIn = getAhTokenId(tokenIdIn, "pah");
-		const ahTokenOut = getAhTokenId(tokenIdOut, "pah");
-
-		if (!ahTokenIn || !ahTokenOut) return of(loadableData(null));
-
-		const ahTokenInSpecs = getTokenSpecs(ahTokenIn);
-		const ahTokenOutSpecs = getTokenSpecs(ahTokenOut);
-
-		// if tokenIn is not on assetHub and his origin is on assetHub, use the origin
-		// if (tokenInSpecs.origin && tokenInSpecs.chainId !== tokenOutSpecs.chainId)
-		// 	tokenInSpecs = getTokenById$(tokenInSpecs.origin);
-
-		if (
-			!ahTokenInSpecs.chainId ||
-			!ahTokenOutSpecs.chainId ||
-			ahTokenInSpecs.chainId !== ahTokenOutSpecs.chainId
-		)
-			return of(loadableData(null));
-
-		const nativeTokenId = getTokenId({
-			type: "native",
-			chainId: ahTokenInSpecs.chainId,
-		});
-
 		const getReserves$ = (tid1: TokenId, tid2: TokenId) => {
 			if (tid1 === tid2)
 				return of({
@@ -142,31 +139,56 @@ export const [useAssetConvertLoadable, getAssetConvertLoadable$] = bind(
 		};
 
 		return combineLatest([
-			getReserves$(nativeTokenId, ahTokenInSpecs.id),
-			getReserves$(nativeTokenId, ahTokenOutSpecs.id),
+			getAhTokenId$(tokenIdIn),
+			getAhTokenId$(tokenIdOut),
 		]).pipe(
-			map(
-				([
-					{ reserves: reserveNativeToTokenIn, isLoading: isLoadingPool1 },
-					{ reserves: reserveNativeToTokenOut, isLoading: isLoadingPool2 },
-				]) => {
-					if (!reserveNativeToTokenIn || !reserveNativeToTokenOut)
-						return loadableData(null, isLoadingPool1 || isLoadingPool2);
+			switchMap(([lsAhTokenIdIn, lsAhTokenIdOut]) => {
+				const ahTokenIdIn = lsAhTokenIdIn.data;
+				const ahTokenIdOut = lsAhTokenIdOut.data;
 
-					const plancksOut =
-						getAssetConvertPlancks(
-							plancksIn,
-							ahTokenInSpecs.id,
-							nativeTokenId,
-							ahTokenOutSpecs.id,
-							reserveNativeToTokenIn,
-							reserveNativeToTokenOut,
-						) ?? null;
+				if (!ahTokenIdIn || !ahTokenIdOut)
+					return of(
+						loadableData(
+							null,
+							lsAhTokenIdIn.isLoading || lsAhTokenIdOut.isLoading,
+						),
+					);
 
-					return loadableData(plancksOut, isLoadingPool1 || isLoadingPool2);
-				},
-			),
-			catchError((err) => of(loadableError<bigint | null>(err))),
+				const ahTokenInSpecs = getTokenSpecs(ahTokenIdIn);
+
+				const nativeTokenId = getTokenId({
+					type: "native",
+					chainId: ahTokenInSpecs.chainId,
+				});
+
+				return combineLatest([
+					getReserves$(nativeTokenId, ahTokenIdIn),
+					getReserves$(nativeTokenId, ahTokenIdOut),
+				]).pipe(
+					map(
+						([
+							{ reserves: reserveNativeToTokenIn, isLoading: isLoadingPool1 },
+							{ reserves: reserveNativeToTokenOut, isLoading: isLoadingPool2 },
+						]) => {
+							if (!reserveNativeToTokenIn || !reserveNativeToTokenOut)
+								return loadableData(null, isLoadingPool1 || isLoadingPool2);
+
+							const plancksOut =
+								getAssetConvertPlancks(
+									plancksIn,
+									ahTokenIdIn,
+									nativeTokenId,
+									ahTokenIdOut,
+									reserveNativeToTokenIn,
+									reserveNativeToTokenOut,
+								) ?? null;
+
+							return loadableData(plancksOut, isLoadingPool1 || isLoadingPool2);
+						},
+					),
+					catchError((err) => of(loadableError<bigint | null>(err))),
+				);
+			}),
 		);
 	},
 	loadableLoading<bigint | null>(),

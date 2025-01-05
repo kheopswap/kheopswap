@@ -2,7 +2,6 @@ export * from "./getAssetConvertPlancks";
 export * from "./getFeeAssetLocation";
 export * from "./getNativeToken";
 export * from "./getTxOptions";
-export * from "./getAssetHubMirrorTokenId";
 export * from "./getTokenTypeLabel";
 export * from "./getTokenDescription";
 export * from "./getXcmMessageFromDryRun";
