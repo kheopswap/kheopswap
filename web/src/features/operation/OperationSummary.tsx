@@ -30,8 +30,8 @@ const FeeSummaryValue: FC<{
 	isLoading: boolean;
 	error: Error | null | undefined;
 	fee: { tokenId: TokenId; plancks: bigint } | null | undefined;
-	unavailable?: boolean;
-}> = ({ isLoading, error, fee, unavailable }) => {
+	unknown?: boolean;
+}> = ({ isLoading, error, fee, unknown }) => {
 	const { data: feeToken } = useToken({
 		tokenId: fee?.tokenId,
 	});
@@ -47,7 +47,7 @@ const FeeSummaryValue: FC<{
 			</Pulse>
 		);
 
-	if (unavailable) return <span className="text-neutral-500">Unavailable</span>;
+	if (unknown) return <span className="text-warn">Unknown</span>;
 
 	return null;
 };
@@ -130,7 +130,7 @@ const DeliveryFeeRow = () => {
 					fee={deliveryFee}
 					isLoading={deliveryFeeIsLoading}
 					error={deliveryFeeError}
-					unavailable
+					unknown
 				/>
 			}
 		/>
@@ -210,7 +210,7 @@ const DestinationFeeRow = () => {
 									fee={destinationFee}
 									isLoading={destinationFeeIsLoading}
 									error={destinationFeeError}
-									unavailable
+									unknown
 								/>
 								<InformationCircleIcon className="size-5 inline align-text-bottom" />
 							</div>
@@ -239,7 +239,7 @@ const DestinationFeeRow = () => {
 					fee={destinationFee}
 					isLoading={destinationFeeIsLoading}
 					error={destinationFeeError}
-					unavailable
+					unknown
 				/>
 			}
 		/>
