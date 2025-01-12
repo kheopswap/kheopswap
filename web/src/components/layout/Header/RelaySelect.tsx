@@ -141,7 +141,6 @@ const DrawerContent: FC<{
 							<ul>
 								<li>- Bifrost</li>
 								<li>- Moonbeam</li>
-								<li>- Laos</li>
 							</ul>
 						</>
 					)}

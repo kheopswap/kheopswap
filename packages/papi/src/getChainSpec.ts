@@ -12,6 +12,7 @@ const KNOWN_CHAIN_SPECS_IDS = [
 	"pasah",
 	"hydration",
 	"mythos",
+	"laos",
 	// "moonbeam", // connects but errors when estimating fees
 	// "bifrostPolkadot", // no wss endpoint yet
 ] as const;
@@ -49,6 +50,8 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 				return (await import("./chainspec/hydration")).chainSpec;
 			case "mythos":
 				return (await import("./chainspec/mythos")).chainSpec;
+			case "laos":
+				return (await import("./chainspec/laos")).chainSpec;
 
 			// TODO errors
 			// case "moonbeam":
