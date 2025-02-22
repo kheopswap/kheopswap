@@ -79,13 +79,15 @@ export type ChainIdWithDryRun =
 	| ChainIdRelay
 	| ChainIdAssetHub
 	| ChainIdMoonbeam
-	| ChainIdBifrostPolkadot;
+	| ChainIdBifrostPolkadot
+	| ChainIdLaos;
 
 export const isChainIdWithDryRun = (id: unknown): id is ChainIdWithDryRun =>
 	isChainIdRelay(id) ||
 	isChainIdAssetHub(id) ||
 	isChainIdMoonbeam(id) ||
-	isChainIdBifrostPolkadot(id);
+	isChainIdBifrostPolkadot(id) ||
+	isChainIdLaos(id);
 
 export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 	DESCRIPTORS_ALL[id];
