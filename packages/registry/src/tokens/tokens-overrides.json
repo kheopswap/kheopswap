@@ -94,6 +94,14 @@
 		"verified": true
 	},
 	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fCAAhCC1wnwAzAHZJAA4AZmSxABEmgE5IqwA2ephJABYIWoBWH370JpGxHzFJFparAP8AXUCgA",
+		"logo": "./img/tokens/EURC.svg",
+		"symbol": "EURC.e",
+		"name": "EURC (Snowbridge)",
+		"decimals": 6,
+		"verified": true
+	},
+	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8JABYfJycAM2SANjEAdmrqpwAOAE4nH3Q6xrEAVggOgGYxaphq9DLpmDEU5JGA/wBdQKA==",
 		"logo": "./img/tokens/MYTH.webp?rounded",
 		"symbol": "MYTH.e",
