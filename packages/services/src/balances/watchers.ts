@@ -5,7 +5,12 @@ import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
 
-import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
+import {
+	getApi,
+	isApiAssetHub,
+	isApiBifrostPolkadot,
+	isApiHydration,
+} from "@kheopswap/papi";
 import { type ChainIdHydration, getChainById } from "@kheopswap/registry";
 import { parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
@@ -123,6 +128,23 @@ const watchBalance = async (balanceId: BalanceId) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
 				updateBalance(balanceId, balance);
+			});
+		}
+		case "bifrost-asset": {
+			if (!isApiBifrostPolkadot(api))
+				throw new Error(
+					`Cannot watch balance for ${tokenId}. Bifrost tokens are not supported on ${chain.id}`,
+				);
+
+			const account$ = api.query.Tokens.Accounts.watchValue(
+				address,
+				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				token.currencyId as any,
+				"best",
+			);
+
+			return account$.subscribe((account) => {
+				updateBalance(balanceId, account.free);
 			});
 		}
 		case "hydration-asset": {

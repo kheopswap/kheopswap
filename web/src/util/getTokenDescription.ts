@@ -48,6 +48,8 @@ export const getTokenDescription = (token: Token) => {
 			return `Hydration - ${token.assetId}`;
 		case "foreign-asset":
 			return `Foreign - ${getForeignTokenOrigin(token)}`;
+		case "bifrost-asset":
+			return `Bifrost - ${token.currencyId.type}: ${token.currencyId.value}`;
 		default:
 			return token.type;
 	}

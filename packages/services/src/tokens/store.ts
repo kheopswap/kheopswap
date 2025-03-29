@@ -11,15 +11,11 @@ import {
 	type ChainId,
 	KNOWN_TOKENS_LIST,
 	KNOWN_TOKENS_MAP,
-	PARA_ID_ASSET_HUB,
 	TOKENS_OVERRIDES_MAP,
 	type Token,
 	type TokenHydrationAsset,
 	type TokenType,
-	type XcmV3Multilocation,
-	getChainById,
 	getChains,
-	getTokenId,
 } from "@kheopswap/registry";
 import {
 	getLocalStorageKey,
@@ -119,52 +115,21 @@ export const tokensStore$ = tokensStoreData$.pipe(
 		const tokens = storageTokens
 			.map((token) => {
 				if (token.type === "hydration-asset") {
-					if (!token.chainId || !("location" in token)) return null;
+					if (!("location" in token) || !("origin" in token)) return null;
 					if (!availableChainIds.includes(token.chainId)) return null;
 
-					const location = token.location as XcmV3Multilocation;
+					const originToken = storageTokensMap[token.origin as string];
+					if (!originToken) return null;
 
-					if (
-						location?.parents === 1 &&
-						location.interior.type === "X3" &&
-						location.interior.value[0]?.type === "Parachain" &&
-						location.interior.value[0].value === PARA_ID_ASSET_HUB &&
-						location.interior.value[1]?.type === "PalletInstance" &&
-						location.interior.value[1].value === 50 &&
-						location.interior.value[2]?.type === "GeneralIndex"
-					) {
-						const assetHubAssetId = location.interior.value[2].value;
-						const hydration = getChainById(token.chainId);
-						const assetHub = chains.find(
-							(c) =>
-								c.relay === hydration.relay && c.paraId === PARA_ID_ASSET_HUB,
-						);
-						if (assetHub) {
-							const assetHubToken = storageTokens.find(
-								(t) =>
-									t.id ===
-									getTokenId({
-										type: "asset",
-										chainId: assetHub.id,
-										assetId: Number(assetHubAssetId),
-									}),
-							);
-							if (assetHubToken) {
-								const { symbol, decimals, name, logo, verified } =
-									assetHubToken;
-								return {
-									...token,
-									symbol,
-									decimals,
-									name,
-									logo,
-									verified,
-								} as TokenHydrationAsset;
-							}
-						}
-					}
-
-					return null; // ignore tokens for which we dont find the matching asset hub token
+					const { symbol, decimals, name, logo, verified } = originToken;
+					return {
+						...token,
+						symbol,
+						decimals,
+						name,
+						logo,
+						verified,
+					} as TokenHydrationAsset;
 				}
 
 				return token as Token;

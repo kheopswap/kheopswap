@@ -24,9 +24,10 @@ import { useSetting } from "./useSetting";
 
 import { getSetting$, setSetting } from "@kheopswap/settings";
 import {
+	type AccountAddressType,
 	type InjectedAccountId,
+	getAccountAddressType,
 	getInjectedAccountId,
-	isValidAddress,
 	logger,
 	sortWallets,
 } from "@kheopswap/utils";
@@ -36,6 +37,7 @@ import { wcAccounts$ } from "src/features/connect/wallet-connect/accounts.state"
 export type InjectedAccount = InjectedPolkadotAccount & {
 	id: InjectedAccountId;
 	wallet: string;
+	addressType: AccountAddressType;
 };
 
 const getInjectedWalletsIds = () =>
@@ -119,25 +121,38 @@ const accountsByExtension$ = connectedExtensions$.pipe(
 	}),
 );
 
-const accounts$ = combineLatest([accountsByExtension$, wcAccounts$]).pipe(
+export const accounts$ = combineLatest([
+	accountsByExtension$,
+	wcAccounts$,
+]).pipe(
 	map(([accountsByExtension, wcAccounts]) => ({
 		...accountsByExtension,
 		[WALLET_CONNECT_NAME]: wcAccounts,
 	})),
-	map(
-		(connectedAccounts) =>
-			entries(connectedAccounts).flatMap(([wallet, accounts]) =>
-				accounts
-					.filter((account) => isValidAddress(account.address))
-					.map((account) => ({
-						id: getInjectedAccountId(wallet, account.address as SS58String),
-						...account,
-						wallet,
-					})),
-			) as InjectedAccount[],
+	map((connectedAccounts) =>
+		entries(connectedAccounts).flatMap(([wallet, accounts]) =>
+			accounts.map(
+				(account): InjectedAccount => ({
+					id: getInjectedAccountId(wallet, account.address as SS58String),
+					...account,
+					wallet,
+					addressType: getAccountAddressType(account.address),
+				}),
+			),
+		),
 	),
 	shareReplay(1),
 );
+
+export const getAccount$ = (id: string) => {
+	return accounts$.pipe(
+		map((accounts) => accounts.find((account) => account.id === id) ?? null),
+		distinctUntilChanged((a1, a2) => a1?.address === a2?.address),
+		shareReplay({ refCount: true, bufferSize: 1 }),
+	);
+};
+
+accounts$.subscribe(console.log);
 
 const [useInjectedExtensionsIds] = bind(injectedExtensionIds$);
 const [useConnectedExtensions] = bind(connectedExtensions$);

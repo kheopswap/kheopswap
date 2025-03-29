@@ -30,12 +30,7 @@ export const PORTFOLIO_TOKEN_TYPES: TokenType[] = [
 	"asset",
 	"foreign-asset",
 	"hydration-asset",
-];
-
-export const TRADABLE_TOKEN_TYPES: TokenType[] = [
-	"native",
-	"asset",
-	"foreign-asset",
+	"bifrost-asset",
 ];
 
 export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
@@ -43,6 +38,7 @@ export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
 	"asset",
 	"foreign-asset",
 	"hydration-asset",
+	"bifrost-asset",
 ];
 
 export const POOL_TOKEN2_TOKEN_TYPES: TokenType[] = ["asset", "foreign-asset"];

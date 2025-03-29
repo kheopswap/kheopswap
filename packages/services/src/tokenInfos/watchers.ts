@@ -2,7 +2,12 @@ import { BehaviorSubject, type Subscription, combineLatest, map } from "rxjs";
 
 import { tokenInfosSubscriptions$ } from "./subscriptions";
 
-import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
+import {
+	getApi,
+	isApiAssetHub,
+	isApiHydration,
+	isApiIn,
+} from "@kheopswap/papi";
 import { getChainById } from "@kheopswap/registry";
 import {
 	type TokenId,
@@ -11,10 +16,13 @@ import {
 } from "@kheopswap/registry";
 import type {
 	TokenIdAsset,
+	TokenIdBifrostAsset,
 	TokenIdForeignAsset,
 	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
+	TokenInfoBifrostAsset,
+	TokenInfoHydrationAsset,
 } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
@@ -80,26 +88,23 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 					`Cannot watch token infos for ${tokenId}. Assets are not supported on ${chain.id}`,
 				);
 
-			const tokenInfo$ = api.query.Assets.Asset.watchValue(
-				token.assetId,
-				"best",
+			return api.query.Assets.Asset.watchValue(token.assetId, "best").subscribe(
+				(asset) => {
+					if (asset)
+						updateTokenInfo({
+							id: tokenId as TokenIdAsset,
+							type: "asset",
+							accounts: asset.accounts,
+							owner: asset.owner,
+							admin: asset.admin,
+							freezer: asset.freezer,
+							issuer: asset.issuer,
+							minBalance: asset.min_balance,
+							supply: asset?.supply,
+							status: asset.status.type,
+						});
+				},
 			);
-
-			return tokenInfo$.subscribe((asset) => {
-				if (asset)
-					updateTokenInfo({
-						id: tokenId as TokenIdAsset,
-						type: "asset",
-						accounts: asset.accounts,
-						owner: asset.owner,
-						admin: asset.admin,
-						freezer: asset.freezer,
-						issuer: asset.issuer,
-						minBalance: asset.min_balance,
-						supply: asset?.supply,
-						status: asset.status.type,
-					});
-			});
 		}
 
 		case "foreign-asset": {
@@ -108,12 +113,10 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 					`Cannot watch token infos for ${tokenId}. ForeignAssets are not supported on ${chain.id}`,
 				);
 
-			const tokenInfo$ = api.query.ForeignAssets.Asset.watchValue(
+			return api.query.ForeignAssets.Asset.watchValue(
 				token.location,
 				"best",
-			);
-
-			return tokenInfo$.subscribe((asset) => {
+			).subscribe((asset) => {
 				if (asset)
 					updateTokenInfo({
 						id: tokenId as TokenIdForeignAsset,
@@ -136,12 +139,10 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 					`Cannot watch token infos for ${tokenId}. PoolAssets are not supported on ${chain.id}`,
 				);
 
-			const tokenInfo$ = api.query.PoolAssets.Asset.watchValue(
+			return api.query.PoolAssets.Asset.watchValue(
 				token.poolAssetId,
 				"best",
-			);
-
-			return tokenInfo$.subscribe((asset) => {
+			).subscribe((asset) => {
 				if (asset)
 					updateTokenInfo({
 						id: tokenId as TokenIdPoolAsset,
@@ -164,29 +165,56 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 					`Cannot watch token infos for ${tokenId}. HydrationAssets are not supported on ${chain.id}`,
 				);
 
-			const tokenInfo$ = combineLatest(
+			return combineLatest([
 				api.query.AssetRegistry.Assets.watchValue(token.assetId, "best"),
 				api.query.Tokens.TotalIssuance.watchValue(token.assetId, "best"),
-			).pipe(
-				map(([asset, supply]) =>
-					asset
-						? {
-								minBalance: asset?.existential_deposit,
-								isSufficient: asset?.is_sufficient,
-								supply,
-							}
-						: null,
-				),
-			);
+			])
+				.pipe(
+					map(([asset, supply]) =>
+						asset
+							? ({
+									id: tokenId as TokenIdHydrationAsset,
+									type: "hydration-asset",
+									minBalance: asset.existential_deposit,
+									isSufficient: asset?.is_sufficient,
+									supply,
+								} as TokenInfoHydrationAsset)
+							: null,
+					),
+				)
+				.subscribe((tokenInfos) => {
+					if (tokenInfos) updateTokenInfo(tokenInfos);
+				});
+		}
 
-			return tokenInfo$.subscribe((tokenInfos) => {
-				if (tokenInfos)
-					updateTokenInfo({
-						id: tokenId as TokenIdHydrationAsset,
-						type: "hydration-asset",
-						...tokenInfos,
-					});
-			});
+		case "bifrost-asset": {
+			if (!isApiIn(api, ["bifrostPolkadot"]))
+				throw new Error(
+					`Cannot watch token infos for ${tokenId}. BifrostAssets are not supported on ${chain.id}`,
+				);
+
+			return combineLatest([
+				api.query.AssetRegistry.CurrencyMetadatas.getValue(token.currencyId, {
+					at: "best",
+				}),
+				api.query.Tokens.TotalIssuance.watchValue(token.currencyId, "best"),
+			])
+				.pipe(
+					map(([asset, supply]) =>
+						asset
+							? ({
+									id: tokenId as TokenIdBifrostAsset,
+									type: "bifrost-asset",
+									minBalance: asset.minimal_balance,
+									isSufficient: false,
+									supply,
+								} as TokenInfoBifrostAsset)
+							: null,
+					),
+				)
+				.subscribe((tokenInfos) => {
+					if (tokenInfos) updateTokenInfo(tokenInfos);
+				});
 		}
 
 		default:

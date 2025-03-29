@@ -28,9 +28,7 @@ export const HorizontalNav: FC = () => {
 					"my-2 flex w-full justify-center px-2 text-sm min-[340px]:gap-1 min-[360px]:gap-2 sm:my-6 sm:text-base",
 				)}
 			>
-				<NavItem to={`/${relayId}/swap`}>Swap</NavItem>
-				<NavItem to={`/${relayId}/teleport`}>Teleport</NavItem>
-				<NavItem to={`/${relayId}/transfer`}>Transfer</NavItem>
+				<NavItem to={`/${relayId}/operation`}>Operation</NavItem>
 				<NavItem to={`/${relayId}/portfolio`}>
 					{accounts.length ? "Portfolio" : "Tokens"}
 				</NavItem>

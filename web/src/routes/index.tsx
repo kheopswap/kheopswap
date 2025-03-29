@@ -2,13 +2,11 @@ import { Navigate, createHashRouter } from "react-router-dom";
 
 import { CreateLiquidityPoolPage } from "./create-pool";
 import { ErrorBoundaryPage } from "./error";
+import { OperationPage } from "./operation";
 import { LiquidityPoolPage } from "./pool";
 import { LiquidityPoolsPage } from "./pools";
 import { PortfolioPage } from "./portfolio";
 import { AppWithRelay } from "./providers/AppWithRelay";
-import { SwapPage } from "./swap";
-import { TeleportPage } from "./teleport";
-import { TransferPage } from "./transfer";
 
 export const router = createHashRouter([
 	{
@@ -17,20 +15,12 @@ export const router = createHashRouter([
 		errorElement: <ErrorBoundaryPage />,
 		children: [
 			{
-				path: "swap",
-				element: <SwapPage />,
+				path: "operation",
+				element: <OperationPage />,
 			},
 			{
 				path: "portfolio",
 				element: <PortfolioPage />,
-			},
-			{
-				path: "teleport",
-				element: <TeleportPage />,
-			},
-			{
-				path: "transfer",
-				element: <TransferPage />,
 			},
 			{
 				path: "pools/create/:tokenId",
@@ -46,13 +36,13 @@ export const router = createHashRouter([
 			},
 			{
 				path: "",
-				element: <Navigate to="swap" replace />,
+				element: <Navigate to="operation" replace />,
 			},
 			{
 				path: "*",
-				element: <Navigate to="swap" replace />,
+				element: <Navigate to="operation" replace />,
 			},
 		],
 	},
-	{ path: "/", element: <Navigate to="/polkadot/swap" replace /> },
+	{ path: "/", element: <Navigate to="/polkadot/operation" replace /> },
 ]);

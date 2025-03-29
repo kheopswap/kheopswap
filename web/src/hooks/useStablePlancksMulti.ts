@@ -5,7 +5,6 @@ import { useObservable } from "react-rx";
 import { type Observable, map, switchMap } from "rxjs";
 import { getAssetConvertMulti$ } from "src/state/convert";
 import { stableToken$ } from "src/state/relay";
-import { getAssetHubMirrorTokenId } from "src/util";
 
 type UseStablePlancksProps = {
 	inputs: { tokenId: TokenId; plancks: bigint | undefined }[];
@@ -22,7 +21,7 @@ const getStablePlancksMulti$ = (
 	return stableToken$.pipe(
 		map((stableToken) =>
 			inputs.map(({ tokenId, plancks }) => ({
-				tokenIdIn: getAssetHubMirrorTokenId(tokenId),
+				tokenIdIn: tokenId,
 				plancksIn: plancks ?? 0n,
 				tokenIdOut: stableToken.id,
 			})),

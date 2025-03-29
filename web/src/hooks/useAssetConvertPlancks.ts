@@ -9,7 +9,7 @@ import {
 } from "@kheopswap/utils";
 import { useObservable } from "react-rx";
 import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
-import { getAssetConvert$ } from "src/state";
+import { getAssetConvert$, getAssetConvertLoadable$ } from "src/state";
 
 type UseAssetConvertPlancks = {
 	tokenIdIn: TokenId | null | undefined;
@@ -77,6 +77,14 @@ const getAssetConvertPlancks$ = (
 						{ token: tokenIn, status: statusTokenIn },
 						{ token: tokenOut, status: statusTokenOut },
 					]) => {
+						if (!isBigInt(plancks))
+							return of({
+								plancksOut: null,
+								isLoading: false,
+								tokenIn,
+								tokenOut,
+							});
+
 						const isLoading = [statusTokenIn, statusTokenOut].some(
 							(status) => status !== "loaded",
 						);
@@ -116,16 +124,37 @@ const getAssetConvertTokens$ = (
 		"getAssetConvertTokens$",
 		`${tokenIdIn},${tokenIdOut},${plancks}`,
 		() => {
-			return getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks).pipe(
-				map(({ plancksOut, isLoading, tokenIn, tokenOut }) => ({
-					isLoading,
-					price:
-						isBigInt(plancksOut) && tokenOut
-							? plancksToTokens(plancksOut, tokenOut.decimals)
-							: undefined,
-					tokenIn,
-					tokenOut,
-				})),
+			if (!tokenIdIn || !tokenIdOut || !plancks)
+				return of({
+					isLoading: false,
+					price: null,
+					tokenIn: null,
+					tokenOut: null,
+				});
+
+			return combineLatest([
+				getTokenById$(tokenIdIn),
+				getTokenById$(tokenIdOut),
+				getAssetConvertLoadable$(tokenIdIn, tokenIdOut, plancks),
+			]).pipe(
+				map(
+					([
+						{ token: tokenIn, status: statusIn },
+						{ token: tokenOut, status: statusOut },
+						{ data: plancksOut, isLoading },
+					]) => {
+						return {
+							isLoading:
+								isLoading || statusIn !== "loaded" || statusOut !== "loaded",
+							price:
+								isBigInt(plancksOut) && tokenOut
+									? plancksToTokens(plancksOut, tokenOut.decimals)
+									: undefined,
+							tokenIn,
+							tokenOut,
+						};
+					},
+				),
 				shareReplay({ bufferSize: 1, refCount: true }),
 			);
 		},

@@ -10,4 +10,4 @@ export const walletConnect = {
 	disconnect: disconnectWalletConnect,
 };
 
-export const [useWalletConnectAccounts] = bind(wcAccounts$);
+export const [useWalletConnectAccounts] = bind(wcAccounts$, []);
