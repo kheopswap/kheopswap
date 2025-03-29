@@ -57,6 +57,7 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 					"paseo",
 					"pasah",
 					"hydration",
+					"laos",
 				])
 			)
 				return of(loadableData(null));
@@ -75,6 +76,12 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 			).pipe(
 				map((deliveryFee) => {
 					if (!deliveryFee.success) throw new Error("Failed to estimate");
+
+					// TODO remove
+					logger.log("DeliveryFee", {
+						chainId,
+						xcm,
+					});
 
 					const assets =
 						deliveryFee.value.type === "V4" && deliveryFee.value.value;
