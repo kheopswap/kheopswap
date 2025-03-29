@@ -98,6 +98,28 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 							token.type === "foreign-asset" && safeStringify(token.location),
 						token,
 					});
+					if (
+						token.type === "foreign-asset" &&
+						token.location.interior.type === "X2" &&
+						token.location.interior.value[0]?.type === "GlobalConsensus" &&
+						token.location.interior.value[0].value.type === "Ethereum"
+					) {
+						logger.warn(
+							"Ethereum chain ID:",
+							token.location.interior.value[0].value.value.chain_id,
+						);
+						if (
+							token.type === "foreign-asset" &&
+							token.location.interior.type === "X2" &&
+							token.location.interior.value[1]?.type === "AccountKey20"
+						) {
+							logger.warn(
+								"Contract:",
+								token.location.interior.value[1].value.key.asHex(),
+							);
+						}
+					}
+
 					return false;
 				}
 				return true;
