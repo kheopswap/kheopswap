@@ -94,6 +94,54 @@
 		"verified": true
 	},
 	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVggATgAOADMrMRgIUp8ANisa5Jaq0oB2dB9enoqapyqfdCsIAGYGmp8xKcZAgF1AoA===",
+		"logo": "./img/tokens/LDO.svg",
+		"symbol": "LDO.e",
+		"name": "Lido DAO Token (Snowbridge)",
+		"decimals": 18,
+		"verified": true
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADnQAZgA2CFKAdmTSgBYAM1KxZorkqpa6lOS6luqW9CqfUogAViqKpqaATiaA/wBdQKA==",
+		"logo": "./img/tokens/LBTC.webp",
+		"symbol": "LBTC.e",
+		"name": "Lombard BTC (Snowbridge)",
+		"decimals": 8,
+		"verified": true
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fCAkYCB8AMwB2KwAOAGZksScGgE4IKIA2WpgrABYIaoBWHx70BsGxHzErJqarAP8AXUCgA",
+		"logo": "./img/tokens/EURC.svg",
+		"symbol": "EURC.e",
+		"name": "EURC (Snowbridge)",
+		"decimals": 6,
+		"verified": true
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgA2ZIB2dCsATlKAMwgIKuSfdArk0rqWjvRyuqqxHwBmUYgnGCc69Cq6gP8AXUCgA",
+		"logo": "./img/tokens/SKY.webp",
+		"symbol": "SKY.e",
+		"name": "SKY Governance Token (Snowbridge)",
+		"decimals": 18,
+		"verified": true
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVicAZidknwAzJwA2J3QIJx8fBoBOMR8Adk6fAA4YMQAWWp9SiqsGho70QeGxAP8AXUCgA",
+		"logo": "./img/tokens/KILT.svg",
+		"symbol": "KILT.e",
+		"name": "KILT (Snowbridge)",
+		"decimals": 15,
+		"verified": true
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVh8AFgBOH2SAdjqfCAAzKqsIADZSjpaADgrkp2bm3oBmGF70DoqYK1bejvaA/wBdQKA==",
+		"logo": "./img/tokens/LINK.svg",
+		"symbol": "LINK.e",
+		"name": "ChainLink Token (Snowbridge)",
+		"decimals": 18,
+		"verified": true
+	},
+	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8JABYfJycAM2SANjEAdmrqpwAOAE4nH3Q6xrEAVggOgGYxaphq9DLpmDEU5JGA/wBdQKA==",
 		"logo": "./img/tokens/MYTH.webp?rounded",
 		"symbol": "MYTH.e",
