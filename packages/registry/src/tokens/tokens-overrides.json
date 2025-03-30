@@ -202,7 +202,15 @@
 		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA",
 		"logo": "./img/tokens/TEER.webp?rounded",
 		"symbol": "TEER",
-		"name": "Teer",
+		"name": "Integritee (Kusama)",
+		"decimals": 12,
+		"verified": true
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBmAJwBfTUA",
+		"logo": "./img/tokens/TEER.webp?rounded",
+		"symbol": "TEER",
+		"name": "Integritee (Polkadot)",
 		"decimals": 12,
 		"verified": true
 	},
