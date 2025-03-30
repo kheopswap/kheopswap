@@ -78,5 +78,11 @@
 		"paraId": 2015,
 		"name": "Integritee Kusama",
 		"parachainsInfoUrl": "https://parachains.info/details/integritee/"
+	},
+	{
+		"relay": "polkadot",
+		"paraId": 2039,
+		"name": "Integritee Polkadot",
+		"parachainsInfoUrl": "https://parachains.info/details/integritee/"
 	}
 ]
