@@ -26,7 +26,9 @@ export type DryRun<Id extends ChainIdRelay | ChainIdAssetHub> = Awaited<
 export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 	return useQuery({
 		queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
-		queryFn: async ({ signal }) => {
+		queryFn: async (
+			// TODO put this back	{ signal }
+		) => {
 			if (!chainId || !from || !call) return null;
 			if (!isChainIdAssetHub(chainId) && !isChainIdRelay(chainId)) return null;
 
@@ -40,7 +42,7 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 						value: from,
 					}),
 					call.decodedCall,
-					{ at: "best", signal },
+					// TODO put this back	{ at: "best", signal },
 				);
 
 				logger.debug("[dry run]", { dryRun, call: call.decodedCall });
