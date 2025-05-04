@@ -167,7 +167,7 @@ export const TokenAmountPicker: FC<{
 							plancks={plancks}
 							tokenId={tokenId}
 							className="text-neutral-500"
-							prefix={showLessThan && "< "}
+							// prefix={showLessThan && "< "} // TOOD make sure < doesnt appear twice
 						/>
 					)}
 				</div>
