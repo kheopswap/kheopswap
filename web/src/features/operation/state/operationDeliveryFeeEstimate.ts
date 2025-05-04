@@ -81,6 +81,7 @@ const getDeliveryFeeEstimate$ = <Id extends ChainId>(
 					logger.log("DeliveryFee", {
 						chainId,
 						xcm,
+						deliveryFee,
 					});
 
 					const assets =
