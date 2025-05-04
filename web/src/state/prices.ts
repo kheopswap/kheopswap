@@ -14,7 +14,6 @@ import {
 import { getCachedObservable$, isBigInt } from "@kheopswap/utils";
 import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
 import { getAssetConvert$ } from "src/state/convert";
-import { getAssetHubMirrorTokenId } from "src/util";
 
 export const getStablePlancks$ = (
 	tokenId: TokenId,
@@ -25,7 +24,7 @@ export const getStablePlancks$ = (
 
 	return stableToken$.pipe(
 		map((stableToken) => ({
-			tokenIdIn: getAssetHubMirrorTokenId(tokenId),
+			tokenIdIn: tokenId,
 			plancksIn: plancks ?? 0n,
 			tokenIdOut: stableToken.id,
 		})),
@@ -57,7 +56,7 @@ const getTokenPrice$ = (token: Token) => {
 					});
 
 					const stablePrice$ = getAssetConvert$({
-						tokenIdIn: getAssetHubMirrorTokenId(token.id),
+						tokenIdIn: token.id,
 						plancksIn: parseUnits("1", token.decimals),
 						tokenIdOut: stableToken.id,
 					});

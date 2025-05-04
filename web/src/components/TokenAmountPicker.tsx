@@ -16,7 +16,7 @@ import { useMaskito } from "@maskito/react";
 import type { Dictionary } from "lodash";
 
 import type { Token, TokenId } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
+import { cn, isBigInt, tokensToPlancks } from "@kheopswap/utils";
 import {
 	StablePrice,
 	Tokens,
@@ -60,7 +60,6 @@ export const TokenAmountPicker: FC<{
 	tokenId: TokenId | null | undefined;
 	tokens?: Dictionary<Token> | undefined;
 	accounts?: InjectedAccount[] | string[];
-	plancks: bigint | null | undefined;
 	isLoading: boolean;
 	errorMessage?: string | null;
 	disableTokenButton?: boolean;
@@ -69,13 +68,14 @@ export const TokenAmountPicker: FC<{
 	isLoadingBalance?: boolean;
 	onMaxClick?: () => void;
 	isComputingValue?: boolean;
+	lessThan?: boolean;
 }> = ({
 	inputProps,
 	tokenId,
 	tokens,
 	accounts,
 	isLoading,
-	plancks,
+
 	errorMessage,
 	onTokenChange,
 	disableTokenButton,
@@ -85,10 +85,24 @@ export const TokenAmountPicker: FC<{
 	onMaxClick,
 
 	isComputingValue,
+	lessThan,
 }) => {
 	const token = useMemo(
 		() => (tokenId ? tokens?.[tokenId] : undefined),
 		[tokenId, tokens],
+	);
+
+	const plancks = useMemo(
+		() =>
+			typeof inputProps.value === "string" && inputProps.value && token
+				? tokensToPlancks(inputProps.value, token.decimals)
+				: null,
+		[inputProps.value, token],
+	);
+
+	const showLessThan = useMemo(
+		() => isBigInt(plancks) && !isComputingValue && !!lessThan,
+		[isComputingValue, lessThan, plancks],
 	);
 
 	return (
@@ -99,7 +113,8 @@ export const TokenAmountPicker: FC<{
 				inputProps.readOnly && "focus-within:border-neutral-800",
 			)}
 		>
-			<div className="flex w-full relative">
+			<div className="flex w-full relative items-center">
+				{showLessThan && <div className="text-2xl">&lt;&nbsp;</div>}
 				<TokenInput
 					decimals={token?.decimals}
 					{...inputProps}
@@ -152,6 +167,7 @@ export const TokenAmountPicker: FC<{
 							plancks={plancks}
 							tokenId={tokenId}
 							className="text-neutral-500"
+							// prefix={showLessThan && "< "} // TOOD make sure < doesnt appear twice
 						/>
 					)}
 				</div>

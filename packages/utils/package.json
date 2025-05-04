@@ -10,19 +10,20 @@
 		"@kheopswap/typescript-config": "workspace:*",
 		"@types/react": "^18.3.12",
 		"@types/webfontloader": "^1.6.38",
-		"typescript": "^5.7.2",
+		"typescript": "^5.8.3",
 		"vite": "^5.4.11"
 	},
 	"dependencies": {
 		"@kheopswap/constants": "workspace:*",
+		"@noble/hashes": "^1.8.0",
 		"clsx": "^2.1.1",
 		"polkadot-api": "^1.10.1",
 		"react": "^18.3.1",
 		"react-toastify": "^10.0.6",
 		"rxjs": "^7.8.2",
-		"tailwind-merge": "^2.5.4",
+		"tailwind-merge": "^2.5.5",
 		"url-join": "^5.0.0",
-		"viem": "^2.21.49",
+		"viem": "^2.21.57",
 		"webfontloader": "^1.6.28"
 	}
 }

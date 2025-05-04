@@ -1,7 +1,13 @@
 import CloseIcon from "@w3f/polkadot-icons/solid/Close";
-import { type FC, type ReactNode, useEffect, useRef } from "react";
+import {
+	type FC,
+	type ReactNode,
+	type RefObject,
+	useEffect,
+	useRef,
+} from "react";
 
-import { cn } from "@kheopswap/utils";
+import { cn, provideContext } from "@kheopswap/utils";
 
 export const DrawerContainer: FC<{
 	title: ReactNode;
@@ -57,8 +63,22 @@ export const DrawerContainer: FC<{
 					contentClassName,
 				)}
 			>
-				{children}
+				<DrawerContainerProvider refContainer={refContainer}>
+					{children}
+				</DrawerContainerProvider>
 			</div>
 		</div>
 	);
 };
+
+const useDrawerContainerProvider = ({
+	refContainer,
+}: { refContainer: RefObject<HTMLDivElement> }) => {
+	return refContainer;
+};
+
+const [DrawerContainerProvider, useDrawerContainer] = provideContext(
+	useDrawerContainerProvider,
+);
+
+export { useDrawerContainer };

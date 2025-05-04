@@ -11,7 +11,8 @@ import { useDryRunError } from "src/hooks";
 import { useTransaction } from "./TransactionProvider";
 
 export const TransactionDryRunSummaryValue = () => {
-	const { chainId, dryRun, errorDryRun, isLoadingDryRun } = useTransaction();
+	const { chainId, dryRun, errorDryRun, isLoadingDryRun, call } =
+		useTransaction();
 
 	const { data: errorMessage } = useDryRunError({ chainId, dryRun });
 
@@ -23,12 +24,12 @@ export const TransactionDryRunSummaryValue = () => {
 		return formatTxError(dryRun.value.execution_result.value.error);
 	}, [dryRun, errorMessage]);
 
+	if (!call) return null;
+
 	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 
-	if (errorDryRun || (dryRun && !dryRun.success))
+	if (errorDryRun || !dryRun?.success)
 		return <span className="text-neutral-500">Unavailable</span>;
-
-	if (!dryRun) return null;
 
 	return (
 		<Tooltip placement="bottom-end">

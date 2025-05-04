@@ -108,7 +108,7 @@ const DrawerContent: FC<{
 							className={cn(
 								"h-6 w-11 rounded-full border bg-transparent ",
 								"after:absolute after:left-[2px] after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
-								"peer-checked:bg-neutral-500 peer-checked:after:translate-x-full peer-checked:after:border-neutral-200 peer-focus-visible:ring-1 peer-focus-visible:ring-neutral-200",
+								"peer-checked:bg-secondary-500 peer-checked:after:translate-x-full peer-checked:after:border-neutral-200 peer-focus-visible:ring-1 peer-focus-visible:ring-neutral-200",
 							)}
 						/>
 					</div>
@@ -132,6 +132,16 @@ const DrawerContent: FC<{
 							</a>{" "}
 							browser extension to share light clients across all your browser
 							apps.
+							<br />
+							<br />
+							<div>
+								Note: the following networks do not support light clients yet,
+								Kheopswap will connect using public RPCs:
+							</div>
+							<ul>
+								<li>- Bifrost</li>
+								<li>- Moonbeam</li>
+							</ul>
 						</>
 					)}
 				</div>
@@ -156,7 +166,7 @@ export const RelaySelect = () => {
 					`/${relayId}`,
 				);
 				navigate(newPath);
-			} else navigate(`/${relayId}/swap`);
+			} else navigate(`/${relayId}/operation`);
 			close();
 		},
 		[matches, navigate, close],

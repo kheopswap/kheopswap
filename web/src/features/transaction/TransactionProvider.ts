@@ -7,6 +7,7 @@ import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { Token, TokenId } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
 import {
+	type TxEvents,
 	formatTxError,
 	logger,
 	notifyError,
@@ -18,16 +19,30 @@ import {
 	useAssetConvertPlancks,
 	useBalance,
 	useBalances,
-	useDryRun,
 	useEstimateFee,
 	useExistentialDeposits,
 	useFeeToken,
 	useNativeToken,
 	useNonce,
 	useWalletAccount,
+	useXcmDryRun,
 } from "src/hooks";
+import { useDryRunCall } from "src/state/dryRunCall";
 import type { AnyTransaction } from "src/types";
-import { getFeeAssetLocation, getTxOptions } from "src/util";
+import {
+	getDestinationChain,
+	getFeeAssetLocation,
+	getTxOptions,
+	getXcmMessageFromDryRun,
+} from "src/util";
+
+export type ExpectedEventResult<T = unknown> = {
+	label: string;
+	tokenId: TokenId;
+	plancks: bigint;
+	getEffectiveValue: (events: TxEvents) => T | null;
+	component?: string;
+};
 
 export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
@@ -40,6 +55,7 @@ type UseTransactionProviderProps = {
 	chainId: ChainId | null | undefined;
 	callSpendings?: CallSpendings; // tokens to be spent as part of the call
 	followUpData?: object;
+	expectedEventResults?: ExpectedEventResult[];
 	onReset: () => void;
 };
 
@@ -49,10 +65,12 @@ type FollowUpInputs = {
 	account: InjectedAccount;
 	feeEstimate: bigint;
 	feeToken: Token;
+	expectedEventResults: ExpectedEventResult[];
 };
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
 const DEFAULT_FOLLOW_UP_DATA = {};
+const DEFAULT_EXPECTED_EVENT_RESULTS: ExpectedEventResult[] = [];
 
 const useTransactionProvider = ({
 	call,
@@ -62,6 +80,7 @@ const useTransactionProvider = ({
 	callSpendings = DEFAULT_CALL_SPENDINGS,
 	onReset,
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
+	expectedEventResults = DEFAULT_EXPECTED_EVENT_RESULTS,
 }: UseTransactionProviderProps) => {
 	const account = useWalletAccount({ id: signer });
 
@@ -139,10 +158,11 @@ const useTransactionProvider = ({
 				feeEstimate,
 				feeToken,
 				call,
+				expectedEventResults,
 			});
 
 			const sub = obsTxEvents.subscribe((x) => {
-				logger.log("Transaction status update", x);
+				logger.log("[tx event]", x);
 
 				if (x.type === "broadcasted") isSubmitted = true;
 
@@ -178,7 +198,15 @@ const useTransactionProvider = ({
 		} catch (err) {
 			notifyError(err);
 		}
-	}, [account, call, feeEstimate, feeToken, followUpData, options]);
+	}, [
+		account,
+		call,
+		feeEstimate,
+		feeToken,
+		followUpData,
+		options,
+		expectedEventResults,
+	]);
 
 	const tokenIds = useMemo(() => {
 		const allTokenIds = Object.keys(callSpendings)
@@ -267,10 +295,26 @@ const useTransactionProvider = ({
 		data: dryRun,
 		isLoading: isLoadingDryRun,
 		error: errorDryRun,
-	} = useDryRun({
-		chainId,
-		from: account?.address,
-		call,
+	} = useDryRunCall(chainId, account?.address, call?.decodedCall);
+
+	const [destChainId, xcm] = useMemo(() => {
+		if (!dryRun || !chainId) return [null, null];
+		const xcm = getXcmMessageFromDryRun(dryRun);
+		if (!xcm) return [null, null];
+		const destinationChain = getDestinationChain(chainId, xcm.destination);
+		if (!destinationChain) return [null, null];
+
+		return [destinationChain.id, xcm];
+	}, [dryRun, chainId]);
+
+	const {
+		data: xcmDryRun,
+		isLoading: isLoadingXcmDryRun,
+		error: errorXcmDryRun,
+	} = useXcmDryRun({
+		chainId: destChainId,
+		originChainId: chainId,
+		xcm,
 	});
 
 	const isLoading = useMemo(() => {
@@ -294,8 +338,7 @@ const useTransactionProvider = ({
 		if (!options?.asset && dryRun?.success)
 			return dryRun.value.execution_result.success;
 
-		// TODO add a flag to allow parent form to force another isLoading state
-		return (
+		const ok =
 			!!call &&
 			!!account &&
 			!!feeEstimate &&
@@ -303,8 +346,9 @@ const useTransactionProvider = ({
 			!!options &&
 			!error &&
 			!isLoading &&
-			!Object.keys(insufficientBalances).length
-		);
+			!Object.keys(insufficientBalances).length;
+
+		return ok;
 	}, [
 		account,
 		call,
@@ -362,6 +406,12 @@ const useTransactionProvider = ({
 		dryRun,
 		isLoadingDryRun,
 		errorDryRun,
+
+		xcmDryRun,
+		isLoadingXcmDryRun,
+		errorXcmDryRun,
+
+		call,
 	};
 };
 

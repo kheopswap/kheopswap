@@ -10,7 +10,7 @@ const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
 	return isChainIdRelay(relayId) ? (
 		<>{children}</>
 	) : (
-		<Navigate to="/polkadot/swap" replace />
+		<Navigate to="/polkadot/operation" replace />
 	);
 };
 

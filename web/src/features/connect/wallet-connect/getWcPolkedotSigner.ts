@@ -1,7 +1,7 @@
 import { logger } from "@kheopswap/utils";
 import type { PolkadotSigner } from "@polkadot-api/polkadot-signer";
+import { getPolkadotSignerFromPjs } from "polkadot-api/pjs-signer";
 import { firstValueFrom } from "rxjs";
-import { getPolkadotSignerFromPjs } from "./pjs-signer/from-pjs-account";
 import { wcProvider$ } from "./provider.state";
 import { wcSession$ } from "./session.store";
 

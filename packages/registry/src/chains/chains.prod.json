@@ -16,8 +16,8 @@
 		"relay": "polkadot",
 		"paraId": null,
 		"logo": "./img/tokens/DOT.svg",
-		"stableTokenId": null,
-		"blockExplorerUrl": "https://polkadot.subscan.io"
+		"blockExplorerUrl": "https://polkadot.subscan.io",
+		"addressType": "ss58"
 	},
 	{
 		"id": "pah",
@@ -37,8 +37,8 @@
 		"relay": "polkadot",
 		"paraId": 1000,
 		"logo": "./img/chains/pah.svg",
-		"stableTokenId": "asset::pah::1337",
-		"blockExplorerUrl": "https://assethub-polkadot.subscan.io"
+		"blockExplorerUrl": "https://assethub-polkadot.subscan.io",
+		"addressType": "ss58"
 	},
 	{
 		"id": "hydration",
@@ -55,8 +55,61 @@
 		"relay": "polkadot",
 		"paraId": 2034,
 		"logo": "./img/chains/hydration.svg",
-		"stableTokenId": null,
-		"blockExplorerUrl": "https://hydration.subscan.io"
+		"blockExplorerUrl": "https://hydration.subscan.io",
+		"addressType": "ss58"
+	},
+	{
+		"id": "mythos",
+		"name": "Mythos",
+		"wsUrl": ["wss://polkadot-mythos-rpc.polkadot.io"],
+		"relay": "polkadot",
+		"paraId": 3369,
+		"logo": "./img/chains/mythos.webp?rounded",
+		"blockExplorerUrl": "https://mythos.subscan.io",
+		"addressType": "ethereum"
+	},
+	{
+		"id": "moonbeam",
+		"name": "Moonbeam",
+		"wsUrl": [
+			"wss://moonbeam-rpc.dwellir.com",
+			"wss://moonbeam.ibp.network",
+			"wss://moonbeam.dotters.network",
+			"wss://moonbeam-rpc.publicnode.com",
+			"wss://wss.api.moonbeam.network",
+			"wss://moonbeam.public.curie.radiumblock.co/ws",
+			"wss://moonbeam.unitedbloc.com",
+			"wss://wss.api.moonbeam.network"
+		],
+		"relay": "polkadot",
+		"paraId": 2004,
+		"logo": "./img/chains/moonbeam.webp",
+		"blockExplorerUrl": "https://moonbeam.subscan.io",
+		"addressType": "ethereum"
+	},
+	{
+		"id": "bifrostPolkadot",
+		"name": "Bifrost Polkadot",
+		"wsUrl": [
+			"wss://bifrost-polkadot.ibp.network",
+			"wss://bifrost-polkadot.dotters.network",
+			"wss://hk.p.bifrost-rpc.liebi.com/ws",
+			"wss://eu.bifrost-polkadot-rpc.liebi.com/ws"
+		],
+		"relay": "polkadot",
+		"paraId": 2030,
+		"logo": "./img/chains/bifrost-polkadot.svg",
+		"blockExplorerUrl": "https://bifrost.subscan.io",
+		"addressType": "ss58"
+	},
+	{
+		"id": "laos",
+		"name": "LAOS Network",
+		"wsUrl": ["wss://rpc.laos.laosfoundation.io", "wss://laos-rpc.dwellir.com"],
+		"relay": "polkadot",
+		"paraId": 3370,
+		"logo": "./img/chains/laos.svg",
+		"addressType": "ethereum"
 	},
 	{
 		"id": "kusama",
@@ -76,8 +129,8 @@
 		"relay": "kusama",
 		"paraId": null,
 		"logo": "./img/tokens/KSM.svg",
-		"stableTokenId": null,
-		"blockExplorerUrl": "https://kusama.subscan.io"
+		"blockExplorerUrl": "https://kusama.subscan.io",
+		"addressType": "ss58"
 	},
 	{
 		"id": "kah",
@@ -94,8 +147,8 @@
 		"relay": "kusama",
 		"paraId": 1000,
 		"logo": "./img/chains/kah.svg",
-		"stableTokenId": "native::kah",
-		"blockExplorerUrl": "https://assethub-kusama.subscan.io"
+		"blockExplorerUrl": "https://assethub-kusama.subscan.io",
+		"addressType": "ss58"
 	},
 	{
 		"id": "westend",
@@ -110,8 +163,8 @@
 		"relay": "westend",
 		"paraId": null,
 		"logo": "./img/tokens/WND.svg",
-		"stableTokenId": null,
-		"blockExplorerUrl": "https://westend.subscan.io"
+		"blockExplorerUrl": "https://westend.subscan.io",
+		"addressType": "ss58"
 	},
 	{
 		"id": "wah",
@@ -126,8 +179,8 @@
 		"relay": "westend",
 		"paraId": 1000,
 		"logo": "./img/chains/wah.svg",
-		"stableTokenId": "native::wah",
-		"blockExplorerUrl": "https://assethub-westend.subscan.io"
+		"blockExplorerUrl": "https://assethub-westend.subscan.io",
+		"addressType": "ss58"
 	},
 
 	{
@@ -144,8 +197,8 @@
 		"relay": "paseo",
 		"paraId": null,
 		"logo": "./img/chains/paseo.png",
-		"stableTokenId": null,
-		"blockExplorerUrl": "https://paseo.subscan.io"
+		"blockExplorerUrl": "https://paseo.subscan.io",
+		"addressType": "ss58"
 	},
 	{
 		"id": "pasah",
@@ -160,7 +213,7 @@
 		"relay": "paseo",
 		"paraId": 1000,
 		"logo": "./img/chains/pasah.svg",
-		"stableTokenId": "native::pasah",
-		"blockExplorerUrl": "https://assethub-paseo.subscan.io"
+		"blockExplorerUrl": "https://assethub-paseo.subscan.io",
+		"addressType": "ss58"
 	}
 ]

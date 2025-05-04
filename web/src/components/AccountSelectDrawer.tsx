@@ -13,7 +13,7 @@ import type { Token } from "@kheopswap/registry";
 import {
 	cn,
 	isBigInt,
-	isValidAddress,
+	isSs58Address,
 	logger,
 	shortenAddress,
 } from "@kheopswap/utils";
@@ -160,7 +160,7 @@ const AddressInput: FC<{
 }> = ({ address, onChange }) => {
 	const [localAddress, setLocalAddress] = useState(address);
 
-	const isValid = useMemo(() => isValidAddress(localAddress), [localAddress]);
+	const isValid = useMemo(() => isSs58Address(localAddress), [localAddress]);
 
 	const handleClick = useCallback(() => {
 		onChange(localAddress);
@@ -262,7 +262,7 @@ const AccountSelectDrawerContent: FC<{
 	);
 
 	const address = useMemo(() => {
-		return idOrAddress && isValidAddress(idOrAddress) ? idOrAddress : "";
+		return idOrAddress && isSs58Address(idOrAddress) ? idOrAddress : "";
 	}, [idOrAddress]);
 
 	const handleClick = useCallback(

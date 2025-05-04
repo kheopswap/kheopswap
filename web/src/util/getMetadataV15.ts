@@ -8,6 +8,10 @@ export const getMetadataV15 = (chainId: ChainId) =>
 		try {
 			const api = await getApi(chainId);
 
+			logger.debug("[api call] Metadata.metadata_at_version(15)", {
+				chainId: api.chainId,
+			});
+
 			const binary = await api.apis.Metadata.metadata_at_version(15);
 			if (!binary) throw new Error("Could not fetch metadata");
 

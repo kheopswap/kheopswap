@@ -2,7 +2,7 @@ import { getApi$ } from "@kheopswap/papi";
 import type { ChainIdHydration } from "@kheopswap/registry";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import type { SS58String } from "polkadot-api";
-import { concat, map, shareReplay, switchMap } from "rxjs";
+import { map, shareReplay, switchMap } from "rxjs";
 
 export const getHydrationAssetsBalances$ = (
 	chainId: ChainIdHydration,
@@ -14,24 +14,14 @@ export const getHydrationAssetsBalances$ = (
 		() => {
 			return getApi$(chainId).pipe(
 				switchMap((api) =>
-					concat(
-						// block number subscription doesnt fire on chopsticks, workaround with a direct query
-						api.query.Tokens.Accounts.getEntries(address, {
-							at: "best",
-						}),
-						api.query.System.Number.watchValue("best").pipe(
-							switchMap(() =>
-								api.query.Tokens.Accounts.getEntries(address, {
-									at: "best",
-								}),
-							),
-						),
-					),
+					api.query.Tokens.Accounts.watchEntries(address, {
+						at: "best",
+					}),
 				),
-				map((entries) =>
-					entries.map(({ keyArgs, value }) => ({
+				map(({ entries }) =>
+					entries.map(({ args: [address, assetId], value }) => ({
 						address,
-						assetId: keyArgs[1],
+						assetId,
 						balance: value.free - value.frozen,
 					})),
 				),

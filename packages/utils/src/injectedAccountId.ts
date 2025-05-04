@@ -1,9 +1,9 @@
-import type { SS58String } from "polkadot-api";
+import type { HexString, SS58String } from "polkadot-api";
 
 import { isValidAddress } from "./isValidAddress";
 import { logger } from "./logger";
 
-export type InjectedAccountId = `${string}::${SS58String}`;
+export type InjectedAccountId = `${string}::${SS58String | HexString}`;
 
 export const getInjectedAccountId = (
 	wallet: string,

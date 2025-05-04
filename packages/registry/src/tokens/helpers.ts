@@ -1,15 +1,18 @@
 import lzs from "lz-string";
 
 import type {
+	BifrostAssetCurrencyId,
 	Token,
 	TokenId,
 	TokenIdAsset,
+	TokenIdBifrostAsset,
 	TokenIdForeignAsset,
 	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 	TokenType,
 	TokenTypeAsset,
+	TokenTypeBifrostAsset,
 	TokenTypeForeignAsset,
 	TokenTypeHydrationAsset,
 	TokenTypeNative,
@@ -22,6 +25,7 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
+
 import { type ChainId, getChainById } from "../chains";
 import { getEvmNetworkById, getEvmNetworkName } from "../evmNetworks";
 import { getParachainName } from "../parachains";
@@ -51,24 +55,31 @@ export const isTokenIdAsset = (
 	}
 };
 
-export const parseTokenId = (
-	tokenId: TokenId,
-):
-	| { type: "native"; chainId: ChainId }
-	| { type: "asset"; chainId: ChainId; assetId: number }
-	| { type: "pool-asset"; chainId: ChainId; poolAssetId: number }
+export type TokenSpec =
+	| { type: TokenTypeNative; chainId: ChainId }
+	| { type: TokenTypeAsset; chainId: ChainId; assetId: number }
+	| { type: TokenTypePoolAsset; chainId: ChainId; poolAssetId: number }
 	| {
-			type: "foreign-asset";
+			type: TokenTypeForeignAsset;
 			chainId: ChainId;
 			location: XcmV3Multilocation;
 	  }
 	| {
-			type: "hydration-asset";
+			type: TokenTypeHydrationAsset;
 			chainId: ChainId;
 			assetId: number;
-	  } => {
+	  }
+	| {
+			type: TokenTypeBifrostAsset;
+			chainId: ChainId;
+			currencyId: BifrostAssetCurrencyId;
+	  };
+
+export type TokenSpecWithId = TokenSpec & { id: TokenId };
+
+export const parseTokenId = (id: TokenId): TokenSpecWithId => {
 	try {
-		const parts = tokenId.split("::");
+		const parts = id.split("::");
 
 		const chainId = parts[1] as ChainId;
 		if (!getChainById(chainId))
@@ -76,36 +87,47 @@ export const parseTokenId = (
 
 		switch (parts[0]) {
 			case "native":
-				return { type: "native", chainId };
+				return { id, type: "native", chainId };
 			case "asset": {
 				const assetId = Number(parts[2]);
 				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
-				return { type: "asset", chainId, assetId };
+				return { id, type: "asset", chainId, assetId };
 			}
 			case "pool-asset": {
 				const poolAssetId = Number(parts[2]);
 				if (Number.isNaN(poolAssetId)) throw new Error("Invalid poolAssetId");
-				return { type: "pool-asset", chainId, poolAssetId };
+				return { id, type: "pool-asset", chainId, poolAssetId };
 			}
 			case "foreign-asset": {
 				if (parts.length < 3) throw new Error("Invalid foreign-asset token id");
 				const location = safeParse<XcmV3Multilocation>(
 					lzs.decompressFromBase64(parts[2] as string),
 				);
-				return { type: "foreign-asset", chainId, location };
+				return { id, type: "foreign-asset", chainId, location };
 			}
 			case "hydration-asset": {
 				const assetId = Number(parts[2]);
 				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
-				return { type: "hydration-asset", chainId, assetId };
+				return { id, type: "hydration-asset", chainId, assetId };
+			}
+			case "bifrost-asset": {
+				if (parts.length < 3) throw new Error("Invalid bifrost-asset token id");
+				const currencyId = safeParse<BifrostAssetCurrencyId>(
+					lzs.decompressFromBase64(parts[2] as string),
+				);
+				return { id, type: "bifrost-asset", chainId, currencyId };
 			}
 			default:
-				throw new Error(`Unsupported token type: ${tokenId}`);
+				throw new Error(`Unsupported token type: ${id}`);
 		}
 	} catch (cause) {
-		logger.error(`Failed to parse token id: ${tokenId}`, { cause });
-		throw new Error(`Failed to parse token id: ${tokenId}`, { cause });
+		logger.error(`Failed to parse token id: ${id}`, { cause });
+		throw new Error(`Failed to parse token id: ${id}`, { cause });
 	}
+};
+
+export const getTokenSpecs = (tokenOrId: Token | TokenId): TokenSpecWithId => {
+	return typeof tokenOrId === "string" ? parseTokenId(tokenOrId) : tokenOrId;
 };
 
 type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
@@ -118,15 +140,12 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 				? TokenIdForeignAsset
 				: T extends TokenTypeHydrationAsset
 					? TokenIdHydrationAsset
-					: never;
+					: T extends TokenTypeBifrostAsset
+						? TokenIdBifrostAsset
+						: never;
 
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
-	token:
-		| { type: TokenTypeNative; chainId: ChainId }
-		| { type: TokenTypeAsset; chainId: ChainId; assetId: number }
-		| { type: TokenTypePoolAsset; chainId: ChainId; poolAssetId: number }
-		| { type: TokenTypeForeignAsset; chainId: ChainId; location: unknown }
-		| { type: TokenTypeHydrationAsset; chainId: ChainId; assetId: number },
+	token: TokenSpec,
 ): Result => {
 	switch (token.type) {
 		case "native":
@@ -139,6 +158,10 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}` as Result;
 		case "hydration-asset":
 			return `hydration-asset::${token.chainId}::${token.assetId}` as Result;
+		case "bifrost-asset":
+			return `bifrost-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.currencyId))}` as Result;
+		default:
+			throw new Error("Unknown token spec");
 	}
 };
 

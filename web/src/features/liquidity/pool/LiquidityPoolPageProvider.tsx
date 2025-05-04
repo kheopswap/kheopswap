@@ -19,7 +19,7 @@ import { useRelayChains } from "src/state";
 const useLiquidityPoolPageProvider = () => {
 	const { poolAssetId } = useParams();
 
-	const { assetHub } = useRelayChains();
+	const { assetHub, stableToken } = useRelayChains();
 	const [defaultAccountId, setDefaultAccountId] =
 		useSetting("defaultAccountId");
 	const [lpSlippage, setLpSlippage] = useSetting("lpSlippage");
@@ -32,8 +32,6 @@ const useLiquidityPoolPageProvider = () => {
 	});
 
 	const nativeToken = useNativeToken({ chain: assetHub });
-
-	const { data: stableToken } = useToken({ tokenId: assetHub.stableTokenId });
 
 	const { data: assetToken, isLoading: isLoadingToken } = useToken({
 		tokenId: pool?.tokenIds[1],

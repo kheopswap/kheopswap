@@ -1,10 +1,21 @@
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { type Dictionary, values } from "lodash";
-import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
+import {
+	type FC,
+	forwardRef,
+	useCallback,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { Drawer } from "src/components/Drawer";
-import { DrawerContainer } from "src/components/DrawerContainer";
+import {
+	DrawerContainer,
+	useDrawerContainer,
+} from "src/components/DrawerContainer";
 import { SearchInput } from "src/components/SearchInput";
 import { Shimmer } from "src/components/Shimmer";
 import { TokenLogo } from "src/components/TokenLogo";
@@ -123,7 +134,7 @@ const TokenSelectDrawerContent: FC<{
 	const [search, setSearch] = useState("");
 
 	const handleClick = useCallback(
-		(id: TokenId) => () => {
+		(id: TokenId) => {
 			onChange(id);
 		},
 		[onChange],
@@ -175,16 +186,67 @@ const TokenSelectDrawerContent: FC<{
 	return (
 		<div className="flex flex-col gap-2">
 			<SearchInput className="mb-2" onChange={setSearch} placeholder="Search" />
-			{items.map((t) => (
-				<TokenButton
-					key={t.id}
-					token={t}
-					balances={balances?.[t.id]}
-					onClick={handleClick(t.id)}
-					selected={t.id === tokenId}
-				/>
-			))}
+			<TokenButtons
+				tokens={items}
+				balances={balances}
+				selectedTokenId={tokenId}
+				onTokenClick={handleClick}
+			/>
 			{isLoading && <TokenButtonShimmer />}
+		</div>
+	);
+};
+
+const TokenButtons: FC<{
+	tokens: Token[];
+	balances: Record<string, BalanceWithStableSummary>;
+	selectedTokenId: TokenId | null | undefined;
+	onTokenClick: (tokenId: TokenId) => void;
+}> = ({ tokens, balances, selectedTokenId, onTokenClick }) => {
+	const refContainer = useDrawerContainer(); // used/defined in popup only
+	const ref = useRef<HTMLDivElement>(null);
+
+	const virtualizer = useVirtualizer({
+		count: tokens.length,
+		estimateSize: () => 64,
+		overscan: 5,
+		getScrollElement: () => refContainer.current, // fallback to main, the container for dashboard
+		gap: 8,
+	});
+
+	return (
+		<div ref={ref}>
+			<div
+				className="relative w-full"
+				style={{
+					height: `${virtualizer.getTotalSize()}px`,
+				}}
+			>
+				{virtualizer.getVirtualItems().map((item) => {
+					const token = tokens[item.index];
+					if (!token) return null;
+					const tokenBalances = balances[token.id];
+					return (
+						<div
+							key={item.key}
+							className="absolute left-0 top-0 w-full"
+							style={{
+								height: `${item.size}px`,
+								transform: `translateY(${item.start}px)`,
+							}}
+						>
+							{token && (
+								<TokenButton
+									token={token}
+									balances={tokenBalances}
+									onClick={() => onTokenClick(token.id)}
+									selected={token.id === selectedTokenId}
+								/>
+							)}
+						</div>
+					);
+				})}
+			</div>
 		</div>
 	);
 };

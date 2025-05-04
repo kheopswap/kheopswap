@@ -1,13 +1,15 @@
 import { logger } from "./logger";
 
-export type TxEvents = {
+export type TxEventEntry = {
 	type: string;
 	value: {
 		type: string;
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		value: any;
 	};
-}[];
+};
+
+export type TxEvents = TxEventEntry[];
 
 export const getErrorMessageFromTxEvents = (events: TxEvents) => {
 	try {

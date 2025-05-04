@@ -7,7 +7,7 @@ import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 
 import type { TokenId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
+import { cn, isValidAddress } from "@kheopswap/utils";
 import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
 import { WalletIcon } from "./WalletIcon";
 
@@ -90,7 +90,7 @@ const AccountSelectButton: FC<{
 				<div>Connect Wallet</div>
 			) : account ? (
 				<AccountRow account={account} className="grow overflow-hidden" />
-			) : !ownedOnly && idOrAddress ? (
+			) : !ownedOnly && !!idOrAddress && isValidAddress(idOrAddress) ? (
 				<AddressRow address={idOrAddress} className="grow overflow-hidden" />
 			) : (
 				<div>Select Account</div>
@@ -106,8 +106,9 @@ export const AccountSelect: FC<{
 	tokenId?: TokenId;
 	ownedOnly?: boolean;
 	className?: string;
+	error?: string | null;
 	onChange: (idOrAddress: string) => void;
-}> = ({ id, ownedOnly, idOrAddress, tokenId, className, onChange }) => {
+}> = ({ id, ownedOnly, idOrAddress, tokenId, className, error, onChange }) => {
 	const { isOpen, open, close } = useOpenClose();
 
 	const handleChange = useCallback(
@@ -124,9 +125,10 @@ export const AccountSelect: FC<{
 				id={id}
 				ownedOnly={ownedOnly}
 				idOrAddress={idOrAddress}
-				className={className}
+				className={cn(className, error && "border-error")}
 				onClick={open}
 			/>
+			{error && <div className="text-error">{error}</div>}
 			<AccountSelectDrawer
 				isOpen={isOpen}
 				ownedOnly={ownedOnly}
