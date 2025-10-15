@@ -14,9 +14,9 @@
 	"scripts": {},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
-		"@types/lodash": "^4.17.13",
-		"typescript": "^5.7.2",
-		"vite": "^5.4.11"
+		"@types/lodash": "^4.17.20",
+		"typescript": "^5.9.3",
+		"vite": "^5.4.20"
 	},
 	"dependencies": {
 		"@kheopswap/constants": "workspace:*",
@@ -24,7 +24,7 @@
 		"@kheopswap/registry": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
 		"lodash": "^4.17.21",
-		"polkadot-api": "^1.10.1",
+		"polkadot-api": "^1.20.0",
 		"rxjs": "^7.8.2"
 	}
 }

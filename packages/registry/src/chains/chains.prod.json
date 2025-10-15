@@ -4,7 +4,6 @@
 		"name": "Polkadot",
 		"wsUrl": [
 			"wss://rpc.ibp.network/polkadot",
-			"wss://polkadot-rpc.dwellir.com",
 			"wss://rpc.dotters.network/polkadot",
 			"wss://polkadot-rpc-tn.dwellir.com",
 			"wss://polkadot-rpc.publicnode.com",
