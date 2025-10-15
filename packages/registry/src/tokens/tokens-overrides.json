@@ -250,7 +250,15 @@
 		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA",
 		"logo": "./img/tokens/TEER.webp?rounded",
 		"symbol": "TEER",
-		"name": "Teer",
+		"name": "Integritee (Kusama)",
+		"decimals": 12,
+		"verified": true
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBmAJwBfTUA===",
+		"logo": "./img/tokens/TEER.webp?rounded",
+		"symbol": "TEER",
+		"name": "Integritee (Polkadot)",
 		"decimals": 12,
 		"verified": true
 	},
@@ -290,10 +298,6 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgAsAZgC+mAdVqj27GAgCScJAghxxNVh25p0yzQF1NmoA===",
 		"logo": "./img/tokens/NEURO.webp?rounded"
-	},
-	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBmAJwBfTUA===",
-		"logo": "./img/tokens/TEER.webp?rounded"
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AFgBWAA5k0srqpxh0dABOHwBmJwgAMxhk5q7S5urK2pgrGAA2MYkugHZKgP8AXUCgA",
