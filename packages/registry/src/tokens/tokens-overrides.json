@@ -290,5 +290,38 @@
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQHYADAF8NQA",
 		"logo": "./img/tokens/LAOS.svg"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoBRBAAsCMTgFtmINlx6gAxjoh4A+jgAmtUTgDmeBKiYBfP36A==",
+		"logo": "./img/tokens/ETH.png"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgAsAZgC+mAdVqj27GAgCScJAghxxNVh25p0yzQF1NmoA===",
+		"logo": "./img/tokens/NEURO.webp?rounded"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBmAJwBfTUA===",
+		"logo": "./img/tokens/TEER.webp?rounded"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AFgBWAA5k0srqpxh0dABOHwBmJwgAMxhk5q7S5urK2pgrGAA2MYkugHZKgP8AXUCgA",
+		"symbol": "PAXG",
+		"decimals": 18,
+		"name": "PAX Gold (Snowbridge)",
+		"logo": "./img/tokens/PAXG.png"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8osvKrAGZKpwBWSoAOJzErdBgYABYAMxgIMWSIAHYIHy6ujpgGiABODoD/AF1AoA===",
+		"symbol": "CFG",
+		"decimals": 18,
+		"name": "Centrifuge",
+		"logo": "./img/tokens/CFG.svg?rounded"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgB2GB8fABYxADYATh8nMXLG5KsAZlKU8rF0GHqADlKnGogarp9hnyHk+r9AgF1AoA===",
+		"symbol": "ENA",
+		"decimals": 18,
+		"name": "Ethena",
+		"logo": "./img/tokens/ENA.svg"
 	}
 ]

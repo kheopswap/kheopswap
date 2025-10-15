@@ -6,11 +6,11 @@ import {
 	type ChainId,
 	type ChainIdAssetHub,
 	type ChainIdRelay,
-	PolkadotRuntimeOriginCaller,
 	isChainIdAssetHub,
 	isChainIdRelay,
 } from "@kheopswap/registry";
 import { logger, safeQueryKeyPart } from "@kheopswap/utils";
+import { Enum } from "@polkadot-api/substrate-bindings";
 import type { AnyTransaction } from "src/types";
 
 type UseDryRunProps = {
@@ -26,21 +26,22 @@ export type DryRun<Id extends ChainIdRelay | ChainIdAssetHub> = Awaited<
 export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 	return useQuery({
 		queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
-		queryFn: async ({ signal }) => {
+		queryFn: async (
+			// TODO put this back	{ signal }
+		) => {
 			if (!chainId || !from || !call) return null;
 			if (!isChainIdAssetHub(chainId) && !isChainIdRelay(chainId)) return null;
 
 			try {
 				const api = await getApi(chainId);
 
+				const origin = Enum("system", Enum("Signed", from));
+
 				// @ts-ignore
 				const dryRun = await api.apis.DryRunApi.dry_run_call(
-					PolkadotRuntimeOriginCaller.system({
-						type: "Signed",
-						value: from,
-					}),
+					origin,
 					call.decodedCall,
-					{ at: "best", signal },
+					// TODO put this back	{ at: "best", signal },
 				);
 
 				logger.debug("[dry run]", { dryRun, call: call.decodedCall });

@@ -8,21 +8,21 @@
 	"scripts": {},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
-		"@types/react": "^18.3.12",
+		"@types/react": "^18.3.26",
 		"@types/webfontloader": "^1.6.38",
-		"typescript": "^5.7.2",
-		"vite": "^5.4.11"
+		"typescript": "^5.9.3",
+		"vite": "^5.4.20"
 	},
 	"dependencies": {
 		"@kheopswap/constants": "workspace:*",
 		"clsx": "^2.1.1",
-		"polkadot-api": "^1.9.7",
+		"polkadot-api": "^1.20.0",
 		"react": "^18.3.1",
 		"react-toastify": "^10.0.6",
 		"rxjs": "^7.8.2",
-		"tailwind-merge": "^2.5.4",
+		"tailwind-merge": "^2.6.0",
 		"url-join": "^5.0.0",
-		"viem": "^2.21.49",
+		"viem": "^2.38.2",
 		"webfontloader": "^1.6.28"
 	}
 }
