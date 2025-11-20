@@ -32,8 +32,8 @@ import { getFeeAssetLocation } from "src/util";
 import { getTxOptions } from "src/util/getTxOptions";
 
 const useFormData = () => {
-	const { relay } = useRelayChains();
-	const nativeToken = useNativeToken({ chain: relay });
+	const { assetHub } = useRelayChains();
+	const ahNativeToken = useNativeToken({ chain: assetHub });
 
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -46,12 +46,12 @@ const useFormData = () => {
 	const defaultValues = useMemo<TransferFormInputs>(
 		() => ({
 			from: account?.id ?? "",
-			tokenId: nativeToken?.id ?? "",
+			tokenId: ahNativeToken?.id ?? "",
 			amount: "",
 			to: "",
 			...location.state,
 		}),
-		[account?.id, nativeToken?.id, location.state],
+		[account?.id, ahNativeToken?.id, location.state],
 	);
 
 	const [formData, setFormData] = useState<TransferFormInputs>(defaultValues);
@@ -78,8 +78,8 @@ const useFormData = () => {
 const useTransferProvider = () => {
 	const [formData, setFormData] = useFormData();
 
-	const { relay } = useRelayChains();
-	const defaultToken = useNativeToken({ chain: relay });
+	const { relay, assetHub } = useRelayChains();
+	const defaultToken = useNativeToken({ chain: assetHub });
 
 	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
 		types: TRANSFERABLE_TOKEN_TYPES,
