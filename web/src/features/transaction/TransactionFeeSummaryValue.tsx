@@ -1,11 +1,12 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import type { PolkadotAccount } from "@kheopskit/core";
 import type { TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { keyBy } from "lodash";
 import { type FC, useCallback, useMemo } from "react";
 import { Shimmer, TokenSelectDrawer, Tokens } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { type PolkadotAccount, useOpenClose } from "src/hooks";
+import { useOpenClose } from "src/hooks";
 
 export const TransactionFeeSummaryValue: FC = () => {
 	const { isOpen, open, close } = useOpenClose();

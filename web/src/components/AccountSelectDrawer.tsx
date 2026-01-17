@@ -1,13 +1,9 @@
+import type { PolkadotAccount, Wallet } from "@kheopskit/core";
 import type { Token } from "@kheopswap/registry";
 import { cn, isBigInt, isValidAddress, shortenAddress } from "@kheopswap/utils";
 import { fromPairs } from "lodash";
 import { type FC, useCallback, useMemo, useState } from "react";
-import {
-	type PolkadotAccount,
-	useBalancesWithStables,
-	useToken,
-	useWallets,
-} from "src/hooks";
+import { useBalancesWithStables, useToken, useWallets } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 import { Drawer } from "./Drawer";
@@ -20,29 +16,27 @@ import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
 
 const WalletButton: FC<{
-	icon: string;
-	name: string;
-	isConnected: boolean;
+	wallet: Wallet;
 	onClick: () => void;
-}> = ({ icon, name, isConnected, onClick }) => (
+}> = ({ wallet, onClick }) => (
 	<button
 		type="button"
 		onClick={onClick}
 		className={cn(
 			"flex w-full items-center justify-between gap-3 rounded-md border p-2 px-4 text-left",
-			isConnected
+			wallet.isConnected
 				? "border-green-700 hover:bg-green-500/10"
 				: "hover:bg-white/10",
 		)}
 	>
 		<div className="size-8 shrink-0">
-			<WalletIcon icon={icon} className="size-8" />
+			<WalletIcon walletId={wallet.id} className="size-8" />
 		</div>
-		<div className="grow text-left">{name}</div>
+		<div className="grow text-left">{wallet.name}</div>
 		<div
 			className={cn(
 				"size-2 rounded-full",
-				isConnected ? "bg-success-500" : "bg-error-500",
+				wallet.isConnected ? "bg-success-500" : "bg-error-500",
 			)}
 		/>
 	</button>
@@ -50,7 +44,6 @@ const WalletButton: FC<{
 
 const AccountButton: FC<{
 	account: PolkadotAccount;
-	walletIcon?: string;
 	selected?: boolean;
 	disabled?: boolean;
 	balance?: BalanceWithStableSummary;
@@ -59,7 +52,6 @@ const AccountButton: FC<{
 	onClick: () => void;
 }> = ({
 	account,
-	walletIcon,
 	selected,
 	balance,
 	token,
@@ -84,7 +76,7 @@ const AccountButton: FC<{
 				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
 					<div className="truncate">{account.name}</div>
 					<div className="inline-block size-4 shrink-0">
-						<WalletIcon icon={walletIcon} className="size-4" />
+						<WalletIcon walletId={account.walletId} className="size-4" />
 					</div>
 				</div>
 				<div className="truncate text-xs text-neutral-500">
@@ -184,8 +176,7 @@ const AccountSelectDrawerContent: FC<{
 	onClose: () => void;
 	onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-	const { accounts, wallets, getWalletIcon, connect, disconnect } =
-		useWallets();
+	const { accounts, wallets, connect, disconnect } = useWallets();
 
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
@@ -281,9 +272,7 @@ const AccountSelectDrawerContent: FC<{
 							{injectedWallets.map((wallet) => (
 								<li key={wallet.id}>
 									<WalletButton
-										icon={wallet.icon}
-										name={wallet.name}
-										isConnected={wallet.isConnected}
+										wallet={wallet}
 										onClick={handleWalletClick(wallet.id, wallet.isConnected)}
 									/>
 								</li>
@@ -301,9 +290,7 @@ const AccountSelectDrawerContent: FC<{
 					<ul className="mt-2 flex flex-col gap-2">
 						<li>
 							<WalletButton
-								icon={walletConnectWallet.icon}
-								name={walletConnectWallet.name}
-								isConnected={walletConnectWallet.isConnected}
+								wallet={walletConnectWallet}
 								onClick={handleWalletClick(
 									walletConnectWallet.id,
 									walletConnectWallet.isConnected,
@@ -321,7 +308,6 @@ const AccountSelectDrawerContent: FC<{
 							<AccountButton
 								key={account.id}
 								account={account}
-								walletIcon={getWalletIcon(account.walletId)}
 								selected={account.id === idOrAddress}
 								balance={balanceByAccount[account.address]}
 								token={token}

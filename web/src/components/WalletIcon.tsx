@@ -1,11 +1,19 @@
+import { useWallets } from "@kheopskit/react";
 import { cn } from "@kheopswap/utils";
 import GenericWalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
-import type { FC } from "react";
+import { type FC, useMemo } from "react";
 
 export const WalletIcon: FC<{
-	icon?: string;
+	walletId: string | null | undefined;
 	className?: string;
-}> = ({ icon, className }) => {
+}> = ({ walletId, className }) => {
+	const { wallets } = useWallets();
+
+	const icon = useMemo(
+		() => wallets.find((w) => w.id === walletId)?.icon,
+		[wallets, walletId],
+	);
+
 	if (icon) {
 		return (
 			<img

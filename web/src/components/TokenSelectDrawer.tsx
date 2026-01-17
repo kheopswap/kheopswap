@@ -1,3 +1,4 @@
+import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { type Dictionary, values } from "lodash";
@@ -10,7 +11,7 @@ import { Shimmer } from "src/components/Shimmer";
 import { Styles } from "src/components/styles";
 import { TokenLogo } from "src/components/TokenLogo";
 import { Tokens } from "src/components/Tokens";
-import { type PolkadotAccount, useBalancesByTokenSummary } from "src/hooks";
+import { useBalancesByTokenSummary } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 import { getTokenDescription } from "src/util";

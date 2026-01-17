@@ -1,3 +1,4 @@
+import type { PolkadotAccount } from "@kheopskit/core";
 import type { TokenId } from "@kheopswap/registry";
 import {
 	cn,
@@ -6,7 +7,7 @@ import {
 } from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { type FC, useCallback, useMemo } from "react";
-import { type PolkadotAccount, useOpenClose, useWallets } from "src/hooks";
+import { useOpenClose, useWallets } from "src/hooks";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
 import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
@@ -39,7 +40,6 @@ const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
 	account,
 	className,
 }) => {
-	const { getWalletIcon } = useWallets();
 	return (
 		<div
 			className={cn(
@@ -51,10 +51,7 @@ const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
 			<div className="flex grow items-center overflow-hidden">
 				<span className="truncate">{account.name}</span>
 				<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
-					<WalletIcon
-						icon={getWalletIcon(account.walletId)}
-						className="size-4"
-					/>
+					<WalletIcon walletId={account.walletId} className="size-4" />
 				</span>
 			</div>
 		</div>

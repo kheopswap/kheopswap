@@ -1,10 +1,11 @@
+import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
 import { type FC, useCallback, useMemo } from "react";
 import { TokenLogo, TokenSelectDrawer } from "src/components";
 import { Styles } from "src/components/styles";
-import { type PolkadotAccount, useChainName, useOpenClose } from "src/hooks";
+import { useChainName, useOpenClose } from "src/hooks";
 
 const TokenButton: FC<{
 	tokenId: TokenId | null | undefined;
