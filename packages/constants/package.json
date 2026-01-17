@@ -8,10 +8,10 @@
 	"scripts": {},
 	"devDependencies": {
 		"@kheopswap/typescript-config": "workspace:*",
-		"@types/react": "^18.3.26",
+		"@types/react": "^19.1.0",
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
-		"vite": "^5.4.20"
+		"vite": "^6.4.0"
 	}
 }
