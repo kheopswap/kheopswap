@@ -135,9 +135,6 @@ importers:
 
   packages/settings:
     dependencies:
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@kheopswap/utils':
         specifier: workspace:*
         version: link:../utils
