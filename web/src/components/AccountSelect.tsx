@@ -1,5 +1,9 @@
 import type { TokenId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
+import {
+	cn,
+	getAddressFromAccountField,
+	isValidAddress,
+} from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { type FC, useCallback, useMemo } from "react";
 import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
@@ -68,6 +72,18 @@ const AccountSelectButton: FC<{
 		[accounts, idOrAddress],
 	);
 
+	// Check if idOrAddress is a raw address (not an account ID)
+	const isRawAddress = useMemo(
+		() => idOrAddress && isValidAddress(idOrAddress),
+		[idOrAddress],
+	);
+
+	// For raw addresses, extract for display. For account IDs, only show when account is resolved.
+	const displayAddress = useMemo(
+		() => (isRawAddress ? getAddressFromAccountField(idOrAddress) : null),
+		[idOrAddress, isRawAddress],
+	);
+
 	const requiresConnect = useMemo(() => {
 		return ownedOnly && !accounts.length;
 	}, [accounts.length, ownedOnly]);
@@ -82,7 +98,7 @@ const AccountSelectButton: FC<{
 				Styles.field,
 				"enabled:hover:bg-neutral-900/50",
 				"flex w-full justify-between gap-4 overflow-hidden p-2  pl-3",
-				idOrAddress
+				account || displayAddress
 					? "text-neutral-300 hover:text-neutral-200"
 					: " text-neutral-500 hover:text-neutral-400",
 				className,
@@ -92,8 +108,8 @@ const AccountSelectButton: FC<{
 				<div>Connect Wallet</div>
 			) : account ? (
 				<AccountRow account={account} className="grow overflow-hidden" />
-			) : !ownedOnly && idOrAddress ? (
-				<AddressRow address={idOrAddress} className="grow overflow-hidden" />
+			) : displayAddress ? (
+				<AddressRow address={displayAddress} className="grow overflow-hidden" />
 			) : (
 				<div>Select Account</div>
 			)}
