@@ -258,15 +258,9 @@ importers:
       '@polkadot-api/metadata-builders':
         specifier: ^0.13.8
         version: 0.13.8
-      '@polkadot-api/polkadot-signer':
-        specifier: ^0.1.6
-        version: 0.1.6
       '@polkadot-api/substrate-bindings':
         specifier: ^0.16.6
         version: 0.16.6
-      '@polkadot-api/utils':
-        specifier: ^0.2.0
-        version: 0.2.0
       '@polkadot-ui/assets':
         specifier: 0.0.1-alpha.2
         version: 0.0.1-alpha.2
