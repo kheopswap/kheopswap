@@ -57,14 +57,14 @@ export const [useRelayChains, relayChains$] = bind(
 	),
 );
 
-export const [useAssetHub, assetHub$] = bind(
+export const [, assetHub$] = bind(
 	relayChains$.pipe(
 		map(({ assetHub }) => assetHub),
 		distinctUntilChanged(),
 	),
 );
 
-export const [useStableToken, stableToken$] = bind(
+export const [, stableToken$] = bind(
 	relayChains$.pipe(
 		map(({ stableToken }) => stableToken),
 		distinctUntilChanged(),

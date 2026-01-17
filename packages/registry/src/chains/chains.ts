@@ -61,9 +61,3 @@ export const isAssetHub = (chain: Chain): chain is ChainAssetHub => {
 export const isRelay = (chain: Chain): chain is ChainRelay => {
 	return chain.paraId === null;
 };
-
-// TODO
-export const hasAssetPallet = isAssetHub;
-
-// TODO
-export const hasAssetConvertionPallet = isAssetHub;

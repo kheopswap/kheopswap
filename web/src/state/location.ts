@@ -48,7 +48,7 @@ export const location$ = new Observable<Location>((subscriber) => {
 
 const RELAY_IDS = getRelayIds();
 
-export const [useRelayId, relayId$] = bind(
+export const [, relayId$] = bind(
 	location$.pipe(
 		map((location) => {
 			const relayId = location.hash.split("/")[1] as ChainIdRelay;

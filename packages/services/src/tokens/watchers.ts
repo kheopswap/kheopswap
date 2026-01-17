@@ -8,7 +8,6 @@ import {
 	type ChainId,
 	getChainById,
 	getTokenId,
-	hasAssetPallet,
 	isAssetHub,
 	KNOWN_TOKENS_MAP,
 	TOKENS_OVERRIDES_MAP,
@@ -168,7 +167,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 };
 
 const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
-	if (hasAssetPallet(chain)) {
+	if (isAssetHub(chain)) {
 		const api = await getApi(chain.id);
 		if (signal.aborted) return;
 
