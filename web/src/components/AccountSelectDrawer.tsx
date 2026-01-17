@@ -1,85 +1,49 @@
+import type { PolkadotAccount, Wallet } from "@kheopskit/core";
 import type { Token } from "@kheopswap/registry";
-import {
-	cn,
-	isBigInt,
-	isValidAddress,
-	logger,
-	shortenAddress,
-} from "@kheopswap/utils";
+import { cn, isBigInt, isValidAddress, shortenAddress } from "@kheopswap/utils";
 import { fromPairs } from "lodash";
 import { type FC, useCallback, useMemo, useState } from "react";
-import {
-	useWalletConnectAccounts,
-	WALLET_CONNECT_NAME,
-	walletConnect,
-} from "src/features/connect/wallet-connect";
-import {
-	type InjectedAccount,
-	useBalancesWithStables,
-	useInjectedExtension,
-	useToken,
-	useWallets,
-} from "src/hooks";
+import { useBalancesWithStables, useToken, useWallets } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
+import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
-import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
 import { Shimmer } from "./Shimmer";
 import { Styles } from "./styles";
 import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
 
-const ExtensionButtonBase: FC<{
-	wallet: string;
-
-	name: string;
-	isConnected: boolean;
+const WalletButton: FC<{
+	wallet: Wallet;
 	onClick: () => void;
-}> = ({ wallet, name, isConnected, onClick }) => (
+}> = ({ wallet, onClick }) => (
 	<button
 		type="button"
 		onClick={onClick}
 		className={cn(
 			"flex w-full items-center justify-between gap-3 rounded-md border p-2 px-4 text-left",
-			isConnected
+			wallet.isConnected
 				? "border-green-700 hover:bg-green-500/10"
 				: "hover:bg-white/10",
 		)}
 	>
 		<div className="size-8 shrink-0">
-			<WalletIcon wallet={wallet} className="size-8" />
+			<WalletIcon walletId={wallet.id} className="size-8" />
 		</div>
-		<div className="grow text-left">{name}</div>
+		<div className="grow text-left">{wallet.name}</div>
 		<div
 			className={cn(
 				"size-2 rounded-full",
-				isConnected ? "bg-success-500" : "bg-error-500",
+				wallet.isConnected ? "bg-success-500" : "bg-error-500",
 			)}
 		/>
 	</button>
 );
 
-const InjectedExtensionButton: FC<{
-	name: string;
-	isConnected: boolean;
-	onClick: () => void;
-}> = ({ name, isConnected, onClick }) => {
-	const { extension } = useInjectedExtension(name);
-
-	return (
-		<ExtensionButtonBase
-			wallet={name}
-			name={extension?.title ?? name}
-			isConnected={isConnected}
-			onClick={onClick}
-		/>
-	);
-};
-
 const AccountButton: FC<{
-	account: InjectedAccount;
+	account: PolkadotAccount;
 	selected?: boolean;
 	disabled?: boolean;
 	balance?: BalanceWithStableSummary;
@@ -107,12 +71,12 @@ const AccountButton: FC<{
 				"disabled:border-transparent disabled:opacity-100",
 			)}
 		>
-			<InjectedAccountIcon account={account} className="size-8" />
+			<AccountIcon account={account} className="size-8" />
 			<div className="flex grow flex-col items-start justify-center overflow-hidden">
 				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
 					<div className="truncate">{account.name}</div>
 					<div className="inline-block size-4 shrink-0">
-						<WalletIcon wallet={account.wallet} className="size-4" />
+						<WalletIcon walletId={account.walletId} className="size-4" />
 					</div>
 				</div>
 				<div className="truncate text-xs text-neutral-500">
@@ -167,7 +131,7 @@ const AddressInput: FC<{
 	return (
 		<div
 			className={cn(
-				"flex h-[42px] w-full items-center rounded-xs border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline-solid",
+				"flex h-10.5 w-full items-center rounded-xs border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline-solid",
 				localAddress && !isValid
 					? "border-error-500 outline-error-500"
 					: "border-neutral-500 outline-neutral-500",
@@ -212,15 +176,7 @@ const AccountSelectDrawerContent: FC<{
 	onClose: () => void;
 	onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-	const {
-		accounts,
-		connect,
-		disconnect,
-		connectedExtensions,
-		injectedExtensionIds: injectedWallets,
-	} = useWallets();
-
-	const wcAccounts = useWalletConnectAccounts();
+	const { accounts, wallets, connect, disconnect } = useWallets();
 
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
@@ -246,17 +202,21 @@ const AccountSelectDrawerContent: FC<{
 		);
 	}, [balances, isLoading]);
 
-	const handleConnectWalletClick = useCallback(
-		(wallet: string) => async () => {
+	const handleWalletClick = useCallback(
+		(walletId: string, isConnected: boolean) => async () => {
 			try {
-				connectedExtensions.some((ext) => ext.name === wallet)
-					? await disconnect(wallet)
-					: await connect(wallet);
+				if (isConnected) {
+					disconnect(walletId);
+				} else {
+					await connect(walletId);
+				}
 			} catch (err) {
-				console.error("Failed to connect %s", wallet, { err });
+				console.error("Failed to toggle wallet connection %s", walletId, {
+					err,
+				});
 			}
 		},
-		[connect, connectedExtensions, disconnect],
+		[connect, disconnect],
 	);
 
 	const address = useMemo(() => {
@@ -283,17 +243,15 @@ const AccountSelectDrawerContent: FC<{
 		});
 	}, [accounts, balanceByAccount]);
 
-	const handleWalletConnectClick = useCallback(async () => {
-		try {
-			if (wcAccounts.length) await walletConnect.disconnect();
-			else {
-				const accounts = await walletConnect.connect();
-				logger.log("Wallet Connect", { accounts });
-			}
-		} catch (err) {
-			console.error("Failed to connect Wallet Connect", { err });
-		}
-	}, [wcAccounts.length]);
+	// Separate injected wallets from WalletConnect
+	const injectedWallets = useMemo(
+		() => wallets.filter((w) => w.type === "injected"),
+		[wallets],
+	);
+	const walletConnectWallet = useMemo(
+		() => wallets.find((w) => w.type === "appKit"),
+		[wallets],
+	);
 
 	return (
 		<DrawerContainer
@@ -307,18 +265,15 @@ const AccountSelectDrawerContent: FC<{
 				</div>
 			)}
 			<div>
-				{!!injectedWallets?.length && (
+				{!!injectedWallets.length && (
 					<>
 						<h4 className="mb-1">Installed wallets</h4>
 						<ul className="flex flex-col gap-2">
 							{injectedWallets.map((wallet) => (
-								<li key={wallet}>
-									<InjectedExtensionButton
-										name={wallet}
-										isConnected={connectedExtensions.some(
-											(ext) => ext.name === wallet,
-										)}
-										onClick={handleConnectWalletClick(wallet)}
+								<li key={wallet.id}>
+									<WalletButton
+										wallet={wallet}
+										onClick={handleWalletClick(wallet.id, wallet.isConnected)}
 									/>
 								</li>
 							))}
@@ -329,19 +284,22 @@ const AccountSelectDrawerContent: FC<{
 					<div className="mb-1">No wallets found</div>
 				)}
 			</div>
-			<div>
-				<h4>External wallets</h4>
-				<ul className="mt-2 flex flex-col gap-2">
-					<li>
-						<ExtensionButtonBase
-							wallet={WALLET_CONNECT_NAME}
-							name={"Wallet Connect"}
-							isConnected={!!wcAccounts.length}
-							onClick={handleWalletConnectClick}
-						/>
-					</li>
-				</ul>
-			</div>
+			{walletConnectWallet && (
+				<div>
+					<h4>External wallets</h4>
+					<ul className="mt-2 flex flex-col gap-2">
+						<li>
+							<WalletButton
+								wallet={walletConnectWallet}
+								onClick={handleWalletClick(
+									walletConnectWallet.id,
+									walletConnectWallet.isConnected,
+								)}
+							/>
+						</li>
+					</ul>
+				</div>
+			)}
 			{!!accounts.length && (
 				<div>
 					<h4 className="mb-1">Connected Accounts</h4>

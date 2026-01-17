@@ -1,17 +1,17 @@
+import type { PolkadotAccount } from "@kheopskit/core";
 import { cn } from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { TalismanOrb } from "@talismn/orb";
 import type { FC } from "react";
-import type { InjectedAccount } from "src/hooks";
 
-export const InjectedAccountIcon: FC<{
-	account: InjectedAccount;
+export const AccountIcon: FC<{
+	account: PolkadotAccount;
 	className?: string;
 }> = ({ account, className }) => {
-	return account.wallet === "talisman" ? (
+	return account.walletId.includes("talisman") ? (
 		<TalismanOrb
 			seed={account.address}
-			className={cn("size-8 shrink-0 ", className)}
+			className={cn("size-8 shrink-0", className)}
 		/>
 	) : (
 		<Polkicon

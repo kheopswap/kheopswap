@@ -13,11 +13,9 @@ import { Modal } from "src/components/Modal";
 import { Pulse } from "src/components/Pulse";
 import { Styles } from "src/components/styles";
 import { Tokens } from "src/components/Tokens";
-import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
 import { CreatePoolFollowUpContent } from "src/features/liquidity/create-pool/CreatePoolFollowUpContent";
 import { SwapFollowUpContent } from "src/features/swap/SwapFollowUpContent";
 import { TeleportFollowUpContent } from "src/features/teleport/TeleportFollowUpContent";
-import { useInjectedExtension } from "src/hooks";
 import urlJoin from "url-join";
 import { useTransactions } from "./TransactionsProvider";
 import type { TransactionRecord } from "./types";
@@ -80,8 +78,6 @@ const FollowUpModalInner: FC<{
 	title?: string;
 	children?: ReactNode;
 }> = ({ followUp, onClose, canAlwaysClose = false, title, children }) => {
-	const extension = useInjectedExtension(followUp.account.wallet);
-
 	const chain = useMemo(
 		() => getChainById(followUp.feeToken.chainId),
 		[followUp.feeToken.chainId],
@@ -145,13 +141,11 @@ const FollowUpModalInner: FC<{
 		if (signed?.type === "signed")
 			return ["Submitting transaction...", false, "loading"];
 
-		const extensionName =
-			followUp.account.wallet === WALLET_CONNECT_NAME
-				? "Wallet Connect"
-				: (extension?.extension?.title ?? followUp.account?.wallet);
+		// Use walletName from the account if available (from kheopskit)
+		const extensionName = followUp.account.walletName;
 
 		return [`Approve in ${extensionName}`, false, "loading"];
-	}, [followUp, extension, error]);
+	}, [followUp, error]);
 
 	const [individualEvents, errorMessage, isPendingFinalization, isFinalized] =
 		useMemo<[TxEvents, string | null, boolean, boolean]>(() => {

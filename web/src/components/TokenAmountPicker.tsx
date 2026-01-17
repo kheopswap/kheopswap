@@ -1,4 +1,5 @@
 import { useMergeRefs } from "@floating-ui/react";
+import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { maskitoNumberOptionsGenerator } from "@maskito/kit";
@@ -18,7 +19,6 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "src/components";
-import type { InjectedAccount } from "src/hooks";
 import { Shimmer } from "./Shimmer";
 import { Styles } from "./styles";
 import { TokenSelectButton } from "./TokenSelectButton";
@@ -56,7 +56,7 @@ export const TokenAmountPicker: FC<{
 	inputProps: TokenAmountPickerProps;
 	tokenId: TokenId | null | undefined;
 	tokens?: Dictionary<Token> | undefined;
-	accounts?: InjectedAccount[] | string[];
+	accounts?: PolkadotAccount[] | string[];
 	plancks: bigint | null | undefined;
 	isLoading: boolean;
 	errorMessage?: string | null;

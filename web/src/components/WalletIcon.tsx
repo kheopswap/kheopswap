@@ -1,20 +1,28 @@
+import { useWallets } from "@kheopskit/react";
 import { cn } from "@kheopswap/utils";
 import GenericWalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
-import type { FC } from "react";
-import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
-import { useInjectedExtension } from "src/hooks";
-import { WalletConnectIcon } from "./icons";
+import { type FC, useMemo } from "react";
 
-export const WalletIcon: FC<{ wallet: string; className?: string }> = ({
-	wallet,
-	className,
-}) => {
-	const { Icon } = useInjectedExtension(wallet);
+export const WalletIcon: FC<{
+	walletId: string | null | undefined;
+	className?: string;
+}> = ({ walletId, className }) => {
+	const { wallets } = useWallets();
 
-	if (Icon) return <Icon className={cn("shrink-0", className)} />;
+	const icon = useMemo(
+		() => wallets.find((w) => w.id === walletId)?.icon,
+		[wallets, walletId],
+	);
 
-	if (wallet === WALLET_CONNECT_NAME)
-		return <WalletConnectIcon className={cn("shrink-0", className)} />;
+	if (icon) {
+		return (
+			<img
+				src={icon}
+				alt=""
+				className={cn("shrink-0 object-contain", className)}
+			/>
+		);
+	}
 
 	return (
 		<GenericWalletIcon className={cn("shrink-0 stroke-current", className)} />

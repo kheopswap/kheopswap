@@ -1,3 +1,4 @@
+export * from "./AccountIcon";
 export * from "./AccountSelect";
 export * from "./AccountSelectDrawer";
 export * from "./AddressDisplay";
@@ -8,7 +9,6 @@ export * from "./DrawerContainer";
 export * from "./FollowUpModal";
 export * from "./FormFieldContainer";
 export * from "./FormSummary";
-export * from "./InjectedAccountIcon";
 export * from "./layout";
 export * from "./MagicButton";
 export * from "./ModalDialog";

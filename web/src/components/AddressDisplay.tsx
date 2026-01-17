@@ -34,7 +34,9 @@ const AddressAvatar: FC<{ address: string; className?: string }> = ({
 	const { accounts } = useWallets();
 	const isTalisman = useMemo(
 		() =>
-			accounts.some((a) => a.address === address && a.wallet === "talisman"),
+			accounts.some(
+				(a) => a.address === address && a.walletId.includes("talisman"),
+			),
 		[accounts, address],
 	);
 	const isEvm = useMemo(

@@ -22,11 +22,11 @@ import {
 } from "react";
 import { useNavigate } from "react-router";
 import {
+	AccountIcon,
 	AccountSelectDrawer,
 	AddressDisplay,
 	Drawer,
 	DrawerContainer,
-	InjectedAccountIcon,
 	Shimmer,
 	Styles,
 	TokenLogo,
@@ -90,7 +90,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 							)}
 						>
 							<div className="flex grow items-center gap-2">
-								<InjectedAccountIcon className="size-6" account={account} />
+								<AccountIcon className="size-6" account={account} />
 								<div className="grow">{account.name}</div>
 							</div>
 							<div className="flex shrink-0 flex-col items-end gap-0.5">

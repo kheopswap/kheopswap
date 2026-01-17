@@ -1,175 +1,45 @@
-import { getSetting$, setSetting } from "@kheopswap/settings";
-import {
-	getInjectedAccountId,
-	type InjectedAccountId,
-	isValidAddress,
-	logger,
-	sortWallets,
-} from "@kheopswap/utils";
-import { bind } from "@react-rxjs/core";
-import { type Dictionary, entries, fromPairs, isEqual } from "lodash";
-import type { SS58String } from "polkadot-api";
-import {
-	connectInjectedExtension,
-	getInjectedExtensions,
-	type InjectedExtension,
-	type InjectedPolkadotAccount,
-} from "polkadot-api/pjs-signer";
-import { useCallback } from "react";
-import {
-	BehaviorSubject,
-	combineLatest,
-	distinctUntilChanged,
-	map,
-	mergeMap,
-	Observable,
-	of,
-	shareReplay,
-	timer,
-} from "rxjs";
-import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
-import { wcAccounts$ } from "src/features/connect/wallet-connect/accounts.state";
-import { useSetting } from "./useSetting";
-
-export type InjectedAccount = InjectedPolkadotAccount & {
-	id: InjectedAccountId;
-	wallet: string;
-};
-
-const getInjectedWalletsIds = () =>
-	getInjectedExtensions()?.concat().sort(sortWallets) ?? [];
-
-const injectedExtensionIds$ = new BehaviorSubject<string[]>(
-	getInjectedWalletsIds(),
-);
-
-// poll for wallets that are slow to register
-of(100, 500, 1000)
-	.pipe(mergeMap((time) => timer(time)))
-	.subscribe(() => {
-		const ids = getInjectedWalletsIds();
-		if (!isEqual(ids, injectedExtensionIds$.value))
-			injectedExtensionIds$.next(ids);
-	});
-
-const connectedExtensions = new Map<string, Promise<InjectedExtension>>();
-
-const connectedExtensions$ = combineLatest([
-	injectedExtensionIds$,
-	getSetting$("connectedExtensionIds"),
-]).pipe(
-	distinctUntilChanged<[string[], string[]]>(isEqual),
-	mergeMap(async ([injectedExtensions, connectedExtensionIds]) => {
-		const injectedWallets = await Promise.all(
-			connectedExtensionIds
-				.filter((id) => injectedExtensions.includes(id))
-				.map(async (name) => {
-					try {
-						const stop = logger.timer(`connecting wallet ${name}`);
-						if (!connectedExtensions.has(name)) {
-							logger.debug("connecting wallet %s", name);
-							connectedExtensions.set(name, connectInjectedExtension(name));
-						}
-						const connected = (await connectedExtensions.get(
-							name,
-						)) as InjectedExtension;
-						stop();
-						return connected ?? null;
-					} catch (err) {
-						console.error("Failed to connect wallet %s", name, { err });
-						connectedExtensions.delete(name);
-						setSetting(
-							"connectedExtensionIds",
-							connectedExtensionIds.filter((id) => id !== name),
-						);
-						return null;
-					}
-				}),
-		);
-
-		return injectedWallets.filter(Boolean) as InjectedExtension[];
-	}),
-);
-
-const getExtensionAccounts$ = (extension: InjectedExtension) =>
-	new Observable<InjectedPolkadotAccount[]>((subscriber) => {
-		const accounts = extension.getAccounts();
-		subscriber.next(accounts);
-		return extension.subscribe((newAccounts) => {
-			subscriber.next(newAccounts);
-		});
-	});
-
-const accountsByExtension$ = connectedExtensions$.pipe(
-	mergeMap((extensions) => {
-		if (!extensions.length)
-			return of({} as Dictionary<InjectedPolkadotAccount[] | undefined>);
-
-		return combineLatest(
-			extensions.map((extension) => getExtensionAccounts$(extension)),
-		).pipe(
-			map((arExtensionAccounts) =>
-				fromPairs(
-					extensions.map((ext, i) => [ext.name, arExtensionAccounts[i]]),
-				),
-			),
-		);
-	}),
-);
-
-const accounts$ = combineLatest([accountsByExtension$, wcAccounts$]).pipe(
-	map(([accountsByExtension, wcAccounts]) => ({
-		...accountsByExtension,
-		[WALLET_CONNECT_NAME]: wcAccounts,
-	})),
-	map(
-		(connectedAccounts) =>
-			entries(connectedAccounts).flatMap(([wallet, accounts]) =>
-				accounts
-					.filter((account) => isValidAddress(account.address))
-					.map((account) => ({
-						id: getInjectedAccountId(wallet, account.address as SS58String),
-						...account,
-						wallet,
-					})),
-			) as InjectedAccount[],
-	),
-	shareReplay(1),
-);
-
-const [useInjectedExtensionsIds] = bind(injectedExtensionIds$);
-const [useConnectedExtensions] = bind(connectedExtensions$);
-const [useConnectedAccounts] = bind(accounts$);
+import { useWallets as useKheopskitWallets } from "@kheopskit/react";
+import { useCallback, useMemo } from "react";
 
 export const useWallets = () => {
-	const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
+	const { wallets, accounts } = useKheopskitWallets();
 
-	const injectedExtensionIds = useInjectedExtensionsIds();
-	const connectedExtensions = useConnectedExtensions();
-	const accounts = useConnectedAccounts();
+	// Filter to only polkadot wallets (this app doesn't use Ethereum)
+	const polkadotWallets = useMemo(
+		() => wallets.filter((w) => w.platform === "polkadot"),
+		[wallets],
+	);
+
+	// Filter to only polkadot accounts
+	const polkadotAccounts = useMemo(
+		() => accounts.filter((a) => a.platform === "polkadot"),
+		[accounts],
+	);
 
 	const connect = useCallback(
-		(name: string) => {
-			setConnectedExtensionIds((prev) => [
-				...prev.filter((n) => n !== name),
-				name,
-			]);
+		async (walletId: string) => {
+			const wallet = polkadotWallets.find((w) => w.id === walletId);
+			if (wallet) {
+				await wallet.connect();
+			}
 		},
-		[setConnectedExtensionIds],
+		[polkadotWallets],
 	);
 
 	const disconnect = useCallback(
-		(name: string) => {
-			setConnectedExtensionIds((prev) => prev.filter((n) => n !== name));
+		(walletId: string) => {
+			const wallet = polkadotWallets.find((w) => w.id === walletId);
+			if (wallet) {
+				wallet.disconnect();
+			}
 		},
-		[setConnectedExtensionIds],
+		[polkadotWallets],
 	);
 
 	return {
-		injectedExtensionIds,
-		connectedExtensions,
+		wallets: polkadotWallets,
+		accounts: polkadotAccounts,
 		connect,
 		disconnect,
-		accounts,
 	};
 };

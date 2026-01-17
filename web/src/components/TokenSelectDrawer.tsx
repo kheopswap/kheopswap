@@ -1,3 +1,4 @@
+import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { type Dictionary, values } from "lodash";
@@ -10,7 +11,7 @@ import { Shimmer } from "src/components/Shimmer";
 import { Styles } from "src/components/styles";
 import { TokenLogo } from "src/components/TokenLogo";
 import { Tokens } from "src/components/Tokens";
-import { type InjectedAccount, useBalancesByTokenSummary } from "src/hooks";
+import { useBalancesByTokenSummary } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 import { getTokenDescription } from "src/util";
@@ -115,7 +116,7 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 const TokenSelectDrawerContent: FC<{
 	tokenId?: TokenId | null;
 	tokens?: Dictionary<Token>;
-	accounts?: InjectedAccount[] | string[];
+	accounts?: PolkadotAccount[] | string[];
 	isLoading?: boolean;
 	onChange: (tokenId: TokenId) => void;
 }> = ({ tokenId, tokens: tokensMap, accounts, isLoading, onChange }) => {
@@ -192,7 +193,7 @@ export const TokenSelectDrawer: FC<{
 	isOpen?: boolean;
 	tokenId?: TokenId | null;
 	tokens?: Dictionary<Token>;
-	accounts?: InjectedAccount[] | string[];
+	accounts?: PolkadotAccount[] | string[];
 	isLoading?: boolean;
 	title?: string;
 	onChange: (tokenId: TokenId) => void;

@@ -3,7 +3,6 @@ import { isEqual, merge } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 export type Settings = {
-	connectedExtensionIds: string[];
 	defaultAccountId: string | null;
 	relayId: string;
 	lightClients: boolean;
@@ -13,7 +12,6 @@ export type Settings = {
 };
 
 const DEFAULT_SETTINGS: Settings = {
-	connectedExtensionIds: [],
 	defaultAccountId: null,
 	relayId: "polkadot",
 	lightClients: true,
@@ -26,13 +24,6 @@ const STORAGE_KEY = getLocalStorageKey("settings");
 
 const getPersistedSettings = () => {
 	try {
-		// TODO suppress this in a while
-		localStorage.removeItem(getLocalStorageKey("relayId"));
-		localStorage.removeItem(getLocalStorageKey("slippage"));
-		localStorage.removeItem(getLocalStorageKey("chainId"));
-		localStorage.removeItem(getLocalStorageKey("connectedExtensions"));
-		localStorage.removeItem(getLocalStorageKey("defaultAccount"));
-
 		const strSettings = localStorage.getItem(STORAGE_KEY);
 		const settings = strSettings
 			? safeParse<Settings>(strSettings)
