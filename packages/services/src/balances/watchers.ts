@@ -140,25 +140,35 @@ const sortBalanceIdsByBalanceDesc = (bid1: BalanceId, bid2: BalanceId) => {
 // and update watchers accordingly
 balanceSubscriptions$.subscribe((balanceIds) => {
 	try {
-		// add missing watchers
-		for (const balanceId of balanceIds
-			.filter((id) => !WATCHERS.has(id))
-			// prioritize watchers for positive balance first, to reduce user waiting time
-			.sort(sortBalanceIdsByBalanceDesc)) {
-			WATCHERS.set(balanceId, watchBalance(balanceId));
-		}
-
 		// remove watchers that are not needed anymore
 		const existingIds = Array.from(WATCHERS.keys());
 		const watchersToStop = existingIds.filter((id) => !balanceIds.includes(id));
 		for (const balanceId of watchersToStop) {
-			WATCHERS.get(balanceId)?.then((watcher) => watcher.unsubscribe());
+			const watcher = WATCHERS.get(balanceId);
 			WATCHERS.delete(balanceId);
+			watcher?.then((sub) => sub.unsubscribe()).catch(() => {});
 		}
 		statusByBalanceId$.next({
 			...statusByBalanceId$.value,
 			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
 		});
+
+		// add missing watchers
+		for (const balanceId of balanceIds
+			.filter((id) => !WATCHERS.has(id))
+			// prioritize watchers for positive balance first, to reduce user waiting time
+			.sort(sortBalanceIdsByBalanceDesc)) {
+			WATCHERS.set(
+				balanceId,
+				watchBalance(balanceId).catch((err) => {
+					logger.error("Failed to start balance watcher", { balanceId, err });
+					updateBalanceLoadingStatus(balanceId, "stale");
+					WATCHERS.delete(balanceId);
+					// Return a no-op subscription to satisfy the type
+					return { unsubscribe: () => {} } as Subscription;
+				}),
+			);
+		}
 	} catch (err) {
 		logger.error("Failed to update balance watchers", { balanceIds, err });
 	}

@@ -164,22 +164,32 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 // and update watchers accordingly
 tokenInfosSubscriptions$.subscribe((tokenIds) => {
 	try {
-		// add missing watchers
-		for (const tokenId of tokenIds.filter((id) => !WATCHERS.has(id))) {
-			WATCHERS.set(tokenId, watchTokenInfo(tokenId));
-		}
-
 		// remove watchers that are not needed anymore
 		const existingIds = Array.from(WATCHERS.keys());
 		const watchersToStop = existingIds.filter((id) => !tokenIds.includes(id));
 		for (const tokenId of watchersToStop) {
-			WATCHERS.get(tokenId)?.then((watcher) => watcher?.unsubscribe());
+			const watcher = WATCHERS.get(tokenId);
 			WATCHERS.delete(tokenId);
+			watcher?.then((sub) => sub?.unsubscribe()).catch(() => {});
 		}
 		statusByTokenId$.next({
 			...statusByTokenId$.value,
 			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
 		});
+
+		// add missing watchers
+		for (const tokenId of tokenIds.filter((id) => !WATCHERS.has(id))) {
+			WATCHERS.set(
+				tokenId,
+				watchTokenInfo(tokenId).catch((err) => {
+					logger.error("Failed to start token info watcher", { tokenId, err });
+					updateTokenInfoLoadingStatus(tokenId, "stale");
+					WATCHERS.delete(tokenId);
+					// Return a no-op subscription to satisfy the type
+					return { unsubscribe: () => {} } as Subscription;
+				}),
+			);
+		}
 	} catch (err) {
 		logger.error("Failed to update token infos watchers", { tokenIds, err });
 	}
