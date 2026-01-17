@@ -5,9 +5,9 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
-import { type Dictionary, keyBy, pickBy, values } from "lodash";
+import { type Dictionary, keyBy, values } from "lodash";
 import { BehaviorSubject, debounceTime } from "rxjs";
-import type { BalanceId, StoredBalance } from "./types";
+import type { StoredBalance } from "./types";
 import { getBalanceId } from "./utils";
 
 // cleanup old keys
@@ -44,18 +44,3 @@ stop();
 
 // save after updates
 balancesStore$.pipe(debounceTime(1_000)).subscribe(save);
-
-/**
- * Remove balance entries that are no longer being watched.
- * Called when watchers are removed to prevent unbounded store growth.
- */
-export const cleanupBalancesStore = (activeBalanceIds: Set<BalanceId>) => {
-	const current = balancesStore$.value;
-	const cleaned = pickBy(current, (_, id) =>
-		activeBalanceIds.has(id as BalanceId),
-	);
-
-	if (Object.keys(cleaned).length < Object.keys(current).length) {
-		balancesStore$.next(cleaned);
-	}
-};
