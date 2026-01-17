@@ -3,7 +3,6 @@ import { isEqual, merge } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 export type Settings = {
-	connectedExtensionIds: string[];
 	defaultAccountId: string | null;
 	relayId: string;
 	lightClients: boolean;
@@ -13,7 +12,6 @@ export type Settings = {
 };
 
 const DEFAULT_SETTINGS: Settings = {
-	connectedExtensionIds: [],
 	defaultAccountId: null,
 	relayId: "polkadot",
 	lightClients: true,

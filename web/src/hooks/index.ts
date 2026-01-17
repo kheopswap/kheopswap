@@ -17,7 +17,6 @@ export * from "./useExistentialDeposit";
 export * from "./useExistentialDeposits";
 export * from "./useFeeToken";
 export * from "./useFeeTokens";
-export * from "./useInjectedExtension";
 export * from "./useLoadingStatusSummary";
 export * from "./useNativeToken";
 export * from "./useNonce";

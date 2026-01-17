@@ -8,10 +8,10 @@ export const InjectedAccountIcon: FC<{
 	account: InjectedAccount;
 	className?: string;
 }> = ({ account, className }) => {
-	return account.wallet === "talisman" ? (
+	return account.walletId.includes("talisman") ? (
 		<TalismanOrb
 			seed={account.address}
-			className={cn("size-8 shrink-0 ", className)}
+			className={cn("size-8 shrink-0", className)}
 		/>
 	) : (
 		<Polkicon

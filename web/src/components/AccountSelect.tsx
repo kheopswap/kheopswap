@@ -45,7 +45,11 @@ const AccountRow: FC<{ account: InjectedAccount; className?: string }> = ({
 		<div className="flex grow items-center overflow-hidden">
 			<span className="truncate">{account.name}</span>
 			<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
-				<WalletIcon wallet={account.wallet} className="size-4" />
+				<WalletIcon
+					walletId={account.walletId}
+					icon={account.walletIcon}
+					className="size-4"
+				/>
 			</span>
 		</div>
 	</div>
