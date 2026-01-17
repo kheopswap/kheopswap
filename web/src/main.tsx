@@ -13,6 +13,11 @@ import { preloadFont } from "../../packages/utils/src/preloadFont";
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
 import { Toasts } from "./components/Toasts";
 import { router } from "./routes";
+import {
+	GlobalFollowUpModal,
+	TransactionsProvider,
+	TransactionToasts,
+} from "./state/transactions";
 
 preloadFont();
 
@@ -22,7 +27,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<Subscribe fallback={<SuspenseMonitor label="Subscribe" />}>
-				<RouterProvider router={router} />
+				<TransactionsProvider>
+					<RouterProvider router={router} />
+					<GlobalFollowUpModal />
+					<TransactionToasts />
+				</TransactionsProvider>
 			</Subscribe>
 		</QueryClientProvider>
 		<Toasts />

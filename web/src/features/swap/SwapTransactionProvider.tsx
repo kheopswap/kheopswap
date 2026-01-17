@@ -5,11 +5,34 @@ import {
 } from "src/features/transaction/TransactionProvider";
 import { useSwap } from "./SwapProvider";
 
+const getSwapTitle = (
+	tokenInSymbol: string | undefined,
+	tokenOutSymbol: string | undefined,
+): string => {
+	if (tokenInSymbol && tokenOutSymbol) {
+		return `Swap ${tokenInSymbol}/${tokenOutSymbol}`;
+	}
+	return "Swap";
+};
+
 export const SwapTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
-	const { call, fakeCall, formData, tokenIn, totalIn, onReset, followUpData } =
-		useSwap();
+	const {
+		call,
+		fakeCall,
+		formData,
+		tokenIn,
+		tokenOut,
+		totalIn,
+		onReset,
+		followUpData,
+	} = useSwap();
+
+	const title = useMemo(
+		() => getSwapTitle(tokenIn?.symbol, tokenOut?.symbol),
+		[tokenIn?.symbol, tokenOut?.symbol],
+	);
 
 	const callSpendings = useMemo<CallSpendings>(
 		() =>
@@ -30,6 +53,8 @@ export const SwapTransactionProvider: FC<PropsWithChildren> = ({
 			signer={formData.from}
 			onReset={onReset}
 			followUpData={followUpData}
+			transactionType="swap"
+			transactionTitle={title}
 		>
 			{children}
 		</TransactionProvider>

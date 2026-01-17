@@ -75,11 +75,13 @@ const FollowUpResultIcon: FC<{
 	</div>
 );
 
-const FollowUpModalInner: FC<{
+export const FollowUpModalInner: FC<{
 	followUp: FollowUpData;
 	onClose: () => void;
+	canAlwaysClose?: boolean;
+	title?: string;
 	children?: ReactNode;
-}> = ({ followUp, onClose, children }) => {
+}> = ({ followUp, onClose, canAlwaysClose = false, title, children }) => {
 	const extension = useInjectedExtension(followUp.account.wallet);
 
 	const chain = useMemo(
@@ -199,22 +201,25 @@ const FollowUpModalInner: FC<{
 				"h-dvh max-h-dvh w-dvw max-w-dvw p-3 sm:p-4",
 				"bg-black sm:border-neutral-850",
 				"sm:h-128 sm:w-auto sm:rounded-xl sm:border sm:shadow-sm",
-				"flex flex-col",
+				"flex flex-col gap-4",
 			)}
 		>
-			<div className="pt-5">
-				<FollowUpResultIcon className="inline-block" result={result} />
+			{title && <div className=" font-semibold text-neutral">{title}</div>}
+			<div className="grow flex flex-col items-center justify-start">
+				<div>
+					<FollowUpResultIcon className="inline-block" result={result} />
+				</div>
+				<Pulse
+					pulse={!error && isPendingFinalization}
+					className={cn(
+						"text-xl font-medium text-neutral-300 transition-colors",
+						(!!error || isFinalized) && "text-neutral-100",
+					)}
+				>
+					{message ?? null}
+				</Pulse>
 			</div>
-			<Pulse
-				pulse={!error && isPendingFinalization}
-				className={cn(
-					"text-xl font-medium text-neutral-300 transition-colors",
-					(!!error || isFinalized) && "text-neutral-100",
-				)}
-			>
-				{message ?? null}
-			</Pulse>
-			<div className="my-10 flex w-96 max-w-full grow flex-col justify-center gap-4 text-center">
+			<div className="flex w-96 max-w-full flex-col justify-center gap-4 text-center">
 				{!!errorMessage && <div className="text-error">{errorMessage}</div>}
 				{children && <div>{children}</div>}
 				<div className={cn(effectiveFee ? "block" : "hidden")}>
@@ -255,7 +260,7 @@ const FollowUpModalInner: FC<{
 						Styles.button,
 						"h-12 w-full border-primary-400 bg-primary enabled:hover:bg-primary-450 disabled:opacity-50",
 					)}
-					disabled={!canClose}
+					disabled={!canAlwaysClose && !canClose}
 				>
 					Close
 				</button>

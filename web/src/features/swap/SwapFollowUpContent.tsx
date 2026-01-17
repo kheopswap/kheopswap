@@ -1,29 +1,31 @@
 import type { Token } from "@kheopswap/registry";
 import { cn, isBigInt, type TxEvents } from "@kheopswap/utils";
 import { type FC, useMemo } from "react";
-import { type FollowUpData, Tokens } from "src/components";
-import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
-import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
+import { Tokens } from "src/components";
+import type { TransactionRecord } from "src/state/transactions";
 
-type SwapFollowUpData = FollowUpData<{
+type SwapFollowUpData = {
 	swapPlancksOut: bigint;
 	minPlancksOut: bigint;
 	slippage: number;
 	tokenOut: Token;
-}>;
+};
 
-const OutcomeFollowUpInner: FC<{
-	followUp: SwapFollowUpData;
-}> = ({ followUp }) => {
+export const SwapFollowUpContent: FC<{
+	transaction: TransactionRecord;
+}> = ({ transaction }) => {
+	const followUpData = transaction.followUpData as SwapFollowUpData;
+	const txEvents = transaction.txEvents;
+
 	const individualEvents = useMemo<TxEvents>(
 		() =>
-			followUp.txEvents.flatMap(
+			txEvents.flatMap(
 				(e) =>
 					(e.type === "finalized" && e.events) ||
 					(e.type === "txBestBlocksState" && e.found && e.events) ||
 					[],
 			),
-		[followUp.txEvents],
+		[txEvents],
 	);
 
 	const effectiveOutcome = useMemo(() => {
@@ -34,21 +36,27 @@ const OutcomeFollowUpInner: FC<{
 	}, [individualEvents]);
 
 	const effectiveSlippage = useMemo(() => {
-		if (!isBigInt(effectiveOutcome)) return null;
+		if (!isBigInt(effectiveOutcome) || !followUpData?.swapPlancksOut)
+			return null;
 		return (
 			Number(
-				(10000n * (followUp.swapPlancksOut - effectiveOutcome)) /
-					followUp.swapPlancksOut,
+				(10000n * (followUpData.swapPlancksOut - effectiveOutcome)) /
+					followUpData.swapPlancksOut,
 			) / 100
 		);
-	}, [effectiveOutcome, followUp.swapPlancksOut]);
+	}, [effectiveOutcome, followUpData?.swapPlancksOut]);
+
+	if (!followUpData?.tokenOut) return null;
 
 	return (
 		<div className={cn(effectiveOutcome ? "block" : "hidden")}>
 			<div className="flex flex-wrap justify-between">
 				<div className="text-neutral-500">Estimated outcome</div>
 				<div className="text-right font-medium text-neutral-500">
-					<Tokens plancks={followUp.swapPlancksOut} token={followUp.tokenOut} />
+					<Tokens
+						plancks={followUpData.swapPlancksOut}
+						token={followUpData.tokenOut}
+					/>
 				</div>
 			</div>
 			<div className="flex flex-wrap justify-between">
@@ -57,9 +65,9 @@ const OutcomeFollowUpInner: FC<{
 					{isBigInt(effectiveOutcome) && (
 						<Tokens
 							plancks={effectiveOutcome}
-							token={followUp.tokenOut}
+							token={followUpData.tokenOut}
 							className={cn(
-								effectiveOutcome >= followUp.swapPlancksOut
+								effectiveOutcome >= followUpData.swapPlancksOut
 									? "text-success"
 									: "text-warn",
 							)}
@@ -73,7 +81,7 @@ const OutcomeFollowUpInner: FC<{
 					<div
 						className={cn(
 							"text-right font-medium",
-							effectiveOutcome >= followUp.swapPlancksOut
+							effectiveOutcome >= followUpData.swapPlancksOut
 								? "text-success"
 								: "text-warn",
 						)}
@@ -85,21 +93,5 @@ const OutcomeFollowUpInner: FC<{
 				)}
 			</div>
 		</div>
-	);
-};
-
-const OutcomeFollowUp: FC = () => {
-	const { followUp } = useTransactionFollowUp();
-
-	if (!followUp) return null;
-
-	return <OutcomeFollowUpInner followUp={followUp as SwapFollowUpData} />;
-};
-
-export const SwapFollowUp: FC = () => {
-	return (
-		<TransactionFollowUp>
-			<OutcomeFollowUp />
-		</TransactionFollowUp>
 	);
 };

@@ -6,6 +6,16 @@ import {
 } from "src/features/transaction/TransactionProvider";
 import { useCreatePool } from "./CreatePoolProvider";
 
+const getCreatePoolTitle = (
+	token1Symbol: string | undefined,
+	token2Symbol: string | undefined,
+): string => {
+	if (token1Symbol && token2Symbol) {
+		return `Create ${token1Symbol}/${token2Symbol} pool`;
+	}
+	return "Create pool";
+};
+
 export const CreatePoolTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
@@ -19,6 +29,11 @@ export const CreatePoolTransactionProvider: FC<PropsWithChildren> = ({
 		onReset,
 		assetHub,
 	} = useCreatePool();
+
+	const title = useMemo(
+		() => getCreatePoolTitle(token1?.symbol, token2?.symbol),
+		[token1?.symbol, token2?.symbol],
+	);
 
 	const callSpendings = useMemo<CallSpendings>(() => {
 		if (!liquidityToAdd || !token1 || !token2) return {};
@@ -37,6 +52,8 @@ export const CreatePoolTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={assetHub.id}
 			signer={formData.from}
 			onReset={onReset}
+			transactionType="createPool"
+			transactionTitle={title}
 		>
 			{children}
 		</TransactionProvider>
