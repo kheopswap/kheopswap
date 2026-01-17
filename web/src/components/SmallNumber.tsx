@@ -1,5 +1,4 @@
-import { cn, formatDecimals, logger } from "@kheopswap/utils";
-import { plancksToTokens } from "@kheopswap/utils";
+import { cn, formatDecimals, logger, plancksToTokens } from "@kheopswap/utils";
 import { type FC, forwardRef, useMemo } from "react";
 
 type PricePartProps = {
@@ -43,11 +42,11 @@ export const Price = forwardRef<HTMLSpanElement, PriceProps>(
 				if (match?.length === 3)
 					return [
 						{ isSub: false, value: `${isLowerThan ? "< " : ""}0.0` },
-						// biome-ignore lint/style/noNonNullAssertion: <explanation>
+						// biome-ignore lint/style/noNonNullAssertion: length checked above
 						{ isSub: true, value: match[1]!.length.toString() },
 						{
 							isSub: false,
-							// biome-ignore lint/style/noNonNullAssertion: <explanation>
+							// biome-ignore lint/style/noNonNullAssertion: length checked above
 							value: match[2]!
 								.slice(0, Math.max(1, digits - 2)) // min one digit after the sub
 								.replace(/0+$/, ""), // remove trailing zeros
@@ -64,7 +63,7 @@ export const Price = forwardRef<HTMLSpanElement, PriceProps>(
 		return (
 			<span ref={ref} className={cn("whitespace-nowrap", className)}>
 				{parts.map((props, i) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+					// biome-ignore lint/suspicious/noArrayIndexKey: legacy
 					<PricePart key={`${value}-${i}`} {...props} />
 				))}
 				{!!suffix && ` ${suffix}`}

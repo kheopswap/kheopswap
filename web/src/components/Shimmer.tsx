@@ -1,6 +1,5 @@
-import type { FC, ReactNode } from "react";
-
 import { cn } from "@kheopswap/utils";
+import type { FC, ReactNode } from "react";
 import { Pulse } from "./Pulse";
 
 export const Shimmer: FC<{ children?: ReactNode; className?: string }> = ({
@@ -11,7 +10,7 @@ export const Shimmer: FC<{ children?: ReactNode; className?: string }> = ({
 		<Pulse
 			pulse
 			className={cn(
-				"select-none rounded",
+				"select-none rounded-sm",
 				className,
 				"bg-neutral-800 text-neutral-800",
 			)}

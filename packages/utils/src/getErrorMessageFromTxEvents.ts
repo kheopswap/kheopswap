@@ -4,7 +4,7 @@ export type TxEvents = {
 	type: string;
 	value: {
 		type: string;
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: legacy
 		value: any;
 	};
 }[];
@@ -24,7 +24,7 @@ export const getErrorMessageFromTxEvents = (events: TxEvents) => {
 	return "Unknown error";
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: legacy
 export const formatTxError = (error: any): string => {
 	if (!error) return "";
 	if (typeof error === "string") return error;

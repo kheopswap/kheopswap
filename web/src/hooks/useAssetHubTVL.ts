@@ -1,14 +1,12 @@
+import { isBigInt, logger } from "@kheopswap/utils";
 import { groupBy, mapValues, toPairs, values } from "lodash";
 import { useMemo } from "react";
-
+import { useRelayChains } from "src/state";
+import type { BalanceWithStableSummary } from "src/types";
 import { useBalances } from "./useBalances";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";
 import { useTokensByChainIds } from "./useTokensByChainIds";
-
-import { isBigInt, logger } from "@kheopswap/utils";
-import { useRelayChains } from "src/state";
-import type { BalanceWithStableSummary } from "src/types";
 
 type UseAssetHubTVLResult = {
 	isLoading: boolean;
@@ -85,7 +83,7 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 					isLoadingTokenPlancks:
 						locked?.isLoading ||
 						(!isBigInt(locked?.plancks) && isLoadingTokens),
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					// biome-ignore lint/style/noNonNullAssertion: legacy
 					...assetConvertPlancks[lockedIdx]!,
 				};
 			}),

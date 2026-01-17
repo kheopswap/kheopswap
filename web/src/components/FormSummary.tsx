@@ -1,6 +1,5 @@
-import type { FC, PropsWithChildren, ReactNode } from "react";
-
 import { cn } from "@kheopswap/utils";
+import type { FC, PropsWithChildren, ReactNode } from "react";
 
 export const FormSummary: FC<PropsWithChildren & { className?: string }> = ({
 	children,

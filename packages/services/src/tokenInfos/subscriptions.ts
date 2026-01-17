@@ -1,8 +1,7 @@
-import { isEqual, uniq } from "lodash";
-import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
-
 import type { TokenId } from "@kheopswap/registry";
 import { firstThenDebounceTime } from "@kheopswap/utils";
+import { isEqual, uniq } from "lodash";
+import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 type TokenInfosSubscriptionRequest = {
 	id: string;

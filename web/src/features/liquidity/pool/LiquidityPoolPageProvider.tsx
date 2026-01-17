@@ -1,10 +1,6 @@
-import { useMemo } from "react";
-import { useParams } from "react-router-dom";
-
-import { useAccountBalancesForPool } from "./useAccountBalancesForPool";
-import { usePoolPosition } from "./usePoolPosition";
-
 import { provideContext } from "@kheopswap/utils";
+import { useMemo } from "react";
+import { useParams } from "react-router";
 import {
 	useNativeToken,
 	usePoolByPoolAssetId,
@@ -14,6 +10,8 @@ import {
 	useWalletAccount,
 } from "src/hooks";
 import { useRelayChains } from "src/state";
+import { useAccountBalancesForPool } from "./useAccountBalancesForPool";
+import { usePoolPosition } from "./usePoolPosition";
 
 // provides informations that are common between add & remove liquidity pages
 const useLiquidityPoolPageProvider = () => {

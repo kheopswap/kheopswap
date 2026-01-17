@@ -1,6 +1,5 @@
-import type { PoolSupplyId } from "./types";
-
 import type { TokenIdsPair } from "@kheopswap/registry";
+import type { PoolSupplyId } from "./types";
 
 export const parsePoolSupplyId = (poolSupplyId: PoolSupplyId) => {
 	return poolSupplyId.split("||") as TokenIdsPair;

@@ -1,9 +1,7 @@
 import type { FC, PropsWithChildren } from "react";
-
-import { useRemoveLiquidity } from "./RemoveLiquidityProvider";
-
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { TransactionProvider } from "src/features/transaction/TransactionProvider";
+import { useRemoveLiquidity } from "./RemoveLiquidityProvider";
 
 export const RemoveLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 	children,

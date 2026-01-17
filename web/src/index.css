@@ -1,32 +1,324 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@keyframes spin2 {
-	0% {
-		stroke-dasharray: 1, 800;
-		stroke-dashoffset: 0;
+@theme {
+	--color-*: initial;
+	--color-transparent: transparent;
+	--color-current: currentColor;
+	--color-white: #ffffff;
+	--color-black: #000000;
+
+	--color-primary-50: #d5caf3;
+	--color-primary-100: #c6b7ef;
+	--color-primary-150: #b8a3ea;
+	--color-primary-200: #a990e6;
+	--color-primary-250: #9a7de2;
+	--color-primary-300: #8b6add;
+	--color-primary-350: #7c57d9;
+	--color-primary-400: #6d44d5;
+	--color-primary-450: #5e31d1;
+	--color-primary-500: #552bbf;
+	--color-primary-550: #4d27ac;
+	--color-primary-600: #442299;
+	--color-primary-650: #3c1e86;
+	--color-primary-700: #331a73;
+	--color-primary-750: #2b1560;
+	--color-primary-800: #22114c;
+	--color-primary-850: #1a0d39;
+	--color-primary-900: #110926;
+	--color-primary-950: #090413;
+	--color-primary: #552bbf;
+
+	--color-secondary-50: #ffb6dd;
+	--color-secondary-100: #ff9fd2;
+	--color-secondary-150: #ff88c7;
+	--color-secondary-200: #ff71bc;
+	--color-secondary-250: #ff5ab2;
+	--color-secondary-300: #ff43a7;
+	--color-secondary-350: #ff2c9c;
+	--color-secondary-400: #ff1591;
+	--color-secondary-450: #fd0086;
+	--color-secondary-500: #e6007a;
+	--color-secondary-550: #cf006e;
+	--color-secondary-600: #b80062;
+	--color-secondary-650: #a10055;
+	--color-secondary-700: #8a0049;
+	--color-secondary-750: #73003d;
+	--color-secondary-800: #5c0031;
+	--color-secondary-850: #450025;
+	--color-secondary-900: #2e0018;
+	--color-secondary-950: #17000c;
+	--color-secondary: #e6007a;
+
+	--color-neutral-50: #dedee0;
+	--color-neutral-100: #d2d2d5;
+	--color-neutral-150: #c6c6ca;
+	--color-neutral-200: #b9b9bf;
+	--color-neutral-250: #adadb3;
+	--color-neutral-300: #a1a1a8;
+	--color-neutral-350: #95959d;
+	--color-neutral-400: #898991;
+	--color-neutral-450: #7c7c86;
+	--color-neutral-500: #71717a;
+	--color-neutral-550: #66666e;
+	--color-neutral-600: #5a5a62;
+	--color-neutral-650: #4f4f55;
+	--color-neutral-700: #444449;
+	--color-neutral-750: #39393d;
+	--color-neutral-800: #2d2d31;
+	--color-neutral-850: #222225;
+	--color-neutral-900: #171718;
+	--color-neutral-950: #0b0b0c;
+	--color-neutral: #71717a;
+
+	--color-error-50: #ffffff;
+	--color-error-100: #ffffff;
+	--color-error-150: #ffffff;
+	--color-error-200: #feeeee;
+	--color-error-250: #fbd1d1;
+	--color-error-300: #f9b5b5;
+	--color-error-350: #f69999;
+	--color-error-400: #f47d7d;
+	--color-error-450: #f16060;
+	--color-error-500: #ef4444;
+	--color-error-550: #ed2828;
+	--color-error-600: #e21313;
+	--color-error-650: #c61111;
+	--color-error-700: #aa0f0f;
+	--color-error-750: #8d0c0c;
+	--color-error-800: #710a0a;
+	--color-error-850: #550707;
+	--color-error-900: #390505;
+	--color-error-950: #1c0202;
+	--color-error: #ef4444;
+
+	--color-warn-50: #ffffff;
+	--color-warn-100: #fef2e9;
+	--color-warn-150: #fee2cf;
+	--color-warn-200: #fdd2b5;
+	--color-warn-250: #fcc29a;
+	--color-warn-300: #fcb280;
+	--color-warn-350: #fba365;
+	--color-warn-400: #fa934b;
+	--color-warn-450: #fa8330;
+	--color-warn-500: #f97316;
+	--color-warn-550: #ee6506;
+	--color-warn-600: #d35a05;
+	--color-warn-650: #b94f05;
+	--color-warn-700: #9f4304;
+	--color-warn-750: #843803;
+	--color-warn-800: #6a2d03;
+	--color-warn-850: #4f2202;
+	--color-warn-900: #351601;
+	--color-warn-950: #1a0b01;
+	--color-warn: #f97316;
+
+	--color-success-50: #c2f5d5;
+	--color-success-100: #aff1c7;
+	--color-success-150: #9beeb9;
+	--color-success-200: #87eaac;
+	--color-success-250: #74e79e;
+	--color-success-300: #60e490;
+	--color-success-350: #4ce083;
+	--color-success-400: #38dd75;
+	--color-success-450: #25d967;
+	--color-success-500: #22c55e;
+	--color-success-550: #1fb155;
+	--color-success-600: #1b9e4b;
+	--color-success-650: #188a42;
+	--color-success-700: #147638;
+	--color-success-750: #11632f;
+	--color-success-800: #0e4f26;
+	--color-success-850: #0a3b1c;
+	--color-success-900: #072713;
+	--color-success-950: #031409;
+	--color-success: #22c55e;
+
+	--color-cyan-50: #e5f7ff;
+	--color-cyan-100: #ccf0ff;
+	--color-cyan-150: #b3e8ff;
+	--color-cyan-200: #99e0ff;
+	--color-cyan-250: #80d8ff;
+	--color-cyan-300: #66d1ff;
+	--color-cyan-350: #4dc9ff;
+	--color-cyan-400: #33c1ff;
+	--color-cyan-450: #1abaff;
+	--color-cyan-500: #00b2ff;
+	--color-cyan-550: #00a0e6;
+	--color-cyan-600: #008ecc;
+	--color-cyan-650: #007db3;
+	--color-cyan-700: #006b99;
+	--color-cyan-750: #005980;
+	--color-cyan-800: #004766;
+	--color-cyan-850: #00354d;
+	--color-cyan-900: #002433;
+	--color-cyan-950: #00121a;
+	--color-cyan: #00b2ff;
+
+	--color-lime-50: #ffffff;
+	--color-lime-100: #ffffff;
+	--color-lime-150: #ffffff;
+	--color-lime-200: #fbffeb;
+	--color-lime-250: #f4ffcc;
+	--color-lime-300: #edffad;
+	--color-lime-350: #e7ff8f;
+	--color-lime-400: #e0ff70;
+	--color-lime-450: #daff52;
+	--color-lime-500: #d3ff33;
+	--color-lime-550: #ccff14;
+	--color-lime-600: #c0f500;
+	--color-lime-650: #a8d600;
+	--color-lime-700: #90b800;
+	--color-lime-750: #789900;
+	--color-lime-800: #607a00;
+	--color-lime-850: #485c00;
+	--color-lime-900: #303d00;
+	--color-lime-950: #181f00;
+	--color-lime: #d3ff33;
+
+	--color-green-50: #ffffff;
+	--color-green-100: #ffffff;
+	--color-green-150: #ffffff;
+	--color-green-200: #ffffff;
+	--color-green-250: #f0fef6;
+	--color-green-300: #d1fce3;
+	--color-green-350: #b2fad1;
+	--color-green-400: #93f7bf;
+	--color-green-450: #75f5ac;
+	--color-green-500: #56f39a;
+	--color-green-550: #37f188;
+	--color-green-600: #19ef75;
+	--color-green-650: #0fd766;
+	--color-green-700: #0db857;
+	--color-green-750: #0b9a49;
+	--color-green-800: #097b3a;
+	--color-green-850: #075c2c;
+	--color-green-900: #043d1d;
+	--color-green-950: #021f0f;
+	--color-green: #56f39a;
+
+	--color-pink-50: #ffb6dd;
+	--color-pink-100: #ff9fd2;
+	--color-pink-150: #ff88c7;
+	--color-pink-200: #ff71bc;
+	--color-pink-250: #ff5ab2;
+	--color-pink-300: #ff43a7;
+	--color-pink-350: #ff2c9c;
+	--color-pink-400: #ff1591;
+	--color-pink-450: #fd0086;
+	--color-pink-500: #e6007a;
+	--color-pink-550: #cf006e;
+	--color-pink-600: #b80062;
+	--color-pink-650: #a10055;
+	--color-pink-700: #8a0049;
+	--color-pink-750: #73003d;
+	--color-pink-800: #5c0031;
+	--color-pink-850: #450025;
+	--color-pink-900: #2e0018;
+	--color-pink-950: #17000c;
+	--color-pink: #e6007a;
+
+	--color-purple-50: #d5caf3;
+	--color-purple-100: #c6b7ef;
+	--color-purple-150: #b8a3ea;
+	--color-purple-200: #a990e6;
+	--color-purple-250: #9a7de2;
+	--color-purple-300: #8b6add;
+	--color-purple-350: #7c57d9;
+	--color-purple-400: #6d44d5;
+	--color-purple-450: #5e31d1;
+	--color-purple-500: #552bbf;
+	--color-purple-550: #4d27ac;
+	--color-purple-600: #442299;
+	--color-purple-650: #3c1e86;
+	--color-purple-700: #331a73;
+	--color-purple-750: #2b1560;
+	--color-purple-800: #22114c;
+	--color-purple-850: #1a0d39;
+	--color-purple-900: #110926;
+	--color-purple-950: #090413;
+	--color-purple: #552bbf;
+
+	--font-sans:
+		"Lexend Deca Variable", ui-sans-serif, system-ui, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+	--animate-fade-in: fade-in 0.2s ease-out;
+	--animate-fade-out: fade-out 0.2s ease-out;
+	--animate-spin: spin-custom 1s linear infinite;
+
+	@keyframes fade-in {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
 	}
-	50% {
-		stroke-dasharray: 400, 400;
-		stroke-dashoffset: -200px;
+	@keyframes fade-out {
+		0% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
 	}
-	100% {
-		stroke-dasharray: 800, 1;
-		stroke-dashoffset: -800px;
+	@keyframes spin-custom {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 }
 
-@keyframes spin3 {
-	to {
-		transform: rotate(360deg);
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-neutral-200, currentcolor);
 	}
 }
 
-.spin2 {
-	transform-origin: center;
-	animation: spin2 1.5s ease-in-out infinite, spin3 2s linear infinite;
-	animation-direction: alternate;
+@layer utilities {
+	@keyframes spin2 {
+		0% {
+			stroke-dasharray: 1, 800;
+			stroke-dashoffset: 0;
+		}
+		50% {
+			stroke-dasharray: 400, 400;
+			stroke-dashoffset: -200px;
+		}
+		100% {
+			stroke-dasharray: 800, 1;
+			stroke-dashoffset: -800px;
+		}
+	}
+
+	@keyframes spin3 {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.spin2 {
+		transform-origin: center;
+		animation:
+			spin2 1.5s ease-in-out infinite,
+			spin3 2s linear infinite;
+		animation-direction: alternate;
+	}
 }
 
 @layer base {
@@ -38,6 +330,7 @@
 	input[type="number"]::-webkit-outer-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
+		/* biome-ignore lint/complexity/noImportantStyles: legacy */
 		-moz-appearance: textfield !important;
 	}
 
@@ -45,7 +338,18 @@
 	a,
 	div,
 	aside {
-		@apply focus:outline-none focus-visible:ring-1 focus-visible:outline-none focus-visible:ring-white;
+		@apply focus:outline-hidden focus-visible:ring-1 focus-visible:outline-hidden focus-visible:ring-white;
+	}
+
+	button,
+	[role="button"],
+	a[href] {
+		cursor: pointer;
+	}
+
+	button:disabled,
+	[role="button"][aria-disabled="true"] {
+		cursor: default;
 	}
 }
 

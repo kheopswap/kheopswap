@@ -1,14 +1,12 @@
+import type { TokenId } from "@kheopswap/registry";
+import { cn } from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { type FC, useCallback, useMemo } from "react";
-
+import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
 import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
-
-import type { TokenId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
-import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
 import { WalletIcon } from "./WalletIcon";
 
 const AddressRow: FC<{ address: string; className?: string }> = ({

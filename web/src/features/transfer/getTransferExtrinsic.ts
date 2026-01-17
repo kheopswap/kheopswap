@@ -1,18 +1,17 @@
-import { MultiAddress } from "@kheopswap/registry";
-import type { SS58String } from "polkadot-api";
-
 import {
 	getApi,
 	isApiAssetHub,
 	isApiHydration,
 	isApiRelay,
 } from "@kheopswap/papi";
-import { getChainById } from "@kheopswap/registry";
 import {
-	type TokenId,
+	getChainById,
 	getChainIdFromTokenId,
+	MultiAddress,
 	parseTokenId,
+	type TokenId,
 } from "@kheopswap/registry";
+import type { SS58String } from "polkadot-api";
 
 export const getTransferExtrinsic = async (
 	tokenId: TokenId,

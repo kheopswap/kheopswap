@@ -1,12 +1,10 @@
+import { logger } from "@kheopswap/utils";
 import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
-
+import type { LoadingStatus } from "../common";
 import { poolSuppliesStore$ } from "./store";
 import { poolSuppliesSubscriptions$ } from "./subscriptions";
 import type { PoolSupplyId, PoolSupplyState, StoredPoolSupply } from "./types";
 import { poolSuppliesStatuses$ } from "./watchers";
-
-import { logger } from "@kheopswap/utils";
-import type { LoadingStatus } from "../common";
 
 const combineState = (
 	poolSupplyIds: string[],

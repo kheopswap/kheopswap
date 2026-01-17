@@ -1,11 +1,9 @@
 import { type FormEventHandler, useCallback } from "react";
-
+import { AccountSelect, FormFieldContainer, MagicButton } from "src/components";
+import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { useSwap } from "./SwapProvider";
 import { SwapSummary } from "./SwapSummary";
 import { SwapTokensEditor } from "./SwapTokensEditor";
-
-import { AccountSelect, FormFieldContainer, MagicButton } from "src/components";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
 
 export const SwapForm = () => {
 	const { from, onFromChange, tokenIn } = useSwap();

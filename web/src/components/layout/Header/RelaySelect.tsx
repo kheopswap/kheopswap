@@ -1,6 +1,3 @@
-import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
-import { useMatches, useNavigate } from "react-router-dom";
-
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainIdRelay,
@@ -8,6 +5,8 @@ import {
 	isChainIdRelay,
 } from "@kheopswap/registry";
 import { cn, notifyError } from "@kheopswap/utils";
+import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
+import { useMatches, useNavigate } from "react-router";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
 import { useOpenClose, useSetting } from "src/hooks";
@@ -50,12 +49,12 @@ const DrawerContent: FC<{
 	);
 
 	const handleSetLightClients = useCallback(
-		async (e: ChangeEvent<HTMLInputElement>) => {
+		async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
 			if (USE_CHOPSTICKS) {
 				notifyError(
 					new Error("Light clients are not supported in chopsticks mode"),
 				);
-				return false;
+				return;
 			}
 			setLightClient(e.target.checked);
 			onClose();
@@ -107,7 +106,7 @@ const DrawerContent: FC<{
 						<div
 							className={cn(
 								"h-6 w-11 rounded-full border bg-transparent ",
-								"after:absolute after:left-[2px] after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
+								"after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
 								"peer-checked:bg-neutral-500 peer-checked:after:translate-x-full peer-checked:after:border-neutral-200 peer-focus-visible:ring-1 peer-focus-visible:ring-neutral-200",
 							)}
 						/>

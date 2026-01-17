@@ -1,10 +1,5 @@
-import { isNumber, uniq } from "lodash";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "react-toastify";
-import { type Observable, catchError, of, shareReplay } from "rxjs";
-
-import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { Token, TokenId } from "@kheopswap/registry";
+import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
 import {
 	formatTxError,
@@ -12,6 +7,10 @@ import {
 	notifyError,
 	provideContext,
 } from "@kheopswap/utils";
+import { isNumber, uniq } from "lodash";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import { catchError, type Observable, of, shareReplay } from "rxjs";
 import type { FollowUpTxEvent } from "src/components";
 import {
 	type InjectedAccount,

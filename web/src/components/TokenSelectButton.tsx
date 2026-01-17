@@ -1,8 +1,7 @@
-import type { Dictionary } from "lodash";
-import { type FC, useCallback, useMemo } from "react";
-
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
+import type { Dictionary } from "lodash";
+import { type FC, useCallback, useMemo } from "react";
 import { TokenLogo, TokenSelectDrawer } from "src/components";
 import { Styles } from "src/components/styles";
 import { type InjectedAccount, useChainName, useOpenClose } from "src/hooks";

@@ -5,9 +5,8 @@ import {
 	Transition,
 	TransitionChild,
 } from "@headlessui/react";
-import { type FC, Fragment, type ReactNode, useCallback } from "react";
-
 import { cn } from "@kheopswap/utils";
+import { type FC, Fragment, type ReactNode, useCallback } from "react";
 
 type ModalDialog = {
 	isOpen: boolean;

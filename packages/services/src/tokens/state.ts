@@ -1,3 +1,5 @@
+import type { ChainId, Token } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 import {
 	type Dictionary,
 	fromPairs,
@@ -7,15 +9,10 @@ import {
 	values,
 } from "lodash";
 import { combineLatest, map, shareReplay } from "rxjs";
-
+import type { LoadingStatus } from "../common";
 import { tokensStore$ } from "./store";
 import { sortTokens } from "./util";
 import { chainTokensStatuses$ } from "./watchers";
-
-import type { ChainId } from "@kheopswap/registry";
-import type { Token } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
-import type { LoadingStatus } from "../common";
 
 export type ChainTokensState = {
 	status: LoadingStatus;

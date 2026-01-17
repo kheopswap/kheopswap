@@ -1,7 +1,6 @@
-import { useCallback, useDeferredValue, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
 import { provideContext } from "@kheopswap/utils";
+import { useCallback, useDeferredValue, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import type { FollowUpData } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 

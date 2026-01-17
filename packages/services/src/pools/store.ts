@@ -1,10 +1,7 @@
-import { BehaviorSubject, debounceTime } from "rxjs";
-
-import type { Pool, PoolStorage } from "./types";
-
 import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
-import { logger } from "@kheopswap/utils";
-import { getLocalStorageKey } from "@kheopswap/utils";
+import { getLocalStorageKey, logger } from "@kheopswap/utils";
+import { BehaviorSubject, debounceTime } from "rxjs";
+import type { Pool, PoolStorage } from "./types";
 
 // cleanup old keys
 localStorage.removeItem(getLocalStorageKey("pools"));

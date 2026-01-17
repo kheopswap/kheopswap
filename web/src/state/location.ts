@@ -1,11 +1,11 @@
 import { type ChainIdRelay, getRelayIds } from "@kheopswap/registry";
 import { bind } from "@react-rxjs/core";
 import {
-	Observable,
 	distinctUntilChanged,
 	fromEvent,
 	map,
 	merge,
+	Observable,
 	shareReplay,
 } from "rxjs";
 

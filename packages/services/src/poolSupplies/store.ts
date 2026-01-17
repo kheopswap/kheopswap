@@ -1,7 +1,3 @@
-import { BehaviorSubject, debounceTime } from "rxjs";
-
-import type { StoredPoolSupply } from "./types";
-
 import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
 import {
 	getLocalStorageKey,
@@ -9,6 +5,8 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
+import { BehaviorSubject, debounceTime } from "rxjs";
+import type { StoredPoolSupply } from "./types";
 
 const STORAGE_KEY = getLocalStorageKey("poolSupplies");
 

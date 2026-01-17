@@ -1,9 +1,3 @@
-import { isNumber } from "lodash";
-import { distinctUntilChanged, filter } from "rxjs";
-
-import { type StorageToken, updateTokensStore } from "./store";
-import { tokensByChainSubscriptions$ } from "./subscriptions";
-
 import {
 	STORAGE_QUERY_TIMEOUT,
 	TOKENS_CACHE_DURATION,
@@ -12,20 +6,22 @@ import { getApi } from "@kheopswap/papi";
 import {
 	type Chain,
 	type ChainId,
-	PARA_ID_ASSET_HUB,
 	getChainById,
+	getTokenId,
 	hasAssetPallet,
 	isAssetHub,
 	isHydration,
-} from "@kheopswap/registry";
-import {
 	KNOWN_TOKENS_MAP,
+	PARA_ID_ASSET_HUB,
 	TOKENS_OVERRIDES_MAP,
 	type Token,
-	getTokenId,
 } from "@kheopswap/registry";
 import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
+import { isNumber } from "lodash";
+import { distinctUntilChanged, filter } from "rxjs";
 import { pollChainStatus } from "../pollChainStatus";
+import { type StorageToken, updateTokensStore } from "./store";
+import { tokensByChainSubscriptions$ } from "./subscriptions";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);

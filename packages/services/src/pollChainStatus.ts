@@ -1,10 +1,8 @@
-import { BehaviorSubject, distinctUntilChanged, map, shareReplay } from "rxjs";
-
-import type { LoadingStatus } from "./common";
-
 import { type ChainId, getChains } from "@kheopswap/registry";
 import { getCachedObservable$, logger } from "@kheopswap/utils";
 import { fromPairs } from "lodash";
+import { BehaviorSubject, distinctUntilChanged, map, shareReplay } from "rxjs";
+import type { LoadingStatus } from "./common";
 
 /**
  * For services that need to poll/refresh data every x seconds and keep track of the loading status

@@ -1,12 +1,10 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
-import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
-
-import { useTeleport } from "./TeleportProvider";
-
 import { cn, isBigInt } from "@kheopswap/utils";
+import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
 import { Styles, TokenAmountPicker } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { useWalletAccount, useWallets } from "src/hooks";
+import { useTeleport } from "./TeleportProvider";
 
 const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
 	onClick,

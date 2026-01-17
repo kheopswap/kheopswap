@@ -1,22 +1,19 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"composite": false,
-		"declaration": false,
-		"declarationMap": false,
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"moduleDetection": "force",
+		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"inlineSources": false,
-		"isolatedModules": true,
-		"module": "ESNext",
-		"moduleResolution": "Bundler",
-		"noUnusedLocals": false,
-		"noUnusedParameters": false,
-		"noUncheckedIndexedAccess": true,
-		"preserveWatchOutput": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"disableSizeLimit": true
+		"noUncheckedIndexedAccess": true,
+		"noFallthroughCasesInSwitch": true
 	},
 	"exclude": ["node_modules"]
 }

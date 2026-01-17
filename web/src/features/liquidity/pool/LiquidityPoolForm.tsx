@@ -1,11 +1,5 @@
-import { type FC, useMemo, useState } from "react";
-
-import { useLiquidityPoolPage } from "./LiquidityPoolPageProvider";
-import { AddLiquidity } from "./addLiquidity/AddLiquidity";
-import { RemoveLiquidity } from "./removeLiquidity/RemoveLiquidity";
-import { usePoolValuation } from "./usePoolValuation";
-
 import { cn, isBigInt } from "@kheopswap/utils";
+import { type FC, useMemo, useState } from "react";
 import {
 	AccountSelect,
 	FormFieldContainer,
@@ -15,6 +9,10 @@ import {
 } from "src/components";
 import { Pulse } from "src/components/Pulse";
 import { useStablePlancks } from "src/hooks";
+import { AddLiquidity } from "./addLiquidity/AddLiquidity";
+import { useLiquidityPoolPage } from "./LiquidityPoolPageProvider";
+import { RemoveLiquidity } from "./removeLiquidity/RemoveLiquidity";
+import { usePoolValuation } from "./usePoolValuation";
 
 const PoolReserves: FC = () => {
 	const { reserves, isLoadingReserves, nativeToken, assetToken } =
@@ -190,31 +188,31 @@ export const LiquidityPoolForm = () => {
 				/>
 			</FormFieldContainer>
 			<div className="grid gap-4 text-white sm:grid-cols-2">
-				<div className="rounded bg-primary-900/50 px-3 py-2">
+				<div className="rounded-sm bg-primary-900/50 px-3 py-2">
 					<div className="text-neutral-300">Pool liquidity</div>
 					<PoolReserves />
 					<div className="mt-2 text-neutral-300">Est. Value</div>
 					<PoolValue />
 				</div>
-				<div className="rounded bg-primary-900/50 px-3 py-2">
+				<div className="rounded-sm bg-primary-900/50 px-3 py-2">
 					<div className="text-neutral-300">Your position</div>
 					<PoolPosition />
 					<div className="mt-2 text-neutral-300">Est. Value</div>
 					<PoolPositionValue />
 				</div>
 			</div>
-			<div className="my-4 grid h-12 grid-cols-2 rounded border border-primary-500 p-1">
+			<div className="my-4 grid h-12 grid-cols-2 rounded-sm border border-primary-500 p-1">
 				<button
 					type="button"
 					onClick={() => setAction("add")}
-					className={cn("rounded", action === "add" && "bg-primary-550")}
+					className={cn("rounded-sm", action === "add" && "bg-primary-550")}
 				>
 					Add
 				</button>
 				<button
 					type="button"
 					onClick={() => setAction("remove")}
-					className={cn("rounded", action === "remove" && "bg-primary-550")}
+					className={cn("rounded-sm", action === "remove" && "bg-primary-550")}
 				>
 					Remove
 				</button>

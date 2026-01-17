@@ -1,15 +1,13 @@
+import type { ChainId } from "@kheopswap/registry";
 import { isEqual } from "lodash";
 import { distinctUntilChanged, map, tap } from "rxjs";
-
+import type { LoadingStatus } from "../common";
 import { poolsByChainState$ } from "./state";
 import {
 	addPoolsByChainSubscription,
 	removePoolsByChainSubscription,
 } from "./subscriptions";
 import type { Pool } from "./types";
-
-import type { ChainId } from "@kheopswap/registry";
-import type { LoadingStatus } from "../common";
 import { setLoadingStatus } from "./watchers";
 
 type PoolsByChainState = {

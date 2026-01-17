@@ -6,23 +6,26 @@ import type { PolkadotSigner } from "@polkadot-api/polkadot-signer";
 import {
 	AccountId,
 	Blake2256,
-	type V15,
 	compact,
 	enhanceEncoder,
 	metadata as metadataCodec,
 	u8,
+	unifyMetadata,
+	type V15,
 } from "@polkadot-api/substrate-bindings";
 import { fromHex, mergeUint8, toHex } from "@polkadot-api/utils";
 import * as signedExtensionMappers from "./pjs-signed-extensions-mappers";
-import type { SignPayload, SignRaw, SignerPayloadJSON } from "./types";
+import type { SignerPayloadJSON, SignPayload, SignRaw } from "./types";
 
 export const getAddressFormat = (metadata: V15): number => {
-	const dynamicBuilder = getDynamicBuilder(getLookupFn(metadata));
+	const dynamicBuilder = getDynamicBuilder(
+		getLookupFn(unifyMetadata(metadata)),
+	);
 
-	// biome-ignore lint/style/noNonNullAssertion: <explanation>
+	// biome-ignore lint/style/noNonNullAssertion: legacy
 	const constant = metadata.pallets
 		.find((x) => x.name === "System")!
-		.constants!.find((s) => s.name === "SS58Prefix")!;
+		.constants.find((s) => s.name === "SS58Prefix")!;
 
 	return dynamicBuilder.buildDefinition(constant.type).dec(constant.value);
 };
@@ -75,15 +78,18 @@ export function getPolkadotSignerFromPjs(
 		const { version } = decMeta.extrinsic;
 		const extra: Array<Uint8Array> = [];
 
+		// biome-ignore lint/suspicious/useIterableCallbackReturn: legacy
 		decMeta.extrinsic.signedExtensions.map(({ identifier }) => {
 			const signedExtension = signedExtensions[identifier];
 			if (!signedExtension)
 				throw new Error(`Missing ${identifier} signed-extension`);
 			extra.push(signedExtension.value);
 
-			// biome-ignore lint/style/noNonNullAssertion: <explanation>
-			pjs.signedExtensions!.push(identifier);
+			if (!pjs.signedExtensions)
+				throw new Error("signedExtensions should be initialized");
+			pjs.signedExtensions.push(identifier);
 
+			// biome-ignore lint/performance/noDynamicNamespaceImportAccess: legacy
 			if (!signedExtensionMappers[identifier as "CheckMortality"]) {
 				if (
 					signedExtension.value.length === 0 &&
@@ -97,6 +103,7 @@ export function getPolkadotSignerFromPjs(
 
 			Object.assign(
 				pjs,
+				// biome-ignore lint/performance/noDynamicNamespaceImportAccess: legacy
 				signedExtensionMappers[identifier as "CheckMortality"](
 					signedExtension,
 					atBlockNumber,

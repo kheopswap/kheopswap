@@ -32,8 +32,7 @@ export const connectWalletConnect = async () => {
 	}
 
 	try {
-		// biome-ignore lint/style/noVar: <explanation>
-		// biome-ignore lint/correctness/noInnerDeclarations: <explanation>
+		// biome-ignore lint/correctness/noInnerDeclarations: legacy
 		var { uri, approval } = await provider.client.connect(
 			WALLET_CONNECT_CONNECT_PARAMS,
 		);

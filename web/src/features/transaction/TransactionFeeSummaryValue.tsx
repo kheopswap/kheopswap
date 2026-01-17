@@ -1,9 +1,8 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import { keyBy } from "lodash";
-import { type FC, useCallback, useMemo } from "react";
-
 import type { TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
+import { keyBy } from "lodash";
+import { type FC, useCallback, useMemo } from "react";
 import { Shimmer, TokenSelectDrawer, Tokens } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { type InjectedAccount, useOpenClose } from "src/hooks";

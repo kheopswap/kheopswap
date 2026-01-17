@@ -1,13 +1,11 @@
 import { type FormEventHandler, useCallback } from "react";
-
+import { FormFieldContainer, MagicButton } from "src/components";
+import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
+import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { RemoveLiquidityOutcome } from "./RemoveLiquidityOutcome";
 import { useRemoveLiquidity } from "./RemoveLiquidityProvider";
 import { RemoveLiquiditySlider } from "./RemoveLiquiditySlider";
 import { RemoveLiquiditySummary } from "./RemoveLiquiditySummary";
-
-import { FormFieldContainer, MagicButton } from "src/components";
-import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
 
 export const RemoveLiquidityForm = () => {
 	const { nativeToken, assetToken, position } = useLiquidityPoolPage();

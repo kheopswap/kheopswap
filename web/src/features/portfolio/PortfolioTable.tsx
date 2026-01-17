@@ -1,5 +1,8 @@
+import type { TokenId } from "@kheopswap/registry";
+import { isBigInt, sortBigInt } from "@kheopswap/utils";
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
-
+import { SearchInput } from "src/components";
+import type { BalanceWithStable } from "src/types";
 import { PortfolioHeaderRow } from "./PortfolioHeaderRow";
 import { usePortfolio } from "./PortfolioProvider";
 import { PortfolioRows } from "./PortfolioRows";
@@ -10,11 +13,6 @@ import type {
 	PortfolioVisibleCol,
 } from "./types";
 import { usePortfolioRows } from "./usePortfolioRows";
-
-import type { TokenId } from "@kheopswap/registry";
-import { isBigInt, sortBigInt } from "@kheopswap/utils";
-import { SearchInput } from "src/components";
-import type { BalanceWithStable } from "src/types";
 
 const sortByValue = (a: BalanceWithStable, b: BalanceWithStable) => {
 	if (isBigInt(a.stablePlancks) && isBigInt(b.stablePlancks))

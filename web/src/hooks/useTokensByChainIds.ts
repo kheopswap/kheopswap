@@ -1,14 +1,12 @@
-import { type Dictionary, values } from "lodash";
-import { useMemo } from "react";
-import { useObservable } from "react-rx";
-import { map } from "rxjs";
-
-import type { ChainId } from "@kheopswap/registry";
-import type { Token } from "@kheopswap/registry";
+import type { ChainId, Token } from "@kheopswap/registry";
 import {
 	type ChainTokensState,
 	getTokensByChains$,
 } from "@kheopswap/services/tokens";
+import { type Dictionary, values } from "lodash";
+import { useMemo } from "react";
+import { useObservable } from "react-rx";
+import { map } from "rxjs";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];

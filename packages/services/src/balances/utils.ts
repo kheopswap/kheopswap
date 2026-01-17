@@ -1,6 +1,5 @@
-import type { Address, BalanceDef, BalanceId } from "./types";
-
 import type { TokenId } from "@kheopswap/registry";
+import type { Address, BalanceDef, BalanceId } from "./types";
 
 export const parseBalanceId = (balanceId: BalanceId): BalanceDef => {
 	const [address, tokenId] = balanceId.split("||") as [Address, TokenId];

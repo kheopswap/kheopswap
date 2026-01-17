@@ -1,13 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
-import type { SS58String } from "polkadot-api";
-
-import { getSwapExtrinsic } from "./getSwapTransaction";
-
 import { APP_FEE_ADDRESS } from "@kheopswap/constants";
 import { getApi } from "@kheopswap/papi";
-import { getChainById, isAssetHub } from "@kheopswap/registry";
-import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
+import {
+	getChainById,
+	getChainIdFromTokenId,
+	isAssetHub,
+	type TokenId,
+} from "@kheopswap/registry";
+import { useQuery } from "@tanstack/react-query";
+import type { SS58String } from "polkadot-api";
 import { getTransferExtrinsic } from "src/features/transfer/getTransferExtrinsic";
+import { getSwapExtrinsic } from "./getSwapTransaction";
 
 type UseSwapExtrinsic = {
 	tokenIdIn: TokenId | null | undefined;

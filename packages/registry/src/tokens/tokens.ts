@@ -1,6 +1,6 @@
 import { getTokenId } from "./helpers";
-import tokensOverridesJson from "./tokens-overrides.json";
 import tokensJson from "./tokens.json";
+import tokensOverridesJson from "./tokens-overrides.json";
 import type { Token, TokenId, TokenNoId, TokenType } from "./types";
 
 const TOKENS = tokensJson as TokenNoId[];

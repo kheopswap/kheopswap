@@ -1,10 +1,10 @@
 import type { HexString } from "@polkadot-api/substrate-bindings";
 import {
 	Bytes,
-	Option,
-	Struct,
 	compact,
 	compactBn,
+	Option,
+	Struct,
 	u32,
 } from "@polkadot-api/substrate-bindings";
 import { toHex } from "@polkadot-api/utils";
@@ -18,8 +18,7 @@ const toPjsHex = (value: number | bigint, minByteLen?: number) => {
 	let inner = value.toString(16);
 	inner = (inner.length % 2 ? "0" : "") + inner;
 	const nPaddedBytes = Math.max(0, (minByteLen || 0) - inner.length / 2);
-	// biome-ignore lint/style/useTemplate: <explanation>
-	return "0x" + "00".repeat(nPaddedBytes) + inner;
+	return `0x${"00".repeat(nPaddedBytes)}${inner}`;
 };
 
 export const CheckGenesis = ({

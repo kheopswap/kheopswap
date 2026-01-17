@@ -1,11 +1,9 @@
 import type { FC, PropsWithChildren } from "react";
-
+import { FollowUpModal } from "src/components";
 import {
 	TransactionFollowUpProvider,
 	useTransactionFollowUp,
 } from "./TransactionFollowUpProvider";
-
-import { FollowUpModal } from "src/components";
 
 const FollowUp: FC<PropsWithChildren> = ({ children }) => {
 	const { followUp, close } = useTransactionFollowUp();

@@ -1,13 +1,13 @@
 import {
-	type TokenId,
 	getChainIdFromTokenId,
 	getTokenId,
+	type TokenId,
 } from "@kheopswap/registry";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import {
-	type Observable,
 	combineLatest,
 	map,
+	type Observable,
 	of,
 	shareReplay,
 	throttleTime,

@@ -1,6 +1,7 @@
 import type { ChainId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import { getLookupFn } from "@polkadot-api/metadata-builders";
+import { unifyMetadata } from "@polkadot-api/substrate-bindings";
 import { getMetadataV15 } from "./getMetadataV15";
 
 const ERRORS_TRANSACTIONAL = {
@@ -82,7 +83,7 @@ const getModuleErrorMessage = async (
 		const pallet = metadata.pallets.find((p) => p.name === error.type);
 		if (typeof pallet?.errors !== "number") throw new Error("Unknown pallet");
 
-		const lookup = getLookupFn(metadata);
+		const lookup = getLookupFn(unifyMetadata(metadata));
 
 		const palletErrors = lookup(pallet.errors);
 		if (
@@ -91,7 +92,7 @@ const getModuleErrorMessage = async (
 		)
 			throw new Error("Unknown error type");
 
-		// biome-ignore lint/style/noNonNullAssertion: <explanation>
+		// biome-ignore lint/style/noNonNullAssertion: checked above
 		return palletErrors.innerDocs[error.value.type]!.join(" ");
 	} catch (err) {
 		logger.error("Failed to parse module error", { chainId, error, err });

@@ -1,11 +1,10 @@
+import type { ChainId, ChainIdRelay } from "@kheopswap/registry";
 import {
 	type Chain,
+	createScClient,
 	type ScClient,
 	WellKnownChain,
-	createScClient,
 } from "@substrate/connect";
-
-import type { ChainId, ChainIdRelay } from "@kheopswap/registry";
 import { getSmProvider } from "polkadot-api/sm-provider";
 
 // No intellisense on WellKnownChain ?

@@ -1,12 +1,11 @@
-import { type Dictionary, keyBy, values } from "lodash";
-import { useMemo } from "react";
-
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getTokensById$ } from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
+import { type Dictionary, keyBy, values } from "lodash";
 import type { TokenState } from "node_modules/@kheopswap/services/src/tokens/state";
+import { useMemo } from "react";
 import { useObservable } from "react-rx";
-import { Observable, map, shareReplay } from "rxjs";
+import { map, Observable, shareReplay } from "rxjs";
 
 type UseTokensProps = { tokenIds: TokenId[] };
 

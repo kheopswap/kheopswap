@@ -1,3 +1,4 @@
+import { cn, logger } from "@kheopswap/utils";
 import { motion, useAnimate } from "framer-motion";
 import type React from "react";
 import {
@@ -8,8 +9,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-
-import { cn, logger } from "@kheopswap/utils";
 
 type Location = "TOP_LEFT" | "BOTTOM_LEFT" | "BOTTOM_RIGHT" | "TOP_RIGHT";
 
@@ -153,7 +152,7 @@ export const MagicButton: FC<
 			onMouseLeave={() => setHovered(false)}
 			className={cn(
 				"relative flex items-center justify-center transition-colors duration-500",
-				"group rounded enabled:bg-primary disabled:bg-neutral-800 disabled:opacity-50",
+				"group rounded-sm enabled:bg-primary disabled:bg-neutral-800 disabled:opacity-50",
 				"my-2 h-14 text-xl font-bold",
 				className,
 			)}
@@ -164,7 +163,7 @@ export const MagicButton: FC<
 				<motion.div
 					ref={scope}
 					className={cn(
-						"absolute z-0 size-full rounded-[inherit] blur-sm motion-reduce:hidden ",
+						"absolute z-0 size-full rounded-[inherit] blur-xs motion-reduce:hidden ",
 					)}
 				/>
 			)}
@@ -172,7 +171,7 @@ export const MagicButton: FC<
 				<div
 					className={cn(
 						"size-full rounded-[inherit]",
-						"bg-primary-950 transition-colors duration-300 group-enabled:group-hover:bg-primary-900 group-disabled:bg-primary-950",
+						"bg-primary-950 transition-colors duration-300 group-hover:group-enabled:bg-primary-900 group-disabled:bg-primary-950",
 					)}
 				/>
 			</div>

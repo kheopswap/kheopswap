@@ -1,4 +1,12 @@
+import { type Api, getApi, isApiAssetHub, isApiRelay } from "@kheopswap/papi";
 import {
+	type ChainIdAssetHub,
+	type ChainIdRelay,
+	getChainById,
+	getChainIdFromTokenId,
+	isAssetHub,
+	isRelay,
+	type TokenId,
 	XcmV3Junction,
 	XcmV3Junctions,
 	XcmV3MultiassetAssetId,
@@ -8,16 +16,6 @@ import {
 	XcmVersionedLocation,
 } from "@kheopswap/registry";
 import { AccountId, Binary, type SS58String } from "polkadot-api";
-
-import { type Api, getApi, isApiAssetHub, isApiRelay } from "@kheopswap/papi";
-import {
-	type ChainIdAssetHub,
-	type ChainIdRelay,
-	getChainById,
-	isAssetHub,
-	isRelay,
-} from "@kheopswap/registry";
-import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
 
 const encodeAccount = AccountId().enc;
 

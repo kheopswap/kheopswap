@@ -1,7 +1,6 @@
+import { firstThenDebounceTime } from "@kheopswap/utils";
 import { type Dictionary, isEqual, uniq, values } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
-
-import { firstThenDebounceTime } from "@kheopswap/utils";
 import type { BalanceId } from "./types";
 
 // represent the list of balances that must be watched

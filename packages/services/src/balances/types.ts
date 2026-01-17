@@ -1,6 +1,5 @@
-import type { SS58String } from "polkadot-api";
-
 import type { TokenId } from "@kheopswap/registry";
+import type { SS58String } from "polkadot-api";
 import type { LoadingStatus } from "../common";
 
 export type Address = SS58String; // ethereum soon

@@ -1,31 +1,39 @@
-name: Code quality
+name: CI Checks
 
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.12.2]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
-        with:
-          version: latest
-      - name: Run Biome
-        run: biome ci --error-on-warnings .
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          node-version-file: "package.json"
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Check typings
+
+      - name: Biome check
+        run: pnpm biome ci --error-on-warnings .
+
+      - name: Knip (unused files & dependencies)
+        run: pnpm knip --include files,dependencies,devDependencies
+
+      - name: Typecheck
         run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build

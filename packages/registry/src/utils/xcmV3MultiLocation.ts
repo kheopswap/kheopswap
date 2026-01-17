@@ -1,6 +1,6 @@
 import { XcmV3Junction, XcmV3Junctions } from "@polkadot-api/descriptors";
 import { type ChainId, isChainIdAssetHub } from "../chains";
-import { type TokenId, getTokenId, parseTokenId } from "../tokens";
+import { getTokenId, parseTokenId, type TokenId } from "../tokens";
 import type { XcmV3Multilocation } from "../types";
 
 type Multilocation<T> = T extends TokenId ? XcmV3Multilocation : null;

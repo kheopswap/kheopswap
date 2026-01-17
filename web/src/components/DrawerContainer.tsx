@@ -1,7 +1,6 @@
+import { cn } from "@kheopswap/utils";
 import CloseIcon from "@w3f/polkadot-icons/solid/Close";
 import { type FC, type ReactNode, useEffect, useRef } from "react";
-
-import { cn } from "@kheopswap/utils";
 
 export const DrawerContainer: FC<{
 	title: ReactNode;
@@ -42,7 +41,7 @@ export const DrawerContainer: FC<{
 				{onClose && (
 					<button
 						type="button"
-						className="rounded-sm outline-white ring-white focus:outline-none focus-visible:ring-1"
+						className="rounded-xs outline-white ring-white focus:outline-hidden focus-visible:ring-1"
 						onClick={onClose}
 					>
 						<CloseIcon className="size-5 fill-white" />

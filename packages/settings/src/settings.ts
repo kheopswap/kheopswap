@@ -1,7 +1,6 @@
+import { getLocalStorageKey, safeParse, safeStringify } from "@kheopswap/utils";
 import { isEqual, merge } from "lodash";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
-
-import { getLocalStorageKey, safeParse, safeStringify } from "@kheopswap/utils";
 
 export type Settings = {
 	connectedExtensionIds: string[];
@@ -43,7 +42,7 @@ const getPersistedSettings = () => {
 		if (strSettings)
 			for (const key of Object.keys(settings))
 				if (!(key in DEFAULT_SETTINGS)) {
-					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+					// biome-ignore lint/suspicious/noExplicitAny: legacy
 					delete (settings as any)[key];
 				}
 

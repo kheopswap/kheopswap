@@ -1,14 +1,13 @@
-import { useMemo } from "react";
-
 import type { ChainId, Token } from "@kheopswap/registry";
 import { getTokensByChain$ } from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import { type Dictionary, isEqual, values } from "lodash";
+import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import {
-	Observable,
 	distinctUntilChanged,
 	map,
+	Observable,
 	of,
 	shareReplay,
 	switchMap,

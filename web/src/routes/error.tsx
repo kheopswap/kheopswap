@@ -1,8 +1,7 @@
-import { type FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useRouteError } from "react-router-dom";
-
 import { DEV } from "@kheopswap/constants";
 import { cn } from "@kheopswap/utils";
+import { type FC, useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, useRouteError } from "react-router";
 import { ModalDialog } from "src/components";
 import { useOpenClose } from "src/hooks";
 
@@ -62,7 +61,7 @@ const ReportIssueButton: FC<{ error: unknown }> = ({ error }) => {
 		<>
 			<button
 				type="button"
-				className="mt-8 rounded bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+				className="mt-8 rounded-sm bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 				onClick={open}
 			>
 				Report Bug
@@ -73,7 +72,7 @@ const ReportIssueButton: FC<{ error: unknown }> = ({ error }) => {
 					<p>We greatly appreciate this, it will help us improving the site.</p>
 				</div>
 				<textarea
-					className="mt-4 w-full resize-none border border-primary-700 bg-primary-950 p-1 outline-primary focus:outline"
+					className="mt-4 w-full resize-none border border-primary-700 bg-primary-950 p-1 outline-primary focus:outline-solid"
 					rows={3}
 					placeholder="Your comments (200 characters max)"
 					maxLength={200}
@@ -89,14 +88,14 @@ const ReportIssueButton: FC<{ error: unknown }> = ({ error }) => {
 				<div className="flex justify-end gap-4">
 					<button
 						type="button"
-						className="rounded bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+						className="rounded-sm bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 						onClick={close}
 					>
 						Cancel
 					</button>
 					<button
 						type="button"
-						className="relative flex items-center justify-center rounded bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+						className="relative flex items-center justify-center rounded-sm bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 						onClick={handleSend}
 					>
 						<span className={cn(isSending && "invisible")}>Send</span>
@@ -163,7 +162,7 @@ export const ErrorBoundaryPage = () => {
 			<div className="flex justify-center gap-4">
 				<button
 					type="button"
-					className="mt-8 rounded bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+					className="mt-8 rounded-sm bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 					onClick={goHome(false)}
 				>
 					Home
@@ -172,7 +171,7 @@ export const ErrorBoundaryPage = () => {
 				{DEV && (
 					<button
 						type="button"
-						className="mt-8 rounded bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+						className="mt-8 rounded-sm bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 						onClick={goHome(true)}
 					>
 						Reset

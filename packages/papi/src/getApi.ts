@@ -1,8 +1,3 @@
-import type { TypedApi } from "polkadot-api";
-import { type Observable, firstValueFrom, from } from "rxjs";
-
-import { getClient } from "./getClient";
-
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainId,
@@ -22,6 +17,9 @@ import {
 	getCachedPromise,
 	logger,
 } from "@kheopswap/utils";
+import type { TypedApi } from "polkadot-api";
+import { firstValueFrom, from, type Observable } from "rxjs";
+import { getClient } from "./getClient";
 
 type ApiBase<Id extends ChainId> = TypedApi<Descriptors<Id>>;
 

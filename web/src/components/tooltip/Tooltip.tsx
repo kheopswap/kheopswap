@@ -1,14 +1,12 @@
 import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
+import { cn } from "@kheopswap/utils";
 import * as React from "react";
-
 import {
 	TooltipContext,
 	type TooltipOptions,
 	useTooltip,
 	useTooltipContext,
 } from "./useTooltip";
-
-import { cn } from "@kheopswap/utils";
 
 export function Tooltip({
 	children,
@@ -29,21 +27,20 @@ export const TooltipTrigger = React.forwardRef<
 	React.HTMLProps<HTMLElement> & { asChild?: boolean }
 >(function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
 	const context = useTooltipContext();
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: from template
 	const childrenRef = (children as any).ref;
 	const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
 	// `asChild` allows the user to pass any element as the anchor
 	if (asChild && React.isValidElement(children)) {
-		return React.cloneElement(
-			children,
-			context.getReferenceProps({
+		return React.cloneElement(children, {
+			...context.getReferenceProps({
 				ref,
 				...props,
-				...children.props,
-				"data-state": context.open ? "open" : "closed",
+				...(children.props as object),
 			}),
-		);
+			"data-state": context.open ? "open" : "closed",
+		} as React.HTMLAttributes<HTMLElement>);
 	}
 
 	return (
@@ -71,7 +68,7 @@ export const TooltipContent = React.forwardRef<
 				<div
 					ref={ref}
 					className={cn(
-						"z-50 rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-xs text-neutral-300 shadow",
+						"z-50 rounded-sm border border-neutral-700 bg-neutral-950 px-3 py-2 text-xs text-neutral-300 shadow-sm",
 						props.className,
 					)}
 					style={{

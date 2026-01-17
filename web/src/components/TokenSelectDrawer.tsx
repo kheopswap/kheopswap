@@ -1,16 +1,15 @@
-import { type Dictionary, values } from "lodash";
-import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
-
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
+import { type Dictionary, values } from "lodash";
+import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
 import { Drawer } from "src/components/Drawer";
 import { DrawerContainer } from "src/components/DrawerContainer";
+import { ActionRightIcon } from "src/components/icons";
 import { SearchInput } from "src/components/SearchInput";
 import { Shimmer } from "src/components/Shimmer";
+import { Styles } from "src/components/styles";
 import { TokenLogo } from "src/components/TokenLogo";
 import { Tokens } from "src/components/Tokens";
-import { ActionRightIcon } from "src/components/icons";
-import { Styles } from "src/components/styles";
 import { type InjectedAccount, useBalancesByTokenSummary } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";

@@ -1,8 +1,8 @@
 import {
-	type Observable,
-	type OperatorFunction,
 	concat,
 	debounceTime,
+	type Observable,
+	type OperatorFunction,
 	skip,
 	take,
 } from "rxjs";

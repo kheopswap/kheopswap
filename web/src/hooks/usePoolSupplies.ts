@@ -1,9 +1,8 @@
+import type { TokenIdsPair } from "@kheopswap/registry";
+import { getPoolSupplies$ } from "@kheopswap/services/poolSupplies";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
-
-import type { TokenIdsPair } from "@kheopswap/registry";
-import { getPoolSupplies$ } from "@kheopswap/services/poolSupplies";
 
 type UsePoolSuppliesProps = {
 	pairs: TokenIdsPair[] | undefined;

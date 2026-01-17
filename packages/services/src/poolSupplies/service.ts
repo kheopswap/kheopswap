@@ -1,6 +1,6 @@
+import type { TokenIdsPair } from "@kheopswap/registry";
 import { isEqual } from "lodash";
 import { distinctUntilChanged, map, tap } from "rxjs";
-
 import { poolSuppliesState$ } from "./state";
 import {
 	addPoolSupplySubscription,
@@ -8,8 +8,6 @@ import {
 } from "./subscriptions";
 import type { PoolSupplyState } from "./types";
 import { getPoolSupplyId } from "./utils";
-
-import type { TokenIdsPair } from "@kheopswap/registry";
 
 const DEFAULT_POOL_SUPPLY_STATE: PoolSupplyState = {
 	supply: undefined,

@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import type { TokenId } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import {
@@ -7,6 +5,7 @@ import {
 	isBigInt,
 	plancksToTokens,
 } from "@kheopswap/utils";
+import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
 import { getAssetConvert$ } from "src/state";

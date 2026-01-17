@@ -1,14 +1,3 @@
-import { fromPairs } from "lodash";
-import { type FC, useCallback, useMemo, useState } from "react";
-
-import { Drawer } from "./Drawer";
-import { DrawerContainer } from "./DrawerContainer";
-import { InjectedAccountIcon } from "./InjectedAccountIcon";
-import { Shimmer } from "./Shimmer";
-import { Tokens } from "./Tokens";
-import { ActionRightIcon } from "./icons";
-import { Styles } from "./styles";
-
 import type { Token } from "@kheopswap/registry";
 import {
 	cn,
@@ -17,9 +6,11 @@ import {
 	logger,
 	shortenAddress,
 } from "@kheopswap/utils";
+import { fromPairs } from "lodash";
+import { type FC, useCallback, useMemo, useState } from "react";
 import {
-	WALLET_CONNECT_NAME,
 	useWalletConnectAccounts,
+	WALLET_CONNECT_NAME,
 	walletConnect,
 } from "src/features/connect/wallet-connect";
 import {
@@ -31,6 +22,13 @@ import {
 } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
+import { Drawer } from "./Drawer";
+import { DrawerContainer } from "./DrawerContainer";
+import { InjectedAccountIcon } from "./InjectedAccountIcon";
+import { ActionRightIcon } from "./icons";
+import { Shimmer } from "./Shimmer";
+import { Styles } from "./styles";
+import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
 
 const ExtensionButtonBase: FC<{
@@ -169,7 +167,7 @@ const AddressInput: FC<{
 	return (
 		<div
 			className={cn(
-				"flex h-[42px] w-full items-center rounded-sm border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline",
+				"flex h-[42px] w-full items-center rounded-xs border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline-solid",
 				localAddress && !isValid
 					? "border-error-500 outline-error-500"
 					: "border-neutral-500 outline-neutral-500",
@@ -180,7 +178,7 @@ const AddressInput: FC<{
 				defaultValue={localAddress}
 				onChange={(e) => setLocalAddress(e.target.value)}
 				autoComplete="off"
-				className="grow bg-transparent px-2 outline-none"
+				className="grow bg-transparent px-2 outline-hidden"
 			/>
 			<div
 				className={cn(

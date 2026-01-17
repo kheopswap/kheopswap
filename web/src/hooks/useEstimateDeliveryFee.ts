@@ -1,16 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import { Enum, type SS58String } from "polkadot-api";
-
 import { getApi } from "@kheopswap/papi";
 import {
 	type ChainId,
-	type XcmV3Multilocation,
-	type XcmV4Instruction,
 	getTokenIdFromXcmV3Multilocation,
 	isChainIdAssetHub,
 	isChainIdRelay,
+	XcmV3Junctions,
+	type XcmV3Multilocation,
+	type XcmV4Instruction,
+	XcmVersionedAssetId,
 } from "@kheopswap/registry";
 import { logger, safeQueryKeyPart } from "@kheopswap/utils";
+import { useQuery } from "@tanstack/react-query";
+import { Enum, type SS58String } from "polkadot-api";
 import type { AnyTransaction } from "src/types";
 import { getXcmMessageFromDryRun } from "src/util";
 import { useDryRun } from "./useDryRun";
@@ -60,6 +61,10 @@ export const useEstimateDeliveryFee = ({
 				const deliveryFee = await api.apis.XcmPaymentApi.query_delivery_fees(
 					Enum("V4", xcm.destination),
 					Enum("V4", xcm.message as XcmV4Instruction[]),
+					XcmVersionedAssetId.V4({
+						parents: isChainIdAssetHub(chainId) ? 1 : 0,
+						interior: XcmV3Junctions.Here(),
+					}),
 					{ at: "best", signal },
 				);
 

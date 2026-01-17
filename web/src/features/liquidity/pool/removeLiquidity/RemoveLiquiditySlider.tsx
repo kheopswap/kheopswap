@@ -1,6 +1,5 @@
-import { type FC, type ReactNode, useCallback, useMemo } from "react";
-
 import { cn } from "@kheopswap/utils";
+import { type FC, type ReactNode, useCallback, useMemo } from "react";
 
 const RatioButton: FC<{
 	children: ReactNode;
@@ -11,7 +10,7 @@ const RatioButton: FC<{
 	<button
 		type="button"
 		className={cn(
-			"h-8 rounded-sm px-2",
+			"h-8 rounded-xs px-2",
 			selected
 				? "bg-primary-500"
 				: "bg-primary-700 enabled:hover:bg-primary-650",
@@ -40,7 +39,7 @@ export const RemoveLiquiditySlider: FC<{
 	return (
 		<div
 			className={cn(
-				"flex w-full flex-col gap-5 rounded-sm border border-neutral-500 bg-neutral-900 p-3 py-4",
+				"flex w-full flex-col gap-5 rounded-xs border border-neutral-500 bg-neutral-900 p-3 py-4",
 				disabled && "opacity-50",
 			)}
 		>

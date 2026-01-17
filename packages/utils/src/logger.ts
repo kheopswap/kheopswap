@@ -66,8 +66,7 @@ const incrementCumulativeTimer = (label: string, duration: number) => {
 if (isDevMode) {
 	interval(5000).subscribe(() => {
 		if (!printCumulativeTimers) return;
-		const timers = CUMULATIVE_TIMERS.entries()
-			.toArray()
+		const timers = Array.from(CUMULATIVE_TIMERS.entries())
 			.map(([label, { count, duration }]) => ({
 				label,
 				duration: Math.round(duration),

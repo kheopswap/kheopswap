@@ -1,4 +1,5 @@
 import { Transition, TransitionChild } from "@headlessui/react";
+import { cn } from "@kheopswap/utils";
 import {
 	type FC,
 	type MouseEventHandler,
@@ -7,8 +8,6 @@ import {
 	useMemo,
 } from "react";
 import { createPortal } from "react-dom";
-
-import { cn } from "@kheopswap/utils";
 
 type DrawerAnchor = "top" | "right" | "bottom" | "left";
 
@@ -31,7 +30,7 @@ const getAnchorClasses = (
 		: "h-screen max-w-[100vw]";
 	const topBottom = withContainer
 		? "w-full max-h-full"
-		: "w-screen max-h-[100vh]";
+		: "w-screen max-h-screen";
 
 	switch (anchor) {
 		case "right":
@@ -47,19 +46,19 @@ const getAnchorClasses = (
 			return {
 				position,
 				drawer: cn("left-0 top-0", position, leftRight),
-				enterFrom: "translate-x-[-100%]",
+				enterFrom: "-translate-x-full",
 				enterTo: "translate-x-0",
 				leaveFrom: "translate-x-0",
-				leaveTo: "translate-x-[-100%]",
+				leaveTo: "-translate-x-full",
 			};
 		case "top":
 			return {
 				position,
 				drawer: cn("left-0 top-0", position, topBottom),
-				enterFrom: "translate-y-[-100%]",
+				enterFrom: "-translate-y-full",
 				enterTo: "translate-y-0",
 				leaveFrom: "translate-y-0",
-				leaveTo: "translate-y-[-100%]",
+				leaveTo: "-translate-y-full",
 			};
 		case "bottom":
 			return {

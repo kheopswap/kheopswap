@@ -4,12 +4,11 @@ import {
 	InformationCircleIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
+import type { ReactNode } from "react";
 import { type IconProps, ToastContainer } from "react-toastify";
-
-import type { FC } from "react";
 import { SpinnerBasicIcon } from "./icons";
 
-const icon: FC<IconProps> = (props) => {
+const icon = (props: IconProps): ReactNode => {
 	switch (props.type) {
 		case "info":
 			return (
@@ -46,8 +45,7 @@ const icon: FC<IconProps> = (props) => {
 export const Toasts = () => (
 	<ToastContainer
 		theme="dark"
-		bodyClassName={"font-sans text-sm gap-1 "}
-		toastClassName={"bg-neutral-850 border-neutral-800 border"}
+		toastClassName="bg-neutral-850 border-neutral-800 border font-sans text-sm"
 		position="bottom-right"
 		icon={icon}
 	/>

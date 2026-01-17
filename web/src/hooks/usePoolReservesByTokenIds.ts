@@ -1,6 +1,5 @@
-import { useMemo } from "react";
-
 import type { TokenId } from "@kheopswap/registry";
+import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 import { getPoolReserves$ } from "src/state";

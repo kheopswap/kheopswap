@@ -1,12 +1,10 @@
+import { getChainIdFromTokenId, type TokenId } from "@kheopswap/registry";
+import { keyBy, values } from "lodash";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
-
-import { useExistentialDeposit } from "./useExistentialDeposit";
-
-import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
-import { keyBy, values } from "lodash";
 import { getNativeToken } from "src/util";
 import { useBalances } from "./useBalances";
+import { useExistentialDeposit } from "./useExistentialDeposit";
 import { useTokensByChainId } from "./useTokensByChainId";
 
 type UseCanAccountReceiveProps = {
