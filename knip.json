@@ -30,7 +30,8 @@
 		},
 		"web": {
 			"entry": ["src/main.tsx"],
-			"project": ["src/**/*.{ts,tsx}"]
+			"project": ["src/**/*.{ts,tsx}"],
+			"ignoreDependencies": ["tailwindcss"]
 		}
 	},
 	"ignore": ["**/*.d.ts", "**/vite-env.d.ts"],
