@@ -1,9 +1,0 @@
-{
-	"sites": [
-		{
-			"slug": "thousands-refrigerator-wailing",
-			"distDir": "./web/dist",
-			"buildCommand": "pnpm build"
-		}
-	]
-}
