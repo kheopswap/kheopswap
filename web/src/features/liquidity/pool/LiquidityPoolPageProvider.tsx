@@ -1,6 +1,6 @@
 import { provideContext } from "@kheopswap/utils";
 import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import {
 	useNativeToken,
 	usePoolByPoolAssetId,

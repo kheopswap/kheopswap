@@ -10,7 +10,7 @@ import {
 } from "@kheopswap/utils";
 import { isEqual, keyBy, values } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import {
 	useAssetConvertPlancks,
 	useBalance,

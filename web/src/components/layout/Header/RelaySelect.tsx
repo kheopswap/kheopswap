@@ -6,7 +6,7 @@ import {
 } from "@kheopswap/registry";
 import { cn, notifyError } from "@kheopswap/utils";
 import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
-import { useMatches, useNavigate } from "react-router-dom";
+import { useMatches, useNavigate } from "react-router";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
 import { useOpenClose, useSetting } from "src/hooks";

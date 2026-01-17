@@ -1,6 +1,6 @@
 import { cn } from "@kheopswap/utils";
 import type { ComponentProps, FC } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router";
 import { useWallets } from "src/hooks";
 
 const NavItem: FC<ComponentProps<typeof NavLink>> = ({ to, children }) => {

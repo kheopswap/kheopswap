@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
-import { Navigate, NavLink, useParams } from "react-router-dom";
+import { Navigate, NavLink, useParams } from "react-router";
 
 import { Layout, PageContent, PageTitle, TabTitle } from "src/components";
 import { CreatePool } from "src/features/liquidity/create-pool";

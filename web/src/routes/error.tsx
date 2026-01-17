@@ -1,7 +1,7 @@
 import { DEV } from "@kheopswap/constants";
 import { cn } from "@kheopswap/utils";
 import { type FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useRouteError } from "react-router-dom";
+import { useNavigate, useParams, useRouteError } from "react-router";
 import { ModalDialog } from "src/components";
 import { useOpenClose } from "src/hooks";
 

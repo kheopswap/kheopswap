@@ -8,7 +8,7 @@ import {
 } from "@kheopswap/utils";
 import { isEqual } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import {
 	useAllTokens,
 	useAssetConvertPlancks,
