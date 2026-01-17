@@ -3,7 +3,7 @@ import { cn, isBigInt, isValidAddress, shortenAddress } from "@kheopswap/utils";
 import { fromPairs } from "lodash";
 import { type FC, useCallback, useMemo, useState } from "react";
 import {
-	type InjectedAccount,
+	type PolkadotAccount,
 	useBalancesWithStables,
 	useToken,
 	useWallets,
@@ -49,7 +49,7 @@ const WalletButton: FC<{
 );
 
 const AccountButton: FC<{
-	account: InjectedAccount;
+	account: PolkadotAccount;
 	walletIcon?: string;
 	selected?: boolean;
 	disabled?: boolean;
@@ -184,7 +184,8 @@ const AccountSelectDrawerContent: FC<{
 	onClose: () => void;
 	onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-	const { accounts, wallets, connect, disconnect } = useWallets();
+	const { accounts, wallets, getWalletIcon, connect, disconnect } =
+		useWallets();
 
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
@@ -320,7 +321,7 @@ const AccountSelectDrawerContent: FC<{
 							<AccountButton
 								key={account.id}
 								account={account}
-								walletIcon={account.walletIcon}
+								walletIcon={getWalletIcon(account.walletId)}
 								selected={account.id === idOrAddress}
 								balance={balanceByAccount[account.address]}
 								token={token}

@@ -5,7 +5,7 @@ import { keyBy } from "lodash";
 import { type FC, useCallback, useMemo } from "react";
 import { Shimmer, TokenSelectDrawer, Tokens } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { type InjectedAccount, useOpenClose } from "src/hooks";
+import { type PolkadotAccount, useOpenClose } from "src/hooks";
 
 export const TransactionFeeSummaryValue: FC = () => {
 	const { isOpen, open, close } = useOpenClose();
@@ -38,7 +38,7 @@ export const TransactionFeeSummaryValue: FC = () => {
 	const feeTokensMap = useMemo(() => keyBy(feeTokens, "id"), [feeTokens]);
 
 	const accounts = useMemo(
-		() => [account].filter(Boolean) as InjectedAccount[],
+		() => [account].filter(Boolean) as PolkadotAccount[],
 		[account],
 	);
 

@@ -141,9 +141,8 @@ const FollowUpModalInner: FC<{
 		if (signed?.type === "signed")
 			return ["Submitting transaction...", false, "loading"];
 
-		// Use walletName from the account if available (from kheopskit), fallback to wallet id
-		const extensionName =
-			followUp.account.walletName ?? followUp.account.wallet;
+		// Use walletName from the account if available (from kheopskit)
+		const extensionName = followUp.account.walletName;
 
 		return [`Approve in ${extensionName}`, false, "loading"];
 	}, [followUp, error]);

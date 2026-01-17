@@ -2,10 +2,10 @@ import { cn } from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { TalismanOrb } from "@talismn/orb";
 import type { FC } from "react";
-import type { InjectedAccount } from "src/hooks";
+import type { PolkadotAccount } from "src/hooks";
 
 export const InjectedAccountIcon: FC<{
-	account: InjectedAccount;
+	account: PolkadotAccount;
 	className?: string;
 }> = ({ account, className }) => {
 	return account.walletId.includes("talisman") ? (

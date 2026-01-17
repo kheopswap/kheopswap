@@ -6,7 +6,7 @@ import {
 } from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { type FC, useCallback, useMemo } from "react";
-import { type InjectedAccount, useOpenClose, useWallets } from "src/hooks";
+import { type PolkadotAccount, useOpenClose, useWallets } from "src/hooks";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
 import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
@@ -35,25 +35,31 @@ const AddressRow: FC<{ address: string; className?: string }> = ({
 	);
 };
 
-const AccountRow: FC<{ account: InjectedAccount; className?: string }> = ({
+const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
 	account,
 	className,
-}) => (
-	<div
-		className={cn(
-			"flex grow items-center gap-2 overflow-hidden text-left",
-			className,
-		)}
-	>
-		<InjectedAccountIcon className="size-6" account={account} />
-		<div className="flex grow items-center overflow-hidden">
-			<span className="truncate">{account.name}</span>
-			<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
-				<WalletIcon icon={account.walletIcon} className="size-4" />
-			</span>
+}) => {
+	const { getWalletIcon } = useWallets();
+	return (
+		<div
+			className={cn(
+				"flex grow items-center gap-2 overflow-hidden text-left",
+				className,
+			)}
+		>
+			<InjectedAccountIcon className="size-6" account={account} />
+			<div className="flex grow items-center overflow-hidden">
+				<span className="truncate">{account.name}</span>
+				<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
+					<WalletIcon
+						icon={getWalletIcon(account.walletId)}
+						className="size-4"
+					/>
+				</span>
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 const AccountSelectButton: FC<{
 	id?: string;

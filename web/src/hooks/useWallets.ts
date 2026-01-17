@@ -2,10 +2,7 @@ import type { PolkadotAccount, Wallet } from "@kheopskit/core";
 import { useWallets as useKheopskitWallets } from "@kheopskit/react";
 import { useCallback, useMemo } from "react";
 
-export type InjectedAccount = PolkadotAccount & {
-	wallet: string;
-	walletIcon: string;
-};
+export type { PolkadotAccount };
 
 export const useWallets = () => {
 	const { wallets, accounts } = useKheopskitWallets();
@@ -20,18 +17,18 @@ export const useWallets = () => {
 		[wallets],
 	);
 
-	// Map kheopskit accounts to the format expected by the app
-	const mappedAccounts = useMemo(() => {
-		return accounts
-			.filter((a): a is PolkadotAccount => a.platform === "polkadot")
-			.map((account) => ({
-				...account,
-				// Extract wallet name from walletId (e.g., "polkadot:talisman" -> "talisman")
-				wallet: account.walletId.split(":")[1] ?? account.walletName,
-				walletIcon:
-					polkadotWallets.find((w) => w.id === account.walletId)?.icon ?? "",
-			})) as InjectedAccount[];
-	}, [accounts, polkadotWallets]);
+	// Filter to only polkadot accounts
+	const polkadotAccounts = useMemo(
+		() =>
+			accounts.filter((a): a is PolkadotAccount => a.platform === "polkadot"),
+		[accounts],
+	);
+
+	const getWalletIcon = useCallback(
+		(walletId: string) =>
+			polkadotWallets.find((w) => w.id === walletId)?.icon ?? "",
+		[polkadotWallets],
+	);
 
 	const connect = useCallback(
 		async (walletId: string) => {
@@ -55,7 +52,8 @@ export const useWallets = () => {
 
 	return {
 		wallets: polkadotWallets,
-		accounts: mappedAccounts,
+		accounts: polkadotAccounts,
+		getWalletIcon,
 		connect,
 		disconnect,
 	};
