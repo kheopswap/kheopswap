@@ -31,18 +31,19 @@ export const useWallets = () => {
 	);
 
 	// Map kheopskit accounts to the format expected by the app
-	const mappedAccounts = useMemo(
-		() =>
-			accounts
-				.filter((a): a is PolkadotAccount => a.platform === "polkadot")
-				.map((account) => ({
-					...account,
-					// Extract wallet name from walletId (e.g., "polkadot:talisman" -> "talisman")
-					wallet: account.walletId.split(":")[1] ?? account.walletName,
-					walletIcon: walletIconById[account.walletId] ?? "",
-				})) as InjectedAccount[],
-		[accounts, walletIconById],
-	);
+	const mappedAccounts = useMemo(() => {
+		const result = accounts
+			.filter((a): a is PolkadotAccount => a.platform === "polkadot")
+			.map((account) => ({
+				...account,
+				// Extract wallet name from walletId (e.g., "polkadot:talisman" -> "talisman")
+				wallet: account.walletId.split(":")[1] ?? account.walletName,
+				walletIcon: walletIconById[account.walletId] ?? "",
+			})) as InjectedAccount[];
+
+		console.debug("[useWallets] accounts:", result.length, result.map((a) => a.id));
+		return result;
+	}, [accounts, walletIconById]);
 
 	const connect = useCallback(
 		async (walletId: string) => {
