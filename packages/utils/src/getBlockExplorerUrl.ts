@@ -6,6 +6,6 @@ export const getBlockExplorerUrl = (
 	type: "address" | "account",
 ) => {
 	return blockExplorerUrl && address && type
-		? urlJoin(blockExplorerUrl, "account", address)
+		? urlJoin(blockExplorerUrl, type, address)
 		: null;
 };

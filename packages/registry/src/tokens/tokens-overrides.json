@@ -319,5 +319,19 @@
 		"decimals": 18,
 		"name": "Ethena",
 		"logo": "./img/tokens/ENA.svg"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8YAE4AMwA2JzKADnqKsvQqsrEAVh8ymB8AFgBmdpgqmAkKioB2KqqrCYreqrEKgP8AXUCgA",
+		"symbol": "vTAO",
+		"decimals": 18,
+		"name": "Virtual TAO",
+		"logo": "./img/tokens/vTAO.svg"
+	},
+	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fADYAZgAzAA4rdAAWMoB2AE5GsRhkiBhmsQBWCobm9HQ6iDEq9DLkip8a5sGA/wBdQKA==",
+		"symbol": "WLD",
+		"decimals": 18,
+		"name": "Worldcoin",
+		"logo": "./img/tokens/WLD.webp?rounded"
 	}
 ]
