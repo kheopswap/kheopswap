@@ -2,8 +2,8 @@ import {
 	type Chain,
 	type ChainAssetHub,
 	type ChainRelay,
-	PARA_ID_ASSET_HUB,
 	getChains,
+	PARA_ID_ASSET_HUB,
 } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { bind } from "@react-rxjs/core";

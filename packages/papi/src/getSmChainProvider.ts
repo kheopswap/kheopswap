@@ -1,7 +1,6 @@
-import { getSmProvider } from "polkadot-api/sm-provider";
-
 import type { ChainId } from "@kheopswap/registry";
 import { getCachedPromise } from "@kheopswap/utils";
+import { getSmProvider } from "polkadot-api/sm-provider";
 
 type Chain = Awaited<Parameters<typeof getSmProvider>[0]>;
 

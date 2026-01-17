@@ -1,7 +1,6 @@
-import type { FC } from "react";
-
 import type { TokenId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
+import type { FC } from "react";
 import { Styles, TokenLogo, Tokens } from "src/components";
 import { useToken } from "src/hooks";
 

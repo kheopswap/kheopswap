@@ -1,14 +1,9 @@
-import {
-	BehaviorSubject,
-	debounceTime,
-	distinctUntilChanged,
-	map,
-	shareReplay,
-} from "rxjs";
-
 import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
 import {
 	type ChainId,
+	getChainById,
+	getChains,
+	getTokenId,
 	KNOWN_TOKENS_LIST,
 	KNOWN_TOKENS_MAP,
 	PARA_ID_ASSET_HUB,
@@ -17,9 +12,6 @@ import {
 	type TokenHydrationAsset,
 	type TokenType,
 	type XcmV3Multilocation,
-	getChainById,
-	getChains,
-	getTokenId,
 } from "@kheopswap/registry";
 import {
 	getLocalStorageKey,
@@ -28,6 +20,13 @@ import {
 	safeStringify,
 } from "@kheopswap/utils";
 import { type Dictionary, entries, isEqual, keyBy, values } from "lodash";
+import {
+	BehaviorSubject,
+	debounceTime,
+	distinctUntilChanged,
+	map,
+	shareReplay,
+} from "rxjs";
 
 export type StorageToken = Pick<Token, "id" | "chainId" | "type"> &
 	Partial<Omit<Token, "id" | "chainId" | "type">>;

@@ -1,14 +1,13 @@
-import type { InjectedAccount } from "polkadot-api/pjs-signer";
-import { useMemo } from "react";
-
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getBalance$ } from "@kheopswap/services/balances";
 import { getCachedObservable$ } from "@kheopswap/utils";
+import type { InjectedAccount } from "polkadot-api/pjs-signer";
+import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import {
-	type Observable,
 	combineLatest,
 	map,
+	type Observable,
 	of,
 	shareReplay,
 	switchMap,

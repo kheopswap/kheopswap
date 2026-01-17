@@ -1,14 +1,4 @@
-import { BehaviorSubject, type Subscription, combineLatest, map } from "rxjs";
-
-import { tokenInfosSubscriptions$ } from "./subscriptions";
-
 import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
-import { getChainById } from "@kheopswap/registry";
-import {
-	type TokenId,
-	type TokenInfo,
-	parseTokenId,
-} from "@kheopswap/registry";
 import type {
 	TokenIdAsset,
 	TokenIdForeignAsset,
@@ -16,10 +6,18 @@ import type {
 	TokenIdNative,
 	TokenIdPoolAsset,
 } from "@kheopswap/registry";
+import {
+	getChainById,
+	parseTokenId,
+	type TokenId,
+	type TokenInfo,
+} from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
+import { BehaviorSubject, combineLatest, map, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { tokenInfosStore$ } from "./store";
+import { tokenInfosSubscriptions$ } from "./subscriptions";
 
 const statusByTokenId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
 

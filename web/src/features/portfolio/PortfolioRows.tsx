@@ -1,11 +1,9 @@
-import { type FC, useCallback } from "react";
-
-import { PortfolioRow } from "./PortfolioRow";
-import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
-
 import type { TokenId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
+import { type FC, useCallback } from "react";
 import { Shimmer } from "src/components";
+import { PortfolioRow } from "./PortfolioRow";
+import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 
 export const PortfolioRows: FC<{
 	rows: PortfolioRowData[];

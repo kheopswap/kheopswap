@@ -1,8 +1,7 @@
-import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
-
 import type { TokenId, TokenInfo } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import { type Dictionary, fromPairs, keys } from "lodash";
+import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { tokenInfosStore$ } from "./store";
 import { tokenInfosSubscriptions$ } from "./subscriptions";

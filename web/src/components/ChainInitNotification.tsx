@@ -1,8 +1,7 @@
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-
 import { getApi } from "@kheopswap/papi";
 import type { ChainId } from "@kheopswap/registry";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 import { useSetting } from "src/hooks";
 import { useRelayChains } from "src/state";
 

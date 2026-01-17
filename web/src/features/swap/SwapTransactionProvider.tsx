@@ -1,11 +1,9 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
-
-import { useSwap } from "./SwapProvider";
-
 import {
 	type CallSpendings,
 	TransactionProvider,
 } from "src/features/transaction/TransactionProvider";
+import { useSwap } from "./SwapProvider";
 
 export const SwapTransactionProvider: FC<PropsWithChildren> = ({
 	children,

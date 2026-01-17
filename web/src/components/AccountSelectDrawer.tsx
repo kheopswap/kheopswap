@@ -1,14 +1,3 @@
-import { fromPairs } from "lodash";
-import { type FC, useCallback, useMemo, useState } from "react";
-
-import { Drawer } from "./Drawer";
-import { DrawerContainer } from "./DrawerContainer";
-import { InjectedAccountIcon } from "./InjectedAccountIcon";
-import { Shimmer } from "./Shimmer";
-import { Tokens } from "./Tokens";
-import { ActionRightIcon } from "./icons";
-import { Styles } from "./styles";
-
 import type { Token } from "@kheopswap/registry";
 import {
 	cn,
@@ -17,9 +6,11 @@ import {
 	logger,
 	shortenAddress,
 } from "@kheopswap/utils";
+import { fromPairs } from "lodash";
+import { type FC, useCallback, useMemo, useState } from "react";
 import {
-	WALLET_CONNECT_NAME,
 	useWalletConnectAccounts,
+	WALLET_CONNECT_NAME,
 	walletConnect,
 } from "src/features/connect/wallet-connect";
 import {
@@ -31,6 +22,13 @@ import {
 } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
+import { Drawer } from "./Drawer";
+import { DrawerContainer } from "./DrawerContainer";
+import { InjectedAccountIcon } from "./InjectedAccountIcon";
+import { ActionRightIcon } from "./icons";
+import { Shimmer } from "./Shimmer";
+import { Styles } from "./styles";
+import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
 
 const ExtensionButtonBase: FC<{

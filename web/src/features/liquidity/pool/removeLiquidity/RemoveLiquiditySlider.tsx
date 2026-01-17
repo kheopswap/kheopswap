@@ -1,6 +1,5 @@
-import { type FC, type ReactNode, useCallback, useMemo } from "react";
-
 import { cn } from "@kheopswap/utils";
+import { type FC, type ReactNode, useCallback, useMemo } from "react";
 
 const RatioButton: FC<{
 	children: ReactNode;

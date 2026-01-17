@@ -1,12 +1,14 @@
+import type { ChainId } from "@kheopswap/registry";
+import { getChainIdFromTokenId, type TokenId } from "@kheopswap/registry";
+import { getCachedObservable$ } from "@kheopswap/utils";
 import { type Dictionary, fromPairs, isEqual } from "lodash";
 import {
-	Observable,
 	combineLatest,
 	distinctUntilChanged,
 	map,
+	Observable,
 	shareReplay,
 } from "rxjs";
-
 import {
 	type ChainTokensState,
 	type TokenState,
@@ -17,10 +19,6 @@ import {
 	addTokensByChainSubscription,
 	removeTokensByChainSubscription,
 } from "./subscriptions";
-
-import type { ChainId } from "@kheopswap/registry";
-import { type TokenId, getChainIdFromTokenId } from "@kheopswap/registry";
-import { getCachedObservable$ } from "@kheopswap/utils";
 
 const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
 	status: "stale",

@@ -1,9 +1,8 @@
+import type { ChainId } from "@kheopswap/registry";
+import { getPoolsByChain$, type Pool } from "@kheopswap/services/pools";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
-
-import type { ChainId } from "@kheopswap/registry";
-import { type Pool, getPoolsByChain$ } from "@kheopswap/services/pools";
 
 type UsePoolsProps = {
 	chainId: ChainId | null | undefined;

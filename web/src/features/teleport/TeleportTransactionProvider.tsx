@@ -1,11 +1,9 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
-
-import { useTeleport } from "./TeleportProvider";
-
 import {
 	type CallSpendings,
 	TransactionProvider,
 } from "src/features/transaction/TransactionProvider";
+import { useTeleport } from "./TeleportProvider";
 
 export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 	children,

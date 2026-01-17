@@ -1,12 +1,10 @@
+import type { TokenId } from "@kheopswap/registry";
+import { type ChainId, getChainById } from "@kheopswap/registry";
+import { getAddressFromAccountField, logger } from "@kheopswap/utils";
 import { useCallback, useMemo } from "react";
-
 import { useFeeTokens } from "./useFeeTokens";
 import { useNativeToken } from "./useNativeToken";
 import { useSetting } from "./useSetting";
-
-import { type ChainId, getChainById } from "@kheopswap/registry";
-import type { TokenId } from "@kheopswap/registry";
-import { getAddressFromAccountField, logger } from "@kheopswap/utils";
 
 type UsePreferredFeeToken = {
 	accountId: string | null | undefined;

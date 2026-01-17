@@ -1,11 +1,9 @@
 import { type FormEventHandler, useCallback } from "react";
-
+import { AccountSelect, FormFieldContainer, MagicButton } from "src/components";
+import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { useTeleport } from "./TeleportProvider";
 import { TeleportSummary } from "./TeleportSummary";
 import { TeleportTokensEditor } from "./TeleportTokensEditor";
-
-import { AccountSelect, FormFieldContainer, MagicButton } from "src/components";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
 
 export const TeleportForm = () => {
 	const { formData, onFromChange } = useTeleport();

@@ -1,4 +1,12 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import type { Token } from "@kheopswap/registry";
+import { getChainById } from "@kheopswap/registry";
+import {
+	cn,
+	getErrorMessageFromTxEvents,
+	isBigInt,
+	type TxEvents,
+} from "@kheopswap/utils";
 import type { TxEvent } from "polkadot-api";
 import {
 	type FC,
@@ -6,20 +14,14 @@ import {
 	type ReactNode,
 	useMemo,
 } from "react";
-import urlJoin from "url-join";
-
-import { Modal } from "./Modal";
-import { Tokens } from "./Tokens";
-import { SpinnerIcon } from "./icons";
-import { Styles } from "./styles";
-
-import { getChainById } from "@kheopswap/registry";
-import type { Token } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
-import { type TxEvents, getErrorMessageFromTxEvents } from "@kheopswap/utils";
 import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
 import { type InjectedAccount, useInjectedExtension } from "src/hooks";
+import urlJoin from "url-join";
+import { SpinnerIcon } from "./icons";
+import { Modal } from "./Modal";
 import { Pulse } from "./Pulse";
+import { Styles } from "./styles";
+import { Tokens } from "./Tokens";
 
 export type FollowUpTxEvent =
 	| TxEvent

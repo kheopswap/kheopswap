@@ -25,7 +25,9 @@
 
 .spin2 {
 	transform-origin: center;
-	animation: spin2 1.5s ease-in-out infinite, spin3 2s linear infinite;
+	animation:
+		spin2 1.5s ease-in-out infinite,
+		spin3 2s linear infinite;
 	animation-direction: alternate;
 }
 
@@ -38,6 +40,7 @@
 	input[type="number"]::-webkit-outer-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
+		/* biome-ignore lint/complexity/noImportantStyles: legacy */
 		-moz-appearance: textfield !important;
 	}
 

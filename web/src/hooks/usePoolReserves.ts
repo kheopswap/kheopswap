@@ -1,6 +1,5 @@
-import { useMemo } from "react";
-
 import type { Pool } from "@kheopswap/services/pools";
+import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 import { getAssetHubPoolReserves$ } from "src/state";

@@ -1,3 +1,6 @@
+import type { Token } from "@kheopswap/registry";
+import { plancksToTokens, tokensToPlancks } from "@kheopswap/utils";
+import { keyBy } from "lodash";
 import {
 	type FC,
 	type FormEventHandler,
@@ -6,13 +9,6 @@ import {
 	useMemo,
 	useRef,
 } from "react";
-
-import { useAddLiquidity } from "./AddLiquidityProvider";
-import { AddLiquiditySummary } from "./AddLiquiditySummary";
-
-import type { Token } from "@kheopswap/registry";
-import { plancksToTokens, tokensToPlancks } from "@kheopswap/utils";
-import { keyBy } from "lodash";
 import {
 	FormFieldContainer,
 	MagicButton,
@@ -20,6 +16,8 @@ import {
 } from "src/components";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
+import { useAddLiquidity } from "./AddLiquidityProvider";
+import { AddLiquiditySummary } from "./AddLiquiditySummary";
 
 const AddLiquidityEditor: FC = () => {
 	const {

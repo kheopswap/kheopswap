@@ -1,11 +1,13 @@
-import { BehaviorSubject, debounceTime } from "rxjs";
-
-import type { StoredBalance } from "./types";
-
 import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
-import { logger, safeParse, safeStringify } from "@kheopswap/utils";
-import { getLocalStorageKey } from "@kheopswap/utils";
+import {
+	getLocalStorageKey,
+	logger,
+	safeParse,
+	safeStringify,
+} from "@kheopswap/utils";
 import { type Dictionary, keyBy, values } from "lodash";
+import { BehaviorSubject, debounceTime } from "rxjs";
+import type { StoredBalance } from "./types";
 import { getBalanceId } from "./utils";
 
 // cleanup old keys

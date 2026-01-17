@@ -1,13 +1,11 @@
 import { getApi } from "@kheopswap/papi";
 import {
 	getChainById,
+	getChainIdFromTokenId,
 	getXcmV3MultilocationFromTokenId,
 	isAssetHub,
-} from "@kheopswap/registry";
-import {
-	type TokenId,
-	getChainIdFromTokenId,
 	parseTokenId,
+	type TokenId,
 } from "@kheopswap/registry";
 
 export type CreatePoolExtrinsicProps = {

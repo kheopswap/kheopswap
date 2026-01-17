@@ -1,3 +1,4 @@
+import { cn } from "@kheopswap/utils";
 import {
 	type FC,
 	useCallback,
@@ -6,12 +7,9 @@ import {
 	useRef,
 	useState,
 } from "react";
-
-import { cn } from "@kheopswap/utils";
 import { ModalDialog } from "src/components";
 import { DiscordIcon, GitHubIcon, XDotComIcon } from "src/components/icons";
-import { useOpenClose } from "src/hooks";
-import { useLoadingStatusSummary } from "src/hooks";
+import { useLoadingStatusSummary, useOpenClose } from "src/hooks";
 
 const LoadingStatus = () => {
 	const { loaded, total } = useDeferredValue(useLoadingStatusSummary());
@@ -172,76 +170,72 @@ const FeedbackContent: FC<{ onClose: () => void; onSent: () => void }> = ({
 	}, [feedback, isSending, onSent]);
 
 	return (
-		<>
-			<div className="text-neutral-300">
-				<p>
-					Your anonymous feedback will help us improving the website. Shoot!
-				</p>
-				<p className="mt-4 text-xs font-light text-neutral-500">
-					Feedbacks are anonymous and one-way only.
-					<br />
-					If you expect an answer, please contact us on our Discord server
-					instead, or create a Github issue.
-					<br />
-					Links to those are in the bottom right of the screen.
-				</p>
-				<textarea
-					ref={refTextArea}
-					className="mt-4 w-full resize-none border border-primary-700 bg-primary-950 p-1 outline-primary focus:outline"
-					rows={5}
-					placeholder="Your feedback (400 characters max)"
-					maxLength={400}
-					onChange={(e) => setFeedback(e.target.value)}
-				/>
-				<div className="mt-2 text-error">
-					{sendError ?? (
-						<span className="pointer-events-none cursor-default text-transparent">
-							placeholder
-						</span>
-					)}
-				</div>
-				<div className="flex justify-end gap-4">
-					<button
-						type="button"
-						className="rounded bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
-						onClick={onClose}
-					>
-						Cancel
-					</button>
-					<button
-						type="button"
-						disabled={!feedback.length}
-						className="relative flex items-center justify-center rounded bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
-						onClick={handleSend}
-					>
-						<span className={cn(isSending && "invisible")}>Send</span>
-						{isSending && (
-							<div className="absolute left-1/2 top-1/2 size-5 -translate-x-1/2 -translate-y-1/2">
-								<svg
-									className=" size-5  animate-spin text-white"
-									fill="none"
-									viewBox="0 0 24 24"
-								>
-									<title>spinner</title>
-									<circle
-										className="opacity-25"
-										cx="12"
-										cy="12"
-										r="10"
-										stroke="currentColor"
-										strokeWidth="4"
-									/>
-									<path
-										className="opacity-75"
-										fill="currentColor"
-										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-									/>
-								</svg>
-							</div>
-						)}
-					</button>
-				</div>
+		<div className="text-neutral-300">
+			<p>Your anonymous feedback will help us improving the website. Shoot!</p>
+			<p className="mt-4 text-xs font-light text-neutral-500">
+				Feedbacks are anonymous and one-way only.
+				<br />
+				If you expect an answer, please contact us on our Discord server
+				instead, or create a Github issue.
+				<br />
+				Links to those are in the bottom right of the screen.
+			</p>
+			<textarea
+				ref={refTextArea}
+				className="mt-4 w-full resize-none border border-primary-700 bg-primary-950 p-1 outline-primary focus:outline"
+				rows={5}
+				placeholder="Your feedback (400 characters max)"
+				maxLength={400}
+				onChange={(e) => setFeedback(e.target.value)}
+			/>
+			<div className="mt-2 text-error">
+				{sendError ?? (
+					<span className="pointer-events-none cursor-default text-transparent">
+						placeholder
+					</span>
+				)}
 			</div>
-		</>
+			<div className="flex justify-end gap-4">
+				<button
+					type="button"
+					className="rounded bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+					onClick={onClose}
+				>
+					Cancel
+				</button>
+				<button
+					type="button"
+					disabled={!feedback.length}
+					className="relative flex items-center justify-center rounded bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+					onClick={handleSend}
+				>
+					<span className={cn(isSending && "invisible")}>Send</span>
+					{isSending && (
+						<div className="absolute left-1/2 top-1/2 size-5 -translate-x-1/2 -translate-y-1/2">
+							<svg
+								className=" size-5  animate-spin text-white"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<title>spinner</title>
+								<circle
+									className="opacity-25"
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									strokeWidth="4"
+								/>
+								<path
+									className="opacity-75"
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								/>
+							</svg>
+						</div>
+					)}
+				</button>
+			</div>
+		</div>
 	);
 };

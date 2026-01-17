@@ -58,16 +58,14 @@ export const LiquidityPoolBalances: FC<{
 					<Tokens plancks={valuationPlancks} token={stableToken} />
 				</div>
 			) : (
-				<>
-					<div>
-						{!!displayReserve1 && !!displayReserve2 && (
-							<>
-								<Tokens plancks={displayReserve1} token={pool.token1} /> /{" "}
-								<Tokens plancks={displayReserve2} token={pool.token2} />
-							</>
-						)}
-					</div>
-				</>
+				<div>
+					{!!displayReserve1 && !!displayReserve2 && (
+						<>
+							<Tokens plancks={displayReserve1} token={pool.token1} /> /{" "}
+							<Tokens plancks={displayReserve2} token={pool.token2} />
+						</>
+					)}
+				</div>
 			)}
 		</Pulse>
 	);

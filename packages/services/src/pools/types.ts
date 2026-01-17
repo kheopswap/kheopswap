@@ -1,7 +1,5 @@
+import type { ChainId, TokenIdsPair } from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
-
-import type { ChainId } from "@kheopswap/registry";
-import type { TokenIdsPair } from "@kheopswap/registry";
 
 export type AssetConvertionPoolDef = {
 	type: "asset-convertion";

@@ -1,13 +1,11 @@
-import type { FC, ReactNode } from "react";
-
-import { PriceImpact } from "./PriceImpact";
-import { Slippage } from "./Slippage";
-import { useSwap } from "./SwapProvider";
-
 import { isBigInt } from "@kheopswap/utils";
+import type { FC, ReactNode } from "react";
 import { Tokens } from "src/components";
 import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
+import { PriceImpact } from "./PriceImpact";
+import { Slippage } from "./Slippage";
+import { useSwap } from "./SwapProvider";
 
 const SummaryRow: FC<{ label: ReactNode; value: ReactNode }> = ({
 	label,

@@ -1,10 +1,8 @@
-import type { FC } from "react";
-
-import { LiquidityPoolsRow } from "./LiquidityPoolsRow";
-
 import { cn } from "@kheopswap/utils";
+import type { FC } from "react";
 import { Shimmer } from "src/components";
 import { Pulse } from "src/components/Pulse";
+import { LiquidityPoolsRow } from "./LiquidityPoolsRow";
 import type { LiquidityPoolsVisibleCol } from "./types";
 import type { LiquidityPoolRowData } from "./useLiquidityPools";
 

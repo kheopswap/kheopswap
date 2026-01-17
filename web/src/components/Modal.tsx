@@ -1,8 +1,7 @@
 import { Transition, TransitionChild } from "@headlessui/react";
+import { cn } from "@kheopswap/utils";
 import { type FC, Fragment, type ReactNode } from "react";
 import { useScrollLock } from "usehooks-ts";
-
-import { cn } from "@kheopswap/utils";
 
 type Modal = {
 	isOpen: boolean;
@@ -29,8 +28,7 @@ export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
 				leaveTo="opacity-0"
 			/>
 
-			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-			{/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
+			{/** biome-ignore lint/a11y/noStaticElementInteractions: legacy */}
 			<div
 				role="presentation"
 				onClick={onDismiss}
@@ -40,8 +38,7 @@ export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
 					onDismiss && "cursor-pointer",
 				)}
 			>
-				{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-				{/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
+				{/** biome-ignore lint/a11y/noStaticElementInteractions: legacy */}
 				<div
 					role="presentation"
 					className="cursor-default"

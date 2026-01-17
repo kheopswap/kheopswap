@@ -1,6 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import type { SS58String } from "polkadot-api";
-
 import { type Api, getApi } from "@kheopswap/papi";
 import {
 	type ChainId,
@@ -11,6 +8,8 @@ import {
 } from "@kheopswap/registry";
 import { logger, safeQueryKeyPart } from "@kheopswap/utils";
 import { Enum } from "@polkadot-api/substrate-bindings";
+import { useQuery } from "@tanstack/react-query";
+import type { SS58String } from "polkadot-api";
 import type { AnyTransaction } from "src/types";
 
 type UseDryRunProps = {
@@ -37,7 +36,7 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 
 				const origin = Enum("system", Enum("Signed", from));
 
-				// @ts-ignore
+				// @ts-expect-error
 				const dryRun = await api.apis.DryRunApi.dry_run_call(
 					origin,
 					call.decodedCall,

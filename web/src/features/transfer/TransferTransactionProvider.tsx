@@ -1,11 +1,9 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
-
-import { useTransfer } from "./TransferProvider";
-
 import {
 	type CallSpendings,
 	TransactionProvider,
 } from "src/features/transaction/TransactionProvider";
+import { useTransfer } from "./TransferProvider";
 
 export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 	children,

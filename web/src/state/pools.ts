@@ -1,7 +1,7 @@
 import {
-	type TokenId,
 	getChainIdFromTokenId,
 	parseTokenId,
+	type TokenId,
 } from "@kheopswap/registry";
 import { getBalance$ } from "@kheopswap/services/balances";
 import { getPoolsByChain$ } from "@kheopswap/services/pools";
@@ -12,9 +12,9 @@ import type {
 	Pool,
 } from "node_modules/@kheopswap/services/src/pools/types";
 import {
-	type Observable,
 	combineLatest,
 	map,
+	type Observable,
 	of,
 	shareReplay,
 	switchMap,

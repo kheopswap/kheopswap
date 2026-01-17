@@ -1,7 +1,6 @@
 import { logger } from "@kheopswap/utils";
 import UniversalProvider from "@walletconnect/universal-provider";
-import {} from "@walletconnect/universal-provider";
-import { Observable, firstValueFrom, shareReplay } from "rxjs";
+import { firstValueFrom, Observable, shareReplay } from "rxjs";
 import { WALLET_CONNECT_PROVIDER_OPTS } from "./constants";
 import { wcSession$ } from "./session.store";
 

@@ -1,13 +1,11 @@
+import { logger } from "@kheopswap/utils";
+import { type Dictionary, fromPairs, keys, uniq } from "lodash";
 import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
-
+import type { LoadingStatus } from "../common";
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId, BalanceState, StoredBalance } from "./types";
 import { balanceStatuses$ } from "./watchers";
-
-import { logger } from "@kheopswap/utils";
-import { type Dictionary, fromPairs, keys, uniq } from "lodash";
-import type { LoadingStatus } from "../common";
 
 const combineState = (
 	balanceIds: BalanceId[],

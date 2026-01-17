@@ -1,14 +1,12 @@
 import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
+import { cn } from "@kheopswap/utils";
 import * as React from "react";
-
 import {
 	TooltipContext,
 	type TooltipOptions,
 	useTooltip,
 	useTooltipContext,
 } from "./useTooltip";
-
-import { cn } from "@kheopswap/utils";
 
 export function Tooltip({
 	children,
@@ -29,7 +27,7 @@ export const TooltipTrigger = React.forwardRef<
 	React.HTMLProps<HTMLElement> & { asChild?: boolean }
 >(function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
 	const context = useTooltipContext();
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: from template
 	const childrenRef = (children as any).ref;
 	const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 

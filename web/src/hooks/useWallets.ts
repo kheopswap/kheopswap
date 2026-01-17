@@ -1,37 +1,35 @@
-import { bind } from "@react-rxjs/core";
-import { type Dictionary, entries, fromPairs, isEqual } from "lodash";
-import type { SS58String } from "polkadot-api";
-import {
-	type InjectedExtension,
-	type InjectedPolkadotAccount,
-	connectInjectedExtension,
-	getInjectedExtensions,
-} from "polkadot-api/pjs-signer";
-import { useCallback } from "react";
-import {
-	BehaviorSubject,
-	Observable,
-	combineLatest,
-	distinctUntilChanged,
-	map,
-	mergeMap,
-	of,
-	shareReplay,
-	timer,
-} from "rxjs";
-
-import { useSetting } from "./useSetting";
-
 import { getSetting$, setSetting } from "@kheopswap/settings";
 import {
-	type InjectedAccountId,
 	getInjectedAccountId,
+	type InjectedAccountId,
 	isValidAddress,
 	logger,
 	sortWallets,
 } from "@kheopswap/utils";
+import { bind } from "@react-rxjs/core";
+import { type Dictionary, entries, fromPairs, isEqual } from "lodash";
+import type { SS58String } from "polkadot-api";
+import {
+	connectInjectedExtension,
+	getInjectedExtensions,
+	type InjectedExtension,
+	type InjectedPolkadotAccount,
+} from "polkadot-api/pjs-signer";
+import { useCallback } from "react";
+import {
+	BehaviorSubject,
+	combineLatest,
+	distinctUntilChanged,
+	map,
+	mergeMap,
+	Observable,
+	of,
+	shareReplay,
+	timer,
+} from "rxjs";
 import { WALLET_CONNECT_NAME } from "src/features/connect/wallet-connect";
 import { wcAccounts$ } from "src/features/connect/wallet-connect/accounts.state";
+import { useSetting } from "./useSetting";
 
 export type InjectedAccount = InjectedPolkadotAccount & {
 	id: InjectedAccountId;

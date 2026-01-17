@@ -1,6 +1,3 @@
-import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
-import { useMatches, useNavigate } from "react-router-dom";
-
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainIdRelay,
@@ -8,6 +5,8 @@ import {
 	isChainIdRelay,
 } from "@kheopswap/registry";
 import { cn, notifyError } from "@kheopswap/utils";
+import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
+import { useMatches, useNavigate } from "react-router-dom";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
 import { useOpenClose, useSetting } from "src/hooks";

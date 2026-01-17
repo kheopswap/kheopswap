@@ -1,8 +1,7 @@
-import { useMemo } from "react";
-
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
+import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map, of } from "rxjs";
 

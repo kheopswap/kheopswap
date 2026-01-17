@@ -1,9 +1,5 @@
-import { type FormEventHandler, useCallback, useMemo } from "react";
-
-import { useTransfer } from "./TransferProvider";
-import { TransferSummary } from "./TransferSummary";
-
 import { isBigInt } from "@kheopswap/utils";
+import { type FormEventHandler, useCallback, useMemo } from "react";
 import {
 	AccountSelect,
 	Balance,
@@ -13,6 +9,8 @@ import {
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { useWalletAccount, useWallets } from "src/hooks";
+import { useTransfer } from "./TransferProvider";
+import { TransferSummary } from "./TransferSummary";
 
 export const TransferForm = () => {
 	const {

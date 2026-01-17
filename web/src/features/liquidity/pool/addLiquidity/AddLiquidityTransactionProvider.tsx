@@ -1,12 +1,10 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
-
-import { useAddLiquidity } from "./AddLiquidityProvider";
-
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import {
 	type CallSpendings,
 	TransactionProvider,
 } from "src/features/transaction/TransactionProvider";
+import { useAddLiquidity } from "./AddLiquidityProvider";
 
 export const AddLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 	children,

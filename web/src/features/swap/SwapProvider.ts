@@ -1,11 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-
-import type { SwapFormInputs } from "./schema";
-import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
-import { useSwapExtrinsic } from "./useSwapExtrinsic";
-
 import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "@kheopswap/constants";
-import { type TokenId, getTokenId, parseTokenId } from "@kheopswap/registry";
+import { getTokenId, parseTokenId, type TokenId } from "@kheopswap/registry";
 import { setSetting } from "@kheopswap/settings";
 import {
 	isBigInt,
@@ -15,6 +9,7 @@ import {
 	tokensToPlancks,
 } from "@kheopswap/utils";
 import { isEqual, keyBy, values } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
 	useAssetConvertPlancks,
@@ -36,6 +31,9 @@ import {
 } from "src/hooks";
 import { useRelayChains } from "src/state";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
+import type { SwapFormInputs } from "./schema";
+import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
+import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
 const useFormData = () => {
 	const { relay } = useRelayChains();

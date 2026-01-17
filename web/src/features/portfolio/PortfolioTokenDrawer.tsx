@@ -1,3 +1,17 @@
+import type { TokenAsset, TokenForeignAsset } from "@kheopswap/registry";
+import {
+	type DisplayProperty,
+	getTokenDisplayProperties,
+	type Token,
+	type TokenId,
+} from "@kheopswap/registry";
+import {
+	cn,
+	getBlockExplorerUrl,
+	isBigInt,
+	shortenAddress,
+	sortBigInt,
+} from "@kheopswap/utils";
 import {
 	type FC,
 	type ReactNode,
@@ -6,24 +20,6 @@ import {
 	useMemo,
 	useState,
 } from "react";
-
-import { usePortfolio } from "./PortfolioProvider";
-import type { PortfolioRowData } from "./types";
-
-import {
-	type DisplayProperty,
-	type Token,
-	type TokenId,
-	getTokenDisplayProperties,
-} from "@kheopswap/registry";
-import type { TokenAsset, TokenForeignAsset } from "@kheopswap/registry";
-import {
-	cn,
-	getBlockExplorerUrl,
-	isBigInt,
-	shortenAddress,
-	sortBigInt,
-} from "@kheopswap/utils";
 import { useNavigate } from "react-router-dom";
 import {
 	AccountSelectDrawer,
@@ -45,11 +41,13 @@ import {
 	useOpenClose,
 	usePoolByTokenId,
 	useTokenChain,
+	useTokenInfo,
 } from "src/hooks";
-import { useTokenInfo } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStable, BalanceWithStableSummary } from "src/types";
 import { getTokenTypeLabel } from "src/util";
+import { usePortfolio } from "./PortfolioProvider";
+import type { PortfolioRowData } from "./types";
 
 const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
 	if (isBigInt(a.tokenPlancks) && isBigInt(b.tokenPlancks))
@@ -69,7 +67,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 			accounts
 				.map((account) => ({
 					account,
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					// biome-ignore lint/style/noNonNullAssertion: legacy
 					balance: balances.find(
 						(b) => b.tokenId === token.id && b.address === account.address,
 					)!,
@@ -222,13 +220,13 @@ const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
 );
 
 const DisplayPropertyValue: FC<DisplayProperty> = ({ value, format, url }) => {
-	if (format === "address")
-		return <AddressDisplay address={value} url={url} iconClassName="size-5" />;
-
 	const formatted = useMemo(() => {
 		if (format === "address") return shortenAddress(value);
 		return value;
 	}, [format, value]);
+
+	if (format === "address")
+		return <AddressDisplay address={value} url={url} iconClassName="size-5" />;
 
 	if (url)
 		return (
@@ -414,7 +412,7 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 				<TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
 			)}
 			{displayProps.map((prop, i) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+				// biome-ignore lint/suspicious/noArrayIndexKey: legacy
 				<TokenDetailsRow key={i} label={prop.label}>
 					<DisplayPropertyValue {...prop} />
 				</TokenDetailsRow>

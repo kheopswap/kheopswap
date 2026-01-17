@@ -1,4 +1,5 @@
 import { Transition, TransitionChild } from "@headlessui/react";
+import { cn } from "@kheopswap/utils";
 import {
 	type FC,
 	type MouseEventHandler,
@@ -7,8 +8,6 @@ import {
 	useMemo,
 } from "react";
 import { createPortal } from "react-dom";
-
-import { cn } from "@kheopswap/utils";
 
 type DrawerAnchor = "top" | "right" | "bottom" | "left";
 

@@ -1,13 +1,11 @@
-import { type FC, useMemo } from "react";
-
-import { TokenBalancesSummary } from "./PortfolioDataCell";
-import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
-
 import { cn } from "@kheopswap/utils";
+import { type FC, useMemo } from "react";
 import { Styles, TokenLogo } from "src/components";
 import { useNativeToken } from "src/hooks";
 import { useRelayChains } from "src/state";
 import { getTokenDescription } from "src/util";
+import { TokenBalancesSummary } from "./PortfolioDataCell";
+import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 
 type PortfolioRowProps = PortfolioRowData & {
 	visibleCol: PortfolioVisibleCol;

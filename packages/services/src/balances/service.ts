@@ -1,13 +1,12 @@
+import { getCachedObservable$ } from "@kheopswap/utils";
 import isEqual from "lodash/isEqual";
 import {
-	Observable,
 	combineLatest,
 	distinctUntilChanged,
 	map,
+	Observable,
 	shareReplay,
 } from "rxjs";
-
-import { getCachedObservable$ } from "@kheopswap/utils";
 import { balancesState$ } from "./state";
 import {
 	addBalanceSubscription,

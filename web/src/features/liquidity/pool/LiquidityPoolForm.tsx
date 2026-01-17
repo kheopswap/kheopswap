@@ -1,11 +1,5 @@
-import { type FC, useMemo, useState } from "react";
-
-import { useLiquidityPoolPage } from "./LiquidityPoolPageProvider";
-import { AddLiquidity } from "./addLiquidity/AddLiquidity";
-import { RemoveLiquidity } from "./removeLiquidity/RemoveLiquidity";
-import { usePoolValuation } from "./usePoolValuation";
-
 import { cn, isBigInt } from "@kheopswap/utils";
+import { type FC, useMemo, useState } from "react";
 import {
 	AccountSelect,
 	FormFieldContainer,
@@ -15,6 +9,10 @@ import {
 } from "src/components";
 import { Pulse } from "src/components/Pulse";
 import { useStablePlancks } from "src/hooks";
+import { AddLiquidity } from "./addLiquidity/AddLiquidity";
+import { useLiquidityPoolPage } from "./LiquidityPoolPageProvider";
+import { RemoveLiquidity } from "./removeLiquidity/RemoveLiquidity";
+import { usePoolValuation } from "./usePoolValuation";
 
 const PoolReserves: FC = () => {
 	const { reserves, isLoadingReserves, nativeToken, assetToken } =

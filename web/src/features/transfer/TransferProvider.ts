@@ -1,9 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-
-import type { TransferFormInputs } from "./schema";
-import { useTransferExtrinsic } from "./useTransferExtrinsic";
-
-import { TRANSFERABLE_TOKEN_TYPES, type TokenId } from "@kheopswap/registry";
+import { type TokenId, TRANSFERABLE_TOKEN_TYPES } from "@kheopswap/registry";
 import {
 	getAddressFromAccountField,
 	isNumber,
@@ -12,6 +7,7 @@ import {
 	tokensToPlancks,
 } from "@kheopswap/utils";
 import { isEqual } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
 	useAllTokens,
@@ -30,6 +26,8 @@ import {
 import { useRelayChains } from "src/state";
 import { getFeeAssetLocation } from "src/util";
 import { getTxOptions } from "src/util/getTxOptions";
+import type { TransferFormInputs } from "./schema";
+import { useTransferExtrinsic } from "./useTransferExtrinsic";
 
 const useFormData = () => {
 	const { assetHub } = useRelayChains();

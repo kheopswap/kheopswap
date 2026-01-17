@@ -1,11 +1,3 @@
-import { type PolkadotClient, createClient } from "polkadot-api";
-import { getWsProvider } from "polkadot-api/ws-provider/web";
-
-import { getChainSpec, hasChainSpec } from "./getChainSpec";
-import { getScChainProvider } from "./getScChainProvider";
-import { getSmChainProvider } from "./getSmChainProvider";
-import { isScAvailableScProvider } from "./isScAvailable";
-
 import {
 	type Chain,
 	type ChainId,
@@ -14,7 +6,14 @@ import {
 	isRelay,
 } from "@kheopswap/registry";
 import { getCachedPromise } from "@kheopswap/utils";
+import { createClient, type PolkadotClient } from "polkadot-api";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
+import { getWsProvider } from "polkadot-api/ws-provider/web";
+import { getChainSpec, hasChainSpec } from "./getChainSpec";
+import { getScChainProvider } from "./getScChainProvider";
+import { getSmChainProvider } from "./getSmChainProvider";
+import { isScAvailableScProvider } from "./isScAvailable";
+
 type ClientOptions = {
 	lightClients: boolean;
 };

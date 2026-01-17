@@ -1,3 +1,4 @@
+import { cn, logger } from "@kheopswap/utils";
 import { motion, useAnimate } from "framer-motion";
 import type React from "react";
 import {
@@ -8,8 +9,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-
-import { cn, logger } from "@kheopswap/utils";
 
 type Location = "TOP_LEFT" | "BOTTOM_LEFT" | "BOTTOM_RIGHT" | "TOP_RIGHT";
 

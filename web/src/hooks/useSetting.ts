@@ -1,7 +1,6 @@
+import { getSetting$, type Settings, setSetting } from "@kheopswap/settings";
 import { bind } from "@react-rxjs/core";
 import { type SetStateAction, useCallback } from "react";
-
-import { type Settings, getSetting$, setSetting } from "@kheopswap/settings";
 
 const [useReadSetting] = bind(getSetting$);
 

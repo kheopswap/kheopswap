@@ -1,11 +1,9 @@
-import { isEqual, uniq } from "lodash";
-import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
-
-import type { PoolSupplyId } from "./types";
-import { getPoolSupplyId } from "./utils";
-
 import type { TokenIdsPair } from "@kheopswap/registry";
 import { firstThenDebounceTime } from "@kheopswap/utils";
+import { isEqual, uniq } from "lodash";
+import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
+import type { PoolSupplyId } from "./types";
+import { getPoolSupplyId } from "./utils";
 
 type PoolSupplySubscriptionRequest = {
 	id: string;

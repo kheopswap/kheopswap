@@ -1,15 +1,13 @@
+import type { Token, TokenId } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 import { groupBy, keys } from "lodash";
 import type { InjectedAccount } from "polkadot-api/pjs-signer";
 import { useMemo } from "react";
-
-import { useBalancesWithStables } from "./useBalancesWithStables";
-
-import type { Token, TokenId } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
 import type {
 	AccountBalanceWithStable,
 	BalanceWithStableSummary,
 } from "src/types";
+import { useBalancesWithStables } from "./useBalancesWithStables";
 
 type UseBalancesByTokenSummaryProps = {
 	tokens: Token[] | TokenId[] | null | undefined;

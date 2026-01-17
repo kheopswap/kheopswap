@@ -1,10 +1,8 @@
-import type { FC } from "react";
-
-import { RelaySelect } from "./RelaySelect";
-
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import { cn } from "@kheopswap/utils";
+import type { FC } from "react";
 import { ConnectButton } from "src/components/ConnectButton";
+import { RelaySelect } from "./RelaySelect";
 
 export const Header: FC = () => {
 	return (

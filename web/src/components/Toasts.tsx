@@ -4,9 +4,8 @@ import {
 	InformationCircleIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { type IconProps, ToastContainer } from "react-toastify";
-
 import type { FC } from "react";
+import { type IconProps, ToastContainer } from "react-toastify";
 import { SpinnerBasicIcon } from "./icons";
 
 const icon: FC<IconProps> = (props) => {

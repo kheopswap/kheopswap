@@ -1,6 +1,5 @@
-import { useMemo } from "react";
-
 import type { TokenId, TokenInfo } from "@kheopswap/registry";
+import { useMemo } from "react";
 import { useTokenInfos } from "./useTokenInfos";
 
 type UseTokenInfoProps = {

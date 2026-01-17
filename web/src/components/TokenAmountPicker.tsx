@@ -1,22 +1,16 @@
-import {
-	type DetailedHTMLProps,
-	type FC,
-	type InputHTMLAttributes,
-	forwardRef,
-	useMemo,
-} from "react";
-
-import { Shimmer } from "./Shimmer";
-import { TokenSelectButton } from "./TokenSelectButton";
-import { Styles } from "./styles";
-
 import { useMergeRefs } from "@floating-ui/react";
+import type { Token, TokenId } from "@kheopswap/registry";
+import { cn, isBigInt } from "@kheopswap/utils";
 import { maskitoNumberOptionsGenerator } from "@maskito/kit";
 import { useMaskito } from "@maskito/react";
 import type { Dictionary } from "lodash";
-
-import type { Token, TokenId } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
+import {
+	type DetailedHTMLProps,
+	type FC,
+	forwardRef,
+	type InputHTMLAttributes,
+	useMemo,
+} from "react";
 import {
 	StablePrice,
 	Tokens,
@@ -25,6 +19,9 @@ import {
 	TooltipTrigger,
 } from "src/components";
 import type { InjectedAccount } from "src/hooks";
+import { Shimmer } from "./Shimmer";
+import { Styles } from "./styles";
+import { TokenSelectButton } from "./TokenSelectButton";
 
 const TokenInput = forwardRef<
 	HTMLInputElement,

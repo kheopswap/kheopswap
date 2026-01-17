@@ -1,7 +1,6 @@
 import type { FC } from "react";
-
-import { SuspenseMonitor } from "./SuspenseMonitor";
 import { SpinnerIcon } from "./icons";
+import { SuspenseMonitor } from "./SuspenseMonitor";
 
 export const SuspenseSpinner: FC<{ label: string }> = ({ label }) => {
 	return (

@@ -91,7 +91,7 @@ const getModuleErrorMessage = async (
 		)
 			throw new Error("Unknown error type");
 
-		// biome-ignore lint/style/noNonNullAssertion: <explanation>
+		// biome-ignore lint/style/noNonNullAssertion: checked above
 		return palletErrors.innerDocs[error.value.type]!.join(" ");
 	} catch (err) {
 		logger.error("Failed to parse module error", { chainId, error, err });

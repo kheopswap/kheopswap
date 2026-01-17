@@ -1,8 +1,6 @@
-import { useMemo } from "react";
-
-import { usePoolSupplies } from "./usePoolSupplies";
-
 import type { TokenId, TokenIdsPair } from "@kheopswap/registry";
+import { useMemo } from "react";
+import { usePoolSupplies } from "./usePoolSupplies";
 
 type UsePoolSupplyProps = {
 	tokenId1: TokenId | null | undefined;

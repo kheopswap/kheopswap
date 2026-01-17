@@ -1,11 +1,9 @@
+import { logger } from "@kheopswap/utils";
 import { keyBy, values } from "lodash";
 import { useMemo } from "react";
-
+import { getBalancesByTokenSummary } from "src/hooks";
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
-
-import { logger } from "@kheopswap/utils";
-import { getBalancesByTokenSummary } from "src/hooks";
 
 export const usePortfolioRows = () => {
 	const stop = logger.cumulativeTimer("usePortfolioRows");

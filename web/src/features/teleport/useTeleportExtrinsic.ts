@@ -1,9 +1,7 @@
+import type { TokenId } from "@kheopswap/registry";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-
 import { getTeleportExtrinsic } from "./extrinsics";
-
-import type { TokenId } from "@kheopswap/registry";
 
 type UseTeleportExtrinsicProps = {
 	tokenIdIn: TokenId | null | undefined;

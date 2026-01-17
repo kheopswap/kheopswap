@@ -1,10 +1,7 @@
-import { useMemo } from "react";
-
-import { useTokensByChainIds } from "./useTokensByChainIds";
-
-import type { ChainId } from "@kheopswap/registry";
-import type { Token } from "@kheopswap/registry";
+import type { ChainId, Token } from "@kheopswap/registry";
 import type { Dictionary } from "lodash";
+import { useMemo } from "react";
+import { useTokensByChainIds } from "./useTokensByChainIds";
 
 type UseTokensProps = {
 	chainId: ChainId | null | undefined;

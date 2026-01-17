@@ -1,11 +1,10 @@
-import { type FC, useMemo } from "react";
-
 import {
 	type ChainId,
-	type XcmV3Multilocation,
 	getTokenIdFromXcmV3Multilocation,
+	type XcmV3Multilocation,
 } from "@kheopswap/registry";
-import { type TxEvents, cn } from "@kheopswap/utils";
+import { cn, type TxEvents } from "@kheopswap/utils";
+import { type FC, useMemo } from "react";
 import { type FollowUpData, Tokens } from "src/components";
 import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
 import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
