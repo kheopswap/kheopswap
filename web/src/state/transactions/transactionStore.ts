@@ -1,4 +1,4 @@
-import { getLocalStorageKey } from "@kheopswap/utils";
+import { getLocalStorageKey, safeParse, safeStringify } from "@kheopswap/utils";
 import { BehaviorSubject, map } from "rxjs";
 import type { FollowUpTxEvent } from "src/components";
 import {
@@ -19,14 +19,7 @@ const loadPersistedTransactions = (): Map<TransactionId, TransactionRecord> => {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		if (!stored) return new Map();
 
-		const parsed = JSON.parse(stored, (_key, value) => {
-			// Restore bigint values
-			if (typeof value === "string" && value.startsWith("bigint:")) {
-				return BigInt(value.slice(7));
-			}
-			return value;
-		}) as Array<[TransactionId, TransactionRecord]>;
-
+		const parsed = safeParse<Array<[TransactionId, TransactionRecord]>>(stored);
 		return new Map(parsed);
 	} catch {
 		return new Map();
@@ -42,14 +35,7 @@ const persistTransactions = (
 			isTerminalStatus(tx.status),
 		);
 
-		const serialized = JSON.stringify(toStore, (_, value) => {
-			if (typeof value === "bigint") {
-				return `bigint:${value.toString()}`;
-			}
-			return value;
-		});
-
-		localStorage.setItem(STORAGE_KEY, serialized);
+		localStorage.setItem(STORAGE_KEY, safeStringify(toStore));
 	} catch (err) {
 		console.error("Failed to persist transactions", err);
 	}
