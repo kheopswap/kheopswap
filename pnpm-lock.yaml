@@ -19,20 +19,16 @@ importers:
         version: 2.13.1
 
   packages/constants:
-    dependencies:
-      vite:
-        specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
     devDependencies:
       '@kheopswap/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/react':
-        specifier: ^19.1.0
-        version: 19.2.8
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      vite:
+        specifier: ^6.4.0
+        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
 
   packages/papi:
     dependencies:
@@ -337,9 +333,6 @@ importers:
       viem:
         specifier: ^2.44.2
         version: 2.44.2(typescript@5.9.3)(zod@4.3.5)
-      vite-plugin-biome:
-        specifier: ^1.0.12
-        version: 1.0.12(@biomejs/biome@2.3.11)
       yaml:
         specifier: ^2.8.1
         version: 2.8.1
@@ -356,9 +349,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.0
         version: 19.2.3(@types/react@19.2.8)
-      '@types/webfontloader':
-        specifier: ^1.6.38
-        version: 1.6.38
       '@vitejs/plugin-react-swc':
         specifier: ^4.2.0
         version: 4.2.2(@swc/helpers@0.5.17)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1))
@@ -3837,11 +3827,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  vite-plugin-biome@1.0.12:
-    resolution: {integrity: sha512-/+fBi1S+UEYtTu361IXQLZB8cSV/z4WoyK9cp/Dd1hHT6wGnFb+4Wcjwog3Y7HSUqNJbCdFWTYTyX4hwyO2iBg==}
-    peerDependencies:
-      '@biomejs/biome': ^1.8.0
 
   vite-plugin-checker@0.12.0:
     resolution: {integrity: sha512-CmdZdDOGss7kdQwv73UyVgLPv0FVYe5czAgnmRX2oKljgEvSrODGuClaV3PDR2+3ou7N/OKGauDDBjy2MB07Rg==}
@@ -7871,10 +7856,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
       - zod
-
-  vite-plugin-biome@1.0.12(@biomejs/biome@2.3.11):
-    dependencies:
-      '@biomejs/biome': 2.3.11
 
   vite-plugin-checker@0.12.0(@biomejs/biome@2.3.11)(optionator@0.9.4)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)):
     dependencies:
