@@ -72,7 +72,7 @@ pnpm typecheck               # TypeScript check (web package)
 
 ## Code Conventions
 
-- **Linting**: Biome handles formatting and linting. Pre-commit hook via Lefthook runs `biome check --write`
+- **Linting**: Biome handles formatting and linting. Pre-commit hook via simple-git-hooks runs `biome check --write`
 - **Imports**: Use `@kheopswap/*` workspace aliases. Web uses `src/` alias for absolute imports
 - **File naming**: Features in `web/src/features/`, hooks in `web/src/hooks/`, providers end with `Provider.ts(x)`
 - **Observable naming**: Suffix with `$` (e.g., `relayChains$`, `getBalance$`)

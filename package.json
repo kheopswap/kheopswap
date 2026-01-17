@@ -14,7 +14,11 @@
 		"check": "biome check --write",
 		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest xcm -r ./polkadot.yml -p ./pah.yml -p ./hydration.yml)",
 		"papi:update": "pnpm --filter @kheopswap/registry papi:update",
-		"papi": "pnpm --filter @kheopswap/registry papi"
+		"papi": "pnpm --filter @kheopswap/registry papi",
+		"prepare": "simple-git-hooks"
+	},
+	"simple-git-hooks": {
+		"pre-commit": ".githooks/pre-commit.sh"
 	},
 	"keywords": [],
 	"author": "Kheops",
@@ -22,6 +26,11 @@
 	"packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48",
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.11",
-		"lefthook": "^1.13.6"
+		"simple-git-hooks": "^2.13.1"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"simple-git-hooks"
+		]
 	}
 }
