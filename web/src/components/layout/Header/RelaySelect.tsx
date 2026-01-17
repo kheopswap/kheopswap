@@ -49,12 +49,12 @@ const DrawerContent: FC<{
 	);
 
 	const handleSetLightClients = useCallback(
-		async (e: ChangeEvent<HTMLInputElement>) => {
+		async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
 			if (USE_CHOPSTICKS) {
 				notifyError(
 					new Error("Light clients are not supported in chopsticks mode"),
 				);
-				return false;
+				return;
 			}
 			setLightClient(e.target.checked);
 			onClose();

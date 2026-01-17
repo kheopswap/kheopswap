@@ -1,12 +1,15 @@
 import type { XcmV3Multilocation } from "@kheopswap/registry";
 import type { TxOptions } from "polkadot-api";
 
-// TODO: change to TxOptions<XcmV3Multilocation>
-export type TxOptionsWithChargeAssetTxPayment = TxOptions<unknown, unknown> & {
-	asset?: XcmV3Multilocation;
-};
+// Use `any` for the Ext parameter to match the internal CustomSignedExtensionValues type
+// which is not exported from polkadot-api
+export type TxOptionsWithChargeAssetTxPayment = TxOptions<
+	XcmV3Multilocation,
+	// biome-ignore lint/suspicious/noExplicitAny: CustomSignedExtensionValues is not exported from polkadot-api
+	any
+>;
 
 // saves the need to declare the type everywhere
 export const getTxOptions = (options: TxOptionsWithChargeAssetTxPayment) => {
-	return options as TxOptionsWithChargeAssetTxPayment;
+	return options;
 };

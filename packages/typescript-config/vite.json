@@ -1,12 +1,7 @@
 {
 	"extends": "./base.json",
 	"compilerOptions": {
-		"target": "ESNext",
-		"useDefineForClassFields": true,
-		"module": "ESNext",
-		"lib": ["ESNext", "DOM"],
-		"sourceMap": true,
-		"resolveJsonModule": true,
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
 		"noEmit": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
