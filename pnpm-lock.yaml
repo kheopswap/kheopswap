@@ -171,14 +171,14 @@ importers:
         specifier: ^19.1.0
         version: 19.2.3
       react-toastify:
-        specifier: ^10.0.6
-        version: 10.0.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^11.0.5
+        version: 11.0.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
       tailwind-merge:
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^3.4.0
+        version: 3.4.0
       url-join:
         specifier: ^5.0.0
         version: 5.0.0
@@ -319,8 +319,8 @@ importers:
         specifier: ^4.2.2
         version: 4.2.2(react@19.2.3)(rxjs@7.8.2)
       react-toastify:
-        specifier: ^10.0.6
-        version: 10.0.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^11.0.5
+        version: 11.0.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -3318,11 +3318,11 @@ packages:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
 
-  react-toastify@10.0.6:
-    resolution: {integrity: sha512-yYjp+omCDf9lhZcrZHKbSq7YMuK0zcYkDFTzfRFgTXkTFHZ1ToxwAonzA4JI5CxA91JpjFLmwEsZEgfYfOqI1A==}
+  react-toastify@11.0.5:
+    resolution: {integrity: sha512-EpqHBGvnSTtHYhCPLxML05NLY2ZX0JURbAdNYa6BUkk+amz4wbKBQvoKQAB0ardvSarUBuY4Q4s1sluAzZwkmA==}
     peerDependencies:
-      react: '>=18'
-      react-dom: '>=18'
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
 
   react@19.2.3:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
@@ -3601,8 +3601,8 @@ packages:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
     engines: {node: '>=20'}
 
-  tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+  tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
 
   tailwindcss@3.4.18:
     resolution: {integrity: sha512-6A2rnmW5xZMdw11LYjhcI5846rt9pbLSabY5XPxo+XWdxwZaFEn47Go4NzFiHu9sNNmr/kXivP1vStfvMaK1GQ==}
@@ -7308,7 +7308,7 @@ snapshots:
       rxjs: 7.8.2
       use-effect-event: 2.0.3(react@19.2.3)
 
-  react-toastify@10.0.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  react-toastify@11.0.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       clsx: 2.1.1
       react: 19.2.3
@@ -7666,7 +7666,7 @@ snapshots:
 
   tagged-tag@1.0.0: {}
 
-  tailwind-merge@2.6.0: {}
+  tailwind-merge@3.4.0: {}
 
   tailwindcss@3.4.18(yaml@2.8.2):
     dependencies:

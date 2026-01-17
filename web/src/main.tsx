@@ -1,4 +1,4 @@
-import "react-toastify/dist/ReactToastify.min.css";
+import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
 import "@fontsource-variable/lexend-deca";
