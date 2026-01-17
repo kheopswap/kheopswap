@@ -1,14 +1,9 @@
-import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
-import {
-	type ChainIdHydration,
-	getChainById,
-	parseTokenId,
-} from "@kheopswap/registry";
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getChainById, parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
 import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
-import { getHydrationAssetsBalances$ } from "./hydration";
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
@@ -123,23 +118,6 @@ const watchBalance = async (balanceId: BalanceId) => {
 			return account$.subscribe((account) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
-				updateBalance(balanceId, balance);
-			});
-		}
-		case "hydration-asset": {
-			if (!isApiHydration(api))
-				throw new Error(
-					`Cannot watch balance for ${tokenId}. HydrationAssets are not supported on ${chain.id}`,
-				);
-
-			return getHydrationAssetsBalances$(
-				chain.id as ChainIdHydration,
-				address,
-			).subscribe((results) => {
-				const balance =
-					results.find((result) => result.assetId === token.assetId)?.balance ??
-					0n;
-
 				updateBalance(balanceId, balance);
 			});
 		}

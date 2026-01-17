@@ -1,8 +1,7 @@
-import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
 import type {
 	TokenIdAsset,
 	TokenIdForeignAsset,
-	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 } from "@kheopswap/registry";
@@ -14,7 +13,7 @@ import {
 } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
-import { BehaviorSubject, combineLatest, map, type Subscription } from "rxjs";
+import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { tokenInfosStore$ } from "./store";
 import { tokenInfosSubscriptions$ } from "./subscriptions";
@@ -152,37 +151,6 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 						minBalance: asset.min_balance,
 						supply: asset?.supply,
 						status: asset.status.type,
-					});
-			});
-		}
-
-		case "hydration-asset": {
-			if (!isApiHydration(api))
-				throw new Error(
-					`Cannot watch token infos for ${tokenId}. HydrationAssets are not supported on ${chain.id}`,
-				);
-
-			const tokenInfo$ = combineLatest(
-				api.query.AssetRegistry.Assets.watchValue(token.assetId, "best"),
-				api.query.Tokens.TotalIssuance.watchValue(token.assetId, "best"),
-			).pipe(
-				map(([asset, supply]) =>
-					asset
-						? {
-								minBalance: asset?.existential_deposit,
-								isSufficient: asset?.is_sufficient,
-								supply,
-							}
-						: null,
-				),
-			);
-
-			return tokenInfo$.subscribe((tokenInfos) => {
-				if (tokenInfos)
-					updateTokenInfo({
-						id: tokenId as TokenIdHydrationAsset,
-						type: "hydration-asset",
-						...tokenInfos,
 					});
 			});
 		}

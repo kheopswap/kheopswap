@@ -45,8 +45,6 @@ export const getTokenDescription = (token: Token) => {
 			return `Asset Hub - ${token.assetId}`;
 		case "native":
 			return chain.name;
-		case "hydration-asset":
-			return `Hydration - ${token.assetId}`;
 		case "foreign-asset":
 			return `Foreign - ${getForeignTokenOrigin(token)}`;
 		default:

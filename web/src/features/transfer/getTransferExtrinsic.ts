@@ -1,9 +1,4 @@
-import {
-	getApi,
-	isApiAssetHub,
-	isApiHydration,
-	isApiRelay,
-} from "@kheopswap/papi";
+import { getApi, isApiAssetHub, isApiRelay } from "@kheopswap/papi";
 import {
 	getChainById,
 	getChainIdFromTokenId,
@@ -42,12 +37,6 @@ export const getTransferExtrinsic = async (
 			});
 		}
 		case "native": {
-			if (isApiHydration(api))
-				return api.tx.Balances.transfer_keep_alive({
-					dest,
-					value: plancks,
-				});
-
 			if (isApiRelay(api) || isApiAssetHub(api))
 				return api.tx.Balances.transfer_keep_alive({
 					dest: MultiAddress.Id(dest),
@@ -65,17 +54,6 @@ export const getTransferExtrinsic = async (
 				id: token.location,
 				amount: plancks,
 				target: MultiAddress.Id(dest),
-			});
-		}
-		case "hydration-asset": {
-			if (!isApiHydration(api))
-				throw new Error(
-					`Chain ${chain.name} does not have the ForeignAssets pallet`,
-				);
-			return api.tx.Tokens.transfer({
-				currency_id: token.assetId,
-				amount: plancks,
-				dest,
 			});
 		}
 		default:

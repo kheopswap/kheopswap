@@ -47,7 +47,6 @@ export const [useRelayChains, relayChains$] = bind(relayId$.pipe(...));
 ```typescript
 isChainIdAssetHub(id); // ChainIdAssetHub
 isChainIdRelay(id); // ChainIdRelay
-isApiHydration(api); // Api<ChainIdHydration>
 ```
 
 ### API Access
@@ -104,7 +103,6 @@ Chopsticks provides sandboxed chains at:
 
 - Polkadot: `ws://localhost:3420`
 - Asset Hub: `ws://localhost:3421`
-- Hydration: `ws://localhost:3422`
 
 `USE_CHOPSTICKS` constant toggles chain config and disables light clients.
 
