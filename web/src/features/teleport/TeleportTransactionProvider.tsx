@@ -42,6 +42,7 @@ export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 			signer={formData.from}
 			onReset={onReset}
 			followUpData={followUpData}
+			transactionType="teleport"
 		>
 			{children}
 		</TransactionProvider>

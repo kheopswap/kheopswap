@@ -1,4 +1,4 @@
-import type { Token, TokenId } from "@kheopswap/registry";
+import type { TokenId } from "@kheopswap/registry";
 import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
 import {
@@ -8,12 +8,10 @@ import {
 	provideContext,
 } from "@kheopswap/utils";
 import { isNumber, uniq } from "lodash";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
-import { catchError, type Observable, of, shareReplay } from "rxjs";
-import type { FollowUpTxEvent } from "src/components";
+import { catchError, of, shareReplay } from "rxjs";
 import {
-	type InjectedAccount,
 	useAssetConvertPlancks,
 	useBalance,
 	useBalances,
@@ -25,6 +23,12 @@ import {
 	useNonce,
 	useWalletAccount,
 } from "src/hooks";
+import {
+	addTransaction,
+	appendTxEvent,
+	type TransactionType,
+	updateTransactionStatus,
+} from "src/state/transactions";
 import type { AnyTransaction } from "src/types";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 
@@ -39,15 +43,8 @@ type UseTransactionProviderProps = {
 	chainId: ChainId | null | undefined;
 	callSpendings?: CallSpendings; // tokens to be spent as part of the call
 	followUpData?: object;
+	transactionType?: TransactionType;
 	onReset: () => void;
-};
-
-type FollowUpInputs = {
-	call: AnyTransaction | null | undefined;
-	obsTxEvents: Observable<FollowUpTxEvent>;
-	account: InjectedAccount;
-	feeEstimate: bigint;
-	feeToken: Token;
 };
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
@@ -61,6 +58,7 @@ const useTransactionProvider = ({
 	callSpendings = DEFAULT_CALL_SPENDINGS,
 	onReset,
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
+	transactionType = "unknown",
 }: UseTransactionProviderProps) => {
 	const account = useWalletAccount({ id: signer });
 
@@ -69,8 +67,6 @@ const useTransactionProvider = ({
 		[chainId],
 	);
 	const nativeToken = useNativeToken({ chain });
-
-	const [followUpInputs, setFollowUpInputs] = useState<FollowUpInputs>();
 
 	const { data: nonce } = useNonce({
 		account: account?.address,
@@ -122,6 +118,7 @@ const useTransactionProvider = ({
 
 			if (!call || !account || !feeEstimate || !feeToken || !options) return;
 
+			const txId = crypto.randomUUID();
 			let isSubmitted = false;
 
 			const obsTxEvents = call
@@ -131,19 +128,29 @@ const useTransactionProvider = ({
 					shareReplay(1),
 				);
 
-			setFollowUpInputs({
-				...(followUpData as object),
-				obsTxEvents,
+			// Add transaction to global store
+			addTransaction({
+				id: txId,
+				createdAt: Date.now(),
+				status: "pending",
+				txEvents: [{ type: "pending" }],
 				account,
 				feeEstimate,
 				feeToken,
-				call,
+				type: transactionType,
+				followUpData: followUpData as Record<string, unknown>,
+				isMinimized: false,
 			});
 
 			const sub = obsTxEvents.subscribe((x) => {
 				logger.log("Transaction status update", x);
 
 				if (x.type === "broadcasted") isSubmitted = true;
+
+				// Append event to transaction store
+				if (x.type !== "error") {
+					appendTxEvent(txId, x);
+				}
 
 				if (x.type === "finalized") sub.unsubscribe();
 
@@ -164,11 +171,15 @@ const useTransactionProvider = ({
 						);
 
 					// if submitted let follow up display it
-					// if not, use standard error notification
+					// if not, use standard error notification and dismiss transaction
 					if (!isSubmitted) {
 						if (errorText) toast(errorText, { type: "error" });
 						else notifyError(x.error);
-						setFollowUpInputs(undefined);
+						// Update status to failed and dismiss (don't show modal for pre-submission errors)
+						updateTransactionStatus(txId, "failed");
+					} else {
+						// Transaction was submitted, show error in modal
+						appendTxEvent(txId, x);
 					}
 
 					sub.unsubscribe();
@@ -177,7 +188,15 @@ const useTransactionProvider = ({
 		} catch (err) {
 			notifyError(err);
 		}
-	}, [account, call, feeEstimate, feeToken, followUpData, options]);
+	}, [
+		account,
+		call,
+		feeEstimate,
+		feeToken,
+		followUpData,
+		options,
+		transactionType,
+	]);
 
 	const tokenIds = useMemo(() => {
 		const allTokenIds = Object.keys(callSpendings)
@@ -323,14 +342,6 @@ const useTransactionProvider = ({
 		[setFeeTokenId],
 	);
 
-	const onCloseFollowUp = useCallback(
-		(reset: boolean) => {
-			setFollowUpInputs(undefined);
-			if (reset) onReset();
-		},
-		[onReset],
-	);
-
 	return {
 		chainId,
 		account,
@@ -348,7 +359,6 @@ const useTransactionProvider = ({
 		isLoadingFeeTokenBalance,
 
 		insufficientBalances,
-		followUpInputs,
 
 		onSubmit,
 		canSubmit,
@@ -356,7 +366,7 @@ const useTransactionProvider = ({
 		error,
 		isLoading,
 
-		onCloseFollowUp,
+		onReset,
 
 		dryRun,
 		isLoadingDryRun,

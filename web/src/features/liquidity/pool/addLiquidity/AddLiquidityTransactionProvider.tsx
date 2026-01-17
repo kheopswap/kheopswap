@@ -29,6 +29,7 @@ export const AddLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 			signer={account?.id}
 			onReset={onReset}
 			callSpendings={spendings}
+			transactionType="addLiquidity"
 		>
 			{children}
 		</TransactionProvider>

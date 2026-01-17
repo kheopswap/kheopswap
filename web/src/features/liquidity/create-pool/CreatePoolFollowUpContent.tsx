@@ -2,23 +2,28 @@ import { refreshPools } from "@kheopswap/services/pools";
 import { cn, type TxEvents } from "@kheopswap/utils";
 import { isNumber } from "lodash";
 import { type FC, useEffect, useMemo } from "react";
-import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
-import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
 import { useRelayChains } from "src/state";
+import type { TransactionRecord } from "src/state/transactions";
 
-const OutcomeFollowUpInner: FC = () => {
-	const { followUp, setRedirectUrl } = useTransactionFollowUp();
-	const { relayId, assetHub } = useRelayChains();
+// TODO: The redirect functionality was handled by setRedirectUrl in the old system
+// With the new global modal, we need a different approach for post-transaction navigation
+// For now, we just show the pool ID and let users navigate manually
+
+export const CreatePoolFollowUpContent: FC<{
+	transaction: TransactionRecord;
+}> = ({ transaction }) => {
+	const txEvents = transaction.txEvents;
+	const { assetHub } = useRelayChains();
 
 	const individualEvents = useMemo<TxEvents>(
 		() =>
-			followUp?.txEvents.flatMap(
+			txEvents.flatMap(
 				(e) =>
 					(e.type === "finalized" && e.events) ||
 					(e.type === "txBestBlocksState" && e.found && e.events) ||
 					[],
-			) ?? [],
-		[followUp?.txEvents],
+			),
+		[txEvents],
 	);
 
 	const poolId = useMemo(
@@ -29,13 +34,12 @@ const OutcomeFollowUpInner: FC = () => {
 		[individualEvents],
 	);
 
+	// Refresh pools list when pool is created
 	useEffect(() => {
-		setRedirectUrl(poolId === null ? null : `/${relayId}/pools/${poolId}`);
-
 		if (poolId) {
 			refreshPools(assetHub.id);
 		}
-	}, [poolId, relayId, assetHub.id, setRedirectUrl]);
+	}, [poolId, assetHub.id]);
 
 	return (
 		<div className={cn(isNumber(poolId) ? "block" : "hidden")}>
@@ -44,21 +48,5 @@ const OutcomeFollowUpInner: FC = () => {
 				<div className="text-right font-medium text-neutral-500">{poolId}</div>
 			</div>
 		</div>
-	);
-};
-
-const OutcomeFollowUp: FC = () => {
-	const { followUp } = useTransactionFollowUp();
-
-	if (!followUp) return null;
-
-	return <OutcomeFollowUpInner />;
-};
-
-export const CreatePoolFollowUp: FC = () => {
-	return (
-		<TransactionFollowUp>
-			<OutcomeFollowUp />
-		</TransactionFollowUp>
 	);
 };

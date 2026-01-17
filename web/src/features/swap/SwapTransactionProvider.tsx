@@ -30,6 +30,7 @@ export const SwapTransactionProvider: FC<PropsWithChildren> = ({
 			signer={formData.from}
 			onReset={onReset}
 			followUpData={followUpData}
+			transactionType="swap"
 		>
 			{children}
 		</TransactionProvider>

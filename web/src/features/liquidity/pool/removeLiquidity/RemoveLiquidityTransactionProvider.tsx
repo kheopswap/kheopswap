@@ -16,6 +16,7 @@ export const RemoveLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={assetHub.id}
 			signer={account?.id}
 			onReset={onReset}
+			transactionType="removeLiquidity"
 		>
 			{children}
 		</TransactionProvider>

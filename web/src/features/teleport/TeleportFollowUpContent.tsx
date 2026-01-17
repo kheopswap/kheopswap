@@ -5,12 +5,11 @@ import {
 } from "@kheopswap/registry";
 import { cn, type TxEvents } from "@kheopswap/utils";
 import { type FC, useMemo } from "react";
-import { type FollowUpData, Tokens } from "src/components";
-import { TransactionFollowUp } from "src/features/transaction/TransactionFollowUp";
-import { useTransactionFollowUp } from "src/features/transaction/TransactionFollowUpProvider";
+import { Tokens } from "src/components";
 import { useToken } from "src/hooks";
+import type { TransactionRecord } from "src/state/transactions";
 
-type TeleportFollowUpData = FollowUpData<{
+type TeleportFollowUpData = {
 	chainId: ChainId | undefined;
 	deliveryFeeEstimate:
 		| {
@@ -19,24 +18,27 @@ type TeleportFollowUpData = FollowUpData<{
 		  }
 		| null
 		| undefined;
-}>;
+};
 
-const OutcomeFollowUpInner: FC<{
-	followUp: TeleportFollowUpData;
-}> = ({ followUp }) => {
+export const TeleportFollowUpContent: FC<{
+	transaction: TransactionRecord;
+}> = ({ transaction }) => {
+	const followUpData = transaction.followUpData as TeleportFollowUpData;
+	const txEvents = transaction.txEvents;
+
 	const individualEvents = useMemo<TxEvents>(
 		() =>
-			followUp.txEvents.flatMap(
+			txEvents.flatMap(
 				(e) =>
 					(e.type === "finalized" && e.events) ||
 					(e.type === "txBestBlocksState" && e.found && e.events) ||
 					[],
 			),
-		[followUp.txEvents],
+		[txEvents],
 	);
 
 	const effectiveDeliveryFee = useMemo(() => {
-		if (!followUp.chainId || !individualEvents) return null;
+		if (!followUpData?.chainId || !individualEvents) return null;
 
 		const deliveryFee = individualEvents.find(
 			(e) =>
@@ -48,7 +50,7 @@ const OutcomeFollowUpInner: FC<{
 		if (fee?.fun.type !== "Fungible") return null;
 
 		const tokenId = getTokenIdFromXcmV3Multilocation(
-			followUp.chainId,
+			followUpData.chainId,
 			fee.id as XcmV3Multilocation,
 		);
 		if (!tokenId) return null;
@@ -57,16 +59,16 @@ const OutcomeFollowUpInner: FC<{
 			tokenId,
 			plancks: fee.fun.value,
 		};
-	}, [individualEvents, followUp.chainId]);
+	}, [individualEvents, followUpData?.chainId]);
 
 	const { data: expectedToken } = useToken({
-		tokenId: followUp.deliveryFeeEstimate?.tokenId,
+		tokenId: followUpData?.deliveryFeeEstimate?.tokenId,
 	});
 	const { data: effectiveToken } = useToken({
 		tokenId: effectiveDeliveryFee?.tokenId,
 	});
 
-	if (!followUp.deliveryFeeEstimate || !expectedToken) return null;
+	if (!followUpData?.deliveryFeeEstimate || !expectedToken) return null;
 
 	return (
 		<div className={cn(effectiveDeliveryFee ? "block" : "hidden")}>
@@ -74,7 +76,7 @@ const OutcomeFollowUpInner: FC<{
 				<div className="text-neutral-500">Estimated delivery fee</div>
 				<div className="text-right font-medium text-neutral-500">
 					<Tokens
-						plancks={followUp.deliveryFeeEstimate.plancks}
+						plancks={followUpData.deliveryFeeEstimate.plancks}
 						token={expectedToken}
 					/>
 				</div>
@@ -88,9 +90,9 @@ const OutcomeFollowUpInner: FC<{
 							token={effectiveToken}
 							className={cn(
 								effectiveDeliveryFee.tokenId !==
-									followUp.deliveryFeeEstimate.tokenId ||
+									followUpData.deliveryFeeEstimate.tokenId ||
 									effectiveDeliveryFee.plancks >=
-										followUp.deliveryFeeEstimate.plancks
+										followUpData.deliveryFeeEstimate.plancks
 									? "text-success"
 									: "text-warn",
 							)}
@@ -99,21 +101,5 @@ const OutcomeFollowUpInner: FC<{
 				</div>
 			</div>
 		</div>
-	);
-};
-
-const OutcomeFollowUp: FC = () => {
-	const { followUp } = useTransactionFollowUp();
-
-	if (!followUp) return null;
-
-	return <OutcomeFollowUpInner followUp={followUp as TeleportFollowUpData} />;
-};
-
-export const TeleportFollowUp: FC = () => {
-	return (
-		<TransactionFollowUp>
-			<OutcomeFollowUp />
-		</TransactionFollowUp>
 	);
 };

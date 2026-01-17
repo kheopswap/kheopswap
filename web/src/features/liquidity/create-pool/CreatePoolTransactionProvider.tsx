@@ -37,6 +37,7 @@ export const CreatePoolTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={assetHub.id}
 			signer={formData.from}
 			onReset={onReset}
+			transactionType="createPool"
 		>
 			{children}
 		</TransactionProvider>

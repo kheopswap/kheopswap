@@ -75,11 +75,12 @@ const FollowUpResultIcon: FC<{
 	</div>
 );
 
-const FollowUpModalInner: FC<{
+export const FollowUpModalInner: FC<{
 	followUp: FollowUpData;
 	onClose: () => void;
+	canAlwaysClose?: boolean;
 	children?: ReactNode;
-}> = ({ followUp, onClose, children }) => {
+}> = ({ followUp, onClose, canAlwaysClose = false, children }) => {
 	const extension = useInjectedExtension(followUp.account.wallet);
 
 	const chain = useMemo(
@@ -255,7 +256,7 @@ const FollowUpModalInner: FC<{
 						Styles.button,
 						"h-12 w-full border-primary-400 bg-primary enabled:hover:bg-primary-450 disabled:opacity-50",
 					)}
-					disabled={!canClose}
+					disabled={!canAlwaysClose && !canClose}
 				>
 					Close
 				</button>

@@ -28,6 +28,7 @@ export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={token?.chainId}
 			signer={formData.from}
 			onReset={onReset}
+			transactionType="transfer"
 		>
 			{children}
 		</TransactionProvider>

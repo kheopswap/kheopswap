@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { TabTitle } from "src/components";
-import { SwapFollowUp } from "./SwapFollowUp";
 import { SwapForm } from "./SwapForm";
 import { SwapProvider, useSwap } from "./SwapProvider";
 import { SwapTransactionProvider } from "./SwapTransactionProvider";
@@ -10,7 +9,6 @@ export const Swap = () => {
 		<SwapProvider>
 			<SwapTransactionProvider>
 				<SwapForm />
-				<SwapFollowUp />
 			</SwapTransactionProvider>
 			<SwapTabTitle />
 		</SwapProvider>
