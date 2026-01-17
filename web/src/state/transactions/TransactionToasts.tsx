@@ -36,7 +36,7 @@ const getToastType = (
 		case "finalized":
 			return "success";
 		case "failed":
-			return "failed" as "error";
+			return "error";
 		default:
 			return "default";
 	}

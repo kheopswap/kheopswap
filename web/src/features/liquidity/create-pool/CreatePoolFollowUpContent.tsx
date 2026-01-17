@@ -5,10 +5,6 @@ import { type FC, useEffect, useMemo } from "react";
 import { useRelayChains } from "src/state";
 import type { TransactionRecord } from "src/state/transactions";
 
-// TODO: The redirect functionality was handled by setRedirectUrl in the old system
-// With the new global modal, we need a different approach for post-transaction navigation
-// For now, we just show the pool ID and let users navigate manually
-
 export const CreatePoolFollowUpContent: FC<{
 	transaction: TransactionRecord;
 }> = ({ transaction }) => {
