@@ -54,14 +54,6 @@ const useFormData = () => {
 
 	const [formData, setFormData] = useState<TransferFormInputs>(defaultValues);
 
-	// Debug logging
-	console.debug("[TransferProvider]", {
-		defaultAccountId,
-		accountId: account?.id,
-		defaultValuesFrom: defaultValues.from,
-		formDataFrom: formData.from,
-	});
-
 	useEffect(() => {
 		if (!isEqual(location.state, formData)) {
 			navigate(location, { state: formData, replace: true });
@@ -70,11 +62,6 @@ const useFormData = () => {
 
 	// account won't be available on first render
 	useEffect(() => {
-		console.debug("[TransferProvider] Effect check:", {
-			formDataFrom: formData.from,
-			defaultValuesFrom: defaultValues.from,
-			shouldUpdate: !formData.from && !!defaultValues.from,
-		});
 		if (!formData.from && defaultValues.from)
 			setFormData((prev) => ({ ...prev, from: defaultValues.from }));
 	}, [defaultValues.from, formData.from]);
