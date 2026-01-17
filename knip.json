@@ -1,0 +1,38 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"workspaces": {
+		".": {
+			"entry": [],
+			"project": []
+		},
+		"packages/constants": {
+			"project": ["src/**/*.ts"]
+		},
+		"packages/papi": {
+			"project": ["src/**/*.ts"]
+		},
+		"packages/registry": {
+			"entry": ["papi-whitelist.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"packages/services": {
+			"project": ["src/**/*.ts"]
+		},
+		"packages/settings": {
+			"project": ["src/**/*.ts"]
+		},
+		"packages/utils": {
+			"project": ["src/**/*.ts"]
+		},
+		"packages/typescript-config": {
+			"entry": [],
+			"project": []
+		},
+		"web": {
+			"entry": ["src/main.tsx"],
+			"project": ["src/**/*.{ts,tsx}"]
+		}
+	},
+	"ignore": ["**/*.d.ts", "**/vite-env.d.ts"],
+	"ignoreExportsUsedInFile": true
+}
