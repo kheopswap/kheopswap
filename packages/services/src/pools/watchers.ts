@@ -19,8 +19,11 @@ import { poolsStore$ } from "./store";
 import { poolsByChainSubscriptions$ } from "./subscriptions";
 import type { AssetConvertionPoolDef } from "./types";
 
-export const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
-	pollChainStatus("poolsByChainStatuses", POOLS_CACHE_DURATION);
+export const {
+	getLoadingStatus$,
+	loadingStatusByChain$: chainPoolsStatuses$,
+	setLoadingStatus,
+} = pollChainStatus("poolsByChainStatuses", POOLS_CACHE_DURATION);
 
 const WATCHERS = new Map<ChainId, () => void>();
 
@@ -142,7 +145,5 @@ poolsByChainSubscriptions$.subscribe((chainIds) => {
 	for (const chainId of chainIds.filter((id) => !WATCHERS.has(id)))
 		WATCHERS.set(chainId, watchPoolsByChain(chainId));
 });
-
-export const chainPoolsStatuses$ = loadingStatusByChain$;
 
 export const getPoolsWatchersCount = () => WATCHERS.size;
