@@ -4,7 +4,7 @@ import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
 import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
-import { balancesStore$ } from "./store";
+import { balancesStore$, cleanupBalancesStore } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
@@ -148,10 +148,19 @@ balanceSubscriptions$.subscribe((balanceIds) => {
 			WATCHERS.delete(balanceId);
 			watcher?.then((sub) => sub.unsubscribe()).catch(() => {});
 		}
-		statusByBalanceId$.next({
-			...statusByBalanceId$.value,
-			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
-		});
+
+		// Clean up statuses for stopped watchers
+		if (watchersToStop.length > 0) {
+			const currentStatuses = statusByBalanceId$.value;
+			const newStatuses = { ...currentStatuses };
+			for (const id of watchersToStop) {
+				delete newStatuses[id];
+			}
+			statusByBalanceId$.next(newStatuses);
+
+			// Clean up store entries that are no longer watched
+			cleanupBalancesStore(new Set(balanceIds));
+		}
 
 		// add missing watchers
 		for (const balanceId of balanceIds

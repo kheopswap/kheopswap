@@ -15,7 +15,7 @@ import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
 import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
-import { tokenInfosStore$ } from "./store";
+import { cleanupTokenInfosStore, tokenInfosStore$ } from "./store";
 import { tokenInfosSubscriptions$ } from "./subscriptions";
 
 const statusByTokenId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
@@ -172,10 +172,19 @@ tokenInfosSubscriptions$.subscribe((tokenIds) => {
 			WATCHERS.delete(tokenId);
 			watcher?.then((sub) => sub?.unsubscribe()).catch(() => {});
 		}
-		statusByTokenId$.next({
-			...statusByTokenId$.value,
-			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
-		});
+
+		// Clean up statuses for stopped watchers
+		if (watchersToStop.length > 0) {
+			const currentStatuses = statusByTokenId$.value;
+			const newStatuses = { ...currentStatuses };
+			for (const id of watchersToStop) {
+				delete newStatuses[id];
+			}
+			statusByTokenId$.next(newStatuses);
+
+			// Clean up store entries that are no longer watched
+			cleanupTokenInfosStore(new Set(tokenIds));
+		}
 
 		// add missing watchers
 		for (const tokenId of tokenIds.filter((id) => !WATCHERS.has(id))) {
