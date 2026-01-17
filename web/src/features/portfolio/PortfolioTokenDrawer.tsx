@@ -85,7 +85,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 						<div
 							key={account.id}
 							className={cn(
-								"flex h-12 items-center gap-4 rounded bg-neutral-850 px-2",
+								"flex h-12 items-center gap-4 rounded-sm bg-neutral-850 px-2",
 								!balance.tokenPlancks && "opacity-50",
 							)}
 						>

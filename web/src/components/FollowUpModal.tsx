@@ -196,9 +196,9 @@ const FollowUpModalInner: FC<{
 	return (
 		<div
 			className={cn(
-				"h-dvh max-h-dvh w-dvw max-w-[100dvw] p-3 sm:p-4",
+				"h-dvh max-h-dvh w-dvw max-w-dvw p-3 sm:p-4",
 				"bg-black sm:border-neutral-850",
-				"sm:h-[32rem] sm:w-auto sm:rounded-xl sm:border sm:shadow",
+				"sm:h-128 sm:w-auto sm:rounded-xl sm:border sm:shadow-sm",
 				"flex flex-col",
 			)}
 		>

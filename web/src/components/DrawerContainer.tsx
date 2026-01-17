@@ -41,7 +41,7 @@ export const DrawerContainer: FC<{
 				{onClose && (
 					<button
 						type="button"
-						className="rounded-sm outline-white ring-white focus:outline-none focus-visible:ring-1"
+						className="rounded-xs outline-white ring-white focus:outline-hidden focus-visible:ring-1"
 						onClick={onClose}
 					>
 						<CloseIcon className="size-5 fill-white" />

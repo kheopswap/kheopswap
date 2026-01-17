@@ -53,13 +53,13 @@ export const SearchInput: FC<{
 				type="text"
 				placeholder={placeholder}
 				className={
-					"grow bg-transparent outline-none placeholder:text-neutral-600"
+					"grow bg-transparent outline-hidden placeholder:text-neutral-600"
 				}
 				onChange={(e) => setSearch(e.target.value)}
 			/>
 			<button
 				type="button"
-				className={cn("rounded-sm", !search && "invisible")}
+				className={cn("rounded-xs", !search && "invisible")}
 				onClick={handleResetClick}
 			>
 				<XMarkIcon className="size-5 stroke-white" />

@@ -12,7 +12,7 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
 				<div className="grow py-2 pb-4">
 					<div className="container mx-auto max-w-2xl">
 						<HorizontalNav />
-						<div className="max-w-[100dvw] animate-fade-in">{children}</div>
+						<div className="max-w-dvw animate-fade-in">{children}</div>
 					</div>
 				</div>
 			</div>

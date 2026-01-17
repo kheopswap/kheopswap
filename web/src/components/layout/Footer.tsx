@@ -104,7 +104,7 @@ const FeedbackButton = () => {
 					<button
 						type="button"
 						onClick={oFeedbackSent.close}
-						className="rounded bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+						className="rounded-sm bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 					>
 						Close
 					</button>
@@ -182,7 +182,7 @@ const FeedbackContent: FC<{ onClose: () => void; onSent: () => void }> = ({
 			</p>
 			<textarea
 				ref={refTextArea}
-				className="mt-4 w-full resize-none border border-primary-700 bg-primary-950 p-1 outline-primary focus:outline"
+				className="mt-4 w-full resize-none border border-primary-700 bg-primary-950 p-1 outline-primary focus:outline-solid"
 				rows={5}
 				placeholder="Your feedback (400 characters max)"
 				maxLength={400}
@@ -198,7 +198,7 @@ const FeedbackContent: FC<{ onClose: () => void; onSent: () => void }> = ({
 			<div className="flex justify-end gap-4">
 				<button
 					type="button"
-					className="rounded bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+					className="rounded-sm bg-primary p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 					onClick={onClose}
 				>
 					Cancel
@@ -206,7 +206,7 @@ const FeedbackContent: FC<{ onClose: () => void; onSent: () => void }> = ({
 				<button
 					type="button"
 					disabled={!feedback.length}
-					className="relative flex items-center justify-center rounded bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+					className="relative flex items-center justify-center rounded-sm bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
 					onClick={handleSend}
 				>
 					<span className={cn(isSending && "invisible")}>Send</span>

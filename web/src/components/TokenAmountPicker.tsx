@@ -106,7 +106,7 @@ export const TokenAmountPicker: FC<{
 					autoComplete="off"
 					autoCorrect="off"
 					className={cn(
-						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left text-2xl font-semibold text-white placeholder:text-white/50 focus:border-none focus:outline-none focus:ring-0",
+						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left text-2xl font-semibold text-white placeholder:text-white/50 focus:border-none focus:outline-hidden focus:ring-0",
 						isComputingValue && "invisible",
 					)}
 				/>

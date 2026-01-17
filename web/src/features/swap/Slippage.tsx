@@ -20,7 +20,7 @@ const SlippageButton: FC<{
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"rounded bg-purple p-2 text-center ring-primary-300 hover:bg-primary-400",
+				"rounded-sm bg-purple p-2 text-center ring-primary-300 hover:bg-primary-400",
 				selected && "ring-1",
 			)}
 		>

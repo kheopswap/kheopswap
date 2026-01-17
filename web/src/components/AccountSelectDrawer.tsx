@@ -167,7 +167,7 @@ const AddressInput: FC<{
 	return (
 		<div
 			className={cn(
-				"flex h-[42px] w-full items-center rounded-sm border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline",
+				"flex h-[42px] w-full items-center rounded-xs border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline-solid",
 				localAddress && !isValid
 					? "border-error-500 outline-error-500"
 					: "border-neutral-500 outline-neutral-500",
@@ -178,7 +178,7 @@ const AddressInput: FC<{
 				defaultValue={localAddress}
 				onChange={(e) => setLocalAddress(e.target.value)}
 				autoComplete="off"
-				className="grow bg-transparent px-2 outline-none"
+				className="grow bg-transparent px-2 outline-hidden"
 			/>
 			<div
 				className={cn(

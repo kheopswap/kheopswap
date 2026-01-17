@@ -10,7 +10,7 @@ export const Shimmer: FC<{ children?: ReactNode; className?: string }> = ({
 		<Pulse
 			pulse
 			className={cn(
-				"select-none rounded",
+				"select-none rounded-sm",
 				className,
 				"bg-neutral-800 text-neutral-800",
 			)}

@@ -68,7 +68,7 @@ export const TooltipContent = React.forwardRef<
 				<div
 					ref={ref}
 					className={cn(
-						"z-50 rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-xs text-neutral-300 shadow",
+						"z-50 rounded-sm border border-neutral-700 bg-neutral-950 px-3 py-2 text-xs text-neutral-300 shadow-sm",
 						props.className,
 					)}
 					style={{
