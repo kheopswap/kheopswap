@@ -28,7 +28,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
+        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.2)
 
   packages/papi:
     dependencies:
@@ -49,7 +49,7 @@ importers:
         version: 2.1.8
       polkadot-api:
         specifier: ^1.23.2
-        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1)
+        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -62,19 +62,19 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
+        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.2)
 
   packages/registry:
     dependencies:
       '@polkadot-api/descriptors':
         specifier: file:.papi/descriptors
-        version: file:packages/registry/.papi/descriptors(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1))
+        version: file:packages/registry/.papi/descriptors(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2))
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
       polkadot-api:
         specifier: ^1.23.2
-        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1)
+        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2)
     devDependencies:
       '@kheopswap/constants':
         specifier: workspace:*
@@ -90,7 +90,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
+        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.2)
 
   packages/services:
     dependencies:
@@ -111,7 +111,7 @@ importers:
         version: 4.17.21
       polkadot-api:
         specifier: ^1.23.2
-        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1)
+        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -120,14 +120,14 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
       '@types/lodash':
-        specifier: ^4.17.20
-        version: 4.17.20
+        specifier: ^4.17.23
+        version: 4.17.23
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
         specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
+        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.2)
 
   packages/settings:
     dependencies:
@@ -145,14 +145,14 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
       '@types/lodash':
-        specifier: ^4.17.20
-        version: 4.17.20
+        specifier: ^4.17.23
+        version: 4.17.23
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
         specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
+        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.2)
 
   packages/typescript-config: {}
 
@@ -166,7 +166,7 @@ importers:
         version: 2.1.1
       polkadot-api:
         specifier: ^1.23.2
-        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1)
+        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2)
       react:
         specifier: ^19.1.0
         version: 19.2.3
@@ -203,7 +203,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1)
+        version: 6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.2)
 
   web:
     dependencies:
@@ -241,14 +241,14 @@ importers:
         specifier: workspace:*
         version: link:../packages/utils
       '@maskito/core':
-        specifier: ^3.11.1
-        version: 3.11.1
+        specifier: ^5.0.1
+        version: 5.0.1
       '@maskito/kit':
-        specifier: ^3.11.1
-        version: 3.11.1(@maskito/core@3.11.1)
+        specifier: ^5.0.1
+        version: 5.0.1(@maskito/core@5.0.1)
       '@maskito/react':
-        specifier: ^3.11.1
-        version: 3.11.1(@maskito/core@3.11.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^5.0.1
+        version: 5.0.1(@maskito/core@5.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@polkadot-api/metadata-builders':
         specifier: ^0.13.8
         version: 0.13.8
@@ -266,16 +266,16 @@ importers:
         version: 0.0.1-alpha.2
       '@polkadot-ui/react':
         specifier: 0.0.1-alpha.35
-        version: 0.0.1-alpha.35(@noble/hashes@2.0.1)(@polkadot-api/substrate-bindings@0.16.6)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.4(@polkadot/keyring@13.1.1(@polkadot/util-crypto@13.1.1(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 0.0.1-alpha.35(@noble/hashes@2.0.1)(@polkadot-api/substrate-bindings@0.16.6)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.4(@polkadot/keyring@13.1.1(@polkadot/util-crypto@13.1.1(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@react-rxjs/core':
         specifier: ^0.10.8
         version: 0.10.8(react@19.2.3)(rxjs@7.8.2)
       '@talismn/orb':
-        specifier: 0.3.0
-        version: 0.3.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.3.5
+        version: 0.3.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tanstack/react-query':
-        specifier: ^5.90.3
-        version: 5.90.3(react@19.2.3)
+        specifier: ^5.90.16
+        version: 5.90.16(react@19.2.3)
       '@w3f/polkadot-icons':
         specifier: ^1.0.0
         version: 1.0.0(react@19.2.3)
@@ -302,7 +302,7 @@ importers:
         version: 2.0.6
       polkadot-api:
         specifier: ^1.23.2
-        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1)
+        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2)
       react:
         specifier: ^19.1.0
         version: 19.2.3
@@ -316,8 +316,8 @@ importers:
         specifier: ^6.30.1
         version: 6.30.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-rx:
-        specifier: ^4.2.1
-        version: 4.2.1(react@19.2.3)(rxjs@7.8.2)
+        specifier: ^4.2.2
+        version: 4.2.2(react@19.2.3)(rxjs@7.8.2)
       react-toastify:
         specifier: ^10.0.6
         version: 10.0.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -334,12 +334,12 @@ importers:
         specifier: ^2.44.2
         version: 2.44.2(typescript@5.9.3)(zod@4.3.5)
       yaml:
-        specifier: ^2.8.1
-        version: 2.8.1
+        specifier: ^2.8.2
+        version: 2.8.2
     devDependencies:
       '@types/lodash':
-        specifier: ^4.17.20
-        version: 4.17.20
+        specifier: ^4.17.23
+        version: 4.17.23
       '@types/numeral':
         specifier: ^2.0.5
         version: 2.0.5
@@ -351,7 +351,7 @@ importers:
         version: 19.2.3(@types/react@19.2.8)
       '@vitejs/plugin-react-swc':
         specifier: ^4.2.0
-        version: 4.2.2(@swc/helpers@0.5.17)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1))
+        version: 4.2.2(@swc/helpers@0.5.17)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2))
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
@@ -363,22 +363,22 @@ importers:
         version: 8.5.6
       tailwindcss:
         specifier: ^3.4.18
-        version: 3.4.18(yaml@2.8.1)
+        version: 3.4.18(yaml@2.8.2)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
         specifier: ^6.4.0
-        version: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)
+        version: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)
       vite-plugin-checker:
         specifier: ^0.12.0
-        version: 0.12.0(@biomejs/biome@2.3.11)(optionator@0.9.4)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1))
+        version: 0.12.0(@biomejs/biome@2.3.11)(optionator@0.9.4)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2))
       vite-plugin-node-polyfills:
         specifier: ^0.24.0
-        version: 0.24.0(rollup@4.55.1)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1))
+        version: 0.24.0(rollup@4.55.1)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2))
       vite-plugin-svgr:
         specifier: ^4.5.0
-        version: 4.5.0(rollup@4.55.1)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1))
+        version: 4.5.0(rollup@4.55.1)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2))
 
 packages:
 
@@ -909,18 +909,18 @@ packages:
   '@lit/reactive-element@1.6.3':
     resolution: {integrity: sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==}
 
-  '@maskito/core@3.11.1':
-    resolution: {integrity: sha512-zN5k/BiZXblo8mEFhsGnnXBCqKMkjEGArorOOcpB1/ymZyqF12Dk6IipEsSE6abMnWw4YF2tukzfq73BFZKz8A==}
+  '@maskito/core@5.0.1':
+    resolution: {integrity: sha512-GhampUrd0JM3RlA8Jq63Lq8pXMEYv2hmRcUMwRl9LkirIGhst4TPpaOat4GnyK539CGePRw4W7sI1uYOuJ05ew==}
 
-  '@maskito/kit@3.11.1':
-    resolution: {integrity: sha512-KOBUqxRz383xJWCoe+Emwxv2oAzUrZobIN+Gntmi5Py2S10XbqYnGX/6W7QHN8CUK2Nx11d3HsxbEQaq5Hinjg==}
+  '@maskito/kit@5.0.1':
+    resolution: {integrity: sha512-34neUTonhKjYHRt4Ft8mVS1hLDhZ198w/7BSYO6xyFvZVwQK6IqMGEWGuy1ty8R239ZgyIY4v4E1jxS0LyUTwA==}
     peerDependencies:
-      '@maskito/core': ^3.11.1
+      '@maskito/core': ^5.0.1
 
-  '@maskito/react@3.11.1':
-    resolution: {integrity: sha512-Euqlm2mafBs1h9SPME0UEm8S/7CY1WwGusZSLScQoHx1dNCU+XVZl9cTDhnNI2/Ly+CnmcG/plgsGoeprabBHQ==}
+  '@maskito/react@5.0.1':
+    resolution: {integrity: sha512-0QxG9G9HboT4hxfOKNzioXLpimHmQ7KQLayNjZqaIEFYp5B1aTOZ3cME8+eBqMvsrDSv4g7uxZ8D+pjQbU7+8A==}
     peerDependencies:
-      '@maskito/core': ^3.11.1
+      '@maskito/core': ^5.0.1
       react: '>=16.8'
       react-dom: '>=16.8'
 
@@ -960,24 +960,36 @@ packages:
     resolution: {integrity: sha512-2I0gnIVPtfnMw9ee9h1dJG7tp81+8Ob3OJb3Mv37rx5L40/b0i7djjCVvGOVqc9AEIQyvyu1i6ypKdFw8R8gQw==}
     engines: {node: ^14.21.3 || >=16}
 
+  '@noble/ciphers@2.0.1':
+    resolution: {integrity: sha512-xHK3XHPUW8DTAobU+G0XT+/w+JLM7/8k1UFdB5xg/zTFPnFCobhftzw8wl4Lw2aq/Rvir5pxfZV5fEazmeCJ2g==}
+    engines: {node: '>= 20.19.0'}
+
   '@noble/curves@1.8.0':
     resolution: {integrity: sha512-j84kjAbzEnQHaSIhRPUmB3/eVXu2k3dKPl2LOrR8fSOIL+89U+7lV117EWHtq/GHM3ReGHM46iRBdZfpc4HRUQ==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@noble/curves@1.8.2':
+    resolution: {integrity: sha512-vnI7V6lFNe0tLAuJMu+2sX+FcL14TaCWy1qiczg1VwRmPrpQCdq5ESXQMqUc2tluRNf6irBXrWbl1mGN8uaU/g==}
     engines: {node: ^14.21.3 || >=16}
 
   '@noble/curves@1.9.1':
     resolution: {integrity: sha512-k11yZxZg+t+gWvBbIswW0yoJlu8cHOC7dhunwOzoWH/mXGBiYyR4YY6hAEK/3EUs4UpB8la1RfdRpeGsFHkWsA==}
     engines: {node: ^14.21.3 || >=16}
 
+  '@noble/curves@1.9.2':
+    resolution: {integrity: sha512-HxngEd2XUcg9xi20JkwlLCtYwfoFw4JGkuZpT+WlsPD4gB/cxkvTD8fSsoAnphGZhFdZYKeQIPCuFlWPm1uE0g==}
+    engines: {node: ^14.21.3 || >=16}
+
   '@noble/curves@1.9.7':
     resolution: {integrity: sha512-gbKGcRUYIjA3/zCCNaWDciTMFI0dCkvou3TL8Zmy5Nc7sJ47a0jtOeZoTaMxkuqRo9cRhjOdZJXegxYE5FN/xw==}
     engines: {node: ^14.21.3 || >=16}
 
-  '@noble/hashes@1.5.0':
-    resolution: {integrity: sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA==}
-    engines: {node: ^14.21.3 || >=16}
-
   '@noble/hashes@1.7.0':
     resolution: {integrity: sha512-HXydb0DgzTpDPwbVeDGCG1gIu7X6+AuU6Zl6av/E/KG8LMsvPntvq+w17CHRpKBmN6Ybdrt1eP3k4cj8DJa78w==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@noble/hashes@1.7.2':
+    resolution: {integrity: sha512-biZ0NUSxyjLLqo6KxEJ1b+C2NAx0wtDoFvCaXHGgUkeHzf3Xc1xKumFKREuT7f7DARNZ/slvYUwFG6B0f2b6hQ==}
     engines: {node: ^14.21.3 || >=16}
 
   '@noble/hashes@1.8.0':
@@ -1638,9 +1650,6 @@ packages:
     peerDependencies:
       rxjs: '>=7'
 
-  '@scure/base@1.1.9':
-    resolution: {integrity: sha512-8YKhl8GHiNI/pU2VMaofa2Tor7PJRAjwQLBBuilkJ9L5+13yVbC7JO/wS7piioAvPSwR3JKM1IJ/u4xQzbcXKg==}
-
   '@scure/base@1.2.6':
     resolution: {integrity: sha512-g/nm5FgUa//MCj1gV09zTJTaM6KBAHqLN907YVQqf7zC49+DcO4B1so4ZX07Ef10Twr6nuqYEH9GEggFXA4Fmg==}
 
@@ -1649,6 +1658,9 @@ packages:
 
   '@scure/bip32@1.7.0':
     resolution: {integrity: sha512-E4FFX/N3f4B80AKWp5dP6ow+flD1LQZo/w8UnLGYZO674jS6YnYeepycOOksv+vLPSpgN35wgKgy+ybfTb2SMw==}
+
+  '@scure/bip39@1.5.4':
+    resolution: {integrity: sha512-TFM4ni0vKvCfBpohoh+/lY05i9gRbSwXWngAsF4CABQxoaOHijxuaZ2R6cStDQ5CHtHO9aGJTr4ksVJASRRyMA==}
 
   '@scure/bip39@1.6.0':
     resolution: {integrity: sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A==}
@@ -1828,17 +1840,21 @@ packages:
   '@swc/types@0.1.25':
     resolution: {integrity: sha512-iAoY/qRhNH8a/hBvm3zKj9qQ4oc2+3w1unPJa2XvTK3XjeLXtzcCingVPw/9e5mn1+0yPqxcBGp9Jf0pkfMb1g==}
 
-  '@talismn/orb@0.3.0':
-    resolution: {integrity: sha512-cBxS/h/l9zlmxrxKG1KdmbGkyPIpwoLvMAKv6he74z0KTnoQDBNEQkJizmO3gNo9uFLD7d4JBT1rPl46R67Xfw==}
+  '@talismn/crypto@0.3.0':
+    resolution: {integrity: sha512-muR17IkudvOqheeG8r8oP/g647luPMSampaiKvfk0VUukN9cBmOyNUsXrSgcOIu4ATFMe7VEuP75JUOdOF1Szg==}
+    engines: {node: '>=20'}
+
+  '@talismn/orb@0.3.5':
+    resolution: {integrity: sha512-C3X4cRhWQE+5OcMzUHkTrwAXWTij7i85nwX2emsx8IhRkzMRng0sfrnxXvKOePSbZUTJfnvE20Ti3gCAqhjB7A==}
     peerDependencies:
       react: '*'
       react-dom: '*'
 
-  '@tanstack/query-core@5.90.3':
-    resolution: {integrity: sha512-HtPOnCwmx4dd35PfXU8jjkhwYrsHfuqgC8RCJIwWglmhIUIlzPP0ZcEkDAc+UtAWCiLm7T8rxeEfHZlz3hYMCA==}
+  '@tanstack/query-core@5.90.16':
+    resolution: {integrity: sha512-MvtWckSVufs/ja463/K4PyJeqT+HMlJWtw6PrCpywznd2NSgO3m4KwO9RqbFqGg6iDE8vVMFWMeQI4Io3eEYww==}
 
-  '@tanstack/react-query@5.90.3':
-    resolution: {integrity: sha512-i/LRL6DtuhG6bjGzavIMIVuKKPWx2AnEBIsBfuMm3YoHne0a20nWmsatOCBcVSaT0/8/5YFjNkebHAPLVUSi0Q==}
+  '@tanstack/react-query@5.90.16':
+    resolution: {integrity: sha512-bpMGOmV4OPmif7TNMteU/Ehf/hoC0Kf98PDc0F4BZkFrEapRMEqI/V6YS0lyzwSV6PQpY1y4xxArUIfBW5LVxQ==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -1860,8 +1876,8 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/lodash@4.17.20':
-    resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
+  '@types/lodash@4.17.23':
+    resolution: {integrity: sha512-RDvF6wTulMPjrNdCoYRC8gNR880JNGT8uB+REUpC2Ns4pRqQJhGz90wh7rgdXDPpCczF3VGktDuFGVnz8zP7HA==}
 
   '@types/node@24.10.8':
     resolution: {integrity: sha512-r0bBaXu5Swb05doFYO2kTWHMovJnNVbCsII0fhesM8bNRlLhXIuckley4a2DaD+vOdmm5G+zGkQZAPZsF80+YQ==}
@@ -2061,6 +2077,9 @@ packages:
     resolution: {integrity: sha512-OMu3BGQ4E7P1ErFsIPpbJh0qvDudM/UuJeHgkAvfWe+0HFJCXh+t/l8L6fVLR55RI/UbKrVLnAXZSVwd9ysWYw==}
     hasBin: true
 
+  bech32@2.0.0:
+    resolution: {integrity: sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==}
+
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
@@ -2117,6 +2136,9 @@ packages:
 
   bs58@6.0.0:
     resolution: {integrity: sha512-PD0wEnEYg6ijszw/u8s+iI3H17cTymlrwkKhDhPZq+Sokl3AU4htyBFTjAeNAlCCmg0f53g6ih3jATyCKftTfw==}
+
+  bs58check@4.0.0:
+    resolution: {integrity: sha512-FsGDOnFg9aVI9erdriULkd/JjEWONV/lQE5aYziB5PoBsXRind56lh8doIZIc9X4HoxT5x4bLjMWN1/NB8Zp5g==}
 
   buffer-xor@1.0.3:
     resolution: {integrity: sha512-571s0T7nZWK6vB67HI5dyUF7wXiNcfaPPPTl6zYCNApANjIvYJTg7hlud/+cJpdAhS7dVzqMLmfhfHR3rAcOjQ==}
@@ -2844,6 +2866,10 @@ packages:
   mersenne-twister@1.1.0:
     resolution: {integrity: sha512-mUYWsMKNrm4lfygPkL3OfGzOPTR2DBlTkBNHM//F6hGp8cLThY897crAlk3/Jo17LEOOjQUrNAx6DvgO77QJkA==}
 
+  micro-sr25519@0.1.3:
+    resolution: {integrity: sha512-Tw1I3Yjq9XySsU3hsgPVkQTG3NIje070VUWtT4tb9d1tVwQqpCIBH4SM5h4Mxp2Ua4PUyPsot2F40eyJ0QnzTg==}
+    deprecated: Switch to "@scure/sr25519" for security updates
+
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
@@ -2872,6 +2898,10 @@ packages:
   minipass@7.1.2:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
+
+  mlkem@2.5.0:
+    resolution: {integrity: sha512-TnSvGBs0EVPukQcdPF0882ZoYXYuD2rb+VgO0kUDbFi/XM1rJOwnQoFW3wGGuc3nG3AT/zp3oWJ86W7ewwKYyA==}
+    engines: {node: '>=16.0.0'}
 
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
@@ -3253,8 +3283,8 @@ packages:
   randomfill@1.0.4:
     resolution: {integrity: sha512-87lcbR8+MhcWcUiQ+9e+Rwx8MyR2P7qnt15ynUlbm3TU/fjbgz4GsvfSUDTemtCCtVCqb4ZcEFlyPNTh9bBTLw==}
 
-  react-compiler-runtime@19.1.0-rc.3:
-    resolution: {integrity: sha512-Cssogys2XZu6SqxRdX2xd8cQAf57BBvFbLEBlIa77161lninbKUn/EqbecCe7W3eqDQfg3rIoOwzExzgCh7h/g==}
+  react-compiler-runtime@1.0.0:
+    resolution: {integrity: sha512-rRfjYv66HlG8896yPUDONgKzG5BxZD1nV9U6rkm+7VCuvQc903C4MjcoZR4zPw53IKSOX9wMQVpA1IAbRtzQ7w==}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
 
@@ -3282,8 +3312,8 @@ packages:
     peerDependencies:
       react: '>=16.8'
 
-  react-rx@4.2.1:
-    resolution: {integrity: sha512-tafRnEQ8FSlvPuC8a7UzGYXr4QSZBD0AmJexWr+XGxW3RafkDWKHrXtgMUaT06RLOg3f3FzOoc3otRzaCdjulg==}
+  react-rx@4.2.2:
+    resolution: {integrity: sha512-L0M51QxRnb5RndopV3lGPtG+O2rGVZl6aIzH1Fyx5ieOog/E947Xu00JERxksPJ9Lxn7kdME2wFtsWpiKTgI+A==}
     peerDependencies:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
@@ -4026,8 +4056,8 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
-  yaml@2.8.1:
-    resolution: {integrity: sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==}
+  yaml@2.8.2:
+    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -4450,15 +4480,15 @@ snapshots:
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.4.0
 
-  '@maskito/core@3.11.1': {}
+  '@maskito/core@5.0.1': {}
 
-  '@maskito/kit@3.11.1(@maskito/core@3.11.1)':
+  '@maskito/kit@5.0.1(@maskito/core@5.0.1)':
     dependencies:
-      '@maskito/core': 3.11.1
+      '@maskito/core': 5.0.1
 
-  '@maskito/react@3.11.1(@maskito/core@3.11.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@maskito/react@5.0.1(@maskito/core@5.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
-      '@maskito/core': 3.11.1
+      '@maskito/core': 5.0.1
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
@@ -4518,11 +4548,21 @@ snapshots:
 
   '@noble/ciphers@1.3.0': {}
 
+  '@noble/ciphers@2.0.1': {}
+
   '@noble/curves@1.8.0':
     dependencies:
       '@noble/hashes': 1.7.0
 
+  '@noble/curves@1.8.2':
+    dependencies:
+      '@noble/hashes': 1.7.2
+
   '@noble/curves@1.9.1':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
+  '@noble/curves@1.9.2':
     dependencies:
       '@noble/hashes': 1.8.0
 
@@ -4530,9 +4570,9 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.8.0
 
-  '@noble/hashes@1.5.0': {}
-
   '@noble/hashes@1.7.0': {}
+
+  '@noble/hashes@1.7.2': {}
 
   '@noble/hashes@1.8.0': {}
 
@@ -4615,7 +4655,7 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@polkadot-api/cli@0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.1)':
+  '@polkadot-api/cli@0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.2)':
     dependencies:
       '@commander-js/extra-typings': 14.0.0(commander@14.0.2)
       '@polkadot-api/codegen': 0.21.1
@@ -4641,7 +4681,7 @@ snapshots:
       read-pkg: 10.0.0
       rxjs: 7.8.2
       tsc-prog: 2.3.0(typescript@5.9.3)
-      tsup: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1)
+      tsup: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.2)
       typescript: 5.9.3
       write-package: 7.2.0
     transitivePeerDependencies:
@@ -4655,7 +4695,7 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@polkadot-api/cli@0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.1)':
+  '@polkadot-api/cli@0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.2)':
     dependencies:
       '@commander-js/extra-typings': 14.0.0(commander@14.0.2)
       '@polkadot-api/codegen': 0.21.1
@@ -4681,7 +4721,7 @@ snapshots:
       read-pkg: 10.0.0
       rxjs: 7.8.2
       tsc-prog: 2.3.0(typescript@5.9.3)
-      tsup: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1)
+      tsup: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.2)
       typescript: 5.9.3
       write-package: 7.2.0
     transitivePeerDependencies:
@@ -4703,9 +4743,9 @@ snapshots:
       '@polkadot-api/substrate-bindings': 0.16.6
       '@polkadot-api/utils': 0.2.0
 
-  '@polkadot-api/descriptors@file:packages/registry/.papi/descriptors(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1))':
+  '@polkadot-api/descriptors@file:packages/registry/.papi/descriptors(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2))':
     dependencies:
-      polkadot-api: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1)
+      polkadot-api: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2)
 
   '@polkadot-api/ink-contracts@0.4.5':
     dependencies:
@@ -4834,14 +4874,14 @@ snapshots:
 
   '@polkadot-ui/core@0.0.1-alpha.2': {}
 
-  '@polkadot-ui/react@0.0.1-alpha.35(@noble/hashes@2.0.1)(@polkadot-api/substrate-bindings@0.16.6)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.4(@polkadot/keyring@13.1.1(@polkadot/util-crypto@13.1.1(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@polkadot-ui/react@0.0.1-alpha.35(@noble/hashes@2.0.1)(@polkadot-api/substrate-bindings@0.16.6)(@polkadot-ui/assets@0.0.1-alpha.2)(@polkadot-ui/core@0.0.1-alpha.2)(@polkadot-ui/utils@0.0.4(@polkadot/keyring@13.1.1(@polkadot/util-crypto@13.1.1(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@noble/hashes': 2.0.1
       '@polkadot-api/substrate-bindings': 0.16.6
       '@polkadot-ui/assets': 0.0.1-alpha.2
       '@polkadot-ui/core': 0.0.1-alpha.2
       '@polkadot-ui/utils': 0.0.4(@polkadot/keyring@13.1.1(@polkadot/util-crypto@13.1.1(@polkadot/util@13.1.1))(@polkadot/util@13.1.1))(@polkadot/util@13.1.1)
-      polkadot-api: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1)
+      polkadot-api: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2)
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
@@ -5176,8 +5216,6 @@ snapshots:
     dependencies:
       rxjs: 7.8.2
 
-  '@scure/base@1.1.9': {}
-
   '@scure/base@1.2.6': {}
 
   '@scure/base@2.0.0': {}
@@ -5186,6 +5224,11 @@ snapshots:
     dependencies:
       '@noble/curves': 1.9.1
       '@noble/hashes': 1.8.0
+      '@scure/base': 1.2.6
+
+  '@scure/bip39@1.5.4':
+    dependencies:
+      '@noble/hashes': 1.7.2
       '@scure/base': 1.2.6
 
   '@scure/bip39@1.6.0':
@@ -5346,20 +5389,33 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
-  '@talismn/orb@0.3.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@talismn/crypto@0.3.0':
     dependencies:
-      '@noble/hashes': 1.5.0
-      '@scure/base': 1.1.9
+      '@noble/ciphers': 2.0.1
+      '@noble/curves': 1.9.2
+      '@noble/hashes': 1.8.0
+      '@scure/base': 1.2.6
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.5.4
+      bech32: 2.0.0
+      bs58check: 4.0.0
+      micro-sr25519: 0.1.3
+      mlkem: 2.5.0
+      scale-ts: 1.6.1
+
+  '@talismn/orb@0.3.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@talismn/crypto': 0.3.0
       blueimp-md5: 2.19.0
       color: 4.2.3
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@tanstack/query-core@5.90.3': {}
+  '@tanstack/query-core@5.90.16': {}
 
-  '@tanstack/react-query@5.90.3(react@19.2.3)':
+  '@tanstack/react-query@5.90.16(react@19.2.3)':
     dependencies:
-      '@tanstack/query-core': 5.90.3
+      '@tanstack/query-core': 5.90.16
       react: 19.2.3
 
   '@tanstack/react-virtual@3.13.12(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
@@ -5381,7 +5437,7 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
-  '@types/lodash@4.17.20': {}
+  '@types/lodash@4.17.23': {}
 
   '@types/node@24.10.8':
     dependencies:
@@ -5411,11 +5467,11 @@ snapshots:
     dependencies:
       '@types/node': 25.0.8
 
-  '@vitejs/plugin-react-swc@4.2.2(@swc/helpers@0.5.17)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1))':
+  '@vitejs/plugin-react-swc@4.2.2(@swc/helpers@0.5.17)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.47
       '@swc/core': 1.13.5(@swc/helpers@0.5.17)
-      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)
+      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@swc/helpers'
 
@@ -5818,6 +5874,8 @@ snapshots:
 
   baseline-browser-mapping@2.8.16: {}
 
+  bech32@2.0.0: {}
+
   binary-extensions@2.3.0: {}
 
   blakejs@1.2.1: {}
@@ -5897,6 +5955,11 @@ snapshots:
   bs58@6.0.0:
     dependencies:
       base-x: 5.0.1
+
+  bs58check@4.0.0:
+    dependencies:
+      '@noble/hashes': 1.8.0
+      bs58: 6.0.0
 
   buffer-xor@1.0.3: {}
 
@@ -6673,6 +6736,11 @@ snapshots:
 
   mersenne-twister@1.1.0: {}
 
+  micro-sr25519@0.1.3:
+    dependencies:
+      '@noble/curves': 1.8.2
+      '@noble/hashes': 1.7.2
+
   micromatch@4.0.8:
     dependencies:
       braces: 3.0.3
@@ -6696,6 +6764,8 @@ snapshots:
   minimist@1.2.8: {}
 
   minipass@7.1.2: {}
+
+  mlkem@2.5.0: {}
 
   mlly@1.8.0:
     dependencies:
@@ -7033,9 +7103,9 @@ snapshots:
 
   pngjs@5.0.0: {}
 
-  polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1):
+  polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2):
     dependencies:
-      '@polkadot-api/cli': 0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.1)
+      '@polkadot-api/cli': 0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.2)
       '@polkadot-api/ink-contracts': 0.4.5
       '@polkadot-api/json-rpc-provider': 0.0.4
       '@polkadot-api/known-chains': 0.9.17
@@ -7066,9 +7136,9 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.1):
+  polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(yaml@2.8.2):
     dependencies:
-      '@polkadot-api/cli': 0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.1)
+      '@polkadot-api/cli': 0.18.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.2)
       '@polkadot-api/ink-contracts': 0.4.5
       '@polkadot-api/json-rpc-provider': 0.0.4
       '@polkadot-api/known-chains': 0.9.17
@@ -7113,21 +7183,21 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.5.6
 
-  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.1):
+  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.2):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 1.21.7
       postcss: 8.5.6
-      yaml: 2.8.1
+      yaml: 2.8.2
 
-  postcss-load-config@6.0.1(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.1):
+  postcss-load-config@6.0.1(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.2):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.6.1
       postcss: 8.5.6
-      yaml: 2.8.1
+      yaml: 2.8.2
 
   postcss-nested@6.2.0(postcss@8.5.6):
     dependencies:
@@ -7203,7 +7273,7 @@ snapshots:
       randombytes: 2.1.0
       safe-buffer: 5.2.1
 
-  react-compiler-runtime@19.1.0-rc.3(react@19.2.3):
+  react-compiler-runtime@1.0.0(react@19.2.3):
     dependencies:
       react: 19.2.3
 
@@ -7230,11 +7300,11 @@ snapshots:
       '@remix-run/router': 1.23.0
       react: 19.2.3
 
-  react-rx@4.2.1(react@19.2.3)(rxjs@7.8.2):
+  react-rx@4.2.2(react@19.2.3)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.2.3
-      react-compiler-runtime: 19.1.0-rc.3(react@19.2.3)
+      react-compiler-runtime: 1.0.0(react@19.2.3)
       rxjs: 7.8.2
       use-effect-event: 2.0.3(react@19.2.3)
 
@@ -7598,7 +7668,7 @@ snapshots:
 
   tailwind-merge@2.6.0: {}
 
-  tailwindcss@3.4.18(yaml@2.8.1):
+  tailwindcss@3.4.18(yaml@2.8.2):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -7617,7 +7687,7 @@ snapshots:
       postcss: 8.5.6
       postcss-import: 15.1.0(postcss@8.5.6)
       postcss-js: 4.1.0(postcss@8.5.6)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.1)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.2)
       postcss-nested: 6.2.0(postcss@8.5.6)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.10
@@ -7679,7 +7749,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1):
+  tsup@8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.2):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.12)
       cac: 6.7.14
@@ -7690,7 +7760,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.1)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)(yaml@2.8.2)
       resolve-from: 5.0.0
       rollup: 4.55.1
       source-map: 0.8.0-beta.0
@@ -7708,7 +7778,7 @@ snapshots:
       - tsx
       - yaml
 
-  tsup@8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1):
+  tsup@8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.2):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.12)
       cac: 6.7.14
@@ -7719,7 +7789,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.1)
+      postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.6)(yaml@2.8.2)
       resolve-from: 5.0.0
       rollup: 4.55.1
       source-map: 0.8.0-beta.0
@@ -7857,7 +7927,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  vite-plugin-checker@0.12.0(@biomejs/biome@2.3.11)(optionator@0.9.4)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)):
+  vite-plugin-checker@0.12.0(@biomejs/biome@2.3.11)(optionator@0.9.4)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)):
     dependencies:
       '@babel/code-frame': 7.27.1
       chokidar: 4.0.3
@@ -7866,33 +7936,33 @@ snapshots:
       picomatch: 4.0.3
       tiny-invariant: 1.3.3
       tinyglobby: 0.2.15
-      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)
+      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)
       vscode-uri: 3.1.0
     optionalDependencies:
       '@biomejs/biome': 2.3.11
       optionator: 0.9.4
       typescript: 5.9.3
 
-  vite-plugin-node-polyfills@0.24.0(rollup@4.55.1)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)):
+  vite-plugin-node-polyfills@0.24.0(rollup@4.55.1)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@4.55.1)
       node-stdlib-browser: 1.3.1
-      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)
+      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-svgr@4.5.0(rollup@4.55.1)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)):
+  vite-plugin-svgr@4.5.0(rollup@4.55.1)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.55.1)
       '@svgr/core': 8.1.0(typescript@5.9.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))
-      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1)
+      vite: 6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.1):
+  vite@6.4.1(@types/node@25.0.8)(jiti@1.21.7)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.11
       fdir: 6.5.0(picomatch@4.0.3)
@@ -7904,9 +7974,9 @@ snapshots:
       '@types/node': 25.0.8
       fsevents: 2.3.3
       jiti: 1.21.7
-      yaml: 2.8.1
+      yaml: 2.8.2
 
-  vite@6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.1):
+  vite@6.4.1(@types/node@25.0.8)(jiti@2.6.1)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.11
       fdir: 6.5.0(picomatch@4.0.3)
@@ -7918,7 +7988,7 @@ snapshots:
       '@types/node': 25.0.8
       fsevents: 2.3.3
       jiti: 2.6.1
-      yaml: 2.8.1
+      yaml: 2.8.2
 
   vm-browserify@1.1.2: {}
 
@@ -8012,7 +8082,7 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@2.8.1: {}
+  yaml@2.8.2: {}
 
   yargs-parser@18.1.3:
     dependencies:

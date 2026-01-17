@@ -35,7 +35,7 @@ const TokenInput = forwardRef<
 			options: maskitoNumberOptionsGenerator({
 				thousandSeparator: "",
 				min: 0,
-				precision: decimals,
+				maximumFractionDigits: decimals,
 			}),
 		}),
 		[decimals],
