@@ -136,8 +136,11 @@ const sortBalanceIdsByBalanceDesc = (bid1: BalanceId, bid2: BalanceId) => {
 	return 0;
 };
 
-// subscribe to the list of the unique balanceIds to watch
-// and update watchers accordingly
+// Subscribe to the list of the unique balanceIds to watch and update watchers accordingly.
+// NOTE: When watchers are removed, we intentionally keep the cached balance data in the store.
+// This allows instant display of cached values when the user navigates back to a page,
+// while fresh data is fetched in the background. The store persists to localStorage and
+// will be refreshed on subsequent visits. Do not add store cleanup here.
 balanceSubscriptions$.subscribe((balanceIds) => {
 	try {
 		// remove watchers that are not needed anymore

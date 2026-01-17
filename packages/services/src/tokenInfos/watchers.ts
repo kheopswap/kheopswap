@@ -160,8 +160,11 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 	}
 };
 
-// subscribe to the list of the unique tokenIds to watch
-// and update watchers accordingly
+// Subscribe to the list of the unique tokenIds to watch and update watchers accordingly.
+// NOTE: When watchers are removed, we intentionally keep the cached token info data in the store.
+// This allows instant display of cached values when the user navigates back to a page,
+// while fresh data is fetched in the background. The store persists to localStorage and
+// will be refreshed on subsequent visits. Do not add store cleanup here.
 tokenInfosSubscriptions$.subscribe((tokenIds) => {
 	try {
 		// remove watchers that are not needed anymore
