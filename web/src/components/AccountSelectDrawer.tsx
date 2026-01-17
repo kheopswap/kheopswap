@@ -186,12 +186,6 @@ const AccountSelectDrawerContent: FC<{
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
 	const { accounts, wallets, connect, disconnect } = useWallets();
 
-	// Create a lookup map for wallet icons by wallet ID
-	const walletIconById = useMemo(
-		() => fromPairs(wallets.map((w) => [w.id, w.icon])),
-		[wallets],
-	);
-
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
 	const summaryInputs = useMemo(
@@ -326,7 +320,7 @@ const AccountSelectDrawerContent: FC<{
 							<AccountButton
 								key={account.id}
 								account={account}
-								walletIcon={walletIconById[account.walletId]}
+								walletIcon={account.walletIcon}
 								selected={account.id === idOrAddress}
 								balance={balanceByAccount[account.address]}
 								token={token}
