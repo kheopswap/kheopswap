@@ -107,3 +107,14 @@ Chopsticks provides sandboxed chains at:
 - Hydration: `ws://localhost:3422`
 
 `USE_CHOPSTICKS` constant toggles chain config and disables light clients.
+
+## Before Completing Any Task
+
+Always run these commands to validate changes:
+
+```bash
+pnpm check      # Lint and format with Biome (auto-fixes issues)
+pnpm typecheck  # Verify TypeScript types compile correctly
+```
+
+Fix any errors before considering the task complete.
