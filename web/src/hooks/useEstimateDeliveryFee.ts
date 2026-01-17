@@ -4,8 +4,10 @@ import {
 	getTokenIdFromXcmV3Multilocation,
 	isChainIdAssetHub,
 	isChainIdRelay,
+	XcmV3Junctions,
 	type XcmV3Multilocation,
 	type XcmV4Instruction,
+	XcmVersionedAssetId,
 } from "@kheopswap/registry";
 import { logger, safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -59,6 +61,10 @@ export const useEstimateDeliveryFee = ({
 				const deliveryFee = await api.apis.XcmPaymentApi.query_delivery_fees(
 					Enum("V4", xcm.destination),
 					Enum("V4", xcm.message as XcmV4Instruction[]),
+					XcmVersionedAssetId.V4({
+						parents: isChainIdAssetHub(chainId) ? 1 : 0,
+						interior: XcmV3Junctions.Here(),
+					}),
 					{ at: "best", signal },
 				);
 

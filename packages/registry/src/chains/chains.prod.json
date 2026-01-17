@@ -22,16 +22,11 @@
 		"id": "pah",
 		"name": "Polkadot Asset Hub",
 		"wsUrl": [
-			"wss://sys.ibp.network/statemint",
-			"wss://sys.dotters.network/statemint",
-			"wss://sys.ibp.network/asset-hub-polkadot",
-			"wss://sys.dotters.network/asset-hub-polkadot",
-			"wss://asset-hub-polkadot-rpc.dwellir.com",
-			"wss://statemint-rpc-tn.dwellir.com",
 			"wss://rpc-asset-hub-polkadot.luckyfriday.io",
+			"wss://sys.ibp.network/asset-hub-polkadot",
+			"wss://asset-hub-polkadot.dotters.network",
 			"wss://polkadot-asset-hub-rpc.polkadot.io",
-			"wss://dot-rpc.stakeworld.io/assethub",
-			"wss://statemint-rpc.dwellir.com"
+			"wss://dot-rpc.stakeworld.io/assethub"
 		],
 		"relay": "polkadot",
 		"paraId": 1000,

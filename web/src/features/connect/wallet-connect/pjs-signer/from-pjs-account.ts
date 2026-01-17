@@ -10,6 +10,7 @@ import {
 	enhanceEncoder,
 	metadata as metadataCodec,
 	u8,
+	unifyMetadata,
 	type V15,
 } from "@polkadot-api/substrate-bindings";
 import { fromHex, mergeUint8, toHex } from "@polkadot-api/utils";
@@ -17,7 +18,9 @@ import * as signedExtensionMappers from "./pjs-signed-extensions-mappers";
 import type { SignerPayloadJSON, SignPayload, SignRaw } from "./types";
 
 export const getAddressFormat = (metadata: V15): number => {
-	const dynamicBuilder = getDynamicBuilder(getLookupFn(metadata));
+	const dynamicBuilder = getDynamicBuilder(
+		getLookupFn(unifyMetadata(metadata)),
+	);
 
 	// biome-ignore lint/style/noNonNullAssertion: legacy
 	const constant = metadata.pallets

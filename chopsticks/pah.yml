@@ -1,10 +1,9 @@
-endpoint: 
-- wss://sys.ibp.network/statemint
-- wss://sys.dotters.network/statemint
-- wss://sys.ibp.network/asset-hub-polkadot
-- wss://sys.dotters.network/asset-hub-polkadot
-- wss://asset-hub-polkadot-rpc.dwellir.com
-- wss://polkadot-asset-hub-rpc.polkadot.io
+endpoint:
+  - wss://sys.ibp.network/asset-hub-polkadot
+  - wss://asset-hub-polkadot.dotters.network
+  - wss://rpc-asset-hub-polkadot.luckyfriday.io
+  - wss://polkadot-asset-hub-rpc.polkadot.io
+  - wss://dot-rpc.stakeworld.io/assethub
 mock-signature-host: true
 block: ${env.POLKADOT_ASSET_HUB_BLOCK_NUMBER}
 #db: ./pah.db.sqlite
@@ -13,14 +12,18 @@ port: 3421
 import-storage:
   System:
     Account:
-      -
-        -
-          - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+      - - - 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
         - providers: 1
           data:
             free: 1000000000000000
   Assets:
     Account:
-      - [[1984, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY], { balance: 1000000000 }]
-      - [[21, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY], { balance: 1000000000 }]
+      - [
+          [1984, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY],
+          { balance: 1000000000 },
+        ]
+      - [
+          [21, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY],
+          { balance: 1000000000 },
+        ]
     Asset: [[[21], { supply: 1000000000 }]]

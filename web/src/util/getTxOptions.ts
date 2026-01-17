@@ -2,7 +2,7 @@ import type { XcmV3Multilocation } from "@kheopswap/registry";
 import type { TxOptions } from "polkadot-api";
 
 // TODO: change to TxOptions<XcmV3Multilocation>
-export type TxOptionsWithChargeAssetTxPayment = TxOptions<unknown> & {
+export type TxOptionsWithChargeAssetTxPayment = TxOptions<unknown, unknown> & {
 	asset?: XcmV3Multilocation;
 };
 

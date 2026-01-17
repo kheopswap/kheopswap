@@ -9,10 +9,10 @@
 			"codeHash": "0xa4d527cb0db4146686eeffb216b562fe68440185d5067e6177d1681ff7bb3043"
 		},
 		"pah": {
-			"wsUrl": "wss://polkadot-asset-hub-rpc.polkadot.io",
+			"wsUrl": "wss://rpc-asset-hub-polkadot.luckyfriday.io",
 			"metadata": ".papi/scale/pah.scale",
 			"genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
-			"codeHash": "0xd863e58d979f0f36f78c2779fa8f99f2ecde98744151e11500655058dae37378"
+			"codeHash": "0xd4cd182f3ea1a30ad6527a088dbd1ebd7381d7c85b675cc8c29f82e695f73fbd"
 		},
 		"hydration": {
 			"wsUrl": "wss://hydration.ibp.network",
