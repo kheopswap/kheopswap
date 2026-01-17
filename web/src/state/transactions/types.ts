@@ -36,8 +36,6 @@ export type TransactionRecord = {
 	// Feature-specific data for rendering the follow-up modal
 	// biome-ignore lint/suspicious/noExplicitAny: varies by transaction type
 	followUpData: Record<string, any>;
-	// UI state
-	isMinimized: boolean;
 };
 
 export const getStatusFromEvent = (

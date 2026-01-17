@@ -73,6 +73,12 @@ export const transactions$ = transactionsSubject
 	.asObservable()
 	.pipe(map((m) => Array.from(m.values())));
 
+// Track which transaction's modal is open (null = no modal open)
+const openTransactionIdSubject = new BehaviorSubject<TransactionId | null>(
+	null,
+);
+export const openTransactionId$ = openTransactionIdSubject.asObservable();
+
 export const getTransaction = (
 	id: TransactionId,
 ): TransactionRecord | undefined => {
@@ -148,45 +154,38 @@ export const appendTxEvent = (
 };
 
 export const minimizeTransaction = (id: TransactionId): void => {
-	updateTransaction(id, { isMinimized: true });
+	// Close modal if this transaction's modal is open
+	if (openTransactionIdSubject.getValue() === id) {
+		openTransactionIdSubject.next(null);
+	}
 };
 
 export const openTransactionModal = (id: TransactionId): void => {
-	const transactions = new Map(transactionsSubject.getValue());
-
-	// Minimize any currently open transaction first
-	for (const [txId, tx] of transactions) {
-		if (!tx.isMinimized && txId !== id) {
-			transactions.set(txId, { ...tx, isMinimized: true });
-		}
+	const transactions = transactionsSubject.getValue();
+	// Only open if transaction exists
+	if (transactions.has(id)) {
+		openTransactionIdSubject.next(id);
 	}
-
-	// Open the target transaction
-	const target = transactions.get(id);
-	if (target) {
-		transactions.set(id, { ...target, isMinimized: false });
-	}
-
-	transactionsSubject.next(transactions);
 };
 
 export const dismissTransaction = (id: TransactionId): void => {
 	const transactions = new Map(transactionsSubject.getValue());
 	transactions.delete(id);
 	transactionsSubject.next(transactions);
+	// Close modal if this transaction was open
+	if (openTransactionIdSubject.getValue() === id) {
+		openTransactionIdSubject.next(null);
+	}
 };
 
 export const getOpenTransaction = (): TransactionRecord | undefined => {
-	const transactions = transactionsSubject.getValue();
-	for (const tx of transactions.values()) {
-		if (!tx.isMinimized) return tx;
-	}
-	return undefined;
+	const openId = openTransactionIdSubject.getValue();
+	if (!openId) return undefined;
+	return transactionsSubject.getValue().get(openId);
 };
 
-export const getMinimizedTransactions = (): TransactionRecord[] => {
-	const transactions = transactionsSubject.getValue();
-	return Array.from(transactions.values()).filter((tx) => tx.isMinimized);
+export const getOpenTransactionId = (): TransactionId | null => {
+	return openTransactionIdSubject.getValue();
 };
 
 export const updateTransactionStatus = (

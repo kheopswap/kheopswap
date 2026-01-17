@@ -26,6 +26,7 @@ import {
 import {
 	addTransaction,
 	appendTxEvent,
+	openTransactionModal,
 	type TransactionType,
 	updateTransactionStatus,
 } from "src/state/transactions";
@@ -142,8 +143,10 @@ const useTransactionProvider = ({
 				type: transactionType,
 				title: transactionTitle,
 				followUpData: followUpData as Record<string, unknown>,
-				isMinimized: false,
 			});
+
+			// Open the modal for this transaction
+			openTransactionModal(txId);
 
 			const sub = obsTxEvents.subscribe((x) => {
 				logger.log("Transaction status update", x);

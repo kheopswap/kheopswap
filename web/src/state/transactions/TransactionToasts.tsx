@@ -93,6 +93,11 @@ const activeToasts = new Map<string, ToastId>();
 // Track toasts we're dismissing programmatically (not by user action)
 const programmaticDismissals = new Set<string>();
 
+// Toast should be shown once transaction is signed (not just pending)
+const shouldShowToast = (status: TransactionStatus): boolean => {
+	return status !== "pending";
+};
+
 const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 	const { open, dismiss } = useTransactions();
 	// Use ref to avoid stale closure in onClose
@@ -100,19 +105,13 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 	dismissRef.current = dismiss;
 
 	const handleClick = useCallback(() => {
-		// Mark as programmatic dismissal before dismissing
-		programmaticDismissals.add(tx.id);
-		const existingToast = activeToasts.get(tx.id);
-		if (existingToast !== undefined) {
-			toast.dismiss(existingToast);
-			activeToasts.delete(tx.id);
-		}
+		// Just open the modal, don't dismiss the toast
 		open(tx.id);
 	}, [open, tx.id]);
 
 	const handleToastClose = useCallback(() => {
 		// Only dismiss from store if user manually closed the toast
-		// (not when we programmatically dismissed it to open modal)
+		// (not when we programmatically dismissed it)
 		if (programmaticDismissals.has(tx.id)) {
 			programmaticDismissals.delete(tx.id);
 			return;
@@ -121,13 +120,14 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 		dismissRef.current(tx.id);
 	}, [tx.id]);
 
-	// Manage toast based on isMinimized state
+	// Manage toast based on transaction status (not isMinimized)
+	// Toast appears once signed and stays visible regardless of modal state
 	useEffect(() => {
 		const toastType = getToastType(tx.status);
 		const existingToast = activeToasts.get(tx.id);
+		const showToast = shouldShowToast(tx.status);
 
-		if (tx.isMinimized) {
-			// Should show toast
+		if (showToast) {
 			if (existingToast === undefined) {
 				// Create new toast
 				const toastId = toast(<ToastContent tx={tx} onClick={handleClick} />, {
@@ -146,14 +146,6 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 					render: <ToastContent tx={tx} onClick={handleClick} />,
 					type: toastType,
 				});
-			}
-		} else {
-			// Should hide toast (modal is open)
-			if (existingToast !== undefined) {
-				// Mark as programmatic dismissal before calling dismiss
-				programmaticDismissals.add(tx.id);
-				toast.dismiss(existingToast);
-				activeToasts.delete(tx.id);
 			}
 		}
 	}, [tx, handleClick, handleToastClose]);

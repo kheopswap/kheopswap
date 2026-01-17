@@ -7,11 +7,12 @@ import {
 	useContext,
 	useMemo,
 } from "react";
-import { map } from "rxjs";
+import { combineLatest, map } from "rxjs";
 import {
 	dismissTransaction,
-	getOpenTransaction,
+	getOpenTransactionId,
 	minimizeTransaction,
+	openTransactionId$,
 	openTransactionModal,
 	transactions$,
 } from "./transactionStore";
@@ -21,19 +22,18 @@ import type { TransactionId, TransactionRecord } from "./types";
 const [useAllTransactions] = bind(transactions$, []);
 
 const [useOpenTransaction] = bind(
-	transactions$.pipe(map((txs) => txs.find((tx) => !tx.isMinimized) ?? null)),
+	combineLatest([transactions$, openTransactionId$]).pipe(
+		map(
+			([txs, openId]) =>
+				(openId ? txs.find((tx) => tx.id === openId) : null) ?? null,
+		),
+	),
 	null,
-);
-
-const [useMinimizedTransactions] = bind(
-	transactions$.pipe(map((txs) => txs.filter((tx) => tx.isMinimized))),
-	[],
 );
 
 type TransactionsContextValue = {
 	transactions: TransactionRecord[];
 	openTransaction: TransactionRecord | null;
-	minimizedTransactions: TransactionRecord[];
 	minimize: (id: TransactionId) => void;
 	open: (id: TransactionId) => void;
 	dismiss: (id: TransactionId) => void;
@@ -47,7 +47,6 @@ const TransactionsContext = createContext<TransactionsContextValue | null>(
 export const TransactionsProvider: FC<PropsWithChildren> = ({ children }) => {
 	const transactions = useAllTransactions();
 	const openTransaction = useOpenTransaction();
-	const minimizedTransactions = useMinimizedTransactions();
 
 	const minimize = useCallback((id: TransactionId) => {
 		minimizeTransaction(id);
@@ -61,38 +60,35 @@ export const TransactionsProvider: FC<PropsWithChildren> = ({ children }) => {
 		dismissTransaction(id);
 	}, []);
 
-	const closeModal = useCallback((id: TransactionId) => {
-		const tx = getOpenTransaction();
-		if (!tx || tx.id !== id) return;
+	const closeModal = useCallback(
+		(id: TransactionId) => {
+			const openId = getOpenTransactionId();
+			if (openId !== id) return;
 
-		// If finalized or failed, dismiss entirely (no toast)
-		// Otherwise, minimize to toast
-		if (tx.status === "finalized" || tx.status === "failed") {
-			dismissTransaction(id);
-		} else {
-			minimizeTransaction(id);
-		}
-	}, []);
+			const tx = transactions.find((t) => t.id === id);
+			if (!tx) return;
+
+			// If finalized or failed, dismiss entirely (no toast)
+			// Otherwise, just close modal (toast stays)
+			if (tx.status === "finalized" || tx.status === "failed") {
+				dismissTransaction(id);
+			} else {
+				minimizeTransaction(id);
+			}
+		},
+		[transactions],
+	);
 
 	const value = useMemo<TransactionsContextValue>(
 		() => ({
 			transactions,
 			openTransaction,
-			minimizedTransactions,
 			minimize,
 			open,
 			dismiss,
 			closeModal,
 		}),
-		[
-			transactions,
-			openTransaction,
-			minimizedTransactions,
-			minimize,
-			open,
-			dismiss,
-			closeModal,
-		],
+		[transactions, openTransaction, minimize, open, dismiss, closeModal],
 	);
 
 	return (
