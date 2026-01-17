@@ -6,9 +6,9 @@ import { type FC, useCallback, useMemo, useState } from "react";
 import { useBalancesWithStables, useToken, useWallets } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
+import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
-import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
 import { Shimmer } from "./Shimmer";
 import { Styles } from "./styles";
@@ -71,7 +71,7 @@ const AccountButton: FC<{
 				"disabled:border-transparent disabled:opacity-100",
 			)}
 		>
-			<InjectedAccountIcon account={account} className="size-8" />
+			<AccountIcon account={account} className="size-8" />
 			<div className="flex grow flex-col items-start justify-center overflow-hidden">
 				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
 					<div className="truncate">{account.name}</div>

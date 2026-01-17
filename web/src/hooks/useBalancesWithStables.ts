@@ -1,7 +1,7 @@
+import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getBalance$ } from "@kheopswap/services/balances";
 import { getCachedObservable$ } from "@kheopswap/utils";
-import type { InjectedAccount } from "polkadot-api/pjs-signer";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import {
@@ -17,7 +17,7 @@ import type { AccountBalanceWithStable } from "src/types";
 
 type UseAccountBalancesWithStablesProps = {
 	tokens: Token[] | TokenId[] | null | undefined;
-	accounts: InjectedAccount[] | string[] | null | undefined;
+	accounts: PolkadotAccount[] | string[] | null | undefined;
 };
 
 const getBalanceWithStable$ = (

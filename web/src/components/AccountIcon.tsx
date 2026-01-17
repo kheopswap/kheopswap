@@ -4,7 +4,7 @@ import { Polkicon } from "@polkadot-ui/react";
 import { TalismanOrb } from "@talismn/orb";
 import type { FC } from "react";
 
-export const InjectedAccountIcon: FC<{
+export const AccountIcon: FC<{
 	account: PolkadotAccount;
 	className?: string;
 }> = ({ account, className }) => {

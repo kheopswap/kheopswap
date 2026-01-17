@@ -8,8 +8,8 @@ import {
 import { Polkicon } from "@polkadot-ui/react";
 import { type FC, useCallback, useMemo } from "react";
 import { useOpenClose, useWallets } from "src/hooks";
+import { AccountIcon } from "./AccountIcon";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
-import { InjectedAccountIcon } from "./InjectedAccountIcon";
 import { ActionRightIcon } from "./icons";
 import { Styles } from "./styles";
 import { WalletIcon } from "./WalletIcon";
@@ -47,7 +47,7 @@ const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
 				className,
 			)}
 		>
-			<InjectedAccountIcon className="size-6" account={account} />
+			<AccountIcon className="size-6" account={account} />
 			<div className="flex grow items-center overflow-hidden">
 				<span className="truncate">{account.name}</span>
 				<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
