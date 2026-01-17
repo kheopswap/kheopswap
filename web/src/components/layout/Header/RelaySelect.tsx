@@ -106,7 +106,7 @@ const DrawerContent: FC<{
 						<div
 							className={cn(
 								"h-6 w-11 rounded-full border bg-transparent ",
-								"after:absolute after:left-[2px] after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
+								"after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
 								"peer-checked:bg-neutral-500 peer-checked:after:translate-x-full peer-checked:after:border-neutral-200 peer-focus-visible:ring-1 peer-focus-visible:ring-neutral-200",
 							)}
 						/>

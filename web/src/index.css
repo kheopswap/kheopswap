@@ -340,6 +340,17 @@
 	aside {
 		@apply focus:outline-hidden focus-visible:ring-1 focus-visible:outline-hidden focus-visible:ring-white;
 	}
+
+	button,
+	[role="button"],
+	a[href] {
+		cursor: pointer;
+	}
+
+	button:disabled,
+	[role="button"][aria-disabled="true"] {
+		cursor: default;
+	}
 }
 
 /* react-toastify overrides */
