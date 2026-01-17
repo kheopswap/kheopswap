@@ -279,7 +279,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 
 	if (token.type === "pool-asset") return null;
 
-	if (token.type === "native" || token.type === "hydration-asset")
+	if (token.type === "native")
 		return (
 			<TokenDetailsRow label="Total Supply">
 				{tokenInfo && "supply" in tokenInfo ? (
@@ -290,11 +290,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 			</TokenDetailsRow>
 		);
 
-	if (
-		tokenInfo?.type === "native" ||
-		tokenInfo?.type === "pool-asset" ||
-		tokenInfo?.type === "hydration-asset"
-	)
+	if (tokenInfo?.type === "native" || tokenInfo?.type === "pool-asset")
 		return null;
 
 	return (

@@ -8,11 +8,8 @@ import {
 	type ChainId,
 	getChainById,
 	getTokenId,
-	hasAssetPallet,
 	isAssetHub,
-	isHydration,
 	KNOWN_TOKENS_MAP,
-	PARA_ID_ASSET_HUB,
 	TOKENS_OVERRIDES_MAP,
 	type Token,
 } from "@kheopswap/registry";
@@ -20,7 +17,7 @@ import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
 import { isNumber } from "lodash";
 import { distinctUntilChanged, filter } from "rxjs";
 import { pollChainStatus } from "../pollChainStatus";
-import { type StorageToken, updateTokensStore } from "./store";
+import { updateTokensStore } from "./store";
 import { tokensByChainSubscriptions$ } from "./subscriptions";
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
@@ -170,7 +167,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 };
 
 const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
-	if (hasAssetPallet(chain)) {
+	if (isAssetHub(chain)) {
 		const api = await getApi(chain.id);
 		if (signal.aborted) return;
 
@@ -224,60 +221,6 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	}
 };
 
-const fetchHydrationAssetTokens = async (chain: Chain, signal: AbortSignal) => {
-	if (!isHydration(chain)) return;
-
-	const api = await getApi(chain.id);
-	if (signal.aborted) return;
-
-	await api.waitReady;
-	if (signal.aborted) return;
-
-	const stop = logger.timer(
-		`chain.api.query.Hydration.Metadata.getEntries() - ${chain.id}`,
-	);
-
-	const locations = await api.query.AssetRegistry.AssetLocations.getEntries({
-		at: "best",
-		signal,
-	});
-
-	stop();
-
-	// consider only tokens from parachain 1000
-	const tokensRaw = locations
-		.filter(
-			(entry) =>
-				entry.value.parents === 1 &&
-				entry.value.interior.type === "X3" &&
-				entry.value.interior.value[0]?.type === "Parachain" &&
-				entry.value.interior.value[0].value === PARA_ID_ASSET_HUB &&
-				entry.value.interior.value[1]?.type === "PalletInstance" &&
-				entry.value.interior.value[1].value === 50,
-		)
-		.map((entry) => ({
-			id: entry.keyArgs[0],
-			location: entry.value,
-		}))
-		.map((entry) => {
-			const id = getTokenId({
-				type: "hydration-asset",
-				chainId: "hydration",
-				assetId: entry.id,
-			});
-
-			return {
-				id,
-				type: "hydration-asset",
-				chainId: "hydration",
-				assetId: entry.id,
-				location: entry.location,
-			} as StorageToken;
-		});
-
-	updateTokensStore("hydration", "hydration-asset", tokensRaw);
-};
-
 const watchTokensByChain = (chainId: ChainId) => {
 	const watchController = new AbortController();
 	let retryTimeout = 3_000;
@@ -300,7 +243,6 @@ const watchTokensByChain = (chainId: ChainId) => {
 					fetchAssetTokens(chain, refreshController.signal),
 					fetchPoolAssetTokens(chain, refreshController.signal),
 					fetchForeignAssetTokens(chain, refreshController.signal),
-					fetchHydrationAssetTokens(chain, refreshController.signal),
 				]),
 				throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
 			]);

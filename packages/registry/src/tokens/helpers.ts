@@ -14,13 +14,11 @@ import type {
 	TokenId,
 	TokenIdAsset,
 	TokenIdForeignAsset,
-	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 	TokenType,
 	TokenTypeAsset,
 	TokenTypeForeignAsset,
-	TokenTypeHydrationAsset,
 	TokenTypeNative,
 	TokenTypePoolAsset,
 } from "./types";
@@ -59,11 +57,6 @@ export const parseTokenId = (
 			type: "foreign-asset";
 			chainId: ChainId;
 			location: XcmV3Multilocation;
-	  }
-	| {
-			type: "hydration-asset";
-			chainId: ChainId;
-			assetId: number;
 	  } => {
 	try {
 		const parts = tokenId.split("::");
@@ -92,11 +85,6 @@ export const parseTokenId = (
 				);
 				return { type: "foreign-asset", chainId, location };
 			}
-			case "hydration-asset": {
-				const assetId = Number(parts[2]);
-				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
-				return { type: "hydration-asset", chainId, assetId };
-			}
 			default:
 				throw new Error(`Unsupported token type: ${tokenId}`);
 		}
@@ -114,17 +102,14 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 			? TokenIdPoolAsset
 			: T extends TokenTypeForeignAsset
 				? TokenIdForeignAsset
-				: T extends TokenTypeHydrationAsset
-					? TokenIdHydrationAsset
-					: never;
+				: never;
 
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 	token:
 		| { type: TokenTypeNative; chainId: ChainId }
 		| { type: TokenTypeAsset; chainId: ChainId; assetId: number }
 		| { type: TokenTypePoolAsset; chainId: ChainId; poolAssetId: number }
-		| { type: TokenTypeForeignAsset; chainId: ChainId; location: unknown }
-		| { type: TokenTypeHydrationAsset; chainId: ChainId; assetId: number },
+		| { type: TokenTypeForeignAsset; chainId: ChainId; location: unknown },
 ): Result => {
 	switch (token.type) {
 		case "native":
@@ -135,8 +120,6 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 			return `pool-asset::${token.chainId}::${token.poolAssetId}` as Result;
 		case "foreign-asset":
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}` as Result;
-		case "hydration-asset":
-			return `hydration-asset::${token.chainId}::${token.assetId}` as Result;
 	}
 };
 

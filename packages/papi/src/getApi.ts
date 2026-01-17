@@ -2,13 +2,11 @@ import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainId,
 	type ChainIdAssetHub,
-	type ChainIdHydration,
 	type ChainIdRelay,
 	type Descriptors,
 	getChainById,
 	getDescriptors,
 	isChainIdAssetHub,
-	isChainIdHydration,
 	isChainIdRelay,
 } from "@kheopswap/registry";
 import { getSetting } from "@kheopswap/settings";
@@ -36,12 +34,6 @@ export const isApiAssetHub = (
 
 export const isApiRelay = (api: Api<ChainId>): api is Api<ChainIdRelay> => {
 	return isChainIdRelay(api.chainId);
-};
-
-export const isApiHydration = (
-	api: Api<ChainId>,
-): api is Api<ChainIdHydration> => {
-	return isChainIdHydration(api.chainId);
 };
 
 const getApiInner = async <Id extends ChainId>(

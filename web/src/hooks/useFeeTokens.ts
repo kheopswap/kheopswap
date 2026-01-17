@@ -60,34 +60,6 @@ const getFeeTokens$ = (
 					map((tokensByChainState) => tokensByChainState.tokens ?? {}),
 					distinctUntilChanged<Dictionary<Token>>(isEqual),
 					switchMap((tokens) => {
-						// TODO uncomment the block below when we support converting fee estimate
-						// if (isChainIdHydration(chainId)) {
-						// 	// for now we dont support changing the fee token for hydration
-						// 	// return only the currently set fee token
-						// 	const obs = getApi$(chainId).pipe(
-						// 		switchMap((api) =>
-						// 			api.query.MultiTransactionPayment.AccountCurrencyMap.watchValue(
-						// 				address,
-						// 				"best",
-						// 			),
-						// 		),
-						// 		map((assetId) =>
-						// 			assetId === undefined
-						// 				? [tokens[getTokenId({ type: "native", chainId })]]
-						// 				: [
-						// 						tokens[
-						// 							getTokenId({
-						// 								type: "hydration-asset",
-						// 								chainId,
-						// 								assetId,
-						// 							})
-						// 						],
-						// 					],
-						// 		),
-						// 	);
-						// 	return obs;
-						// }
-
 						return of(values(tokens).filter((token) => token.isSufficient));
 					}),
 					distinctUntilChanged<Token[]>(isEqual),

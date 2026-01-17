@@ -35,24 +35,6 @@
 		"blockExplorerUrl": "https://assethub-polkadot.subscan.io"
 	},
 	{
-		"id": "hydration",
-		"name": "Hydration",
-		"wsUrl": [
-			"wss://hydradx-rpc.dwellir.com",
-			"wss://hydration.ibp.network",
-			"wss://hydration.dotters.network",
-			"wss://rpc.hydradx.cloud",
-			"wss://rpc.helikon.io/hydradx",
-			"wss://hydradx.paras.ibp.network",
-			"wss://hydradx.paras.dotters.network"
-		],
-		"relay": "polkadot",
-		"paraId": 2034,
-		"logo": "./img/chains/hydration.svg",
-		"stableTokenId": null,
-		"blockExplorerUrl": "https://hydration.subscan.io"
-	},
-	{
 		"id": "kusama",
 		"name": "Kusama",
 		"wsUrl": [

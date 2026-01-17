@@ -1,14 +1,9 @@
-import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
-import {
-	type ChainIdHydration,
-	getChainById,
-	parseTokenId,
-} from "@kheopswap/registry";
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getChainById, parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
 import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
-import { getHydrationAssetsBalances$ } from "./hydration";
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
@@ -126,23 +121,6 @@ const watchBalance = async (balanceId: BalanceId) => {
 				updateBalance(balanceId, balance);
 			});
 		}
-		case "hydration-asset": {
-			if (!isApiHydration(api))
-				throw new Error(
-					`Cannot watch balance for ${tokenId}. HydrationAssets are not supported on ${chain.id}`,
-				);
-
-			return getHydrationAssetsBalances$(
-				chain.id as ChainIdHydration,
-				address,
-			).subscribe((results) => {
-				const balance =
-					results.find((result) => result.assetId === token.assetId)?.balance ??
-					0n;
-
-				updateBalance(balanceId, balance);
-			});
-		}
 		default:
 			throw new Error(`Unsupported token type ${tokenId}`);
 	}
@@ -158,29 +136,48 @@ const sortBalanceIdsByBalanceDesc = (bid1: BalanceId, bid2: BalanceId) => {
 	return 0;
 };
 
-// subscribe to the list of the unique balanceIds to watch
-// and update watchers accordingly
+// Subscribe to the list of the unique balanceIds to watch and update watchers accordingly.
+// NOTE: When watchers are removed, we intentionally keep the cached balance data in the store.
+// This allows instant display of cached values when the user navigates back to a page,
+// while fresh data is fetched in the background. The store persists to localStorage and
+// will be refreshed on subsequent visits. Do not add store cleanup here.
 balanceSubscriptions$.subscribe((balanceIds) => {
 	try {
+		// remove watchers that are not needed anymore
+		const existingIds = Array.from(WATCHERS.keys());
+		const watchersToStop = existingIds.filter((id) => !balanceIds.includes(id));
+		for (const balanceId of watchersToStop) {
+			const watcher = WATCHERS.get(balanceId);
+			WATCHERS.delete(balanceId);
+			watcher?.then((sub) => sub.unsubscribe()).catch(() => {});
+		}
+
+		// Clean up statuses for stopped watchers
+		if (watchersToStop.length > 0) {
+			const currentStatuses = statusByBalanceId$.value;
+			const newStatuses = { ...currentStatuses };
+			for (const id of watchersToStop) {
+				delete newStatuses[id];
+			}
+			statusByBalanceId$.next(newStatuses);
+		}
+
 		// add missing watchers
 		for (const balanceId of balanceIds
 			.filter((id) => !WATCHERS.has(id))
 			// prioritize watchers for positive balance first, to reduce user waiting time
 			.sort(sortBalanceIdsByBalanceDesc)) {
-			WATCHERS.set(balanceId, watchBalance(balanceId));
+			WATCHERS.set(
+				balanceId,
+				watchBalance(balanceId).catch((err) => {
+					logger.error("Failed to start balance watcher", { balanceId, err });
+					updateBalanceLoadingStatus(balanceId, "stale");
+					WATCHERS.delete(balanceId);
+					// Return a no-op subscription to satisfy the type
+					return { unsubscribe: () => {} } as Subscription;
+				}),
+			);
 		}
-
-		// remove watchers that are not needed anymore
-		const existingIds = Array.from(WATCHERS.keys());
-		const watchersToStop = existingIds.filter((id) => !balanceIds.includes(id));
-		for (const balanceId of watchersToStop) {
-			WATCHERS.get(balanceId)?.then((watcher) => watcher.unsubscribe());
-			WATCHERS.delete(balanceId);
-		}
-		statusByBalanceId$.next({
-			...statusByBalanceId$.value,
-			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
-		});
 	} catch (err) {
 		logger.error("Failed to update balance watchers", { balanceIds, err });
 	}

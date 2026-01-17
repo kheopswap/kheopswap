@@ -10,7 +10,6 @@ const KNOWN_CHAIN_SPECS_IDS = [
 	"wah",
 	"pah",
 	"pasah",
-	"hydration",
 ] as const;
 
 type ChainIdWithChainSpec = (typeof KNOWN_CHAIN_SPECS_IDS)[number];
@@ -41,9 +40,6 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 					.chainSpec;
 			case "pasah":
 				return (await import("polkadot-api/chains/paseo_asset_hub")).chainSpec;
-			case "hydration": {
-				return (await import("./chainspec/hydration")).chainSpec;
-			}
 			default:
 				throw new Error(`Unknown chain: ${chainId}`);
 		}

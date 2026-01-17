@@ -1,5 +1,3 @@
-import type { PolkadotSigner } from "@polkadot-api/polkadot-signer";
-
 type HexString = string;
 export interface SignerPayloadJSON {
 	/**
@@ -84,23 +82,6 @@ export interface SignerPayloadJSON {
 	withSignedTransaction?: boolean;
 }
 
-export type KeypairType = "ed25519" | "sr25519" | "ecdsa";
-
-export interface InjectedAccount {
-	address: string;
-	genesisHash?: string | null;
-	name?: string;
-	type?: KeypairType;
-}
-
-export interface InjectedPolkadotAccount {
-	polkadotSigner: PolkadotSigner;
-	address: string;
-	genesisHash?: string | null;
-	name?: string;
-	type?: KeypairType;
-}
-
 export type SignPayload = (
 	payload: SignerPayloadJSON,
 ) => Promise<{ signature: string; signedTransaction?: string | Uint8Array }>;
@@ -110,23 +91,3 @@ export type SignRaw = (payload: {
 	data: HexString;
 	type: "bytes";
 }) => Promise<{ id: number; signature: HexString }>;
-
-export interface PjsInjectedExtension {
-	signer: {
-		signPayload: SignPayload;
-		signRaw: SignRaw;
-	};
-	accounts: {
-		get: () => Promise<InjectedPolkadotAccount[]>;
-		subscribe: (
-			cb: (accounts: InjectedPolkadotAccount[]) => void,
-		) => () => void;
-	};
-}
-
-export interface InjectedExtension {
-	name: string;
-	getAccounts: () => InjectedPolkadotAccount[];
-	subscribe: (cb: (accounts: InjectedPolkadotAccount[]) => void) => () => void;
-	disconnect: () => void;
-}

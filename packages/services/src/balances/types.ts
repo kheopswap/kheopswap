@@ -21,8 +21,3 @@ export type BalanceState = {
 	balance: bigint | undefined;
 	status: LoadingStatus;
 };
-
-export type Balance = {
-	address: Address;
-	tokenId: TokenId;
-} & BalanceState;

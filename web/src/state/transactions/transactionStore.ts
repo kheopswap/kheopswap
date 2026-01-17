@@ -65,15 +65,6 @@ const openTransactionIdSubject = new BehaviorSubject<TransactionId | null>(
 );
 export const openTransactionId$ = openTransactionIdSubject.asObservable();
 
-export const getTransaction = (
-	id: TransactionId,
-): TransactionRecord | undefined => {
-	return transactionsSubject.getValue().get(id);
-};
-
-export const getTransactionById$ = (id: TransactionId) =>
-	transactionsSubject.asObservable().pipe(map((m) => m.get(id)));
-
 // Auto-prune: remove oldest terminal transactions when exceeding limit
 const autoPrune = (
 	transactions: Map<TransactionId, TransactionRecord>,
@@ -162,12 +153,6 @@ export const dismissTransaction = (id: TransactionId): void => {
 	if (openTransactionIdSubject.getValue() === id) {
 		openTransactionIdSubject.next(null);
 	}
-};
-
-export const getOpenTransaction = (): TransactionRecord | undefined => {
-	const openId = openTransactionIdSubject.getValue();
-	if (!openId) return undefined;
-	return transactionsSubject.getValue().get(openId);
 };
 
 export const getOpenTransactionId = (): TransactionId | null => {

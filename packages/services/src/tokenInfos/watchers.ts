@@ -1,8 +1,7 @@
-import { getApi, isApiAssetHub, isApiHydration } from "@kheopswap/papi";
+import { getApi, isApiAssetHub } from "@kheopswap/papi";
 import type {
 	TokenIdAsset,
 	TokenIdForeignAsset,
-	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 } from "@kheopswap/registry";
@@ -14,7 +13,7 @@ import {
 } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
-import { BehaviorSubject, combineLatest, map, type Subscription } from "rxjs";
+import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { tokenInfosStore$ } from "./store";
 import { tokenInfosSubscriptions$ } from "./subscriptions";
@@ -156,62 +155,50 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 			});
 		}
 
-		case "hydration-asset": {
-			if (!isApiHydration(api))
-				throw new Error(
-					`Cannot watch token infos for ${tokenId}. HydrationAssets are not supported on ${chain.id}`,
-				);
-
-			const tokenInfo$ = combineLatest(
-				api.query.AssetRegistry.Assets.watchValue(token.assetId, "best"),
-				api.query.Tokens.TotalIssuance.watchValue(token.assetId, "best"),
-			).pipe(
-				map(([asset, supply]) =>
-					asset
-						? {
-								minBalance: asset?.existential_deposit,
-								isSufficient: asset?.is_sufficient,
-								supply,
-							}
-						: null,
-				),
-			);
-
-			return tokenInfo$.subscribe((tokenInfos) => {
-				if (tokenInfos)
-					updateTokenInfo({
-						id: tokenId as TokenIdHydrationAsset,
-						type: "hydration-asset",
-						...tokenInfos,
-					});
-			});
-		}
-
 		default:
 			throw new Error(`Unsupported token type ${tokenId}`);
 	}
 };
 
-// subscribe to the list of the unique tokenIds to watch
-// and update watchers accordingly
+// Subscribe to the list of the unique tokenIds to watch and update watchers accordingly.
+// NOTE: When watchers are removed, we intentionally keep the cached token info data in the store.
+// This allows instant display of cached values when the user navigates back to a page,
+// while fresh data is fetched in the background. The store persists to localStorage and
+// will be refreshed on subsequent visits. Do not add store cleanup here.
 tokenInfosSubscriptions$.subscribe((tokenIds) => {
 	try {
-		// add missing watchers
-		for (const tokenId of tokenIds.filter((id) => !WATCHERS.has(id))) {
-			WATCHERS.set(tokenId, watchTokenInfo(tokenId));
-		}
-
 		// remove watchers that are not needed anymore
 		const existingIds = Array.from(WATCHERS.keys());
 		const watchersToStop = existingIds.filter((id) => !tokenIds.includes(id));
 		for (const tokenId of watchersToStop) {
-			WATCHERS.get(tokenId)?.then((watcher) => watcher?.unsubscribe());
+			const watcher = WATCHERS.get(tokenId);
 			WATCHERS.delete(tokenId);
+			watcher?.then((sub) => sub?.unsubscribe()).catch(() => {});
 		}
-		statusByTokenId$.next({
-			...statusByTokenId$.value,
-			...Object.fromEntries(watchersToStop.map((id) => [id, "stale"])),
-		});
+
+		// Clean up statuses for stopped watchers
+		if (watchersToStop.length > 0) {
+			const currentStatuses = statusByTokenId$.value;
+			const newStatuses = { ...currentStatuses };
+			for (const id of watchersToStop) {
+				delete newStatuses[id];
+			}
+			statusByTokenId$.next(newStatuses);
+		}
+
+		// add missing watchers
+		for (const tokenId of tokenIds.filter((id) => !WATCHERS.has(id))) {
+			WATCHERS.set(
+				tokenId,
+				watchTokenInfo(tokenId).catch((err) => {
+					logger.error("Failed to start token info watcher", { tokenId, err });
+					updateTokenInfoLoadingStatus(tokenId, "stale");
+					WATCHERS.delete(tokenId);
+					// Return a no-op subscription to satisfy the type
+					return { unsubscribe: () => {} } as Subscription;
+				}),
+			);
+		}
 	} catch (err) {
 		logger.error("Failed to update token infos watchers", { tokenIds, err });
 	}

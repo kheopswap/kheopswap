@@ -1,17 +1,12 @@
 import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
 import {
 	type ChainId,
-	getChainById,
 	getChains,
-	getTokenId,
 	KNOWN_TOKENS_LIST,
 	KNOWN_TOKENS_MAP,
-	PARA_ID_ASSET_HUB,
 	TOKENS_OVERRIDES_MAP,
 	type Token,
-	type TokenHydrationAsset,
 	type TokenType,
-	type XcmV3Multilocation,
 } from "@kheopswap/registry";
 import {
 	getLocalStorageKey,
@@ -85,96 +80,95 @@ export const updateTokensStore = (
 	tokens: StorageToken[],
 ) => {
 	const stop = logger.cumulativeTimer("updateTokensStore");
+	const current = tokensStoreData$.value;
 
-	const currentTokens = values(tokensStoreData$.value);
-
-	const otherTokens = currentTokens.filter(
-		(t) => t.chainId !== chainId || t.type !== type,
-	);
-
-	const newValue = keyBy(
-		[
-			...otherTokens,
-			...tokens.filter((t) => t.id && t.type === type && t.chainId === chainId),
-		],
+	// Build a map of new tokens for quick lookup
+	const newTokensMap = keyBy(
+		tokens.filter((t) => t.id && t.type === type && t.chainId === chainId),
 		"id",
 	);
 
-	tokensStoreData$.next(newValue);
+	// Track if anything changed
+	let hasChanges = false;
+	const newValue: Dictionary<StorageToken> = {};
+
+	// Keep tokens from other chains/types, check for removals
+	for (const [id, token] of entries(current)) {
+		if (token.chainId === chainId && token.type === type) {
+			// This token is in the update scope - only keep if in new tokens
+			if (newTokensMap[id]) {
+				newValue[id] = newTokensMap[id];
+				if (!isEqual(current[id], newTokensMap[id])) hasChanges = true;
+			} else {
+				hasChanges = true; // Token was removed
+			}
+		} else {
+			// Keep tokens from other chains/types
+			newValue[id] = token;
+		}
+	}
+
+	// Add new tokens that weren't in current
+	for (const [id, token] of entries(newTokensMap)) {
+		if (!current[id]) {
+			newValue[id] = token;
+			hasChanges = true;
+		}
+	}
+
+	// Only emit if something changed
+	if (hasChanges) {
+		tokensStoreData$.next(newValue);
+	}
 
 	stop();
 };
 
-//store may contain incomplete information, such as for XC tokens whose symbol can only be found on the source chain
+// Cache the available chain IDs to avoid recomputing on every emission
+let cachedAvailableChainIds: ChainId[] | null = null;
+const getAvailableChainIds = () => {
+	if (!cachedAvailableChainIds) {
+		cachedAvailableChainIds = getChains().map((c) => c.id);
+	}
+	return cachedAvailableChainIds;
+};
+
+// Cache the last consolidated result to avoid recomputation when nothing changed
+let lastStorageTokensMap: Dictionary<StorageToken> | null = null;
+let lastConsolidatedTokens: Dictionary<Token> | null = null;
+
+const consolidateTokens = (
+	storageTokensMap: Dictionary<StorageToken>,
+): Dictionary<Token> => {
+	// Return cached result if input hasn't changed
+	if (lastStorageTokensMap === storageTokensMap && lastConsolidatedTokens) {
+		return lastConsolidatedTokens;
+	}
+
+	const stop = logger.timer("consolidate tokensStore$");
+	const availableChainIds = getAvailableChainIds();
+
+	const tokensMap: Dictionary<Token> = {};
+	for (const [id, token] of entries(storageTokensMap)) {
+		if (availableChainIds.includes(token.chainId)) {
+			tokensMap[id] = token as Token;
+		}
+	}
+
+	// Cache the result
+	lastStorageTokensMap = storageTokensMap;
+	lastConsolidatedTokens = tokensMap;
+
+	stop();
+	return tokensMap;
+};
+
+// Store may contain incomplete information, such as for XC tokens whose symbol can only be found on the source chain
 export const tokensStore$ = tokensStoreData$.pipe(
 	distinctUntilChanged(isEqual),
-	map<Dictionary<StorageToken>, Dictionary<Token>>((storageTokensMap) => {
-		const stop = logger.timer("consolidate tokensStore$");
-		const storageTokens = values(storageTokensMap);
-
-		const chains = getChains();
-		const availableChainIds = chains.map((c) => c.id);
-
-		const tokens = storageTokens
-			.map((token) => {
-				if (token.type === "hydration-asset") {
-					if (!token.chainId || !("location" in token)) return null;
-					if (!availableChainIds.includes(token.chainId)) return null;
-
-					const location = token.location as XcmV3Multilocation;
-
-					if (
-						location?.parents === 1 &&
-						location.interior.type === "X3" &&
-						location.interior.value[0]?.type === "Parachain" &&
-						location.interior.value[0].value === PARA_ID_ASSET_HUB &&
-						location.interior.value[1]?.type === "PalletInstance" &&
-						location.interior.value[1].value === 50 &&
-						location.interior.value[2]?.type === "GeneralIndex"
-					) {
-						const assetHubAssetId = location.interior.value[2].value;
-						const hydration = getChainById(token.chainId);
-						const assetHub = chains.find(
-							(c) =>
-								c.relay === hydration.relay && c.paraId === PARA_ID_ASSET_HUB,
-						);
-						if (assetHub) {
-							const assetHubToken = storageTokens.find(
-								(t) =>
-									t.id ===
-									getTokenId({
-										type: "asset",
-										chainId: assetHub.id,
-										assetId: Number(assetHubAssetId),
-									}),
-							);
-							if (assetHubToken) {
-								const { symbol, decimals, name, logo, verified } =
-									assetHubToken;
-								return {
-									...token,
-									symbol,
-									decimals,
-									name,
-									logo,
-									verified,
-								} as TokenHydrationAsset;
-							}
-						}
-					}
-
-					return null; // ignore tokens for which we dont find the matching asset hub token
-				}
-
-				return token as Token;
-			})
-			.filter(Boolean) as Token[];
-
-		const tokensMap = keyBy(tokens, "id");
-
-		stop();
-
-		return tokensMap;
-	}),
+	map(consolidateTokens),
+	// The consolidateTokens function has internal caching, so this distinctUntilChanged
+	// uses reference equality which is cheap when the cache hits
+	distinctUntilChanged(),
 	shareReplay(1),
 );

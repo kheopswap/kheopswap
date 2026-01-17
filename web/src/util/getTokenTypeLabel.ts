@@ -10,8 +10,6 @@ export const getTokenTypeLabel = (type: TokenType) => {
 			return "Liquidity Pool Token";
 		case "foreign-asset":
 			return "Foreign Asset (Asset Hub)";
-		case "hydration-asset":
-			return "Hydration Asset";
 		default:
 			return type;
 	}
