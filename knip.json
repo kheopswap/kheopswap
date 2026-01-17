@@ -32,10 +32,7 @@
 			"entry": ["src/main.tsx"],
 			"project": ["src/**/*.{ts,tsx}"],
 			"ignoreDependencies": ["tailwindcss"],
-			"ignore": [
-				"src/features/connect/wallet-connect/pjs-signer/pjs-signed-extensions-mappers.ts",
-				"src/types/helpers.ts"
-			]
+			"ignore": ["src/types/helpers.ts"]
 		}
 	},
 	"ignore": ["**/*.d.ts", "**/vite-env.d.ts"],
