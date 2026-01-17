@@ -10,20 +10,20 @@ import {
 	type TransactionStatus,
 } from "./types";
 
-const getToastMessage = (tx: TransactionRecord): string => {
-	switch (tx.status) {
+const getStatusText = (status: TransactionStatus): string => {
+	switch (status) {
 		case "pending":
 			return "Waiting for signature...";
 		case "signed":
-			return "Submitting transaction...";
+			return "Submitting...";
 		case "broadcasted":
-			return "Transaction submitted";
+			return "Submitted, waiting for block...";
 		case "inBlock":
-			return "Transaction in block";
+			return "In block, waiting for finalization...";
 		case "finalized":
-			return "Transaction finalized";
+			return "Finalized";
 		case "failed":
-			return "Transaction failed";
+			return "Failed";
 		default:
 			return "Processing...";
 	}
@@ -34,7 +34,6 @@ const getToastType = (
 ): "default" | "success" | "error" => {
 	switch (status) {
 		case "finalized":
-		case "inBlock":
 			return "success";
 		case "failed":
 			return "failed" as "error";
@@ -47,8 +46,9 @@ const ToastContent: FC<{ tx: TransactionRecord; onClick: () => void }> = ({
 	tx,
 	onClick,
 }) => {
-	const isLoading = !isTerminalStatus(tx.status) && tx.status !== "inBlock";
-	const isSuccess = tx.status === "finalized" || tx.status === "inBlock";
+	// Show spinner for all non-terminal statuses (including inBlock)
+	const isLoading = !isTerminalStatus(tx.status);
+	const isSuccess = tx.status === "finalized";
 	const isError = tx.status === "failed";
 
 	return (
@@ -78,79 +78,109 @@ const ToastContent: FC<{ tx: TransactionRecord; onClick: () => void }> = ({
 						isError && "text-error",
 					)}
 				>
-					{getToastMessage(tx)}
+					{tx.title}
 				</span>
 				<span className="text-xs text-neutral-500 truncate">
-					Click to view details
+					{getStatusText(tx.status)}
 				</span>
 			</div>
 		</button>
 	);
 };
 
-const TransactionToast: FC<{ tx: TransactionRecord }> = ({ tx }) => {
+// Track all toasts globally to manage their lifecycle
+const activeToasts = new Map<string, ToastId>();
+// Track toasts we're dismissing programmatically (not by user action)
+const programmaticDismissals = new Set<string>();
+
+const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 	const { open, dismiss } = useTransactions();
-	const toastIdRef = useRef<ToastId | null>(null);
-	const prevStatusRef = useRef<TransactionStatus>(tx.status);
+	// Use ref to avoid stale closure in onClose
+	const dismissRef = useRef(dismiss);
+	dismissRef.current = dismiss;
 
 	const handleClick = useCallback(() => {
+		// Mark as programmatic dismissal before dismissing
+		programmaticDismissals.add(tx.id);
+		const existingToast = activeToasts.get(tx.id);
+		if (existingToast !== undefined) {
+			toast.dismiss(existingToast);
+			activeToasts.delete(tx.id);
+		}
 		open(tx.id);
-		// Don't dismiss the toast, just open the modal
-		// Toast will be dismissed when transaction is dismissed from modal
 	}, [open, tx.id]);
 
-	const handleClose = useCallback(() => {
-		dismiss(tx.id);
-	}, [dismiss, tx.id]);
+	const handleToastClose = useCallback(() => {
+		// Only dismiss from store if user manually closed the toast
+		// (not when we programmatically dismissed it to open modal)
+		if (programmaticDismissals.has(tx.id)) {
+			programmaticDismissals.delete(tx.id);
+			return;
+		}
+		activeToasts.delete(tx.id);
+		dismissRef.current(tx.id);
+	}, [tx.id]);
 
-	// Create or update toast
+	// Manage toast based on isMinimized state
 	useEffect(() => {
 		const toastType = getToastType(tx.status);
+		const existingToast = activeToasts.get(tx.id);
 
-		if (toastIdRef.current === null) {
-			// Create new toast
-			toastIdRef.current = toast(
-				<ToastContent tx={tx} onClick={handleClick} />,
-				{
+		if (tx.isMinimized) {
+			// Should show toast
+			if (existingToast === undefined) {
+				// Create new toast
+				const toastId = toast(<ToastContent tx={tx} onClick={handleClick} />, {
 					toastId: tx.id,
 					type: toastType,
 					autoClose: false,
 					closeOnClick: false,
 					draggable: true,
-					onClose: handleClose,
+					onClose: handleToastClose,
 					icon: false,
-				},
-			);
-		} else if (prevStatusRef.current !== tx.status) {
-			// Update existing toast
-			toast.update(toastIdRef.current, {
-				render: <ToastContent tx={tx} onClick={handleClick} />,
-				type: toastType,
-			});
+				});
+				activeToasts.set(tx.id, toastId);
+			} else {
+				// Update existing toast
+				toast.update(existingToast, {
+					render: <ToastContent tx={tx} onClick={handleClick} />,
+					type: toastType,
+				});
+			}
+		} else {
+			// Should hide toast (modal is open)
+			if (existingToast !== undefined) {
+				// Mark as programmatic dismissal before calling dismiss
+				programmaticDismissals.add(tx.id);
+				toast.dismiss(existingToast);
+				activeToasts.delete(tx.id);
+			}
 		}
+	}, [tx, handleClick, handleToastClose]);
 
-		prevStatusRef.current = tx.status;
-	}, [tx, handleClick, handleClose]);
-
-	// Cleanup toast on unmount (when transaction is no longer minimized)
+	// Cleanup when transaction is removed from store
 	useEffect(() => {
 		return () => {
-			if (toastIdRef.current !== null) {
-				toast.dismiss(toastIdRef.current);
+			const existingToast = activeToasts.get(tx.id);
+			if (existingToast !== undefined) {
+				// Mark as programmatic to prevent double-dismiss
+				programmaticDismissals.add(tx.id);
+				toast.dismiss(existingToast);
+				activeToasts.delete(tx.id);
 			}
 		};
-	}, []);
+	}, [tx.id]);
 
 	return null;
 };
 
 export const TransactionToasts: FC = () => {
-	const { minimizedTransactions } = useTransactions();
+	const { transactions } = useTransactions();
 
 	return (
 		<>
-			{minimizedTransactions.map((tx) => (
-				<TransactionToast key={tx.id} tx={tx} />
+			{transactions.map((tx) => (
+				<TransactionToastManager key={tx.id} tx={tx} />
 			))}
 		</>
 	);

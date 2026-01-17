@@ -31,6 +31,8 @@ export type TransactionRecord = {
 	feeEstimate: bigint;
 	feeToken: Token;
 	type: TransactionType;
+	// Human-readable title for the transaction (e.g., "Swap DOT/USDC")
+	title: string;
 	// Feature-specific data for rendering the follow-up modal
 	// biome-ignore lint/suspicious/noExplicitAny: varies by transaction type
 	followUpData: Record<string, any>;

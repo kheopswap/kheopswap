@@ -5,10 +5,16 @@ import {
 } from "src/features/transaction/TransactionProvider";
 import { useTransfer } from "./TransferProvider";
 
+const getTransferTitle = (tokenSymbol: string | undefined): string => {
+	return tokenSymbol ? `Transfer ${tokenSymbol}` : "Transfer";
+};
+
 export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
 	const { call, fakeCall, formData, token, plancks, onReset } = useTransfer();
+
+	const title = useMemo(() => getTransferTitle(token?.symbol), [token?.symbol]);
 
 	const callSpendings = useMemo<CallSpendings>(
 		() =>
@@ -29,6 +35,7 @@ export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 			signer={formData.from}
 			onReset={onReset}
 			transactionType="transfer"
+			transactionTitle={title}
 		>
 			{children}
 		</TransactionProvider>

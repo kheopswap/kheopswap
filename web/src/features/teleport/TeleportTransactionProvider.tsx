@@ -5,6 +5,10 @@ import {
 } from "src/features/transaction/TransactionProvider";
 import { useTeleport } from "./TeleportProvider";
 
+const getTeleportTitle = (tokenSymbol: string | undefined): string => {
+	return tokenSymbol ? `Teleport ${tokenSymbol}` : "Teleport";
+};
+
 export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
@@ -18,6 +22,11 @@ export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 		deliveryFeeEstimate,
 		followUpData,
 	} = useTeleport();
+
+	const title = useMemo(
+		() => getTeleportTitle(tokenIn?.symbol),
+		[tokenIn?.symbol],
+	);
 
 	const callSpendings = useMemo<CallSpendings>(() => {
 		if (!tokenIn || !plancksIn) return {};
@@ -43,6 +52,7 @@ export const TeleportTransactionProvider: FC<PropsWithChildren> = ({
 			onReset={onReset}
 			followUpData={followUpData}
 			transactionType="teleport"
+			transactionTitle={title}
 		>
 			{children}
 		</TransactionProvider>

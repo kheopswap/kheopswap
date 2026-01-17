@@ -44,6 +44,7 @@ type UseTransactionProviderProps = {
 	callSpendings?: CallSpendings; // tokens to be spent as part of the call
 	followUpData?: object;
 	transactionType?: TransactionType;
+	transactionTitle?: string;
 	onReset: () => void;
 };
 
@@ -59,6 +60,7 @@ const useTransactionProvider = ({
 	onReset,
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
 	transactionType = "unknown",
+	transactionTitle = "Transaction",
 }: UseTransactionProviderProps) => {
 	const account = useWalletAccount({ id: signer });
 
@@ -138,6 +140,7 @@ const useTransactionProvider = ({
 				feeEstimate,
 				feeToken,
 				type: transactionType,
+				title: transactionTitle,
 				followUpData: followUpData as Record<string, unknown>,
 				isMinimized: false,
 			});
@@ -196,6 +199,7 @@ const useTransactionProvider = ({
 		followUpData,
 		options,
 		transactionType,
+		transactionTitle,
 	]);
 
 	const tokenIds = useMemo(() => {

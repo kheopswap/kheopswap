@@ -48,6 +48,7 @@ export const GlobalFollowUpModal: FC = () => {
 				followUp={followUpData}
 				onClose={handleClose}
 				canAlwaysClose
+				title={openTransaction.title}
 			>
 				{getFollowUpContent(openTransaction)}
 			</FollowUpModalInner>

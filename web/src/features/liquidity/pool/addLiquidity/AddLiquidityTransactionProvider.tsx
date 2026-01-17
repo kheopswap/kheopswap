@@ -6,11 +6,26 @@ import {
 } from "src/features/transaction/TransactionProvider";
 import { useAddLiquidity } from "./AddLiquidityProvider";
 
+const getAddLiquidityTitle = (
+	token1Symbol: string | undefined,
+	token2Symbol: string | undefined,
+): string => {
+	if (token1Symbol && token2Symbol) {
+		return `Add ${token1Symbol}/${token2Symbol} liquidity`;
+	}
+	return "Add liquidity";
+};
+
 export const AddLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
 	const { assetHub, account, nativeToken, assetToken } = useLiquidityPoolPage();
 	const { liquidityToAdd, call, onReset } = useAddLiquidity();
+
+	const title = useMemo(
+		() => getAddLiquidityTitle(nativeToken?.symbol, assetToken?.symbol),
+		[nativeToken?.symbol, assetToken?.symbol],
+	);
 
 	const spendings = useMemo<CallSpendings>(() => {
 		if (!liquidityToAdd || !nativeToken || !assetToken) return {};
@@ -30,6 +45,7 @@ export const AddLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 			onReset={onReset}
 			callSpendings={spendings}
 			transactionType="addLiquidity"
+			transactionTitle={title}
 		>
 			{children}
 		</TransactionProvider>
