@@ -41,7 +41,11 @@ export const useWallets = () => {
 				walletIcon: walletIconById[account.walletId] ?? "",
 			})) as InjectedAccount[];
 
-		console.debug("[useWallets] accounts:", result.length, result.map((a) => a.id));
+		console.debug(
+			"[useWallets] accounts:",
+			result.length,
+			result.map((a) => a.id),
+		);
 		return result;
 	}, [accounts, walletIconById]);
 
