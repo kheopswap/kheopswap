@@ -24,13 +24,6 @@ const STORAGE_KEY = getLocalStorageKey("settings");
 
 const getPersistedSettings = () => {
 	try {
-		// TODO suppress this in a while
-		localStorage.removeItem(getLocalStorageKey("relayId"));
-		localStorage.removeItem(getLocalStorageKey("slippage"));
-		localStorage.removeItem(getLocalStorageKey("chainId"));
-		localStorage.removeItem(getLocalStorageKey("connectedExtensions"));
-		localStorage.removeItem(getLocalStorageKey("defaultAccount"));
-
 		const strSettings = localStorage.getItem(STORAGE_KEY);
 		const settings = strSettings
 			? safeParse<Settings>(strSettings)

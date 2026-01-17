@@ -3,7 +3,6 @@ import GenericWalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
 import type { FC } from "react";
 
 export const WalletIcon: FC<{
-	walletId: string;
 	icon?: string;
 	className?: string;
 }> = ({ icon, className }) => {

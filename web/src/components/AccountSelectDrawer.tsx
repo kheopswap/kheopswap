@@ -20,12 +20,11 @@ import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
 
 const WalletButton: FC<{
-	walletId: string;
 	icon: string;
 	name: string;
 	isConnected: boolean;
 	onClick: () => void;
-}> = ({ walletId, icon, name, isConnected, onClick }) => (
+}> = ({ icon, name, isConnected, onClick }) => (
 	<button
 		type="button"
 		onClick={onClick}
@@ -37,7 +36,7 @@ const WalletButton: FC<{
 		)}
 	>
 		<div className="size-8 shrink-0">
-			<WalletIcon walletId={walletId} icon={icon} className="size-8" />
+			<WalletIcon icon={icon} className="size-8" />
 		</div>
 		<div className="grow text-left">{name}</div>
 		<div
@@ -85,11 +84,7 @@ const AccountButton: FC<{
 				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
 					<div className="truncate">{account.name}</div>
 					<div className="inline-block size-4 shrink-0">
-						<WalletIcon
-							walletId={account.walletId}
-							icon={walletIcon}
-							className="size-4"
-						/>
+						<WalletIcon icon={walletIcon} className="size-4" />
 					</div>
 				</div>
 				<div className="truncate text-xs text-neutral-500">
@@ -144,7 +139,7 @@ const AddressInput: FC<{
 	return (
 		<div
 			className={cn(
-				"flex h-[42px] w-full items-center rounded-xs border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline-solid",
+				"flex h-10.5 w-full items-center rounded-xs border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline-solid",
 				localAddress && !isValid
 					? "border-error-500 outline-error-500"
 					: "border-neutral-500 outline-neutral-500",
@@ -291,7 +286,6 @@ const AccountSelectDrawerContent: FC<{
 							{injectedWallets.map((wallet) => (
 								<li key={wallet.id}>
 									<WalletButton
-										walletId={wallet.id}
 										icon={wallet.icon}
 										name={wallet.name}
 										isConnected={wallet.isConnected}
@@ -312,7 +306,6 @@ const AccountSelectDrawerContent: FC<{
 					<ul className="mt-2 flex flex-col gap-2">
 						<li>
 							<WalletButton
-								walletId={walletConnectWallet.id}
 								icon={walletConnectWallet.icon}
 								name={walletConnectWallet.name}
 								isConnected={walletConnectWallet.isConnected}
