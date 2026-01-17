@@ -51,9 +51,7 @@ export const useWallets = () => {
 
 	const connect = useCallback(
 		async (walletId: string) => {
-			const wallet = polkadotWallets.find(
-				(w) => w.id === walletId || w.id === `polkadot::${walletId}`,
-			);
+			const wallet = polkadotWallets.find((w) => w.id === walletId);
 			if (wallet) {
 				await wallet.connect();
 			}
@@ -63,9 +61,7 @@ export const useWallets = () => {
 
 	const disconnect = useCallback(
 		(walletId: string) => {
-			const wallet = polkadotWallets.find(
-				(w) => w.id === walletId || w.id === `polkadot::${walletId}`,
-			);
+			const wallet = polkadotWallets.find((w) => w.id === walletId);
 			if (wallet) {
 				wallet.disconnect();
 			}
