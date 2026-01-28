@@ -9,6 +9,7 @@ export * from "./DrawerContainer";
 export * from "./FollowUpModal";
 export * from "./FormFieldContainer";
 export * from "./FormSummary";
+export * from "./GitHubImage";
 export * from "./layout";
 export * from "./MagicButton";
 export * from "./ModalDialog";

@@ -1,10 +1,14 @@
 import { GITHUB_BRANCH } from "@kheopswap/constants";
 import type { ChainId } from "@kheopswap/registry";
-import { getLocalStorageKey, logger } from "@kheopswap/utils";
+import {
+	getLocalStorageKey,
+	logger,
+	toStaticallyCdnUrl,
+} from "@kheopswap/utils";
 import { BehaviorSubject, map, shareReplay } from "rxjs";
 import type { DirectoryChainData, DirectoryState } from "./types";
 
-const DIRECTORY_BASE_URL = `https://raw.githubusercontent.com/kheopswap/kheopswap/${GITHUB_BRANCH}/directory/data/v1`;
+const DIRECTORY_RAW_URL = `https://raw.githubusercontent.com/kheopswap/kheopswap/${GITHUB_BRANCH}/directory/data/v1`;
 
 const getStorageKey = (chainId: ChainId) =>
 	getLocalStorageKey(`directory::v1::${chainId}`);
@@ -48,13 +52,34 @@ const saveToCache = (chainId: ChainId, data: DirectoryChainData): void => {
 };
 
 /**
- * Fetch directory data from GitHub
+ * Fetch directory data from GitHub via Statically CDN with fallback to raw GitHub
  */
 const fetchFromGitHub = async (
 	chainId: ChainId,
 ): Promise<DirectoryChainData> => {
-	const url = `${DIRECTORY_BASE_URL}/${chainId}.json`;
-	const response = await fetch(url);
+	const rawUrl = `${DIRECTORY_RAW_URL}/${chainId}.json`;
+	const cdnUrl = toStaticallyCdnUrl(rawUrl);
+
+	// Try Statically CDN first
+	if (cdnUrl) {
+		try {
+			const response = await fetch(cdnUrl);
+			if (response.ok) {
+				return response.json();
+			}
+			logger.warn(
+				`Statically CDN failed for ${chainId}, falling back to raw GitHub`,
+			);
+		} catch (err) {
+			logger.warn(
+				`Statically CDN error for ${chainId}, falling back to raw GitHub`,
+				{ err },
+			);
+		}
+	}
+
+	// Fallback to raw GitHub
+	const response = await fetch(rawUrl);
 
 	if (!response.ok) {
 		throw new Error(

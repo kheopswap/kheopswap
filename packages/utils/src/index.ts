@@ -7,6 +7,7 @@ export * from "./getCachedObservable";
 export * from "./getCachedPromise";
 export * from "./getErrorMessageFromTxEvents";
 export * from "./getLocalStorageKey";
+export * from "./githubCdn";
 export * from "./isBigInt";
 export * from "./isBinary";
 export * from "./isNumber";

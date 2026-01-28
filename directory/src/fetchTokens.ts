@@ -37,15 +37,12 @@ const getCurrentBranch = (): string => {
 const CURRENT_BRANCH = getCurrentBranch();
 const LOGOS_BASE_URL = `https://raw.githubusercontent.com/kheopswap/kheopswap/${CURRENT_BRANCH}/directory/logos`;
 
-// Fallback logos use relative paths - they're served from the frontend's public folder
-const DEFAULT_ASSET_LOGO = "./img/tokens/asset.svg";
-const DEFAULT_UNKNOWN_LOGO = "./img/tokens/unknown.svg";
-
 /**
  * Convert a local logo path to a GitHub raw URL
+ * Returns undefined if no logo is available (frontend will use fallback)
  */
-const resolveLogoUrl = (logo: string | undefined): string => {
-	if (!logo) return DEFAULT_UNKNOWN_LOGO;
+const resolveLogoUrl = (logo: string | undefined): string | undefined => {
+	if (!logo) return undefined;
 
 	// If already a URL, return as is
 	if (logo.startsWith("http://") || logo.startsWith("https://")) {
@@ -59,7 +56,7 @@ const resolveLogoUrl = (logo: string | undefined): string => {
 		return `${LOGOS_BASE_URL}/${match[1]}`;
 	}
 
-	return DEFAULT_UNKNOWN_LOGO;
+	return undefined;
 };
 
 /**
@@ -77,17 +74,20 @@ export const getNativeToken = (
 		return null;
 	}
 
-	return {
+	const logo = resolveLogoUrl(knownToken.logo);
+	const token: DirectoryTokenNative = {
 		id: tokenId,
 		type: "native",
 		chainId: chain.id,
 		decimals: knownToken.decimals,
 		symbol: knownToken.symbol,
 		name: knownToken.name,
-		logo: resolveLogoUrl(knownToken.logo),
 		verified: true,
 		isSufficient: true,
 	};
+	if (logo) token.logo = logo;
+
+	return token;
 };
 
 /**
@@ -135,7 +135,7 @@ export const fetchAssetTokens = async (
 		const override = overridesMap[tokenId];
 		const assetInfo = assetInfoMap.get(assetId);
 
-		// Base token from on-chain data
+		// Base token from on-chain data (no logo - frontend will use fallback)
 		const baseToken: DirectoryTokenAsset = {
 			id: tokenId,
 			type: "asset",
@@ -144,7 +144,6 @@ export const fetchAssetTokens = async (
 			symbol: metadata.symbol.asText(),
 			decimals: metadata.decimals,
 			name: metadata.name.asText(),
-			logo: DEFAULT_ASSET_LOGO,
 			verified: false,
 			isSufficient: assetInfo?.isSufficient ?? false,
 		};
@@ -154,7 +153,8 @@ export const fetchAssetTokens = async (
 			baseToken.symbol = knownToken.symbol;
 			baseToken.name = knownToken.name;
 			baseToken.decimals = knownToken.decimals;
-			baseToken.logo = resolveLogoUrl(knownToken.logo);
+			const logo = resolveLogoUrl(knownToken.logo);
+			if (logo) baseToken.logo = logo;
 			baseToken.verified = true;
 			baseToken.isSufficient =
 				knownToken.isSufficient ?? baseToken.isSufficient;
@@ -162,7 +162,8 @@ export const fetchAssetTokens = async (
 
 		// Apply overrides (partial updates like logo only)
 		if (override) {
-			if (override.logo) baseToken.logo = resolveLogoUrl(override.logo);
+			const logo = resolveLogoUrl(override.logo);
+			if (logo) baseToken.logo = logo;
 			if (override.symbol) baseToken.symbol = override.symbol;
 			if (override.name) baseToken.name = override.name;
 			if (override.decimals !== undefined)
@@ -209,7 +210,6 @@ export const fetchPoolAssetTokens = async (
 			symbol: "",
 			decimals: 0,
 			name: "",
-			logo: "",
 			verified: false,
 			isSufficient: false,
 		};
@@ -271,7 +271,6 @@ export const fetchForeignAssetTokens = async (
 			symbol: metadata?.symbol.asText() ?? "",
 			decimals: metadata?.decimals ?? 0,
 			name: metadata?.name.asText() ?? "",
-			logo: DEFAULT_ASSET_LOGO,
 			verified: false,
 			isSufficient: false,
 		};
@@ -281,14 +280,16 @@ export const fetchForeignAssetTokens = async (
 			baseToken.symbol = knownToken.symbol;
 			baseToken.name = knownToken.name;
 			baseToken.decimals = knownToken.decimals;
-			baseToken.logo = resolveLogoUrl(knownToken.logo);
+			const logo = resolveLogoUrl(knownToken.logo);
+			if (logo) baseToken.logo = logo;
 			baseToken.verified = true;
 			baseToken.isSufficient = knownToken.isSufficient ?? false;
 		}
 
 		// Apply overrides
 		if (override) {
-			if (override.logo) baseToken.logo = resolveLogoUrl(override.logo);
+			const logo = resolveLogoUrl(override.logo);
+			if (logo) baseToken.logo = logo;
 			if (override.symbol) baseToken.symbol = override.symbol;
 			if (override.name) baseToken.name = override.name;
 			if (override.decimals !== undefined)

@@ -1,6 +1,6 @@
 {
 	"chainId": "pasah",
-	"generatedAt": "2026-01-28T15:24:19.142Z",
+	"generatedAt": "2026-01-28T16:00:28.743Z",
 	"tokens": [
 		{
 			"id": "native::pasah",
@@ -9,9 +9,9 @@
 			"decimals": 10,
 			"symbol": "PAS",
 			"name": "Paseo",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/PAS.png",
 			"verified": true,
-			"isSufficient": true
+			"isSufficient": true,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/PAS.png"
 		},
 		{
 			"id": "asset::pasah::50000074",
@@ -21,7 +21,6 @@
 			"symbol": "ANT",
 			"decimals": 18,
 			"name": "A new token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -33,7 +32,6 @@
 			"symbol": "VAR",
 			"decimals": 10,
 			"name": "VAR USD",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -45,7 +43,6 @@
 			"symbol": "CW-1",
 			"decimals": 12,
 			"name": "Chinggis Warriors Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -57,7 +54,6 @@
 			"symbol": "ATK",
 			"decimals": 12,
 			"name": "Awesome Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -69,7 +65,6 @@
 			"symbol": "Metizport-1",
 			"decimals": 12,
 			"name": "Metizport Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -81,7 +76,6 @@
 			"symbol": "Fluxo-1",
 			"decimals": 12,
 			"name": "Fluxo Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -93,7 +87,6 @@
 			"symbol": "NEON",
 			"decimals": 2,
 			"name": "NEON",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -105,7 +98,6 @@
 			"symbol": "Metizport-1",
 			"decimals": 12,
 			"name": "Metizport Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -117,7 +109,6 @@
 			"symbol": "multi",
 			"decimals": 12,
 			"name": "multi",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -129,7 +120,6 @@
 			"symbol": "Nemiga-1",
 			"decimals": 12,
 			"name": "Nemiga Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -141,7 +131,6 @@
 			"symbol": "LUM",
 			"decimals": 12,
 			"name": "Lumity",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -153,7 +142,6 @@
 			"symbol": "SIL",
 			"decimals": 9,
 			"name": "silver",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -165,7 +153,6 @@
 			"symbol": "PUPU",
 			"decimals": 3,
 			"name": "ShiFu",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -177,7 +164,6 @@
 			"symbol": "PACOT",
 			"decimals": 2,
 			"name": "Paco Taco",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -189,7 +175,6 @@
 			"symbol": "HELL",
 			"decimals": 3,
 			"name": "HELLO",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -201,7 +186,6 @@
 			"symbol": "JINX",
 			"decimals": 18,
 			"name": "Oh The Misery",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -213,7 +197,6 @@
 			"symbol": "MOUZ",
 			"decimals": 12,
 			"name": "MOUZ",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -225,7 +208,6 @@
 			"symbol": "TYLOO-1",
 			"decimals": 12,
 			"name": "TYLOO Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -237,7 +219,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -249,7 +230,6 @@
 			"symbol": "AIR-MAY-12",
 			"decimals": 18,
 			"name": "AIR-MAY-12",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -261,7 +241,6 @@
 			"symbol": "PACO5",
 			"decimals": 6,
 			"name": "PACO CINCO",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -273,7 +252,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -285,7 +263,6 @@
 			"symbol": "TTB",
 			"decimals": 18,
 			"name": "token to be",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -297,7 +274,6 @@
 			"symbol": "FlyQuest-1",
 			"decimals": 12,
 			"name": "FlyQuest Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -309,7 +285,6 @@
 			"symbol": "FlyQuest-1",
 			"decimals": 12,
 			"name": "FlyQuest Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -321,7 +296,6 @@
 			"symbol": "RCK",
 			"decimals": 9,
 			"name": "rock",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -333,7 +307,6 @@
 			"symbol": "LAWN",
 			"decimals": 18,
 			"name": "The Lawnmower Man",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -345,7 +318,6 @@
 			"symbol": "ODT",
 			"decimals": 1,
 			"name": "Oksana",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -357,7 +329,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -369,7 +340,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -381,7 +351,6 @@
 			"symbol": "NRG-1",
 			"decimals": 12,
 			"name": "NRG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -393,7 +362,6 @@
 			"symbol": "VAR 2",
 			"decimals": 10,
 			"name": "VAR USD 2",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -405,7 +373,6 @@
 			"symbol": "USDT",
 			"decimals": 6,
 			"name": "USDT-test",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -417,7 +384,6 @@
 			"symbol": "TES",
 			"decimals": 4,
 			"name": "test",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -429,7 +395,6 @@
 			"symbol": "PETER",
 			"decimals": 0,
 			"name": "Peter Coin",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -441,7 +406,6 @@
 			"symbol": "BLAST",
 			"decimals": 10,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -453,7 +417,6 @@
 			"symbol": "CAT",
 			"decimals": 18,
 			"name": "CatCoin",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -465,7 +428,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -477,7 +439,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -489,7 +450,6 @@
 			"symbol": "SHINE",
 			"decimals": 10,
 			"name": "Moonshine",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -501,7 +461,6 @@
 			"symbol": "Legacy-1",
 			"decimals": 12,
 			"name": "Legacy Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -513,7 +472,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -525,7 +483,6 @@
 			"symbol": "PIGLET",
 			"decimals": 10,
 			"name": "Pink Piglet",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -537,7 +494,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -549,7 +505,6 @@
 			"symbol": "B8-1",
 			"decimals": 12,
 			"name": "B8 Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -561,7 +516,6 @@
 			"symbol": "MTR",
 			"decimals": 10,
 			"name": "MANTRA",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -573,7 +527,6 @@
 			"symbol": "Wildcard-1",
 			"decimals": 12,
 			"name": "Wildcard Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -585,7 +538,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -597,7 +549,6 @@
 			"symbol": "USDT",
 			"decimals": 6,
 			"name": "Tether USD Test",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": true
 		},
@@ -609,7 +560,6 @@
 			"symbol": "MONGOLZ",
 			"decimals": 12,
 			"name": "The MongolZ",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -621,7 +571,6 @@
 			"symbol": "POCHO",
 			"decimals": 8,
 			"name": "PACO OCHO",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -633,7 +582,6 @@
 			"symbol": "Legacy-1",
 			"decimals": 12,
 			"name": "Legacy Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -645,7 +593,6 @@
 			"symbol": "BLAST-1",
 			"decimals": 12,
 			"name": "BLAST Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -657,7 +604,6 @@
 			"symbol": "BLAST",
 			"decimals": 10,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -669,7 +615,6 @@
 			"symbol": "tDON",
 			"decimals": 12,
 			"name": "Test Paydon Utility Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -681,7 +626,6 @@
 			"symbol": "GL",
 			"decimals": 10,
 			"name": "GamerLegion",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -693,7 +637,6 @@
 			"symbol": "Imperial-1",
 			"decimals": 12,
 			"name": "Imperial Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -705,7 +648,6 @@
 			"symbol": "TEST",
 			"decimals": 12,
 			"name": "TEST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -717,7 +659,6 @@
 			"symbol": "BLAST",
 			"decimals": 10,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -729,7 +670,6 @@
 			"symbol": "HEROIC-1",
 			"decimals": 12,
 			"name": "HEROIC Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -741,7 +681,6 @@
 			"symbol": "FURIA",
 			"decimals": 12,
 			"name": "FURIA",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -753,7 +692,6 @@
 			"symbol": "ECSTATIC",
 			"decimals": 10,
 			"name": "ECSTATIC",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -765,7 +703,6 @@
 			"symbol": "Imperial-1",
 			"decimals": 12,
 			"name": "Imperial Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -777,7 +714,6 @@
 			"symbol": "Betboom-1",
 			"decimals": 12,
 			"name": "Betboom Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -789,7 +725,6 @@
 			"symbol": "SP",
 			"decimals": 12,
 			"name": "Sprig Plantar",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -801,7 +736,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -813,7 +747,6 @@
 			"symbol": "PACO7",
 			"decimals": 7,
 			"name": "PACO SIETE",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -825,7 +758,6 @@
 			"symbol": "Legacy-1",
 			"decimals": 12,
 			"name": "Legacy Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -837,7 +769,6 @@
 			"symbol": "HVT",
 			"decimals": 2,
 			"name": "HavToken",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -849,7 +780,6 @@
 			"symbol": "FURIA",
 			"decimals": 10,
 			"name": "FURIA",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -861,7 +791,6 @@
 			"symbol": "0.0",
 			"decimals": 10,
 			"name": "1230.0",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -873,7 +802,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -885,7 +813,6 @@
 			"symbol": "FLY",
 			"decimals": 10,
 			"name": "FlyQuest",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -897,7 +824,6 @@
 			"symbol": "Wildcard-1",
 			"decimals": 12,
 			"name": "Wildcard Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -909,7 +835,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 10,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -921,7 +846,6 @@
 			"symbol": "STN",
 			"decimals": 12,
 			"name": "Shan Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -933,7 +857,6 @@
 			"symbol": "Fluxo-1",
 			"decimals": 12,
 			"name": "Fluxo Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -945,7 +868,6 @@
 			"symbol": "lop",
 			"decimals": 5,
 			"name": "lop",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -957,7 +879,6 @@
 			"symbol": "Nemiga-1",
 			"decimals": 12,
 			"name": "Nemiga Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -969,7 +890,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -981,7 +901,6 @@
 			"symbol": "Metizport-1",
 			"decimals": 12,
 			"name": "Metizport Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -993,7 +912,6 @@
 			"symbol": "KONI",
 			"decimals": 10,
 			"name": "Koni Studio",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1005,7 +923,6 @@
 			"symbol": "Betboom-1",
 			"decimals": 12,
 			"name": "Betboom Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1017,7 +934,6 @@
 			"symbol": "air-may-5-2",
 			"decimals": 18,
 			"name": "air-may-5-2",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1029,7 +945,6 @@
 			"symbol": "NAVI",
 			"decimals": 12,
 			"name": "Natus Vincere",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1041,7 +956,6 @@
 			"symbol": "LV-1",
 			"decimals": 12,
 			"name": "Lynn Vision Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1053,7 +967,6 @@
 			"symbol": "TYLOO-1",
 			"decimals": 12,
 			"name": "TYLOO Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1065,7 +978,6 @@
 			"symbol": "XT3",
 			"decimals": 12,
 			"name": "X Test3",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1077,7 +989,6 @@
 			"symbol": "HBK",
 			"decimals": 20,
 			"name": "HIBIKI",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1089,7 +1000,6 @@
 			"symbol": "Tobi",
 			"decimals": 2,
 			"name": "Tobi",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1101,7 +1011,6 @@
 			"symbol": "PAS-AIR-2",
 			"decimals": 12,
 			"name": "PAS-AIR-2",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1113,7 +1022,6 @@
 			"symbol": "vsa",
 			"decimals": 1,
 			"name": "vsa token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1125,7 +1033,6 @@
 			"symbol": "TAA",
 			"decimals": 10,
 			"name": "Test Asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1137,7 +1044,6 @@
 			"symbol": "CAM",
 			"decimals": 18,
 			"name": "Polka asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1149,7 +1055,6 @@
 			"symbol": "Complexity-1",
 			"decimals": 12,
 			"name": "Complexity Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1161,7 +1066,6 @@
 			"symbol": "Complexity-1",
 			"decimals": 12,
 			"name": "Complexity Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1173,7 +1077,6 @@
 			"symbol": "TYLOO-1",
 			"decimals": 12,
 			"name": "TYLOO Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1185,7 +1088,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1197,7 +1099,6 @@
 			"symbol": "TBT",
 			"decimals": 10,
 			"name": "TB Test",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1209,7 +1110,6 @@
 			"symbol": "vku",
 			"decimals": 0,
 			"name": "vkusnayaEda",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1221,7 +1121,6 @@
 			"symbol": "Metizport-1",
 			"decimals": 12,
 			"name": "Metizport Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1233,7 +1132,6 @@
 			"symbol": "AROH",
 			"decimals": 12,
 			"name": "A Ray Of Hope",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1245,7 +1143,6 @@
 			"symbol": "Wildcard-1",
 			"decimals": 12,
 			"name": "Wildcard Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1257,7 +1154,6 @@
 			"symbol": "LEGACY",
 			"decimals": 10,
 			"name": "Legacy",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1269,7 +1165,6 @@
 			"symbol": "Betboom-1",
 			"decimals": 12,
 			"name": "Betboom Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1281,7 +1176,6 @@
 			"symbol": "ADT",
 			"decimals": 1,
 			"name": "ADT",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1293,7 +1187,6 @@
 			"symbol": "FNT",
 			"decimals": 10,
 			"name": "Fintra New Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1305,7 +1198,6 @@
 			"symbol": "Fluxo-1",
 			"decimals": 12,
 			"name": "Fluxo Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1317,7 +1209,6 @@
 			"symbol": "ASSET",
 			"decimals": 12,
 			"name": "An Asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1329,7 +1220,6 @@
 			"symbol": "BLAST",
 			"decimals": 10,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1341,7 +1231,6 @@
 			"symbol": "TT",
 			"decimals": 18,
 			"name": "Test Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1353,7 +1242,6 @@
 			"symbol": "NMD",
 			"decimals": 10,
 			"name": "Nomad Bitcoin Test Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1365,7 +1253,6 @@
 			"symbol": "PAP",
 			"decimals": 2,
 			"name": "PAPI ROCKS!",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1377,7 +1264,6 @@
 			"symbol": "MOUZ",
 			"decimals": 10,
 			"name": "MOUZ",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1389,7 +1275,6 @@
 			"symbol": "PACO6",
 			"decimals": 6,
 			"name": "PACO SIX",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1401,7 +1286,6 @@
 			"symbol": "Betboom-1",
 			"decimals": 12,
 			"name": "Betboom Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1413,7 +1297,6 @@
 			"symbol": "AIR-MAY-15",
 			"decimals": 18,
 			"name": "AIR-MAY-15",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1425,7 +1308,6 @@
 			"symbol": "NWT",
 			"decimals": 3,
 			"name": "Night Wanderer ",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1437,7 +1319,6 @@
 			"symbol": "cretoka",
 			"decimals": 10,
 			"name": "created Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1449,7 +1330,6 @@
 			"symbol": "BT",
 			"decimals": 18,
 			"name": "branch token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1461,7 +1341,6 @@
 			"symbol": "NEW",
 			"decimals": 1,
 			"name": "NewToken",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1473,7 +1352,6 @@
 			"symbol": "NAVI",
 			"decimals": 10,
 			"name": "Natus Vincere",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1485,7 +1363,6 @@
 			"symbol": "FlyQuest-1",
 			"decimals": 12,
 			"name": "FlyQuest Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1497,7 +1374,6 @@
 			"symbol": "bal",
 			"decimals": 0,
 			"name": "bananaAlina",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1509,7 +1385,6 @@
 			"symbol": "NRG-1",
 			"decimals": 12,
 			"name": "NRG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1521,7 +1396,6 @@
 			"symbol": "BPV",
 			"decimals": 3,
 			"name": "BURAK tokens ",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1533,7 +1407,6 @@
 			"symbol": "FAZE",
 			"decimals": 12,
 			"name": "FaZe Clan",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1545,7 +1418,6 @@
 			"symbol": "B8-1",
 			"decimals": 12,
 			"name": "B8 Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1557,7 +1429,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1569,7 +1440,6 @@
 			"symbol": "SATW",
 			"decimals": 12,
 			"name": "Spranne Against The World",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1581,7 +1451,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 10,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1593,7 +1462,6 @@
 			"symbol": "NRG-1",
 			"decimals": 12,
 			"name": "NRG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1605,7 +1473,6 @@
 			"symbol": "USDC",
 			"decimals": 3,
 			"name": "USDC",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1617,7 +1484,6 @@
 			"symbol": "MTT",
 			"decimals": 0,
 			"name": "My Token Test",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1629,7 +1495,6 @@
 			"symbol": "PACO3",
 			"decimals": 4,
 			"name": "PACO TRES",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1641,7 +1506,6 @@
 			"symbol": "PACO9",
 			"decimals": 9,
 			"name": "PACO NINE",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1653,7 +1517,6 @@
 			"symbol": "air-may-6",
 			"decimals": 18,
 			"name": "air-may-6",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1665,7 +1528,6 @@
 			"symbol": "EFI",
 			"decimals": 12,
 			"name": "Efimero",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1677,7 +1539,6 @@
 			"symbol": "USDH",
 			"decimals": 6,
 			"name": "USDH",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1689,7 +1550,6 @@
 			"symbol": "M80",
 			"decimals": 10,
 			"name": "M80",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1701,7 +1561,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 10,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1713,7 +1572,6 @@
 			"symbol": "CW-1",
 			"decimals": 12,
 			"name": "Chinggis Warriors Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1725,7 +1583,6 @@
 			"symbol": "HEROIC-1",
 			"decimals": 12,
 			"name": "HEROIC Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1737,7 +1594,6 @@
 			"symbol": "PLURA",
 			"decimals": 18,
 			"name": "PuppyCOIN",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1749,7 +1605,6 @@
 			"symbol": "Nemiga-1",
 			"decimals": 12,
 			"name": "Nemiga Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1761,7 +1616,6 @@
 			"symbol": "HU",
 			"decimals": 12,
 			"name": "Hush",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1773,7 +1627,6 @@
 			"symbol": "NEIN",
 			"decimals": 12,
 			"name": "never don't give up",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1785,7 +1638,6 @@
 			"symbol": "HEROIC-1",
 			"decimals": 12,
 			"name": "HEROIC Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1797,7 +1649,6 @@
 			"symbol": "PACOTEN",
 			"decimals": 10,
 			"name": "PACO TEN",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1809,7 +1660,6 @@
 			"symbol": "fintok",
 			"decimals": 12,
 			"name": "Finally Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1821,7 +1671,6 @@
 			"symbol": " IAO",
 			"decimals": 13,
 			"name": "🌈 I A O Abraxas Sabaoth 🌈",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1833,7 +1682,6 @@
 			"symbol": "SYN",
 			"decimals": 10,
 			"name": "Synergy",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1845,7 +1693,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1857,7 +1704,6 @@
 			"symbol": "Imperial-1",
 			"decimals": 12,
 			"name": "Imperial Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1869,7 +1715,6 @@
 			"symbol": "Pol",
 			"decimals": 10,
 			"name": "PolkaGate",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1881,7 +1726,6 @@
 			"symbol": "LV-1",
 			"decimals": 12,
 			"name": "Lynn Vision Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1893,7 +1737,6 @@
 			"symbol": "KMI",
 			"decimals": 18,
 			"name": "Maks asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1905,7 +1748,6 @@
 			"symbol": "Nemiga-1",
 			"decimals": 12,
 			"name": "Nemiga Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1917,7 +1759,6 @@
 			"symbol": "USDt",
 			"decimals": 6,
 			"name": "Tether USD",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": true
 		},
@@ -1929,7 +1770,6 @@
 			"symbol": "meow",
 			"decimals": 0,
 			"name": "alinaMeow",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1941,7 +1781,6 @@
 			"symbol": "pFINT",
 			"decimals": 4,
 			"name": "Fintra",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1953,7 +1792,6 @@
 			"symbol": "Wildcard-1",
 			"decimals": 12,
 			"name": "Wildcard Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1965,7 +1803,6 @@
 			"symbol": "VIT",
 			"decimals": 10,
 			"name": "Team Vitality",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1977,7 +1814,6 @@
 			"symbol": "LV-1",
 			"decimals": 12,
 			"name": "Lynn Vision Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -1989,7 +1825,6 @@
 			"symbol": "NRG-1",
 			"decimals": 12,
 			"name": "NRG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2001,7 +1836,6 @@
 			"symbol": "VITALITY",
 			"decimals": 12,
 			"name": "Team Vitality",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2013,7 +1847,6 @@
 			"symbol": "MLF",
 			"decimals": 10,
 			"name": "Moonlit Floor",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2025,7 +1858,6 @@
 			"symbol": "OG-1",
 			"decimals": 12,
 			"name": "OG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2037,7 +1869,6 @@
 			"symbol": "Complexity-1",
 			"decimals": 12,
 			"name": "Complexity Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2049,7 +1880,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2061,7 +1891,6 @@
 			"symbol": "ATA",
 			"decimals": 12,
 			"name": "Assethub Test Asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2073,7 +1902,6 @@
 			"symbol": "TS",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2085,7 +1913,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2097,7 +1924,6 @@
 			"symbol": "BLAST-1",
 			"decimals": 12,
 			"name": "BLAST Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2109,7 +1935,6 @@
 			"symbol": "FURIA",
 			"decimals": 10,
 			"name": "FURIA",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2121,7 +1946,6 @@
 			"symbol": "Nemiga-1",
 			"decimals": 12,
 			"name": "Nemiga Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2133,7 +1957,6 @@
 			"symbol": "LFT",
 			"decimals": 1,
 			"name": "LFToken",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2145,7 +1968,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2157,7 +1979,6 @@
 			"symbol": "Imperial-1",
 			"decimals": 12,
 			"name": "Imperial Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2169,7 +1990,6 @@
 			"symbol": "MEV",
 			"decimals": 1,
 			"name": "MEV Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2181,7 +2001,6 @@
 			"symbol": "NRG-1",
 			"decimals": 12,
 			"name": "NRG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2193,7 +2012,6 @@
 			"symbol": "OG-1",
 			"decimals": 12,
 			"name": "OG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2205,7 +2023,6 @@
 			"symbol": "OEE",
 			"decimals": 0,
 			"name": "oee asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2217,7 +2034,6 @@
 			"symbol": "air-may-6-2",
 			"decimals": 18,
 			"name": "air-may-6-2",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2229,7 +2045,6 @@
 			"symbol": "OG-1",
 			"decimals": 12,
 			"name": "OG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2241,7 +2056,6 @@
 			"symbol": "BLAST",
 			"decimals": 10,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2253,7 +2067,6 @@
 			"symbol": "bal",
 			"decimals": 0,
 			"name": "bananaAlina",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2265,7 +2078,6 @@
 			"symbol": "FNATIC",
 			"decimals": 10,
 			"name": "Fnatic",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2277,7 +2089,6 @@
 			"symbol": "Imperial-1",
 			"decimals": 12,
 			"name": "Imperial Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2289,7 +2100,6 @@
 			"symbol": "ABC",
 			"decimals": 12,
 			"name": "ABC",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2301,7 +2111,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2313,7 +2122,6 @@
 			"symbol": "PEPE",
 			"decimals": 10,
 			"name": "PEPE",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2325,7 +2133,6 @@
 			"symbol": "FTSO",
 			"decimals": 10,
 			"name": "firstblock-test-shanghai-1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2337,7 +2144,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2349,7 +2155,6 @@
 			"symbol": "VIPT",
 			"decimals": 1,
 			"name": "VIP token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2361,7 +2166,6 @@
 			"symbol": "FCB",
 			"decimals": 5,
 			"name": "FCBarcelona",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2373,7 +2177,6 @@
 			"symbol": "HEROIC-1",
 			"decimals": 12,
 			"name": "HEROIC Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2385,7 +2188,6 @@
 			"symbol": "Fluxo-1",
 			"decimals": 12,
 			"name": "Fluxo Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2397,7 +2199,6 @@
 			"symbol": "G2",
 			"decimals": 10,
 			"name": "G2 Esports",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2409,7 +2210,6 @@
 			"symbol": "WAT",
 			"decimals": 12,
 			"name": "Wow What A Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2421,7 +2221,6 @@
 			"symbol": "FAZE",
 			"decimals": 10,
 			"name": "FaZe Clan",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2433,7 +2232,6 @@
 			"symbol": "CW-1",
 			"decimals": 12,
 			"name": "Chinggis Warriors Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2445,7 +2243,6 @@
 			"symbol": "LIQUID",
 			"decimals": 10,
 			"name": "Team Liquid",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2457,7 +2254,6 @@
 			"symbol": "BLAST",
 			"decimals": 10,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2469,7 +2265,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2481,7 +2276,6 @@
 			"symbol": "ONG",
 			"decimals": 1,
 			"name": "orange_333",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2493,7 +2287,6 @@
 			"symbol": "JET",
 			"decimals": 10,
 			"name": "JET",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2505,7 +2298,6 @@
 			"symbol": "RCK",
 			"decimals": 9,
 			"name": "rock",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2517,7 +2309,6 @@
 			"symbol": "FFSA",
 			"decimals": 12,
 			"name": "Farfisa",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2529,7 +2320,6 @@
 			"symbol": "BLAST-1",
 			"decimals": 12,
 			"name": "BLAST Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2541,7 +2331,6 @@
 			"symbol": "TAL",
 			"decimals": 18,
 			"name": "Talisman Test Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2553,7 +2342,6 @@
 			"symbol": "PAIN",
 			"decimals": 12,
 			"name": "paiN Gaming",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2565,7 +2353,6 @@
 			"symbol": "IMP",
 			"decimals": 10,
 			"name": "Imperial Esports",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2577,7 +2364,6 @@
 			"symbol": "MEF",
 			"decimals": 12,
 			"name": "MockEf",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2589,7 +2375,6 @@
 			"symbol": "KUS",
 			"decimals": 5,
 			"name": "courseKusama",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2601,7 +2386,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2613,7 +2397,6 @@
 			"symbol": "B8-1",
 			"decimals": 12,
 			"name": "B8 Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2625,7 +2408,6 @@
 			"symbol": "WRKS",
 			"decimals": 12,
 			"name": "Works",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2637,7 +2419,6 @@
 			"symbol": "TYLOO-1",
 			"decimals": 12,
 			"name": "TYLOO Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2649,7 +2430,6 @@
 			"symbol": "MCTS",
 			"decimals": 12,
 			"name": "My Custom Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2661,7 +2441,6 @@
 			"symbol": "TA",
 			"decimals": 12,
 			"name": "Test Asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2673,7 +2452,6 @@
 			"symbol": "BURT",
 			"decimals": 6,
 			"name": "Burton Leon Reynolds",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2685,7 +2463,6 @@
 			"symbol": "LUM",
 			"decimals": 12,
 			"name": "Lumity",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2697,7 +2474,6 @@
 			"symbol": "ATT",
 			"decimals": 18,
 			"name": "a test token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2709,7 +2485,6 @@
 			"symbol": "Fluxo-1",
 			"decimals": 12,
 			"name": "Fluxo Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2721,7 +2496,6 @@
 			"symbol": "PACO",
 			"decimals": 1,
 			"name": "Paco",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2733,7 +2507,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 10,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2745,7 +2518,6 @@
 			"symbol": "AATW",
 			"decimals": 12,
 			"name": "An Asset That Works",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2757,7 +2529,6 @@
 			"symbol": "AATB",
 			"decimals": 12,
 			"name": "An Asset To Be",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2769,7 +2540,6 @@
 			"symbol": "FAZE",
 			"decimals": 10,
 			"name": "FaZe Clan",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2781,7 +2551,6 @@
 			"symbol": "CRO",
 			"decimals": 18,
 			"name": "cronos",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2793,7 +2562,6 @@
 			"symbol": "FlyQuest-1",
 			"decimals": 12,
 			"name": "FlyQuest Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2805,7 +2573,6 @@
 			"symbol": "Cred",
 			"decimals": 0,
 			"name": "credit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2817,7 +2584,6 @@
 			"symbol": "OG-1",
 			"decimals": 12,
 			"name": "OG Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2829,7 +2595,6 @@
 			"symbol": "VIRTUS",
 			"decimals": 10,
 			"name": "Virtus.pro",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2841,7 +2606,6 @@
 			"symbol": "Alina",
 			"decimals": 0,
 			"name": "I'm Alina",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2853,7 +2617,6 @@
 			"symbol": "USDC",
 			"decimals": 6,
 			"name": "USD Coin",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": true
 		},
@@ -2865,7 +2628,6 @@
 			"symbol": "gabik",
 			"decimals": 6,
 			"name": "gabik",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2877,7 +2639,6 @@
 			"symbol": "BABE",
 			"decimals": 1,
 			"name": "Babe",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2889,7 +2650,6 @@
 			"symbol": "hot",
 			"decimals": 0,
 			"name": "hot",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2901,7 +2661,6 @@
 			"symbol": "LKK",
 			"decimals": 10,
 			"name": "Lakaka Coin",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2913,7 +2672,6 @@
 			"symbol": "Complexity-1",
 			"decimals": 12,
 			"name": "Complexity Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2925,7 +2683,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2937,7 +2694,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2949,7 +2705,6 @@
 			"symbol": "RST",
 			"decimals": 10,
 			"name": "RESET",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2961,7 +2716,6 @@
 			"symbol": "BRA",
 			"decimals": 10,
 			"name": "BRA_16-DOT",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2973,7 +2727,6 @@
 			"symbol": "AIR-TEST-May-5",
 			"decimals": 18,
 			"name": "AIR-TEST-May-5",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2985,7 +2738,6 @@
 			"symbol": "alinka",
 			"decimals": 0,
 			"name": "alinka",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -2997,7 +2749,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3009,7 +2760,6 @@
 			"symbol": "KUSD",
 			"decimals": 6,
 			"name": "Kreivo de Paseo's Test USD",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3021,7 +2771,6 @@
 			"symbol": "Metizport-1",
 			"decimals": 12,
 			"name": "Metizport Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3033,7 +2782,6 @@
 			"symbol": "DADT",
 			"decimals": 18,
 			"name": "day after day token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3045,7 +2793,6 @@
 			"symbol": "CAT",
 			"decimals": 0,
 			"name": "CatCoin",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3057,7 +2804,6 @@
 			"symbol": "HEY",
 			"decimals": 12,
 			"name": "Hello World",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3069,7 +2815,6 @@
 			"symbol": "hal",
 			"decimals": 10,
 			"name": "Halo",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3081,7 +2826,6 @@
 			"symbol": "Legacy-1",
 			"decimals": 12,
 			"name": "Legacy Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3093,7 +2837,6 @@
 			"symbol": "EDU",
 			"decimals": 10,
 			"name": "Educoin",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3105,7 +2848,6 @@
 			"symbol": "SCSS",
 			"decimals": 12,
 			"name": "Success",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3117,7 +2859,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3129,7 +2870,6 @@
 			"symbol": "PD",
 			"decimals": 18,
 			"name": "PolkaDollar",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3141,7 +2881,6 @@
 			"symbol": "RMIX",
 			"decimals": 0,
 			"name": "Remix",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3153,7 +2892,6 @@
 			"symbol": "B8-1",
 			"decimals": 12,
 			"name": "B8 Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3165,7 +2903,6 @@
 			"symbol": "Imperial-1",
 			"decimals": 12,
 			"name": "Imperial Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3177,7 +2914,6 @@
 			"symbol": "Legacy-1",
 			"decimals": 12,
 			"name": "Legacy Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3189,7 +2925,6 @@
 			"symbol": "CTT",
 			"decimals": 10,
 			"name": "Cheers To Token",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3201,7 +2936,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3213,7 +2947,6 @@
 			"symbol": "BLAST-1",
 			"decimals": 12,
 			"name": "BLAST Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3225,7 +2958,6 @@
 			"symbol": "SPIRIT",
 			"decimals": 12,
 			"name": "Team Spirit",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3237,7 +2969,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3249,7 +2980,6 @@
 			"symbol": "PACO4",
 			"decimals": 4,
 			"name": "PACO QUATRO",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3261,7 +2991,6 @@
 			"symbol": "fun",
 			"decimals": 10,
 			"name": "fundation",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3273,7 +3002,6 @@
 			"symbol": "BMBI",
 			"decimals": 12,
 			"name": "Bambi",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3285,7 +3013,6 @@
 			"symbol": "KDP",
 			"decimals": 0,
 			"name": "kdp asset",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3297,7 +3024,6 @@
 			"symbol": "LV-1",
 			"decimals": 12,
 			"name": "Lynn Vision Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3309,7 +3035,6 @@
 			"symbol": "CW-1",
 			"decimals": 12,
 			"name": "Chinggis Warriors Stage 1",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3321,7 +3046,6 @@
 			"symbol": "BLAST",
 			"decimals": 12,
 			"name": "BLAST",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3333,7 +3057,6 @@
 			"symbol": "TLH",
 			"decimals": 12,
 			"name": "The Last Hope",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3345,7 +3068,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3357,7 +3079,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3369,7 +3090,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3381,7 +3101,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3393,7 +3112,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3405,7 +3123,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3417,7 +3134,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3429,7 +3145,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3441,7 +3156,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3453,7 +3167,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3465,7 +3178,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3477,7 +3189,6 @@
 			"symbol": "",
 			"decimals": 0,
 			"name": "",
-			"logo": "",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3503,7 +3214,6 @@
 			"symbol": "ETH",
 			"decimals": 18,
 			"name": "Ether",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3530,7 +3240,6 @@
 			"symbol": "HOLLAR",
 			"decimals": 18,
 			"name": "Hydrated Dollar",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3551,7 +3260,6 @@
 			"symbol": "MERC",
 			"decimals": 18,
 			"name": "MERC",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3572,7 +3280,6 @@
 			"symbol": "SIGMA",
 			"decimals": 18,
 			"name": "LAOS Sigma",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3606,7 +3313,6 @@
 			"symbol": "WETH",
 			"decimals": 18,
 			"name": "Wrapped Ether",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3627,7 +3333,6 @@
 			"symbol": "MYTH",
 			"decimals": 18,
 			"name": "Mythos",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3648,7 +3353,6 @@
 			"symbol": "VEN",
 			"decimals": 18,
 			"name": "LAOS Venus",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3675,7 +3379,6 @@
 			"symbol": "NEURO",
 			"decimals": 12,
 			"name": "NEURO",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		},
@@ -3696,7 +3399,6 @@
 			"symbol": "NEURO",
 			"decimals": 12,
 			"name": "NEURO",
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/asset.svg",
 			"verified": false,
 			"isSufficient": false
 		}

@@ -14,7 +14,7 @@ export type DirectoryTokenNative = {
 	decimals: number;
 	symbol: string;
 	name: string;
-	logo: string;
+	logo?: string;
 	verified: true;
 	isSufficient: true;
 };
@@ -26,7 +26,7 @@ export type DirectoryTokenAsset = {
 	decimals: number;
 	symbol: string;
 	name: string;
-	logo: string;
+	logo?: string;
 	assetId: number;
 	verified: boolean;
 	isSufficient: boolean;
@@ -39,7 +39,7 @@ export type DirectoryTokenPoolAsset = {
 	decimals: number;
 	symbol: string;
 	name: string;
-	logo: string;
+	logo?: string;
 	poolAssetId: number;
 	verified: false;
 	isSufficient: false;
@@ -52,7 +52,7 @@ export type DirectoryTokenForeignAsset = {
 	decimals: number;
 	symbol: string;
 	name: string;
-	logo: string;
+	logo?: string;
 	location: unknown; // XcmV5Multilocation - stored as JSON
 	verified: boolean;
 	isSufficient: boolean;
