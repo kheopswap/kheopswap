@@ -11,7 +11,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
-import { preloadFont } from "../../packages/utils/src/preloadFont";
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
 import { Toasts } from "./components/Toasts";
 import { kheopskitConfig } from "./kheopskit";
@@ -21,6 +20,7 @@ import {
 	TransactionsProvider,
 	TransactionToasts,
 } from "./state/transactions";
+import { preloadFont } from "./util/preloadFont";
 
 preloadFont();
 

@@ -1,0 +1,3649 @@
+{
+	"chainId": "kah",
+	"generatedAt": "2026-01-28T14:54:36.992Z",
+	"tokens": [
+		{
+			"id": "native::kah",
+			"type": "native",
+			"chainId": "kah",
+			"decimals": 12,
+			"symbol": "KSM",
+			"name": "Kusama",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/KSM.svg",
+			"verified": true,
+			"isSufficient": true
+		},
+		{
+			"id": "asset::kah::863012",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 863012,
+			"symbol": "VCOP",
+			"decimals": 2,
+			"name": "VIrto COP",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::9999",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 9999,
+			"symbol": "BTC",
+			"decimals": 20,
+			"name": "BTC",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::100",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 100,
+			"symbol": "Chralt",
+			"decimals": 0,
+			"name": "Chralt",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2323",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2323,
+			"symbol": "Tsn",
+			"decimals": 2,
+			"name": "Testiranje",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::81",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 81,
+			"symbol": "TEMU",
+			"decimals": 12,
+			"name": "DEDY",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::200",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 200,
+			"symbol": "SIX",
+			"decimals": 5,
+			"name": "HEINEKEN",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::123",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 123,
+			"symbol": "NFT",
+			"decimals": 20,
+			"name": "NFT",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::9000",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 9000,
+			"symbol": "KPOTS",
+			"decimals": 6,
+			"name": "KPOTS",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::222",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 222,
+			"symbol": "PNEO",
+			"decimals": 12,
+			"name": "Planet Neo Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1155",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1155,
+			"symbol": "WITEK",
+			"decimals": 18,
+			"name": "WitekCoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::69420",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 69420,
+			"symbol": "CHAOS",
+			"decimals": 10,
+			"name": "Chaos",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50000003",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50000003,
+			"symbol": "USDd",
+			"decimals": 6,
+			"name": "Digital Dollar",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::47",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 47,
+			"symbol": "EUR",
+			"decimals": 12,
+			"name": "Euro",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::6789",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 6789,
+			"symbol": "VHM",
+			"decimals": 16,
+			"name": "drhuongtx",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50,
+			"symbol": "PROMO",
+			"decimals": 18,
+			"name": "PromoTeam",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::420",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 420,
+			"symbol": "BLAZE",
+			"decimals": 10,
+			"name": "BLAZE",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::0",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 0,
+			"symbol": "DOG",
+			"decimals": 6,
+			"name": "Polkadog",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::10",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 10,
+			"symbol": "USDC",
+			"decimals": 4,
+			"name": "USDC",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::120",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 120,
+			"symbol": "OAT",
+			"decimals": 4,
+			"name": "Other Asset Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50000006",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50000006,
+			"symbol": "LGT",
+			"decimals": 12,
+			"name": "Longevity",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1111",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1111,
+			"symbol": "MTVD",
+			"decimals": 20,
+			"name": "Mantiev Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::756",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 756,
+			"symbol": "TSM",
+			"decimals": 2,
+			"name": "Test Me",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::300",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 300,
+			"symbol": "PWS",
+			"decimals": 18,
+			"name": "PolkaWarriors",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::4",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 4,
+			"symbol": "HAPPY",
+			"decimals": 10,
+			"name": "Happy",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::48",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 48,
+			"symbol": "LWOOF",
+			"decimals": 9,
+			"name": "Jacques le Woof",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50000000",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50000000,
+			"symbol": "NWEST",
+			"decimals": 6,
+			"name": "NWEST",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::21",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 21,
+			"symbol": "ELEV",
+			"decimals": 10,
+			"name": "ELEVATE_DAO",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::333",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 333,
+			"symbol": "Token",
+			"decimals": 20,
+			"name": "Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::85",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 85,
+			"symbol": "DED",
+			"decimals": 0,
+			"name": "DOTisDED",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::28",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 28,
+			"symbol": "LAC",
+			"decimals": 7,
+			"name": "Ladycoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1985",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1985,
+			"symbol": "web3",
+			"decimals": 16,
+			"name": "Jeff3",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::20",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 20,
+			"symbol": "BFKK",
+			"decimals": 20,
+			"name": "Berlin FKK Paradise😎",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2048",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2048,
+			"symbol": "RWS",
+			"decimals": 8,
+			"name": "Robonomics web Services",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::377",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 377,
+			"symbol": "KAA",
+			"decimals": 2,
+			"name": "KAA test",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::95834",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 95834,
+			"symbol": "LUL",
+			"decimals": 12,
+			"name": "TEST123231",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::999",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 999,
+			"symbol": "CBDC",
+			"decimals": 10,
+			"name": "CBDC",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::30",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 30,
+			"symbol": "GOL",
+			"decimals": 8,
+			"name": "Fucho",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::677",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 677,
+			"symbol": "GRB",
+			"decimals": 0,
+			"name": "GEAR BONUS",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::39",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 39,
+			"symbol": "DSCAN",
+			"decimals": 8,
+			"name": "DotScanner.com",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::101",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 101,
+			"symbol": "---",
+			"decimals": 0,
+			"name": " ---",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::46",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 46,
+			"symbol": "FAN",
+			"decimals": 10,
+			"name": "FANARIA",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50000002",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50000002,
+			"symbol": "dUSD",
+			"decimals": 6,
+			"name": "decent",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/DUSD.webp?rounded",
+			"verified": true,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::99",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 99,
+			"symbol": "BITCOIN",
+			"decimals": 20,
+			"name": "BITCOIN",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::34",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 34,
+			"symbol": "PLX",
+			"decimals": 9,
+			"name": "PLX",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::7777",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 7777,
+			"symbol": "lucky7",
+			"decimals": 20,
+			"name": "lucky7",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::168",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 168,
+			"symbol": "Tokens",
+			"decimals": 20,
+			"name": "Tokens",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2077",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2077,
+			"symbol": "XRT",
+			"decimals": 8,
+			"name": "Robonomics",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::16",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 16,
+			"symbol": "ARIS",
+			"decimals": 8,
+			"name": "PolarisDAO",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::11",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 11,
+			"symbol": "USDT",
+			"decimals": 4,
+			"name": "USDT",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::224",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 224,
+			"symbol": "SIK",
+			"decimals": 8,
+			"name": "SikCoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::138",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 138,
+			"symbol": "Abc",
+			"decimals": 20,
+			"name": "Abc",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::75",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 75,
+			"symbol": "cipher",
+			"decimals": 10,
+			"name": "ohzomdmrkyc.gybvn",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::111",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 111,
+			"symbol": "NO1",
+			"decimals": 20,
+			"name": "NO1",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::66",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 66,
+			"symbol": "DAI",
+			"decimals": 20,
+			"name": "DAI",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::555",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 555,
+			"symbol": "GAME",
+			"decimals": 10,
+			"name": "gamedao.co",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::14",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 14,
+			"symbol": "DOT",
+			"decimals": 10,
+			"name": "Polkadot",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::360",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 360,
+			"symbol": "uni",
+			"decimals": 20,
+			"name": "uni",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::6",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 6,
+			"symbol": "ZKPD",
+			"decimals": 10,
+			"name": "ZKP DAO",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::19",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 19,
+			"symbol": "SHOT",
+			"decimals": 12,
+			"name": "Shot",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1607",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1607,
+			"symbol": "STRGZN",
+			"decimals": 0,
+			"name": "Stargazing",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::383",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 383,
+			"symbol": "KODA",
+			"decimals": 12,
+			"name": "KODA",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::42069",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 42069,
+			"symbol": "INTRN",
+			"decimals": 18,
+			"name": "👶☕ intern coin 🥶🌝",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::88888",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 88888,
+			"symbol": "BAILEGO",
+			"decimals": 0,
+			"name": "SHIBATALES",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::4206969",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 4206969,
+			"symbol": "SHIB",
+			"decimals": 10,
+			"name": "Polka SHIBA INU",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2021",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2021,
+			"symbol": "WAVE",
+			"decimals": 4,
+			"name": "wave network",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::123456",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 123456,
+			"symbol": "DMX",
+			"decimals": 18,
+			"name": "DummyXC20",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1107",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1107,
+			"symbol": "JAM",
+			"decimals": 12,
+			"name": "JAM DUNA on Kusama",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::77",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 77,
+			"symbol": "Crypto",
+			"decimals": 20,
+			"name": "Crypto",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::35",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 35,
+			"symbol": "LUCKY",
+			"decimals": 10,
+			"name": "Lucky Friday",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::36",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 36,
+			"symbol": "RRT",
+			"decimals": 0,
+			"name": "Ruined Records Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2284739",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2284739,
+			"symbol": "ETAR",
+			"decimals": 2,
+			"name": "Educational Tarantula",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::31",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 31,
+			"symbol": "ki",
+			"decimals": 18,
+			"name": "Genki",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::33",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 33,
+			"symbol": "BUSSY",
+			"decimals": 10,
+			"name": "Ladyboi",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::41",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 41,
+			"symbol": "GOOSE",
+			"decimals": 12,
+			"name": "GooseCoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::131313",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 131313,
+			"symbol": "DMO",
+			"decimals": 3,
+			"name": "Demo",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::71",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 71,
+			"symbol": "OAK",
+			"decimals": 10,
+			"name": "OAK Network Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::44",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 44,
+			"symbol": "ADVNCE",
+			"decimals": 10,
+			"name": "Most Advanced Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::11111",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 11111,
+			"symbol": "KVC",
+			"decimals": 12,
+			"name": "1KV.CLUB",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::15",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 15,
+			"symbol": "Web3",
+			"decimals": 20,
+			"name": "Web3",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3721",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3721,
+			"symbol": "fast",
+			"decimals": 20,
+			"name": "fast",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::374",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 374,
+			"symbol": "wETH",
+			"decimals": 18,
+			"name": "wETH",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::61",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 61,
+			"symbol": "CRY",
+			"decimals": 12,
+			"name": "CRYPTONITAS",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::40",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 40,
+			"symbol": "ERIC",
+			"decimals": 10,
+			"name": "Eric",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2,
+			"symbol": "PNN",
+			"decimals": 10,
+			"name": "Polkanuannuan",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1121",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1121,
+			"symbol": "OAT",
+			"decimals": 12,
+			"name": "Other Asset",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::70",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 70,
+			"symbol": "KRSU",
+			"decimals": 12,
+			"name": "KarasuCoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::13",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 13,
+			"symbol": "LN",
+			"decimals": 13,
+			"name": "LuckyNumber",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2049",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2049,
+			"symbol": "Android",
+			"decimals": 0,
+			"name": "DoAndroidsDreamOfElectricSheep?",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::32",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 32,
+			"symbol": "FAV",
+			"decimals": 0,
+			"name": "Favor",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::188",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 188,
+			"symbol": "ZLK",
+			"decimals": 12,
+			"name": "Zenlink Network Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::27",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 27,
+			"symbol": "RUNE",
+			"decimals": 10,
+			"name": "Valhello.app",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::49",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 49,
+			"symbol": "DIAN",
+			"decimals": 10,
+			"name": "ENDIANNESS",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1999",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1999,
+			"symbol": "ADVERT2",
+			"decimals": 10,
+			"name": "Fanaria - Most Advanced NFT",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3943",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3943,
+			"symbol": "GMK",
+			"decimals": 0,
+			"name": "GoldMark",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50000001",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50000001,
+			"symbol": "YSBC",
+			"decimals": 6,
+			"name": "Your Stable Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::314159",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 314159,
+			"symbol": "RTT",
+			"decimals": 2,
+			"name": "Retreat",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2993",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2993,
+			"symbol": "WOOD",
+			"decimals": 6,
+			"name": "WOOD",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::29",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 29,
+			"symbol": "CODES",
+			"decimals": 10,
+			"name": "COUPONS",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::42",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 42,
+			"symbol": "NRNF",
+			"decimals": 12,
+			"name": "No Risk - No Fun",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::102",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 102,
+			"symbol": "DRX",
+			"decimals": 0,
+			"name": "DREx distributed renewable ",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::80815",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 80815,
+			"symbol": "KSMFS",
+			"decimals": 10,
+			"name": "Kusama File Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::43",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 43,
+			"symbol": "TTT",
+			"decimals": 2,
+			"name": "Tricky-NFT.art Treasure Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::7777777",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 7777777,
+			"symbol": "king",
+			"decimals": 20,
+			"name": "king",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::365",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 365,
+			"symbol": "time",
+			"decimals": 20,
+			"name": "time",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::5",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 5,
+			"symbol": "BEER",
+			"decimals": 12,
+			"name": "BeerCoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::18",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 18,
+			"symbol": "HEI",
+			"decimals": 10,
+			"name": "HEIHEI",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1311",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1311,
+			"symbol": "GCT",
+			"decimals": 4,
+			"name": "Gacy Test",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::7",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 7,
+			"symbol": "DOS",
+			"decimals": 1,
+			"name": "DogeSeven",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::252",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 252,
+			"symbol": "BLACK",
+			"decimals": 12,
+			"name": "BLACK",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::26",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 26,
+			"symbol": "BUNGA",
+			"decimals": 8,
+			"name": "BUNGA BUNGA",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::8848",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 8848,
+			"symbol": "top",
+			"decimals": 20,
+			"name": "top",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3077",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3077,
+			"symbol": "ACT",
+			"decimals": 0,
+			"name": "AutomatedCoffeeToken",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::87",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 87,
+			"symbol": "XEXR",
+			"decimals": 6,
+			"name": "Xexr",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1984",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1984,
+			"symbol": "USDT",
+			"decimals": 6,
+			"name": "Tether USD",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/USDT.webp",
+			"verified": true,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2050",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2050,
+			"symbol": "CUT",
+			"decimals": 9,
+			"name": "Carbon Unit Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1688",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1688,
+			"symbol": "ali",
+			"decimals": 20,
+			"name": "ali",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1123",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1123,
+			"symbol": "XEN",
+			"decimals": 10,
+			"name": "XEntropy",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50000004",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50000004,
+			"symbol": "TEST45",
+			"decimals": 10,
+			"name": "TESTINGV45",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::777777",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 777777,
+			"symbol": "DEFI",
+			"decimals": 8,
+			"name": "DeFi The World",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::22",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 22,
+			"symbol": "STH",
+			"decimals": 6,
+			"name": "Smoothie",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::777",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 777,
+			"symbol": "GOD",
+			"decimals": 0,
+			"name": "Heaven",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::68",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 68,
+			"symbol": "ADVERT",
+			"decimals": 10,
+			"name": "Fanaria on Twitter: @FanariaNFT",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1313",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1313,
+			"symbol": "TACP",
+			"decimals": 2,
+			"name": "TestACP",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::24",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 24,
+			"symbol": "test",
+			"decimals": 1,
+			"name": "PolkaTest",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::90",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 90,
+			"symbol": "SATS",
+			"decimals": 1,
+			"name": "Satoshi",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::177",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 177,
+			"symbol": "KST",
+			"decimals": 4,
+			"name": "Kusama Test",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3000",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3000,
+			"symbol": "GRAIN",
+			"decimals": 8,
+			"name": "GRAIN Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::8",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 8,
+			"symbol": "RMRK",
+			"decimals": 10,
+			"name": "RMRK.app",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/RMRK.webp",
+			"verified": true,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::45",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 45,
+			"symbol": "CRIB",
+			"decimals": 15,
+			"name": "CRIB",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::841",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 841,
+			"symbol": "YAYOI",
+			"decimals": 10,
+			"name": "YAYOI",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2820",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2820,
+			"symbol": "HOOT",
+			"decimals": 6,
+			"name": "Jellied Owls",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::22060",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 22060,
+			"symbol": "RON",
+			"decimals": 3,
+			"name": "RON",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::5201314",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 5201314,
+			"symbol": "belove",
+			"decimals": 20,
+			"name": "belove",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::500",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 500,
+			"symbol": "$DED",
+			"decimals": 12,
+			"name": "DOT is DED",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::6967",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 6967,
+			"symbol": "CHAOS",
+			"decimals": 10,
+			"name": "expectchaos.com",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::51",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 51,
+			"symbol": "STONE",
+			"decimals": 6,
+			"name": "STONE",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1234",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1234,
+			"symbol": "KSM",
+			"decimals": 10,
+			"name": "Kusama",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::404",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 404,
+			"symbol": "MAXI",
+			"decimals": 8,
+			"name": "MAXI",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1420",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1420,
+			"symbol": "HYDR",
+			"decimals": 10,
+			"name": "Hydrogen line",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1000",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1000,
+			"symbol": "SPARK",
+			"decimals": 10,
+			"name": "SPARK TOKEN",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::223",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 223,
+			"symbol": "BILL",
+			"decimals": 8,
+			"name": "BILLCOIN",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3913",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3913,
+			"symbol": "KAI ",
+			"decimals": 16,
+			"name": "HAPPY",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::60",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 60,
+			"symbol": "GAV",
+			"decimals": 4,
+			"name": "GavCoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::80817",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 80817,
+			"symbol": "FRALEY",
+			"decimals": 10,
+			"name": "FRALEY Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3001",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3001,
+			"symbol": "DUCK",
+			"decimals": 6,
+			"name": "DUCK Currency",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1,
+			"symbol": "L T",
+			"decimals": 14,
+			"name": "Listen Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::12",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 12,
+			"symbol": "BUSD",
+			"decimals": 4,
+			"name": "BUSD",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::12345",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 12345,
+			"symbol": "DREX",
+			"decimals": 10,
+			"name": "Drexall",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2000",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2000,
+			"symbol": "USDT",
+			"decimals": 10,
+			"name": "TetherUSDT",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3,
+			"symbol": "Meow",
+			"decimals": 6,
+			"name": "Catsama",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::55",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 55,
+			"symbol": "MTS",
+			"decimals": 8,
+			"name": "DIVING",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3327",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3327,
+			"symbol": "MVPW",
+			"decimals": 9,
+			"name": "MVP Workshop",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1337",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1337,
+			"symbol": "TIP",
+			"decimals": 10,
+			"name": "Test In Prod",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::666",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 666,
+			"symbol": "BAD",
+			"decimals": 10,
+			"name": "Evil Corp",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::88",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 88,
+			"symbol": "BTC",
+			"decimals": 20,
+			"name": "BTC",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::17",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 17,
+			"symbol": "MEME",
+			"decimals": 18,
+			"name": "MEME",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::220204",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 220204,
+			"symbol": "STM",
+			"decimals": 10,
+			"name": "STATEMINE",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::598",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 598,
+			"symbol": "EREN",
+			"decimals": 10,
+			"name": "Eren Yilmaz",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::25",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 25,
+			"symbol": "BABE",
+			"decimals": 10,
+			"name": "Polkababes",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1526",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1526,
+			"symbol": "bcd",
+			"decimals": 18,
+			"name": "bcd",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::50000005",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 50000005,
+			"symbol": "TKY",
+			"decimals": 2,
+			"name": "TurkeyCoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::69",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 69,
+			"symbol": "NICE",
+			"decimals": 10,
+			"name": "NICE",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::23",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 23,
+			"symbol": "KOJO",
+			"decimals": 3,
+			"name": "DLTKOJO",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::19840",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 19840,
+			"symbol": "USDt",
+			"decimals": 3,
+			"name": "Tether USD",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::37",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 37,
+			"symbol": "MNCH",
+			"decimals": 18,
+			"name": "Munchkin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1899",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1899,
+			"symbol": "BKNRY",
+			"decimals": 5,
+			"name": "BABY KNRY",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::759",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 759,
+			"symbol": "bLd",
+			"decimals": 18,
+			"name": "bLd",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::2025",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 2025,
+			"symbol": "FLMG",
+			"decimals": 10,
+			"name": "Flamingo",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::91",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 91,
+			"symbol": "TMJ",
+			"decimals": 8,
+			"name": "Tamo Junto",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1225",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1225,
+			"symbol": "GOD",
+			"decimals": 20,
+			"name": "GOD",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::64",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 64,
+			"symbol": "oh!",
+			"decimals": 4,
+			"name": "oh!",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::520",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 520,
+			"symbol": "♥♥♥",
+			"decimals": 10,
+			"name": "Love",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::3328",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 3328,
+			"symbol": "A42",
+			"decimals": 6,
+			"name": "Attic42",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::9",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 9,
+			"symbol": "TOT",
+			"decimals": 1,
+			"name": "TakeTime",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::862812",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 862812,
+			"symbol": "CUBO",
+			"decimals": 9,
+			"name": "Virto CUBO",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::888",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 888,
+			"symbol": "LUCK",
+			"decimals": 10,
+			"name": "LUCK",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::813",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 813,
+			"symbol": "TBUX",
+			"decimals": 0,
+			"name": "Teddy Bucks",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::911",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 911,
+			"symbol": "911",
+			"decimals": 20,
+			"name": "911",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::214",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 214,
+			"symbol": "LOVE",
+			"decimals": 20,
+			"name": "LOVE",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::345",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 345,
+			"symbol": "345",
+			"decimals": 20,
+			"name": "345",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::1441",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 1441,
+			"symbol": "SPOT",
+			"decimals": 0,
+			"name": "Spot access token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "asset::kah::80816",
+			"type": "asset",
+			"chainId": "kah",
+			"assetId": 80816,
+			"symbol": "RUEPP",
+			"decimals": 10,
+			"name": "RUEPP Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::0",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 0,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::10",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 10,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::4",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 4,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::16",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 16,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::11",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 11,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::14",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 14,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::6",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 6,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::15",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 15,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::2",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 2,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::13",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 13,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::5",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 5,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::18",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 18,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::7",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 7,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::8",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 8,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::1",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 1,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::12",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 12,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::3",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 3,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::17",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 17,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "pool-asset::kah::9",
+			"type": "pool-asset",
+			"chainId": "kah",
+			"poolAssetId": 9,
+			"symbol": "",
+			"decimals": 0,
+			"name": "",
+			"logo": "",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ATicAZlKIAFYnGArkmBqAdgAWNoqxADNu9AgADkaWiDb0GoA2KwGW0pGKtrmA/wBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "sUSDe",
+			"decimals": 18,
+			"name": "Staked USDe",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKgAzL4NDQDsFgC6lkA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X4",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Polkadot"
+							}
+						},
+						{
+							"type": "Parachain",
+							"value": 1000
+						},
+						{
+							"type": "PalletInstance",
+							"value": 50
+						},
+						{
+							"type": "GeneralIndex",
+							"value": "31337"
+						}
+					]
+				}
+			},
+			"symbol": "WUD",
+			"decimals": 10,
+			"name": "GAVUN WUD",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8rZPQISoBmAE4xdHQqgDMYAA4nZIhkmABWKwAWJvQAdhgIJxrk1qqrYZ6ANijGQIBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "WETH",
+			"decimals": 18,
+			"name": "Wrapped Ether",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "PEPE",
+			"decimals": 18,
+			"name": "Pepe",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVggATgAOADMrMRgIUp8ANisa5Jaq0oB2dB9enoqapyqfdCsIAGYGmp8xKcZAgF1AoA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "LDO",
+			"decimals": 18,
+			"name": "Lido DAO Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IAGYATjKfJwB2HwAOWtqrZJha8p8AFgarMVqYMS6ugDYygFZ0LoAzGCt0WumxF0CAXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "sUSDS",
+			"decimals": 18,
+			"name": "Savings USDS",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADnQAZgA2CFKAdmTSgBYAM1KxZorkqpa6lOS6luqW9CqfUogAViqKpqaATiaA/wBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "LBTC",
+			"decimals": 8,
+			"name": "Lombard Staked Bitcoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fCAkYCB8AMwB2KwAOAGZksScGgE4IKIA2WpgrABYIaoBWHx70BsGxHzErJqarAP8AXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "EURC",
+			"decimals": 6,
+			"name": "Euro Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKi+AMyNAOwWALqWQA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X4",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Polkadot"
+							}
+						},
+						{
+							"type": "Parachain",
+							"value": 1000
+						},
+						{
+							"type": "PalletInstance",
+							"value": 50
+						},
+						{
+							"type": "GeneralIndex",
+							"value": "1337"
+						}
+					]
+				}
+			},
+			"symbol": "USDC",
+			"decimals": 6,
+			"name": "USD Coin (Polkadot)",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgA2ZIB2dCsATlKAMwgIKuSfdArk0rqWjvRyuqqxHwBmUYgnGCc69Cq6gP8AXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "SKY",
+			"decimals": 18,
+			"name": "SKY Governance Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IZLEADgA2AE4anysq9B8KsQBmKqsfJx8apwAWCHQYGpgxZKsYDuSqsf6KgP8AXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "USDC",
+			"decimals": 6,
+			"name": "USDC (Snowbridge)",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8JABYfJycAM2SANjEAdmrqpwAOAE4nH3Q6xrEAVggOgGYxaphq9DLpmDEU5JGA/wBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "MYTH",
+			"decimals": 18,
+			"name": "Mythos",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA9kmB8ADgA2AGYAVgB2Kxr0GqsK5KqrHxgAMycIJxqqp3QfBt6GiDqAFjFap0qA/wBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "CGT2.0",
+			"decimals": 18,
+			"name": "Curio Gas Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fAA5ksoAWADMJADZGiABmZqdmgHYAVgBOdBqIdHrWmqcqnogOqqcnHuaIMrKA/wBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "tBTC",
+			"decimals": 18,
+			"name": "tBTC v2",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzAGYATisAVgAOH3K66rqxOsr6qzEfarEnZLFK8oanCAA2K2rKuph0KwhUwIBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "wstETH",
+			"decimals": 18,
+			"name": "Wrapped liquid staked Ether 2.0",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgAOdCdygHZ0CB8xZIBOABYAMytW8vbSpxgAZh8nAbEagfaq5rEYVpr+9r9AgF1AoA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "TONCOIN",
+			"decimals": 9,
+			"name": "Wrapped TON Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANjEfAHYAVgAWStqYAA4ATmSW2qta2qcIFqaxFrqYGCcYCC6h9EqfJ2SAMwD/AF1AoA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "DAI",
+			"decimals": 18,
+			"name": "Dai Stablecoin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAFIuwDWEACZEEIAL7nTQA=",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X1",
+					"value": {
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Polkadot"
+						}
+					}
+				}
+			},
+			"symbol": "DOT",
+			"decimals": 10,
+			"name": "Polkadot",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/DOT.svg",
+			"verified": true,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmXoAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0DbABMICCLQBGeaBVTKAB5qygAsqhGRUdExsXHx0SDq6gC6yUA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 1,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "Parachain",
+							"value": 2001
+						},
+						{
+							"type": "GeneralKey",
+							"value": {
+								"length": 2,
+								"data": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "vKSM",
+			"decimals": 12,
+			"name": "Voucher KSM",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ATgBWCCcANh8xZIgfcuSnAHZS9B9SpysAM2qAFhgfGGqo5J9e5LFBqwGrGkCAXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "SHIB",
+			"decimals": 18,
+			"name": "SHIBA INU",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48G6BgFYAvpgHVaAcXgEOASTgATGAA85C7rQBGOAOZ4EqAAwh1AXXXqgA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 1,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "Parachain",
+							"value": 2125
+						},
+						{
+							"type": "GeneralIndex",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"symbol": "TNKR",
+			"decimals": 12,
+			"name": "Tinkernet",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/TNKR.svg",
+			"verified": true,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmdPIDMAX3VA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 1,
+				"interior": {
+					"type": "X1",
+					"value": {
+						"type": "Parachain",
+						"value": 2123
+					}
+				}
+			},
+			"symbol": "FREN",
+			"decimals": 12,
+			"name": "FREN",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA90dAA2ZIAzCCsAVhg6uoAWdAgAdnaAZggIZuaqsSsqmCcq9qsfAE4uofR6qamA/wBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "WBTC",
+			"decimals": 8,
+			"name": "Wrapped BTC",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmXoAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0DbABMICCLQBGeaBVTKAB6qaiFh4RGRUdExUSDq6gC6CUA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 1,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "Parachain",
+							"value": 2001
+						},
+						{
+							"type": "GeneralKey",
+							"value": {
+								"length": 2,
+								"data": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "BNC",
+			"decimals": 12,
+			"name": "Bifrost Native Coin",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKi+AJwAHEzmALqWQA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X4",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Polkadot"
+							}
+						},
+						{
+							"type": "Parachain",
+							"value": 1000
+						},
+						{
+							"type": "PalletInstance",
+							"value": 50
+						},
+						{
+							"type": "GeneralIndex",
+							"value": "1984"
+						}
+					]
+				}
+			},
+			"symbol": "USDt",
+			"decimals": 6,
+			"name": "Tether USD (Polkadot)",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgYBmAL6YB1WqPbsYCAJJwkCCHHE1WHbmnTKNAXQ0agA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 1,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "Parachain",
+							"value": 2023
+						},
+						{
+							"type": "PalletInstance",
+							"value": 10
+						}
+					]
+				}
+			},
+			"symbol": "MOVR",
+			"decimals": 18,
+			"name": "MOVR Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/MOVR.webp",
+			"verified": true,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 1,
+				"interior": {
+					"type": "X1",
+					"value": {
+						"type": "Parachain",
+						"value": 2015
+					}
+				}
+			},
+			"symbol": "TEER",
+			"decimals": 12,
+			"name": "Integritee (Kusama)",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/TEER.webp?rounded",
+			"verified": true,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADicIGAknGABOdHQnADMAdgBmAFYrNtKrUuSrFqqnFuTSiCaOsZ8OpogIAP8AXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "TBTC",
+			"decimals": 18,
+			"name": "tBTC",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoBRBAAsCMTgFtmINlx6gAxjoh4A+jgAmtUTgDmeBKiYBfP36A==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X1",
+					"value": {
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "1"
+							}
+						}
+					}
+				}
+			},
+			"symbol": "ETH",
+			"decimals": 18,
+			"name": "Ether",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVicAZidknwAzJwA2J3QIJx8fBoBOMR8Adk6fAA4YMQAWWp9SiqsGho70QeGxAP8AXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "KILT",
+			"decimals": 15,
+			"name": "KILT",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8nCCsfAHYAMwBOAFYADid0GBh69ABmCHQUgDZ+2tqAFnrayorOp0bOnxgrSoD/AF1AoA===",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "USDT",
+			"decimals": 6,
+			"name": "USDT (Snowbridge)",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVh8AFgBOH2SAdjqfCAAzKqsIADZSjpaADgrkp2bm3oBmGF70DoqYK1bejvaA/wBdQKA==",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "LINK",
+			"decimals": 18,
+			"name": "ChainLink Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		},
+		{
+			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzKwA2KoBWZOSrAA4AFghSqognUpgATitegGYWwdKxStqIK0HBmHQnJwg+gP8AXUCgA",
+			"type": "foreign-asset",
+			"chainId": "kah",
+			"location": {
+				"parents": 2,
+				"interior": {
+					"type": "X2",
+					"value": [
+						{
+							"type": "GlobalConsensus",
+							"value": {
+								"type": "Ethereum",
+								"value": {
+									"chain_id": "1"
+								}
+							}
+						},
+						{
+							"type": "AccountKey20",
+							"value": {
+								"key": {}
+							}
+						}
+					]
+				}
+			},
+			"symbol": "AAVE",
+			"decimals": 18,
+			"name": "Aave Token",
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos/asset.svg",
+			"verified": false,
+			"isSufficient": false
+		}
+	],
+	"pools": [
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 9,
+			"tokenIds": ["native::kah", "asset::kah::2993"],
+			"owner": "E6EZRQdPamnni9ArfUAkj2fETf9V7vv6NjCEtrSTfxV5Cym"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 12,
+			"tokenIds": ["native::kah", "asset::kah::50000002"],
+			"owner": "HzjaEhyrxwjqzwtBYPcwXusL47dbrLthDQGCpfTjF1jjnQf"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 15,
+			"tokenIds": [
+				"native::kah",
+				"foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKi+AMyNAOwWALqWQA"
+			],
+			"owner": "FGh6BicdHtsrBV5bNRAUnp29gsqzD7G1KwnyAw6QXkTkiwC"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 18,
+			"tokenIds": [
+				"native::kah",
+				"foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmXoAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0DbABMICCLQBGeaBVTKAB6qaiFh4RGRUdExUSDq6gC6CUA==="
+			],
+			"owner": "DdNoZcA8niPHz4zkbp7rV5sALCRZAprN5d5r5Kss1JwvfWD"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 2,
+			"tokenIds": ["native::kah", "asset::kah::1313"],
+			"owner": "DWCjcNK5dCLkKRsr2vEPAqG5kifjqi8psmnCKjPF8NtKnRS"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 6,
+			"tokenIds": ["native::kah", "asset::kah::756"],
+			"owner": "J7SdigzBYL7s4qAa2N9K3xpBaHqVDtMMtdoKdSRqk7L1gGF"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 4,
+			"tokenIds": ["native::kah", "asset::kah::3328"],
+			"owner": "HWMhX5WiF5dxC6iHCGBHVaHLNBEs9dKHvrMuwFf5EkbA57P"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 1,
+			"tokenIds": ["native::kah", "asset::kah::1984"],
+			"owner": "GYX5QBG1ymcRfnrkscpRYnSueiHCk8ZZPnJ7fEwzUycc3gY"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 0,
+			"tokenIds": ["native::kah", "asset::kah::5797867"],
+			"owner": "HGtLp5K6i9bEJWmdF2e4kBLMjzW3iFz6VdMK7Bbwej1hoEG"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 5,
+			"tokenIds": ["native::kah", "asset::kah::131313"],
+			"owner": "DmY4J9Xj1dFGTSmhNKzTYaKYVJBGTYPdrBQMbBY7sdGGht3"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 13,
+			"tokenIds": [
+				"native::kah",
+				"foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA"
+			],
+			"owner": "CnBDkKfjihrZmNc1qnuZwVhFjW3jmAf3JdrZzpGtoWYAwA4"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 14,
+			"tokenIds": ["native::kah", "asset::kah::19840"],
+			"owner": "ESprPFAzxheXKjBBkuNnKc6iZV6cYtVxPP18SP2DSeHTvb8"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 8,
+			"tokenIds": ["native::kah", "asset::kah::1107"],
+			"owner": "DmzC42u8XkmTNk8CTqLK2SfAK3zK64tZUHnqMM1GJpjr3xR"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 3,
+			"tokenIds": ["native::kah", "asset::kah::3327"],
+			"owner": "Evrt7kRgeYt4itMtTNVJNL6Ter1k7zrW2wbJWDjG8Ham8ZY"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 11,
+			"tokenIds": [
+				"native::kah",
+				"foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAFIuwDWEACZEEIAL7nTQA="
+			],
+			"owner": "HbJnJy2Jg81pAytZogkz1qCzfyQvgq9VCrLaL5jK79jdtLJ"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 16,
+			"tokenIds": [
+				"native::kah",
+				"foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKi+AJwAHEzmALqWQA"
+			],
+			"owner": "JKssVQFZk9gqDi3ZaqqHoKo56hEhc6qdUXGa8BTroMqHmPA"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 7,
+			"tokenIds": [
+				"native::kah",
+				"foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmdPIDMAX3VA=="
+			],
+			"owner": "GhowbbBqx4SkiQaAtPxyFWjyPDUZeDCzqPUdw5HdSdFzSQg"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 10,
+			"tokenIds": ["native::kah", "asset::kah::223"],
+			"owner": "GKVMfihWmrfnYBAjzXAFVsDEuNtMrWamv2ZxiU33ER58Zfm"
+		},
+		{
+			"type": "asset-convertion",
+			"chainId": "kah",
+			"poolAssetId": 17,
+			"tokenIds": [
+				"native::kah",
+				"foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmXoAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0DbABMICCLQBGeaBVTKAB5qygAsqhGRUdExsXHx0SDq6gC6yUA==="
+			],
+			"owner": "GUipoZ5yPYFjrd8yH8C8DhkfsMqfXLhfMvM1vHDE8jbHvK8"
+		}
+	]
+}

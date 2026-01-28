@@ -16,7 +16,6 @@ export * from "./normalizeAccountId";
 export * from "./notifyError";
 export * from "./notifyTxStatus";
 export * from "./plancks";
-export * from "./preloadFont";
 export * from "./provideContext";
 export * from "./safeQueryKeyPart";
 export * from "./serialization";

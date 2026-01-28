@@ -13,7 +13,7 @@ import {
 	type Token,
 } from "@kheopswap/registry";
 import { logger, safeStringify, sleep, throwAfter } from "@kheopswap/utils";
-import { isNumber } from "lodash";
+import { isNumber } from "lodash-es";
 import { distinctUntilChanged, filter } from "rxjs";
 import { pollChainStatus } from "../pollChainStatus";
 import { updateTokensStore } from "./store";

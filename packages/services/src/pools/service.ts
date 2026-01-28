@@ -1,5 +1,5 @@
 import type { ChainId } from "@kheopswap/registry";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { distinctUntilChanged, map, tap } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { poolsByChainState$ } from "./state";

@@ -12,13 +12,12 @@ import {
 	type TokenInfo,
 } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import type { Dictionary } from "lodash";
 import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { tokenInfosStore$ } from "./store";
 import { tokenInfosSubscriptions$ } from "./subscriptions";
 
-const statusByTokenId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
+const statusByTokenId$ = new BehaviorSubject<Record<string, LoadingStatus>>({});
 
 const WATCHERS = new Map<TokenId, Promise<Subscription>>();
 

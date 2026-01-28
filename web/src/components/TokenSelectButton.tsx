@@ -1,7 +1,6 @@
 import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
-import type { Dictionary } from "lodash";
 import { type FC, useCallback, useMemo } from "react";
 import { TokenLogo, TokenSelectDrawer } from "src/components";
 import { Styles } from "src/components/styles";
@@ -9,7 +8,7 @@ import { useChainName, useOpenClose } from "src/hooks";
 
 const TokenButton: FC<{
 	tokenId: TokenId | null | undefined;
-	tokens: Dictionary<Token> | undefined;
+	tokens: Record<string, Token> | undefined;
 	isLoading?: boolean;
 	disabled?: boolean;
 	className?: string;
@@ -48,7 +47,7 @@ const TokenButton: FC<{
 
 export const TokenSelectButton: FC<{
 	tokenId: TokenId | null | undefined;
-	tokens: Dictionary<Token> | undefined;
+	tokens: Record<string, Token> | undefined;
 	accounts?: PolkadotAccount[] | string[];
 	isLoading: boolean;
 	onChange: (tokenId: TokenId) => void;

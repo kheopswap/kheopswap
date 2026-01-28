@@ -1,5 +1,5 @@
 import { getCachedObservable$ } from "@kheopswap/utils";
-import isEqual from "lodash/isEqual";
+import { isEqual } from "lodash-es";
 import {
 	combineLatest,
 	distinctUntilChanged,

@@ -2,6 +2,7 @@
 	"name": "@kheopswap/registry",
 	"version": "0.0.0",
 	"private": true,
+	"type": "module",
 	"exports": {
 		".": "./src/index.ts"
 	},
@@ -12,13 +13,13 @@
 		"build": "papi --whitelist papi-whitelist.ts"
 	},
 	"devDependencies": {
-		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/typescript-config": "workspace:*",
-		"@kheopswap/utils": "workspace:*",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
+		"@kheopswap/constants": "workspace:*",
+		"@kheopswap/utils": "workspace:*",
 		"@polkadot-api/descriptors": "file:.papi/descriptors",
 		"lz-string": "^1.5.0",
 		"polkadot-api": "^1.23.2"

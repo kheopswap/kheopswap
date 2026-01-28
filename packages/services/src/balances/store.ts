@@ -5,7 +5,7 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
-import { type Dictionary, keyBy, values } from "lodash";
+import { keyBy, values } from "lodash-es";
 import { BehaviorSubject, debounceTime } from "rxjs";
 import type { StoredBalance } from "./types";
 import { getBalanceId } from "./utils";
@@ -16,7 +16,7 @@ localStorage.removeItem(getLocalStorageKey("balances::v2"));
 
 const STORAGE_KEY = getLocalStorageKey("balances::v3");
 
-const load = (): Dictionary<StoredBalance> => {
+const load = (): Record<string, StoredBalance> => {
 	try {
 		if (DEV_IGNORE_STORAGE) return {};
 
@@ -29,7 +29,7 @@ const load = (): Dictionary<StoredBalance> => {
 	}
 };
 
-const save = (balances: Dictionary<StoredBalance>) => {
+const save = (balances: Record<string, StoredBalance>) => {
 	try {
 		localStorage.setItem(STORAGE_KEY, safeStringify(values(balances)));
 	} catch (err) {
@@ -38,9 +38,9 @@ const save = (balances: Dictionary<StoredBalance>) => {
 };
 
 const stop = logger.timer("initialiwing balances store");
-export const balancesStore$ = new BehaviorSubject<Dictionary<StoredBalance>>(
-	load(),
-);
+export const balancesStore$ = new BehaviorSubject<
+	Record<string, StoredBalance>
+>(load());
 stop();
 
 // save after updates

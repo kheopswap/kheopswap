@@ -46,5 +46,5 @@ export const kheopskitConfig: Partial<KheopskitConfig> = {
 				networks: [polkadot, polkadotAssetHub],
 			}
 		: undefined,
-	debug: DEV,
+	debug: DEV === true,
 };
