@@ -7,7 +7,7 @@
 		".": "./src/index.ts"
 	},
 	"scripts": {
-		"generate": "tsx src/generate.ts",
+		"generate": "tsx src/generate.ts && biome check --write data/",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
