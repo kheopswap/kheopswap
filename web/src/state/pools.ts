@@ -20,8 +20,10 @@ import {
 	switchMap,
 } from "rxjs";
 
+// Only consider "loading" as loading, not "stale"
+// "stale" means we have data but it might be old, not that we're fetching
 const getIsLoading = (...loadingStatuses: LoadingStatus[]) =>
-	loadingStatuses.some((status) => status !== "loaded");
+	loadingStatuses.some((status) => status === "loading");
 
 const getPool$ = (
 	tokenId1: TokenId,
@@ -112,6 +114,7 @@ export const getPoolReserves$ = (
 			return combineLatest([getPool$(tokenId1, tokenId2)]).pipe(
 				switchMap(([{ pool, status: statusPool }]) => {
 					const isLoading = getIsLoading(statusPool);
+					// If no pool exists, return isLoading based on pool status
 					if (!pool)
 						return of({
 							isLoading,

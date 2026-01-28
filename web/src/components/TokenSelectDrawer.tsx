@@ -67,17 +67,19 @@ const TokenButton = forwardRef<
 								pulse={balances.isLoadingTokenPlancks}
 							/>
 						</div>
-						<div className="text-sm">
-							<Tokens
-								token={stableToken}
-								plancks={balances.stablePlancks ?? 0n}
-								className={cn(
-									!isBigInt(balances.stablePlancks) && "invisible",
-									token.id === stableToken.id && "invisible",
-								)}
-								pulse={balances.isLoadingStablePlancks}
-							/>
-						</div>
+						{stableToken && (
+							<div className="text-sm">
+								<Tokens
+									token={stableToken}
+									plancks={balances.stablePlancks ?? 0n}
+									className={cn(
+										!isBigInt(balances.stablePlancks) && "invisible",
+										token.id === stableToken.id && "invisible",
+									)}
+									pulse={balances.isLoadingStablePlancks}
+								/>
+							</div>
+						)}
 					</div>
 				)
 			) : (

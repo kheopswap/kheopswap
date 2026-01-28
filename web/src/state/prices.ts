@@ -20,17 +20,26 @@ export const getStablePlancks$ = (
 	if (plancks === 0n)
 		return of({ stablePlancks: 0n, isLoadingStablePlancks: false });
 
-	return stableToken$.pipe(
-		map((stableToken) => ({
-			tokenIdIn: getAssetHubMirrorTokenId(tokenId),
-			plancksIn: plancks ?? 0n,
-			tokenIdOut: stableToken.id,
-		})),
-		switchMap(getAssetConvert$), // includes throttling
-		map(({ plancksOut, isLoading }) => ({
-			stablePlancks: plancksOut,
-			isLoadingStablePlancks: isLoading,
-		})),
+	return combineLatest([assetHub$, stableToken$]).pipe(
+		switchMap(([assetHub, stableToken]) => {
+			// If no stable token configured or not loaded yet
+			if (!stableToken) {
+				// Only show loading if stable token is expected but not yet loaded
+				const isLoading = !!assetHub.stableTokenId;
+				return of({ stablePlancks: null, isLoadingStablePlancks: isLoading });
+			}
+			return of({
+				tokenIdIn: getAssetHubMirrorTokenId(tokenId),
+				plancksIn: plancks ?? 0n,
+				tokenIdOut: stableToken.id,
+			}).pipe(
+				switchMap(getAssetConvert$),
+				map(({ plancksOut, isLoading }) => ({
+					stablePlancks: plancksOut,
+					isLoadingStablePlancks: isLoading,
+				})),
+			);
+		}),
 		shareReplay({ bufferSize: 1, refCount: true }),
 	);
 };
@@ -53,11 +62,15 @@ const getTokenPrice$ = (token: Token) => {
 						tokenIdOut: nativeTokenId,
 					});
 
-					const stablePrice$ = getAssetConvert$({
-						tokenIdIn: getAssetHubMirrorTokenId(token.id),
-						plancksIn: parseUnits("1", token.decimals),
-						tokenIdOut: stableToken.id,
-					});
+					// If no stable token configured or not loaded yet
+					const stablePrice$ = stableToken
+						? getAssetConvert$({
+								tokenIdIn: getAssetHubMirrorTokenId(token.id),
+								plancksIn: parseUnits("1", token.decimals),
+								tokenIdOut: stableToken.id,
+							})
+						: // Only show loading if stable token is expected but not yet loaded
+							of({ plancksOut: null, isLoading: !!assetHub.stableTokenId });
 
 					return combineLatest([nativePrice$, stablePrice$]).pipe(
 						map(([nativePrice, stablePrice]) => {

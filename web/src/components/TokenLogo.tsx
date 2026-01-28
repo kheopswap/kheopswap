@@ -6,6 +6,8 @@ import { type FC, useMemo } from "react";
 import { useToken } from "src/hooks";
 import { GitHubImage } from "./GitHubImage";
 
+const FALLBACK_LOGO = "/img/tokens/asset.svg";
+
 const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 	token,
 	className,
@@ -19,8 +21,8 @@ const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 		<div className={cn("relative size-6 shrink-0", className)}>
 			<GitHubImage
 				loading="lazy"
-				src={token?.logo ?? "/img/tokens/unknown.svg"}
-				fallbackSrc="/img/tokens/unknown.svg"
+				src={token?.logo ?? FALLBACK_LOGO}
+				fallbackSrc={FALLBACK_LOGO}
 				alt={token?.symbol ?? ""}
 				className={cn(
 					"size-full",
@@ -31,7 +33,7 @@ const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 				<GitHubImage
 					loading="lazy"
 					src={chain.logo}
-					fallbackSrc="/img/tokens/unknown.svg"
+					fallbackSrc={FALLBACK_LOGO}
 					alt={""}
 					className="absolute bottom-[-10%] left-[-10%] size-1/2"
 				/>

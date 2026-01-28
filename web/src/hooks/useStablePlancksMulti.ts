@@ -19,21 +19,34 @@ const getStablePlancksMulti$ = (
 	inputs: { tokenId: TokenId; plancks: bigint | undefined }[],
 ): Observable<UseStablePlancksResult> => {
 	return stableToken$.pipe(
-		map((stableToken) =>
-			inputs.map(({ tokenId, plancks }) => ({
+		switchMap((stableToken) => {
+			// If stable token not loaded yet, return loading state
+			if (!stableToken) {
+				return [
+					{
+						isLoading: true,
+						data: inputs.map(() => ({
+							stablePlancks: null,
+							isLoadingStablePlancks: true,
+						})),
+					},
+				];
+			}
+			const convertInputs = inputs.map(({ tokenId, plancks }) => ({
 				tokenIdIn: getAssetHubMirrorTokenId(tokenId),
 				plancksIn: plancks ?? 0n,
 				tokenIdOut: stableToken.id,
-			})),
-		),
-		switchMap(getAssetConvertMulti$), // includes throttling
-		map((outputs) => ({
-			data: outputs.data.map(({ plancksOut, isLoading }) => ({
-				stablePlancks: plancksOut,
-				isLoadingStablePlancks: isLoading,
-			})),
-			isLoading: outputs.isLoading,
-		})),
+			}));
+			return getAssetConvertMulti$(convertInputs).pipe(
+				map((outputs) => ({
+					data: outputs.data.map(({ plancksOut, isLoading }) => ({
+						stablePlancks: plancksOut,
+						isLoadingStablePlancks: isLoading,
+					})),
+					isLoading: outputs.isLoading,
+				})),
+			);
+		}),
 	);
 };
 

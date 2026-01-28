@@ -11,6 +11,11 @@ type GitHubImageProps = Omit<
 };
 
 /**
+ * Strip query parameters from URL (e.g., ?rounded used for styling hints)
+ */
+const stripQueryParams = (url: string): string => url.split("?")[0] ?? url;
+
+/**
  * Image component that loads GitHub images via Statically CDN with fallback
  * - For raw.githubusercontent.com URLs: tries Statically CDN first, falls back to raw GitHub
  * - For other URLs: loads directly with optional fallback
@@ -32,16 +37,19 @@ export const GitHubImage: FC<GitHubImageProps> = ({
 		setUseCdn(true);
 	}, [src]);
 
+	// Strip query params for actual URL fetching (CDN doesn't support them)
+	const cleanSrc = useMemo(() => stripQueryParams(src), [src]);
+
 	const cdnUrl = useMemo(() => {
-		if (!isRawGitHubUrl(src)) return null;
-		return toStaticallyCdnUrl(src);
-	}, [src]);
+		if (!isRawGitHubUrl(cleanSrc)) return null;
+		return toStaticallyCdnUrl(cleanSrc);
+	}, [cleanSrc]);
 
 	const currentSrc = useMemo(() => {
 		if (useFallback) return fallbackSrc;
 		if (cdnUrl && useCdn) return cdnUrl;
-		return src;
-	}, [useFallback, cdnUrl, useCdn, src, fallbackSrc]);
+		return cleanSrc;
+	}, [useFallback, cdnUrl, useCdn, cleanSrc, fallbackSrc]);
 
 	const handleError = useCallback(
 		(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
