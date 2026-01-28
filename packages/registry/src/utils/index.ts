@@ -1,1 +1,1 @@
-export * from "./xcmV3MultiLocation";
+export * from "./xcmMultiLocation";

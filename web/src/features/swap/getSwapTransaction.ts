@@ -2,7 +2,7 @@ import { getApi, isApiAssetHub } from "@kheopswap/papi";
 import {
 	getChainById,
 	getChainIdFromTokenId,
-	getXcmV3MultilocationFromTokenId,
+	getXcmV5MultilocationFromTokenId,
 	parseTokenId,
 	type TokenId,
 } from "@kheopswap/registry";
@@ -41,8 +41,8 @@ export const getSwapExtrinsic = async (
 
 	return api.tx.AssetConversion.swap_exact_tokens_for_tokens({
 		path: [
-			getXcmV3MultilocationFromTokenId(tokenIdIn),
-			getXcmV3MultilocationFromTokenId(tokenIdOut),
+			getXcmV5MultilocationFromTokenId(tokenIdIn),
+			getXcmV5MultilocationFromTokenId(tokenIdOut),
 		],
 		amount_in: amountIn,
 		amount_out_min: amountOutMin,

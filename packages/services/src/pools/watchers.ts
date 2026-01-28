@@ -8,7 +8,7 @@ import {
 	type Chain,
 	type ChainId,
 	getChainById,
-	getTokenIdFromXcmV3Multilocation,
+	getTokenIdFromXcmV5Multilocation,
 	isAssetHub,
 } from "@kheopswap/registry";
 import { logger, sleep, throwAfter } from "@kheopswap/utils";
@@ -56,7 +56,7 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 					chainId: chain.id,
 					poolAssetId,
 					tokenIds: d.keyArgs[0].map((k) =>
-						getTokenIdFromXcmV3Multilocation(chain.id, k),
+						getTokenIdFromXcmV5Multilocation(chain.id, k),
 					) as TokenIdsPair,
 					owner: poolAsset.value.owner,
 				};

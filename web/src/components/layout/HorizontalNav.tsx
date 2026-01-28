@@ -28,7 +28,6 @@ export const HorizontalNav: FC = () => {
 				)}
 			>
 				<NavItem to={`/${relayId}/swap`}>Swap</NavItem>
-				{/* <NavItem to={`/${relayId}/teleport`}>Teleport</NavItem> */}
 				<NavItem to={`/${relayId}/transfer`}>Transfer</NavItem>
 				<NavItem to={`/${relayId}/portfolio`}>
 					{accounts.length ? "Portfolio" : "Tokens"}

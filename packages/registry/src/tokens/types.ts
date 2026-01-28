@@ -1,4 +1,4 @@
-import type { ChainId, XcmV3Multilocation } from "@kheopswap/registry";
+import type { ChainId, XcmV5Multilocation } from "@kheopswap/registry";
 
 export type TokenTypeNative = "native";
 export type TokenTypeAsset = "asset";
@@ -52,7 +52,7 @@ export type TokenForeignAssetNoId = {
 	symbol: string; // TODO remove
 	name: string; // TODO remove
 	logo: string; // TODO remove
-	location: XcmV3Multilocation;
+	location: XcmV5Multilocation;
 	verified: boolean;
 	isSufficient: boolean;
 };

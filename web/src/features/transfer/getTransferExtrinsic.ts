@@ -5,6 +5,7 @@ import {
 	MultiAddress,
 	parseTokenId,
 	type TokenId,
+	toXcmV5Multilocation,
 } from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
 
@@ -51,7 +52,7 @@ export const getTransferExtrinsic = async (
 					`Chain ${chain.name} does not have the ForeignAssets pallet`,
 				);
 			return api.tx.ForeignAssets.transfer({
-				id: token.location,
+				id: toXcmV5Multilocation(token.location),
 				amount: plancks,
 				target: MultiAddress.Id(dest),
 			});

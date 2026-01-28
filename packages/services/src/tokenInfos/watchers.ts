@@ -10,6 +10,7 @@ import {
 	parseTokenId,
 	type TokenId,
 	type TokenInfo,
+	toXcmV5Multilocation,
 } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
@@ -106,7 +107,7 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 				);
 
 			const tokenInfo$ = api.query.ForeignAssets.Asset.watchValue(
-				token.location,
+				toXcmV5Multilocation(token.location),
 				"best",
 			);
 
