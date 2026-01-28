@@ -1,4 +1,4 @@
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi } from "@kheopswap/papi";
 import { getXcmV5MultilocationFromTokenId } from "@kheopswap/registry";
 import { provideContext, safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -46,7 +46,6 @@ const useRemoveLiquidityProvider = () => {
 			if (!asset1 || !asset2) return null;
 
 			const api = await getApi(assetHub.id);
-			if (!isApiAssetHub(api)) return null;
 
 			return api.tx.AssetConversion.remove_liquidity({
 				asset1,

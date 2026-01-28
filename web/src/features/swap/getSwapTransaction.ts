@@ -1,4 +1,4 @@
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi } from "@kheopswap/papi";
 import {
 	getChainById,
 	getChainIdFromTokenId,
@@ -36,8 +36,6 @@ export const getSwapExtrinsic = async (
 		);
 
 	const api = await getApi(chain.id);
-
-	if (!isApiAssetHub(api)) throw new Error("Chain is not an asset hub");
 
 	return api.tx.AssetConversion.swap_exact_tokens_for_tokens({
 		path: [

@@ -45,8 +45,7 @@ export const [useRelayChains, relayChains$] = bind(relayId$.pipe(...));
 **Chain Type Guards** - Registry exports type narrowing functions:
 
 ```typescript
-isChainIdAssetHub(id); // ChainIdAssetHub
-isChainIdRelay(id); // ChainIdRelay
+isChainIdAssetHub(id); // ChainIdAssetHub (all supported chains are asset hubs)
 ```
 
 ### API Access

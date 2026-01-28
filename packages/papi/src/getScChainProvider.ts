@@ -1,4 +1,4 @@
-import type { ChainId, ChainIdRelay } from "@kheopswap/registry";
+import type { ChainId, RelayId } from "@kheopswap/registry";
 import {
 	type Chain,
 	createScClient,
@@ -8,7 +8,9 @@ import {
 import { getSmProvider } from "polkadot-api/sm-provider";
 
 // No intellisense on WellKnownChain ?
-const getWellKnownChain = (chainId: ChainId): WellKnownChain | null => {
+const getWellKnownChain = (
+	chainId: ChainId | RelayId,
+): WellKnownChain | null => {
 	switch (chainId) {
 		case "polkadot":
 			return WellKnownChain.polkadot;
@@ -27,7 +29,7 @@ let client: ScClient;
 
 type ScProviderProps = {
 	chainId: ChainId;
-	relayChainId?: ChainIdRelay;
+	relayChainId?: RelayId;
 	chainSpec: string;
 };
 

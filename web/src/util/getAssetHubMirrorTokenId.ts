@@ -1,16 +1,8 @@
 import type { TokenId } from "@kheopswap/registry";
 
-export const getAssetHubMirrorTokenId = (tokenId: TokenId) => {
-	switch (tokenId) {
-		case "native::polkadot":
-			return "native::pah";
-		case "native::kusama":
-			return "native::kah";
-		case "native::westend":
-			return "native::wah";
-		case "native::paseo":
-			return "native::pasah";
-		default:
-			return tokenId;
-	}
-};
+/**
+ * Previously mapped relay chain native tokens to their asset hub equivalents.
+ * Now that we only support asset hubs, this is an identity function.
+ * Kept for backwards compatibility but can be removed in the future.
+ */
+export const getAssetHubMirrorTokenId = (tokenId: TokenId) => tokenId;

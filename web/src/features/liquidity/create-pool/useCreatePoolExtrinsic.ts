@@ -2,7 +2,6 @@ import { getApi } from "@kheopswap/papi";
 import {
 	getChainById,
 	getXcmV5MultilocationFromTokenId,
-	isAssetHub,
 	POOL_TOKEN2_TOKEN_TYPES,
 	parseTokenId,
 	type TokenId,
@@ -62,7 +61,6 @@ const getCreatePoolExtrinsic = async (
 		throw new Error("Invalid token type for token 2");
 
 	const chain = getChainById(token1.chainId);
-	if (!isAssetHub(chain)) throw new Error("Chain is not an asset hub");
 
 	const asset1 = getXcmV5MultilocationFromTokenId(tokenId1);
 	if (!asset1) throw new Error("Invalid location for token 1");

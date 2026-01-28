@@ -1,5 +1,5 @@
 import { getApi } from "@kheopswap/papi";
-import { type Chain, isAssetHub } from "@kheopswap/registry";
+import type { Chain } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 
@@ -11,7 +11,6 @@ export const useAssetConvertionLPFee = ({
 	const query = useQuery({
 		queryKey: ["useAssetConvertionLPFee", chain.id],
 		queryFn: async () => {
-			if (!isAssetHub(chain)) return null;
 			const api = await getApi(chain.id);
 
 			const stop = logger.timer(

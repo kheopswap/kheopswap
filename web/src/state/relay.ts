@@ -1,10 +1,4 @@
-import {
-	type Chain,
-	type ChainAssetHub,
-	type ChainRelay,
-	getChains,
-	PARA_ID_ASSET_HUB,
-} from "@kheopswap/registry";
+import { type ChainAssetHub, getChains } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { bind } from "@react-rxjs/core";
 import { isEqual } from "lodash";
@@ -21,21 +15,14 @@ export const [useRelayChains, relayChains$] = bind(
 		map((relayId) => {
 			const chains = getChains();
 
-			const relay = chains.find(
-				(c) => c.id === relayId && c.relay === relayId,
-			) as ChainRelay | undefined;
-			if (!relay) throw new Error("Relay not found");
+			const assetHub = chains.find((c) => c.relay === relayId) as
+				| ChainAssetHub
+				| undefined;
+			if (!assetHub) throw new Error("Asset hub not found for relay");
 
-			const allChains = chains.filter((c) => c.relay === relayId) as Chain[];
-
-			const assetHub = allChains.find(
-				(c) => c.paraId === PARA_ID_ASSET_HUB && c.relay === relayId,
-			) as ChainAssetHub | undefined;
-			if (!assetHub) throw new Error("Relay not found");
-
-			return { relayId, relay, assetHub, allChains };
+			return { relayId, assetHub, allChains: [assetHub] };
 		}),
-		switchMap(({ relayId, relay, assetHub, allChains }) => {
+		switchMap(({ relayId, assetHub, allChains }) => {
 			if (!assetHub.stableTokenId) throw new Error("Stable token not found");
 			return getTokenById$(assetHub.stableTokenId).pipe(
 				distinctUntilKeyChanged("token", isEqual),
@@ -46,7 +33,6 @@ export const [useRelayChains, relayChains$] = bind(
 						);
 					return {
 						relayId,
-						relay,
 						assetHub,
 						allChains,
 						stableToken, //always defined by config

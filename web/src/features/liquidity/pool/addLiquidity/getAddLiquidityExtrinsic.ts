@@ -3,7 +3,6 @@ import {
 	getChainById,
 	getChainIdFromTokenId,
 	getXcmV5MultilocationFromTokenId,
-	isAssetHub,
 	parseTokenId,
 	type TokenId,
 } from "@kheopswap/registry";
@@ -66,8 +65,6 @@ export const getAddLiquidityExtrinsic = async ({
 		throw new Error(
 			`Token ${tokenIdAsset} is not supported on chain ${chain.id}`,
 		);
-
-	if (!isAssetHub(chain)) throw new Error("Chain is not an asset hub");
 
 	const asset1 = getXcmV5MultilocationFromTokenId(tokenIdNative);
 	if (!asset1)

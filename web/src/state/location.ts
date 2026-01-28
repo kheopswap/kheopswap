@@ -1,4 +1,4 @@
-import { type ChainIdRelay, getRelayIds } from "@kheopswap/registry";
+import { getRelayIds, type RelayId } from "@kheopswap/registry";
 import { bind } from "@react-rxjs/core";
 import {
 	distinctUntilChanged,
@@ -51,7 +51,7 @@ const RELAY_IDS = getRelayIds();
 export const [, relayId$] = bind(
 	location$.pipe(
 		map((location) => {
-			const relayId = location.hash.split("/")[1] as ChainIdRelay;
+			const relayId = location.hash.split("/")[1] as RelayId;
 			return RELAY_IDS.includes(relayId) ? relayId : "polkadot";
 		}),
 		distinctUntilChanged(),

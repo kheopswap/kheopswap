@@ -1,4 +1,4 @@
-import type { ChainId } from "@kheopswap/registry";
+import type { ChainId, RelayId } from "@kheopswap/registry";
 import { getCachedPromise } from "@kheopswap/utils";
 
 const KNOWN_CHAIN_SPECS_IDS = [
@@ -15,7 +15,7 @@ const KNOWN_CHAIN_SPECS_IDS = [
 type ChainIdWithChainSpec = (typeof KNOWN_CHAIN_SPECS_IDS)[number];
 
 export const hasChainSpec = (
-	chainId: ChainId,
+	chainId: ChainId | RelayId,
 ): chainId is ChainIdWithChainSpec =>
 	KNOWN_CHAIN_SPECS_IDS.includes(chainId as ChainIdWithChainSpec);
 

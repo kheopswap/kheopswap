@@ -36,8 +36,8 @@ import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
 const useFormData = () => {
-	const { relay } = useRelayChains();
-	const nativeToken = useNativeToken({ chain: relay });
+	const { assetHub } = useRelayChains();
+	const nativeToken = useNativeToken({ chain: assetHub });
 
 	const location = useLocation();
 	const navigate = useNavigate();

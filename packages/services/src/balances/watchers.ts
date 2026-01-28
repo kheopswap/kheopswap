@@ -1,4 +1,4 @@
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi } from "@kheopswap/papi";
 import { getChainById, parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
@@ -67,12 +67,6 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 		}
 		case "asset": {
-			if (!isApiAssetHub(api)) {
-				console.warn("OOPS", { token, chain, balanceId });
-				throw new Error(
-					`Cannot watch balance for ${tokenId}. Assets are not supported on ${chain.id}`,
-				);
-			}
 			const account$ = api.query.Assets.Account.watchValue(
 				token.assetId,
 				address,
@@ -86,11 +80,6 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 		}
 		case "pool-asset": {
-			if (!isApiAssetHub(api))
-				throw new Error(
-					`Cannot watch balance for ${tokenId}. PoolAssets are not supported on ${chain.id}`,
-				);
-
 			const account$ = api.query.PoolAssets.Account.watchValue(
 				token.poolAssetId,
 				address,
@@ -104,11 +93,6 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 		}
 		case "foreign-asset": {
-			if (!isApiAssetHub(api))
-				throw new Error(
-					`Cannot watch balance for ${tokenId}. ForeignAssets are not supported on ${chain.id}`,
-				);
-
 			const account$ = api.query.ForeignAssets.Account.watchValue(
 				token.location,
 				address,

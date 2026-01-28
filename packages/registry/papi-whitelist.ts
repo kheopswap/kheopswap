@@ -31,6 +31,5 @@ export const whitelist: WhiteListEntry[] = [
 	"const.Balances.ExistentialDeposit",
 	"api.AssetConversionApi.*",
 	"api.DryRunApi.*",
-	"api.XcmPaymentApi.*",
 	"api.Metadata.metadata_at_version",
 ];
