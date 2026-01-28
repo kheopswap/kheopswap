@@ -37,8 +37,9 @@ const getCurrentBranch = (): string => {
 const CURRENT_BRANCH = getCurrentBranch();
 const LOGOS_BASE_URL = `https://raw.githubusercontent.com/kheopswap/kheopswap/${CURRENT_BRANCH}/directory/logos`;
 
-const DEFAULT_ASSET_LOGO = `${LOGOS_BASE_URL}/asset.svg`;
-const DEFAULT_UNKNOWN_LOGO = `${LOGOS_BASE_URL}/unknown.svg`;
+// Fallback logos use relative paths - they're served from the frontend's public folder
+const DEFAULT_ASSET_LOGO = "./img/tokens/asset.svg";
+const DEFAULT_UNKNOWN_LOGO = "./img/tokens/unknown.svg";
 
 /**
  * Convert a local logo path to a GitHub raw URL

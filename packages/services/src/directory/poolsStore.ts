@@ -1,6 +1,6 @@
-import { type ChainId, getChains } from "@kheopswap/registry";
+import type { ChainId } from "@kheopswap/registry";
 import { getLocalStorageKey, logger } from "@kheopswap/utils";
-import { BehaviorSubject, debounceTime } from "rxjs";
+import { BehaviorSubject, debounceTime, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { getDirectoryPools$ } from "../directory/service";
 import type { Pool } from "../pools/types";
@@ -55,69 +55,79 @@ const statusByChain$ = new BehaviorSubject<Record<ChainId, LoadingStatus>>(
 	{} as Record<ChainId, LoadingStatus>,
 );
 
+// Track which chains have been initialized
+const initializedChains = new Set<ChainId>();
+const chainSubscriptions = new Map<ChainId, Subscription>();
+
 /**
- * Initialize directory pool loading for all chains
- * This should be called once on app startup
+ * Initialize directory pool loading for a specific chain (lazy)
+ * Called automatically when pools for a chain are first requested
  */
-export const initializeDirectoryPools = (): void => {
-	const chains = getChains();
+const initializeChainPools = (chainId: ChainId): void => {
+	if (initializedChains.has(chainId)) return;
+	initializedChains.add(chainId);
 
-	// Initialize status for all chains
-	const initialStatus = {} as Record<ChainId, LoadingStatus>;
-	for (const chain of chains) {
-		initialStatus[chain.id] = "loading";
-	}
-	statusByChain$.next(initialStatus);
+	// Set initial loading status
+	statusByChain$.next({
+		...statusByChain$.value,
+		[chainId]: "loading",
+	});
 
-	// Subscribe to directory data for each chain
-	for (const chain of chains) {
-		getDirectoryPools$(chain.id).subscribe({
-			next: ({ status, pools, error }) => {
-				if (error && pools.length === 0) {
-					// Error with no cached data
-					logger.error(`Failed to load directory pools for ${chain.id}`, {
-						error,
-					});
-					statusByChain$.next({
-						...statusByChain$.value,
-						[chain.id]: "stale",
-					});
-					return;
-				}
-
-				// Update pools store
-				const currentPools = directoryPoolsStore$.value;
-
-				// Remove old pools for this chain and add new ones
-				const otherChainPools = currentPools.filter(
-					(p) => p.chainId !== chain.id,
-				);
-				const newPools = [...otherChainPools, ...pools];
-
-				directoryPoolsStore$.next(newPools);
-
-				// Update status
-				const loadingStatus: LoadingStatus =
-					status === "loaded"
-						? "loaded"
-						: status === "error"
-							? "stale"
-							: "loading";
-				statusByChain$.next({
-					...statusByChain$.value,
-					[chain.id]: loadingStatus,
-				});
-			},
-			error: (err) => {
-				logger.error(`Directory pools subscription error for ${chain.id}`, {
-					err,
+	const subscription = getDirectoryPools$(chainId).subscribe({
+		next: ({ status, pools, error }) => {
+			if (error && pools.length === 0) {
+				logger.error(`Failed to load directory pools for ${chainId}`, {
+					error,
 				});
 				statusByChain$.next({
 					...statusByChain$.value,
-					[chain.id]: "stale",
+					[chainId]: "stale",
 				});
-			},
-		});
+				return;
+			}
+
+			// Update pools store
+			const currentPools = directoryPoolsStore$.value;
+
+			// Remove old pools for this chain and add new ones
+			const otherChainPools = currentPools.filter((p) => p.chainId !== chainId);
+			const newPools = [...otherChainPools, ...pools];
+
+			directoryPoolsStore$.next(newPools);
+
+			// Update status
+			const loadingStatus: LoadingStatus =
+				status === "loaded"
+					? "loaded"
+					: status === "error"
+						? "stale"
+						: "loading";
+			statusByChain$.next({
+				...statusByChain$.value,
+				[chainId]: loadingStatus,
+			});
+		},
+		error: (err) => {
+			logger.error(`Directory pools subscription error for ${chainId}`, {
+				err,
+			});
+			statusByChain$.next({
+				...statusByChain$.value,
+				[chainId]: "stale",
+			});
+		},
+	});
+
+	chainSubscriptions.set(chainId, subscription);
+};
+
+/**
+ * Ensure pools are loaded for the specified chains
+ * Call this when the active chain changes
+ */
+export const ensureDirectoryPools = (chainIds: ChainId[]): void => {
+	for (const chainId of chainIds) {
+		initializeChainPools(chainId);
 	}
 };
 

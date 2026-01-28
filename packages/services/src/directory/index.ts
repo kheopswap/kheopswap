@@ -1,12 +1,12 @@
 export {
 	directoryPoolsStatusByChain$,
 	directoryPoolsStore$,
-	initializeDirectoryPools,
+	ensureDirectoryPools,
 } from "./poolsStore";
 export * from "./service";
 export {
 	directoryTokensStatusByChain$,
 	directoryTokensStore$,
-	initializeDirectoryTokens,
+	ensureDirectoryTokens,
 } from "./tokensStore";
 export type * from "./types";
