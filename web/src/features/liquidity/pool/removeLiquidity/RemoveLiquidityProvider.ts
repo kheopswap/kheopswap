@@ -1,5 +1,5 @@
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
-import { getXcmV3MultilocationFromTokenId } from "@kheopswap/registry";
+import { getApi } from "@kheopswap/papi";
+import { getXcmV5MultilocationFromTokenId } from "@kheopswap/registry";
 import { provideContext, safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
@@ -40,13 +40,12 @@ const useRemoveLiquidityProvider = () => {
 		queryFn: async () => {
 			if (!nativeToken || !assetToken || !account || !lpTokenBurn) return null;
 
-			const asset1 = getXcmV3MultilocationFromTokenId(nativeToken.id);
-			const asset2 = getXcmV3MultilocationFromTokenId(assetToken.id);
+			const asset1 = getXcmV5MultilocationFromTokenId(nativeToken.id);
+			const asset2 = getXcmV5MultilocationFromTokenId(assetToken.id);
 
 			if (!asset1 || !asset2) return null;
 
 			const api = await getApi(assetHub.id);
-			if (!isApiAssetHub(api)) return null;
 
 			return api.tx.AssetConversion.remove_liquidity({
 				asset1,

@@ -1,9 +1,5 @@
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
-import {
-	type ChainIdRelay,
-	getChains,
-	isChainIdRelay,
-} from "@kheopswap/registry";
+import { getChains, type RelayId } from "@kheopswap/registry";
 import { cn, notifyError } from "@kheopswap/utils";
 import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
 import { useMatches, useNavigate } from "react-router";
@@ -34,14 +30,14 @@ const ChainButton: FC<{
 );
 
 const DrawerContent: FC<{
-	relayId: ChainIdRelay;
-	onChange: (relayId: ChainIdRelay) => void;
+	relayId: RelayId;
+	onChange: (relayId: RelayId) => void;
 	onClose: () => void;
 }> = ({ relayId, onChange, onClose }) => {
 	const [lightClient, setLightClient] = useSetting("lightClients");
 
 	const handleClick = useCallback(
-		(relayId: ChainIdRelay) => async () => {
+		(relayId: RelayId) => async () => {
 			onChange(relayId);
 			onClose();
 		},
@@ -63,22 +59,20 @@ const DrawerContent: FC<{
 		[onClose, setLightClient],
 	);
 
-	const relays = useMemo(
-		() => getChains().filter(({ id }) => isChainIdRelay(id)),
-		[],
-	);
+	// Get asset hubs (one per relay environment)
+	const assetHubs = useMemo(() => getChains(), []);
 
 	return (
 		<div className="flex flex-col items-start gap-4">
 			<div className="flex w-full flex-col items-start gap-2">
-				<div>Relay network</div>
-				{relays.map((c) => (
+				<div>Network</div>
+				{assetHubs.map((c) => (
 					<ChainButton
 						key={c.id}
-						onClick={handleClick(c.id as ChainIdRelay)}
+						onClick={handleClick(c.relay)}
 						logo={c.logo}
 						name={c.name}
-						selected={c.id === relayId}
+						selected={c.relay === relayId}
 					/>
 				))}
 			</div>
@@ -140,22 +134,22 @@ const DrawerContent: FC<{
 };
 
 export const RelaySelect = () => {
-	const { relay } = useRelayChains();
+	const { assetHub, relayId } = useRelayChains();
 	const navigate = useNavigate();
 	const { open, close, isOpen } = useOpenClose();
 
 	const matches = useMatches();
 
 	const handleChainSelect = useCallback(
-		(relayId: ChainIdRelay) => {
+		(newRelayId: RelayId) => {
 			const last = matches[matches.length - 1];
 			if (last?.params?.relayId) {
 				const newPath = last.pathname.replace(
 					`/${last.params.relayId}`,
-					`/${relayId}`,
+					`/${newRelayId}`,
 				);
 				navigate(newPath);
-			} else navigate(`/${relayId}/swap`);
+			} else navigate(`/${newRelayId}/swap`);
 			close();
 		},
 		[matches, navigate, close],
@@ -164,12 +158,17 @@ export const RelaySelect = () => {
 	return (
 		<>
 			<button type="button" onClick={open}>
-				<img loading="lazy" src={relay.logo} alt="Chain" className="size-6" />
+				<img
+					loading="lazy"
+					src={assetHub.logo}
+					alt="Chain"
+					className="size-6"
+				/>
 			</button>
 			<Drawer anchor="right" isOpen={isOpen} onDismiss={close}>
 				<DrawerContainer title="Select network" onClose={close}>
 					<DrawerContent
-						relayId={relay.id}
+						relayId={relayId}
 						onChange={handleChainSelect}
 						onClose={close}
 					/>

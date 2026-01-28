@@ -1,10 +1,4 @@
-import {
-	type Chain,
-	type ChainId,
-	type ChainRelay,
-	getChainById,
-	isRelay,
-} from "@kheopswap/registry";
+import { type Chain, type ChainId, getChainById } from "@kheopswap/registry";
 import { getCachedPromise } from "@kheopswap/utils";
 import { createClient, type PolkadotClient } from "polkadot-api";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
@@ -30,50 +24,20 @@ export const getClient = (
 		getClientCacheId(chainId, options),
 		() => {
 			const chain = getChainById(chainId);
-
-			return isRelay(chain)
-				? getRelayChainClient(chain, options)
-				: getParaChainClient(chain, options);
+			return getAssetHubClient(chain, options);
 		},
 	);
 };
 
-const getRelayChainClient = async (
-	chain: ChainRelay,
-	options: ClientOptions,
-) => {
-	// force ws provider if light clients are disabled or chainSpec is not available
-	if (!options.lightClients || !hasChainSpec(chain.id))
-		return createClient(withPolkadotSdkCompat(getWsProvider(chain.wsUrl)));
+const getAssetHubClient = async (chain: Chain, options: ClientOptions) => {
+	const { id: chainId, relay: relayId } = chain;
 
-	const chainSpec = await getChainSpec(chain.id);
-
-	// use substrate-connect if available
-	if (await isScAvailableScProvider())
-		return createClient(getScChainProvider({ chainId: chain.id, chainSpec }));
-
-	// fallback to smoldot
-	return createClient(
-		await getSmChainProvider({ chainId: chain.id, chainSpec }),
-	);
-};
-
-const getParaChainClient = async (chain: Chain, options: ClientOptions) => {
-	if (!chain.relay)
-		throw new Error(`Chain ${chain.id} does not have a relay chain`);
-
-	const { id: paraChainId, relay: relayChainId } = chain;
-
-	if (
-		!options.lightClients ||
-		!hasChainSpec(paraChainId) ||
-		!hasChainSpec(relayChainId)
-	)
+	if (!options.lightClients || !hasChainSpec(chainId) || !hasChainSpec(relayId))
 		return createClient(withPolkadotSdkCompat(getWsProvider(chain.wsUrl)));
 
 	const [relayChainSpec, paraChainSpec] = await Promise.all([
-		getChainSpec(relayChainId),
-		getChainSpec(paraChainId),
+		getChainSpec(relayId),
+		getChainSpec(chainId),
 	] as const);
 
 	// use substrate-connect if available
@@ -82,14 +46,14 @@ const getParaChainClient = async (chain: Chain, options: ClientOptions) => {
 			getScChainProvider({
 				chainId: chain.id,
 				chainSpec: paraChainSpec,
-				relayChainId,
+				relayChainId: relayId,
 			}),
 		);
 
 	return createClient(
 		await getSmChainProvider(
 			{ chainId: chain.id, chainSpec: paraChainSpec },
-			{ chainId: relayChainId, chainSpec: relayChainSpec },
+			{ chainId: relayId, chainSpec: relayChainSpec },
 		),
 	);
 };

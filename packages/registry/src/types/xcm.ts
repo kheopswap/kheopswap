@@ -1,6 +1,6 @@
-import type { XcmV3Junctions } from "@polkadot-api/descriptors";
+import type { XcmV5Junctions } from "@polkadot-api/descriptors";
 
-export type XcmV3Multilocation = {
+export type XcmV5Multilocation = {
 	parents: number;
-	interior: XcmV3Junctions;
+	interior: XcmV5Junctions;
 };

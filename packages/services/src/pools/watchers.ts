@@ -8,8 +8,7 @@ import {
 	type Chain,
 	type ChainId,
 	getChainById,
-	getTokenIdFromXcmV3Multilocation,
-	isAssetHub,
+	getTokenIdFromXcmV5Multilocation,
 } from "@kheopswap/registry";
 import { logger, sleep, throwAfter } from "@kheopswap/utils";
 import { isEqual } from "lodash";
@@ -28,52 +27,48 @@ export const {
 const WATCHERS = new Map<ChainId, () => void>();
 
 const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
-	if (isAssetHub(chain)) {
-		const api = await getApi(chain.id);
-		if (signal.aborted) return;
+	const api = await getApi(chain.id);
+	if (signal.aborted) return;
 
-		await api.waitReady;
-		if (signal.aborted) return;
+	await api.waitReady;
+	if (signal.aborted) return;
 
-		const stopWatch = logger.timer(`fetch pools & metadata - ${chain.id}`);
-		const [rawPools, rawPoolAssets] = await Promise.all([
-			api.query.AssetConversion.Pools.getEntries({ at: "best", signal }),
-			api.query.PoolAssets.Asset.getEntries({ at: "best", signal }),
-		]);
-		stopWatch();
+	const stopWatch = logger.timer(`fetch pools & metadata - ${chain.id}`);
+	const [rawPools, rawPoolAssets] = await Promise.all([
+		api.query.AssetConversion.Pools.getEntries({ at: "best", signal }),
+		api.query.PoolAssets.Asset.getEntries({ at: "best", signal }),
+	]);
+	stopWatch();
 
-		const pools = rawPools
-			.map<AssetConvertionPoolDef | null>((d) => {
-				const poolAssetId = d.value;
-				const poolAsset = rawPoolAssets.find(
-					(p) => p.keyArgs[0] === poolAssetId,
-				);
+	const pools = rawPools
+		.map<AssetConvertionPoolDef | null>((d) => {
+			const poolAssetId = d.value;
+			const poolAsset = rawPoolAssets.find((p) => p.keyArgs[0] === poolAssetId);
 
-				if (!poolAsset) return null;
+			if (!poolAsset) return null;
 
-				const pool: AssetConvertionPoolDef = {
-					type: "asset-convertion",
-					chainId: chain.id,
-					poolAssetId,
-					tokenIds: d.keyArgs[0].map((k) =>
-						getTokenIdFromXcmV3Multilocation(chain.id, k),
-					) as TokenIdsPair,
-					owner: poolAsset.value.owner,
-				};
+			const pool: AssetConvertionPoolDef = {
+				type: "asset-convertion",
+				chainId: chain.id,
+				poolAssetId,
+				tokenIds: d.keyArgs[0].map((k) =>
+					getTokenIdFromXcmV5Multilocation(chain.id, k),
+				) as TokenIdsPair,
+				owner: poolAsset.value.owner,
+			};
 
-				return pool;
-			})
-			.filter((p): p is AssetConvertionPoolDef => !!p)
-			.filter((p): p is AssetConvertionPoolDef => p.tokenIds.every((t) => !!t));
+			return pool;
+		})
+		.filter((p): p is AssetConvertionPoolDef => !!p)
+		.filter((p): p is AssetConvertionPoolDef => p.tokenIds.every((t) => !!t));
 
-		const currentPools = poolsStore$.value;
+	const currentPools = poolsStore$.value;
 
-		const otherPools = currentPools.filter((t) => t.chainId !== chain.id);
+	const otherPools = currentPools.filter((t) => t.chainId !== chain.id);
 
-		const newValue = [...otherPools, ...pools];
+	const newValue = [...otherPools, ...pools];
 
-		if (!isEqual(currentPools, newValue)) poolsStore$.next(newValue);
-	}
+	if (!isEqual(currentPools, newValue)) poolsStore$.next(newValue);
 };
 
 const watchPoolsByChain = (chainId: ChainId) => {

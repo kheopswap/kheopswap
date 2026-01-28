@@ -1,9 +1,5 @@
 [
 	{
-		"id": "polkadot",
-		"wsUrl": ["ws://localhost:3420"]
-	},
-	{
 		"id": "pah",
 		"wsUrl": ["ws://localhost:3421"]
 	}

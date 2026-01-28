@@ -7,4 +7,3 @@ export * from "./getNativeToken";
 export * from "./getTokenDescription";
 export * from "./getTokenTypeLabel";
 export * from "./getTxOptions";
-export * from "./getXcmMessageFromDryRun";

@@ -76,7 +76,7 @@ const useFormData = () => {
 const useTransferProvider = () => {
 	const [formData, setFormData] = useFormData();
 
-	const { relay, assetHub } = useRelayChains();
+	const { assetHub } = useRelayChains();
 	const defaultToken = useNativeToken({ chain: assetHub });
 
 	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
@@ -106,15 +106,15 @@ const useTransferProvider = () => {
 		accountId: sender,
 	});
 
-	// if relay changes, use it's native token as default
+	// if asset hub changes, use its native token as default
 	useEffect(() => {
-		if (tokenChain?.relay !== relay.id && defaultToken) {
+		if (tokenChain?.relay !== assetHub.relay && defaultToken) {
 			setFormData((prev) => ({
 				...prev,
 				tokenId: defaultToken.id,
 			}));
 		}
-	}, [defaultToken, relay.id, tokenChain?.relay, setFormData]);
+	}, [defaultToken, assetHub.relay, tokenChain?.relay, setFormData]);
 
 	const [
 		plancks,

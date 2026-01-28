@@ -2,8 +2,7 @@ import { getApi } from "@kheopswap/papi";
 import {
 	getChainById,
 	getChainIdFromTokenId,
-	getXcmV3MultilocationFromTokenId,
-	isAssetHub,
+	getXcmV5MultilocationFromTokenId,
 	parseTokenId,
 	type TokenId,
 } from "@kheopswap/registry";
@@ -67,13 +66,11 @@ export const getAddLiquidityExtrinsic = async ({
 			`Token ${tokenIdAsset} is not supported on chain ${chain.id}`,
 		);
 
-	if (!isAssetHub(chain)) throw new Error("Chain is not an asset hub");
-
-	const asset1 = getXcmV3MultilocationFromTokenId(tokenIdNative);
+	const asset1 = getXcmV5MultilocationFromTokenId(tokenIdNative);
 	if (!asset1)
 		throw new Error("Failed to convert native token to multilocation");
 
-	const asset2 = getXcmV3MultilocationFromTokenId(tokenIdAsset);
+	const asset2 = getXcmV5MultilocationFromTokenId(tokenIdAsset);
 	if (!asset2)
 		throw new Error("Failed to convert asset token to multilocation");
 

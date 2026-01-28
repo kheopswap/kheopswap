@@ -8,7 +8,7 @@ import lzs from "lz-string";
 import { type ChainId, getChainById } from "../chains";
 import { getEvmNetworkById, getEvmNetworkName } from "../evmNetworks";
 import { getParachainName } from "../parachains";
-import type { XcmV3Multilocation } from "../types";
+import type { XcmV5Multilocation } from "../types";
 import type {
 	Token,
 	TokenId,
@@ -56,7 +56,7 @@ export const parseTokenId = (
 	| {
 			type: "foreign-asset";
 			chainId: ChainId;
-			location: XcmV3Multilocation;
+			location: XcmV5Multilocation;
 	  } => {
 	try {
 		const parts = tokenId.split("::");
@@ -80,9 +80,16 @@ export const parseTokenId = (
 			}
 			case "foreign-asset": {
 				if (parts.length < 3) throw new Error("Invalid foreign-asset token id");
-				const location = safeParse<XcmV3Multilocation>(
+				const location = safeParse<XcmV5Multilocation>(
 					lzs.decompressFromBase64(parts[2] as string),
 				);
+				if (
+					!location ||
+					typeof location !== "object" ||
+					typeof location.parents !== "number" ||
+					!location.interior
+				)
+					throw new Error("Invalid multilocation");
 				return { type: "foreign-asset", chainId, location };
 			}
 			default:

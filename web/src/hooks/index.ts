@@ -10,8 +10,6 @@ export * from "./useCanAccountReceive";
 export * from "./useChainName";
 export * from "./useDryRun";
 export * from "./useDryRunError";
-export * from "./useEstimateDeliveryFee";
-export * from "./useEstimateDestinationFee";
 export * from "./useEstimateFee";
 export * from "./useExistentialDeposit";
 export * from "./useExistentialDeposits";

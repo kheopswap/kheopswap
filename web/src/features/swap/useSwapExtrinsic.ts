@@ -3,7 +3,6 @@ import { getApi } from "@kheopswap/papi";
 import {
 	getChainById,
 	getChainIdFromTokenId,
-	isAssetHub,
 	type TokenId,
 } from "@kheopswap/registry";
 import { useQuery } from "@tanstack/react-query";
@@ -53,8 +52,6 @@ export const useSwapExtrinsic = ({
 
 			const chain = getChainById(chainId);
 			if (!chain) return null;
-
-			if (!isAssetHub(chain)) return null;
 
 			const swapCall = await getSwapExtrinsic(
 				tokenIdIn,

@@ -1,11 +1,11 @@
-import type { ChainId, ChainIdRelay } from "../chains";
+import type { ChainId, RelayId } from "../chains";
 import parachains from "./parachains.json";
 import type { Parachain } from "./types";
 
 export const getParachains = () => parachains as Parachain[];
 
 export const getParachainByParaId = (
-	relay: ChainIdRelay | null,
+	relay: RelayId | null,
 	paraId: number | string | bigint,
 ) =>
 	getParachains().find(
@@ -16,7 +16,7 @@ export const getParachainByChainId = (chainId: ChainId) =>
 	getParachains().find((network) => network.chainId === chainId);
 
 export const getParachainName = (
-	relay: ChainIdRelay | null,
+	relay: RelayId | null,
 	paraId: number | string | bigint,
 ) => {
 	const network = getParachainByParaId(relay, paraId);

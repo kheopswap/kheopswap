@@ -1,13 +1,9 @@
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainId,
-	type ChainIdAssetHub,
-	type ChainIdRelay,
 	type Descriptors,
 	getChainById,
 	getDescriptors,
-	isChainIdAssetHub,
-	isChainIdRelay,
 } from "@kheopswap/registry";
 import { getSetting } from "@kheopswap/settings";
 import {
@@ -24,16 +20,6 @@ type ApiBase<Id extends ChainId> = TypedApi<Descriptors<Id>>;
 export type Api<Id extends ChainId> = ApiBase<Id> & {
 	chainId: Id;
 	waitReady: Promise<void>;
-};
-
-export const isApiAssetHub = (
-	api: Api<ChainId>,
-): api is Api<ChainIdAssetHub> => {
-	return isChainIdAssetHub(api.chainId);
-};
-
-export const isApiRelay = (api: Api<ChainId>): api is Api<ChainIdRelay> => {
-	return isChainIdRelay(api.chainId);
 };
 
 const getApiInner = async <Id extends ChainId>(

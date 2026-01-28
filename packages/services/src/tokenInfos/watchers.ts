@@ -1,4 +1,4 @@
-import { getApi, isApiAssetHub } from "@kheopswap/papi";
+import { getApi } from "@kheopswap/papi";
 import type {
 	TokenIdAsset,
 	TokenIdForeignAsset,
@@ -72,11 +72,6 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		}
 
 		case "asset": {
-			if (!isApiAssetHub(api))
-				throw new Error(
-					`Cannot watch token infos for ${tokenId}. Assets are not supported on ${chain.id}`,
-				);
-
 			const tokenInfo$ = api.query.Assets.Asset.watchValue(
 				token.assetId,
 				"best",
@@ -100,11 +95,6 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		}
 
 		case "foreign-asset": {
-			if (!isApiAssetHub(api))
-				throw new Error(
-					`Cannot watch token infos for ${tokenId}. ForeignAssets are not supported on ${chain.id}`,
-				);
-
 			const tokenInfo$ = api.query.ForeignAssets.Asset.watchValue(
 				token.location,
 				"best",
@@ -128,11 +118,6 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		}
 
 		case "pool-asset": {
-			if (!isApiAssetHub(api))
-				throw new Error(
-					`Cannot watch token infos for ${tokenId}. PoolAssets are not supported on ${chain.id}`,
-				);
-
 			const tokenInfo$ = api.query.PoolAssets.Asset.watchValue(
 				token.poolAssetId,
 				"best",

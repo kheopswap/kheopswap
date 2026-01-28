@@ -5,8 +5,9 @@ import type { Pool, PoolStorage } from "./types";
 
 // cleanup old keys
 localStorage.removeItem(getLocalStorageKey("pools"));
+localStorage.removeItem(getLocalStorageKey("pools::v2"));
 
-const STORAGE_KEY = getLocalStorageKey("pools::v2");
+const STORAGE_KEY = getLocalStorageKey("pools::v3");
 
 const poolToStorage = (pool: Pool): PoolStorage => {
 	switch (pool.type) {

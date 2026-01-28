@@ -15,7 +15,6 @@ import { Styles } from "src/components/styles";
 import { Tokens } from "src/components/Tokens";
 import { CreatePoolFollowUpContent } from "src/features/liquidity/create-pool/CreatePoolFollowUpContent";
 import { SwapFollowUpContent } from "src/features/swap/SwapFollowUpContent";
-import { TeleportFollowUpContent } from "src/features/teleport/TeleportFollowUpContent";
 import urlJoin from "url-join";
 import { useTransactions } from "./TransactionsProvider";
 import type { TransactionRecord } from "./types";
@@ -24,8 +23,6 @@ const getFollowUpContent = (tx: TransactionRecord): ReactNode => {
 	switch (tx.type) {
 		case "swap":
 			return <SwapFollowUpContent transaction={tx} />;
-		case "teleport":
-			return <TeleportFollowUpContent transaction={tx} />;
 		case "createPool":
 			return <CreatePoolFollowUpContent transaction={tx} />;
 		default:

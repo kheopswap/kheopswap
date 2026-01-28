@@ -11,18 +11,15 @@ const waitChainReady = async (chainId: ChainId) => {
 };
 
 export const ChainInitNotification = () => {
-	const { relay, assetHub } = useRelayChains();
+	const { assetHub } = useRelayChains();
 	const [lightClients] = useSetting("lightClients");
 
 	useEffect(() => {
-		if (!relay || !assetHub) {
+		if (!assetHub) {
 			return;
 		}
 
-		const promRuntime = Promise.all([
-			waitChainReady(relay.id),
-			waitChainReady(assetHub.id),
-		]);
+		const promRuntime = waitChainReady(assetHub.id);
 
 		const promIsLoaded = Promise.race([
 			promRuntime,
@@ -56,7 +53,7 @@ export const ChainInitNotification = () => {
 		return () => {
 			toast.dismiss(toastId);
 		};
-	}, [assetHub, lightClients, relay]);
+	}, [assetHub, lightClients]);
 
 	return null;
 };

@@ -1,7 +1,7 @@
-import type { ChainId, ChainIdRelay } from "../chains";
+import type { ChainId, RelayId } from "../chains";
 
 export type Parachain = {
-	relay: ChainIdRelay | null;
+	relay: RelayId | null;
 	paraId: number;
 	chainId?: ChainId;
 	name: string;

@@ -1,5 +1,5 @@
 import { getApi } from "@kheopswap/papi";
-import { getChainById, isAssetHub, parseTokenId } from "@kheopswap/registry";
+import { getChainById, parseTokenId } from "@kheopswap/registry";
 import { isEqual } from "lodash";
 import {
 	BehaviorSubject,
@@ -56,9 +56,6 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 
 	const chain = getChainById(token1.chainId);
 	if (!chain) throw new Error(`Chain not found for ${token1.chainId}`);
-
-	if (!isAssetHub(chain))
-		throw new Error("Can't watch pool supply on this chain");
 
 	const api = await getApi(chain.id);
 

@@ -1,4 +1,4 @@
-import { getApi, isApiAssetHub, isApiRelay } from "@kheopswap/papi";
+import { getApi } from "@kheopswap/papi";
 import {
 	getChainById,
 	getChainIdFromTokenId,
@@ -27,9 +27,6 @@ export const getTransferExtrinsic = async (
 
 	switch (token.type) {
 		case "asset": {
-			if (!isApiAssetHub(api))
-				throw new Error(`Chain ${chain.name} does not have the Assets pallet`);
-
 			return api.tx.Assets.transfer({
 				id: token.assetId,
 				target: MultiAddress.Id(dest),
@@ -37,19 +34,12 @@ export const getTransferExtrinsic = async (
 			});
 		}
 		case "native": {
-			if (isApiRelay(api) || isApiAssetHub(api))
-				return api.tx.Balances.transfer_keep_alive({
-					dest: MultiAddress.Id(dest),
-					value: plancks,
-				});
-
-			throw new Error("Unknown chain type");
+			return api.tx.Balances.transfer_keep_alive({
+				dest: MultiAddress.Id(dest),
+				value: plancks,
+			});
 		}
 		case "foreign-asset": {
-			if (!isApiAssetHub(api))
-				throw new Error(
-					`Chain ${chain.name} does not have the ForeignAssets pallet`,
-				);
 			return api.tx.ForeignAssets.transfer({
 				id: token.location,
 				amount: plancks,

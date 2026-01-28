@@ -14,7 +14,6 @@ export type TransactionStatus =
 
 export type TransactionType =
 	| "swap"
-	| "teleport"
 	| "transfer"
 	| "addLiquidity"
 	| "removeLiquidity"

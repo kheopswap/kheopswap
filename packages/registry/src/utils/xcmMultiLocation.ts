@@ -1,44 +1,44 @@
-import { XcmV3Junction, XcmV3Junctions } from "@polkadot-api/descriptors";
+import { XcmV5Junction, XcmV5Junctions } from "@polkadot-api/descriptors";
 import { type ChainId, isChainIdAssetHub } from "../chains";
 import { getTokenId, parseTokenId, type TokenId } from "../tokens";
-import type { XcmV3Multilocation } from "../types";
+import type { XcmV5Multilocation } from "../types";
 
-type Multilocation<T> = T extends TokenId ? XcmV3Multilocation : null;
+type MultilocationV5<T> = T extends TokenId ? XcmV5Multilocation : null;
 
 // TODO take parent chain into account
-export const getXcmV3MultilocationFromTokenId = <
+export const getXcmV5MultilocationFromTokenId = <
 	T extends TokenId | null | undefined,
 >(
 	tokenId: T,
-): Multilocation<T> => {
-	if (!tokenId) return null as Multilocation<T>;
+): MultilocationV5<T> => {
+	if (!tokenId) return null as MultilocationV5<T>;
 
 	const parsed = parseTokenId(tokenId);
 
 	if (parsed.type === "native")
 		return {
 			parents: 1,
-			interior: XcmV3Junctions.Here(),
-		} as Multilocation<T>;
+			interior: XcmV5Junctions.Here(),
+		} as MultilocationV5<T>;
 
 	if (parsed.type === "asset")
 		return {
 			parents: 0,
-			interior: XcmV3Junctions.X2([
-				XcmV3Junction.PalletInstance(50),
-				XcmV3Junction.GeneralIndex(BigInt(parsed.assetId)),
+			interior: XcmV5Junctions.X2([
+				XcmV5Junction.PalletInstance(50),
+				XcmV5Junction.GeneralIndex(BigInt(parsed.assetId)),
 			]),
-		} as Multilocation<T>;
+		} as MultilocationV5<T>;
 
 	if (parsed.type === "foreign-asset")
-		return parsed.location as Multilocation<T>;
+		return parsed.location as MultilocationV5<T>;
 
 	throw new Error(`Invalid token type: ${parsed.type}`);
 };
 
-export const getTokenIdFromXcmV3Multilocation = (
+export const getTokenIdFromXcmV5Multilocation = (
 	chainId: ChainId,
-	multilocation: XcmV3Multilocation,
+	multilocation: XcmV5Multilocation,
 ): TokenId | null => {
 	const { interior } = multilocation;
 	if (interior.type === "Here") return `native::${chainId}`;

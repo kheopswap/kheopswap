@@ -1,11 +1,5 @@
 import { type Api, getApi } from "@kheopswap/papi";
-import {
-	type ChainId,
-	type ChainIdAssetHub,
-	type ChainIdRelay,
-	isChainIdAssetHub,
-	isChainIdRelay,
-} from "@kheopswap/registry";
+import type { ChainId } from "@kheopswap/registry";
 import { logger, safeQueryKeyPart } from "@kheopswap/utils";
 import { Enum } from "@polkadot-api/substrate-bindings";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +12,7 @@ type UseDryRunProps = {
 	call: AnyTransaction | null | undefined;
 };
 
-export type DryRun<Id extends ChainIdRelay | ChainIdAssetHub> = Awaited<
+export type DryRun<Id extends ChainId> = Awaited<
 	ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_call"]>
 >;
 
@@ -29,7 +23,6 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 			// TODO put this back	{ signal }
 		) => {
 			if (!chainId || !from || !call) return null;
-			if (!isChainIdAssetHub(chainId) && !isChainIdRelay(chainId)) return null;
 
 			try {
 				const api = await getApi(chainId);

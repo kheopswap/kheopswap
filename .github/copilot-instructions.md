@@ -39,14 +39,14 @@ export const [SwapProvider, useSwap] = provideContext(useSwapProvider);
 **React-RxJS Bindings** - Global state uses `@react-rxjs/core` `bind()`:
 
 ```typescript
-export const [useRelayChains, relayChains$] = bind(relayId$.pipe(...));
+export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...));
 ```
 
-**Chain Type Guards** - Registry exports type narrowing functions:
+**Chain Types** - All supported chains are Asset Hubs (pah, kah, wah, pasah):
 
 ```typescript
-isChainIdAssetHub(id); // ChainIdAssetHub
-isChainIdRelay(id); // ChainIdRelay
+type ChainId = ChainIdAssetHub; // "pah" | "kah" | "wah" | "pasah"
+isChainIdAssetHub(id);          // Type guard for ChainIdAssetHub
 ```
 
 ### API Access
@@ -74,7 +74,7 @@ pnpm typecheck               # TypeScript check (web package)
 - **Linting**: Biome handles formatting and linting. Pre-commit hook via simple-git-hooks runs `biome check --write`
 - **Imports**: Use `@kheopswap/*` workspace aliases. Web uses `src/` alias for absolute imports
 - **File naming**: Features in `web/src/features/`, hooks in `web/src/hooks/`, providers end with `Provider.ts(x)`
-- **Observable naming**: Suffix with `$` (e.g., `relayChains$`, `getBalance$`)
+- **Observable naming**: Suffix with `$` (e.g., `assetHubChains$`, `getBalance$`)
 - **State loading**: Always handle `isLoading` + `data` pattern for async states
 
 ## Token & Chain Types
@@ -99,10 +99,7 @@ Features follow structure: `features/{name}/` with Provider, Form, components
 
 ## Testing Environment
 
-Chopsticks provides sandboxed chains at:
-
-- Polkadot: `ws://localhost:3420`
-- Asset Hub: `ws://localhost:3421`
+Chopsticks provides a sandboxed Asset Hub at `ws://localhost:3421`.
 
 `USE_CHOPSTICKS` constant toggles chain config and disables light clients.
 
