@@ -1,9 +1,5 @@
 import { getApi, isApiAssetHub } from "@kheopswap/papi";
-import {
-	parseTokenId,
-	type TokenId,
-	toXcmV5Multilocation,
-} from "@kheopswap/registry";
+import { parseTokenId, type TokenId } from "@kheopswap/registry";
 
 export const getExistentialDeposit = async (tokenId: TokenId) => {
 	const token = parseTokenId(tokenId);
@@ -25,7 +21,7 @@ export const getExistentialDeposit = async (tokenId: TokenId) => {
 		case "foreign-asset": {
 			if (!isApiAssetHub(api)) throw new Error("Chain is not an asset hub");
 			const asset = await api.query.ForeignAssets.Asset.getValue(
-				toXcmV5Multilocation(token.location),
+				token.location,
 				{ at: "best" },
 			);
 			return asset?.min_balance ?? null;

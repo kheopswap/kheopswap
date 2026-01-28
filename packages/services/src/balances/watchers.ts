@@ -1,9 +1,5 @@
 import { getApi, isApiAssetHub } from "@kheopswap/papi";
-import {
-	getChainById,
-	parseTokenId,
-	toXcmV5Multilocation,
-} from "@kheopswap/registry";
+import { getChainById, parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
 import type { Dictionary } from "lodash";
 import { BehaviorSubject, type Subscription } from "rxjs";
@@ -114,7 +110,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 				);
 
 			const account$ = api.query.ForeignAssets.Account.watchValue(
-				toXcmV5Multilocation(token.location),
+				token.location,
 				address,
 				"best",
 			);
