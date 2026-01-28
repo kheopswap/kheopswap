@@ -29,8 +29,9 @@ export type StorageToken = Pick<Token, "id" | "chainId" | "type"> &
 // cleanup old keys
 localStorage.removeItem(getLocalStorageKey("tokens"));
 localStorage.removeItem(getLocalStorageKey("tokens::v2"));
+localStorage.removeItem(getLocalStorageKey("tokens::v3"));
 
-const STORAGE_KEY = getLocalStorageKey("tokens::v3");
+const STORAGE_KEY = getLocalStorageKey("tokens::v4");
 
 const loadTokens = (): Dictionary<StorageToken> => {
 	try {

@@ -12,8 +12,9 @@ import { getBalanceId } from "./utils";
 
 // cleanup old keys
 localStorage.removeItem(getLocalStorageKey("balances"));
+localStorage.removeItem(getLocalStorageKey("balances::v2"));
 
-const STORAGE_KEY = getLocalStorageKey("balances::v2");
+const STORAGE_KEY = getLocalStorageKey("balances::v3");
 
 const load = (): Dictionary<StoredBalance> => {
 	try {
