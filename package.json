@@ -17,7 +17,7 @@
 		"typecheck": "pnpm --filter web typecheck",
 		"check": "biome check --write",
 		"knip": "knip",
-		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest xcm -r ./polkadot.yml -p ./pah.yml)",
+		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest -c ./pah.yml)",
 		"papi:update": "pnpm --filter @kheopswap/registry papi:update",
 		"papi": "pnpm --filter @kheopswap/registry papi",
 		"prepare": "simple-git-hooks"

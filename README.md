@@ -34,14 +34,9 @@ pnpm install
 pnpm chopsticks
 ```
 
-Chopsticks runs local copies of each network supported by Kheopswap with the following RPC URLs:
+Chopsticks runs a local copy of the Polkadot Asset Hub at `ws://localhost:3421`.
 
-| Network            | Local RPC Url       |
-| ------------------ | ------------------- |
-| Polkadot           | ws://localhost:3420 |
-| Polkadot Asset Hub | ws://localhost:3421 |
-
-> Note: To see your balances on these local networks in Talisman, customize each network in Talisman settings to use these RPCs.
+> Note: To see your balances on this local network in Talisman, customize the Asset Hub network in Talisman settings to use this RPC.
 
 #### Terminal 2: Launch Kheopswap
 
