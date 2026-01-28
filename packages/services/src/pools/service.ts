@@ -1,14 +1,11 @@
 import type { ChainId } from "@kheopswap/registry";
+import { logger } from "@kheopswap/utils";
 import { isEqual } from "lodash-es";
-import { distinctUntilChanged, map, tap } from "rxjs";
+import { distinctUntilChanged, map } from "rxjs";
 import type { LoadingStatus } from "../common";
+import { refreshDirectoryData } from "../directory/service";
 import { poolsByChainState$ } from "./state";
-import {
-	addPoolsByChainSubscription,
-	removePoolsByChainSubscription,
-} from "./subscriptions";
 import type { Pool } from "./types";
-import { setLoadingStatus } from "./watchers";
 
 type PoolsByChainState = {
 	status: LoadingStatus;
@@ -18,17 +15,7 @@ type PoolsByChainState = {
 const DEFAULT_VALUE: PoolsByChainState = { status: "stale", pools: [] };
 
 export const getPoolsByChain$ = (chainId: ChainId | null) => {
-	let subId = "";
-
 	return poolsByChainState$.pipe(
-		tap({
-			subscribe: () => {
-				if (chainId) subId = addPoolsByChainSubscription(chainId);
-			},
-			unsubscribe: () => {
-				if (chainId) removePoolsByChainSubscription(subId);
-			},
-		}),
 		map(
 			(statusAndTokens) => statusAndTokens[chainId as ChainId] ?? DEFAULT_VALUE,
 		),
@@ -37,5 +24,8 @@ export const getPoolsByChain$ = (chainId: ChainId | null) => {
 };
 
 export const refreshPools = (chainId: ChainId) => {
-	setLoadingStatus(chainId, "stale");
+	// Trigger a refresh of directory data for this chain
+	refreshDirectoryData(chainId).catch((err) => {
+		logger.warn(`Failed to refresh pools for ${chainId}`, { err });
+	});
 };

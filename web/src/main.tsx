@@ -5,6 +5,10 @@ import "@fontsource-variable/lexend-deca";
 
 import { KheopskitProvider } from "@kheopskit/react";
 import { DEV } from "@kheopswap/constants";
+import {
+	initializeDirectoryPools,
+	initializeDirectoryTokens,
+} from "@kheopswap/services/directory";
 import { Subscribe } from "@react-rxjs/core";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -23,6 +27,10 @@ import {
 import { preloadFont } from "./util/preloadFont";
 
 preloadFont();
+
+// Initialize directory data fetching (loads from GitHub/cache)
+initializeDirectoryTokens();
+initializeDirectoryPools();
 
 const queryClient = new QueryClient();
 

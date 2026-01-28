@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import {
 	type Chain,
 	type ChainId,
@@ -20,8 +21,21 @@ import type {
 	DirectoryTokenPoolAsset,
 } from "./types";
 
-const LOGOS_BASE_URL =
-	"https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/logos";
+/**
+ * Get current git branch name
+ */
+const getCurrentBranch = (): string => {
+	try {
+		return execSync("git rev-parse --abbrev-ref HEAD", {
+			encoding: "utf-8",
+		}).trim();
+	} catch {
+		return "main";
+	}
+};
+
+const CURRENT_BRANCH = getCurrentBranch();
+const LOGOS_BASE_URL = `https://raw.githubusercontent.com/kheopswap/kheopswap/${CURRENT_BRANCH}/directory/logos`;
 
 const DEFAULT_ASSET_LOGO = `${LOGOS_BASE_URL}/asset.svg`;
 const DEFAULT_UNKNOWN_LOGO = `${LOGOS_BASE_URL}/unknown.svg`;

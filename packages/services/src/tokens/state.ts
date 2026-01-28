@@ -3,9 +3,11 @@ import { logger } from "@kheopswap/utils";
 import { fromPairs, groupBy, keyBy, toPairs, values } from "lodash-es";
 import { combineLatest, map, shareReplay } from "rxjs";
 import type { LoadingStatus } from "../common";
-import { tokensStore$ } from "./store";
+import {
+	directoryTokensStatusByChain$,
+	directoryTokensStore$,
+} from "../directory/tokensStore";
 import { sortTokens } from "./util";
-import { chainTokensStatuses$ } from "./watchers";
 
 export type ChainTokensState = {
 	status: LoadingStatus;
@@ -40,8 +42,8 @@ const combineStateByChainId = (
 };
 
 export const tokensByChainState$ = combineLatest([
-	chainTokensStatuses$,
-	tokensStore$,
+	directoryTokensStatusByChain$,
+	directoryTokensStore$,
 ]).pipe(
 	map(([statusByChain, tokens]) =>
 		combineStateByChainId(statusByChain, tokens),
@@ -73,8 +75,8 @@ const combineStateByTokenId = (
 };
 
 export const tokensByIdState$ = combineLatest([
-	chainTokensStatuses$,
-	tokensStore$,
+	directoryTokensStatusByChain$,
+	directoryTokensStore$,
 ]).pipe(
 	map(([statusByChain, tokens]) =>
 		combineStateByTokenId(statusByChain, tokens),

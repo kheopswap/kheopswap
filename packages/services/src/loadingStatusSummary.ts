@@ -3,10 +3,10 @@ import { combineLatest, distinctUntilChanged, map, throttleTime } from "rxjs";
 
 import { balanceStatuses$ } from "./balances/watchers";
 import type { LoadingStatus } from "./common";
+import { directoryPoolsStatusByChain$ } from "./directory/poolsStore";
+import { directoryTokensStatusByChain$ } from "./directory/tokensStore";
 import { poolSuppliesStatuses$ } from "./poolSupplies/watchers";
-import { chainPoolsStatuses$ } from "./pools/watchers";
 import { tokenInfosStatuses$ } from "./tokenInfos/watchers";
-import { chainTokensStatuses$ } from "./tokens/watchers";
 
 type LoadingStatusSummary = {
 	loading: number;
@@ -26,9 +26,9 @@ const getSummary = (statusMap: Record<string, LoadingStatus>) => {
 
 export const loadingStatusSummary$ = combineLatest([
 	balanceStatuses$.pipe(map(getSummary)),
-	chainPoolsStatuses$.pipe(map(getSummary)),
+	directoryPoolsStatusByChain$.pipe(map(getSummary)),
 	poolSuppliesStatuses$.pipe(map(getSummary)),
-	chainTokensStatuses$.pipe(map(getSummary)),
+	directoryTokensStatusByChain$.pipe(map(getSummary)),
 	tokenInfosStatuses$.pipe(map(getSummary)),
 ]).pipe(
 	throttleTime(100, undefined, { leading: true, trailing: true }),

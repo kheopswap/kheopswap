@@ -1,10 +1,10 @@
+import { GITHUB_BRANCH } from "@kheopswap/constants";
 import type { ChainId } from "@kheopswap/registry";
 import { getLocalStorageKey, logger } from "@kheopswap/utils";
 import { BehaviorSubject, map, shareReplay } from "rxjs";
 import type { DirectoryChainData, DirectoryState } from "./types";
 
-const DIRECTORY_BASE_URL =
-	"https://raw.githubusercontent.com/kheopswap/kheopswap/main/directory/data/v1";
+const DIRECTORY_BASE_URL = `https://raw.githubusercontent.com/kheopswap/kheopswap/${GITHUB_BRANCH}/directory/data/v1`;
 
 const getStorageKey = (chainId: ChainId) =>
 	getLocalStorageKey(`directory::v1::${chainId}`);

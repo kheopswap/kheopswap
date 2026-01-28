@@ -17,6 +17,8 @@ export const WALLET_CONNECT_PROJECT_ID = "67b8f4b678ad8d5d9dc3a564e4057dbb";
 
 export const USE_CHOPSTICKS = !!env.VITE_USE_CHOPSTICKS;
 
+export const GITHUB_BRANCH = "feat/directory";
+
 export const DEFAULT_RELAY_ID = "polkadot";
 
 export const POOLS_CACHE_DURATION = 300_000;

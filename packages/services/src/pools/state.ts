@@ -3,9 +3,11 @@ import { logger } from "@kheopswap/utils";
 import { groupBy } from "lodash-es";
 import { combineLatest, map, shareReplay } from "rxjs";
 import type { LoadingStatus } from "../common";
-import { poolsStore$ } from "./store";
+import {
+	directoryPoolsStatusByChain$,
+	directoryPoolsStore$,
+} from "../directory/poolsStore";
 import type { Pool } from "./types";
-import { chainPoolsStatuses$ } from "./watchers";
 
 const combineState = (
 	statusByChain: Record<ChainId, LoadingStatus>,
@@ -34,8 +36,8 @@ const combineState = (
 };
 
 export const poolsByChainState$ = combineLatest([
-	chainPoolsStatuses$,
-	poolsStore$,
+	directoryPoolsStatusByChain$,
+	directoryPoolsStore$,
 ]).pipe(
 	map(([statusByChain, allPools]) => combineState(statusByChain, allPools)),
 	shareReplay(1),

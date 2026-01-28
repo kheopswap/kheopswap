@@ -4,6 +4,7 @@
 	"private": true,
 	"exports": {
 		".": "./src/index.ts",
+		"./directory": "./src/directory/index.ts",
 		"./pools": "./src/pools/index.ts",
 		"./balances": "./src/balances/index.ts",
 		"./tokens": "./src/tokens/index.ts",

@@ -1,12 +1,11 @@
-import type { ChainId } from "@kheopswap/registry";
-import { getChainIdFromTokenId, type TokenId } from "@kheopswap/registry";
+import type { ChainId, TokenId } from "@kheopswap/registry";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import { fromPairs, isEqual } from "lodash-es";
 import {
 	combineLatest,
 	distinctUntilChanged,
 	map,
-	Observable,
+	type Observable,
 	shareReplay,
 } from "rxjs";
 import {
@@ -15,10 +14,6 @@ import {
 	tokensByChainState$,
 	tokensByIdState$,
 } from "./state";
-import {
-	addTokensByChainSubscription,
-	removeTokensByChainSubscription,
-} from "./subscriptions";
 
 const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
 	status: "stale",
@@ -27,24 +22,13 @@ const DEFAULT_VALUE_BY_CHAIN: ChainTokensState = {
 
 export const getTokensByChain$ = (chainId: ChainId) => {
 	return getCachedObservable$("getTokensByChain$", chainId, () =>
-		new Observable<ChainTokensState>((subscriber) => {
-			const subId = addTokensByChainSubscription([chainId]);
-
-			const sub = tokensByChainState$
-				.pipe(
-					map(
-						(statusAndTokens) =>
-							statusAndTokens[chainId] ?? DEFAULT_VALUE_BY_CHAIN,
-					),
-					distinctUntilChanged<ChainTokensState>(isEqual),
-				)
-				.subscribe(subscriber);
-
-			return () => {
-				sub.unsubscribe();
-				removeTokensByChainSubscription(subId);
-			};
-		}).pipe(shareReplay(1)),
+		tokensByChainState$.pipe(
+			map(
+				(statusAndTokens) => statusAndTokens[chainId] ?? DEFAULT_VALUE_BY_CHAIN,
+			),
+			distinctUntilChanged<ChainTokensState>(isEqual),
+			shareReplay(1),
+		),
 	);
 };
 
@@ -66,25 +50,13 @@ const DEFAULT_VALUE_BY_TOKEN: TokenState = {
 
 export const getTokenById$ = (tokenId: TokenId) => {
 	return getCachedObservable$("getTokenById$", tokenId, () =>
-		new Observable<TokenState>((subscriber) => {
-			const chainId = getChainIdFromTokenId(tokenId);
-			const subId = addTokensByChainSubscription([chainId]);
-
-			const sub = tokensByIdState$
-				.pipe(
-					map(
-						(statusAndTokens) =>
-							statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
-					),
-					distinctUntilChanged<TokenState>(isEqual),
-				)
-				.subscribe(subscriber);
-
-			return () => {
-				sub.unsubscribe();
-				removeTokensByChainSubscription(subId);
-			};
-		}).pipe(shareReplay(1)),
+		tokensByIdState$.pipe(
+			map(
+				(statusAndTokens) => statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
+			),
+			distinctUntilChanged<TokenState>(isEqual),
+			shareReplay(1),
+		),
 	);
 };
 
