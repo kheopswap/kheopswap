@@ -1,7 +1,6 @@
 import { getApi } from "@kheopswap/papi";
 import { getChainById, parseTokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import type { Dictionary } from "lodash";
 import { BehaviorSubject, type Subscription } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { balancesStore$ } from "./store";
@@ -9,7 +8,9 @@ import { balanceSubscriptions$ } from "./subscriptions";
 import type { BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
 
-const statusByBalanceId$ = new BehaviorSubject<Dictionary<LoadingStatus>>({});
+const statusByBalanceId$ = new BehaviorSubject<Record<string, LoadingStatus>>(
+	{},
+);
 
 const WATCHERS = new Map<BalanceId, Promise<Subscription>>();
 

@@ -1,5 +1,5 @@
 import { isBigInt, logger } from "@kheopswap/utils";
-import { groupBy, mapValues, toPairs, values } from "lodash";
+import { groupBy, mapValues, toPairs, values } from "lodash-es";
 import { useMemo } from "react";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";

@@ -46,14 +46,16 @@ const getBalanceWithStable$ = (
 	);
 };
 
-const DEFAULT_VALUE = { data: [], isLoading: true };
+const DEFAULT_VALUE = { data: [], isLoading: false };
 
 export const useBalancesWithStables = ({
 	tokens,
 	accounts,
 }: UseAccountBalancesWithStablesProps) => {
 	const obs = useMemo(() => {
-		if (!tokens?.length || !accounts?.length) return of(DEFAULT_VALUE);
+		// If no accounts or no tokens, there's nothing to load
+		if (!tokens?.length || !accounts?.length)
+			return of({ data: [], isLoading: false });
 
 		const observables = (tokens ?? []).flatMap((token) =>
 			(accounts ?? []).map((acc) => {

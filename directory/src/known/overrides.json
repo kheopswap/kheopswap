@@ -78,7 +78,7 @@
 	},
 
 	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA",
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADnQAZgA2CFKAdmTSgBYAM1KxZorkqpa6lOS6luqW9CqfUogAViqKpqaATiaA/wBdQKA==",
 		"logo": "./img/tokens/PEPE.webp?rounded",
 		"symbol": "PEPE.e",
 		"name": "Pepe (Snowbridge)",
@@ -102,7 +102,7 @@
 		"verified": true
 	},
 	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADnQAZgA2CFKAdmTSgBYAM1KxZorkqpa6lOS6luqW9CqfUogAViqKpqaATiaA/wBdQKA==",
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADnQAZgA2CFKAdmTSgBYAM1KxZorkqpa6lOS6luqW9CqfUogAViqKpqaATiaA/wBdQKA===",
 		"logo": "./img/tokens/LBTC.webp",
 		"symbol": "LBTC.e",
 		"name": "Lombard BTC (Snowbridge)",
@@ -118,7 +118,7 @@
 		"verified": true
 	},
 	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgA2ZIB2dCsATlKAMwgIKuSfdArk0rqWjvRyuqqxHwBmUYgnGCc69Cq6gP8AXUCgA",
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgBWCCcANh8xZIgfcuSnAHZS9B9SpysAM2qAFhgfGGqo5J9e5LFBqwGrGkCAXUCgA",
 		"logo": "./img/tokens/SKY.webp",
 		"symbol": "SKY.e",
 		"name": "SKY Governance Token (Snowbridge)",
@@ -190,7 +190,7 @@
 		"verified": true
 	},
 	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA90dAA2ZIAzCCsAVhg6uoAWdAgAdnaAZggIZuaqsSsqmCcq9qsfAE4uofR6qamA/wBdQKA==",
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8nCCsfAHYAMwBOAFYADid0GBh69ABmCHQUgDZ+2tqAFnrayorOp0bOnxgrSoD/AF1AoA===",
 		"logo": "./img/tokens/WBTC.webp",
 		"symbol": "WBTC.e",
 		"name": "Wrapped BTC (Snowbridge)",
@@ -222,7 +222,7 @@
 		"verified": false
 	},
 	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ATicAZlKIAFYnGArkmBqAdgAWNoqxADNu9AgADkaWiDb0GoA2KwGW0pGKtrmA/wBdQKA==",
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8TAZLEADgA2AE4anysq9B8KsQBmKqsfJx8apwAWCHQYGpgxZKsYDuSqsf6KgP8AXUCgA",
 		"logo": "./img/tokens/sUSDe.webp",
 		"symbol": "sUSDe.e",
 		"name": "Staked USDe (Snowbridge)",

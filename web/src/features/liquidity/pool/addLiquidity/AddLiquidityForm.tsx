@@ -1,6 +1,6 @@
 import type { Token } from "@kheopswap/registry";
 import { plancksToTokens, tokensToPlancks } from "@kheopswap/utils";
-import { keyBy } from "lodash";
+import { keyBy } from "lodash-es";
 import {
 	type FC,
 	type FormEventHandler,

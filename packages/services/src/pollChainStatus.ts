@@ -1,6 +1,6 @@
 import { type ChainId, getChains } from "@kheopswap/registry";
 import { getCachedObservable$, logger } from "@kheopswap/utils";
-import { fromPairs } from "lodash";
+import { fromPairs } from "lodash-es";
 import { BehaviorSubject, distinctUntilChanged, map, shareReplay } from "rxjs";
 import type { LoadingStatus } from "./common";
 

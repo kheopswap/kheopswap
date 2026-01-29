@@ -4,6 +4,9 @@ import { getChainById } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
 import { type FC, useMemo } from "react";
 import { useToken } from "src/hooks";
+import { GitHubImage } from "./GitHubImage";
+
+const FALLBACK_LOGO = "/img/tokens/asset.svg";
 
 const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 	token,
@@ -16,19 +19,21 @@ const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 
 	return (
 		<div className={cn("relative size-6 shrink-0", className)}>
-			<img
+			<GitHubImage
 				loading="lazy"
-				src={token?.logo ?? "/img/tokens/unknown.svg"}
+				src={token?.logo ?? FALLBACK_LOGO}
+				fallbackSrc={FALLBACK_LOGO}
 				alt={token?.symbol ?? ""}
 				className={cn(
 					"size-full",
-					token?.logo.endsWith("?rounded") && "rounded-full",
+					token?.logo?.endsWith("?rounded") && "rounded-full",
 				)}
 			/>
 			{chain && chain.logo !== token?.logo && (
-				<img
+				<GitHubImage
 					loading="lazy"
 					src={chain.logo}
+					fallbackSrc={FALLBACK_LOGO}
 					alt={""}
 					className="absolute bottom-[-10%] left-[-10%] size-1/2"
 				/>

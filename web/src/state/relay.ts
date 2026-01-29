@@ -1,12 +1,18 @@
-import { type ChainAssetHub, getChains } from "@kheopswap/registry";
+import { type ChainAssetHub, getChains, type Token } from "@kheopswap/registry";
+import {
+	ensureDirectoryPools,
+	ensureDirectoryTokens,
+} from "@kheopswap/services/directory";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { bind } from "@react-rxjs/core";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import {
 	distinctUntilChanged,
 	distinctUntilKeyChanged,
 	map,
+	of,
 	switchMap,
+	tap,
 } from "rxjs";
 import { relayId$ } from "src/state/location";
 
@@ -22,22 +28,31 @@ export const [useRelayChains, relayChains$] = bind(
 
 			return { relayId, assetHub, allChains: [assetHub] };
 		}),
+		// Trigger directory loading for the current chain
+		tap(({ allChains }) => {
+			const chainIds = allChains.map((c) => c.id);
+			ensureDirectoryTokens(chainIds);
+			ensureDirectoryPools(chainIds);
+		}),
 		switchMap(({ relayId, assetHub, allChains }) => {
-			if (!assetHub.stableTokenId) throw new Error("Stable token not found");
+			// If no stable token configured, emit immediately without one
+			if (!assetHub.stableTokenId) {
+				return of({
+					relayId,
+					assetHub,
+					allChains,
+					stableToken: undefined as Token | undefined,
+				});
+			}
+			// Subscribe to token updates, emit even when undefined (loading)
 			return getTokenById$(assetHub.stableTokenId).pipe(
-				distinctUntilKeyChanged("token", isEqual),
-				map(({ token: stableToken }) => {
-					if (!stableToken)
-						throw new Error(
-							`Stable token not found: ${assetHub.stableTokenId}`,
-						);
-					return {
-						relayId,
-						assetHub,
-						allChains,
-						stableToken, //always defined by config
-					};
-				}),
+				map(({ token: stableToken }) => ({
+					relayId,
+					assetHub,
+					allChains,
+					stableToken,
+				})),
+				distinctUntilKeyChanged("stableToken", isEqual),
 			);
 		}),
 	),

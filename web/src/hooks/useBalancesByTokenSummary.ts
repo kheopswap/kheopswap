@@ -1,7 +1,7 @@
 import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import { groupBy, keys } from "lodash";
+import { groupBy, keys } from "lodash-es";
 import { useMemo } from "react";
 import type {
 	AccountBalanceWithStable,

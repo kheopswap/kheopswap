@@ -6,7 +6,7 @@ import {
 	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
