@@ -12,13 +12,16 @@ on:
 
 jobs:
   update-directory:
-    # Run on schedule/dispatch, or on PR comment with magic phrase
+    # Run on schedule/dispatch, or on PR comment with magic phrase (restricted to collaborators)
     if: >
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
-       contains(github.event.comment.body, '/generate-directory'))
+       contains(github.event.comment.body, '/generate-directory') &&
+       (github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
