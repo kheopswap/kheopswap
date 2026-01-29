@@ -40,5 +40,5 @@ export const poolsByChainState$ = combineLatest([
 	directoryPoolsStore$,
 ]).pipe(
 	map(([statusByChain, allPools]) => combineState(statusByChain, allPools)),
-	shareReplay(1),
+	shareReplay({ bufferSize: 1, refCount: true }),
 );

@@ -27,7 +27,7 @@ export const getTokensByChain$ = (chainId: ChainId) => {
 				(statusAndTokens) => statusAndTokens[chainId] ?? DEFAULT_VALUE_BY_CHAIN,
 			),
 			distinctUntilChanged<ChainTokensState>(isEqual),
-			shareReplay(1),
+			shareReplay({ bufferSize: 1, refCount: true }),
 		),
 	);
 };
@@ -55,7 +55,7 @@ export const getTokenById$ = (tokenId: TokenId) => {
 				(statusAndTokens) => statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
 			),
 			distinctUntilChanged<TokenState>(isEqual),
-			shareReplay(1),
+			shareReplay({ bufferSize: 1, refCount: true }),
 		),
 	);
 };

@@ -48,7 +48,7 @@ export const tokensByChainState$ = combineLatest([
 	map(([statusByChain, tokens]) =>
 		combineStateByChainId(statusByChain, tokens),
 	),
-	shareReplay(1),
+	shareReplay({ bufferSize: 1, refCount: true }),
 );
 
 const combineStateByTokenId = (
@@ -81,5 +81,5 @@ export const tokensByIdState$ = combineLatest([
 	map(([statusByChain, tokens]) =>
 		combineStateByTokenId(statusByChain, tokens),
 	),
-	shareReplay(1),
+	shareReplay({ bufferSize: 1, refCount: true }),
 );

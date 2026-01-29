@@ -54,5 +54,5 @@ export const poolSuppliesState$ = combineLatest([
 	map(([poolSupplyIds, statuses, poolSupplies]) =>
 		combineState(poolSupplyIds, statuses, poolSupplies),
 	),
-	shareReplay(1),
+	shareReplay({ bufferSize: 1, refCount: true }),
 );

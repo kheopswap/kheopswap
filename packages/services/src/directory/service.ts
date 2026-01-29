@@ -205,7 +205,9 @@ export const getDirectoryState$ = (chainId: ChainId) => {
 	// Trigger fetch (stale-while-revalidate)
 	fetchDirectoryData(chainId);
 
-	return store.asObservable().pipe(shareReplay(1));
+	return store
+		.asObservable()
+		.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 };
 
 /**
@@ -218,7 +220,7 @@ export const getDirectoryTokens$ = (chainId: ChainId) => {
 			tokens: state.data?.tokens ?? [],
 			error: state.error,
 		})),
-		shareReplay(1),
+		shareReplay({ bufferSize: 1, refCount: true }),
 	);
 };
 
@@ -232,7 +234,7 @@ export const getDirectoryPools$ = (chainId: ChainId) => {
 			pools: state.data?.pools ?? [],
 			error: state.error,
 		})),
-		shareReplay(1),
+		shareReplay({ bufferSize: 1, refCount: true }),
 	);
 };
 

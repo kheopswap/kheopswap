@@ -44,7 +44,7 @@ export const location$ = new Observable<Location>((subscriber) => {
 		history.replaceState = originalReplaceState;
 		subscription.unsubscribe();
 	};
-}).pipe(shareReplay(1));
+}).pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
 const RELAY_IDS = getRelayIds();
 

@@ -46,5 +46,5 @@ export const tokenInfosState$ = combineLatest([
 	map(([balanceIds, statuses, balances]) =>
 		combineState(balanceIds, statuses, balances),
 	),
-	shareReplay(1),
+	shareReplay({ bufferSize: 1, refCount: true }),
 );
