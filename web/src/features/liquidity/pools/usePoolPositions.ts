@@ -106,7 +106,10 @@ export const usePoolWithPositions = ({
 						shares,
 						supply,
 						valuation:
-							isBigInt(pool.valuation) && isBigInt(shares) && isBigInt(supply)
+							isBigInt(pool.valuation) &&
+							isBigInt(shares) &&
+							isBigInt(supply) &&
+							supply > 0n
 								? (pool.valuation * shares) / supply
 								: null,
 					};
