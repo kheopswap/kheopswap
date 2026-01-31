@@ -2,7 +2,7 @@ import { DEV } from "@kheopswap/constants";
 import { logger } from "@kheopswap/utils";
 import { type FC, useEffect, useRef } from "react";
 
-const SHOULD_LOG = DEV || true; // TODO only DEV
+const SHOULD_LOG = DEV;
 
 export const SuspenseMonitorInner: FC<{ label: string }> = ({ label }) => {
 	const refStart = useRef(performance.now());
