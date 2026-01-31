@@ -2,6 +2,12 @@ import type { ChainId, RelayId } from "../chains";
 import parachains from "./parachains.json";
 import type { Parachain } from "./types";
 
+export type { Parachain };
+
+/**
+ * Get static parachains list (fallback data)
+ * Note: For runtime data with logos, use @kheopswap/services parachainsStore$
+ */
 export const getParachains = () => parachains as Parachain[];
 
 export const getParachainByParaId = (

@@ -2,6 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { type ChainId, getChains } from "@kheopswap/registry";
 import { isBigInt, isBinary } from "@kheopswap/utils";
+import { type DirectoryParachain, fetchParachains } from "./fetchParachains";
 import { fetchPools } from "./fetchPools";
 import { fetchAllTokens } from "./fetchTokens";
 import { disconnectAll } from "./getApi";
@@ -57,11 +58,34 @@ const writeChainData = (chainId: ChainId, data: DirectoryChainData): void => {
 };
 
 /**
+ * Write parachains data to JSON file
+ */
+const writeParachainsData = (parachains: DirectoryParachain[]): void => {
+	const filePath = path.join(DATA_DIR, "parachains.json");
+
+	// Ensure directory exists
+	fs.mkdirSync(DATA_DIR, { recursive: true });
+
+	// Write JSON file with pretty formatting
+	fs.writeFileSync(filePath, JSON.stringify(parachains, null, "\t"));
+
+	console.log(`Written: ${filePath}`);
+};
+
+/**
  * Main entry point
  */
 const main = async (): Promise<void> => {
 	console.log("Starting directory generation...");
 	console.log(`Output directory: ${DATA_DIR}`);
+
+	// Generate parachains data first (from chaindata)
+	try {
+		const parachains = await fetchParachains();
+		writeParachainsData(parachains);
+	} catch (error) {
+		console.error("Failed to generate parachains data:", error);
+	}
 
 	const chains = getChains();
 	console.log(`Chains to process: ${chains.map((c) => c.id).join(", ")}`);

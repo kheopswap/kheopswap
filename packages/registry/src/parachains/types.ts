@@ -5,5 +5,6 @@ export type Parachain = {
 	paraId: number;
 	chainId?: ChainId;
 	name: string;
+	logo?: string;
 	subscanUrl?: string;
 };

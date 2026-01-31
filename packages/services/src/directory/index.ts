@@ -1,4 +1,12 @@
 export {
+	ensureParachains,
+	getParachainByParaId,
+	getParachainName,
+	type ParachainsState,
+	parachains$,
+	parachainsStore$,
+} from "./parachainsStore";
+export {
 	directoryPoolsStatusByChain$,
 	directoryPoolsStore$,
 	ensureDirectoryPools,

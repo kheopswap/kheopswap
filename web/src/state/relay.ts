@@ -2,6 +2,7 @@ import { type ChainAssetHub, getChains, type Token } from "@kheopswap/registry";
 import {
 	ensureDirectoryPools,
 	ensureDirectoryTokens,
+	ensureParachains,
 } from "@kheopswap/services/directory";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { bind } from "@react-rxjs/core";
@@ -33,6 +34,7 @@ export const relayChains$ = relayId$.pipe(
 		const chainIds = allChains.map((c) => c.id);
 		ensureDirectoryTokens(chainIds);
 		ensureDirectoryPools(chainIds);
+		ensureParachains();
 	}),
 	switchMap(({ relayId, assetHub, allChains }) => {
 		// If no stable token configured, emit immediately without one
