@@ -1,6 +1,6 @@
 {
 	"chainId": "pasah",
-	"generatedAt": "2026-01-31T04:13:33.546Z",
+	"generatedAt": "2026-01-31T05:38:15.414Z",
 	"tokens": [
 		{
 			"id": "native::pasah",
@@ -550,7 +550,8 @@
 			"decimals": 6,
 			"name": "Tether USD Test",
 			"verified": false,
-			"isSufficient": true
+			"isSufficient": true,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pasah-asset-7777.svg"
 		},
 		{
 			"id": "asset::pasah::50000173",
@@ -1760,7 +1761,8 @@
 			"decimals": 6,
 			"name": "Tether USD",
 			"verified": false,
-			"isSufficient": true
+			"isSufficient": true,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pasah-asset-1984.svg"
 		},
 		{
 			"id": "asset::pasah::50000028",
@@ -2618,7 +2620,8 @@
 			"decimals": 6,
 			"name": "USD Coin",
 			"verified": false,
-			"isSufficient": true
+			"isSufficient": true,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pasah-asset-1337.svg"
 		},
 		{
 			"id": "asset::pasah::50000263",
@@ -3215,7 +3218,8 @@
 			"decimals": 18,
 			"name": "Ether",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pasah-foreign-eth.svg"
 		},
 		{
 			"id": "foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMAFgC+mAdVoBxeAQ4BJOABMYADzkLutAEY4A5ngSoGnkJoC6mzUA=",
@@ -3241,7 +3245,8 @@
 			"decimals": 18,
 			"name": "Hydrated Dollar",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pasah-foreign-hollar.svg"
 		},
 		{
 			"id": "foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AWAAwAmAMwBfTUA===",

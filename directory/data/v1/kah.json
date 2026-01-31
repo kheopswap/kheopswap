@@ -1,6 +1,6 @@
 {
 	"chainId": "kah",
-	"generatedAt": "2026-01-31T04:13:20.468Z",
+	"generatedAt": "2026-01-31T05:37:59.558Z",
 	"tokens": [
 		{
 			"id": "native::kah",
@@ -540,7 +540,8 @@
 			"decimals": 8,
 			"name": "PolarisDAO",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-asset-16.svg"
 		},
 		{
 			"id": "asset::kah::11",
@@ -2258,7 +2259,8 @@
 			"decimals": 18,
 			"name": "Staked USDe",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-9d39a5de.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKgAzL4NDQDsFgC6lkA===",
@@ -2327,7 +2329,8 @@
 			"decimals": 18,
 			"name": "Wrapped Ether",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-c02aaa39.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA",
@@ -2360,7 +2363,8 @@
 			"decimals": 18,
 			"name": "Pepe",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-69825081.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVggATgAOADMrMRgIUp8ANisa5Jaq0oB2dB9enoqapyqfdCsIAGYGmp8xKcZAgF1AoA===",
@@ -2393,7 +2397,8 @@
 			"decimals": 18,
 			"name": "Lido DAO Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-5a98fcbe.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IAGYATjKfJwB2HwAOWtqrZJha8p8AFgarMVqYMS6ugDYygFZ0LoAzGCt0WumxF0CAXUCgA",
@@ -2426,7 +2431,8 @@
 			"decimals": 18,
 			"name": "Savings USDS",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-a3931d71.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADnQAZgA2CFKAdmTSgBYAM1KxZorkqpa6lOS6luqW9CqfUogAViqKpqaATiaA/wBdQKA==",
@@ -2459,7 +2465,8 @@
 			"decimals": 8,
 			"name": "Lombard Staked Bitcoin",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-8236a870.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fCAkYCB8AMwB2KwAOAGZksScGgE4IKIA2WpgrABYIaoBWHx70BsGxHzErJqarAP8AXUCgA",
@@ -2492,7 +2499,8 @@
 			"decimals": 6,
 			"name": "Euro Coin",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-1abaea1f.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKi+AMyNAOwWALqWQA",
@@ -2528,7 +2536,8 @@
 			"decimals": 6,
 			"name": "USD Coin (Polkadot)",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-usdc.svg"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgA2ZIB2dCsATlKAMwgIKuSfdArk0rqWjvRyuqqxHwBmUYgnGCc69Cq6gP8AXUCgA",
@@ -2561,7 +2570,8 @@
 			"decimals": 18,
 			"name": "SKY Governance Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-56072c95.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IZLEADgA2AE4anysq9B8KsQBmKqsfJx8apwAWCHQYGpgxZKsYDuSqsf6KgP8AXUCgA",
@@ -2592,9 +2602,10 @@
 			},
 			"symbol": "USDC",
 			"decimals": 6,
-			"name": "USDC (Snowbridge)",
+			"name": "USD Coin",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-a0b86991.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8JABYfJycAM2SANjEAdmrqpwAOAE4nH3Q6xrEAVggOgGYxaphq9DLpmDEU5JGA/wBdQKA==",
@@ -2627,7 +2638,8 @@
 			"decimals": 18,
 			"name": "Mythos",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-ba41ddf0.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA9kmB8ADgA2AGYAVgB2Kxr0GqsK5KqrHxgAMycIJxqqp3QfBt6GiDqAFjFap0qA/wBdQKA==",
@@ -2660,7 +2672,8 @@
 			"decimals": 18,
 			"name": "Curio Gas Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-0e186357.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fAA5ksoAWADMJADZGiABmZqdmgHYAVgBOdBqIdHrWmqcqnogOqqcnHuaIMrKA/wBdQKA==",
@@ -2693,7 +2706,8 @@
 			"decimals": 18,
 			"name": "tBTC v2",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-18084fba.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzAGYATisAVgAOH3K66rqxOsr6qzEfarEnZLFK8oanCAA2K2rKuph0KwhUwIBdQKA==",
@@ -2726,7 +2740,8 @@
 			"decimals": 18,
 			"name": "Wrapped liquid staked Ether 2.0",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-7f39c581.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgAOdCdygHZ0CB8xZIBOABYAMytW8vbSpxgAZh8nAbEagfaq5rEYVpr+9r9AgF1AoA===",
@@ -2759,7 +2774,8 @@
 			"decimals": 9,
 			"name": "Wrapped TON Coin",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-582d872a.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANjEfAHYAVgAWStqYAA4ATmSW2qta2qcIFqaxFrqYGCcYCC6h9EqfJ2SAMwD/AF1AoA===",
@@ -2792,7 +2808,8 @@
 			"decimals": 18,
 			"name": "Dai Stablecoin",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-6b175474.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAFIuwDWEACZEEIAL7nTQA=",
@@ -2877,7 +2894,8 @@
 			"decimals": 18,
 			"name": "SHIBA INU",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-95ad61b0.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48G6BgFYAvpgHVaAcXgEOASTgATGAA85C7rQBGOAOZ4EqAAwh1AXXXqgA===",
@@ -2957,7 +2975,8 @@
 			"decimals": 8,
 			"name": "Wrapped BTC",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-2260fac5.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmXoAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0DbABMICCLQBGeaBVTKAB6qaiFh4RGRUdExUSDq6gC6CUA===",
@@ -3022,7 +3041,8 @@
 			"decimals": 6,
 			"name": "Tether USD (Polkadot)",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-usdt.svg"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgYBmAL6YB1WqPbsYCAJJwkCCHHE1WHbmnTKNAXQ0agA",
@@ -3128,7 +3148,8 @@
 			"decimals": 18,
 			"name": "Ether",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-eth.svg"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVicAZidknwAzJwA2J3QIJx8fBoBOMR8Adk6fAA4YMQAWWp9SiqsGho70QeGxAP8AXUCgA",
@@ -3192,9 +3213,10 @@
 			},
 			"symbol": "USDT",
 			"decimals": 6,
-			"name": "USDT (Snowbridge)",
+			"name": "Tether USD",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-dac17f95.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVh8AFgBOH2SAdjqfCAAzKqsIADZSjpaADgrkp2bm3oBmGF70DoqYK1bejvaA/wBdQKA==",
@@ -3227,7 +3249,8 @@
 			"decimals": 18,
 			"name": "ChainLink Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-51491077.webp"
 		},
 		{
 			"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzKwA2KoBWZOSrAA4AFghSqognUpgATitegGYWwdKxStqIK0HBmHQnJwg+gP8AXUCgA",
@@ -3260,7 +3283,8 @@
 			"decimals": 18,
 			"name": "Aave Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/kah-foreign-7fc66500.webp"
 		}
 	],
 	"pools": [

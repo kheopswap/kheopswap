@@ -1,6 +1,6 @@
 {
 	"chainId": "pah",
-	"generatedAt": "2026-01-31T04:13:18.688Z",
+	"generatedAt": "2026-01-31T05:37:52.688Z",
 	"tokens": [
 		{
 			"id": "native::pah",
@@ -8359,7 +8359,8 @@
 			"decimals": 18,
 			"name": "Staked USDe",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pah-foreign-9d39a5de.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzp0AX3VA==",
@@ -8443,11 +8444,12 @@
 					]
 				}
 			},
-			"symbol": "PEPE",
+			"symbol": "PEPE.e",
 			"decimals": 18,
-			"name": "Pepe",
-			"verified": false,
-			"isSufficient": false
+			"name": "Pepe (Snowbridge)",
+			"verified": true,
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/PEPE.webp?rounded"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVggATgAOADMrMRgIUp8ANisa5Jaq0oB2dB9enoqapyqfdCsIAGYGmp8xKcZAgF1AoA===",
@@ -8510,10 +8512,10 @@
 					]
 				}
 			},
-			"symbol": "PAXG",
+			"symbol": "PAXG.e",
 			"decimals": 18,
 			"name": "PAX Gold (Snowbridge)",
-			"verified": false,
+			"verified": true,
 			"isSufficient": false,
 			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/PAXG.png"
 		},
@@ -8544,10 +8546,10 @@
 					]
 				}
 			},
-			"symbol": "CFG",
+			"symbol": "CFG.e",
 			"decimals": 18,
-			"name": "Centrifuge",
-			"verified": false,
+			"name": "Centrifuge (Snowbridge)",
+			"verified": true,
 			"isSufficient": false,
 			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/CFG.svg?rounded"
 		},
@@ -8635,10 +8637,10 @@
 					]
 				}
 			},
-			"symbol": "WLD",
+			"symbol": "WLD.e",
 			"decimals": 18,
-			"name": "Worldcoin",
-			"verified": false,
+			"name": "Worldcoin (Snowbridge)",
+			"verified": true,
 			"isSufficient": false,
 			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/WLD.webp?rounded"
 		},
@@ -8669,10 +8671,10 @@
 					]
 				}
 			},
-			"symbol": "ENA",
+			"symbol": "ENA.e",
 			"decimals": 18,
-			"name": "Ethena",
-			"verified": false,
+			"name": "Ethena (Snowbridge)",
+			"verified": true,
 			"isSufficient": false,
 			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/ENA.svg"
 		},
@@ -8703,12 +8705,12 @@
 					]
 				}
 			},
-			"symbol": "PEPE.e",
-			"decimals": 18,
-			"name": "Pepe (Snowbridge)",
+			"symbol": "LBTC.e",
+			"decimals": 8,
+			"name": "Lombard BTC (Snowbridge)",
 			"verified": true,
 			"isSufficient": false,
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/PEPE.webp?rounded"
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/LBTC.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBmAJwBfTUA===",
@@ -8867,7 +8869,8 @@
 			"decimals": 18,
 			"name": "SKY Governance Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pah-foreign-56072c95.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IZLEADgA2AE4anysq9B8KsQBmKqsfJx8apwAWCHQYGpgxZKsYDuSqsf6KgP8AXUCgA",
@@ -8968,7 +8971,8 @@
 			"decimals": 18,
 			"name": "Curio Gas Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pah-foreign-0e186357.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ICAB2CABOKwgADnKnAGYANiqAFjEAVnKuroAzdB8m7qdk9uSOsTqx/uSIFv6A/wBdQKA==",
@@ -8999,9 +9003,10 @@
 			},
 			"symbol": "TRAC",
 			"decimals": 18,
-			"name": "OriginTrail TRAC",
+			"name": "Trace Token",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pah-foreign-aa7a9ca8.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fAA5ksoAWADMJADZGiABmZqdmgHYAVgBOdBqIdHrWmqcqnogOqqcnHuaIMrKA/wBdQKA==",
@@ -9098,10 +9103,10 @@
 					]
 				}
 			},
-			"symbol": "vTAO",
+			"symbol": "vTAO.e",
 			"decimals": 18,
-			"name": "Virtual TAO",
-			"verified": false,
+			"name": "Virtual TAO (Snowbridge)",
+			"verified": true,
 			"isSufficient": false,
 			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/vTAO.svg"
 		},
@@ -9268,7 +9273,8 @@
 			"decimals": 9,
 			"name": "Robonomics",
 			"verified": false,
-			"isSufficient": false
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pah-foreign-7de91b20.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA90dAA2ZIAzCCsAVhg6uoAWdAgAdnaAZggIZuaqsSsqmCcq9qsfAE4uofR6qamA/wBdQKA==",
@@ -9297,11 +9303,12 @@
 					]
 				}
 			},
-			"symbol": "WBTC",
+			"symbol": "WBTC.e",
 			"decimals": 8,
-			"name": "Wrapped BTC",
-			"verified": false,
-			"isSufficient": false
+			"name": "Wrapped BTC (Snowbridge)",
+			"verified": true,
+			"isSufficient": false,
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/WBTC.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmUAWAL6YB1WqPbsYCAJJwkCCHHE1WHbmnTKNAXQ0agA",
@@ -9644,7 +9651,7 @@
 					]
 				}
 			},
-			"symbol": "AAVE",
+			"symbol": "AAVE.e",
 			"decimals": 18,
 			"name": "Aave Token (Snowbridge)",
 			"verified": true,
@@ -9668,9 +9675,9 @@
 			"symbol": "AJUN",
 			"decimals": 12,
 			"name": "Ajuna Polkadot AJUN",
-			"verified": true,
+			"verified": false,
 			"isSufficient": false,
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/AJUN.svg"
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pah-foreign-ajun.webp"
 		}
 	],
 	"pools": [
