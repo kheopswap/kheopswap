@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { type ChainId, getChains } from "@kheopswap/registry";
+import { isBigInt, isBinary } from "@kheopswap/utils";
 import { fetchPools } from "./fetchPools";
 import { fetchAllTokens } from "./fetchTokens";
 import { disconnectAll } from "./getApi";
@@ -32,10 +33,13 @@ const generateChainData = async (
 };
 
 /**
- * JSON replacer that converts BigInt to string
+ * JSON replacer that converts BigInt to string and Binary to hex string
  */
-const bigIntReplacer = (_key: string, value: unknown): unknown =>
-	typeof value === "bigint" ? value.toString() : value;
+const jsonReplacer = (_key: string, value: unknown): unknown => {
+	if (isBigInt(value)) return value.toString();
+	if (isBinary(value)) return value.asHex();
+	return value;
+};
 
 /**
  * Write chain data to JSON file
@@ -46,8 +50,8 @@ const writeChainData = (chainId: ChainId, data: DirectoryChainData): void => {
 	// Ensure directory exists
 	fs.mkdirSync(DATA_DIR, { recursive: true });
 
-	// Write JSON file with pretty formatting (handle BigInt serialization)
-	fs.writeFileSync(filePath, JSON.stringify(data, bigIntReplacer, "\t"));
+	// Write JSON file with pretty formatting (handle BigInt and Binary serialization)
+	fs.writeFileSync(filePath, JSON.stringify(data, jsonReplacer, "\t"));
 
 	console.log(`Written: ${filePath}`);
 };

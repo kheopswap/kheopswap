@@ -1,6 +1,6 @@
 {
 	"chainId": "pasah",
-	"generatedAt": "2026-01-31T04:03:30.785Z",
+	"generatedAt": "2026-01-31T04:13:33.546Z",
 	"tokens": [
 		{
 			"id": "native::pasah",
@@ -3304,7 +3304,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0xfff9976782d46cc05630d1f6ebab18b2324d6b14"
 							}
 						}
 					]

@@ -1,6 +1,6 @@
 {
 	"chainId": "kah",
-	"generatedAt": "2026-01-31T04:03:14.190Z",
+	"generatedAt": "2026-01-31T04:13:20.468Z",
 	"tokens": [
 		{
 			"id": "native::kah",
@@ -2248,7 +2248,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x9d39a5de30e57443bff2a8307a4256c8797a3497"
 							}
 						}
 					]
@@ -2317,7 +2317,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 							}
 						}
 					]
@@ -2350,7 +2350,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x6982508145454ce325ddbe47a25d4ec3d2311933"
 							}
 						}
 					]
@@ -2383,7 +2383,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x5a98fcbea516cf06857215779fd812ca3bef1b32"
 							}
 						}
 					]
@@ -2416,7 +2416,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0xa3931d71877c0e7a3148cb7eb4463524fec27fbd"
 							}
 						}
 					]
@@ -2449,7 +2449,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x8236a87084f8b84306f72007f36f2618a5634494"
 							}
 						}
 					]
@@ -2482,7 +2482,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c"
 							}
 						}
 					]
@@ -2551,7 +2551,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x56072c95faa701256059aa122697b133aded9279"
 							}
 						}
 					]
@@ -2584,7 +2584,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
 							}
 						}
 					]
@@ -2617,7 +2617,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0xba41ddf06b7ffd89d1267b5a93bfef2424eb2003"
 							}
 						}
 					]
@@ -2650,7 +2650,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x0e186357c323c806c1efdad36d217f7a54b63d18"
 							}
 						}
 					]
@@ -2683,7 +2683,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x18084fba666a33d37592fa2633fd49a74dd93a88"
 							}
 						}
 					]
@@ -2716,7 +2716,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
 							}
 						}
 					]
@@ -2749,7 +2749,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x582d872a1b094fc48f5de31d3b73f2d9be47def1"
 							}
 						}
 					]
@@ -2782,7 +2782,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x6b175474e89094c44da98b954eedeac495271d0f"
 							}
 						}
 					]
@@ -2834,7 +2834,7 @@
 							"type": "GeneralKey",
 							"value": {
 								"length": 2,
-								"data": {}
+								"data": "0x0104000000000000000000000000000000000000000000000000000000000000"
 							}
 						}
 					]
@@ -2867,7 +2867,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce"
 							}
 						}
 					]
@@ -2947,7 +2947,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
 							}
 						}
 					]
@@ -2976,7 +2976,7 @@
 							"type": "GeneralKey",
 							"value": {
 								"length": 2,
-								"data": {}
+								"data": "0x0001000000000000000000000000000000000000000000000000000000000000"
 							}
 						}
 					]
@@ -3093,7 +3093,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x8daebade922df735c38c80c7ebd708af50815faa"
 							}
 						}
 					]
@@ -3151,7 +3151,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x5d3d01fd6d2ad1169b17918eb4f153c6616288eb"
 							}
 						}
 					]
@@ -3184,7 +3184,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0xdac17f958d2ee523a2206206994597c13d831ec7"
 							}
 						}
 					]
@@ -3217,7 +3217,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x514910771af9ca656af840dff83e8264ecf986ca"
 							}
 						}
 					]
@@ -3250,7 +3250,7 @@
 						{
 							"type": "AccountKey20",
 							"value": {
-								"key": {}
+								"key": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
 							}
 						}
 					]
