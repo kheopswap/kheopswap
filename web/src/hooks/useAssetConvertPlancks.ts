@@ -1,14 +1,37 @@
-import type { TokenId } from "@kheopswap/registry";
+import type { Token, TokenId } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import {
 	getCachedObservable$,
 	isBigInt,
 	plancksToTokens,
 } from "@kheopswap/utils";
-import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { bind } from "@react-rxjs/core";
 import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
 import { getAssetConvert$ } from "src/state";
+
+type UseAssetConvertPlancksResult = {
+	plancksOut: bigint | null;
+	isLoading: boolean;
+	tokenIn: Token | null | undefined;
+	tokenOut: Token | null | undefined;
+};
+
+const DEFAULT_VALUE_PLANCKS: UseAssetConvertPlancksResult = {
+	plancksOut: null,
+	isLoading: true,
+	tokenIn: null,
+	tokenOut: null,
+};
+
+// bind() with factory function for parameterized observable
+const [useAssetConvertPlancksInternal] = bind(
+	(
+		tokenIdIn: TokenId | null | undefined,
+		tokenIdOut: TokenId | null | undefined,
+		plancks: bigint | null | undefined,
+	) => getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks),
+	DEFAULT_VALUE_PLANCKS,
+);
 
 type UseAssetConvertPlancks = {
 	tokenIdIn: TokenId | null | undefined;
@@ -16,24 +39,12 @@ type UseAssetConvertPlancks = {
 	plancks: bigint | null | undefined;
 };
 
-const DEFAULT_VALUE_PLANCKS = {
-	plancksOut: undefined,
-	isLoading: true,
-	tokenIn: undefined,
-	tokenOut: undefined,
-};
-
 export const useAssetConvertPlancks = ({
 	tokenIdIn,
 	tokenIdOut,
 	plancks,
 }: UseAssetConvertPlancks) => {
-	const obs = useMemo(
-		() => getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks),
-		[tokenIdIn, tokenIdOut, plancks],
-	);
-
-	return useObservable(obs, DEFAULT_VALUE_PLANCKS);
+	return useAssetConvertPlancksInternal(tokenIdIn, tokenIdOut, plancks);
 };
 
 const DEFAULT_VALUE_PRICE = {
@@ -43,17 +54,22 @@ const DEFAULT_VALUE_PRICE = {
 	tokenOut: undefined,
 };
 
+// bind() with factory function for useAssetConvertPrice
+const [useAssetConvertPriceInternal] = bind(
+	(
+		tokenIdIn: TokenId | null | undefined,
+		tokenIdOut: TokenId | null | undefined,
+		plancks: bigint | null | undefined,
+	) => getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
+	DEFAULT_VALUE_PRICE,
+);
+
 export const useAssetConvertPrice = ({
 	tokenIdIn,
 	tokenIdOut,
 	plancks,
 }: UseAssetConvertPlancks) => {
-	const obs = useMemo(
-		() => getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
-		[tokenIdIn, tokenIdOut, plancks],
-	);
-
-	return useObservable(obs, DEFAULT_VALUE_PRICE);
+	return useAssetConvertPriceInternal(tokenIdIn, tokenIdOut, plancks);
 };
 
 const NO_TOKEN_RESULT = { token: null, status: "loaded" };

@@ -76,7 +76,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const token1 = useNativeToken({ chain: assetHub });
 
 	const token2 = useMemo(
-		() => tokens[formData.token2Id] ?? null,
+		() => (formData.token2Id ? (tokens[formData.token2Id] ?? null) : null),
 		[formData.token2Id, tokens],
 	);
 

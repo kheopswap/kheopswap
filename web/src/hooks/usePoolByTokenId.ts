@@ -2,15 +2,14 @@ import type { TokenIdAsset, TokenIdForeignAsset } from "@kheopswap/registry";
 import type { Pool } from "@kheopswap/services/pools";
 import { useMemo } from "react";
 import { useRelayChains } from "src/state";
+import type { LoadingState } from "src/types";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 
 type UsePoolByTokenIdProps = {
 	tokenId: TokenIdAsset | TokenIdForeignAsset | null | undefined;
 };
-type UsePoolByTokenIdResult = {
-	data: Pool | null;
-	isLoading: boolean;
-};
+
+type UsePoolByTokenIdResult = LoadingState<Pool | null>;
 
 export const usePoolByTokenId = ({
 	tokenId,

@@ -48,17 +48,16 @@ const useFormData = () => {
 	// account won't be available on first render
 	const account = useWalletAccount({ id: defaultAccountId });
 
-	const defaultValues = useMemo<SwapFormInputs>(
-		() => ({
+	const defaultValues = useMemo<SwapFormInputs>(() => {
+		return {
 			from: account?.id ?? "",
 			to: "",
 			tokenIdIn: nativeToken?.id ?? "",
 			tokenIdOut: "",
 			amountIn: "",
 			...location.state,
-		}),
-		[account?.id, nativeToken?.id, location.state],
-	);
+		};
+	}, [account?.id, nativeToken?.id, location.state]);
 
 	const [formData, setFormData] = useState<SwapFormInputs>(defaultValues);
 
@@ -132,6 +131,7 @@ const useSwapProvider = () => {
 			chainId: assetHub.id,
 		},
 	);
+
 	const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
 		chainId: assetHub.id,
 	});
@@ -174,6 +174,7 @@ const useSwapProvider = () => {
 	);
 
 	const account = useWalletAccount({ id: from });
+
 	const [slippage, setSlippage] = useSetting("slippage");
 
 	const { data: reserves, isLoading: isLoadingReserves } =
@@ -190,6 +191,7 @@ const useSwapProvider = () => {
 		address: account?.address,
 		tokenId: tokenIdIn,
 	});
+
 	const { data: balanceOut, isLoading: isLoadingBalanceOut } = useBalance({
 		address: account?.address,
 		tokenId: tokenIdOut,
@@ -207,6 +209,7 @@ const useSwapProvider = () => {
 	);
 
 	const { data: tokenIn } = useToken({ tokenId: tokenIdIn });
+
 	const { data: tokenOut } = useToken({ tokenId: tokenIdOut });
 
 	const { swapPlancksIn, appCommission, totalIn, isValidAmountIn } =

@@ -2,16 +2,13 @@ import { isBigInt, logger } from "@kheopswap/utils";
 import { groupBy, mapValues, toPairs, values } from "lodash-es";
 import { useMemo } from "react";
 import { useRelayChains } from "src/state";
-import type { BalanceWithStableSummary } from "src/types";
+import type { BalanceWithStableSummary, LoadingState } from "src/types";
 import { useBalances } from "./useBalances";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
-type UseAssetHubTVLResult = {
-	isLoading: boolean;
-	data: BalanceWithStableSummary[];
-};
+type UseAssetHubTVLResult = LoadingState<BalanceWithStableSummary[]>;
 
 export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 	const stop = logger.cumulativeTimer("useAssetHubTVL");

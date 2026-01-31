@@ -130,3 +130,15 @@ When testing the app after making changes:
    - Verify no React errors like "Maximum update depth exceeded"
 5. **After code changes**: If the page shows an error overlay, click **Reset** or do a hard reload (Cmd+Shift+R) to see the updated code
 6. **Light client sync**: When enabled, smoldot light clients take 10-30 seconds to sync. A "Synchronizing light clients" toast is expected on initial load.
+
+## Browser Testing with MCP
+
+When using the browser MCP tools to test the app:
+
+1. **Always use the `?light-clients=false` query parameter** when opening the app (unless specifically testing light client functionality):
+   - Use URL: `http://localhost:5173/?light-clients=false`
+   - This disables light clients immediately at startup, avoiding sync delays
+   - The query string is automatically cleaned from the URL after applying
+2. **Wait for the page to load** before interacting with elements
+3. **Check console messages** for errors after navigation
+4. **The setting persists** in localStorage, so subsequent navigations within the same session won't need the parameter

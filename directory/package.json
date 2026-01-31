@@ -10,15 +10,17 @@
 		"generate": "tsx src/generate.ts && biome check --write data/",
 		"typecheck": "tsc --noEmit"
 	},
-	"devDependencies": {
-		"@kheopswap/typescript-config": "workspace:*",
-		"@types/node": "^25.0.10",
-		"tsx": "^4.19.0",
-		"typescript": "^5.9.3"
-	},
 	"dependencies": {
 		"@kheopswap/registry": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
+		"lodash-es": "^4.17.21",
 		"polkadot-api": "^1.23.2"
+	},
+	"devDependencies": {
+		"@kheopswap/typescript-config": "workspace:*",
+		"@types/lodash-es": "^4.17.12",
+		"@types/node": "^25.0.10",
+		"tsx": "^4.19.0",
+		"typescript": "^5.9.3"
 	}
 }

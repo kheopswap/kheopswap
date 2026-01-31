@@ -327,6 +327,32 @@ const [useBalances] = bind(
 )
 ```
 
+### Rule 6: Choose Separators Carefully When Serializing IDs
+
+When serializing arrays to strings for `bind()` or `state()` factory functions, **choose separators that cannot appear in the values being joined**:
+
+```typescript
+// ❌ WRONG - Token IDs contain "::" (e.g., "pah::asset::1984")
+const key = items.map((i) => `${i.address}:${i.tokenId}`).join(",")
+// "addr:pah::asset::1984,addr2:kah::native" splits incorrectly!
+
+// ✅ CORRECT - Use separators that won't appear in values
+const key = items.map((i) => `${i.address}||${i.tokenId}`).join(",,")
+// "addr||pah::asset::1984,,addr2||kah::native" splits correctly!
+
+// Parsing
+const parseKey = (key: string) => key.split(",,").map((item) => {
+  const [address, tokenId] = item.split("||")
+  return { address, tokenId }
+})
+```
+
+**Common separator patterns:**
+- Use `||` as item delimiter (won't appear in addresses or token IDs)
+- Use `,,` as array delimiter (won't appear in individual items)
+- Never use `:` when values contain `::` (common in Polkadot token IDs)
+- Consider URL-safe characters that won't appear in your data
+
 ## Migration from `react-rx` (`useObservable`)
 
 If migrating from the `react-rx` package:

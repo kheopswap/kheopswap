@@ -7,7 +7,7 @@ import {
 	useContext,
 	useMemo,
 } from "react";
-import { combineLatest, map } from "rxjs";
+import { combineLatest, map, shareReplay } from "rxjs";
 import {
 	dismissTransaction,
 	getOpenTransactionId,
@@ -18,17 +18,24 @@ import {
 } from "./transactionStore";
 import type { TransactionId, TransactionRecord } from "./types";
 
-// React-rxjs bindings for reactive updates
-const [useAllTransactions] = bind(transactions$, []);
+// Observables for reactive updates
+const openTransaction$ = combineLatest([
+	transactions$,
+	openTransactionId$,
+]).pipe(
+	map(
+		([txs, openId]) =>
+			(openId ? txs.find((tx) => tx.id === openId) : null) ?? null,
+	),
+	shareReplay({ bufferSize: 1, refCount: true }),
+);
+
+// bind() returns a hook that already handles subscriptions internally
+const [useAllTransactions] = bind(transactions$, [] as TransactionRecord[]);
 
 const [useOpenTransaction] = bind(
-	combineLatest([transactions$, openTransactionId$]).pipe(
-		map(
-			([txs, openId]) =>
-				(openId ? txs.find((tx) => tx.id === openId) : null) ?? null,
-		),
-	),
-	null,
+	openTransaction$,
+	null as TransactionRecord | null,
 );
 
 type TransactionsContextValue = {

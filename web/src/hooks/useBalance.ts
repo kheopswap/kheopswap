@@ -1,6 +1,7 @@
 import type { TokenId } from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
+import type { LoadingState } from "src/types";
 import { useBalances } from "./useBalances";
 
 type UseBalanceProps = {
@@ -8,10 +9,7 @@ type UseBalanceProps = {
 	tokenId: TokenId | null | undefined;
 };
 
-type UseBalanceResult = {
-	isLoading: boolean;
-	data: bigint | undefined;
-};
+type UseBalanceResult = LoadingState<bigint | undefined>;
 
 export const useBalance = ({
 	address,
