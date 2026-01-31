@@ -1,11 +1,6 @@
-// Environment accessor that works in both Vite and Node.js
-const env =
-	(import.meta as { env?: Record<string, string | boolean | undefined> }).env ??
-	(typeof process !== "undefined"
-		? (process.env as Record<string, string | boolean | undefined>)
-		: {});
+const env = import.meta.env;
 
-export const DEV = env.DEV ?? env.NODE_ENV !== "production";
+export const DEV = env.DEV;
 export const DEV_IGNORE_STORAGE = env.VITE_DEV_IGNORE_STORAGE;
 
 export const APP_KEY = "kheopswap"; // TODO do something about the one in utils
