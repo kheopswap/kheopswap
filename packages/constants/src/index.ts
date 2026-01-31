@@ -1,4 +1,4 @@
-const env = import.meta.env;
+const env = import.meta.env ?? {};
 
 export const DEV = env.DEV;
 export const DEV_IGNORE_STORAGE = env.VITE_DEV_IGNORE_STORAGE;

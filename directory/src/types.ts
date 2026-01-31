@@ -76,7 +76,6 @@ export type DirectoryPool = {
 // The output schema for each chain's JSON file
 export type DirectoryChainData = {
 	chainId: ChainId;
-	generatedAt: string; // ISO timestamp
 	tokens: DirectoryToken[];
 	pools: DirectoryPool[];
 };

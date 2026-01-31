@@ -27,7 +27,6 @@ const generateChainData = async (
 
 	return {
 		chainId,
-		generatedAt: new Date().toISOString(),
 		tokens,
 		pools,
 	};

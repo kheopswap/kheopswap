@@ -133,6 +133,13 @@
 		"verified": true
 	},
 	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8nCCsfAHYAMwBOAFYADid0GBh69ABmCHQUgDZ+2tqAFnrayorOp0bOnxgrSoD/AF1AoA===",
+		"logo": "./img/tokens/USDT.webp",
+		"symbol": "USDT.e",
+		"name": "USDT (Snowbridge)",
+		"verified": true
+	},
+	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVggATgAOADMrMRgIUp8ANisa5Jaq0oB2dB9enoqapyqfdCsIAGYGmp8xKcZAgF1AoA===",
 		"logo": "./img/tokens/LDO.svg",
 		"symbol": "LDO.e",

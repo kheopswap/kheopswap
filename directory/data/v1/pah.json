@@ -1,6 +1,6 @@
 {
 	"chainId": "pah",
-	"generatedAt": "2026-01-31T05:54:16.043Z",
+	"generatedAt": "2026-01-31T06:21:15.609Z",
 	"tokens": [
 		{
 			"id": "native::pah",
@@ -9536,12 +9536,12 @@
 					]
 				}
 			},
-			"symbol": "USDT",
+			"symbol": "USDT.e",
 			"decimals": 6,
-			"name": "Tether USD",
-			"verified": false,
+			"name": "USDT (Snowbridge)",
+			"verified": true,
 			"isSufficient": false,
-			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/pah-foreign-dac17f95.webp"
+			"logo": "https://raw.githubusercontent.com/kheopswap/kheopswap/feat/directory/directory/logos/USDT.webp"
 		},
 		{
 			"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgAsAZgC+mAdVqj27GAgCScJAghxxNVh25p0yzQF1NmoA===",
