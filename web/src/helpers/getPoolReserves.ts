@@ -43,7 +43,9 @@ export const getPoolReserves = (
 			},
 		);
 
-		return reserveNative?.balance && reserveStable?.balance
+		// Check for bigint explicitly since 0n is falsy
+		return typeof reserveNative?.balance === "bigint" &&
+			typeof reserveStable?.balance === "bigint"
 			? ([reserveNative.balance, reserveStable.balance] as [bigint, bigint])
 			: null;
 	} finally {

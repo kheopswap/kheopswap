@@ -99,8 +99,13 @@ const getAssetConvertPlancks$ = (
 						if (!tokenIdIn || !tokenIdOut)
 							return of({ plancksOut: null, isLoading, tokenIn, tokenOut });
 
-						if (!plancks)
+						// Converting 0 of any token is always 0 (no need to check pool reserves)
+						if (plancks === 0n)
 							return of({ plancksOut: 0n, isLoading, tokenIn, tokenOut });
+
+						// If plancks is null/undefined, we can't calculate yet
+						if (plancks == null)
+							return of({ plancksOut: null, isLoading, tokenIn, tokenOut });
 
 						return getAssetConvert$({
 							tokenIdIn,
