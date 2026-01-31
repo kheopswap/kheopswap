@@ -1,6 +1,6 @@
 {
 	"chainId": "pah",
-	"generatedAt": "2026-01-28T15:59:36.568Z",
+	"generatedAt": "2026-01-31T04:03:11.371Z",
 	"tokens": [
 		{
 			"id": "native::pah",
@@ -7071,17 +7071,6 @@
 			"symbol": "gg",
 			"decimals": 9,
 			"name": "gishay",
-			"verified": false,
-			"isSufficient": false
-		},
-		{
-			"id": "asset::pah::7151",
-			"type": "asset",
-			"chainId": "pah",
-			"assetId": 7151,
-			"symbol": "TUKI",
-			"decimals": 8,
-			"name": "TUKI",
 			"verified": false,
 			"isSufficient": false
 		},
