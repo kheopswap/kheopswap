@@ -1,30 +1,25 @@
 import type { ChainId, Token } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import {
-	type Dictionary,
-	fromPairs,
-	groupBy,
-	keyBy,
-	toPairs,
-	values,
-} from "lodash";
+import { fromPairs, groupBy, keyBy, toPairs, values } from "lodash-es";
 import { combineLatest, map, shareReplay } from "rxjs";
 import type { LoadingStatus } from "../common";
-import { tokensStore$ } from "./store";
+import {
+	directoryTokensStatusByChain$,
+	directoryTokensStore$,
+} from "../directory/tokensStore";
 import { sortTokens } from "./util";
-import { chainTokensStatuses$ } from "./watchers";
 
 export type ChainTokensState = {
 	status: LoadingStatus;
-	tokens: Dictionary<Token>;
+	tokens: Record<string, Token>;
 };
 
 export type TokenState = { status: LoadingStatus; token: Token | undefined };
 
 const combineStateByChainId = (
 	statusByChain: Record<ChainId, LoadingStatus>,
-	tokens: Dictionary<Token>,
-): Dictionary<ChainTokensState> => {
+	tokens: Record<string, Token>,
+): Record<string, ChainTokensState> => {
 	const stop = logger.cumulativeTimer("tokens.combineStateByChainId");
 	try {
 		const tokensByChain = groupBy(values(tokens).sort(sortTokens), "chainId");
@@ -47,19 +42,19 @@ const combineStateByChainId = (
 };
 
 export const tokensByChainState$ = combineLatest([
-	chainTokensStatuses$,
-	tokensStore$,
+	directoryTokensStatusByChain$,
+	directoryTokensStore$,
 ]).pipe(
 	map(([statusByChain, tokens]) =>
 		combineStateByChainId(statusByChain, tokens),
 	),
-	shareReplay(1),
+	shareReplay({ bufferSize: 1, refCount: true }),
 );
 
 const combineStateByTokenId = (
 	statusByChain: Record<ChainId, LoadingStatus>,
-	tokens: Dictionary<Token>,
-): Dictionary<TokenState> => {
+	tokens: Record<string, Token>,
+): Record<string, TokenState> => {
 	const stop = logger.cumulativeTimer("tokens.combineStateByTokenId");
 	try {
 		return fromPairs(
@@ -80,11 +75,11 @@ const combineStateByTokenId = (
 };
 
 export const tokensByIdState$ = combineLatest([
-	chainTokensStatuses$,
-	tokensStore$,
+	directoryTokensStatusByChain$,
+	directoryTokensStore$,
 ]).pipe(
 	map(([statusByChain, tokens]) =>
 		combineStateByTokenId(statusByChain, tokens),
 	),
-	shareReplay(1),
+	shareReplay({ bufferSize: 1, refCount: true }),
 );

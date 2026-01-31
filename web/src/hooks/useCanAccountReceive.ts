@@ -1,5 +1,5 @@
 import { getChainIdFromTokenId, type TokenId } from "@kheopswap/registry";
-import { keyBy, values } from "lodash";
+import { keyBy, values } from "lodash-es";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { getNativeToken } from "src/util";

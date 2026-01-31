@@ -1,15 +1,13 @@
 import type { TokenId, TokenInfo } from "@kheopswap/registry";
 import { useMemo } from "react";
+import type { LoadingState } from "src/types";
 import { useTokenInfos } from "./useTokenInfos";
 
 type UseTokenInfoProps = {
 	tokenId: TokenId | null | undefined;
 };
 
-type UseTokenInfoResult = {
-	isLoading: boolean;
-	data: TokenInfo | undefined;
-};
+type UseTokenInfoResult = LoadingState<TokenInfo | undefined>;
 
 export const useTokenInfo = ({
 	tokenId,

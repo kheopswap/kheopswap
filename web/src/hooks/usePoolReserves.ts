@@ -1,23 +1,31 @@
 import type { Pool } from "@kheopswap/services/pools";
-import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { bind } from "@react-rxjs/core";
 import { map } from "rxjs";
 import { getAssetHubPoolReserves$ } from "src/state";
+import type { LoadingState } from "src/types";
 
 type UsePoolReservesProps = {
 	pool: Pool | null | undefined;
 };
 
-const DEFAULT_VALUE = { data: undefined, isLoading: true };
+type UsePoolReservesResult = LoadingState<[bigint, bigint] | null>;
 
-export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
-	const obs = useMemo(
-		() =>
-			getAssetHubPoolReserves$(pool ?? null).pipe(
-				map(({ reserves, isLoading }) => ({ data: reserves, isLoading })),
-			),
-		[pool],
-	);
+const DEFAULT_VALUE: UsePoolReservesResult = {
+	data: null,
+	isLoading: true,
+};
 
-	return useObservable(obs, DEFAULT_VALUE);
+// bind() with factory function for parameterized observable
+const [usePoolReservesInternal] = bind(
+	(pool: Pool | null) =>
+		getAssetHubPoolReserves$(pool).pipe(
+			map(({ reserves, isLoading }) => ({ data: reserves, isLoading })),
+		),
+	DEFAULT_VALUE,
+);
+
+export const usePoolReserves = ({
+	pool,
+}: UsePoolReservesProps): UsePoolReservesResult => {
+	return usePoolReservesInternal(pool ?? null);
 };

@@ -7,7 +7,7 @@ import type { BalanceWithStableSummary } from "src/types";
 export const TokenBalancesSummary: FC<
 	BalanceWithStableSummary & {
 		token: Token;
-		stableToken: Token;
+		stableToken: Token | undefined;
 		isPrice?: boolean;
 	}
 > = ({
@@ -49,17 +49,19 @@ export const TokenBalancesSummary: FC<
 				/>
 			</div>
 			<div className="truncate text-sm text-neutral-500">
-				<Tokens
-					token={stableToken}
-					plancks={stablePlancks ?? 0n}
-					pulse={isLoadingStablePlancks}
-					digits={2}
-					isPrice={isPrice}
-					className={cn(
-						!isBigInt(stablePlancks) && "invisible",
-						token.id === stableToken.id && "invisible",
-					)}
-				/>
+				{stableToken && (
+					<Tokens
+						token={stableToken}
+						plancks={stablePlancks ?? 0n}
+						pulse={isLoadingStablePlancks}
+						digits={2}
+						isPrice={isPrice}
+						className={cn(
+							!isBigInt(stablePlancks) && "invisible",
+							token.id === stableToken.id && "invisible",
+						)}
+					/>
+				)}
 			</div>
 		</div>
 	);

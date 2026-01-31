@@ -1,5 +1,5 @@
 import { logger } from "@kheopswap/utils";
-import { keyBy, values } from "lodash";
+import { keyBy, values } from "lodash-es";
 import { useMemo } from "react";
 import { getBalancesByTokenSummary } from "src/hooks";
 import { usePortfolio } from "./PortfolioProvider";

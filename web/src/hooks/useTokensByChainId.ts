@@ -1,5 +1,4 @@
 import type { ChainId, Token } from "@kheopswap/registry";
-import type { Dictionary } from "lodash";
 import { useMemo } from "react";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
@@ -9,7 +8,7 @@ type UseTokensProps = {
 
 type UseTokensResult = {
 	isLoading: boolean;
-	data: Dictionary<Token>;
+	data: Record<string, Token>;
 };
 
 export const useTokensByChainId = ({

@@ -1,6 +1,6 @@
 import type { TokenIdsPair } from "@kheopswap/registry";
 import { firstThenDebounceTime } from "@kheopswap/utils";
-import { isEqual, uniq } from "lodash";
+import { isEqual, uniq } from "lodash-es";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import type { PoolSupplyId } from "./types";
 import { getPoolSupplyId } from "./utils";

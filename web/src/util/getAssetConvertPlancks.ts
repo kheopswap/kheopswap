@@ -14,6 +14,9 @@ export const getAssetConvertPlancks = (
 	try {
 		if (tokenIdIn === tokenIdOut) return plancks;
 
+		// Converting 0 of any token is always 0
+		if (plancks === 0n) return 0n;
+
 		if (tokenIdNative !== tokenIdOut && !reservesNativeToTokenOut)
 			return undefined;
 

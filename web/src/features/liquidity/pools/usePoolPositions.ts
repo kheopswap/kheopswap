@@ -1,7 +1,7 @@
 import { getTokenId } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
 import { isBigInt } from "@kheopswap/utils";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { useBalances, usePoolSupplies } from "src/hooks";
@@ -56,8 +56,10 @@ export const usePoolWithPositions = ({
 		[poolTokenIds, addresses],
 	);
 
+	// Use poll mode for pool positions - informational display
 	const { data: lpShares, isLoading: isLoadingLpShares } = useBalances({
 		balanceDefs: sharesBalanceDefs,
+		mode: "poll",
 	});
 
 	const pairs = useMemo(

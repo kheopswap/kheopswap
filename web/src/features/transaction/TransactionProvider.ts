@@ -7,7 +7,7 @@ import {
 	notifyError,
 	provideContext,
 } from "@kheopswap/utils";
-import { isNumber, uniq } from "lodash";
+import { isNumber, uniq } from "lodash-es";
 import { useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import { catchError, of, shareReplay } from "rxjs";

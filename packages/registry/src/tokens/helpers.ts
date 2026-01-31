@@ -1,5 +1,6 @@
 import {
 	getBlockExplorerUrl,
+	isBinary,
 	logger,
 	safeParse,
 	safeStringify,
@@ -186,23 +187,28 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 				interior.value[0].value.type === "Ethereum" &&
 				interior.value[1]?.type === "AccountKey20"
 			) {
-				const network = getEvmNetworkById(
-					interior.value[0].value.value.chain_id,
-				);
+				// Handle both PAPI format (bigint directly) and directory JSON format ({chain_id: string})
+				const ethValue = interior.value[0].value.value;
+				const chainId =
+					typeof ethValue === "object" &&
+					ethValue !== null &&
+					"chain_id" in ethValue
+						? (ethValue as { chain_id: string | number | bigint }).chain_id
+						: ethValue;
+				const network = getEvmNetworkById(chainId);
+				// Handle both Binary objects (from PAPI) and plain hex strings (from directory JSON)
+				const key = interior.value[1].value.key;
+				const keyHex = isBinary(key) ? key.asHex() : String(key);
 				return [
 					{
 						label: "Origin",
-						value: getEvmNetworkName(interior.value[0].value.value.chain_id),
+						value: getEvmNetworkName(chainId),
 					},
 					{
 						label: "Contract address",
-						value: interior.value[1].value.key.asHex(),
+						value: keyHex,
 						format: "address",
-						url: getBlockExplorerUrl(
-							network?.explorerUrl,
-							interior.value[1].value.key.asHex(),
-							"address",
-						),
+						url: getBlockExplorerUrl(network?.explorerUrl, keyHex, "address"),
 					},
 				];
 			}

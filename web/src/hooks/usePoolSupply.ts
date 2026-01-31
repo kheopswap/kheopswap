@@ -1,5 +1,6 @@
 import type { TokenId, TokenIdsPair } from "@kheopswap/registry";
 import { useMemo } from "react";
+import type { LoadingState } from "src/types";
 import { usePoolSupplies } from "./usePoolSupplies";
 
 type UsePoolSupplyProps = {
@@ -7,10 +8,7 @@ type UsePoolSupplyProps = {
 	tokenId2: TokenId | null | undefined;
 };
 
-type UsePoolSupplyResult = {
-	isLoading: boolean;
-	data: bigint | undefined;
-};
+type UsePoolSupplyResult = LoadingState<bigint | undefined>;
 
 export const usePoolSupply = ({
 	tokenId1,

@@ -6,12 +6,12 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
-import { type Dictionary, keyBy, values } from "lodash";
+import { keyBy, values } from "lodash-es";
 import { BehaviorSubject, debounceTime } from "rxjs";
 
 const STORAGE_KEY = getLocalStorageKey("token-infos");
 
-const loadTokenInfos = (): Dictionary<TokenInfo> => {
+const loadTokenInfos = (): Record<string, TokenInfo> => {
 	try {
 		const strTokenInfos = localStorage.getItem(STORAGE_KEY);
 		const tokenInfosList: TokenInfo[] =
@@ -26,7 +26,7 @@ const loadTokenInfos = (): Dictionary<TokenInfo> => {
 	}
 };
 
-const saveTokenInfos = (tokens: Dictionary<TokenInfo>) => {
+const saveTokenInfos = (tokens: Record<string, TokenInfo>) => {
 	try {
 		localStorage.setItem(STORAGE_KEY, safeStringify(values(tokens)));
 	} catch (err) {
@@ -35,7 +35,7 @@ const saveTokenInfos = (tokens: Dictionary<TokenInfo>) => {
 };
 
 const stop = logger.timer("initializing token infos store");
-export const tokenInfosStore$ = new BehaviorSubject<Dictionary<TokenInfo>>(
+export const tokenInfosStore$ = new BehaviorSubject<Record<string, TokenInfo>>(
 	loadTokenInfos(),
 );
 stop();

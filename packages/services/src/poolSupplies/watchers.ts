@@ -1,6 +1,6 @@
 import { getApi } from "@kheopswap/papi";
 import { getChainById, parseTokenId } from "@kheopswap/registry";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import {
 	BehaviorSubject,
 	distinctUntilChanged,

@@ -1,3 +1,4 @@
+import { refreshBalances } from "@kheopswap/services/balances";
 import { getLocalStorageKey, safeParse, safeStringify } from "@kheopswap/utils";
 import { BehaviorSubject, map } from "rxjs";
 import type { FollowUpTxEvent } from "src/components";
@@ -127,6 +128,12 @@ export const appendTxEvent = (
 			txHash,
 		});
 		transactionsSubject.next(transactions);
+
+		// Refresh all balances when a transaction is finalized (success or failure)
+		// This ensures poll-mode subscriptions get updated immediately after transactions
+		if (status === "finalized" || status === "failed") {
+			refreshBalances();
+		}
 	}
 };
 

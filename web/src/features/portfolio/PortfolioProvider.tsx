@@ -1,6 +1,6 @@
 import { PORTFOLIO_TOKEN_TYPES } from "@kheopswap/registry";
 import { logger, provideContext } from "@kheopswap/utils";
-import { values } from "lodash";
+import { values } from "lodash-es";
 import { useMemo } from "react";
 import {
 	useAllTokens,
@@ -23,8 +23,9 @@ export const usePortfolioProvider = () => {
 
 	const { data: tvl } = useAssetHubTVL();
 
+	// Use poll mode for portfolio - doesn't need real-time updates
 	const { data: balances, isLoading: isLoadingBalances } =
-		useBalancesWithStables({ tokens, accounts });
+		useBalancesWithStables({ tokens, accounts, mode: "poll" });
 
 	const { data: prices, isLoading: isLoadingPrices } = useTokenPrices();
 

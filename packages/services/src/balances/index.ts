@@ -1,2 +1,3 @@
+export { refreshBalances } from "./refresh";
 export * from "./service";
-export type { BalanceDef } from "./types";
+export type { BalanceDef, BalanceSubscriptionMode } from "./types";

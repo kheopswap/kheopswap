@@ -8,7 +8,7 @@ import {
 	isBigInt,
 	provideContext,
 } from "@kheopswap/utils";
-import { type Dictionary, fromPairs, toPairs } from "lodash";
+import { fromPairs, toPairs } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	useAllTokens,
@@ -64,7 +64,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 
 	const { data: pools } = usePoolsByChainId({ chainId: assetHub.id });
 
-	const tokensWithoutPool = useMemo<Dictionary<Token>>(() => {
+	const tokensWithoutPool = useMemo<Record<string, Token>>(() => {
 		if (!pools) return {};
 		return fromPairs(
 			toPairs(tokens).filter(
@@ -76,7 +76,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const token1 = useNativeToken({ chain: assetHub });
 
 	const token2 = useMemo(
-		() => tokens[formData.token2Id] ?? null,
+		() => (formData.token2Id ? (tokens[formData.token2Id] ?? null) : null),
 		[formData.token2Id, tokens],
 	);
 

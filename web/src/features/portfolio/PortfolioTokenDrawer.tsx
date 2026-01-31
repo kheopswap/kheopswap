@@ -108,7 +108,8 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 									)}
 								</div>
 
-								{stableToken.id !== token.id &&
+								{stableToken &&
+									stableToken.id !== token.id &&
 									(isBigInt(balance.stablePlancks) ||
 										balance.isLoadingStablePlancks) && (
 										<div className="text-sm text-neutral-500">
@@ -195,15 +196,17 @@ const TokenDetailsRowValue: FC<
 				className={cn(
 					"text-neutral-500",
 					!isBigInt(stablePlancks) && "hidden",
-					token.id === stableToken.id && "hidden",
+					stableToken && token.id === stableToken.id && "hidden",
 				)}
 			>
-				<Tokens
-					token={stableToken}
-					plancks={stablePlancks ?? 0n}
-					digits={2}
-					pulse={isLoadingStablePlancks}
-				/>
+				{stableToken && (
+					<Tokens
+						token={stableToken}
+						plancks={stablePlancks ?? 0n}
+						digits={2}
+						pulse={isLoadingStablePlancks}
+					/>
+				)}
 			</span>
 		</div>
 	);
