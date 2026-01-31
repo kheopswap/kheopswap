@@ -113,3 +113,20 @@ pnpm typecheck  # Verify TypeScript types compile correctly
 ```
 
 Fix any errors before considering the task complete.
+
+## Browser Testing with DevTools
+
+When testing the app after making changes:
+
+1. **Start the dev server** if not already running: `pnpm dev`
+2. **Open the app** at http://localhost:5173/
+3. **Disable light clients for faster testing** (unless testing light client features):
+   - Click the chain selector in the header (shows "Polkadot" or network name)
+   - Uncheck "Connect via light clients" toggle
+   - Page will reload with RPC connections instead (much faster)
+4. **Use browser DevTools** to verify the app works:
+   - Check the Console for errors (filter out expected debug/info messages)
+   - Navigate to key pages: Swap, Transfer, Tokens, Liquidity Pools
+   - Verify no React errors like "Maximum update depth exceeded"
+5. **After code changes**: If the page shows an error overlay, click **Reset** or do a hard reload (Cmd+Shift+R) to see the updated code
+6. **Light client sync**: When enabled, smoldot light clients take 10-30 seconds to sync. A "Synchronizing light clients" toast is expected on initial load.
