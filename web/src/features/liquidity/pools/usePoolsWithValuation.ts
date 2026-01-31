@@ -36,8 +36,10 @@ export const usePoolsWithValuation = ({
 		[pools],
 	);
 
+	// Use poll mode for pool reserves display - informational
 	const { data: allReservesBalances, isLoading } = useBalances({
 		balanceDefs: poolsBalanceDefs,
+		mode: "poll",
 	});
 
 	const reservesNativeToStable = useMemo(

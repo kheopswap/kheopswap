@@ -12,7 +12,11 @@ import {
 	addBalanceSubscription,
 	removeBalancesSubscription,
 } from "./subscriptions";
-import type { BalanceDef, BalanceState } from "./types";
+import type {
+	BalanceDef,
+	BalanceState,
+	BalanceSubscriptionMode,
+} from "./types";
 import { getBalanceId } from "./utils";
 
 const DEFAULT_BALANCE_STATE: BalanceState = {
@@ -22,10 +26,15 @@ const DEFAULT_BALANCE_STATE: BalanceState = {
 
 export const getBalance$ = (def: BalanceDef) => {
 	const balanceId = getBalanceId(def);
+	const mode: BalanceSubscriptionMode = def.mode ?? "live";
 
-	return getCachedObservable$("getBalance$", balanceId, () => {
+	// Cache key includes mode so different mode subscriptions are separate observables
+	// but they share the same underlying balance state
+	const cacheKey = `${balanceId}::${mode}`;
+
+	return getCachedObservable$("getBalance$", cacheKey, () => {
 		return new Observable<BalanceState>((subscriber) => {
-			const subId = addBalanceSubscription(balanceId);
+			const subId = addBalanceSubscription(balanceId, mode);
 
 			const sub = balancesState$
 				.pipe(
@@ -43,12 +52,14 @@ export const getBalance$ = (def: BalanceDef) => {
 };
 
 export const getBalances$ = (defs: BalanceDef[]) => {
-	return getCachedObservable$(
-		"getBalances$",
-		defs.map(getBalanceId).join(","),
-		() =>
-			combineLatest(defs.map(getBalance$)).pipe(
-				shareReplay({ refCount: true, bufferSize: 1 }),
-			),
+	// Include mode in cache key
+	const cacheKey = defs
+		.map((d) => `${getBalanceId(d)}::${d.mode ?? "live"}`)
+		.join(",");
+
+	return getCachedObservable$("getBalances$", cacheKey, () =>
+		combineLatest(defs.map(getBalance$)).pipe(
+			shareReplay({ refCount: true, bufferSize: 1 }),
+		),
 	);
 };

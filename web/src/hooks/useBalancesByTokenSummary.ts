@@ -1,5 +1,6 @@
 import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
+import type { BalanceSubscriptionMode } from "@kheopswap/services/balances";
 import { logger } from "@kheopswap/utils";
 import { groupBy, keys } from "lodash-es";
 import { useMemo } from "react";
@@ -12,6 +13,8 @@ import { useBalancesWithStables } from "./useBalancesWithStables";
 type UseBalancesByTokenSummaryProps = {
 	tokens: Token[] | TokenId[] | null | undefined;
 	accounts: PolkadotAccount[] | string[] | null | undefined;
+	/** Subscription mode: "live" for real-time updates, "poll" for periodic updates (default: "live") */
+	mode?: BalanceSubscriptionMode;
 };
 
 export const getBalancesByTokenSummary = (
@@ -64,12 +67,14 @@ export const getBalancesByTokenSummary = (
 export const useBalancesByTokenSummary = ({
 	tokens,
 	accounts,
+	mode,
 }: UseBalancesByTokenSummaryProps) => {
 	const stop = logger.cumulativeTimer("useBalancesByTokenSummary");
 
 	const { data: balances, isLoading } = useBalancesWithStables({
 		tokens,
 		accounts,
+		mode,
 	});
 
 	const data = useMemo(() => getBalancesByTokenSummary(balances), [balances]);

@@ -12,9 +12,14 @@ export type StoredBalance = {
 
 export type BalanceId = string; // `${Address}||${TokenId}`;
 
+/** Subscription mode for balance updates */
+export type BalanceSubscriptionMode = "live" | "poll";
+
 export type BalanceDef = {
 	address: Address;
 	tokenId: TokenId;
+	/** Subscription mode: "live" for real-time updates, "poll" for periodic updates */
+	mode?: BalanceSubscriptionMode;
 };
 
 export type BalanceState = {

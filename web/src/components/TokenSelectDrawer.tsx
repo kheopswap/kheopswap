@@ -133,9 +133,11 @@ const TokenSelectDrawerContent: FC<{
 
 	const tokens = useMemo(() => values(tokensMap ?? {}), [tokensMap]);
 
+	// Use poll mode for token picker - doesn't need real-time updates
 	const { data: balances } = useBalancesByTokenSummary({
 		tokens,
 		accounts,
+		mode: "poll",
 	});
 
 	const sortedTokens = useMemo(

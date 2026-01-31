@@ -56,8 +56,10 @@ export const usePoolWithPositions = ({
 		[poolTokenIds, addresses],
 	);
 
+	// Use poll mode for pool positions - informational display
 	const { data: lpShares, isLoading: isLoadingLpShares } = useBalances({
 		balanceDefs: sharesBalanceDefs,
+		mode: "poll",
 	});
 
 	const pairs = useMemo(

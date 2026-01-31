@@ -23,8 +23,9 @@ export const usePortfolioProvider = () => {
 
 	const { data: tvl } = useAssetHubTVL();
 
+	// Use poll mode for portfolio - doesn't need real-time updates
 	const { data: balances, isLoading: isLoadingBalances } =
-		useBalancesWithStables({ tokens, accounts });
+		useBalancesWithStables({ tokens, accounts, mode: "poll" });
 
 	const { data: prices, isLoading: isLoadingPrices } = useTokenPrices();
 

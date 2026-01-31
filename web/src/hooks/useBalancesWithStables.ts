@@ -1,6 +1,9 @@
 import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
-import { getBalance$ } from "@kheopswap/services/balances";
+import {
+	type BalanceSubscriptionMode,
+	getBalance$,
+} from "@kheopswap/services/balances";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import { bind } from "@react-rxjs/core";
 import {
@@ -17,6 +20,8 @@ import type { AccountBalanceWithStable, LoadingState } from "src/types";
 type UseAccountBalancesWithStablesProps = {
 	tokens: Token[] | TokenId[] | null | undefined;
 	accounts: PolkadotAccount[] | string[] | null | undefined;
+	/** Subscription mode: "live" for real-time updates, "poll" for periodic updates (default: "live") */
+	mode?: BalanceSubscriptionMode;
 };
 
 type UseBalancesWithStablesResult = LoadingState<AccountBalanceWithStable[]>;
@@ -24,12 +29,13 @@ type UseBalancesWithStablesResult = LoadingState<AccountBalanceWithStable[]>;
 const getBalanceWithStable$ = (
 	tokenId: TokenId,
 	address: string,
+	mode: BalanceSubscriptionMode = "live",
 ): Observable<AccountBalanceWithStable> => {
 	return getCachedObservable$(
 		"getBalanceWithStable$",
-		`${address},${tokenId}`,
+		`${address},${tokenId},${mode}`,
 		() =>
-			getBalance$({ address, tokenId }).pipe(
+			getBalance$({ address, tokenId, mode }).pipe(
 				switchMap(({ balance, status }) =>
 					getStablePlancks$(tokenId, balance).pipe(
 						map(({ stablePlancks, isLoadingStablePlancks }) => ({
@@ -55,6 +61,7 @@ const DEFAULT_VALUE: UseBalancesWithStablesResult = {
 const getBalancesWithStables$ = (
 	tokens: (Token | TokenId)[],
 	accounts: (PolkadotAccount | string)[],
+	mode: BalanceSubscriptionMode = "live",
 ): Observable<UseBalancesWithStablesResult> => {
 	// If no accounts or no tokens, there's nothing to load
 	if (!tokens.length || !accounts.length)
@@ -64,7 +71,7 @@ const getBalancesWithStables$ = (
 		accounts.map((acc) => {
 			const address = typeof acc === "string" ? acc : acc.address;
 			const tokenId = typeof token === "string" ? token : token.id;
-			return getBalanceWithStable$(tokenId, address);
+			return getBalanceWithStable$(tokenId, address, mode);
 		}),
 	);
 
@@ -79,36 +86,49 @@ const getBalancesWithStables$ = (
 	);
 };
 
-// Parse cache key back into tokens and accounts (use || and ,, as separators since tokenIds contain ::)
-const parseCacheKey = (
-	cacheKey: string,
-): { tokens: string[]; accounts: string[] } => {
-	if (!cacheKey) return { tokens: [], accounts: [] };
-	const [tokensStr, accountsStr] = cacheKey.split("||||");
-	const tokens = tokensStr ? tokensStr.split(",,") : [];
-	const accounts = accountsStr ? accountsStr.split(",,") : [];
-	return { tokens, accounts };
+// Cache key structure: JSON-encoded object to avoid delimiter conflicts
+// (token IDs can contain various characters including base64)
+type CacheKeyData = {
+	mode: BalanceSubscriptionMode;
+	tokens: string[];
+	accounts: string[];
+};
+
+const encodeCacheKey = (data: CacheKeyData): string => JSON.stringify(data);
+
+const parseCacheKey = (cacheKey: string): CacheKeyData => {
+	if (!cacheKey) return { mode: "live", tokens: [], accounts: [] };
+	try {
+		return JSON.parse(cacheKey) as CacheKeyData;
+	} catch {
+		return { mode: "live", tokens: [], accounts: [] };
+	}
 };
 
 // bind() only receives the serialized key - the observable factory uses getCachedObservable$
 const [useBalancesWithStablesInternal] = bind((cacheKey: string) => {
-	const { tokens, accounts } = parseCacheKey(cacheKey);
-	return getBalancesWithStables$(tokens, accounts);
+	const { tokens, accounts, mode } = parseCacheKey(cacheKey);
+	return getBalancesWithStables$(tokens, accounts, mode);
 }, DEFAULT_VALUE);
 
 export const useBalancesWithStables = ({
 	tokens,
 	accounts,
+	mode = "live",
 }: UseAccountBalancesWithStablesProps): UseBalancesWithStablesResult => {
 	const safeTokens = tokens ?? [];
 	const safeAccounts = accounts ?? [];
-	// Create stable cache key (use || and ,, as separators since tokenIds contain ::)
-	const tokensKey = safeTokens
-		.map((t) => (typeof t === "string" ? t : t.id))
-		.join(",,");
-	const accountsKey = safeAccounts
-		.map((a) => (typeof a === "string" ? a : a.address))
-		.join(",,");
-	const cacheKey = `${tokensKey}||||${accountsKey}`;
+
+	const tokenIds = safeTokens.map((t) => (typeof t === "string" ? t : t.id));
+	const accountAddresses = safeAccounts.map((a) =>
+		typeof a === "string" ? a : a.address,
+	);
+
+	const cacheKey = encodeCacheKey({
+		mode,
+		tokens: tokenIds,
+		accounts: accountAddresses,
+	});
+
 	return useBalancesWithStablesInternal(cacheKey);
 };

@@ -19,3 +19,6 @@ export const DEFAULT_RELAY_ID = "polkadot";
 export const POOLS_CACHE_DURATION = 300_000;
 export const TOKENS_CACHE_DURATION = 300_000;
 export const STORAGE_QUERY_TIMEOUT = USE_CHOPSTICKS ? 60_000 : 30_000;
+
+/** Polling interval for balance subscriptions in "poll" mode (30 seconds) */
+export const BALANCE_POLL_INTERVAL = 30_000;

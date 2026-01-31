@@ -184,6 +184,8 @@ const AccountSelectDrawerContent: FC<{
 		() => ({
 			tokens: token ? [token] : [],
 			accounts,
+			// Use poll mode for account picker - doesn't need real-time updates
+			mode: "poll" as const,
 		}),
 		[accounts, token],
 	);
