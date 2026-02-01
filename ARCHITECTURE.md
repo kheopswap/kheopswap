@@ -15,8 +15,79 @@ packages/
 └── utils/          # Framework-agnostic utilities
 
 web/                # React frontend application
-directory/          # Static data generation tool
+directory/          # Static data generation (CI only, not a runtime dependency)
 ```
+
+## Directory vs Registry: Data Flow Architecture
+
+The codebase separates **type definitions** (registry) from **data generation** (directory) to allow CI-driven data updates without triggering Cloudflare rebuilds.
+
+### Package Responsibilities
+
+| Package | Purpose | Build Dependency | Runtime Import |
+|---------|---------|------------------|----------------|
+| **registry** | TypeScript types, utilities, native tokens, PAPI descriptors | ✅ Yes | ✅ Yes |
+| **directory** | CI data generation scripts, generated JSON files | ❌ No | ❌ No (fetched from GitHub) |
+| **services** | Runtime data fetching, caching, observables | ✅ Yes | ✅ Yes |
+
+### Data Flow
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         BUILD TIME (directory/)                             │
+│   CI runs every 2 hours - generates JSON files, commits to repo             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────┐     ┌───────────────────┐     ┌─────────────────────┐    │
+│  │ Chain RPCs   │ ──▶ │ fetchTokens.ts    │ ──▶ │ data/v1/{chain}.json│    │
+│  │ (live data)  │     │ fetchPools.ts     │     │ (committed to repo) │    │
+│  └──────────────┘     └───────────────────┘     └─────────────────────┘    │
+│         │                     ▲                                             │
+│         │             ┌───────┴───────┐                                    │
+│         │             │ known/        │                                    │
+│         │             │ tokens.json   │ (curated logos, names, verified)   │
+│         │             └───────────────┘                                    │
+│         ▼                                                                   │
+│  ┌──────────────┐                                                          │
+│  │ Talisman     │ (logos, metadata enrichment - NOT used at runtime)       │
+│  │ Chaindata    │                                                          │
+│  └──────────────┘                                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        RUNTIME (packages/services/)                         │
+│   Frontend loads data with tiered strategy + on-chain polling               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. STARTUP: Load from localStorage (instant)                              │
+│       │                                                                     │
+│       ▼                                                                     │
+│  2. DIRECTORY: Fetch JSON from GitHub CDN (override localStorage)          │
+│       │                                                                     │
+│       ▼                                                                     │
+│  3. ON-CHAIN POLLING: Fetch new data directly from chain                   │
+│       • Tokens: every 15 minutes (merge new tokens only)                   │
+│       • Pools: every 5 minutes (merge new pools, update existing)          │
+│       • On-demand: when pool references unknown token                      │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────┐       │
+│  │                    Merge Rules                                   │       │
+│  │  • New tokens from chain: verified=false, no logo               │       │
+│  │  • Existing tokens: chain wins for decimals/isSufficient,       │       │
+│  │    directory wins for name/symbol/logo/verified                 │       │
+│  │  • Pools: on-chain data wins                                    │       │
+│  └─────────────────────────────────────────────────────────────────┘       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Why This Separation?
+
+1. **No Cloudflare rebuilds** - Directory JSON updates via CI don't change any build dependencies
+2. **Fast startup** - localStorage provides instant data, directory fetch happens in background
+3. **Self-healing** - On-chain polling discovers new tokens/pools without waiting for CI
+4. **Curated quality** - Directory provides logos, verified status, better names from Talisman
+5. **Always fresh** - Polling ensures recent chain changes appear within minutes
 
 ## Dependency Graph
 

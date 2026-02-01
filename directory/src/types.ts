@@ -1,68 +1,30 @@
-import type { ChainId, TokenIdsPair } from "@kheopswap/registry";
+import type {
+	ChainId,
+	Token,
+	TokenAsset,
+	TokenForeignAsset,
+	TokenIdsPair,
+	TokenNative,
+	TokenPoolAsset,
+} from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
 
 /**
  * Directory output schema v1
  * Contains all tokens and pools for a single chain
+ *
+ * NOTE: These types are used for directory GENERATION only.
+ * The generated JSON files are fetched at runtime and typed using
+ * @kheopswap/registry types directly - there are NO runtime imports
+ * from this package to avoid triggering Cloudflare rebuilds.
  */
 
-// Token types matching @kheopswap/registry Token types
-export type DirectoryTokenNative = {
-	id: string;
-	type: "native";
-	chainId: ChainId;
-	decimals: number;
-	symbol: string;
-	name: string;
-	logo?: string;
-	verified: true;
-	isSufficient: true;
-};
-
-export type DirectoryTokenAsset = {
-	id: string;
-	type: "asset";
-	chainId: ChainId;
-	decimals: number;
-	symbol: string;
-	name: string;
-	logo?: string;
-	assetId: number;
-	verified: boolean;
-	isSufficient: boolean;
-};
-
-export type DirectoryTokenPoolAsset = {
-	id: string;
-	type: "pool-asset";
-	chainId: ChainId;
-	decimals: number;
-	symbol: string;
-	name: string;
-	logo?: string;
-	poolAssetId: number;
-	verified: false;
-	isSufficient: false;
-};
-
-export type DirectoryTokenForeignAsset = {
-	id: string;
-	type: "foreign-asset";
-	chainId: ChainId;
-	decimals: number;
-	symbol: string;
-	name: string;
-	logo?: string;
-	location: unknown; // XcmV5Multilocation - stored as JSON
-	verified: boolean;
-	isSufficient: boolean;
-};
-
-export type DirectoryToken =
-	| DirectoryTokenNative
-	| DirectoryTokenAsset
-	| DirectoryTokenPoolAsset
-	| DirectoryTokenForeignAsset;
+// Re-export registry token types for use in generation scripts
+export type DirectoryTokenNative = TokenNative;
+export type DirectoryTokenAsset = TokenAsset;
+export type DirectoryTokenPoolAsset = TokenPoolAsset;
+export type DirectoryTokenForeignAsset = TokenForeignAsset;
+export type DirectoryToken = Token;
 
 // Pool type matching @kheopswap/services AssetConvertionPoolDef
 export type DirectoryPool = {

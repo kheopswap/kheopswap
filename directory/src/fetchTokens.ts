@@ -393,7 +393,7 @@ export const getNativeToken = async (
 		decimals: knownToken.decimals,
 		symbol: knownToken.symbol,
 		name: knownToken.name,
-		verified: true,
+		verified: undefined,
 		isSufficient: true,
 	};
 	if (logo) token.logo = logo;
@@ -533,7 +533,7 @@ export const fetchPoolAssetTokens = async (
 			symbol: "",
 			decimals: 0,
 			name: "",
-			verified: false,
+			verified: undefined,
 			isSufficient: false,
 		};
 	});

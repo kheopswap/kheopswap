@@ -16,5 +16,6 @@ export {
 	directoryTokensStatusByChain$,
 	directoryTokensStore$,
 	ensureDirectoryTokens,
+	fetchMissingTokens,
 } from "./tokensStore";
 export type * from "./types";
