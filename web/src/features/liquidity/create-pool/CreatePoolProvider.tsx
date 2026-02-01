@@ -1,13 +1,10 @@
+import { provideContext } from "@kheopswap/react-utils";
 import {
 	POOL_TOKEN2_TOKEN_TYPES,
 	type Token,
 	type TokenId,
 } from "@kheopswap/registry";
-import {
-	getAddressFromAccountField,
-	isBigInt,
-	provideContext,
-} from "@kheopswap/utils";
+import { getAddressFromAccountField, isBigInt } from "@kheopswap/utils";
 import { fromPairs, toPairs } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {

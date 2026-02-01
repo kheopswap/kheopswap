@@ -1,9 +1,9 @@
+import { provideContext } from "@kheopswap/react-utils";
 import { type TokenId, TRANSFERABLE_TOKEN_TYPES } from "@kheopswap/registry";
 import {
 	getAddressFromAccountField,
 	isNumber,
 	plancksToTokens,
-	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
 import { isEqual } from "lodash-es";

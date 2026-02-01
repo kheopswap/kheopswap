@@ -8,7 +8,7 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "pnpm -r --if-present test",
 		"build": "pnpm --filter web build",
 		"preview": "pnpm --filter web preview",
 		"dev": "pnpm --filter web dev",

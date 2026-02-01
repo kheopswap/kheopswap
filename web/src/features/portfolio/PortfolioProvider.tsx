@@ -1,5 +1,6 @@
+import { provideContext } from "@kheopswap/react-utils";
 import { PORTFOLIO_TOKEN_TYPES } from "@kheopswap/registry";
-import { logger, provideContext } from "@kheopswap/utils";
+import { logger } from "@kheopswap/utils";
 import { values } from "lodash-es";
 import { useMemo } from "react";
 import {

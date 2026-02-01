@@ -3,14 +3,14 @@ import {
 	parseTokenId,
 	type TokenId,
 } from "@kheopswap/registry";
+import type { LoadingStatus } from "@kheopswap/services";
 import { getBalance$ } from "@kheopswap/services/balances";
-import { getPoolsByChain$ } from "@kheopswap/services/pools";
+import {
+	type AssetConvertionPoolDef,
+	getPoolsByChain$,
+	type Pool,
+} from "@kheopswap/services/pools";
 import { getCachedObservable$, isBigInt } from "@kheopswap/utils";
-import type { LoadingStatus } from "node_modules/@kheopswap/services/src/common";
-import type {
-	AssetConvertionPoolDef,
-	Pool,
-} from "node_modules/@kheopswap/services/src/pools/types";
 import {
 	combineLatest,
 	map,

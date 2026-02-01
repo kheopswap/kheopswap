@@ -12,10 +12,11 @@ Kheopswap is a decentralized exchange for the Polkadot Asset Hub, built as a pnp
 packages/
 ├── constants/     # Environment flags, config (USE_CHOPSTICKS, APP_FEE_*)
 ├── papi/          # Polkadot API wrapper using polkadot-api library
+├── react-utils/   # React-specific utilities (provideContext)
 ├── registry/      # Chain definitions, token types, PAPI descriptors
 ├── services/      # Reactive data services (balances, tokens, pools)
 ├── settings/      # User preference management
-├── utils/         # Shared utilities (provideContext, getCachedObservable$)
+├── utils/         # Framework-agnostic utilities (getCachedObservable$)
 web/               # Vite + React frontend application
 ```
 
@@ -29,7 +30,7 @@ export const getBalance$ = (def: BalanceDef) =>
   getCachedObservable$("getBalance$", balanceId, () => new Observable(...));
 ```
 
-**Context Providers** - Use `provideContext` utility from `@kheopswap/utils` for feature state:
+**Context Providers** - Use `provideContext` utility from `@kheopswap/react-utils` for feature state:
 
 ```typescript
 // Creates [Provider, useHook] tuple from a hook

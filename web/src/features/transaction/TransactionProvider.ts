@@ -1,12 +1,8 @@
+import { notifyError, provideContext } from "@kheopswap/react-utils";
 import type { TokenId } from "@kheopswap/registry";
 import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
-import {
-	formatTxError,
-	logger,
-	notifyError,
-	provideContext,
-} from "@kheopswap/utils";
+import { formatTxError, logger } from "@kheopswap/utils";
 import { isNumber, uniq } from "lodash-es";
 import { useCallback, useMemo } from "react";
 import { toast } from "react-toastify";

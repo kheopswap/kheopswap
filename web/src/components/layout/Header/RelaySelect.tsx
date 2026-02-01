@@ -1,6 +1,7 @@
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
+import { notifyError } from "@kheopswap/react-utils";
 import { getChains, type RelayId } from "@kheopswap/registry";
-import { cn, notifyError } from "@kheopswap/utils";
+import { cn } from "@kheopswap/utils";
 import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
 import { useMatches, useNavigate } from "react-router";
 import { Drawer, DrawerContainer, Styles } from "src/components";

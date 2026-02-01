@@ -1,4 +1,5 @@
-import type { ChainId, TokenNative } from "@kheopswap/registry";
+import type { ChainId } from "../chains/types";
+import type { TokenNative } from "./types";
 
 /**
  * Native tokens are well-known constants that don't need to be fetched.

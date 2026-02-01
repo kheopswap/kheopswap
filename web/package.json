@@ -20,6 +20,7 @@
 		"@kheopskit/react": "^0.0.26",
 		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/papi": "workspace:*",
+		"@kheopswap/react-utils": "workspace:*",
 		"@kheopswap/registry": "workspace:*",
 		"@kheopswap/services": "workspace:*",
 		"@kheopswap/settings": "workspace:*",

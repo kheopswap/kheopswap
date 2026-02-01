@@ -1,9 +1,8 @@
 import type { Token } from "@kheopswap/registry";
 import type { Pool } from "@kheopswap/services/pools";
-import { isBigInt, logger } from "@kheopswap/utils";
+import { getAssetConvertPlancks, isBigInt, logger } from "@kheopswap/utils";
 import { useMemo } from "react";
 import { getPoolReserves } from "src/helpers/getPoolReserves";
-import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
 import { useBalances } from "../../../hooks/useBalances";
 
 export type PoolWithValuation = Pool & {

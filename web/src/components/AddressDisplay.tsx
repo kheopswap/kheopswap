@@ -1,6 +1,7 @@
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/24/solid";
-import { cn, logger, notifyError, shortenAddress } from "@kheopswap/utils";
+import { notifyError } from "@kheopswap/react-utils";
+import { cn, logger, shortenAddress } from "@kheopswap/utils";
 import { Polkicon } from "@polkadot-ui/react";
 import { TalismanOrb } from "@talismn/orb";
 import { type CSSProperties, type FC, useCallback, useMemo } from "react";

@@ -1,7 +1,26 @@
 import { createContext, type FC, type ReactNode, useContext } from "react";
 
-// This utility generates a context provider from a react hook passed as argument
-// Returns an array containing the provider and the consumer hook
+/**
+ * Utility to generate a React context provider from a hook.
+ *
+ * This creates feature-scoped state that is:
+ * - Isolated to a component subtree
+ * - Re-computed when the provider re-renders
+ * - Accessible via the returned hook
+ *
+ * Use this for feature-level state (forms, transactions).
+ * For global app state, use `@react-rxjs/core` `bind()` instead.
+ *
+ * @example
+ * ```ts
+ * const useSwapProvider = () => {
+ *   const [amount, setAmount] = useState("");
+ *   return { amount, setAmount };
+ * };
+ *
+ * export const [SwapProvider, useSwap] = provideContext(useSwapProvider);
+ * ```
+ */
 export const provideContext = <P, T>(useProviderContext: (props: P) => T) => {
 	// automatic typing based on our hook's return type
 	type ContextType = ReturnType<typeof useProviderContext>;
