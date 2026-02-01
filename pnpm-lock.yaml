@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@polkadot-api/descriptors':
+        specifier: file:.papi/descriptors
+        version: link:.papi/descriptors
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.11
@@ -14,9 +18,18 @@ importers:
       knip:
         specifier: ^5.80.2
         version: 5.80.2(@types/node@25.0.8)(typescript@5.9.3)
+      polkadot-api:
+        specifier: ^1.23.2
+        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2)
       simple-git-hooks:
         specifier: ^2.13.1
         version: 2.13.1
+
+  .papi/descriptors:
+    dependencies:
+      polkadot-api:
+        specifier: '>=1.21.0'
+        version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2)
 
   packages/constants:
     devDependencies:
@@ -70,8 +83,8 @@ importers:
   packages/registry:
     dependencies:
       '@polkadot-api/descriptors':
-        specifier: file:.papi/descriptors
-        version: file:packages/registry/.papi/descriptors(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))
+        specifier: workspace:*
+        version: link:../../.papi/descriptors
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
@@ -1123,11 +1136,6 @@ packages:
 
   '@polkadot-api/codegen@0.21.1':
     resolution: {integrity: sha512-dRH0v6rMfGg7qv+/ITd4bKg7q03ej9FuaxiBH0bWANB48AzBVPNoUHDd+bt2F5VCrWn7lVfYfTZZYR+GQRmJ4w==}
-
-  '@polkadot-api/descriptors@file:packages/registry/.papi/descriptors':
-    resolution: {directory: packages/registry/.papi/descriptors, type: directory}
-    peerDependencies:
-      polkadot-api: '>=1.21.0'
 
   '@polkadot-api/ink-contracts@0.4.5':
     resolution: {integrity: sha512-vTBf8Tj/ATC7WL25ffb9VFlzg1mOyB6IM8gy+ujozUyD7/lEL2lXTKcj5cbVXs3DozczxoOa/JdFK16iNRGVkQ==}
@@ -5334,10 +5342,6 @@ snapshots:
       '@polkadot-api/metadata-compatibility': 0.4.3
       '@polkadot-api/substrate-bindings': 0.16.6
       '@polkadot-api/utils': 0.2.0
-
-  '@polkadot-api/descriptors@file:packages/registry/.papi/descriptors(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))':
-    dependencies:
-      polkadot-api: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2)
 
   '@polkadot-api/ink-contracts@0.4.5':
     dependencies:

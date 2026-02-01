@@ -3,7 +3,8 @@
 	"workspaces": {
 		".": {
 			"entry": [],
-			"project": []
+			"project": [],
+			"ignoreDependencies": ["@polkadot-api/descriptors"]
 		},
 		"packages/constants": {
 			"project": ["src/**/*.ts"]
