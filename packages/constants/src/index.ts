@@ -4,6 +4,13 @@ export const DEV = env.DEV;
 export const DEV_IGNORE_STORAGE = env.VITE_DEV_IGNORE_STORAGE;
 
 export const APP_KEY = "kheopswap"; // TODO do something about the one in utils
+
+/**
+ * Increment this version when deploying changes that require localStorage to be cleared.
+ * When the app loads, it checks this version against the stored version.
+ * If they differ, localStorage is cleared to prevent issues with stale data.
+ */
+export const STORAGE_VERSION = 1;
 export const APP_FEE_ADDRESS =
 	"5FfAKNMrDZWBQ3zcRj8UfszfG7EFutCK6kUgNqJ7NFhNMCTV";
 export const APP_FEE_PERCENT = 0.3;

@@ -3,11 +3,8 @@ import "./index.css";
 
 import "@fontsource-variable/lexend-deca";
 
-// Handle URL query parameters BEFORE any other imports that might use settings
-// This must run synchronously before React mounts to prevent connections with wrong settings
-import { applyUrlSettings } from "./util/applyUrlSettings";
-
-applyUrlSettings();
+// Run startup tasks BEFORE any other imports that might use localStorage or settings
+import "./util/startup";
 
 import { KheopskitProvider } from "@kheopskit/react";
 import { DEV } from "@kheopswap/constants";
