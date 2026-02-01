@@ -6,7 +6,6 @@
 		".": "./src/index.ts"
 	},
 	"devDependencies": {
-		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/typescript-config": "workspace:*",
 		"@kheopswap/utils": "workspace:*",
 		"typescript": "^5.9.3",

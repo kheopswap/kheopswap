@@ -12,7 +12,6 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/registry": "workspace:*",
 		"@kheopswap/settings": "workspace:*",
 		"@kheopswap/utils": "workspace:*",

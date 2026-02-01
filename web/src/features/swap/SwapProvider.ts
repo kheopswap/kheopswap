@@ -1,4 +1,3 @@
-import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "@kheopswap/constants";
 import { getTokenId, parseTokenId, type TokenId } from "@kheopswap/registry";
 import { setSetting } from "@kheopswap/settings";
 import {
@@ -31,6 +30,7 @@ import {
 } from "src/hooks";
 import { useRelayChains } from "src/state";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
+import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "./constants";
 import type { SwapFormInputs } from "./schema";
 import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";

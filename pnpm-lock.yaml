@@ -31,23 +31,8 @@ importers:
         specifier: '>=1.21.0'
         version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2)
 
-  packages/constants:
-    devDependencies:
-      '@kheopswap/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vite:
-        specifier: ^7.3.1
-        version: 7.3.1(@types/node@25.0.8)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2)
-
   packages/papi:
     dependencies:
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@kheopswap/registry':
         specifier: workspace:*
         version: link:../registry
@@ -92,9 +77,6 @@ importers:
         specifier: ^1.23.2
         version: 1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2)
     devDependencies:
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@kheopswap/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -110,9 +92,6 @@ importers:
 
   packages/services:
     dependencies:
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@kheopswap/papi':
         specifier: workspace:*
         version: link:../papi
@@ -174,9 +153,6 @@ importers:
 
   packages/utils:
     dependencies:
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../constants
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -241,9 +217,6 @@ importers:
       '@kheopskit/react':
         specifier: ^0.0.26
         version: 0.0.26(@kheopskit/core@0.0.22(@types/react@19.2.8)(bufferutil@4.1.0)(polkadot-api@1.23.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.3)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.3))(utf-8-validate@5.0.10)(zod@3.25.76))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../packages/constants
       '@kheopswap/papi':
         specifier: workspace:*
         version: link:../packages/papi

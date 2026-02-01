@@ -1,7 +1,6 @@
-import { DEV } from "@kheopswap/constants";
 import { interval } from "rxjs";
 
-const isDevMode = DEV;
+const isDevMode = false;
 const printCumulativeTimers = false;
 
 const NO_OP = () => {};

@@ -1,4 +1,3 @@
-import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import {
 	type ChainId,
 	type Descriptors,
@@ -56,7 +55,7 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 	waitReady = true,
 ): Promise<Papi> => {
-	const lightClients = getSetting("lightClients") && !USE_CHOPSTICKS;
+	const lightClients = getSetting("lightClients");
 
 	const api = await getCachedPromise("getApi", `${id}-${lightClients}`, () =>
 		getApiInner(id, lightClients),

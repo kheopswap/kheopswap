@@ -1,8 +1,8 @@
-import {
-	POOLS_CACHE_DURATION,
-	STORAGE_QUERY_TIMEOUT,
-} from "@kheopswap/constants";
 import { getApi } from "@kheopswap/papi";
+
+const STORAGE_QUERY_TIMEOUT = 30_000;
+const POOLS_CACHE_DURATION = 300_000;
+
 import type { TokenIdsPair } from "@kheopswap/registry";
 import {
 	type Chain,

@@ -1,4 +1,3 @@
-import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
 import { getLocalStorageKey, logger } from "@kheopswap/utils";
 import { BehaviorSubject, debounceTime } from "rxjs";
 import type { Pool, PoolStorage } from "./types";
@@ -29,8 +28,6 @@ const poolFromStorage = (pool: PoolStorage): Pool => {
 
 const loadPools = (): Pool[] => {
 	try {
-		if (DEV_IGNORE_STORAGE) return [];
-
 		const strPools = localStorage.getItem(STORAGE_KEY);
 		if (!strPools) return [];
 

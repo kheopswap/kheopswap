@@ -1,7 +1,3 @@
-import {
-	STORAGE_QUERY_TIMEOUT,
-	TOKENS_CACHE_DURATION,
-} from "@kheopswap/constants";
 import { getApi } from "@kheopswap/papi";
 import {
 	type Chain,
@@ -18,6 +14,9 @@ import { distinctUntilChanged, filter } from "rxjs";
 import { pollChainStatus } from "../pollChainStatus";
 import { updateTokensStore } from "./store";
 import { tokensByChainSubscriptions$ } from "./subscriptions";
+
+const STORAGE_QUERY_TIMEOUT = 30_000;
+const TOKENS_CACHE_DURATION = 300_000;
 
 const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 	pollChainStatus("tokensByChainStatuses", TOKENS_CACHE_DURATION);

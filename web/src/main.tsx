@@ -4,7 +4,6 @@ import "./index.css";
 import "@fontsource-variable/lexend-deca";
 
 import { KheopskitProvider } from "@kheopskit/react";
-import { DEV } from "@kheopswap/constants";
 import { Subscribe } from "@react-rxjs/core";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -43,4 +42,4 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 	</React.StrictMode>,
 );
 
-if (DEV) import("./devImports");
+if (import.meta.env.DEV) import("./devImports");

@@ -1,4 +1,3 @@
-import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
 import {
 	type ChainId,
 	getChains,
@@ -36,10 +35,9 @@ const STORAGE_KEY = getLocalStorageKey("tokens::v4");
 const loadTokens = (): Dictionary<StorageToken> => {
 	try {
 		const strTokens = localStorage.getItem(STORAGE_KEY);
-		const tokensList: Token[] =
-			strTokens && !DEV_IGNORE_STORAGE
-				? safeParse(strTokens)
-				: KNOWN_TOKENS_LIST;
+		const tokensList: Token[] = strTokens
+			? safeParse(strTokens)
+			: KNOWN_TOKENS_LIST;
 
 		const tokensMap = keyBy(tokensList, "id");
 

@@ -1,4 +1,3 @@
-import { DEV } from "@kheopswap/constants";
 import { cn } from "@kheopswap/utils";
 import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useRouteError } from "react-router";
@@ -168,7 +167,7 @@ export const ErrorBoundaryPage = () => {
 					Home
 				</button>
 				<ReportIssueButton error={error} />
-				{DEV && (
+				{import.meta.env.DEV && (
 					<button
 						type="button"
 						className="mt-8 rounded-sm bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"

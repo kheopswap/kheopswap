@@ -1,0 +1,3 @@
+export const APP_FEE_ADDRESS =
+	"5FfAKNMrDZWBQ3zcRj8UfszfG7EFutCK6kUgNqJ7NFhNMCTV";
+export const APP_FEE_PERCENT = 0.3;
