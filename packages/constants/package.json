@@ -1,0 +1,13 @@
+{
+	"name": "@kheopswap/constants",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {},
+	"devDependencies": {
+		"@kheopswap/typescript-config": "workspace:*",
+		"typescript": "^5.9.3"
+	}
+}
