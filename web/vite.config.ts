@@ -24,7 +24,7 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		exclude: ["../packages/papi/.papi"],
+		exclude: ["../.papi"],
 	},
 	define: {
 		"process.env": {}, // workaround WalletConnect provider bug

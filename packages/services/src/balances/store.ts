@@ -1,4 +1,3 @@
-import { DEV_IGNORE_STORAGE } from "@kheopswap/constants";
 import {
 	getLocalStorageKey,
 	logger,
@@ -18,8 +17,6 @@ const STORAGE_KEY = getLocalStorageKey("balances::v3");
 
 const load = (): Dictionary<StoredBalance> => {
 	try {
-		if (DEV_IGNORE_STORAGE) return {};
-
 		const strPools = localStorage.getItem(STORAGE_KEY);
 		const pools: StoredBalance[] = strPools ? safeParse(strPools) : [];
 		return keyBy(pools, getBalanceId);

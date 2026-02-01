@@ -10,7 +10,6 @@ Kheopswap is a decentralized exchange for the Polkadot Asset Hub, built as a pnp
 
 ```
 packages/
-├── constants/     # Environment flags, config (USE_CHOPSTICKS, APP_FEE_*)
 ├── papi/          # Polkadot API wrapper using polkadot-api library
 ├── registry/      # Chain definitions, token types, PAPI descriptors
 ├── services/      # Reactive data services (balances, tokens, pools)
@@ -62,8 +61,6 @@ const api = await getApi(chainId); // waitReady=true by default
 ```bash
 pnpm install                 # Install dependencies (uses corepack)
 pnpm dev                     # Dev with production RPCs
-pnpm dev:chopsticks          # Dev with local Chopsticks sandbox (orange header)
-pnpm chopsticks              # Launch local chain forks (separate terminal)
 pnpm check                   # Biome lint + format (auto-fix)
 pnpm papi:update             # Update PAPI chain metadata
 pnpm typecheck               # TypeScript check (web package)
@@ -87,8 +84,6 @@ const tokenId = getTokenId({ chainId, type, onChainId });
 const { chainId, type, onChainId } = parseTokenId(tokenId);
 ```
 
-Chain configurations differ for prod vs Chopsticks - see `chains.prod.json` / `chains.chopsticks.json`.
-
 ## Feature Development
 
 Features follow structure: `features/{name}/` with Provider, Form, components
@@ -96,12 +91,6 @@ Features follow structure: `features/{name}/` with Provider, Form, components
 - Entry point typically exports from `index.ts`
 - Providers manage form state + derived calculations
 - Use existing hooks from `web/src/hooks/` (useBalance, useToken, usePoolReserves, etc.)
-
-## Testing Environment
-
-Chopsticks provides a sandboxed Asset Hub at `ws://localhost:3421`.
-
-`USE_CHOPSTICKS` constant toggles chain config and disables light clients.
 
 ## Before Completing Any Task
 

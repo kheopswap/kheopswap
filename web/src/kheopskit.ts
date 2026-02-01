@@ -1,6 +1,7 @@
 import type { KheopskitConfig } from "@kheopskit/core";
-import { WALLET_CONNECT_PROJECT_ID } from "@kheopswap/constants";
 import { defineChain } from "@reown/appkit/networks";
+
+const WALLET_CONNECT_PROJECT_ID = "67b8f4b678ad8d5d9dc3d564e4057dbb";
 
 // Define Polkadot networks for WalletConnect using defineChain
 const polkadot = defineChain({
