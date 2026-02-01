@@ -1,0 +1,4 @@
+{
+	"extends": "@kheopswap/typescript-config/vite.json",
+	"include": ["src"]
+}

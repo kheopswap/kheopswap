@@ -1,4 +1,4 @@
-import { provideContext } from "@kheopswap/utils";
+import { provideContext } from "@kheopswap/react-utils";
 import type { SS58String } from "polkadot-api";
 import { useCallback, useMemo, useState } from "react";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";

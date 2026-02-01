@@ -3,7 +3,7 @@ import {
 	getTokenId,
 	type TokenId,
 } from "@kheopswap/registry";
-import { getCachedObservable$ } from "@kheopswap/utils";
+import { getAssetConvertPlancks, getCachedObservable$ } from "@kheopswap/utils";
 import {
 	combineLatest,
 	map,
@@ -12,7 +12,6 @@ import {
 	shareReplay,
 	throttleTime,
 } from "rxjs";
-import { getAssetConvertPlancks } from "src/util";
 import { getPoolReserves$ } from "./pools";
 
 type AssetConvertInput = {

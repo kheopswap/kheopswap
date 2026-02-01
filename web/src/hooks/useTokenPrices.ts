@@ -1,12 +1,11 @@
-import { useMemo } from "react";
-
-import { useObservable } from "react-rx";
+import { bind } from "@react-rxjs/core";
 import { getTokenPrices$ } from "src/state/prices";
 
 const DEFAULT_VALUE = { data: [], isLoading: true };
 
-export const useTokenPrices = () => {
-	const tokenPrices$ = useMemo(() => getTokenPrices$(), []);
+// For non-parameterized observables, bind() at module level with default value
+const [useTokenPricesInternal] = bind(getTokenPrices$(), DEFAULT_VALUE);
 
-	return useObservable(tokenPrices$, DEFAULT_VALUE);
+export const useTokenPrices = () => {
+	return useTokenPricesInternal();
 };

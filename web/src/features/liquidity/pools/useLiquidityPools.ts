@@ -3,7 +3,7 @@ import type {
 	TokenForeignAsset,
 	TokenNative,
 } from "@kheopswap/registry";
-import { uniq } from "lodash";
+import { uniq } from "lodash-es";
 import { useMemo } from "react";
 import {
 	useNativeToken,

@@ -3,14 +3,14 @@ import {
 	parseTokenId,
 	type TokenId,
 } from "@kheopswap/registry";
+import type { LoadingStatus } from "@kheopswap/services";
 import { getBalance$ } from "@kheopswap/services/balances";
-import { getPoolsByChain$ } from "@kheopswap/services/pools";
+import {
+	type AssetConvertionPoolDef,
+	getPoolsByChain$,
+	type Pool,
+} from "@kheopswap/services/pools";
 import { getCachedObservable$, isBigInt } from "@kheopswap/utils";
-import type { LoadingStatus } from "node_modules/@kheopswap/services/src/common";
-import type {
-	AssetConvertionPoolDef,
-	Pool,
-} from "node_modules/@kheopswap/services/src/pools/types";
 import {
 	combineLatest,
 	map,
@@ -20,8 +20,10 @@ import {
 	switchMap,
 } from "rxjs";
 
+// Only consider "loading" as loading, not "stale"
+// "stale" means we have data but it might be old, not that we're fetching
 const getIsLoading = (...loadingStatuses: LoadingStatus[]) =>
-	loadingStatuses.some((status) => status !== "loaded");
+	loadingStatuses.some((status) => status === "loading");
 
 const getPool$ = (
 	tokenId1: TokenId,
@@ -112,6 +114,7 @@ export const getPoolReserves$ = (
 			return combineLatest([getPool$(tokenId1, tokenId2)]).pipe(
 				switchMap(([{ pool, status: statusPool }]) => {
 					const isLoading = getIsLoading(statusPool);
+					// If no pool exists, return isLoading based on pool status
 					if (!pool)
 						return of({
 							isLoading,

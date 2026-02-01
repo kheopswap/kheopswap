@@ -1,16 +1,34 @@
-import type { TokenType } from "@kheopswap/registry";
-import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import type { Token, TokenType } from "@kheopswap/registry";
+import { bind } from "@react-rxjs/core";
 import { getAllTokens$ } from "src/state";
+import type { LoadingState } from "src/types";
 
 type UseAllTokensProps = {
 	types?: TokenType[];
 };
 
-const DEFAULT_VALUE = { isLoading: true, data: {} };
+type UseAllTokensResult = LoadingState<Record<string, Token>>;
 
-export const useAllTokens = ({ types }: UseAllTokensProps) => {
-	const allTokens$ = useMemo(() => getAllTokens$(types), [types]);
+const DEFAULT_VALUE: UseAllTokensResult = { isLoading: true, data: {} };
 
-	return useObservable(allTokens$, DEFAULT_VALUE);
+// Parse types from serialized key - getCachedObservable$ inside getAllTokens$ handles the actual caching
+const parseTypesKey = (
+	typesKey: string | undefined,
+): TokenType[] | undefined => {
+	if (!typesKey) return undefined;
+	return typesKey.split(",") as TokenType[];
+};
+
+// bind() only receives the serialized key - observable caching handled by getCachedObservable$
+const [useAllTokensInternal] = bind(
+	(typesKey: string | undefined) => getAllTokens$(parseTypesKey(typesKey)),
+	DEFAULT_VALUE,
+);
+
+export const useAllTokens = ({
+	types,
+}: UseAllTokensProps): UseAllTokensResult => {
+	// Serialize types for stable caching key
+	const typesKey = types?.join(",");
+	return useAllTokensInternal(typesKey);
 };

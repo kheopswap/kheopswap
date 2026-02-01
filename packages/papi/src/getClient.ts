@@ -7,6 +7,7 @@ import { getChainSpec, hasChainSpec } from "./getChainSpec";
 import { getScChainProvider } from "./getScChainProvider";
 import { getSmChainProvider } from "./getSmChainProvider";
 import { isScAvailableScProvider } from "./isScAvailable";
+import { getCachedMetadata, setCachedMetadata } from "./metadataCache";
 
 type ClientOptions = {
 	lightClients: boolean;
@@ -32,8 +33,17 @@ export const getClient = (
 const getAssetHubClient = async (chain: Chain, options: ClientOptions) => {
 	const { id: chainId, relay: relayId } = chain;
 
+	// Metadata cache options to speed up client initialization
+	const metadataCacheOptions = {
+		getMetadata: getCachedMetadata,
+		setMetadata: setCachedMetadata,
+	};
+
 	if (!options.lightClients || !hasChainSpec(chainId) || !hasChainSpec(relayId))
-		return createClient(withPolkadotSdkCompat(getWsProvider(chain.wsUrl)));
+		return createClient(
+			withPolkadotSdkCompat(getWsProvider(chain.wsUrl)),
+			metadataCacheOptions,
+		);
 
 	const [relayChainSpec, paraChainSpec] = await Promise.all([
 		getChainSpec(relayId),
@@ -48,6 +58,7 @@ const getAssetHubClient = async (chain: Chain, options: ClientOptions) => {
 				chainSpec: paraChainSpec,
 				relayChainId: relayId,
 			}),
+			metadataCacheOptions,
 		);
 
 	return createClient(
@@ -55,5 +66,6 @@ const getAssetHubClient = async (chain: Chain, options: ClientOptions) => {
 			{ chainId: chain.id, chainSpec: paraChainSpec },
 			{ chainId: relayId, chainSpec: relayChainSpec },
 		),
+		metadataCacheOptions,
 	);
 };

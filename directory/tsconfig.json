@@ -1,0 +1,12 @@
+{
+	"extends": "@kheopswap/typescript-config/base.json",
+	"compilerOptions": {
+		"lib": ["ES2022"],
+		"types": ["node"],
+		"jsx": "react-jsx",
+		"noEmit": true,
+		"rootDir": "src",
+		"outDir": "dist"
+	},
+	"include": ["src/**/*.ts"]
+}

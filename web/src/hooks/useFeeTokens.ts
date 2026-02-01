@@ -1,9 +1,8 @@
 import type { ChainId, Token } from "@kheopswap/registry";
 import { getTokensByChain$ } from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
-import { type Dictionary, isEqual, values } from "lodash";
-import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { bind } from "@react-rxjs/core";
+import { isEqual, values } from "lodash-es";
 import {
 	distinctUntilChanged,
 	map,
@@ -12,35 +11,18 @@ import {
 	shareReplay,
 	switchMap,
 } from "rxjs";
+import type { LoadingState } from "src/types";
 
 type UseFeeTokensProps = {
 	chainId: ChainId | null | undefined;
 	address: string | null;
 };
 
-type UseFeeTokensResult = {
-	isLoading: boolean;
-	data: Token[] | undefined;
-};
+type UseFeeTokensResult = LoadingState<Token[] | undefined>;
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: UseFeeTokensResult = {
 	isLoading: true,
-	data: undefined,
-};
-
-export const useFeeTokens = ({
-	chainId,
-	address,
-}: UseFeeTokensProps): UseFeeTokensResult => {
-	const feeTokens$ = useMemo(
-		() =>
-			getFeeTokens$(chainId, address).pipe(
-				map((tokens) => ({ isLoading: false, data: tokens })),
-			),
-		[chainId, address],
-	);
-
-	return useObservable(feeTokens$, DEFAULT_VALUES);
+	data: [],
 };
 
 const getFeeTokens$ = (
@@ -58,7 +40,7 @@ const getFeeTokens$ = (
 			const sub = getTokensByChain$(chainId)
 				.pipe(
 					map((tokensByChainState) => tokensByChainState.tokens ?? {}),
-					distinctUntilChanged<Dictionary<Token>>(isEqual),
+					distinctUntilChanged<Record<string, Token>>(isEqual),
 					switchMap((tokens) => {
 						return of(values(tokens).filter((token) => token.isSufficient));
 					}),
@@ -72,4 +54,20 @@ const getFeeTokens$ = (
 			};
 		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
 	);
+};
+
+// bind() with factory function for parameterized observable
+const [useFeeTokensInternal] = bind(
+	(chainId: ChainId | null | undefined, address: string | null) =>
+		getFeeTokens$(chainId, address).pipe(
+			map((tokens) => ({ isLoading: false, data: tokens })),
+		),
+	DEFAULT_VALUES,
+);
+
+export const useFeeTokens = ({
+	chainId,
+	address,
+}: UseFeeTokensProps): UseFeeTokensResult => {
+	return useFeeTokensInternal(chainId, address);
 };

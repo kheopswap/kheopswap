@@ -1,10 +1,8 @@
 import type { Token } from "@kheopswap/registry";
 import type { Pool } from "@kheopswap/services/pools";
-import { isBigInt, logger } from "@kheopswap/utils";
-import type { Dictionary } from "lodash";
+import { getAssetConvertPlancks, isBigInt, logger } from "@kheopswap/utils";
 import { useMemo } from "react";
 import { getPoolReserves } from "src/helpers/getPoolReserves";
-import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
 import { useBalances } from "../../../hooks/useBalances";
 
 export type PoolWithValuation = Pool & {
@@ -13,7 +11,7 @@ export type PoolWithValuation = Pool & {
 
 type UsePoolsWithValuationProps = {
 	pools: Pool[] | null | undefined;
-	tokens: Dictionary<Token> | null | undefined;
+	tokens: Record<string, Token> | null | undefined;
 	nativeToken: Token | null | undefined;
 	stableToken: Token | null | undefined;
 };
@@ -37,8 +35,10 @@ export const usePoolsWithValuation = ({
 		[pools],
 	);
 
+	// Use poll mode for pool reserves display - informational
 	const { data: allReservesBalances, isLoading } = useBalances({
 		balanceDefs: poolsBalanceDefs,
+		mode: "poll",
 	});
 
 	const reservesNativeToStable = useMemo(

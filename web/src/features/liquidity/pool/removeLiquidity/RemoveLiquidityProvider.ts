@@ -1,6 +1,7 @@
 import { getApi } from "@kheopswap/papi";
+import { provideContext } from "@kheopswap/react-utils";
 import { getXcmV5MultilocationFromTokenId } from "@kheopswap/registry";
-import { provideContext, safeQueryKeyPart } from "@kheopswap/utils";
+import { safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";

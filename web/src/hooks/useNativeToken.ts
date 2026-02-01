@@ -1,6 +1,9 @@
-import type { Chain, TokenNative } from "@kheopswap/registry";
+import {
+	type Chain,
+	getNativeToken,
+	type TokenNative,
+} from "@kheopswap/registry";
 import { useMemo } from "react";
-import { getNativeToken } from "src/util";
 
 type UseNativeTokenProps<T extends Chain | null | undefined> = {
 	chain: T;

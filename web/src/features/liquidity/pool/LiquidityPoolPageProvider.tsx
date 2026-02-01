@@ -1,4 +1,4 @@
-import { provideContext } from "@kheopswap/utils";
+import { provideContext } from "@kheopswap/react-utils";
 import { useMemo } from "react";
 import { useParams } from "react-router";
 import {

@@ -1,7 +1,7 @@
 import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
-import { type Dictionary, values } from "lodash";
+import { values } from "lodash-es";
 import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
 import { Drawer } from "src/components/Drawer";
 import { DrawerContainer } from "src/components/DrawerContainer";
@@ -67,17 +67,19 @@ const TokenButton = forwardRef<
 								pulse={balances.isLoadingTokenPlancks}
 							/>
 						</div>
-						<div className="text-sm">
-							<Tokens
-								token={stableToken}
-								plancks={balances.stablePlancks ?? 0n}
-								className={cn(
-									!isBigInt(balances.stablePlancks) && "invisible",
-									token.id === stableToken.id && "invisible",
-								)}
-								pulse={balances.isLoadingStablePlancks}
-							/>
-						</div>
+						{stableToken && (
+							<div className="text-sm">
+								<Tokens
+									token={stableToken}
+									plancks={balances.stablePlancks ?? 0n}
+									className={cn(
+										!isBigInt(balances.stablePlancks) && "invisible",
+										token.id === stableToken.id && "invisible",
+									)}
+									pulse={balances.isLoadingStablePlancks}
+								/>
+							</div>
+						)}
 					</div>
 				)
 			) : (
@@ -115,7 +117,7 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 
 const TokenSelectDrawerContent: FC<{
 	tokenId?: TokenId | null;
-	tokens?: Dictionary<Token>;
+	tokens?: Record<string, Token>;
 	accounts?: PolkadotAccount[] | string[];
 	isLoading?: boolean;
 	onChange: (tokenId: TokenId) => void;
@@ -131,9 +133,11 @@ const TokenSelectDrawerContent: FC<{
 
 	const tokens = useMemo(() => values(tokensMap ?? {}), [tokensMap]);
 
+	// Use poll mode for token picker - doesn't need real-time updates
 	const { data: balances } = useBalancesByTokenSummary({
 		tokens,
 		accounts,
+		mode: "poll",
 	});
 
 	const sortedTokens = useMemo(
@@ -192,7 +196,7 @@ const TokenSelectDrawerContent: FC<{
 export const TokenSelectDrawer: FC<{
 	isOpen?: boolean;
 	tokenId?: TokenId | null;
-	tokens?: Dictionary<Token>;
+	tokens?: Record<string, Token>;
 	accounts?: PolkadotAccount[] | string[];
 	isLoading?: boolean;
 	title?: string;

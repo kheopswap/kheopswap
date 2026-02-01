@@ -28,10 +28,18 @@ export const LiquidityPoolBalances: FC<{
 		plancks: reserve2,
 	});
 	const valuationPlancks = useMemo(() => {
-		if (!price1 || !price2 || !stableToken || !pool) return null;
+		// Allow valuation if we have at least one price (for pools where one side has 0 reserves)
+		if (!stableToken || !pool) return null;
+		// If both prices are missing, we can't calculate
+		if (price1 === undefined && price2 === undefined) return null;
+
 		const total =
-			tokensToPlancks(price1, stableToken.decimals) +
-			tokensToPlancks(price2, stableToken.decimals);
+			tokensToPlancks(price1 ?? 0, stableToken.decimals) +
+			tokensToPlancks(price2 ?? 0, stableToken.decimals);
+
+		// Don't show 0 valuation if we couldn't calculate either price
+		if (total === 0n && (price1 === undefined || price2 === undefined))
+			return null;
 
 		if (display === "positions")
 			return pool.valuation === null

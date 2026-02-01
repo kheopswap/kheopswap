@@ -1,2 +1,3 @@
+export * from "./onchain";
 export * from "./service";
-export type { Pool } from "./types";
+export type { AssetConvertionPoolDef, Pool } from "./types";

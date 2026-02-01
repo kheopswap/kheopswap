@@ -1,12 +1,12 @@
+import { provideContext } from "@kheopswap/react-utils";
 import { type TokenId, TRANSFERABLE_TOKEN_TYPES } from "@kheopswap/registry";
 import {
 	getAddressFromAccountField,
 	isNumber,
 	plancksToTokens,
-	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
@@ -94,7 +94,7 @@ const useTransferProvider = () => {
 	);
 
 	const token = useMemo(
-		() => tokens[formData.tokenId] ?? null,
+		() => (formData.tokenId ? (tokens[formData.tokenId] ?? null) : null),
 		[formData.tokenId, tokens],
 	);
 	const tokenChain = useTokenChain({ tokenId: formData.tokenId as TokenId });

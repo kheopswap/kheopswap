@@ -36,7 +36,7 @@ export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 		(feeTokenId: TokenId) => {
 			if (!key) return;
 			setFeeTokensSettings((prev) => {
-				const next = { ...prev };
+				const next = { ...(prev ?? {}) };
 				next[key] = feeTokenId;
 				return next;
 			});
@@ -54,7 +54,7 @@ export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 	const nativeToken = useNativeToken({ chain });
 
 	const feeToken = useMemo(() => {
-		const feeTokenId = feeTokensSettings[key];
+		const feeTokenId = feeTokensSettings?.[key];
 		const token = feeTokens?.find(
 			(token) => token.id === feeTokenId && token.chainId === chainId,
 		);
