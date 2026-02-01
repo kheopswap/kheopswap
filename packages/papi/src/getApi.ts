@@ -70,9 +70,10 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 export const getApi$ = <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 ): Observable<Papi> => {
+	const lightClients = getSetting("lightClients") && !USE_CHOPSTICKS;
 	return getCachedObservable$(
 		"getApi$",
-		id,
+		`${id}-${lightClients}`,
 		() => from(getApi(id as ChainId)) as Observable<Papi>,
 	);
 };

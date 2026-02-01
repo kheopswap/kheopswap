@@ -60,6 +60,9 @@ export const ChainInitNotification = () => {
 			return;
 		}
 
+		const toastId = `init-${assetHub.id}`;
+		let cancelled = false;
+
 		// Use getSetting directly to get the current value synchronously
 		// This avoids issues with the hook returning undefined initially
 		const isLightClients = getSetting("lightClients");
@@ -71,22 +74,25 @@ export const ChainInitNotification = () => {
 			new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 500)),
 		]);
 
-		const toastId = `init-${assetHub.id}`;
-
 		promIsLoaded.then((isLoaded) => {
-			if (!isLoaded) {
+			if (cancelled) return;
+
+			if (!isLoaded && !toast.isActive(toastId)) {
 				toast.loading(
 					isLightClients ? <LightClientToastContent /> : <RpcToastContent />,
 					{ autoClose: false, toastId },
 				);
 
 				promRuntime.then(() => {
-					toast.dismiss(toastId);
+					if (!cancelled) {
+						toast.dismiss(toastId);
+					}
 				});
 			}
 		});
 
 		return () => {
+			cancelled = true;
 			toast.dismiss(toastId);
 		};
 		// lightClients is read via getSetting() inside the effect, but we keep
