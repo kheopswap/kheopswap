@@ -1,5 +1,5 @@
 import type { KheopskitConfig } from "@kheopskit/core";
-import { DEV, WALLET_CONNECT_PROJECT_ID } from "@kheopswap/constants";
+import { WALLET_CONNECT_PROJECT_ID } from "@kheopswap/constants";
 import { defineChain } from "@reown/appkit/networks";
 
 // Define Polkadot networks for WalletConnect using defineChain
@@ -46,5 +46,5 @@ export const kheopskitConfig: Partial<KheopskitConfig> = {
 				networks: [polkadot, polkadotAssetHub],
 			}
 		: undefined,
-	debug: DEV,
+	debug: false,
 };
