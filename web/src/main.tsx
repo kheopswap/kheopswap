@@ -1,6 +1,5 @@
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
-
 import "@fontsource-variable/lexend-deca";
 
 import { KheopskitProvider } from "@kheopskit/react";
