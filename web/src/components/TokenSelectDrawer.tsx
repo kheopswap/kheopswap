@@ -1,7 +1,7 @@
 import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
-import { type Dictionary, values } from "lodash";
+import { values } from "lodash-es";
 import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
 import { Drawer } from "src/components/Drawer";
 import { DrawerContainer } from "src/components/DrawerContainer";
@@ -115,7 +115,7 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 
 const TokenSelectDrawerContent: FC<{
 	tokenId?: TokenId | null;
-	tokens?: Dictionary<Token>;
+	tokens?: Record<string, Token>;
 	accounts?: PolkadotAccount[] | string[];
 	isLoading?: boolean;
 	onChange: (tokenId: TokenId) => void;
@@ -192,7 +192,7 @@ const TokenSelectDrawerContent: FC<{
 export const TokenSelectDrawer: FC<{
 	isOpen?: boolean;
 	tokenId?: TokenId | null;
-	tokens?: Dictionary<Token>;
+	tokens?: Record<string, Token>;
 	accounts?: PolkadotAccount[] | string[];
 	isLoading?: boolean;
 	title?: string;

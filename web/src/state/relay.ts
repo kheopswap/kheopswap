@@ -1,7 +1,7 @@
 import { type ChainAssetHub, getChains } from "@kheopswap/registry";
 import { getTokenById$ } from "@kheopswap/services/tokens";
 import { bind } from "@react-rxjs/core";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import {
 	distinctUntilChanged,
 	distinctUntilKeyChanged,

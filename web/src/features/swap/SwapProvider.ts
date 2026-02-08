@@ -8,7 +8,7 @@ import {
 	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
-import { isEqual, keyBy, values } from "lodash";
+import { isEqual, keyBy, values } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {

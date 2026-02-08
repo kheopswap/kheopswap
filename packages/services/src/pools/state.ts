@@ -1,6 +1,6 @@
 import type { ChainId } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import { groupBy } from "lodash";
+import { groupBy } from "lodash-es";
 import { combineLatest, map, shareReplay } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { poolsStore$ } from "./store";

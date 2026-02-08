@@ -1,7 +1,7 @@
 import type { PolkadotAccount, Wallet } from "@kheopskit/core";
 import type { Token } from "@kheopswap/registry";
 import { cn, isBigInt, isValidAddress, shortenAddress } from "@kheopswap/utils";
-import { fromPairs } from "lodash";
+import { fromPairs } from "lodash-es";
 import { type FC, useCallback, useMemo, useState } from "react";
 import { useBalancesWithStables, useToken, useWallets } from "src/hooks";
 import { useRelayChains } from "src/state";

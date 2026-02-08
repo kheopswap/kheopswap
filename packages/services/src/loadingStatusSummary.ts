@@ -1,4 +1,4 @@
-import { isEqual, values } from "lodash";
+import { isEqual, values } from "lodash-es";
 import { combineLatest, distinctUntilChanged, map, throttleTime } from "rxjs";
 
 import { balanceStatuses$ } from "./balances/watchers";

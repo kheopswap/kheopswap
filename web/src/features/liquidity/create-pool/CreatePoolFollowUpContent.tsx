@@ -1,6 +1,6 @@
 import { refreshPools } from "@kheopswap/services/pools";
 import { cn, type TxEvents } from "@kheopswap/utils";
-import { isNumber } from "lodash";
+import { isNumber } from "lodash-es";
 import { type FC, useEffect, useMemo } from "react";
 import { useRelayChains } from "src/state";
 import type { TransactionRecord } from "src/state/transactions";

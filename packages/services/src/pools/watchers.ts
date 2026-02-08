@@ -11,7 +11,7 @@ import {
 	getTokenIdFromXcmV5Multilocation,
 } from "@kheopswap/registry";
 import { logger, sleep, throwAfter } from "@kheopswap/utils";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { distinctUntilChanged, filter } from "rxjs";
 import { pollChainStatus } from "../pollChainStatus";
 import { poolsStore$ } from "./store";

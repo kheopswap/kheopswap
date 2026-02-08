@@ -1,5 +1,5 @@
 import { firstThenDebounceTime } from "@kheopswap/utils";
-import { type Dictionary, isEqual, uniq, values } from "lodash";
+import { isEqual, uniq, values } from "lodash-es";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import type { BalanceId } from "./types";
 
@@ -7,7 +7,7 @@ import type { BalanceId } from "./types";
 const allBalanceSubscriptions$ = new BehaviorSubject<
 	// key = subscripption id
 	// value = BalanceId
-	Dictionary<string>
+	Record<string, string>
 >({});
 
 // Unique active subscriptions (1 per token+address)

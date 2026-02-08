@@ -1,5 +1,5 @@
 import { logger } from "@kheopswap/utils";
-import { type Dictionary, fromPairs, keys, uniq } from "lodash";
+import { fromPairs, keys, uniq } from "lodash-es";
 import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { balancesStore$ } from "./store";
@@ -9,9 +9,9 @@ import { balanceStatuses$ } from "./watchers";
 
 const combineState = (
 	balanceIds: BalanceId[],
-	statuses: Dictionary<LoadingStatus>,
-	balances: Dictionary<StoredBalance>,
-): Dictionary<BalanceState> => {
+	statuses: Record<string, LoadingStatus>,
+	balances: Record<string, StoredBalance>,
+): Record<string, BalanceState> => {
 	const stop = logger.cumulativeTimer("balances.combineState");
 
 	try {
@@ -26,7 +26,7 @@ const combineState = (
 
 				return [balanceId, { status, balance }];
 			}),
-		) as Dictionary<BalanceState>;
+		) as Record<string, BalanceState>;
 	} catch (err) {
 		logger.error("Failed to merge balances state", { err });
 		return {};

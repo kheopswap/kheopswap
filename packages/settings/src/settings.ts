@@ -1,5 +1,5 @@
 import { getLocalStorageKey, safeParse, safeStringify } from "@kheopswap/utils";
-import { isEqual, merge } from "lodash";
+import { isEqual, merge } from "lodash-es";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 
 export type Settings = {
