@@ -14,7 +14,7 @@ import {
 	safeParse,
 	safeStringify,
 } from "@kheopswap/utils";
-import { type Dictionary, entries, isEqual, keyBy, values } from "lodash";
+import { entries, isEqual, keyBy, values } from "lodash-es";
 import {
 	BehaviorSubject,
 	debounceTime,
@@ -33,7 +33,7 @@ localStorage.removeItem(getLocalStorageKey("tokens::v3"));
 
 const STORAGE_KEY = getLocalStorageKey("tokens::v4");
 
-const loadTokens = (): Dictionary<StorageToken> => {
+const loadTokens = (): Record<string, StorageToken> => {
 	try {
 		const strTokens = localStorage.getItem(STORAGE_KEY);
 		const tokensList: Token[] =
@@ -58,7 +58,7 @@ const loadTokens = (): Dictionary<StorageToken> => {
 	}
 };
 
-const saveTokens = (tokens: Dictionary<StorageToken>) => {
+const saveTokens = (tokens: Record<string, StorageToken>) => {
 	try {
 		localStorage.setItem(STORAGE_KEY, safeStringify(values(tokens)));
 	} catch (err) {
@@ -67,7 +67,7 @@ const saveTokens = (tokens: Dictionary<StorageToken>) => {
 };
 
 const stop = logger.timer("initializing tokens store");
-const tokensStoreData$ = new BehaviorSubject<Dictionary<StorageToken>>(
+const tokensStoreData$ = new BehaviorSubject<Record<string, StorageToken>>(
 	loadTokens(),
 );
 stop();
@@ -91,7 +91,7 @@ export const updateTokensStore = (
 
 	// Track if anything changed
 	let hasChanges = false;
-	const newValue: Dictionary<StorageToken> = {};
+	const newValue: Record<string, StorageToken> = {};
 
 	// Keep tokens from other chains/types, check for removals
 	for (const [id, token] of entries(current)) {
@@ -135,12 +135,12 @@ const getAvailableChainIds = () => {
 };
 
 // Cache the last consolidated result to avoid recomputation when nothing changed
-let lastStorageTokensMap: Dictionary<StorageToken> | null = null;
-let lastConsolidatedTokens: Dictionary<Token> | null = null;
+let lastStorageTokensMap: Record<string, StorageToken> | null = null;
+let lastConsolidatedTokens: Record<string, Token> | null = null;
 
 const consolidateTokens = (
-	storageTokensMap: Dictionary<StorageToken>,
-): Dictionary<Token> => {
+	storageTokensMap: Record<string, StorageToken>,
+): Record<string, Token> => {
 	// Return cached result if input hasn't changed
 	if (lastStorageTokensMap === storageTokensMap && lastConsolidatedTokens) {
 		return lastConsolidatedTokens;
@@ -149,7 +149,7 @@ const consolidateTokens = (
 	const stop = logger.timer("consolidate tokensStore$");
 	const availableChainIds = getAvailableChainIds();
 
-	const tokensMap: Dictionary<Token> = {};
+	const tokensMap: Record<string, Token> = {};
 	for (const [id, token] of entries(storageTokensMap)) {
 		if (availableChainIds.includes(token.chainId)) {
 			tokensMap[id] = token as Token;

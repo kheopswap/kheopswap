@@ -1,6 +1,6 @@
 import type { TokenId, TokenInfo } from "@kheopswap/registry";
 import { logger } from "@kheopswap/utils";
-import { type Dictionary, fromPairs, keys } from "lodash";
+import { fromPairs, keys } from "lodash-es";
 import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 import type { LoadingStatus } from "../common";
 import { tokenInfosStore$ } from "./store";
@@ -10,9 +10,9 @@ import { tokenInfosStatuses$ } from "./watchers";
 
 const combineState = (
 	tokenIds: TokenId[],
-	statuses: Dictionary<LoadingStatus>,
-	tokenInfos: Dictionary<TokenInfo>,
-): Dictionary<TokenInfoState> => {
+	statuses: Record<string, LoadingStatus>,
+	tokenInfos: Record<string, TokenInfo>,
+): Record<string, TokenInfoState> => {
 	const stop = logger.cumulativeTimer("tokenInfos.combineState");
 
 	try {

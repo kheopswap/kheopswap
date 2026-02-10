@@ -4,7 +4,6 @@ import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { maskitoNumberOptionsGenerator } from "@maskito/kit";
 import { useMaskito } from "@maskito/react";
-import type { Dictionary } from "lodash";
 import {
 	type DetailedHTMLProps,
 	type FC,
@@ -55,7 +54,7 @@ export type TokenAmountPickerProps = Partial<
 export const TokenAmountPicker: FC<{
 	inputProps: TokenAmountPickerProps;
 	tokenId: TokenId | null | undefined;
-	tokens?: Dictionary<Token> | undefined;
+	tokens?: Record<string, Token> | undefined;
 	accounts?: PolkadotAccount[] | string[];
 	plancks: bigint | null | undefined;
 	isLoading: boolean;

@@ -4,7 +4,7 @@ import {
 	getTokensByChains$,
 } from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
-import { keyBy, values } from "lodash";
+import { keyBy, values } from "lodash-es";
 import { map, shareReplay, switchMap } from "rxjs";
 import { relayChains$ } from "./relay";
 

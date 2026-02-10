@@ -1,5 +1,5 @@
 import type { TokenId } from "@kheopswap/registry";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { distinctUntilChanged, map, tap } from "rxjs";
 import { tokenInfosState$ } from "./state";
 import {

@@ -1,7 +1,7 @@
 import type { ChainId } from "@kheopswap/registry";
 import { getChainIdFromTokenId, type TokenId } from "@kheopswap/registry";
 import { getCachedObservable$ } from "@kheopswap/utils";
-import { type Dictionary, fromPairs, isEqual } from "lodash";
+import { fromPairs, isEqual } from "lodash-es";
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -50,7 +50,7 @@ export const getTokensByChain$ = (chainId: ChainId) => {
 
 export const getTokensByChains$ = (
 	chainIds: ChainId[],
-): Observable<Dictionary<ChainTokensState | undefined>> =>
+): Observable<Record<string, ChainTokensState | undefined>> =>
 	combineLatest(chainIds.map(getTokensByChain$)).pipe(
 		map((arChainTokens) =>
 			fromPairs(
@@ -90,7 +90,7 @@ export const getTokenById$ = (tokenId: TokenId) => {
 
 export const getTokensById$ = (
 	tokenIds: TokenId[],
-): Observable<Dictionary<TokenState | undefined>> =>
+): Observable<Record<string, TokenState | undefined>> =>
 	combineLatest(tokenIds.map(getTokenById$)).pipe(
 		map((arTokens) =>
 			fromPairs(tokenIds.map((tokenId, index) => [tokenId, arTokens[index]])),

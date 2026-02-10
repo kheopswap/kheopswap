@@ -1,7 +1,7 @@
 import type { ChainId, Token } from "@kheopswap/registry";
 import { getTokensByChain$ } from "@kheopswap/services/tokens";
 import { getCachedObservable$ } from "@kheopswap/utils";
-import { type Dictionary, isEqual, values } from "lodash";
+import { isEqual, values } from "lodash-es";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import {
@@ -58,7 +58,7 @@ const getFeeTokens$ = (
 			const sub = getTokensByChain$(chainId)
 				.pipe(
 					map((tokensByChainState) => tokensByChainState.tokens ?? {}),
-					distinctUntilChanged<Dictionary<Token>>(isEqual),
+					distinctUntilChanged<Record<string, Token>>(isEqual),
 					switchMap((tokens) => {
 						return of(values(tokens).filter((token) => token.isSufficient));
 					}),

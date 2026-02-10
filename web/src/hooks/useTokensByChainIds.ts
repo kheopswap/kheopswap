@@ -3,7 +3,7 @@ import {
 	type ChainTokensState,
 	getTokensByChains$,
 } from "@kheopswap/services/tokens";
-import { type Dictionary, values } from "lodash";
+import { values } from "lodash-es";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
@@ -14,7 +14,7 @@ type UseTokensByChainIdsProps = {
 
 type UseTokensByChainIdsResult = {
 	isLoading: boolean;
-	data: Dictionary<Token>;
+	data: Record<string, Token>;
 };
 
 export const useTokensByChainIds = ({
