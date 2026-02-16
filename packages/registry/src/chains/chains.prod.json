@@ -25,8 +25,6 @@
 			"wss://sys.ibp.network/statemine",
 			"wss://kusama-asset-hub-rpc.polkadot.io",
 			"wss://sys.dotters.network/statemine",
-			"wss://asset-hub-kusama-rpc.dwellir.com",
-			"wss://statemine-rpc-tn.dwellir.com",
 			"wss://rpc-asset-hub-kusama.luckyfriday.io",
 			"wss://ksm-rpc.stakeworld.io/assethub"
 		],
@@ -45,8 +43,6 @@
 		"wsUrl": [
 			"wss://sys.ibp.network/westmint",
 			"wss://sys.dotters.network/westmint",
-			"wss://asset-hub-westend-rpc.dwellir.com",
-			"wss://westmint-rpc-tn.dwellir.com",
 			"wss://westend-asset-hub-rpc.polkadot.io"
 		],
 		"evmChainId": 420420421,
@@ -62,7 +58,6 @@
 		"id": "pasah",
 		"name": "Paseo Asset Hub",
 		"wsUrl": [
-			"wss://asset-hub-paseo-rpc.dwellir.com",
 			"wss://sys.ibp.network/asset-hub-paseo",
 			"wss://asset-hub-paseo.dotters.network",
 			"wss://pas-rpc.stakeworld.io/assethub",
