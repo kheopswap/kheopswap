@@ -36,6 +36,7 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 					origin,
 					call.decodedCall,
 					resultXcmsVersion,
+					{ at: "best" },
 				)) as DryRun<ChainId>;
 
 				logger.debug("[dry run]", {
