@@ -203,19 +203,14 @@ const AccountSelectDrawerContent: FC<{
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
 	const { accounts, wallets, connect, disconnect } = useAllWallets();
 
-	const polkadotAccounts = useMemo(
-		() => accounts.filter((account) => account.platform === "polkadot"),
-		[accounts],
-	);
-
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
 	const summaryInputs = useMemo(
 		() => ({
 			tokens: token ? [token] : [],
-			accounts: polkadotAccounts,
+			accounts,
 		}),
-		[polkadotAccounts, token],
+		[accounts, token],
 	);
 	const { data: balances, isLoading } = useBalancesWithStables(summaryInputs);
 

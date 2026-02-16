@@ -1,9 +1,6 @@
-import type {
-	KahWhitelistEntry,
-	PolkadotWhitelistEntry,
-} from "@kheopswap/registry";
+import type { KahWhitelistEntry, PahWhitelistEntry } from "@kheopswap/registry";
 
-type WhiteListEntry = KahWhitelistEntry | PolkadotWhitelistEntry;
+type WhiteListEntry = KahWhitelistEntry | PahWhitelistEntry;
 
 export const whitelist: WhiteListEntry[] = [
 	"tx.AssetConversion.swap_exact_tokens_for_tokens",

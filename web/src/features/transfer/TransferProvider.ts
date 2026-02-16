@@ -121,14 +121,11 @@ const useTransferProvider = () => {
 	);
 	const tokenChain = useTokenChain({ tokenId: formData.tokenId as TokenId });
 
-	const {
-		resolvedAddress,
-		isEvmRecipient,
-		isLoading: isResolvingRecipient,
-	} = useResolvedRecipient({
-		address: recipient,
-		chainId: tokenChain?.id,
-	});
+	const { resolvedAddress, isLoading: isResolvingRecipient } =
+		useResolvedRecipient({
+			address: recipient,
+			chainId: tokenChain?.id,
+		});
 
 	const nativeToken = useNativeToken({ chain: tokenChain });
 
@@ -285,7 +282,6 @@ const useTransferProvider = () => {
 		sender,
 		recipient,
 		resolvedAddress,
-		isEvmRecipient,
 		token,
 		plancks,
 		balanceRecipient,
