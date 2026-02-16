@@ -26,22 +26,32 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 
 			try {
 				const api = await getApi(chainId);
+				const resultXcmsVersion =
+					(await api.query.PolkadotXcm.SafeXcmVersion.getValue()) ?? 4;
 
 				const origin = Enum("system", Enum("Signed", from));
 
 				// @ts-expect-error
-				const dryRun = await api.apis.DryRunApi.dry_run_call(
+				const dryRun = (await api.apis.DryRunApi.dry_run_call(
 					origin,
 					call.decodedCall,
-					// TODO put this back	{ at: "best", signal },
-				);
+					resultXcmsVersion,
+				)) as DryRun<ChainId>;
 
-				logger.debug("[dry run]", { dryRun, call: call.decodedCall });
+				logger.debug("[dry run]", {
+					dryRun,
+					call: call.decodedCall,
+					resultXcmsVersion,
+					chainId: api.chainId,
+				});
 
 				return dryRun;
 			} catch (err) {
-				logger.error("[dry run]", { err, call: call.decodedCall });
-				throw err;
+				logger.warn("[dry run] unavailable", {
+					err,
+					call: call.decodedCall,
+				});
+				return null;
 			}
 		},
 		retry: 1,
