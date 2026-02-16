@@ -1,10 +1,10 @@
 import { getAddressFromAccountField } from "@kheopswap/utils";
 import { useMemo } from "react";
 
-import { useWallets } from "./useWallets";
+import { useAllWallets } from "./useWallets";
 
 export const useWalletAccount = ({ id }: { id: string | null | undefined }) => {
-	const { accounts } = useWallets();
+	const { accounts } = useAllWallets();
 
 	return useMemo(() => {
 		if (!id) return null;

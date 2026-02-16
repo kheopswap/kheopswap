@@ -6,9 +6,10 @@ import {
 	logger,
 	notifyError,
 	provideContext,
+	sleep,
 } from "@kheopswap/utils";
 import { isNumber, uniq } from "lodash-es";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { catchError, of, shareReplay } from "rxjs";
 import {
@@ -21,6 +22,7 @@ import {
 	useFeeToken,
 	useNativeToken,
 	useNonce,
+	useResolvedSubstrateAddress,
 	useWalletAccount,
 } from "src/hooks";
 import {
@@ -32,6 +34,7 @@ import {
 } from "src/state/transactions";
 import type { AnyTransaction } from "src/types";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
+import { type Address, toHex } from "viem";
 
 export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
@@ -51,6 +54,32 @@ type UseTransactionProviderProps = {
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
 const DEFAULT_FOLLOW_UP_DATA = {};
+const RUNTIME_PALLETS_ADDR: Address =
+	"0x6d6f646c70792f70616464720000000000000000";
+
+const waitForEthereumTransactionReceipt = async (
+	client: {
+		request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+	},
+	txHash: `0x${string}`,
+) => {
+	for (let attempt = 0; attempt < 120; attempt++) {
+		const receipt = (await client.request({
+			method: "eth_getTransactionReceipt",
+			params: [txHash],
+		})) as {
+			status?: `0x${string}`;
+			blockHash?: `0x${string}`;
+			blockNumber?: `0x${string}`;
+			transactionIndex?: `0x${string}`;
+		} | null;
+
+		if (receipt) return receipt;
+		await sleep(1000);
+	}
+
+	throw new Error("Timed out while waiting for Ethereum transaction receipt");
+};
 
 const useTransactionProvider = ({
 	call,
@@ -64,15 +93,123 @@ const useTransactionProvider = ({
 	transactionTitle = "Transaction",
 }: UseTransactionProviderProps) => {
 	const account = useWalletAccount({ id: signer });
+	const [isSwitchingEthereumNetwork, setIsSwitchingEthereumNetwork] =
+		useState(false);
+	const [connectedEvmChainId, setConnectedEvmChainId] = useState<
+		number | undefined
+	>(undefined);
 
 	const chain = useMemo(
 		() => (chainId ? getChainById(chainId) : null),
 		[chainId],
 	);
+
+	const isEthereumAccount = account?.platform === "ethereum";
+	const {
+		resolvedAddress: signerSubstrateAddress,
+		isLoading: isResolvingSigner,
+	} = useResolvedSubstrateAddress({
+		address: account?.address,
+		chainId,
+	});
+
+	const targetEvmChainId = useMemo(
+		() => chain?.evmChainId,
+		[chain?.evmChainId],
+	);
+
+	const refreshConnectedEvmChainId = useCallback(async () => {
+		if (account?.platform !== "ethereum") {
+			setConnectedEvmChainId(undefined);
+			return;
+		}
+
+		try {
+			const chainId = await account.client.getChainId();
+			setConnectedEvmChainId(chainId);
+		} catch {
+			setConnectedEvmChainId(undefined);
+		}
+	}, [account]);
+
+	useEffect(() => {
+		if (account?.platform !== "ethereum") {
+			setConnectedEvmChainId(undefined);
+			return;
+		}
+
+		let isCancelled = false;
+
+		void refreshConnectedEvmChainId().then(() => {
+			if (isCancelled) return;
+		});
+
+		return () => {
+			isCancelled = true;
+		};
+	}, [account, refreshConnectedEvmChainId]);
+
+	const isEthereumNetworkMismatch = useMemo(() => {
+		if (!isEthereumAccount) return false;
+		if (!targetEvmChainId || !connectedEvmChainId) return false;
+		return targetEvmChainId !== connectedEvmChainId;
+	}, [connectedEvmChainId, isEthereumAccount, targetEvmChainId]);
 	const nativeToken = useNativeToken({ chain });
 
+	const onSwitchEthereumNetwork = useCallback(async () => {
+		if (!isEthereumAccount || !targetEvmChainId) return;
+
+		try {
+			setIsSwitchingEthereumNetwork(true);
+			await account.client.switchChain({ id: targetEvmChainId });
+			await refreshConnectedEvmChainId();
+		} catch {
+			try {
+				await (
+					account.client as unknown as {
+						request: (...args: unknown[]) => Promise<unknown>;
+					}
+				).request({
+					method: "wallet_addEthereumChain",
+					params: [
+						{
+							chainId: `0x${targetEvmChainId.toString(16)}`,
+							chainName: chain?.name ?? `Chain ${targetEvmChainId}`,
+							rpcUrls: chain?.evmRpcUrl ?? [],
+							blockExplorerUrls: chain?.evmBlockExplorer
+								? [chain.evmBlockExplorer]
+								: [],
+							nativeCurrency: {
+								name: nativeToken?.symbol ?? "Native Token",
+								symbol: nativeToken?.symbol ?? "UNIT",
+								decimals: Number(nativeToken?.decimals ?? 12),
+							},
+						},
+					],
+				});
+
+				await account.client.switchChain({ id: targetEvmChainId });
+				await refreshConnectedEvmChainId();
+			} catch (error) {
+				notifyError(error);
+			}
+		} finally {
+			setIsSwitchingEthereumNetwork(false);
+		}
+	}, [
+		account,
+		chain?.evmBlockExplorer,
+		chain?.evmRpcUrl,
+		chain?.name,
+		isEthereumAccount,
+		nativeToken?.decimals,
+		nativeToken?.symbol,
+		refreshConnectedEvmChainId,
+		targetEvmChainId,
+	]);
+
 	const { data: nonce } = useNonce({
-		account: account?.address,
+		account: signerSubstrateAddress,
 		chainId,
 	});
 
@@ -97,7 +234,7 @@ const useTransactionProvider = ({
 		isLoading: isLoadingFeeEstimateNative,
 		error: errorFeeEstimate,
 	} = useEstimateFee({
-		from: account?.address,
+		from: signerSubstrateAddress,
 		call: call ?? fakeCall,
 		options,
 	});
@@ -115,13 +252,92 @@ const useTransactionProvider = ({
 			tokenId: feeToken?.id,
 		});
 
-	const onSubmit = useCallback(() => {
+	const onSubmit = useCallback(async () => {
 		try {
 			logger.log("submit", { call });
 
-			if (!call || !account || !feeEstimate || !feeToken || !options) return;
+			if (!call || !account) return;
+
+			const txFeeToken = feeToken ?? nativeToken;
+			if (!txFeeToken) return;
 
 			const txId = crypto.randomUUID();
+
+			addTransaction({
+				id: txId,
+				createdAt: Date.now(),
+				status: "pending",
+				txEvents: [{ type: "pending" }],
+				account,
+				feeEstimate: feeEstimate ?? 0n,
+				feeToken: txFeeToken,
+				type: transactionType,
+				title: transactionTitle,
+				followUpData: followUpData as Record<string, unknown>,
+			});
+
+			openTransactionModal(txId);
+
+			if (account.platform === "ethereum") {
+				if (isEthereumNetworkMismatch) {
+					updateTransactionStatus(txId, "failed");
+					notifyError(
+						`Wrong network selected. Expected chain ID ${targetEvmChainId}.`,
+					);
+					return;
+				}
+
+				const encodedCallData = await call.getEncodedData();
+				const txData = toHex(encodedCallData.asBytes());
+				const walletClient = account.client as unknown as {
+					request: (args: {
+						method: string;
+						params?: unknown[];
+					}) => Promise<unknown>;
+				};
+
+				const txHash = (await walletClient.request({
+					method: "eth_sendTransaction",
+					params: [
+						{
+							from: account.address,
+							to: RUNTIME_PALLETS_ADDR,
+							data: txData,
+							value: "0x0",
+						},
+					],
+				})) as `0x${string}`;
+
+				appendTxEvent(txId, { type: "broadcasted", txHash });
+
+				const receipt = await waitForEthereumTransactionReceipt(
+					walletClient,
+					txHash,
+				);
+
+				if (receipt.status === "0x1" || receipt.status === "0x01") {
+					appendTxEvent(txId, {
+						type: "finalized",
+						txHash,
+						ok: true,
+						events: [],
+						block: {
+							hash: receipt.blockHash ?? txHash,
+							number: Number.parseInt(receipt.blockNumber ?? "0x0", 16),
+							index: Number.parseInt(receipt.transactionIndex ?? "0x0", 16),
+						},
+					});
+				} else {
+					appendTxEvent(txId, {
+						type: "error",
+						error: new Error("Ethereum transaction failed"),
+					});
+				}
+				return;
+			}
+
+			if (!feeEstimate || !options) return;
+
 			let isSubmitted = false;
 
 			const obsTxEvents = call
@@ -131,29 +347,11 @@ const useTransactionProvider = ({
 					shareReplay(1),
 				);
 
-			// Add transaction to global store
-			addTransaction({
-				id: txId,
-				createdAt: Date.now(),
-				status: "pending",
-				txEvents: [{ type: "pending" }],
-				account,
-				feeEstimate,
-				feeToken,
-				type: transactionType,
-				title: transactionTitle,
-				followUpData: followUpData as Record<string, unknown>,
-			});
-
-			// Open the modal for this transaction
-			openTransactionModal(txId);
-
 			const sub = obsTxEvents.subscribe((x) => {
 				logger.log("Transaction status update", x);
 
 				if (x.type === "broadcasted") isSubmitted = true;
 
-				// Append event to transaction store
 				if (x.type !== "error") {
 					appendTxEvent(txId, x);
 				}
@@ -161,7 +359,6 @@ const useTransactionProvider = ({
 				if (x.type === "finalized") sub.unsubscribe();
 
 				if (x.type === "error") {
-					// Handles errors such as user cancelling the transaction from the wallet
 					logger.error("Transaction error", x.error);
 					const errorMessage = x.error.error
 						? formatTxError(x.error.error)
@@ -176,15 +373,11 @@ const useTransactionProvider = ({
 							"It could be that the chain doesn't support CheckMetadataHash",
 						);
 
-					// if submitted let follow up display it
-					// if not, use standard error notification and dismiss transaction
 					if (!isSubmitted) {
 						if (errorText) toast(errorText, { type: "error" });
 						else notifyError(x.error);
-						// Update status to failed and dismiss (don't show modal for pre-submission errors)
 						updateTransactionStatus(txId, "failed");
 					} else {
-						// Transaction was submitted, show error in modal
 						appendTxEvent(txId, x);
 					}
 
@@ -200,7 +393,10 @@ const useTransactionProvider = ({
 		feeEstimate,
 		feeToken,
 		followUpData,
+		isEthereumNetworkMismatch,
+		nativeToken,
 		options,
+		targetEvmChainId,
 		transactionType,
 		transactionTitle,
 	]);
@@ -294,12 +490,13 @@ const useTransactionProvider = ({
 		error: errorDryRun,
 	} = useDryRun({
 		chainId,
-		from: account?.address,
+		from: signerSubstrateAddress,
 		call,
 	});
 
 	const isLoading = useMemo(() => {
 		return (
+			isResolvingSigner ||
 			isLoadingBalances ||
 			isLoadingExistentialDeposits ||
 			isLoadingFeeEstimate ||
@@ -307,6 +504,7 @@ const useTransactionProvider = ({
 			isLoadingDryRun
 		);
 	}, [
+		isResolvingSigner,
 		isLoadingBalances,
 		isLoadingExistentialDeposits,
 		isLoadingFeeEstimate,
@@ -315,6 +513,16 @@ const useTransactionProvider = ({
 	]);
 
 	const canSubmit = useMemo(() => {
+		if (account?.platform === "ethereum") {
+			return (
+				!!call &&
+				!!account &&
+				!isEthereumNetworkMismatch &&
+				!isSwitchingEthereumNetwork &&
+				!Object.keys(insufficientBalances).length
+			);
+		}
+
 		// if available and there is no specific fee asset, dryRun is the truth
 		if (!options?.asset && dryRun?.success)
 			return dryRun.value.execution_result.success;
@@ -338,6 +546,8 @@ const useTransactionProvider = ({
 		feeToken,
 		insufficientBalances,
 		isLoading,
+		isEthereumNetworkMismatch,
+		isSwitchingEthereumNetwork,
 		options,
 		dryRun,
 	]);
@@ -352,6 +562,11 @@ const useTransactionProvider = ({
 	return {
 		chainId,
 		account,
+		isEthereumNetworkMismatch,
+		targetEvmChainId,
+		connectedEvmChainId,
+		onSwitchEthereumNetwork,
+		isSwitchingEthereumNetwork,
 
 		feeToken,
 		feeTokens,

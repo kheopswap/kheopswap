@@ -59,7 +59,10 @@ export const SwapTokensEditor = () => {
 	const { accounts: allAccounts } = useWallets();
 	const account = useWalletAccount({ id: formData.from });
 	const tokenPickerAccounts = useMemo(
-		() => (account ? [account] : allAccounts),
+		() =>
+			(account
+				? [account.address]
+				: allAccounts.map((item) => item.address)) as string[],
 		[account, allAccounts],
 	);
 

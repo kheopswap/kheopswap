@@ -9,6 +9,9 @@
 			"wss://polkadot-asset-hub-rpc.polkadot.io",
 			"wss://dot-rpc.stakeworld.io/assethub"
 		],
+		"evmChainId": 420420419,
+		"evmRpcUrl": ["https://asset-hub-eth-rpc.polkadot.io"],
+		"evmBlockExplorer": "https://https://blockscout.polkadot.io/",
 		"relay": "polkadot",
 		"paraId": 1000,
 		"logo": "./img/chains/pah.svg",
@@ -27,6 +30,9 @@
 			"wss://rpc-asset-hub-kusama.luckyfriday.io",
 			"wss://ksm-rpc.stakeworld.io/assethub"
 		],
+		"evmChainId": 420420418,
+		"evmRpcUrl": ["https://kusama-asset-hub-eth-rpc.polkadot.io"],
+		"evmBlockExplorer": "https://blockscout-kusama-asset-hub.parity-chains-scw.parity.io/",
 		"relay": "kusama",
 		"paraId": 1000,
 		"logo": "./img/chains/kah.svg",
@@ -43,6 +49,9 @@
 			"wss://westmint-rpc-tn.dwellir.com",
 			"wss://westend-asset-hub-rpc.polkadot.io"
 		],
+		"evmChainId": 420420421,
+		"evmRpcUrl": ["https://westend-asset-hub-eth-rpc.polkadot.io"],
+		"evmBlockExplorer": "https://blockscout-asset-hub.parity-chains-scw.parity.io",
 		"relay": "westend",
 		"paraId": 1000,
 		"logo": "./img/chains/wah.svg",
@@ -59,6 +68,12 @@
 			"wss://pas-rpc.stakeworld.io/assethub",
 			"wss://sys.turboflakes.io/asset-hub-paseo"
 		],
+		"evmChainId": 420420417,
+		"evmRpcUrl": [
+			"https://eth-rpc-testnet.polkadot.io",
+			"https://services.polkadothub-rpc.com/testnet"
+		],
+		"evmBlockExplorer": "https://blockscout-testnet.polkadot.io/",
 		"relay": "paseo",
 		"paraId": 1000,
 		"logo": "./img/chains/pasah.svg",

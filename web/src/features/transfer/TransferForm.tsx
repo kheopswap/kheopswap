@@ -31,12 +31,22 @@ export const TransferForm = () => {
 		onMaxClick,
 	} = useTransfer();
 
-	const { canSubmit, onSubmit, insufficientBalances } = useTransaction();
+	const {
+		canSubmit,
+		onSubmit,
+		insufficientBalances,
+		isEthereumNetworkMismatch,
+		onSwitchEthereumNetwork,
+		isSwitchingEthereumNetwork,
+	} = useTransaction();
 
 	const { accounts: allAccounts } = useWallets();
 	const account = useWalletAccount({ id: formData.from });
 	const tokenPickerAccounts = useMemo(
-		() => (account ? [account] : allAccounts),
+		() =>
+			(account
+				? [account.address]
+				: allAccounts.map((item) => item.address)) as string[],
 		[account, allAccounts],
 	);
 
@@ -55,9 +65,13 @@ export const TransferForm = () => {
 		(e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			onSubmit();
+			if (isEthereumNetworkMismatch) {
+				void onSwitchEthereumNetwork();
+				return;
+			}
+			void onSubmit();
 		},
-		[onSubmit],
+		[isEthereumNetworkMismatch, onSubmit, onSwitchEthereumNetwork],
 	);
 
 	const handleAmountInput: FormEventHandler<HTMLInputElement> = useCallback(
@@ -118,8 +132,17 @@ export const TransferForm = () => {
 						onMaxClick={onMaxClick}
 					/>
 				</FormFieldContainer>
-				<MagicButton type="submit" disabled={!canSubmit}>
-					Transfer
+				<MagicButton
+					type="submit"
+					disabled={
+						isEthereumNetworkMismatch ? isSwitchingEthereumNetwork : !canSubmit
+					}
+				>
+					{isEthereumNetworkMismatch
+						? isSwitchingEthereumNetwork
+							? "Switching network..."
+							: "Switch network"
+						: "Transfer"}
 				</MagicButton>
 				<TransferSummary />
 			</div>
