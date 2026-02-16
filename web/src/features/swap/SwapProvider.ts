@@ -8,9 +8,9 @@ import {
 	provideContext,
 	tokensToPlancks,
 } from "@kheopswap/utils";
-import { isEqual, keyBy, values } from "lodash-es";
+import { keyBy, values } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 import {
 	useAssetConvertPlancks,
 	useBalance,
@@ -35,18 +35,38 @@ import type { SwapFormInputs } from "./schema";
 import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
+const getPersistedSwapDraft = (key: string): Partial<SwapFormInputs> => {
+	if (typeof window === "undefined") return {};
+
+	try {
+		const raw = window.sessionStorage.getItem(key);
+		if (!raw) return {};
+
+		const parsed = JSON.parse(raw) as unknown;
+		if (!parsed || typeof parsed !== "object") return {};
+
+		return parsed as Partial<SwapFormInputs>;
+	} catch {
+		return {};
+	}
+};
+
 const useFormData = () => {
 	const { assetHub } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
+	const storageKey = `swap-form-draft::${assetHub.relay}`;
 
 	const location = useLocation();
-	const navigate = useNavigate();
 
 	const [defaultAccountId, setDefaultAccountId] =
 		useSetting("defaultAccountId");
 
 	// account won't be available on first render
 	const account = useWalletAccount({ id: defaultAccountId });
+	const persistedDraft = useMemo(
+		() => getPersistedSwapDraft(storageKey),
+		[storageKey],
+	);
 
 	const defaultValues = useMemo<SwapFormInputs>(
 		() => ({
@@ -56,17 +76,12 @@ const useFormData = () => {
 			tokenIdOut: "",
 			amountIn: "",
 			...location.state,
+			...persistedDraft,
 		}),
-		[account?.id, nativeToken?.id, location.state],
+		[account?.id, nativeToken?.id, location.state, persistedDraft],
 	);
 
 	const [formData, setFormData] = useState<SwapFormInputs>(defaultValues);
-
-	useEffect(() => {
-		if (!isEqual(location.state, formData)) {
-			navigate(location, { state: formData, replace: true });
-		}
-	}, [formData, location, navigate]);
 
 	// account won't be available on first render
 	useEffect(() => {
@@ -77,6 +92,11 @@ const useFormData = () => {
 	useEffect(() => {
 		if (formData.from) setDefaultAccountId(formData.from);
 	}, [formData.from, setDefaultAccountId]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		window.sessionStorage.setItem(storageKey, JSON.stringify(formData));
+	}, [formData, storageKey]);
 
 	return [formData, setFormData] as const;
 };

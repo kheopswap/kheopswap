@@ -1,8 +1,8 @@
 import { USE_CHOPSTICKS } from "@kheopswap/constants";
 import { getChains, type RelayId } from "@kheopswap/registry";
 import { cn, notifyError } from "@kheopswap/utils";
-import { type ChangeEvent, type FC, useCallback, useMemo } from "react";
-import { useMatches, useNavigate } from "react-router";
+import { type ChangeEvent, type FC, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
 import { useOpenClose, useSetting } from "src/hooks";
@@ -37,11 +37,10 @@ const DrawerContent: FC<{
 	const [lightClient, setLightClient] = useSetting("lightClients");
 
 	const handleClick = useCallback(
-		(relayId: RelayId) => async () => {
+		(relayId: RelayId) => () => {
 			onChange(relayId);
-			onClose();
 		},
-		[onChange, onClose],
+		[onChange],
 	);
 
 	const handleSetLightClients = useCallback(
@@ -59,8 +58,7 @@ const DrawerContent: FC<{
 		[onClose, setLightClient],
 	);
 
-	// Get asset hubs (one per relay environment)
-	const assetHubs = useMemo(() => getChains(), []);
+	const assetHubs = getChains();
 
 	return (
 		<div className="flex flex-col items-start gap-4">
@@ -135,24 +133,29 @@ const DrawerContent: FC<{
 
 export const RelaySelect = () => {
 	const { assetHub, relayId } = useRelayChains();
+	const { pathname } = useLocation();
 	const navigate = useNavigate();
 	const { open, close, isOpen } = useOpenClose();
 
-	const matches = useMatches();
-
-	const handleChainSelect = useCallback(
+	const getRelayPath = useCallback(
 		(newRelayId: RelayId) => {
-			const last = matches[matches.length - 1];
-			if (last?.params?.relayId) {
-				const newPath = last.pathname.replace(
-					`/${last.params.relayId}`,
-					`/${newRelayId}`,
-				);
-				navigate(newPath);
-			} else navigate(`/${newRelayId}/swap`);
+			const segments = pathname.split("/").filter(Boolean);
+			if (segments[0] === relayId) {
+				segments[0] = newRelayId;
+				return `/${segments.join("/")}`;
+			} else {
+				return `/${newRelayId}/swap`;
+			}
+		},
+		[pathname, relayId],
+	);
+
+	const handleChangeRelay = useCallback(
+		(newRelayId: RelayId) => {
+			navigate(getRelayPath(newRelayId));
 			close();
 		},
-		[matches, navigate, close],
+		[navigate, getRelayPath, close],
 	);
 
 	return (
@@ -169,7 +172,7 @@ export const RelaySelect = () => {
 				<DrawerContainer title="Select network" onClose={close}>
 					<DrawerContent
 						relayId={relayId}
-						onChange={handleChainSelect}
+						onChange={handleChangeRelay}
 						onClose={close}
 					/>
 				</DrawerContainer>

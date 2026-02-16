@@ -103,6 +103,12 @@ Chopsticks provides a sandboxed Asset Hub at `ws://localhost:3421`.
 
 `USE_CHOPSTICKS` constant toggles chain config and disables light clients.
 
+## AI Agent Expectations
+
+- **DevTools MCP testing**: If a change does not require wallet signature, validate it with DevTools MCP. First verify DevTools MCP is running; if it is not available, ask the user to start it before proceeding with MCP-based validation.
+- **DevTools port**: This app can only be tested with DevTools MCP against `http://localhost:5173`. Only this port should ever be used.
+- **Code quality bar**: Always produce elegant, pristine, human-maintainable code. Split logic into appropriate sub-components, hooks, and files when it improves clarity, cohesion, and long-term maintainability.
+
 ## Before Completing Any Task
 
 Always run these commands to validate changes:
