@@ -1,4 +1,4 @@
-import type { PolkadotAccount, Wallet } from "@kheopskit/core";
+import type { Wallet, WalletAccount } from "@kheopskit/core";
 import type { Token } from "@kheopswap/registry";
 import {
 	cn,
@@ -8,7 +8,7 @@ import {
 } from "@kheopswap/utils";
 import { fromPairs } from "lodash-es";
 import { type FC, useCallback, useMemo, useState } from "react";
-import { useBalancesWithStables, useToken, useWallets } from "src/hooks";
+import { useAllWallets, useBalancesWithStables, useToken } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 import { AccountIcon } from "./AccountIcon";
@@ -19,6 +19,11 @@ import { Shimmer } from "./Shimmer";
 import { Styles } from "./styles";
 import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
+
+type SelectableAccount = WalletAccount;
+
+const getPlatformLabel = (platform: string) =>
+	platform === "ethereum" ? "Ethereum" : "Polkadot";
 
 const WalletButton: FC<{
 	wallet: Wallet;
@@ -37,7 +42,12 @@ const WalletButton: FC<{
 		<div className="size-8 shrink-0">
 			<WalletIcon walletId={wallet.id} className="size-8" />
 		</div>
-		<div className="grow text-left">{wallet.name}</div>
+		<div className="grow text-left">
+			{wallet.name}
+			<span className="ml-1 text-xs text-neutral-500">
+				({getPlatformLabel(wallet.platform)})
+			</span>
+		</div>
 		<div
 			className={cn(
 				"size-2 rounded-full",
@@ -48,7 +58,7 @@ const WalletButton: FC<{
 );
 
 const AccountButton: FC<{
-	account: PolkadotAccount;
+	account: SelectableAccount;
 	selected?: boolean;
 	disabled?: boolean;
 	balance?: BalanceWithStableSummary;
@@ -64,6 +74,11 @@ const AccountButton: FC<{
 	disabled,
 	onClick,
 }) => {
+	const accountName = useMemo(
+		() => ("name" in account ? account.name : undefined),
+		[account],
+	);
+
 	return (
 		<button
 			type="button"
@@ -79,7 +94,9 @@ const AccountButton: FC<{
 			<AccountIcon account={account} className="size-8" />
 			<div className="flex grow flex-col items-start justify-center overflow-hidden">
 				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
-					<div className="truncate">{account.name}</div>
+					<div className="truncate">
+						{accountName ?? shortenAddress(account.address)}
+					</div>
 					<div className="inline-block size-4 shrink-0">
 						<WalletIcon walletId={account.walletId} className="size-4" />
 					</div>
@@ -184,16 +201,21 @@ const AccountSelectDrawerContent: FC<{
 	onClose: () => void;
 	onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-	const { accounts, wallets, connect, disconnect } = useWallets();
+	const { accounts, wallets, connect, disconnect } = useAllWallets();
+
+	const polkadotAccounts = useMemo(
+		() => accounts.filter((account) => account.platform === "polkadot"),
+		[accounts],
+	);
 
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
 	const summaryInputs = useMemo(
 		() => ({
 			tokens: token ? [token] : [],
-			accounts,
+			accounts: polkadotAccounts,
 		}),
-		[accounts, token],
+		[polkadotAccounts, token],
 	);
 	const { data: balances, isLoading } = useBalancesWithStables(summaryInputs);
 
@@ -241,6 +263,8 @@ const AccountSelectDrawerContent: FC<{
 	const sortedAccounts = useMemo(() => {
 		return accounts.concat().sort((a1, a2) => {
 			const [b1, b2] = [a1, a2].map((a) => balanceByAccount[a.address]);
+			if (b1 && !b2) return -1;
+			if (!b1 && b2) return 1;
 			if (b1 && b2) {
 				if (b1.stablePlancks === b2.stablePlancks) return 0;
 				if (b1.stablePlancks === null) return 1;

@@ -1,22 +1,32 @@
-import type { PolkadotAccount } from "@kheopskit/core";
+import type { WalletAccount } from "@kheopskit/core";
 import { cn } from "@kheopswap/utils";
-import { Polkicon } from "@polkadot-ui/react";
 import { TalismanOrb } from "@talismn/orb";
 import type { FC } from "react";
+import { isHex } from "viem";
+import { EthereumIdenticon } from "./EthereumIdenticon";
+import { PolkadotIdenticon } from "./PolkadotIdenticon";
 
 export const AccountIcon: FC<{
-	account: PolkadotAccount;
+	account: WalletAccount;
 	className?: string;
 }> = ({ account, className }) => {
-	return account.walletId.includes("talisman") ? (
-		<TalismanOrb
-			seed={account.address}
-			className={cn("size-8 shrink-0", className)}
-		/>
-	) : (
-		<Polkicon
+	if (account.walletId.includes("talisman")) {
+		return <TalismanOrb seed={account.address} className={className} />;
+	}
+
+	if (isHex(account.address)) {
+		return (
+			<EthereumIdenticon
+				address={account.address}
+				className={cn("size-full", className)}
+			/>
+		);
+	}
+
+	return (
+		<PolkadotIdenticon
 			address={account.address}
-			className={cn("size-8 rounded-full", className)}
+			className={cn("size-full", className)}
 		/>
 	);
 };

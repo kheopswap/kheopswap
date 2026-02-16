@@ -31,8 +31,22 @@ const polkadotAssetHub = defineChain({
 	caipNetworkId: "polkadot:68d56f15f85d3136970ec16946040bc1",
 });
 
+const ethereum = defineChain({
+	id: "1",
+	name: "Ethereum",
+	nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+	rpcUrls: {
+		default: {
+			http: ["https://eth.llamarpc.com"],
+			webSocket: ["wss://ethereum-rpc.publicnode.com"],
+		},
+	},
+	chainNamespace: "eip155",
+	caipNetworkId: "eip155:1",
+});
+
 export const kheopskitConfig: Partial<KheopskitConfig> = {
-	platforms: ["polkadot"],
+	platforms: ["polkadot", "ethereum"],
 	autoReconnect: true,
 	walletConnect: WALLET_CONNECT_PROJECT_ID
 		? {
@@ -43,7 +57,7 @@ export const kheopskitConfig: Partial<KheopskitConfig> = {
 					url: window.location.origin,
 					icons: [`${window.location.origin}/img/tokens/KHEOPS.svg`],
 				},
-				networks: [polkadot, polkadotAssetHub],
+				networks: [ethereum, polkadot, polkadotAssetHub],
 			}
 		: undefined,
 	debug: false,

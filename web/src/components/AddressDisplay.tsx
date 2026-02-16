@@ -1,55 +1,34 @@
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/24/solid";
+import type { WalletAccount } from "@kheopskit/core";
 import { cn, logger, notifyError, shortenAddress } from "@kheopswap/utils";
-import { Polkicon } from "@polkadot-ui/react";
-import { TalismanOrb } from "@talismn/orb";
-import { type CSSProperties, type FC, useCallback, useMemo } from "react";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+import { type FC, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
-import { useWallets } from "src/hooks";
+import { useAllWallets } from "src/hooks";
 import { useCopyToClipboard } from "usehooks-ts";
 import { isAddress as isEvmAddress } from "viem";
+import { AccountIcon } from "./AccountIcon";
+import { EthereumIdenticon } from "./EthereumIdenticon";
+import { PolkadotIdenticon } from "./PolkadotIdenticon";
 import { Pulse } from "./Pulse";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
-const JAZZICON_PAPER_STYLES: CSSProperties = { width: "100%", height: "100%" };
-
-const JazzIcon: FC<{ address: string; className?: string }> = ({
-	address,
-	className,
-}) => {
-	const seed = useMemo(() => jsNumberForAddress(address), [address]);
-
-	return (
-		<div className={className}>
-			<Jazzicon seed={seed} paperStyles={JAZZICON_PAPER_STYLES} />
-		</div>
-	);
-};
-
-const AddressAvatar: FC<{ address: string; className?: string }> = ({
-	address,
-	className,
-}) => {
-	const { accounts } = useWallets();
-	const isTalisman = useMemo(
-		() =>
-			accounts.some(
-				(a) => a.address === address && a.walletId.includes("talisman"),
-			),
-		[accounts, address],
-	);
+const AddressAvatar: FC<{
+	address: string;
+	className?: string;
+	account?: WalletAccount;
+}> = ({ address, className, account }) => {
 	const isEvm = useMemo(
 		() => isEvmAddress(address, { strict: false }),
 		[address],
 	);
 
-	return isTalisman ? (
-		<TalismanOrb seed={address} className={className} />
+	return account ? (
+		<AccountIcon account={account} className={className} />
 	) : isEvm ? (
-		<JazzIcon address={address} className={className} />
+		<EthereumIdenticon address={address} className={className} />
 	) : (
-		<Polkicon address={address} className={className} />
+		<PolkadotIdenticon address={address} className={className} />
 	);
 };
 
@@ -60,12 +39,16 @@ export const AddressDisplay: FC<{
 	iconClassName?: string;
 	pulse?: boolean;
 }> = ({ address, url, pulse, className, iconClassName }) => {
-	const { accounts } = useWallets();
+	const { accounts } = useAllWallets();
 	const [, copyToClipboard] = useCopyToClipboard();
 
 	const account = useMemo(
 		() => accounts.find((a) => a.address === address),
 		[accounts, address],
+	);
+	const accountName = useMemo(
+		() => (account && "name" in account ? account.name : undefined),
+		[account],
 	);
 
 	const handleCopyClick = useCallback(async () => {
@@ -86,11 +69,12 @@ export const AddressDisplay: FC<{
 		>
 			<AddressAvatar
 				address={address}
+				account={account}
 				className={cn("size-[1.4em]", iconClassName)}
 			/>
 			<Tooltip>
 				<TooltipTrigger onClick={handleCopyClick}>
-					{account?.name || shortenAddress(address)}
+					{accountName || shortenAddress(address)}
 				</TooltipTrigger>
 				<TooltipContent>{address}</TooltipContent>
 			</Tooltip>

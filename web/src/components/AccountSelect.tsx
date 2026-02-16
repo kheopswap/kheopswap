@@ -1,4 +1,4 @@
-import type { PolkadotAccount } from "@kheopskit/core";
+import type { WalletAccount } from "@kheopskit/core";
 import type { TokenId } from "@kheopswap/registry";
 import {
 	cn,
@@ -7,27 +7,23 @@ import {
 	isValidAnyAddress,
 	shortenAddress,
 } from "@kheopswap/utils";
-import { Polkicon } from "@polkadot-ui/react";
 import { type FC, useCallback, useMemo } from "react";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { useOpenClose, useWallets } from "src/hooks";
+import { useAllWallets, useOpenClose } from "src/hooks";
 import { AccountIcon } from "./AccountIcon";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
+import { EthereumIdenticon } from "./EthereumIdenticon";
 import { ActionRightIcon } from "./icons";
+import { PolkadotIdenticon } from "./PolkadotIdenticon";
 import { Styles } from "./styles";
 import { WalletIcon } from "./WalletIcon";
 
-const JAZZICON_PAPER_STYLES = { width: "100%", height: "100%" };
+type SelectableAccount = WalletAccount;
 
 const AddressRow: FC<{ address: string; className?: string }> = ({
 	address,
 	className,
 }) => {
 	const isEvm = useMemo(() => isEthereumAddress(address), [address]);
-	const seed = useMemo(
-		() => (isEvm ? jsNumberForAddress(address) : 0),
-		[address, isEvm],
-	);
 
 	return (
 		<div
@@ -37,14 +33,9 @@ const AddressRow: FC<{ address: string; className?: string }> = ({
 			)}
 		>
 			{isEvm ? (
-				<div className="size-6 shrink-0 rounded-full">
-					<Jazzicon seed={seed} paperStyles={JAZZICON_PAPER_STYLES} />
-				</div>
+				<EthereumIdenticon address={address} className="size-6 shrink-0" />
 			) : (
-				<Polkicon
-					address={address}
-					className={cn("size-6 rounded-full", className)}
-				/>
+				<PolkadotIdenticon address={address} className="size-6 shrink-0" />
 			)}
 			<div className="flex grow items-center overflow-hidden">
 				<span className="truncate">
@@ -55,10 +46,15 @@ const AddressRow: FC<{ address: string; className?: string }> = ({
 	);
 };
 
-const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
+const AccountRow: FC<{ account: SelectableAccount; className?: string }> = ({
 	account,
 	className,
 }) => {
+	const accountName = useMemo(
+		() => ("name" in account ? account.name : undefined),
+		[account],
+	);
+
 	return (
 		<div
 			className={cn(
@@ -68,7 +64,9 @@ const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
 		>
 			<AccountIcon className="size-6" account={account} />
 			<div className="flex grow items-center overflow-hidden">
-				<span className="truncate">{account.name}</span>
+				<span className="truncate">
+					{accountName ?? shortenAddress(account.address)}
+				</span>
 				<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
 					<WalletIcon walletId={account.walletId} className="size-4" />
 				</span>
@@ -84,7 +82,7 @@ const AccountSelectButton: FC<{
 	ownedOnly?: boolean;
 	onClick?: () => void;
 }> = ({ id, idOrAddress, className, ownedOnly, onClick }) => {
-	const { accounts } = useWallets();
+	const { accounts } = useAllWallets();
 	const account = useMemo(
 		() => accounts.find((a) => a.id === idOrAddress),
 		[accounts, idOrAddress],
