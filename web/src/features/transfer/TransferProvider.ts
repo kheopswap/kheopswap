@@ -18,6 +18,7 @@ import {
 	useFeeToken,
 	useNativeToken,
 	useNonce,
+	useResolvedRecipient,
 	useSetting,
 	useTokenChain,
 	useWalletAccount,
@@ -120,6 +121,15 @@ const useTransferProvider = () => {
 	);
 	const tokenChain = useTokenChain({ tokenId: formData.tokenId as TokenId });
 
+	const {
+		resolvedAddress,
+		isEvmRecipient,
+		isLoading: isResolvingRecipient,
+	} = useResolvedRecipient({
+		address: recipient,
+		chainId: tokenChain?.id,
+	});
+
 	const nativeToken = useNativeToken({ chain: tokenChain });
 
 	const { feeToken } = useFeeToken({
@@ -159,13 +169,13 @@ const useTransferProvider = () => {
 	const { data: call } = useTransferExtrinsic({
 		tokenId: token?.id,
 		plancks,
-		recipient,
+		recipient: resolvedAddress,
 	});
 
 	const { data: fakeCall } = useTransferExtrinsic({
 		tokenId: token?.id,
 		plancks: edTokenIn ?? null,
-		recipient: recipient ?? sender,
+		recipient: resolvedAddress ?? sender,
 	});
 
 	const { data: nonce } = useNonce({
@@ -202,13 +212,13 @@ const useTransferProvider = () => {
 	);
 
 	const { data: balanceRecipient } = useBalance({
-		address: recipient,
+		address: resolvedAddress,
 		tokenId: token?.id,
 	});
 
 	const { data: checkCanAccountReceive, isLoading: isCheckingRecipient } =
 		useCanAccountReceive({
-			address: recipient,
+			address: resolvedAddress,
 			tokenId: token?.id,
 			plancks,
 		});
@@ -274,6 +284,8 @@ const useTransferProvider = () => {
 		isLoadingTokens,
 		sender,
 		recipient,
+		resolvedAddress,
+		isEvmRecipient,
 		token,
 		plancks,
 		balanceRecipient,
@@ -288,7 +300,10 @@ const useTransferProvider = () => {
 		onMaxClick,
 		onReset,
 
-		call: outputErrorMessage || isCheckingRecipient ? undefined : call,
+		call:
+			outputErrorMessage || isCheckingRecipient || isResolvingRecipient
+				? undefined
+				: call,
 		fakeCall,
 	};
 };

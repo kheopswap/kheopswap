@@ -20,7 +20,7 @@ export const TransferForm = () => {
 		sender,
 		token,
 		plancks,
-		recipient,
+		resolvedAddress,
 		balanceSender,
 		isLoadingBalanceSender,
 		outputErrorMessage,
@@ -89,8 +89,8 @@ export const TransferForm = () => {
 					id="to-account"
 					label="To"
 					topRight={
-						recipient &&
-						token && <Balance address={recipient} tokenId={token.id} />
+						resolvedAddress &&
+						token && <Balance address={resolvedAddress} tokenId={token.id} />
 					}
 				>
 					<AccountSelect

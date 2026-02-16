@@ -1,6 +1,11 @@
 import type { PolkadotAccount, Wallet } from "@kheopskit/core";
 import type { Token } from "@kheopswap/registry";
-import { cn, isBigInt, isValidAddress, shortenAddress } from "@kheopswap/utils";
+import {
+	cn,
+	isBigInt,
+	isValidAnyAddress,
+	shortenAddress,
+} from "@kheopswap/utils";
 import { fromPairs } from "lodash-es";
 import { type FC, useCallback, useMemo, useState } from "react";
 import { useBalancesWithStables, useToken, useWallets } from "src/hooks";
@@ -122,7 +127,10 @@ const AddressInput: FC<{
 }> = ({ address, onChange }) => {
 	const [localAddress, setLocalAddress] = useState(address);
 
-	const isValid = useMemo(() => isValidAddress(localAddress), [localAddress]);
+	const isValid = useMemo(
+		() => isValidAnyAddress(localAddress),
+		[localAddress],
+	);
 
 	const handleClick = useCallback(() => {
 		onChange(localAddress);
@@ -220,7 +228,7 @@ const AccountSelectDrawerContent: FC<{
 	);
 
 	const address = useMemo(() => {
-		return idOrAddress && isValidAddress(idOrAddress) ? idOrAddress : "";
+		return idOrAddress && isValidAnyAddress(idOrAddress) ? idOrAddress : "";
 	}, [idOrAddress]);
 
 	const handleClick = useCallback(

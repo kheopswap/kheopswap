@@ -1,0 +1,36 @@
+import { AccountId, type SS58String } from "polkadot-api";
+import { fromHex } from "polkadot-api/utils";
+import { isAddress } from "viem";
+import { isValidSs58Address } from "./isValidSs58Address";
+
+export { ss58ToEthereum } from "@polkadot-api/sdk-ink";
+
+const EVM_SUFFIX = new Uint8Array(12).fill(0xee);
+
+const accountIdCodec = AccountId();
+
+/**
+ * Check if a string is a valid EVM (Ethereum) address (0x-prefixed, 40 hex chars).
+ */
+export const isEthereumAddress = (address: string): address is `0x${string}` =>
+	isAddress(address);
+
+/**
+ * Check if a string is a valid address of any supported type (SS58 or EVM).
+ */
+export const isValidAnyAddress = (address: string): boolean =>
+	isValidSs58Address(address) || isEthereumAddress(address);
+
+/**
+ * Convert an EVM address to a Substrate SS58 address using the Revive pallet's
+ * fallback derivation: 20 bytes of the EVM address + 12 bytes of 0xEE.
+ */
+export const getSs58AddressFallback = (
+	evmAddress: `0x${string}`,
+): SS58String => {
+	const evmBytes = fromHex(evmAddress);
+	const publicKey = new Uint8Array(32);
+	publicKey.set(evmBytes, 0);
+	publicKey.set(EVM_SUFFIX, 20);
+	return accountIdCodec.dec(publicKey);
+};

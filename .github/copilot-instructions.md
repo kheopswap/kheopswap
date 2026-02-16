@@ -76,6 +76,7 @@ pnpm typecheck               # TypeScript check (web package)
 - **File naming**: Features in `web/src/features/`, hooks in `web/src/hooks/`, providers end with `Provider.ts(x)`
 - **Observable naming**: Suffix with `$` (e.g., `assetHubChains$`, `getBalance$`)
 - **State loading**: Always handle `isLoading` + `data` pattern for async states
+- **Address terminology**: Prefer `ethereum` over `evm` in new variable, function, type, and file names (e.g., `isEthereumAddress`, `ethereumAddress`). Polkadot Asset Hub supports Ethereum-style addresses, but this is not an EVM runtime; avoid introducing new `evm` identifiers unless required by third-party APIs.
 
 ## Token & Chain Types
 

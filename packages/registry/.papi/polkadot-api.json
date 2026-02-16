@@ -18,13 +18,13 @@
 			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
 			"metadata": ".papi/scale/wah.scale",
 			"genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
-			"codeHash": "0xa1bfce249c230c83f89a8db4f5900387687dca9a33f2c6bdae9d85458e95c129"
+			"codeHash": "0xbfd53f79b6df48dd84cfb49738a3900e9a5e5a0f17b2d5d1866e86a90974e5ab"
 		},
 		"pasah": {
 			"wsUrl": "wss://asset-hub-paseo.dotters.network",
 			"metadata": ".papi/scale/pasah.scale",
 			"genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
-			"codeHash": "0x323b7e6ddc9efd93ea433ebf010fbb9ef9d5db4e39247615a1fc9025406f0980"
+			"codeHash": "0xc66e1574f0df569b29c04d46ae77aeebb622c79fd582de906913886f7853e74b"
 		}
 	}
 }
