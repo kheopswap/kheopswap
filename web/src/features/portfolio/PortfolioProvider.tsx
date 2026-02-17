@@ -1,3 +1,4 @@
+import { useWallets } from "@kheopskit/react";
 import { PORTFOLIO_TOKEN_TYPES } from "@kheopswap/registry";
 import { logger, provideContext } from "@kheopswap/utils";
 import { values } from "lodash-es";
@@ -7,7 +8,6 @@ import {
 	useAssetHubTVL,
 	useBalancesWithStables,
 	useTokenPrices,
-	useWallets,
 } from "src/hooks";
 
 export const usePortfolioProvider = () => {

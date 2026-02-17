@@ -1,4 +1,5 @@
 import type { Wallet, WalletAccount } from "@kheopskit/core";
+import { useWallets } from "@kheopskit/react";
 import type { Token } from "@kheopswap/registry";
 import {
 	cn,
@@ -8,7 +9,7 @@ import {
 } from "@kheopswap/utils";
 import { fromPairs } from "lodash-es";
 import { type FC, useCallback, useMemo, useState } from "react";
-import { useAllWallets, useBalancesWithStables, useToken } from "src/hooks";
+import { useBalancesWithStables, useToken } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
 import { getAccountName } from "src/util";
@@ -199,7 +200,7 @@ const AccountSelectDrawerContent: FC<{
 	onClose: () => void;
 	onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-	const { accounts, wallets, connect, disconnect } = useAllWallets();
+	const { accounts, wallets } = useWallets();
 
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
@@ -228,10 +229,12 @@ const AccountSelectDrawerContent: FC<{
 	const handleWalletClick = useCallback(
 		(walletId: string, isConnected: boolean) => async () => {
 			try {
+				const wallet = wallets.find((w) => w.id === walletId);
+				if (!wallet) return;
 				if (isConnected) {
-					disconnect(walletId);
+					wallet.disconnect();
 				} else {
-					await connect(walletId);
+					await wallet.connect();
 				}
 			} catch (err) {
 				console.error("Failed to toggle wallet connection %s", walletId, {
@@ -239,7 +242,7 @@ const AccountSelectDrawerContent: FC<{
 				});
 			}
 		},
-		[connect, disconnect],
+		[wallets],
 	);
 
 	const address = useMemo(() => {

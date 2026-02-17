@@ -1,10 +1,10 @@
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/24/solid";
 import type { WalletAccount } from "@kheopskit/core";
+import { useWallets } from "@kheopskit/react";
 import { cn, logger, notifyError, shortenAddress } from "@kheopswap/utils";
 import { type FC, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
-import { useAllWallets } from "src/hooks";
 import { getAccountName } from "src/util";
 import { useCopyToClipboard } from "usehooks-ts";
 import { isAddress as isEvmAddress } from "viem";
@@ -40,7 +40,7 @@ export const AddressDisplay: FC<{
 	iconClassName?: string;
 	pulse?: boolean;
 }> = ({ address, url, pulse, className, iconClassName }) => {
-	const { accounts } = useAllWallets();
+	const { accounts } = useWallets();
 	const [, copyToClipboard] = useCopyToClipboard();
 
 	const account = useMemo(

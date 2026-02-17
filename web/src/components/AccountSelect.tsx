@@ -1,4 +1,5 @@
 import type { WalletAccount } from "@kheopskit/core";
+import { useWallets } from "@kheopskit/react";
 import type { TokenId } from "@kheopswap/registry";
 import {
 	cn,
@@ -8,7 +9,7 @@ import {
 	shortenAddress,
 } from "@kheopswap/utils";
 import { type FC, useCallback, useMemo } from "react";
-import { useAllWallets, useOpenClose } from "src/hooks";
+import { useOpenClose } from "src/hooks";
 import { getAccountName } from "src/util";
 import { AccountIcon } from "./AccountIcon";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
@@ -80,7 +81,7 @@ const AccountSelectButton: FC<{
 	ownedOnly?: boolean;
 	onClick?: () => void;
 }> = ({ id, idOrAddress, className, ownedOnly, onClick }) => {
-	const { accounts } = useAllWallets();
+	const { accounts } = useWallets();
 	const account = useMemo(
 		() => accounts.find((a) => a.id === idOrAddress),
 		[accounts, idOrAddress],

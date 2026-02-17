@@ -1,3 +1,4 @@
+import { useWallets } from "@kheopskit/react";
 import { isBigInt } from "@kheopswap/utils";
 import { type FormEventHandler, useCallback, useMemo } from "react";
 import {
@@ -8,7 +9,7 @@ import {
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
 import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
-import { useWalletAccount, useWallets } from "src/hooks";
+import { useWalletAccount } from "src/hooks";
 import { useTransfer } from "./TransferProvider";
 import { TransferSummary } from "./TransferSummary";
 

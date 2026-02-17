@@ -1,3 +1,4 @@
+import { useWallets } from "@kheopskit/react";
 import type {
 	TokenAsset,
 	TokenForeignAsset,
@@ -10,7 +11,6 @@ import {
 	usePoolsByChainId,
 	useToken,
 	useTokensByChainId,
-	useWallets,
 } from "src/hooks";
 import { useRelayChains } from "src/state";
 import {
