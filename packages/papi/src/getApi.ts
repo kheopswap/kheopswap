@@ -1,3 +1,4 @@
+import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
 import {
 	type ChainId,
 	type Descriptors,
@@ -57,7 +58,7 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 	waitReady = true,
 ): Promise<Papi> => {
-	const lightClients = getSetting("lightClients");
+	const lightClients = !DISABLE_LIGHT_CLIENTS && getSetting("lightClients");
 
 	const api = await getCachedPromise("getApi", `${id}-${lightClients}`, () =>
 		getApiInner(id, lightClients),

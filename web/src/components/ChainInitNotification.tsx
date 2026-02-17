@@ -1,3 +1,4 @@
+import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
 import { getApi } from "@kheopswap/papi";
 import type { ChainId } from "@kheopswap/registry";
 import { useEffect } from "react";
@@ -13,6 +14,7 @@ const waitChainReady = async (chainId: ChainId) => {
 export const ChainInitNotification = () => {
 	const { assetHub } = useRelayChains();
 	const [lightClients] = useSetting("lightClients");
+	const effectiveLightClient = !DISABLE_LIGHT_CLIENTS && lightClients;
 
 	useEffect(() => {
 		if (!assetHub) {
@@ -33,10 +35,12 @@ export const ChainInitNotification = () => {
 				toast.loading(
 					<div>
 						<div>
-							{lightClients ? "Synchronizing light clients" : "Connecting"}
+							{effectiveLightClient
+								? "Synchronizing light clients"
+								: "Connecting"}
 						</div>
 						<div className="text-neutral-500">
-							{lightClients
+							{effectiveLightClient
 								? "It may take some time"
 								: "This shouldn't be long"}
 						</div>
@@ -53,7 +57,7 @@ export const ChainInitNotification = () => {
 		return () => {
 			toast.dismiss(toastId);
 		};
-	}, [assetHub, lightClients]);
+	}, [assetHub, effectiveLightClient]);
 
 	return null;
 };

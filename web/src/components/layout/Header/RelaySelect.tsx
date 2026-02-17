@@ -1,3 +1,5 @@
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
 import { getChains, type RelayId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
 import { type ChangeEvent, type FC, useCallback } from "react";
@@ -34,6 +36,7 @@ const DrawerContent: FC<{
 	onClose: () => void;
 }> = ({ relayId, onChange, onClose }) => {
 	const [lightClient, setLightClient] = useSetting("lightClients");
+	const effectiveLightClient = !DISABLE_LIGHT_CLIENTS && lightClient;
 
 	const handleClick = useCallback(
 		(relayId: RelayId) => () => {
@@ -44,6 +47,7 @@ const DrawerContent: FC<{
 
 	const handleSetLightClients = useCallback(
 		async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
+			if (DISABLE_LIGHT_CLIENTS) return;
 			setLightClient(e.target.checked);
 			onClose();
 			window.location.reload();
@@ -67,19 +71,35 @@ const DrawerContent: FC<{
 					/>
 				))}
 			</div>
-			<div>
+			{DISABLE_LIGHT_CLIENTS && (
+				<div className="mt-1 text-sm bg-warn/10 text-warn p-2 rounded w-full border border-warn/20 flex items-center gap-2">
+					<ExclamationTriangleIcon className="size-6 inline mr-2" />
+					Light clients are temporarily disabled.
+				</div>
+			)}
+			<div
+				className={cn(
+					DISABLE_LIGHT_CLIENTS && "opacity-50 pointer-events-none",
+				)}
+			>
 				<label
 					htmlFor="cbLightClient"
 					className="group flex w-full items-center justify-between"
 				>
 					<div className="grow">Connect via light clients</div>
 
-					<div className="relative inline-flex cursor-pointer items-center">
+					<div
+						className={cn(
+							"relative inline-flex  items-center",
+							!DISABLE_LIGHT_CLIENTS && "cursor-pointer",
+						)}
+					>
 						<input
 							id="cbLightClient"
 							type="checkbox"
 							className="peer sr-only"
-							defaultChecked={lightClient}
+							checked={effectiveLightClient}
+							disabled={DISABLE_LIGHT_CLIENTS}
 							onChange={handleSetLightClients}
 						/>
 						<div
@@ -87,10 +107,12 @@ const DrawerContent: FC<{
 								"h-6 w-11 rounded-full border bg-transparent ",
 								"after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
 								"peer-checked:bg-neutral-500 peer-checked:after:translate-x-full peer-checked:after:border-neutral-200 peer-focus-visible:ring-1 peer-focus-visible:ring-neutral-200",
+								DISABLE_LIGHT_CLIENTS && "opacity-50",
 							)}
 						/>
 					</div>
 				</label>
+
 				<div className="mt-1 text-sm text-neutral-500">
 					Light clients are blockchain nodes running in your browser. They
 					provide secure and uncensorable connections to Polkadot networks.
