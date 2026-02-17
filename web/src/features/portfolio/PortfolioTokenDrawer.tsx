@@ -45,7 +45,7 @@ import {
 } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStable, BalanceWithStableSummary } from "src/types";
-import { getTokenTypeLabel } from "src/util";
+import { getAccountName, getTokenTypeLabel } from "src/util";
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
 
@@ -67,6 +67,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 			accounts
 				.map((account) => ({
 					account,
+					accountName: getAccountName(account),
 					// biome-ignore lint/style/noNonNullAssertion: legacy
 					balance: balances.find(
 						(b) => b.tokenId === token.id && b.address === account.address,
@@ -81,7 +82,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 		<div>
 			{rows.length ? (
 				<div className="flex flex-col gap-1 text-sm">
-					{rows.map(({ account, balance }) => (
+					{rows.map(({ account, accountName, balance }) => (
 						<div
 							key={account.id}
 							className={cn(
@@ -91,7 +92,9 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 						>
 							<div className="flex grow items-center gap-2">
 								<AccountIcon className="size-6" account={account} />
-								<div className="grow">{account.name}</div>
+								<div className="grow">
+									{accountName ?? shortenAddress(account.address)}
+								</div>
 							</div>
 							<div className="flex shrink-0 flex-col items-end gap-0.5">
 								<div className="text-sm">

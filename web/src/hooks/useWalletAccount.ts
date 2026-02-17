@@ -1,7 +1,6 @@
+import { useWallets } from "@kheopskit/react";
 import { getAddressFromAccountField } from "@kheopswap/utils";
 import { useMemo } from "react";
-
-import { useWallets } from "./useWallets";
 
 export const useWalletAccount = ({ id }: { id: string | null | undefined }) => {
 	const { accounts } = useWallets();

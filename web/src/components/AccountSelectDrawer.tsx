@@ -1,11 +1,18 @@
-import type { PolkadotAccount, Wallet } from "@kheopskit/core";
+import type { Wallet, WalletAccount } from "@kheopskit/core";
+import { useWallets } from "@kheopskit/react";
 import type { Token } from "@kheopswap/registry";
-import { cn, isBigInt, isValidAddress, shortenAddress } from "@kheopswap/utils";
+import {
+	cn,
+	isBigInt,
+	isValidAnyAddress,
+	shortenAddress,
+} from "@kheopswap/utils";
 import { fromPairs } from "lodash-es";
 import { type FC, useCallback, useMemo, useState } from "react";
-import { useBalancesWithStables, useToken, useWallets } from "src/hooks";
+import { useBalancesWithStables, useToken } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
+import { getAccountName } from "src/util";
 import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
@@ -14,6 +21,9 @@ import { Shimmer } from "./Shimmer";
 import { Styles } from "./styles";
 import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
+
+const getPlatformLabel = (platform: string) =>
+	platform === "ethereum" ? "Ethereum" : "Polkadot";
 
 const WalletButton: FC<{
 	wallet: Wallet;
@@ -32,7 +42,12 @@ const WalletButton: FC<{
 		<div className="size-8 shrink-0">
 			<WalletIcon walletId={wallet.id} className="size-8" />
 		</div>
-		<div className="grow text-left">{wallet.name}</div>
+		<div className="grow text-left">
+			{wallet.name}
+			<span className="ml-1 text-xs text-neutral-500">
+				({getPlatformLabel(wallet.platform)})
+			</span>
+		</div>
 		<div
 			className={cn(
 				"size-2 rounded-full",
@@ -43,7 +58,7 @@ const WalletButton: FC<{
 );
 
 const AccountButton: FC<{
-	account: PolkadotAccount;
+	account: WalletAccount;
 	selected?: boolean;
 	disabled?: boolean;
 	balance?: BalanceWithStableSummary;
@@ -59,6 +74,8 @@ const AccountButton: FC<{
 	disabled,
 	onClick,
 }) => {
+	const accountName = useMemo(() => getAccountName(account), [account]);
+
 	return (
 		<button
 			type="button"
@@ -74,7 +91,9 @@ const AccountButton: FC<{
 			<AccountIcon account={account} className="size-8" />
 			<div className="flex grow flex-col items-start justify-center overflow-hidden">
 				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
-					<div className="truncate">{account.name}</div>
+					<div className="truncate">
+						{accountName ?? shortenAddress(account.address)}
+					</div>
 					<div className="inline-block size-4 shrink-0">
 						<WalletIcon walletId={account.walletId} className="size-4" />
 					</div>
@@ -122,7 +141,10 @@ const AddressInput: FC<{
 }> = ({ address, onChange }) => {
 	const [localAddress, setLocalAddress] = useState(address);
 
-	const isValid = useMemo(() => isValidAddress(localAddress), [localAddress]);
+	const isValid = useMemo(
+		() => isValidAnyAddress(localAddress),
+		[localAddress],
+	);
 
 	const handleClick = useCallback(() => {
 		onChange(localAddress);
@@ -176,7 +198,7 @@ const AccountSelectDrawerContent: FC<{
 	onClose: () => void;
 	onChange?: (accountIdOrAddress: string) => void;
 }> = ({ title, idOrAddress, ownedOnly, tokenId, onClose, onChange }) => {
-	const { accounts, wallets, connect, disconnect } = useWallets();
+	const { accounts, wallets } = useWallets();
 
 	const { stableToken } = useRelayChains();
 	const { data: token } = useToken({ tokenId });
@@ -205,10 +227,12 @@ const AccountSelectDrawerContent: FC<{
 	const handleWalletClick = useCallback(
 		(walletId: string, isConnected: boolean) => async () => {
 			try {
+				const wallet = wallets.find((w) => w.id === walletId);
+				if (!wallet) return;
 				if (isConnected) {
-					disconnect(walletId);
+					wallet.disconnect();
 				} else {
-					await connect(walletId);
+					await wallet.connect();
 				}
 			} catch (err) {
 				console.error("Failed to toggle wallet connection %s", walletId, {
@@ -216,11 +240,11 @@ const AccountSelectDrawerContent: FC<{
 				});
 			}
 		},
-		[connect, disconnect],
+		[wallets],
 	);
 
 	const address = useMemo(() => {
-		return idOrAddress && isValidAddress(idOrAddress) ? idOrAddress : "";
+		return idOrAddress && isValidAnyAddress(idOrAddress) ? idOrAddress : "";
 	}, [idOrAddress]);
 
 	const handleClick = useCallback(
@@ -233,6 +257,8 @@ const AccountSelectDrawerContent: FC<{
 	const sortedAccounts = useMemo(() => {
 		return accounts.concat().sort((a1, a2) => {
 			const [b1, b2] = [a1, a2].map((a) => balanceByAccount[a.address]);
+			if (b1 && !b2) return -1;
+			if (!b1 && b2) return 1;
 			if (b1 && b2) {
 				if (b1.stablePlancks === b2.stablePlancks) return 0;
 				if (b1.stablePlancks === null) return 1;

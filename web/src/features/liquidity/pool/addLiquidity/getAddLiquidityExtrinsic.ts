@@ -16,13 +16,13 @@ export type GetAddLiquidityExtrinsicProps = {
 	amountNativeMin: bigint;
 	amountAsset: bigint;
 	amountAssetMin: bigint;
-	dest: SS58String;
+	dest: SS58String | null;
 	createPool?: boolean;
 };
 
 export const isValidGetAddLiquidityExtrinsicProps = (
 	props: Partial<GetAddLiquidityExtrinsicProps>,
-): props is GetAddLiquidityExtrinsicProps => {
+): props is GetAddLiquidityExtrinsicProps & { dest: SS58String } => {
 	return (
 		!!props &&
 		!!props.tokenIdNative &&

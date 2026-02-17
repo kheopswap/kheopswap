@@ -19,24 +19,33 @@ export type DryRun<Id extends ChainId> = Awaited<
 export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 	return useQuery({
 		queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
-		queryFn: async (
-			// TODO put this back	{ signal }
-		) => {
+		queryFn: async ({ signal }) => {
 			if (!chainId || !from || !call) return null;
 
 			try {
 				const api = await getApi(chainId);
+				const resultXcmsVersion =
+					await api.query.PolkadotXcm.SafeXcmVersion.getValue({
+						at: "best",
+						signal,
+					});
 
 				const origin = Enum("system", Enum("Signed", from));
 
 				// @ts-expect-error
-				const dryRun = await api.apis.DryRunApi.dry_run_call(
+				const dryRun = (await api.apis.DryRunApi.dry_run_call(
 					origin,
 					call.decodedCall,
-					// TODO put this back	{ at: "best", signal },
-				);
+					resultXcmsVersion ?? 4,
+					{ at: "best" },
+				)) as DryRun<ChainId>;
 
-				logger.debug("[dry run]", { dryRun, call: call.decodedCall });
+				logger.debug("[dry run]", {
+					dryRun,
+					call: call.decodedCall,
+					resultXcmsVersion,
+					chainId: api.chainId,
+				});
 
 				return dryRun;
 			} catch (err) {

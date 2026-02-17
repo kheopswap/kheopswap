@@ -1,4 +1,4 @@
-import type { PolkadotAccount } from "@kheopskit/core";
+import type { WalletAccount } from "@kheopskit/core";
 import type { Token } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
 import type { TxEvent } from "polkadot-api";
@@ -12,7 +12,7 @@ export type FollowUpTxEvents = FollowUpTxEvent[];
 
 export type FollowUpData<T = unknown> = {
 	txEvents: FollowUpTxEvents;
-	account: PolkadotAccount;
+	account: WalletAccount;
 	feeEstimate: bigint;
 	feeToken: Token;
 } & T;

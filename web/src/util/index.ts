@@ -1,3 +1,4 @@
+export * from "./getAccountName";
 export * from "./getAssetConvertPlancks";
 export * from "./getAssetHubMirrorTokenId";
 export * from "./getDispatchErrorMessage";

@@ -1,3 +1,4 @@
+import { parseTokenId } from "@kheopswap/registry";
 import { getCachedObservable$ } from "@kheopswap/utils";
 import isEqual from "lodash-es/isEqual";
 import {
@@ -5,8 +6,11 @@ import {
 	distinctUntilChanged,
 	map,
 	Observable,
+	of,
 	shareReplay,
+	switchMap,
 } from "rxjs";
+import { getResolvedSubstrateAddress$ } from "../addressResolution";
 import { balancesState$ } from "./state";
 import {
 	addBalanceSubscription,
@@ -21,25 +25,43 @@ const DEFAULT_BALANCE_STATE: BalanceState = {
 };
 
 export const getBalance$ = (def: BalanceDef) => {
-	const balanceId = getBalanceId(def);
+	const inputBalanceId = getBalanceId(def);
+	const chainId = parseTokenId(def.tokenId).chainId;
 
-	return getCachedObservable$("getBalance$", balanceId, () => {
-		return new Observable<BalanceState>((subscriber) => {
-			const subId = addBalanceSubscription(balanceId);
+	return getCachedObservable$("getBalance$", inputBalanceId, () =>
+		getResolvedSubstrateAddress$({ address: def.address, chainId }).pipe(
+			switchMap(({ address: resolvedAddress, status }) => {
+				if (status !== "loaded" || !resolvedAddress) {
+					return of<BalanceState>({ balance: undefined, status });
+				}
 
-			const sub = balancesState$
-				.pipe(
-					map((balances) => balances[balanceId] ?? DEFAULT_BALANCE_STATE),
-					distinctUntilChanged(isEqual),
-				)
-				.subscribe(subscriber);
+				const resolvedBalanceId = getBalanceId({
+					...def,
+					address: resolvedAddress as BalanceDef["address"],
+				});
 
-			return () => {
-				sub.unsubscribe();
-				removeBalancesSubscription(subId);
-			};
-		}).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
-	});
+				return new Observable<BalanceState>((subscriber) => {
+					const subId = addBalanceSubscription(resolvedBalanceId);
+
+					const sub = balancesState$
+						.pipe(
+							map(
+								(balances) =>
+									balances[resolvedBalanceId] ?? DEFAULT_BALANCE_STATE,
+							),
+							distinctUntilChanged(isEqual),
+						)
+						.subscribe(subscriber);
+
+					return () => {
+						sub.unsubscribe();
+						removeBalancesSubscription(subId);
+					};
+				});
+			}),
+			shareReplay({ refCount: true, bufferSize: 1 }),
+		),
+	);
 };
 
 export const getBalances$ = (defs: BalanceDef[]) => {

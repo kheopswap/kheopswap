@@ -1,4 +1,4 @@
-import type { PolkadotAccount } from "@kheopskit/core";
+import type { WalletAccount } from "@kheopskit/core";
 import type { Token } from "@kheopswap/registry";
 import type { FollowUpTxEvent, FollowUpTxEvents } from "src/components";
 
@@ -26,7 +26,7 @@ export type TransactionRecord = {
 	status: TransactionStatus;
 	txHash?: string;
 	txEvents: FollowUpTxEvents;
-	account: PolkadotAccount;
+	account: WalletAccount;
 	feeEstimate: bigint;
 	feeToken: Token;
 	type: TransactionType;

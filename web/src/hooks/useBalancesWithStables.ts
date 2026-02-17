@@ -1,4 +1,4 @@
-import type { PolkadotAccount } from "@kheopskit/core";
+import type { WalletAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { getBalance$ } from "@kheopswap/services/balances";
 import { getCachedObservable$ } from "@kheopswap/utils";
@@ -17,7 +17,7 @@ import type { AccountBalanceWithStable } from "src/types";
 
 type UseAccountBalancesWithStablesProps = {
 	tokens: Token[] | TokenId[] | null | undefined;
-	accounts: PolkadotAccount[] | string[] | null | undefined;
+	accounts: WalletAccount[] | string[] | null | undefined;
 };
 
 const getBalanceWithStable$ = (

@@ -23,6 +23,7 @@ import {
 	usePoolReservesByTokenIds,
 	usePoolSupplies,
 	usePoolsByChainId,
+	useResolvedSubstrateAddress,
 	useSetting,
 	useToken,
 	useTokenChain,
@@ -194,6 +195,11 @@ const useSwapProvider = () => {
 	);
 
 	const account = useWalletAccount({ id: from });
+	const { resolvedAddress: resolvedSubstrateAddress } =
+		useResolvedSubstrateAddress({
+			address: account?.address,
+			chainId: assetHub.id,
+		});
 	const [slippage, setSlippage] = useSetting("slippage");
 
 	const { data: reserves, isLoading: isLoadingReserves } =
@@ -331,7 +337,7 @@ const useSwapProvider = () => {
 		tokenIdOut,
 		amountIn: swapPlancksIn,
 		amountOutMin: minPlancksOut,
-		dest: account?.address,
+		dest: resolvedSubstrateAddress,
 		appCommission,
 	});
 
@@ -341,7 +347,7 @@ const useSwapProvider = () => {
 		tokenIdOut,
 		amountIn: tokenIn && edTokenIn, // arbitrary amount
 		amountOutMin: 0n,
-		dest: account?.address,
+		dest: resolvedSubstrateAddress,
 		appCommission: tokenIn && edTokenIn, // arbitrary amount
 	});
 

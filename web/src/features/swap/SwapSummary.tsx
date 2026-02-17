@@ -87,7 +87,7 @@ export const SwapSummary = () => {
 							value={<TransactionFeeSummaryValue />}
 						/>
 						<SummaryRow
-							label="Kheopswap commission"
+							label="Service fee"
 							value={
 								!!tokenIn &&
 								isBigInt(minPlancksOut) &&
@@ -97,7 +97,7 @@ export const SwapSummary = () => {
 							}
 						/>
 						<SummaryRow
-							label="Pool commission"
+							label="Protocol fee"
 							value={
 								!!tokenIn &&
 								isBigInt(minPlancksOut) &&

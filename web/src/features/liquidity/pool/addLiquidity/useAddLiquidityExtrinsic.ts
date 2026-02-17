@@ -14,7 +14,7 @@ type UseAddLiquidityExtrinsic = {
 	amountNativeMin: bigint | undefined;
 	amountAsset: bigint | undefined;
 	amountAssetMin: bigint | undefined;
-	dest: SS58String;
+	dest: SS58String | null | undefined;
 	createPool?: boolean;
 };
 

@@ -1,9 +1,10 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
+import { useWallets } from "@kheopskit/react";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
 import { Styles, TokenAmountPicker } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { useWalletAccount, useWallets } from "src/hooks";
+import { useWalletAccount } from "src/hooks";
 import { useSwap } from "./SwapProvider";
 
 const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
@@ -59,7 +60,10 @@ export const SwapTokensEditor = () => {
 	const { accounts: allAccounts } = useWallets();
 	const account = useWalletAccount({ id: formData.from });
 	const tokenPickerAccounts = useMemo(
-		() => (account ? [account] : allAccounts),
+		() =>
+			(account
+				? [account.address]
+				: allAccounts.map((item) => item.address)) as string[],
 		[account, allAccounts],
 	);
 

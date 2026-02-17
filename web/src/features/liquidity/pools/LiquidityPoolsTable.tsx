@@ -1,6 +1,6 @@
+import { useWallets } from "@kheopskit/react";
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import { SearchInput } from "src/components";
-import { useWallets } from "src/hooks";
 import { LiquidityPoolsHeaderRow } from "./LiquidityPoolsHeaderRow";
 import { LiquidityPoolsRows } from "./LiquidityPoolsRows";
 import type { LiquidityPoolsSortMode, LiquidityPoolsVisibleCol } from "./types";

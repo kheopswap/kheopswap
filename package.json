@@ -12,12 +12,10 @@
 		"build": "pnpm --filter web build",
 		"preview": "pnpm --filter web preview",
 		"dev": "pnpm --filter web dev",
-		"dev:chopsticks": "pnpm --filter web dev:chopsticks",
 		"clean": "pnpm -r exec rm -rf node_modules && pnpm -r exec rm -rf dist && pnpm -r exec rm -rf build",
 		"typecheck": "pnpm --filter web typecheck",
 		"check": "biome check --write",
 		"knip": "knip",
-		"chopsticks": "(cd chopsticks && npx @acala-network/chopsticks@latest -c ./pah.yml)",
 		"papi:update": "pnpm --filter @kheopswap/registry papi:update",
 		"papi": "pnpm --filter @kheopswap/registry papi",
 		"prepare": "simple-git-hooks"

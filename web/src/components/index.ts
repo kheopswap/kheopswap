@@ -11,7 +11,6 @@ export * from "./FormFieldContainer";
 export * from "./FormSummary";
 export * from "./layout";
 export * from "./MagicButton";
-export * from "./ModalDialog";
 export * from "./SearchInput";
 export * from "./Shimmer";
 export * from "./StablePrice";

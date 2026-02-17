@@ -1,4 +1,5 @@
 export * from "./cn";
+export * from "./ethereumAddress";
 export * from "./firstThenDebounceTime";
 export * from "./formatDecimals";
 export * from "./getAddressFromAccountField";
@@ -10,9 +11,9 @@ export * from "./getLocalStorageKey";
 export * from "./isBigInt";
 export * from "./isBinary";
 export * from "./isNumber";
-export * from "./isValidAddress";
+export * from "./isValidSs58Address";
 export * from "./logger";
-export * from "./normalizeAccountId";
+export * from "./normalizeSs58AccountId";
 export * from "./notifyError";
 export * from "./notifyTxStatus";
 export * from "./plancks";

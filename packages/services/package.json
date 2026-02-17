@@ -9,7 +9,8 @@
 		"./tokens": "./src/tokens/index.ts",
 		"./tokenInfos": "./src/tokenInfos/index.ts",
 		"./poolSupplies": "./src/poolSupplies/index.ts",
-		"./loadingStatusSummary": "./src/loadingStatusSummary.ts"
+		"./loadingStatusSummary": "./src/loadingStatusSummary.ts",
+		"./addressResolution": "./src/addressResolution/index.ts"
 	},
 	"scripts": {},
 	"devDependencies": {

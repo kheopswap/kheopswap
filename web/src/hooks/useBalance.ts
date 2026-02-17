@@ -1,10 +1,9 @@
 import type { TokenId } from "@kheopswap/registry";
-import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { useBalances } from "./useBalances";
 
 type UseBalanceProps = {
-	address: SS58String | null | undefined;
+	address: string | null | undefined;
 	tokenId: TokenId | null | undefined;
 };
 

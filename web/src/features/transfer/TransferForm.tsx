@@ -1,14 +1,15 @@
+import { useWallets } from "@kheopskit/react";
 import { isBigInt } from "@kheopswap/utils";
 import { type FormEventHandler, useCallback, useMemo } from "react";
 import {
 	AccountSelect,
 	Balance,
 	FormFieldContainer,
-	MagicButton,
 	TokenAmountPicker,
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { useWalletAccount, useWallets } from "src/hooks";
+import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
+import { useWalletAccount } from "src/hooks";
 import { useTransfer } from "./TransferProvider";
 import { TransferSummary } from "./TransferSummary";
 
@@ -20,7 +21,7 @@ export const TransferForm = () => {
 		sender,
 		token,
 		plancks,
-		recipient,
+		resolvedAddress,
 		balanceSender,
 		isLoadingBalanceSender,
 		outputErrorMessage,
@@ -31,12 +32,15 @@ export const TransferForm = () => {
 		onMaxClick,
 	} = useTransfer();
 
-	const { canSubmit, onSubmit, insufficientBalances } = useTransaction();
+	const { onSubmit, insufficientBalances } = useTransaction();
 
 	const { accounts: allAccounts } = useWallets();
 	const account = useWalletAccount({ id: formData.from });
 	const tokenPickerAccounts = useMemo(
-		() => (account ? [account] : allAccounts),
+		() =>
+			(account
+				? [account.address]
+				: allAccounts.map((item) => item.address)) as string[],
 		[account, allAccounts],
 	);
 
@@ -55,7 +59,7 @@ export const TransferForm = () => {
 		(e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			onSubmit();
+			void onSubmit();
 		},
 		[onSubmit],
 	);
@@ -89,8 +93,8 @@ export const TransferForm = () => {
 					id="to-account"
 					label="To"
 					topRight={
-						recipient &&
-						token && <Balance address={recipient} tokenId={token.id} />
+						resolvedAddress &&
+						token && <Balance address={resolvedAddress} tokenId={token.id} />
 					}
 				>
 					<AccountSelect
@@ -118,9 +122,7 @@ export const TransferForm = () => {
 						onMaxClick={onMaxClick}
 					/>
 				</FormFieldContainer>
-				<MagicButton type="submit" disabled={!canSubmit}>
-					Transfer
-				</MagicButton>
+				<TransactionSubmitButton>Transfer</TransactionSubmitButton>
 				<TransferSummary />
 			</div>
 		</form>

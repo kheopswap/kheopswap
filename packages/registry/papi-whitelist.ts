@@ -1,9 +1,6 @@
-import type {
-	KahWhitelistEntry,
-	PolkadotWhitelistEntry,
-} from "@kheopswap/registry";
+import type { KahWhitelistEntry, PahWhitelistEntry } from "@kheopswap/registry";
 
-type WhiteListEntry = KahWhitelistEntry | PolkadotWhitelistEntry;
+type WhiteListEntry = KahWhitelistEntry | PahWhitelistEntry;
 
 export const whitelist: WhiteListEntry[] = [
 	"tx.AssetConversion.swap_exact_tokens_for_tokens",
@@ -16,6 +13,7 @@ export const whitelist: WhiteListEntry[] = [
 	"tx.ForeignAssets.transfer",
 	"tx.Utility.batch_all",
 	"query.System.Account",
+	"query.System.BlockHash",
 	"query.System.Number",
 	"query.AssetConversion.Pools",
 	"query.PoolAssets.Asset",
@@ -27,6 +25,7 @@ export const whitelist: WhiteListEntry[] = [
 	"query.ForeignAssets.Account",
 	"query.ForeignAssets.Metadata",
 	"query.Balances.TotalIssuance",
+	"query.Revive.OriginalAccount",
 	"const.AssetConversion.LPFee",
 	"const.Balances.ExistentialDeposit",
 	"api.AssetConversionApi.*",

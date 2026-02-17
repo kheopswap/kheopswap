@@ -1,7 +1,8 @@
 import { type FormEventHandler, useCallback } from "react";
-import { FormFieldContainer, MagicButton } from "src/components";
+import { FormFieldContainer } from "src/components";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
+import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
 import { RemoveLiquidityOutcome } from "./RemoveLiquidityOutcome";
 import { useRemoveLiquidity } from "./RemoveLiquidityProvider";
 import { RemoveLiquiditySlider } from "./RemoveLiquiditySlider";
@@ -19,7 +20,7 @@ export const RemoveLiquidityForm = () => {
 		setRatio,
 	} = useRemoveLiquidity();
 
-	const { canSubmit, onSubmit } = useTransaction();
+	const { onSubmit } = useTransaction();
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
 		(e) => {
@@ -59,9 +60,7 @@ export const RemoveLiquidityForm = () => {
 						plancks2={assetReceivedMin}
 					/>
 				</FormFieldContainer>
-				<MagicButton type="submit" disabled={!canSubmit}>
-					Remove Liquidity
-				</MagicButton>
+				<TransactionSubmitButton>Remove Liquidity</TransactionSubmitButton>
 				<RemoveLiquiditySummary />
 			</div>
 		</form>

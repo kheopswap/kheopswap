@@ -1,4 +1,4 @@
-import { USE_CHOPSTICKS } from "@kheopswap/constants";
+import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
 import {
 	type ChainId,
 	type Descriptors,
@@ -11,7 +11,7 @@ import {
 	getCachedPromise,
 	logger,
 } from "@kheopswap/utils";
-import type { TypedApi } from "polkadot-api";
+import type { PolkadotClient, TypedApi } from "polkadot-api";
 import { firstValueFrom, from, type Observable } from "rxjs";
 import { getClient } from "./getClient";
 
@@ -19,6 +19,7 @@ type ApiBase<Id extends ChainId> = TypedApi<Descriptors<Id>>;
 
 export type Api<Id extends ChainId> = ApiBase<Id> & {
 	chainId: Id;
+	client: PolkadotClient;
 	waitReady: Promise<void>;
 };
 
@@ -41,6 +42,7 @@ const getApiInner = async <Id extends ChainId>(
 
 	const api = client.getTypedApi(descriptors) as Api<Id>;
 	api.chainId = chainId as Id;
+	api.client = client;
 	api.waitReady = new Promise<void>((resolve, reject) => {
 		const stop = logger.timer(`api ${chainId} waitReady`);
 		firstValueFrom(client.bestBlocks$)
@@ -56,7 +58,7 @@ export const getApi = async <Id extends ChainId, Papi = Api<Id>>(
 	id: Id,
 	waitReady = true,
 ): Promise<Papi> => {
-	const lightClients = getSetting("lightClients") && !USE_CHOPSTICKS;
+	const lightClients = !DISABLE_LIGHT_CLIENTS && getSetting("lightClients");
 
 	const api = await getCachedPromise("getApi", `${id}-${lightClients}`, () =>
 		getApiInner(id, lightClients),

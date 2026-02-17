@@ -1,16 +1,21 @@
-import type { PolkadotAccount } from "@kheopskit/core";
+import type { WalletAccount } from "@kheopskit/core";
+import { useWallets } from "@kheopskit/react";
 import type { TokenId } from "@kheopswap/registry";
 import {
 	cn,
 	getAddressFromAccountField,
-	isValidAddress,
+	isEthereumAddress,
+	isValidAnyAddress,
+	shortenAddress,
 } from "@kheopswap/utils";
-import { Polkicon } from "@polkadot-ui/react";
 import { type FC, useCallback, useMemo } from "react";
-import { useOpenClose, useWallets } from "src/hooks";
+import { useOpenClose } from "src/hooks";
+import { getAccountName } from "src/util";
 import { AccountIcon } from "./AccountIcon";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
+import { EthereumIdenticon } from "./EthereumIdenticon";
 import { ActionRightIcon } from "./icons";
+import { PolkadotIdenticon } from "./PolkadotIdenticon";
 import { Styles } from "./styles";
 import { WalletIcon } from "./WalletIcon";
 
@@ -18,6 +23,8 @@ const AddressRow: FC<{ address: string; className?: string }> = ({
 	address,
 	className,
 }) => {
+	const isEvm = useMemo(() => isEthereumAddress(address), [address]);
+
 	return (
 		<div
 			className={cn(
@@ -25,21 +32,26 @@ const AddressRow: FC<{ address: string; className?: string }> = ({
 				className,
 			)}
 		>
-			<Polkicon
-				address={address}
-				className={cn("size-6 rounded-full", className)}
-			/>
+			{isEvm ? (
+				<EthereumIdenticon address={address} className="size-6 shrink-0" />
+			) : (
+				<PolkadotIdenticon address={address} className="size-6 shrink-0" />
+			)}
 			<div className="flex grow items-center overflow-hidden">
-				<span className="truncate">{address}</span>
+				<span className="truncate">
+					{isEvm ? shortenAddress(address) : address}
+				</span>
 			</div>
 		</div>
 	);
 };
 
-const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
+const AccountRow: FC<{ account: WalletAccount; className?: string }> = ({
 	account,
 	className,
 }) => {
+	const accountName = useMemo(() => getAccountName(account), [account]);
+
 	return (
 		<div
 			className={cn(
@@ -49,7 +61,9 @@ const AccountRow: FC<{ account: PolkadotAccount; className?: string }> = ({
 		>
 			<AccountIcon className="size-6" account={account} />
 			<div className="flex grow items-center overflow-hidden">
-				<span className="truncate">{account.name}</span>
+				<span className="truncate">
+					{accountName ?? shortenAddress(account.address)}
+				</span>
 				<span className="ml-[0.5em] inline-block size-[1em] shrink-0">
 					<WalletIcon walletId={account.walletId} className="size-4" />
 				</span>
@@ -73,7 +87,7 @@ const AccountSelectButton: FC<{
 
 	// Check if idOrAddress is a raw address (not an account ID)
 	const isRawAddress = useMemo(
-		() => idOrAddress && isValidAddress(idOrAddress),
+		() => idOrAddress && isValidAnyAddress(idOrAddress),
 		[idOrAddress],
 	);
 

@@ -1,5 +1,4 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import type { PolkadotAccount } from "@kheopskit/core";
 import type { TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
 import { keyBy } from "lodash-es";
@@ -39,8 +38,8 @@ export const TransactionFeeSummaryValue: FC = () => {
 	const feeTokensMap = useMemo(() => keyBy(feeTokens, "id"), [feeTokens]);
 
 	const accounts = useMemo(
-		() => [account].filter(Boolean) as PolkadotAccount[],
-		[account],
+		() => [account?.address].filter(Boolean) as string[],
+		[account?.address],
 	);
 
 	if (
@@ -52,7 +51,9 @@ export const TransactionFeeSummaryValue: FC = () => {
 	return (
 		<>
 			{!!feeToken && isBigInt(feeEstimate) ? (
-				feeTokens && feeTokens.length > 1 ? (
+				account?.platform === "polkadot" &&
+				feeTokens &&
+				feeTokens.length > 1 ? (
 					<button
 						type="button"
 						onClick={open}

@@ -17,6 +17,7 @@ import {
 	useFeeToken,
 	useNativeToken,
 	usePoolsByChainId,
+	useResolvedSubstrateAddress,
 	useSetting,
 	useWalletAccount,
 } from "src/hooks";
@@ -93,11 +94,16 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		[formData.from],
 	);
 
+	const { resolvedAddress: resolvedSender } = useResolvedSubstrateAddress({
+		address: sender,
+		chainId: assetHub.id,
+	});
+
 	const { data: call } = useCreatePoolExtrinsic({
 		tokenId1: token1?.id,
 		tokenId2: token2?.id,
 		liquidityToAdd,
-		mintTo: sender,
+		mintTo: resolvedSender,
 	});
 
 	const fakeLiquidityToAdd = useMemo<[bigint, bigint] | null>(
@@ -112,7 +118,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		tokenId1: token1?.id,
 		tokenId2: token2?.id,
 		liquidityToAdd: fakeLiquidityToAdd,
-		mintTo: sender,
+		mintTo: resolvedSender,
 	});
 
 	const { feeToken } = useFeeToken({

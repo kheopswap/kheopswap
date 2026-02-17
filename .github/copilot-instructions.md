@@ -10,7 +10,7 @@ Kheopswap is a decentralized exchange for the Polkadot Asset Hub, built as a pnp
 
 ```
 packages/
-├── constants/     # Environment flags, config (USE_CHOPSTICKS, APP_FEE_*)
+├── constants/     # Environment flags, config (APP_FEE_*)
 ├── papi/          # Polkadot API wrapper using polkadot-api library
 ├── registry/      # Chain definitions, token types, PAPI descriptors
 ├── services/      # Reactive data services (balances, tokens, pools)
@@ -57,13 +57,16 @@ Always use `getApi()` from `@kheopswap/papi` - it handles light client vs RPC se
 const api = await getApi(chainId); // waitReady=true by default
 ```
 
+- **Do not use PAPI Unsafe API**: Never use `api.client.getUnsafeApi()` in app code.
+- **Avoid direct PAPI client usage**: Do not use `api.client` directly when a typed API query/tx/constant is available.
+- **Prefer typed API surface**: Use `api.query.*`, `api.tx.*`, `api.event.*`, and `api.constants.*` first.
+- **If no typed API exists**: Call this out explicitly in PR/task notes before introducing any low-level workaround.
+
 ## Development Commands
 
 ```bash
 pnpm install                 # Install dependencies (uses corepack)
 pnpm dev                     # Dev with production RPCs
-pnpm dev:chopsticks          # Dev with local Chopsticks sandbox (orange header)
-pnpm chopsticks              # Launch local chain forks (separate terminal)
 pnpm check                   # Biome lint + format (auto-fix)
 pnpm papi:update             # Update PAPI chain metadata
 pnpm typecheck               # TypeScript check (web package)
@@ -76,6 +79,7 @@ pnpm typecheck               # TypeScript check (web package)
 - **File naming**: Features in `web/src/features/`, hooks in `web/src/hooks/`, providers end with `Provider.ts(x)`
 - **Observable naming**: Suffix with `$` (e.g., `assetHubChains$`, `getBalance$`)
 - **State loading**: Always handle `isLoading` + `data` pattern for async states
+- **Address terminology**: Prefer `ethereum` over `evm` in new variable, function, type, and file names (e.g., `isEthereumAddress`, `ethereumAddress`). Polkadot Asset Hub supports Ethereum-style addresses, but this is not an EVM runtime; avoid introducing new `evm` identifiers unless required by third-party APIs.
 
 ## Token & Chain Types
 
@@ -87,7 +91,7 @@ const tokenId = getTokenId({ chainId, type, onChainId });
 const { chainId, type, onChainId } = parseTokenId(tokenId);
 ```
 
-Chain configurations differ for prod vs Chopsticks - see `chains.prod.json` / `chains.chopsticks.json`.
+Chain configurations are in `chains.prod.json`.
 
 ## Feature Development
 
@@ -97,17 +101,12 @@ Features follow structure: `features/{name}/` with Provider, Form, components
 - Providers manage form state + derived calculations
 - Use existing hooks from `web/src/hooks/` (useBalance, useToken, usePoolReserves, etc.)
 
-## Testing Environment
-
-Chopsticks provides a sandboxed Asset Hub at `ws://localhost:3421`.
-
-`USE_CHOPSTICKS` constant toggles chain config and disables light clients.
-
 ## AI Agent Expectations
 
 - **DevTools MCP testing**: If a change does not require wallet signature, validate it with DevTools MCP. First verify DevTools MCP is running; if it is not available, ask the user to start it before proceeding with MCP-based validation.
 - **DevTools port**: This app can only be tested with DevTools MCP against `http://localhost:5173`. Only this port should ever be used.
 - **Code quality bar**: Always produce elegant, pristine, human-maintainable code. Split logic into appropriate sub-components, hooks, and files when it improves clarity, cohesion, and long-term maintainability.
+- **Chain-specific runtime APIs**: When runtime call signatures differ by chain, handle them explicitly with `switch (api.chainId)` and keep the logic simple. Do not use speculative multi-attempt fallback loops across different signatures.
 
 ## Before Completing Any Task
 
