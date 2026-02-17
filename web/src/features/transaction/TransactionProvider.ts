@@ -1,3 +1,4 @@
+import { getApi } from "@kheopswap/papi";
 import type { TokenId } from "@kheopswap/registry";
 import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
@@ -6,12 +7,12 @@ import {
 	logger,
 	notifyError,
 	provideContext,
-	sleep,
 } from "@kheopswap/utils";
 import { isNumber, uniq } from "lodash-es";
+import type { TxEvent } from "polkadot-api";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { catchError, of, shareReplay } from "rxjs";
+import { catchError, type Observable, of, shareReplay } from "rxjs";
 import {
 	useAssetConvertPlancks,
 	useBalance,
@@ -34,7 +35,11 @@ import {
 } from "src/state/transactions";
 import type { AnyTransaction } from "src/types";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
-import { type Address, toHex } from "viem";
+import { toHex } from "viem";
+import {
+	createEthereumTxObservable,
+	type EthereumWalletClient,
+} from "./createEthereumTxObservable";
 
 export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
@@ -54,31 +59,55 @@ type UseTransactionProviderProps = {
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
 const DEFAULT_FOLLOW_UP_DATA = {};
-const RUNTIME_PALLETS_ADDR: Address =
-	"0x6d6f646c70792f70616464720000000000000000";
 
-const waitForEthereumTransactionReceipt = async (
-	client: {
-		request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-	},
-	txHash: `0x${string}`,
-) => {
-	for (let attempt = 0; attempt < 120; attempt++) {
-		const receipt = (await client.request({
-			method: "eth_getTransactionReceipt",
-			params: [txHash],
-		})) as {
-			status?: `0x${string}`;
-			blockHash?: `0x${string}`;
-			blockNumber?: `0x${string}`;
-			transactionIndex?: `0x${string}`;
-		} | null;
+/**
+ * Subscribes to a transaction Observable and feeds events to the transaction store.
+ * Used by both Polkadot and Ethereum transaction flows.
+ */
+const subscribeTxEvents = (
+	txId: string,
+	txEvents$: Observable<TxEvent>,
+): void => {
+	let isSubmitted = false;
 
-		if (receipt) return receipt;
-		await sleep(1000);
-	}
+	const obs$ = txEvents$.pipe(
+		catchError((error) => of({ type: "error" as const, error })),
+		shareReplay(1),
+	);
 
-	throw new Error("Timed out while waiting for Ethereum transaction receipt");
+	const sub = obs$.subscribe((x) => {
+		logger.log("Transaction status update", x);
+
+		if (x.type === "broadcasted") isSubmitted = true;
+
+		if (x.type !== "error") {
+			appendTxEvent(txId, x);
+		}
+
+		if (x.type === "finalized") sub.unsubscribe();
+
+		if (x.type === "error") {
+			logger.error("Transaction error", x.error);
+			const errorMessage = x.error.error ? formatTxError(x.error.error) : "";
+			const errorType = x.error instanceof Error ? x.error.name : "Error";
+			const errorText = errorMessage ? `${errorType}: ${errorMessage}` : null;
+
+			if (errorMessage === "Unknown: CannotLookup")
+				console.warn(
+					"It could be that the chain doesn't support CheckMetadataHash",
+				);
+
+			if (!isSubmitted) {
+				if (errorText) toast(errorText, { type: "error" });
+				else notifyError(x.error);
+				updateTransactionStatus(txId, "failed");
+			} else {
+				appendTxEvent(txId, x);
+			}
+
+			sub.unsubscribe();
+		}
+	});
 };
 
 const useTransactionProvider = ({
@@ -278,6 +307,8 @@ const useTransactionProvider = ({
 
 			openTransactionModal(txId);
 
+			let txEvents$: Observable<TxEvent>;
+
 			if (account.platform === "ethereum") {
 				if (isEthereumNetworkMismatch) {
 					updateTransactionStatus(txId, "failed");
@@ -288,108 +319,28 @@ const useTransactionProvider = ({
 				}
 
 				const encodedCallData = await call.getEncodedData();
-				const txData = toHex(encodedCallData.asBytes());
-				const walletClient = account.client as unknown as {
-					request: (args: {
-						method: string;
-						params?: unknown[];
-					}) => Promise<unknown>;
-				};
+				const callData = toHex(encodedCallData.asBytes());
 
-				const txHash = (await walletClient.request({
-					method: "eth_sendTransaction",
-					params: [
-						{
-							from: account.address,
-							to: RUNTIME_PALLETS_ADDR,
-							data: txData,
-							value: "0x0",
-						},
-					],
-				})) as `0x${string}`;
-
-				appendTxEvent(txId, { type: "broadcasted", txHash });
-
-				const receipt = await waitForEthereumTransactionReceipt(
-					walletClient,
-					txHash,
-				);
-
-				if (receipt.status === "0x1" || receipt.status === "0x01") {
-					appendTxEvent(txId, {
-						type: "finalized",
-						txHash,
-						ok: true,
-						events: [],
-						block: {
-							hash: receipt.blockHash ?? txHash,
-							number: Number.parseInt(receipt.blockNumber ?? "0x0", 16),
-							index: Number.parseInt(receipt.transactionIndex ?? "0x0", 16),
-						},
-					});
-				} else {
-					appendTxEvent(txId, {
-						type: "error",
-						error: new Error("Ethereum transaction failed"),
-					});
-				}
-				return;
+				txEvents$ = createEthereumTxObservable({
+					walletClient: account.client as unknown as EthereumWalletClient,
+					from: account.address,
+					callData,
+					chainId: chainId as ChainId,
+					getClient: async () => (await getApi(chainId as ChainId)).client,
+				});
+			} else {
+				if (!feeEstimate || !options) return;
+				txEvents$ = call.signSubmitAndWatch(account.polkadotSigner, options);
 			}
 
-			if (!feeEstimate || !options) return;
-
-			let isSubmitted = false;
-
-			const obsTxEvents = call
-				.signSubmitAndWatch(account.polkadotSigner, options)
-				.pipe(
-					catchError((error) => of({ type: "error" as const, error })),
-					shareReplay(1),
-				);
-
-			const sub = obsTxEvents.subscribe((x) => {
-				logger.log("Transaction status update", x);
-
-				if (x.type === "broadcasted") isSubmitted = true;
-
-				if (x.type !== "error") {
-					appendTxEvent(txId, x);
-				}
-
-				if (x.type === "finalized") sub.unsubscribe();
-
-				if (x.type === "error") {
-					logger.error("Transaction error", x.error);
-					const errorMessage = x.error.error
-						? formatTxError(x.error.error)
-						: "";
-					const errorType = x.error instanceof Error ? x.error.name : "Error";
-					const errorText = errorMessage
-						? `${errorType}: ${errorMessage}`
-						: null;
-
-					if (errorMessage === "Unknown: CannotLookup")
-						console.warn(
-							"It could be that the chain doesn't support CheckMetadataHash",
-						);
-
-					if (!isSubmitted) {
-						if (errorText) toast(errorText, { type: "error" });
-						else notifyError(x.error);
-						updateTransactionStatus(txId, "failed");
-					} else {
-						appendTxEvent(txId, x);
-					}
-
-					sub.unsubscribe();
-				}
-			});
+			subscribeTxEvents(txId, txEvents$);
 		} catch (err) {
 			notifyError(err);
 		}
 	}, [
 		account,
 		call,
+		chainId,
 		feeEstimate,
 		feeToken,
 		followUpData,

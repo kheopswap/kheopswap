@@ -1,5 +1,4 @@
 import { provideContext } from "@kheopswap/utils";
-import type { SS58String } from "polkadot-api";
 import { useCallback, useMemo, useState } from "react";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { useExistentialDeposit } from "src/hooks";
@@ -10,8 +9,13 @@ const useAddLiquidityProvider = () => {
 		null,
 	);
 
-	const { pool, nativeToken, assetToken, account, lpSlippage } =
-		useLiquidityPoolPage();
+	const {
+		pool,
+		nativeToken,
+		assetToken,
+		resolvedSubstrateAddress,
+		lpSlippage,
+	} = useLiquidityPoolPage();
 
 	const minLiquidity = useMemo<[bigint, bigint] | null>(() => {
 		if (!liquidityToAdd) return null;
@@ -29,7 +33,7 @@ const useAddLiquidityProvider = () => {
 		amountAsset: liquidityToAdd?.[1],
 		amountNativeMin: minLiquidity?.[0],
 		amountAssetMin: minLiquidity?.[1],
-		dest: account?.address as SS58String,
+		dest: resolvedSubstrateAddress,
 		createPool: !pool,
 	});
 

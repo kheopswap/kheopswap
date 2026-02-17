@@ -48,10 +48,7 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 
 				return dryRun;
 			} catch (err) {
-				logger.warn("[dry run] unavailable", {
-					err,
-					call: call.decodedCall,
-				});
+				logger.warn("[dry run] unavailable", { err, call: call.decodedCall });
 				return null;
 			}
 		},

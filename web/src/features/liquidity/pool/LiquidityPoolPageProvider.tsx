@@ -5,6 +5,7 @@ import {
 	useNativeToken,
 	usePoolByPoolAssetId,
 	usePoolReserves,
+	useResolvedSubstrateAddress,
 	useSetting,
 	useToken,
 	useWalletAccount,
@@ -24,6 +25,11 @@ const useLiquidityPoolPageProvider = () => {
 
 	const account = useWalletAccount({ id: defaultAccountId });
 	const address = useMemo(() => account?.address ?? null, [account]);
+	const { resolvedAddress: resolvedSubstrateAddress } =
+		useResolvedSubstrateAddress({
+			address: account?.address,
+			chainId: assetHub.id,
+		});
 
 	const { data: pool, isLoading: isLoadingPool } = usePoolByPoolAssetId({
 		poolAssetId: Number(poolAssetId),
@@ -62,6 +68,7 @@ const useLiquidityPoolPageProvider = () => {
 		isLoadingReserves,
 		isLoadingPosition,
 		account,
+		resolvedSubstrateAddress,
 		reserves,
 		position,
 		accountBalances,

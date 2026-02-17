@@ -6,8 +6,14 @@ import { useCallback, useMemo, useState } from "react";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 
 const useRemoveLiquidityProvider = () => {
-	const { assetHub, nativeToken, assetToken, position, lpSlippage, account } =
-		useLiquidityPoolPage();
+	const {
+		assetHub,
+		nativeToken,
+		assetToken,
+		position,
+		lpSlippage,
+		resolvedSubstrateAddress,
+	} = useLiquidityPoolPage();
 
 	const [ratio, setRatio] = useState(1);
 
@@ -32,13 +38,19 @@ const useRemoveLiquidityProvider = () => {
 			"remove_liquidity_call",
 			nativeToken?.id,
 			assetToken?.id,
-			account?.address,
+			resolvedSubstrateAddress,
 			safeQueryKeyPart(lpTokenBurn),
 			safeQueryKeyPart(nativeReceivedMin),
 			safeQueryKeyPart(assetReceivedMin),
 		],
 		queryFn: async () => {
-			if (!nativeToken || !assetToken || !account || !lpTokenBurn) return null;
+			if (
+				!nativeToken ||
+				!assetToken ||
+				!resolvedSubstrateAddress ||
+				!lpTokenBurn
+			)
+				return null;
 
 			const asset1 = getXcmV5MultilocationFromTokenId(nativeToken.id);
 			const asset2 = getXcmV5MultilocationFromTokenId(assetToken.id);
@@ -53,7 +65,7 @@ const useRemoveLiquidityProvider = () => {
 				lp_token_burn: lpTokenBurn,
 				amount1_min_receive: nativeReceivedMin,
 				amount2_min_receive: assetReceivedMin,
-				withdraw_to: account.address,
+				withdraw_to: resolvedSubstrateAddress,
 			});
 		},
 		structuralSharing: false,
