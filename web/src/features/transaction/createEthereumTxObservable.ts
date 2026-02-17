@@ -10,18 +10,26 @@ import {
 	Observable,
 	switchMap,
 } from "rxjs";
+import type { Address, Client, Hex } from "viem";
 
+/**
+ * H160 (Ethereum) address of the Revive pallet's "runtime pallets" dispatch precompile on Asset Hub.
+ *
+ * When an Ethereum transaction is sent `to` this address with encoded Substrate call data,
+ * the Revive pallet decodes and dispatches it as a native Substrate extrinsic.
+ *
+ * The hex decodes to ASCII `modlpy/paddr` (the well-known Substrate module account prefix
+ * for the `py/paddr` module), null-padded to 20 bytes.
+ */
 const RUNTIME_PALLETS_ADDR = "0x6d6f646c70792f70616464720000000000000000";
 
-export type EthereumWalletClient = {
-	request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-};
+export type EthereumWalletClient = Pick<Client, "request">;
 
 type EthereumTransactionReceipt = {
-	status?: `0x${string}`;
-	blockHash?: `0x${string}`;
-	blockNumber?: `0x${string}`;
-	transactionIndex?: `0x${string}`;
+	status?: Hex;
+	blockHash?: Hex;
+	blockNumber?: Hex;
+	transactionIndex?: Hex;
 };
 
 type SystemEvent = {
@@ -32,16 +40,25 @@ type SystemEvent = {
 
 const waitForReceipt = async (
 	client: EthereumWalletClient,
-	txHash: `0x${string}`,
+	txHash: Hex,
+	signal?: AbortSignal,
 ): Promise<EthereumTransactionReceipt> => {
-	for (let attempt = 0; attempt < 120; attempt++) {
+	let delay = 1000;
+	const maxDelay = 5000;
+	const deadline = Date.now() + 120_000;
+
+	while (Date.now() < deadline) {
+		if (signal?.aborted) throw new Error("Transaction was cancelled");
+
 		const receipt = (await client.request({
 			method: "eth_getTransactionReceipt",
 			params: [txHash],
 		})) as EthereumTransactionReceipt | null;
 
 		if (receipt) return receipt;
-		await sleep(1000);
+
+		await sleep(delay);
+		delay = Math.min(delay * 1.5, maxDelay);
 	}
 
 	throw new Error("Timed out while waiting for Ethereum transaction receipt");
@@ -129,13 +146,13 @@ export const createEthereumTxObservable = ({
 	getClient,
 }: {
 	walletClient: EthereumWalletClient;
-	from: string;
-	callData: string;
+	from: Address;
+	callData: Hex;
 	chainId: ChainId;
 	getClient: () => Promise<PolkadotClient>;
 }): Observable<TxEvent> =>
 	new Observable((subscriber) => {
-		let cancelled = false;
+		const abortController = new AbortController();
 		const heldBlocks: Array<() => void> = [];
 		let blocksSub: Subscription | undefined;
 
@@ -144,7 +161,7 @@ export const createEthereumTxObservable = ({
 			// and capture Substrate block hashes before our block is produced.
 			const client = await getClient();
 
-			if (cancelled) return;
+			if (abortController.signal.aborted) return;
 
 			// Watch blocks as PAPI discovers them, recording Substrate hashes by
 			// number. We hodl each block to prevent PAPI from unpinning it before
@@ -166,20 +183,24 @@ export const createEthereumTxObservable = ({
 				params: [
 					{
 						from,
-						to: RUNTIME_PALLETS_ADDR,
+						to: RUNTIME_PALLETS_ADDR as Address,
 						data: callData,
 						value: "0x0",
 					},
 				],
-			})) as `0x${string}`;
+			})) as Hex;
 
-			if (cancelled) return;
+			if (abortController.signal.aborted) return;
 
 			subscriber.next({ type: "broadcasted", txHash });
 
-			const receipt = await waitForReceipt(walletClient, txHash);
+			const receipt = await waitForReceipt(
+				walletClient,
+				txHash,
+				abortController.signal,
+			);
 
-			if (cancelled) return;
+			if (abortController.signal.aborted) return;
 
 			const blockNumber = Number.parseInt(receipt.blockNumber ?? "0x0", 16);
 			const txIndex = Number.parseInt(receipt.transactionIndex ?? "0x0", 16);
@@ -236,7 +257,7 @@ export const createEthereumTxObservable = ({
 				}
 			}
 
-			if (cancelled) return;
+			if (abortController.signal.aborted) return;
 
 			// Fetch decoded Substrate events from the block
 			let blockEvents: Awaited<ReturnType<typeof fetchBlockEvents>>;
@@ -264,7 +285,7 @@ export const createEthereumTxObservable = ({
 						};
 			}
 
-			if (cancelled) return;
+			if (abortController.signal.aborted) return;
 
 			const block = {
 				hash: substrateBlockHash,
@@ -286,7 +307,7 @@ export const createEthereumTxObservable = ({
 				client.finalizedBlock$.pipe(filter((b) => b.number >= blockNumber)),
 			);
 
-			if (cancelled) return;
+			if (abortController.signal.aborted) return;
 
 			// Emit finalized
 			subscriber.next({
@@ -300,11 +321,11 @@ export const createEthereumTxObservable = ({
 		};
 
 		run().catch((error) => {
-			if (!cancelled) subscriber.error(error);
+			if (!abortController.signal.aborted) subscriber.error(error);
 		});
 
 		return () => {
-			cancelled = true;
+			abortController.abort();
 			blocksSub?.unsubscribe();
 			for (const release of heldBlocks) release();
 		};

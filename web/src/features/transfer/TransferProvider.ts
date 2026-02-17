@@ -18,7 +18,7 @@ import {
 	useFeeToken,
 	useNativeToken,
 	useNonce,
-	useResolvedRecipient,
+	useResolvedSubstrateAddress,
 	useSetting,
 	useTokenChain,
 	useWalletAccount,
@@ -122,7 +122,7 @@ const useTransferProvider = () => {
 	const tokenChain = useTokenChain({ tokenId: formData.tokenId as TokenId });
 
 	const { resolvedAddress, isLoading: isResolvingRecipient } =
-		useResolvedRecipient({
+		useResolvedSubstrateAddress({
 			address: recipient,
 			chainId: tokenChain?.id,
 		});

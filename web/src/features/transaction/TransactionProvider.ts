@@ -63,6 +63,9 @@ const DEFAULT_FOLLOW_UP_DATA = {};
 /**
  * Subscribes to a transaction Observable and feeds events to the transaction store.
  * Used by both Polkadot and Ethereum transaction flows.
+ *
+ * The subscription self-terminates when a "finalized" or "error" event is received.
+ * It is intentionally not tied to component lifecycle so transactions survive navigation.
  */
 const subscribeTxEvents = (
 	txId: string,
@@ -188,11 +191,7 @@ const useTransactionProvider = ({
 			await refreshConnectedEvmChainId();
 		} catch {
 			try {
-				await (
-					account.client as unknown as {
-						request: (...args: unknown[]) => Promise<unknown>;
-					}
-				).request({
+				await account.client.request({
 					method: "wallet_addEthereumChain",
 					params: [
 						{
@@ -203,7 +202,7 @@ const useTransactionProvider = ({
 							nativeCurrency: {
 								name: nativeToken?.symbol ?? "Native Token",
 								symbol: nativeToken?.symbol ?? "UNIT",
-								decimals: Number(nativeToken?.decimals ?? 12),
+								decimals: 18, // always 18 on ethereum
 							},
 						},
 					],
@@ -223,7 +222,6 @@ const useTransactionProvider = ({
 		chain?.evmRpcUrl,
 		chain?.name,
 		isEthereumAccount,
-		nativeToken?.decimals,
 		nativeToken?.symbol,
 		refreshConnectedEvmChainId,
 		targetEvmChainId,
@@ -325,6 +323,7 @@ const useTransactionProvider = ({
 				txEvents$ = call.signSubmitAndWatch(account.polkadotSigner, options);
 			}
 
+			// Fire-and-forget: subscription self-terminates on finalized/error.
 			subscribeTxEvents(txId, txEvents$);
 		} catch (err) {
 			notifyError(err);
@@ -460,6 +459,8 @@ const useTransactionProvider = ({
 			return (
 				!!call &&
 				!!account &&
+				!isLoading &&
+				!error &&
 				!isEthereumNetworkMismatch &&
 				!isSwitchingEthereumNetwork &&
 				!Object.keys(insufficientBalances).length

@@ -26,8 +26,12 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 
 			try {
 				const api = await getApi(chainId);
+				const unsafeApi = api.client.getUnsafeApi();
 				const resultXcmsVersion =
-					(await api.query.PolkadotXcm.SafeXcmVersion.getValue()) ?? 4;
+					// biome-ignore lint/style/noNonNullAssertion: PolkadotXcm exists on all Asset Hub chains
+					((await unsafeApi.query.PolkadotXcm!.SafeXcmVersion!.getValue()) as
+						| number
+						| undefined) ?? 4;
 
 				const origin = Enum("system", Enum("Signed", from));
 

@@ -26,7 +26,6 @@ export * from "./usePoolReservesByTokenIds";
 export * from "./usePoolSupplies";
 export * from "./usePoolSupply";
 export * from "./usePoolsByChainId";
-export * from "./useResolvedRecipient";
 export * from "./useResolvedSubstrateAddress";
 export * from "./useSetting";
 export * from "./useStablePlancksMulti";
