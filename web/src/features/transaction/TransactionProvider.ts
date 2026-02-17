@@ -1,4 +1,3 @@
-import { getApi } from "@kheopswap/papi";
 import type { TokenId } from "@kheopswap/registry";
 import { type ChainId, getChainById } from "@kheopswap/registry";
 import type { BalanceDef } from "@kheopswap/services/balances";
@@ -311,11 +310,9 @@ const useTransactionProvider = ({
 				const callData = toHex(encodedCallData.asBytes());
 
 				txEvents$ = createEthereumTxObservable({
-					walletClient: account.client,
-					from: account.address,
-					callData,
+					account,
 					chainId: chainId as ChainId,
-					getClient: async () => (await getApi(chainId as ChainId)).client,
+					callData,
 				});
 			} else {
 				if (!feeEstimate || !options) return;

@@ -57,6 +57,11 @@ Always use `getApi()` from `@kheopswap/papi` - it handles light client vs RPC se
 const api = await getApi(chainId); // waitReady=true by default
 ```
 
+- **Do not use PAPI Unsafe API**: Never use `api.client.getUnsafeApi()` in app code.
+- **Avoid direct PAPI client usage**: Do not use `api.client` directly when a typed API query/tx/constant is available.
+- **Prefer typed API surface**: Use `api.query.*`, `api.tx.*`, `api.event.*`, and `api.constants.*` first.
+- **If no typed API exists**: Call this out explicitly in PR/task notes before introducing any low-level workaround.
+
 ## Development Commands
 
 ```bash

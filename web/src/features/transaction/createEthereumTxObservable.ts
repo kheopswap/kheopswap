@@ -1,16 +1,10 @@
-import type { ChainId } from "@kheopswap/registry";
+import { type Api, getApi } from "@kheopswap/papi";
+import { type ChainId, getChainById } from "@kheopswap/registry";
 import { logger, sleep } from "@kheopswap/utils";
-import type { PolkadotClient, TxEvent } from "polkadot-api";
-import type { Subscription } from "rxjs";
-import {
-	filter,
-	firstValueFrom,
-	map,
-	merge,
-	Observable,
-	switchMap,
-} from "rxjs";
-import type { Address, Client, Hex } from "viem";
+import type { TxEvent } from "polkadot-api";
+import { Observable } from "rxjs";
+import type { Address, Client, Hex, PublicClient } from "viem";
+import { createPublicClient, fallback, http } from "viem";
 
 /**
  * H160 (Ethereum) address of the Revive pallet's "runtime pallets" dispatch precompile on Asset Hub.
@@ -22,14 +16,20 @@ import type { Address, Client, Hex } from "viem";
  * for the `py/paddr` module), null-padded to 20 bytes.
  */
 const RUNTIME_PALLETS_ADDR = "0x6d6f646c70792f70616464720000000000000000";
+const ZERO_HASH =
+	"0x0000000000000000000000000000000000000000000000000000000000000000";
+
+const RECEIPT_TIMEOUT_MS = 20_000;
+const BLOCK_HASH_LOOKUP_TIMEOUT_MS = 20_000;
+const FINALIZATION_WAIT_TIMEOUT_MS = 120_000;
+const BLOCK_HASH_POLL_INTERVAL_MS = 500;
+const FINALIZATION_POLL_INTERVAL_MS = 1000;
 
 export type EthereumWalletClient = Pick<Client, "request">;
-
-type EthereumTransactionReceipt = {
-	status?: Hex;
-	blockHash?: Hex;
-	blockNumber?: Hex;
-	transactionIndex?: Hex;
+export type EthereumAccount = {
+	platform: "ethereum";
+	address: string;
+	client: EthereumWalletClient;
 };
 
 type SystemEvent = {
@@ -38,27 +38,60 @@ type SystemEvent = {
 	topics: unknown[];
 };
 
+const parseNumberLike = (value: unknown, fallback: number): number => {
+	if (typeof value === "number")
+		return Number.isFinite(value) ? value : fallback;
+	if (typeof value === "bigint") return Number(value);
+	if (typeof value === "string") {
+		const radix = value.startsWith("0x") ? 16 : 10;
+		const parsed = Number.parseInt(value, radix);
+		return Number.isFinite(parsed) ? parsed : fallback;
+	}
+	return fallback;
+};
+
+const isReceiptSuccess = (status: unknown): boolean =>
+	status === "success" || status === "0x1" || status === "0x01";
+
+const createEthereumPublicClient = (
+	rpcUrls: string[],
+	chainId: ChainId,
+): PublicClient => {
+	const urls = rpcUrls.filter(Boolean);
+	if (!urls.length) {
+		throw new Error(`No public Ethereum RPC configured for chain ${chainId}`);
+	}
+
+	const transport =
+		urls.length === 1
+			? http(urls[0], { retryCount: 0 })
+			: fallback(
+					urls.map((url) => http(url, { retryCount: 0 })),
+					{ rank: false },
+				);
+
+	return createPublicClient({ transport });
+};
+
 const waitForReceipt = async (
-	client: EthereumWalletClient,
+	publicClient: PublicClient,
 	txHash: Hex,
 	signal?: AbortSignal,
-): Promise<EthereumTransactionReceipt> => {
+) => {
 	let delay = 1000;
 	const maxDelay = 5000;
-	const deadline = Date.now() + 120_000;
+	const deadline = Date.now() + RECEIPT_TIMEOUT_MS;
 
 	while (Date.now() < deadline) {
 		if (signal?.aborted) throw new Error("Transaction was cancelled");
 
 		try {
-			const receipt = (await client.request({
-				method: "eth_getTransactionReceipt",
-				params: [txHash],
-			})) as EthereumTransactionReceipt | null;
-
+			const receipt = await publicClient.getTransactionReceipt({
+				hash: txHash,
+			});
 			if (receipt) return receipt;
 		} catch (err) {
-			logger.warn("eth_getTransactionReceipt RPC error, retrying", { err });
+			void err;
 		}
 
 		await sleep(delay);
@@ -68,14 +101,86 @@ const waitForReceipt = async (
 	throw new Error("Timed out while waiting for Ethereum transaction receipt");
 };
 
-/**
- * Fetches decoded Substrate events for a specific extrinsic from a block.
- *
- * Uses PAPI's UnsafeApi to query System.Events at the given block hash,
- * then filters by extrinsic index — the same logic PAPI's submit$ uses internally.
- */
+const waitForSubstrateBlockHash = async (
+	api: Api<ChainId>,
+	blockNumber: number,
+	signal?: AbortSignal,
+): Promise<string> => {
+	const deadline = Date.now() + BLOCK_HASH_LOOKUP_TIMEOUT_MS;
+
+	while (Date.now() < deadline) {
+		if (signal?.aborted) throw new Error("Transaction was cancelled");
+
+		try {
+			const blockHashValue = await api.query.System.BlockHash.getValue(
+				blockNumber,
+				{
+					at: "best",
+					signal,
+				},
+			);
+			const hash = blockHashValue.asHex();
+
+			if (hash && hash !== ZERO_HASH) return hash;
+		} catch (err) {
+			void err;
+		}
+
+		await sleep(BLOCK_HASH_POLL_INTERVAL_MS);
+	}
+
+	throw new Error(
+		`Timed out while resolving Substrate block hash for block ${blockNumber}`,
+	);
+};
+
+const waitForFinalization = async (
+	api: Api<ChainId>,
+	blockNumber: number,
+	expectedHash: string,
+	signal?: AbortSignal,
+): Promise<string> => {
+	const deadline = Date.now() + FINALIZATION_WAIT_TIMEOUT_MS;
+	let attempts = 0;
+
+	while (Date.now() < deadline) {
+		if (signal?.aborted) throw new Error("Transaction was cancelled");
+		attempts += 1;
+
+		try {
+			const finalizedHashValue = await api.query.System.BlockHash.getValue(
+				blockNumber,
+				{ at: "finalized", signal },
+			);
+			const finalizedHash = finalizedHashValue.asHex();
+
+			if (finalizedHash && finalizedHash !== ZERO_HASH) {
+				if (finalizedHash !== expectedHash) {
+					logger.warn("[eth-tx] Finalized block hash differs from best hash", {
+						chainId: api.chainId,
+						blockNumber,
+						expectedHash,
+						finalizedHash,
+						attempts,
+					});
+				}
+
+				return finalizedHash;
+			}
+		} catch (err) {
+			void err;
+		}
+
+		await sleep(FINALIZATION_POLL_INTERVAL_MS);
+	}
+
+	throw new Error(
+		`Timed out while waiting for finalization for block ${blockNumber}`,
+	);
+};
+
 const fetchBlockEvents = async (
-	client: PolkadotClient,
+	api: Api<ChainId>,
 	blockHash: string,
 	extrinsicIndex: number,
 ): Promise<
@@ -89,9 +194,7 @@ const fetchBlockEvents = async (
 			dispatchError: { type: string; value: unknown };
 	  }
 > => {
-	const unsafeApi = client.getUnsafeApi();
-	// biome-ignore lint/style/noNonNullAssertion: System.Events always exists on Substrate chains
-	const systemEvents = (await unsafeApi.query.System!.Events!.getValue({
+	const systemEvents = (await api.query.System.Events.getValue({
 		at: blockHash,
 	})) as SystemEvent[];
 
@@ -124,65 +227,30 @@ const fetchBlockEvents = async (
 	return { ok: true, events };
 };
 
-/**
- * Creates an Observable<TxEvent> for Ethereum transactions that provides
- * the same event flow as PAPI's signSubmitAndWatch:
- *
- * 1. { type: "broadcasted" }       — when eth_sendTransaction returns a tx hash
- * 2. { type: "txBestBlocksState" } — when the tx is found in a best block,
- *    with decoded Substrate events (SwapExecuted, TransactionFeePaid, etc.)
- * 3. { type: "finalized" }         — when the block is finalized
- *
- * The Ethereum receipt provides a keccak256 block hash, but PAPI uses blake2b-256
- * Substrate hashes. We resolve the Substrate hash by block number using two
- * strategies raced together:
- * - blocks$ / bestBlocks$: captures blocks as the light client reports them
- * - System.BlockHash storage query: fallback when the light client is slow and
- *   finalization jumps past our block (so it never appears in bestBlocks$)
- *
- * Errors (user rejection, timeout) go through the Observable error channel.
- */
 export const createEthereumTxObservable = ({
-	walletClient,
-	from,
-	callData,
+	account,
 	chainId,
-	getClient,
+	callData,
 }: {
-	walletClient: EthereumWalletClient;
-	from: Address;
-	callData: Hex;
+	account: EthereumAccount;
 	chainId: ChainId;
-	getClient: () => Promise<PolkadotClient>;
+	callData: Hex;
 }): Observable<TxEvent> =>
 	new Observable((subscriber) => {
 		const abortController = new AbortController();
-		const heldBlocks: Array<() => void> = [];
-		let blocksSub: Subscription | undefined;
 
 		const run = async () => {
-			// Get PAPI client BEFORE sending the tx so we can subscribe to blocks$
-			// and capture Substrate block hashes before our block is produced.
-			const client = await getClient();
+			const api = await getApi(chainId);
+			const chain = getChainById(chainId);
+			const publicRpcUrls = chain?.evmRpcUrl ?? [];
+			const from = account.address as Address;
 
-			if (abortController.signal.aborted) return;
+			const publicClient = createEthereumPublicClient(
+				publicRpcUrls,
+				api.chainId,
+			);
 
-			// Watch blocks as PAPI discovers them, recording Substrate hashes by
-			// number. We hodl each block to prevent PAPI from unpinning it before
-			// we can query its events. This runs from tx send to finalization
-			// (~10-30 blocks), so the held set stays small.
-			// blocks$ replays finalized + descendants synchronously on subscribe.
-			const blocksByNumber = new Map<number, string>();
-			blocksSub = client.blocks$.subscribe((block) => {
-				blocksByNumber.set(block.number, block.hash);
-				try {
-					heldBlocks.push(client.hodlBlock(block.hash));
-				} catch {
-					// Block might have been unpinned already — still record the hash
-				}
-			});
-
-			const txHash = (await walletClient.request({
+			const txHash = (await account.client.request({
 				method: "eth_sendTransaction",
 				params: [
 					{
@@ -194,89 +262,39 @@ export const createEthereumTxObservable = ({
 				],
 			})) as Hex;
 
-			if (abortController.signal.aborted) return;
-
 			subscriber.next({ type: "broadcasted", txHash });
 
 			const receipt = await waitForReceipt(
-				walletClient,
+				publicClient,
 				txHash,
+				abortController.signal,
+			);
+			if (abortController.signal.aborted) return;
+
+			const blockNumber = parseNumberLike(receipt.blockNumber, 0);
+			const txIndex = parseNumberLike(receipt.transactionIndex, 0);
+
+			const substrateBlockHash = await waitForSubstrateBlockHash(
+				api,
+				blockNumber,
 				abortController.signal,
 			);
 
 			if (abortController.signal.aborted) return;
 
-			const blockNumber = Number.parseInt(receipt.blockNumber ?? "0x0", 16);
-			const txIndex = Number.parseInt(receipt.transactionIndex ?? "0x0", 16);
-
-			// Resolve the Substrate block hash from the block number.
-			// The Ethereum receipt gives a keccak256 hash that PAPI cannot use;
-			// we look up the blake2b-256 Substrate hash by number instead.
-			let substrateBlockHash = blocksByNumber.get(blockNumber);
-
-			if (!substrateBlockHash) {
-				// Block not yet captured by blocks$ — race two strategies:
-				// 1. bestBlocks$: works when the light client is keeping up and
-				//    the block appears as unfinalized or latest-finalized.
-				// 2. finalizedBlock$ → System.BlockHash: works when the light
-				//    client is slow and finalization jumps past our block
-				//    (so it never individually appears in bestBlocks$).
-				substrateBlockHash = await firstValueFrom(
-					merge(
-						client.bestBlocks$.pipe(
-							map(
-								(blocks) => blocks.find((b) => b.number === blockNumber)?.hash,
-							),
-							filter((hash): hash is string => !!hash),
-						),
-						client.finalizedBlock$.pipe(
-							filter((b) => b.number > blockNumber),
-							switchMap(async () => {
-								const unsafeApi = client.getUnsafeApi();
-								// System.BlockHash stores hashes for the last 256 blocks
-								// biome-ignore lint/style/noNonNullAssertion: System.BlockHash always exists
-								const hash = (await unsafeApi.query.System!.BlockHash!.getValue(
-									blockNumber,
-								)) as string;
-								return hash;
-							}),
-							filter(
-								(hash): hash is string =>
-									!!hash &&
-									hash !==
-										"0x0000000000000000000000000000000000000000000000000000000000000000",
-							),
-						),
-					),
-				);
-
-				// Hodl it if possible — may fail for already-finalized blocks
-				try {
-					heldBlocks.push(client.hodlBlock(substrateBlockHash));
-				} catch {
-					logger.warn("[eth-tx] Could not pin block, it may have been pruned", {
-						chainId,
-						substrateBlockHash,
-					});
-				}
-			}
-
-			if (abortController.signal.aborted) return;
-
-			// Fetch decoded Substrate events from the block
 			let blockEvents: Awaited<ReturnType<typeof fetchBlockEvents>>;
 			try {
-				blockEvents = await fetchBlockEvents(
-					client,
-					substrateBlockHash,
-					txIndex,
-				);
+				blockEvents = await fetchBlockEvents(api, substrateBlockHash, txIndex);
 			} catch (err) {
 				logger.warn(
 					"[eth-tx] Failed to fetch block events, proceeding without them",
-					{ chainId, blockHash: substrateBlockHash, txIndex, err },
+					{
+						chainId: api.chainId,
+						txHash,
+						err,
+					},
 				);
-				const ok = receipt.status === "0x1" || receipt.status === "0x01";
+				const ok = isReceiptSuccess(receipt.status);
 				blockEvents = ok
 					? { ok: true, events: [] }
 					: {
@@ -297,7 +315,6 @@ export const createEthereumTxObservable = ({
 				index: txIndex,
 			};
 
-			// Emit txBestBlocksState — the tx has been found in a best block
 			subscriber.next({
 				type: "txBestBlocksState",
 				txHash,
@@ -306,14 +323,17 @@ export const createEthereumTxObservable = ({
 				block,
 			} as TxEvent);
 
-			// Wait for PAPI to finalize the block
-			await firstValueFrom(
-				client.finalizedBlock$.pipe(filter((b) => b.number >= blockNumber)),
+			const finalizedHash = await waitForFinalization(
+				api,
+				blockNumber,
+				substrateBlockHash,
+				abortController.signal,
 			);
 
 			if (abortController.signal.aborted) return;
 
-			// Emit finalized
+			if (finalizedHash !== block.hash) block.hash = finalizedHash;
+
 			subscriber.next({
 				type: "finalized",
 				txHash,
@@ -330,7 +350,5 @@ export const createEthereumTxObservable = ({
 
 		return () => {
 			abortController.abort();
-			blocksSub?.unsubscribe();
-			for (const release of heldBlocks) release();
 		};
 	});

@@ -10,7 +10,10 @@
 			"wss://dot-rpc.stakeworld.io/assethub"
 		],
 		"evmChainId": 420420419,
-		"evmRpcUrl": ["https://asset-hub-eth-rpc.polkadot.io"],
+		"evmRpcUrl": [
+			"https://services.polkadothub-rpc.com/mainnet",
+			"https://eth-rpc.polkadot.io"
+		],
 		"evmBlockExplorers": ["https://blockscout.polkadot.io/"],
 		"relay": "polkadot",
 		"paraId": 1000,
