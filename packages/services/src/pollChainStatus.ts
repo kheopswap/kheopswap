@@ -65,7 +65,7 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 							if (statusByChain[chainId] === "loaded")
 								setLoadingStatus(chainId, "stale");
 						}
-					}, refreshTimeout) as unknown as number, // tsconfig bug ?
+					}, refreshTimeout),
 				);
 			}
 
