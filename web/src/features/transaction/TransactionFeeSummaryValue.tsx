@@ -51,7 +51,9 @@ export const TransactionFeeSummaryValue: FC = () => {
 	return (
 		<>
 			{!!feeToken && isBigInt(feeEstimate) ? (
-				feeTokens && feeTokens.length > 1 ? (
+				account?.platform === "polkadot" &&
+				feeTokens &&
+				feeTokens.length > 1 ? (
 					<button
 						type="button"
 						onClick={open}

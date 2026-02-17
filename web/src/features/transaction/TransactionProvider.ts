@@ -231,11 +231,17 @@ const useTransactionProvider = ({
 	});
 
 	const {
-		feeToken,
+		feeToken: selectedFeeToken,
 		feeTokens,
 		isLoading: isLoadingFeeTokens,
 		setFeeTokenId,
 	} = useFeeToken({ accountId: signer, chainId });
+
+	const feeToken = useMemo(
+		() =>
+			isEthereumAccount ? (nativeToken ?? selectedFeeToken) : selectedFeeToken,
+		[isEthereumAccount, nativeToken, selectedFeeToken],
+	);
 
 	const options = useMemo(() => {
 		if (!isNumber(nonce) || !feeToken) return undefined;
@@ -494,9 +500,10 @@ const useTransactionProvider = ({
 
 	const onFeeTokenChange = useCallback(
 		(feeTokenId: TokenId) => {
+			if (isEthereumAccount) return;
 			setFeeTokenId(feeTokenId);
 		},
-		[setFeeTokenId],
+		[isEthereumAccount, setFeeTokenId],
 	);
 
 	return {
