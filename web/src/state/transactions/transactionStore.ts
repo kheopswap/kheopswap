@@ -1,4 +1,3 @@
-import { getLocalStorageKey, safeParse, safeStringify } from "@kheopswap/utils";
 import { BehaviorSubject, map } from "rxjs";
 import type { FollowUpTxEvent } from "src/components";
 import {
@@ -10,49 +9,18 @@ import {
 } from "./types";
 
 const MAX_TRANSACTIONS = 20;
-const STORAGE_KEY = getLocalStorageKey("transactions::v1");
+const LEGACY_STORAGE_KEY = "kheopswap::transactions::v1";
 
-// Only persist completed transactions (for history)
-// Active transactions with observables cannot be serialized
-const loadPersistedTransactions = (): Map<TransactionId, TransactionRecord> => {
-	try {
-		const stored = localStorage.getItem(STORAGE_KEY);
-		if (!stored) return new Map();
-
-		const parsed = safeParse<Array<[TransactionId, TransactionRecord]>>(stored);
-		return new Map(parsed);
-	} catch {
-		return new Map();
-	}
-};
-
-const persistTransactions = (
-	transactions: Map<TransactionId, TransactionRecord>,
-): void => {
-	try {
-		// Only persist terminal transactions
-		const toStore = Array.from(transactions.entries()).filter(([, tx]) =>
-			isTerminalStatus(tx.status),
-		);
-
-		localStorage.setItem(STORAGE_KEY, safeStringify(toStore));
-	} catch (err) {
-		console.error("Failed to persist transactions", err);
-	}
-};
-
-// Initialize store with persisted data
-const initialTransactions = loadPersistedTransactions();
+try {
+	localStorage.removeItem(LEGACY_STORAGE_KEY);
+} catch {
+	// ignore localStorage access issues
+}
 
 // Main store
 const transactionsSubject = new BehaviorSubject<
 	Map<TransactionId, TransactionRecord>
->(initialTransactions);
-
-// Auto-persist on changes (debounced would be better but keeping simple)
-transactionsSubject.subscribe((transactions) => {
-	persistTransactions(transactions);
-});
+>(new Map());
 
 // Observables
 export const transactions$ = transactionsSubject

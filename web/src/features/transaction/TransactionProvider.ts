@@ -10,7 +10,6 @@ import {
 import { isNumber, uniq } from "lodash-es";
 import type { TxEvent } from "polkadot-api";
 import { useCallback, useMemo, useState } from "react";
-import { toast } from "react-toastify";
 import { catchError, type Observable, of, shareReplay } from "rxjs";
 import {
 	useAssetConvertPlancks,
@@ -28,6 +27,7 @@ import {
 import {
 	addTransaction,
 	appendTxEvent,
+	minimizeTransaction,
 	openTransactionModal,
 	type TransactionType,
 	updateTransactionStatus,
@@ -68,6 +68,37 @@ const DEFAULT_FOLLOW_UP_DATA = {};
  */
 const TX_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 
+const isUserRejectedTxError = (error: unknown): boolean => {
+	if (typeof error !== "object" || error === null) return false;
+
+	if ("code" in error) {
+		const code = (error as { code?: unknown }).code;
+		if (code === 4001 || code === "ACTION_REJECTED") return true;
+	}
+
+	if ("name" in error) {
+		const name = (error as { name?: unknown }).name;
+		if (typeof name === "string" && name.includes("Rejected")) return true;
+	}
+
+	if ("message" in error) {
+		const message = (error as { message?: unknown }).message;
+		if (typeof message === "string") {
+			const normalized = message.toLowerCase();
+			if (
+				normalized.includes("user rejected") ||
+				normalized.includes("user denied") ||
+				normalized.includes("cancelled") ||
+				normalized.includes("canceled")
+			) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+};
+
 const subscribeTxEvents = (
 	txId: string,
 	txEvents$: Observable<TxEvent>,
@@ -104,13 +135,12 @@ const subscribeTxEvents = (
 		if (x.type === "error") {
 			logger.error("Transaction error", x.error);
 			const err = x.error;
+			const isUserRejected = isUserRejectedTxError(err);
 			const hasNestedError =
 				typeof err === "object" && err !== null && "error" in err;
 			const errorMessage = hasNestedError
 				? formatTxError((err as { error: unknown }).error)
 				: "";
-			const errorType = err instanceof Error ? err.name : "Error";
-			const errorText = errorMessage ? `${errorType}: ${errorMessage}` : null;
 
 			if (errorMessage === "Unknown: CannotLookup")
 				console.warn(
@@ -118,9 +148,11 @@ const subscribeTxEvents = (
 				);
 
 			if (!isSubmitted) {
-				if (errorText) toast(errorText, { type: "error" });
-				else notifyError(x.error);
+				appendTxEvent(txId, x);
 				updateTransactionStatus(txId, "failed");
+				if (isUserRejected) {
+					minimizeTransaction(txId);
+				}
 			} else {
 				appendTxEvent(txId, x);
 			}

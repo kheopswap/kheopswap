@@ -1,5 +1,10 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { cn } from "@kheopswap/utils";
+import {
+	cn,
+	formatTxError,
+	getErrorMessageFromTxEvents,
+	type TxEvents,
+} from "@kheopswap/utils";
 import { type FC, useCallback, useEffect, useRef } from "react";
 import { type Id as ToastId, toast } from "react-toastify";
 import { SpinnerBasicIcon } from "src/components/icons";
@@ -42,10 +47,11 @@ const getToastType = (
 	}
 };
 
-const ToastContent: FC<{ tx: TransactionRecord; onClick: () => void }> = ({
-	tx,
-	onClick,
-}) => {
+const ToastContent: FC<{
+	tx: TransactionRecord;
+	onClick: () => void;
+	errorMessage?: string | null;
+}> = ({ tx, onClick, errorMessage }) => {
 	// Show spinner for all non-terminal statuses (including inBlock)
 	const isLoading = !isTerminalStatus(tx.status);
 	const isSuccess = tx.status === "finalized";
@@ -74,14 +80,13 @@ const ToastContent: FC<{ tx: TransactionRecord; onClick: () => void }> = ({
 				<span
 					className={cn(
 						"text-sm font-medium truncate",
-						isSuccess && "text-success",
 						isError && "text-error",
 					)}
 				>
 					{tx.title}
 				</span>
 				<span className="text-xs text-neutral-500 truncate">
-					{getStatusText(tx.status)}
+					{errorMessage ?? getStatusText(tx.status)}
 				</span>
 			</div>
 		</button>
@@ -96,6 +101,47 @@ const programmaticDismissals = new Set<string>();
 // Toast should be shown once transaction is signed (not just pending)
 const shouldShowToast = (status: TransactionStatus): boolean => {
 	return status !== "pending";
+};
+
+const getTxErrorMessage = (tx: TransactionRecord): string | null => {
+	if (tx.status !== "failed") return null;
+
+	const latestErrorEvent = [...tx.txEvents]
+		.reverse()
+		.find((event) => event.type === "error");
+
+	if (latestErrorEvent?.type === "error") {
+		const { error } = latestErrorEvent;
+
+		if (error instanceof Error && error.message) return error.message;
+		if (typeof error === "string" && error) return error;
+
+		if (typeof error === "object" && error !== null) {
+			if ("error" in error) {
+				const formatted = formatTxError((error as { error: unknown }).error);
+				if (formatted) return formatted;
+			}
+
+			if (
+				"message" in error &&
+				typeof (error as { message: unknown }).message === "string"
+			) {
+				return (error as { message: string }).message;
+			}
+		}
+	}
+
+	const allEvents: TxEvents = tx.txEvents.flatMap(
+		(event) =>
+			(event.type === "finalized" && event.events) ||
+			(event.type === "txBestBlocksState" && event.found && event.events) ||
+			[],
+	);
+
+	if (allEvents.length === 0) return null;
+
+	const txFailedErrorMessage = getErrorMessageFromTxEvents(allEvents);
+	return txFailedErrorMessage || null;
 };
 
 const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
@@ -126,25 +172,41 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 		const toastType = getToastType(tx.status);
 		const existingToast = activeToasts.get(tx.id);
 		const showToast = shouldShowToast(tx.status);
+		const errorMessage = getTxErrorMessage(tx);
+		const autoClose = tx.status === "failed" ? 5_000 : false;
 
 		if (showToast) {
 			if (existingToast === undefined) {
 				// Create new toast
-				const toastId = toast(<ToastContent tx={tx} onClick={handleClick} />, {
-					toastId: tx.id,
-					type: toastType,
-					autoClose: false,
-					closeOnClick: false,
-					draggable: true,
-					onClose: handleToastClose,
-					icon: false,
-				});
+				const toastId = toast(
+					<ToastContent
+						tx={tx}
+						onClick={handleClick}
+						errorMessage={errorMessage}
+					/>,
+					{
+						toastId: tx.id,
+						type: toastType,
+						autoClose,
+						closeOnClick: false,
+						draggable: true,
+						onClose: handleToastClose,
+						icon: false,
+					},
+				);
 				activeToasts.set(tx.id, toastId);
 			} else {
 				// Update existing toast
 				toast.update(existingToast, {
-					render: <ToastContent tx={tx} onClick={handleClick} />,
+					render: (
+						<ToastContent
+							tx={tx}
+							onClick={handleClick}
+							errorMessage={errorMessage}
+						/>
+					),
 					type: toastType,
+					autoClose,
 				});
 			}
 		}
