@@ -10,7 +10,7 @@ import {
 } from "@kheopswap/utils";
 import { isNumber, uniq } from "lodash-es";
 import type { TxEvent } from "polkadot-api";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { catchError, type Observable, of, shareReplay } from "rxjs";
 import {
@@ -36,10 +36,7 @@ import {
 import type { AnyTransaction } from "src/types";
 import { getFeeAssetLocation, getTxOptions } from "src/util";
 import { toHex } from "viem";
-import {
-	createEthereumTxObservable,
-	type EthereumWalletClient,
-} from "./createEthereumTxObservable";
+import { createEthereumTxObservable } from "./createEthereumTxObservable";
 
 export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
@@ -132,9 +129,6 @@ const useTransactionProvider = ({
 	const account = useWalletAccount({ id: signer });
 	const [isSwitchingEthereumNetwork, setIsSwitchingEthereumNetwork] =
 		useState(false);
-	const [connectedEvmChainId, setConnectedEvmChainId] = useState<
-		number | undefined
-	>(undefined);
 
 	const chain = useMemo(
 		() => (chainId ? getChainById(chainId) : null),
@@ -151,29 +145,10 @@ const useTransactionProvider = ({
 	});
 
 	const targetEvmChainId = chain?.evmChainId;
-
-	const refreshConnectedEvmChainId = useCallback(async () => {
-		if (account?.platform !== "ethereum") {
-			setConnectedEvmChainId(undefined);
-			return;
-		}
-
-		try {
-			const chainId = await account.client.getChainId();
-			setConnectedEvmChainId(chainId);
-		} catch {
-			setConnectedEvmChainId(undefined);
-		}
-	}, [account]);
-
-	useEffect(() => {
-		if (account?.platform !== "ethereum") {
-			setConnectedEvmChainId(undefined);
-			return;
-		}
-
-		void refreshConnectedEvmChainId();
-	}, [account, refreshConnectedEvmChainId]);
+	const connectedEvmChainId = useMemo(
+		() => (account?.platform === "ethereum" ? account.chainId : undefined),
+		[account],
+	);
 
 	const isEthereumNetworkMismatch = useMemo(() => {
 		if (!isEthereumAccount) return false;
@@ -188,7 +163,6 @@ const useTransactionProvider = ({
 		try {
 			setIsSwitchingEthereumNetwork(true);
 			await account.client.switchChain({ id: targetEvmChainId });
-			await refreshConnectedEvmChainId();
 		} catch {
 			try {
 				await account.client.request({
@@ -209,7 +183,6 @@ const useTransactionProvider = ({
 				});
 
 				await account.client.switchChain({ id: targetEvmChainId });
-				await refreshConnectedEvmChainId();
 			} catch (error) {
 				notifyError(error);
 			}
@@ -223,7 +196,6 @@ const useTransactionProvider = ({
 		chain?.name,
 		isEthereumAccount,
 		nativeToken?.symbol,
-		refreshConnectedEvmChainId,
 		targetEvmChainId,
 	]);
 
@@ -312,7 +284,7 @@ const useTransactionProvider = ({
 				const callData = toHex(encodedCallData.asBytes());
 
 				txEvents$ = createEthereumTxObservable({
-					walletClient: account.client as unknown as EthereumWalletClient,
+					walletClient: account.client,
 					from: account.address,
 					callData,
 					chainId: chainId as ChainId,

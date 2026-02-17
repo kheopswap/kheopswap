@@ -223,11 +223,11 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.4)
       '@kheopskit/core':
-        specifier: ^0.1.1
-        version: 0.1.1(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76)
+        specifier: ^0.1.2
+        version: 0.1.2(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76)
       '@kheopskit/react':
         specifier: ^1.0.1
-        version: 1.0.1(@kheopskit/core@0.1.1(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+        version: 1.0.1(@kheopskit/core@0.1.2(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       '@kheopswap/constants':
         specifier: workspace:*
         version: link:../packages/constants
@@ -910,8 +910,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kheopskit/core@0.1.1':
-    resolution: {integrity: sha512-5JlIPkjJNAoKz8EcpitRsoMOK2SS9JA4Qdn3cVLCXHPqbXfJbgil/Hl/WoWysE3YJsA7QCaiBNupZhYHC5Vdhw==}
+  '@kheopskit/core@0.1.2':
+    resolution: {integrity: sha512-TrOGblgDZAAEB0m4A5eMxCJDg95ehltsHREo3ufegFX5VTHFt6bMGrZ+wbb8OeeEVd+oR8sa/ecWks7PXO0U9g==}
     peerDependencies:
       polkadot-api: '>=1.21.0'
       rxjs: '>=7.0.0'
@@ -5176,7 +5176,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@kheopskit/core@0.1.1(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76)':
+  '@kheopskit/core@0.1.2(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
       '@reown/appkit': 1.8.17(@types/react@19.2.11)(bufferutil@4.1.0)(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76)
       '@walletconnect/types': 2.23.4
@@ -5219,9 +5219,9 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@kheopskit/react@1.0.1(@kheopskit/core@0.1.1(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)':
+  '@kheopskit/react@1.0.1(@kheopskit/core@0.1.2(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)':
     dependencies:
-      '@kheopskit/core': 0.1.1(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@kheopskit/core': 0.1.2(@types/react@19.2.11)(bufferutil@4.1.0)(polkadot-api@1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2))(react@19.2.4)(rxjs@7.8.2)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.4))(utf-8-validate@5.0.10)(zod@3.25.76)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
       rxjs: 7.8.2

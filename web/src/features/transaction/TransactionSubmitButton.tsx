@@ -24,7 +24,7 @@ export const TransactionSubmitButton: FC<TransactionSubmitButtonProps> = ({
 				disabled={isSwitchingEthereumNetwork}
 				onClick={onSwitchEthereumNetwork}
 			>
-				{isSwitchingEthereumNetwork ? "Switching network..." : "Switch network"}
+				Switch network
 			</MagicButton>
 		);
 	}

@@ -15,7 +15,7 @@
 		"@fontsource-variable/lexend-deca": "^5.2.10",
 		"@headlessui/react": "^2.2.9",
 		"@heroicons/react": "^2.2.0",
-		"@kheopskit/core": "^0.1.1",
+		"@kheopskit/core": "^0.1.2",
 		"@kheopskit/react": "^1.0.1",
 		"@kheopswap/constants": "workspace:*",
 		"@kheopswap/papi": "workspace:*",
