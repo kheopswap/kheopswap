@@ -11,6 +11,7 @@ import { type FC, useCallback, useMemo, useState } from "react";
 import { useAllWallets, useBalancesWithStables, useToken } from "src/hooks";
 import { useRelayChains } from "src/state";
 import type { BalanceWithStableSummary } from "src/types";
+import { getAccountName } from "src/util";
 import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
@@ -74,10 +75,7 @@ const AccountButton: FC<{
 	disabled,
 	onClick,
 }) => {
-	const accountName = useMemo(
-		() => ("name" in account ? account.name : undefined),
-		[account],
-	);
+	const accountName = useMemo(() => getAccountName(account), [account]);
 
 	return (
 		<button

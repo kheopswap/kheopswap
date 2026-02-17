@@ -17,7 +17,7 @@ export type Chain<Id = ChainId> = {
 	wsUrl: string[];
 	evmChainId: number;
 	evmRpcUrl: string[];
-	evmBlockExplorer: string | null;
+	evmBlockExplorers: string[];
 	relay: RelayId;
 	paraId: number;
 	logo: string;

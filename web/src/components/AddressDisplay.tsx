@@ -5,6 +5,7 @@ import { cn, logger, notifyError, shortenAddress } from "@kheopswap/utils";
 import { type FC, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useAllWallets } from "src/hooks";
+import { getAccountName } from "src/util";
 import { useCopyToClipboard } from "usehooks-ts";
 import { isAddress as isEvmAddress } from "viem";
 import { AccountIcon } from "./AccountIcon";
@@ -46,10 +47,7 @@ export const AddressDisplay: FC<{
 		() => accounts.find((a) => a.address === address),
 		[accounts, address],
 	);
-	const accountName = useMemo(
-		() => (account && "name" in account ? account.name : undefined),
-		[account],
-	);
+	const accountName = useMemo(() => getAccountName(account), [account]);
 
 	const handleCopyClick = useCallback(async () => {
 		try {

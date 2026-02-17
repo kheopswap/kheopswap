@@ -1,6 +1,3 @@
-import { USE_CHOPSTICKS } from "@kheopswap/constants";
-
-import chainsDevJson from "./chains.chopsticks.json";
 import chainsProdJson from "./chains.prod.json";
 import { DESCRIPTORS_ASSET_HUB } from "./descriptors";
 import type {
@@ -13,19 +10,7 @@ import type {
 
 export const PARA_ID_ASSET_HUB = 1000;
 
-const DEV_CHAINS = chainsDevJson as Chain[];
-const PROD_CHAINS = chainsProdJson as Chain[];
-
-const DEV_CHAINS_MAP = Object.fromEntries(
-	DEV_CHAINS.map((chain) => [chain.id, chain]),
-);
-
-// override with chopstick config if necessary
-const CHAINS = USE_CHOPSTICKS
-	? PROD_CHAINS.filter((chain) => !!DEV_CHAINS_MAP[chain.id]).map((chain) =>
-			Object.assign(chain, DEV_CHAINS_MAP[chain.id]),
-		)
-	: PROD_CHAINS;
+const CHAINS = chainsProdJson as Chain[];
 
 const CHAINS_MAP = Object.fromEntries(CHAINS.map((chain) => [chain.id, chain]));
 

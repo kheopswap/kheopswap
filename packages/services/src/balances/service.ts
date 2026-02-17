@@ -6,6 +6,7 @@ import {
 	distinctUntilChanged,
 	map,
 	Observable,
+	of,
 	shareReplay,
 	switchMap,
 } from "rxjs";
@@ -31,10 +32,7 @@ export const getBalance$ = (def: BalanceDef) => {
 		getResolvedSubstrateAddress$({ address: def.address, chainId }).pipe(
 			switchMap(({ address: resolvedAddress, status }) => {
 				if (status !== "loaded" || !resolvedAddress) {
-					return new Observable<BalanceState>((subscriber) => {
-						subscriber.next({ balance: undefined, status });
-						subscriber.complete();
-					});
+					return of<BalanceState>({ balance: undefined, status });
 				}
 
 				const resolvedBalanceId = getBalanceId({

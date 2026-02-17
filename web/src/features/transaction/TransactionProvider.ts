@@ -88,8 +88,13 @@ const subscribeTxEvents = (
 
 		if (x.type === "error") {
 			logger.error("Transaction error", x.error);
-			const errorMessage = x.error.error ? formatTxError(x.error.error) : "";
-			const errorType = x.error instanceof Error ? x.error.name : "Error";
+			const err = x.error;
+			const hasNestedError =
+				typeof err === "object" && err !== null && "error" in err;
+			const errorMessage = hasNestedError
+				? formatTxError((err as { error: unknown }).error)
+				: "";
+			const errorType = err instanceof Error ? err.name : "Error";
 			const errorText = errorMessage ? `${errorType}: ${errorMessage}` : null;
 
 			if (errorMessage === "Unknown: CannotLookup")
@@ -142,10 +147,7 @@ const useTransactionProvider = ({
 		chainId,
 	});
 
-	const targetEvmChainId = useMemo(
-		() => chain?.evmChainId,
-		[chain?.evmChainId],
-	);
+	const targetEvmChainId = chain?.evmChainId;
 
 	const refreshConnectedEvmChainId = useCallback(async () => {
 		if (account?.platform !== "ethereum") {
@@ -167,15 +169,7 @@ const useTransactionProvider = ({
 			return;
 		}
 
-		let isCancelled = false;
-
-		void refreshConnectedEvmChainId().then(() => {
-			if (isCancelled) return;
-		});
-
-		return () => {
-			isCancelled = true;
-		};
+		void refreshConnectedEvmChainId();
 	}, [account, refreshConnectedEvmChainId]);
 
 	const isEthereumNetworkMismatch = useMemo(() => {
@@ -205,9 +199,7 @@ const useTransactionProvider = ({
 							chainId: `0x${targetEvmChainId.toString(16)}`,
 							chainName: chain?.name ?? `Chain ${targetEvmChainId}`,
 							rpcUrls: chain?.evmRpcUrl ?? [],
-							blockExplorerUrls: chain?.evmBlockExplorer
-								? [chain.evmBlockExplorer]
-								: [],
+							blockExplorerUrls: chain?.evmBlockExplorers ?? [],
 							nativeCurrency: {
 								name: nativeToken?.symbol ?? "Native Token",
 								symbol: nativeToken?.symbol ?? "UNIT",
@@ -227,7 +219,7 @@ const useTransactionProvider = ({
 		}
 	}, [
 		account,
-		chain?.evmBlockExplorer,
+		chain?.evmBlockExplorers,
 		chain?.evmRpcUrl,
 		chain?.name,
 		isEthereumAccount,

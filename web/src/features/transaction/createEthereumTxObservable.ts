@@ -1,13 +1,8 @@
 import type { ChainId } from "@kheopswap/registry";
 import { logger, sleep } from "@kheopswap/utils";
 import type { PolkadotClient, TxEvent } from "polkadot-api";
-import {
-	filter,
-	firstValueFrom,
-	map,
-	Observable,
-	type Subscription,
-} from "rxjs";
+import type { Subscription } from "rxjs";
+import { filter, firstValueFrom, map, Observable } from "rxjs";
 
 const RUNTIME_PALLETS_ADDR = "0x6d6f646c70792f70616464720000000000000000";
 

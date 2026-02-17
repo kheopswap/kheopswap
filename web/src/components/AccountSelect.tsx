@@ -9,6 +9,7 @@ import {
 } from "@kheopswap/utils";
 import { type FC, useCallback, useMemo } from "react";
 import { useAllWallets, useOpenClose } from "src/hooks";
+import { getAccountName } from "src/util";
 import { AccountIcon } from "./AccountIcon";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
 import { EthereumIdenticon } from "./EthereumIdenticon";
@@ -50,10 +51,7 @@ const AccountRow: FC<{ account: SelectableAccount; className?: string }> = ({
 	account,
 	className,
 }) => {
-	const accountName = useMemo(
-		() => ("name" in account ? account.name : undefined),
-		[account],
-	);
+	const accountName = useMemo(() => getAccountName(account), [account]);
 
 	return (
 		<div

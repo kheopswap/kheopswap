@@ -11,7 +11,7 @@
 		],
 		"evmChainId": 420420419,
 		"evmRpcUrl": ["https://asset-hub-eth-rpc.polkadot.io"],
-		"evmBlockExplorer": "https://https://blockscout.polkadot.io/",
+		"evmBlockExplorers": ["https://blockscout.polkadot.io/"],
 		"relay": "polkadot",
 		"paraId": 1000,
 		"logo": "./img/chains/pah.svg",
@@ -30,7 +30,9 @@
 		],
 		"evmChainId": 420420418,
 		"evmRpcUrl": ["https://kusama-asset-hub-eth-rpc.polkadot.io"],
-		"evmBlockExplorer": "https://blockscout-kusama-asset-hub.parity-chains-scw.parity.io/",
+		"evmBlockExplorers": [
+			"https://blockscout-kusama-asset-hub.parity-chains-scw.parity.io/"
+		],
 		"relay": "kusama",
 		"paraId": 1000,
 		"logo": "./img/chains/kah.svg",
@@ -47,7 +49,9 @@
 		],
 		"evmChainId": 420420421,
 		"evmRpcUrl": ["https://westend-asset-hub-eth-rpc.polkadot.io"],
-		"evmBlockExplorer": "https://blockscout-asset-hub.parity-chains-scw.parity.io",
+		"evmBlockExplorers": [
+			"https://blockscout-asset-hub.parity-chains-scw.parity.io"
+		],
 		"relay": "westend",
 		"paraId": 1000,
 		"logo": "./img/chains/wah.svg",
@@ -68,7 +72,7 @@
 			"https://eth-rpc-testnet.polkadot.io",
 			"https://services.polkadothub-rpc.com/testnet"
 		],
-		"evmBlockExplorer": "https://blockscout-testnet.polkadot.io/",
+		"evmBlockExplorers": ["https://blockscout-testnet.polkadot.io/"],
 		"relay": "paseo",
 		"paraId": 1000,
 		"logo": "./img/chains/pasah.svg",
