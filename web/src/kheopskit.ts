@@ -2,115 +2,130 @@ import type { KheopskitConfig } from "@kheopskit/core";
 import { WALLET_CONNECT_PROJECT_ID } from "@kheopswap/constants";
 import { defineChain } from "@reown/appkit/networks";
 
-const polkadotAssetHub = defineChain({
+type SubstrateNetworkInput = {
+	id: string;
+	name: string;
+	symbol: string;
+	decimals: number;
+	http: string[];
+	webSocket: string[];
+};
+
+type EthereumNetworkInput = {
+	id: string;
+	name: string;
+	symbol: string;
+	http: string[];
+	decimals?: number;
+};
+
+const defineSubstrateNetwork = ({
+	id,
+	name,
+	symbol,
+	decimals,
+	http,
+	webSocket,
+}: SubstrateNetworkInput) =>
+	defineChain({
+		id,
+		name,
+		nativeCurrency: { name, symbol, decimals },
+		rpcUrls: {
+			default: {
+				http,
+				webSocket,
+			},
+		},
+		chainNamespace: "polkadot",
+		caipNetworkId: `polkadot:${id}`,
+	});
+
+const defineEthereumNetwork = ({
+	id,
+	name,
+	symbol,
+	http,
+	decimals = 18,
+}: EthereumNetworkInput) =>
+	defineChain({
+		id,
+		name,
+		nativeCurrency: { name, symbol, decimals },
+		rpcUrls: {
+			default: {
+				http,
+			},
+		},
+		chainNamespace: "eip155",
+		caipNetworkId: `eip155:${id}`,
+	});
+
+const polkadotAssetHub = defineSubstrateNetwork({
 	id: "68d56f15f85d3136970ec16946040bc1",
 	name: "Polkadot Asset Hub",
-	nativeCurrency: { name: "Polkadot", symbol: "DOT", decimals: 10 },
-	rpcUrls: {
-		default: {
-			http: ["https://polkadot-asset-hub-rpc.polkadot.io"],
-			webSocket: ["wss://polkadot-asset-hub-rpc.polkadot.io"],
-		},
-	},
-	chainNamespace: "polkadot",
-	caipNetworkId: "polkadot:68d56f15f85d3136970ec16946040bc1",
+	symbol: "DOT",
+	decimals: 10,
+	http: ["https://polkadot-asset-hub-rpc.polkadot.io"],
+	webSocket: ["wss://polkadot-asset-hub-rpc.polkadot.io"],
 });
 
-const kusamaAssetHub = defineChain({
+const kusamaAssetHub = defineSubstrateNetwork({
 	id: "48239ef607d7928874027a43a6768920",
 	name: "Kusama Asset Hub",
-	nativeCurrency: { name: "Kusama", symbol: "KSM", decimals: 12 },
-	rpcUrls: {
-		default: {
-			http: ["https://kusama-asset-hub-rpc.polkadot.io"],
-			webSocket: ["wss://kusama-asset-hub-rpc.polkadot.io"],
-		},
-	},
-	chainNamespace: "polkadot",
-	caipNetworkId: "polkadot:48239ef607d7928874027a43a6768920",
+	symbol: "KSM",
+	decimals: 12,
+	http: ["https://kusama-asset-hub-rpc.polkadot.io"],
+	webSocket: ["wss://kusama-asset-hub-rpc.polkadot.io"],
 });
 
-const westendAssetHub = defineChain({
+const westendAssetHub = defineSubstrateNetwork({
 	id: "67f9723393ef76214df0118c34bbbd3d",
 	name: "Westend Asset Hub",
-	nativeCurrency: { name: "Westend", symbol: "WND", decimals: 12 },
-	rpcUrls: {
-		default: {
-			http: ["https://westend-asset-hub-rpc.polkadot.io"],
-			webSocket: ["wss://westend-asset-hub-rpc.polkadot.io"],
-		},
-	},
-	chainNamespace: "polkadot",
-	caipNetworkId: "polkadot:67f9723393ef76214df0118c34bbbd3d",
+	symbol: "WND",
+	decimals: 12,
+	http: ["https://westend-asset-hub-rpc.polkadot.io"],
+	webSocket: ["wss://westend-asset-hub-rpc.polkadot.io"],
 });
 
-const paseoAssetHub = defineChain({
+const paseoAssetHub = defineSubstrateNetwork({
 	id: "d6eec26135305a8ad257a20d00335728",
 	name: "Paseo Asset Hub",
-	nativeCurrency: { name: "Paseo", symbol: "PAS", decimals: 10 },
-	rpcUrls: {
-		default: {
-			http: ["https://sys.ibp.network/asset-hub-paseo"],
-			webSocket: ["wss://sys.ibp.network/asset-hub-paseo"],
-		},
-	},
-	chainNamespace: "polkadot",
-	caipNetworkId: "polkadot:d6eec26135305a8ad257a20d00335728",
+	symbol: "PAS",
+	decimals: 10,
+	http: ["https://sys.ibp.network/asset-hub-paseo"],
+	webSocket: ["wss://sys.ibp.network/asset-hub-paseo"],
 });
 
-const polkadotAssetHubEvm = defineChain({
+const polkadotAssetHubEvm = defineEthereumNetwork({
 	id: "420420419",
 	name: "Polkadot Asset Hub",
-	nativeCurrency: { name: "Polkadot", symbol: "DOT", decimals: 18 },
-	rpcUrls: {
-		default: {
-			http: ["https://asset-hub-eth-rpc.polkadot.io"],
-		},
-	},
-	chainNamespace: "eip155",
-	caipNetworkId: "eip155:420420419",
+	symbol: "DOT",
+	http: ["https://asset-hub-eth-rpc.polkadot.io"],
 });
 
-const kusamaAssetHubEvm = defineChain({
+const kusamaAssetHubEvm = defineEthereumNetwork({
 	id: "420420418",
 	name: "Kusama Asset Hub",
-	nativeCurrency: { name: "Kusama", symbol: "KSM", decimals: 18 },
-	rpcUrls: {
-		default: {
-			http: ["https://kusama-asset-hub-eth-rpc.polkadot.io"],
-		},
-	},
-	chainNamespace: "eip155",
-	caipNetworkId: "eip155:420420418",
+	symbol: "KSM",
+	http: ["https://kusama-asset-hub-eth-rpc.polkadot.io"],
 });
 
-const westendAssetHubEvm = defineChain({
+const westendAssetHubEvm = defineEthereumNetwork({
 	id: "420420421",
 	name: "Westend Asset Hub",
-	nativeCurrency: { name: "Westend", symbol: "WND", decimals: 18 },
-	rpcUrls: {
-		default: {
-			http: ["https://westend-asset-hub-eth-rpc.polkadot.io"],
-		},
-	},
-	chainNamespace: "eip155",
-	caipNetworkId: "eip155:420420421",
+	symbol: "WND",
+	http: ["https://westend-asset-hub-eth-rpc.polkadot.io"],
 });
 
-const paseoAssetHubEvm = defineChain({
+const paseoAssetHubEvm = defineEthereumNetwork({
 	id: "420420417",
 	name: "Paseo Asset Hub",
-	nativeCurrency: { name: "Paseo", symbol: "PAS", decimals: 18 },
-	rpcUrls: {
-		default: {
-			http: [
-				"https://eth-rpc-testnet.polkadot.io",
-				"https://services.polkadothub-rpc.com/testnet",
-			],
-		},
-	},
-	chainNamespace: "eip155",
-	caipNetworkId: "eip155:420420417",
+	symbol: "PAS",
+	http: [
+		"https://eth-rpc-testnet.polkadot.io",
+		"https://services.polkadothub-rpc.com/testnet",
+	],
 });
 
 export const kheopskitConfig: Partial<KheopskitConfig> = {
