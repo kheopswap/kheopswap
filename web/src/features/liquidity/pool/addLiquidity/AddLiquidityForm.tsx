@@ -9,13 +9,10 @@ import {
 	useMemo,
 	useRef,
 } from "react";
-import {
-	FormFieldContainer,
-	MagicButton,
-	TokenAmountPicker,
-} from "src/components";
+import { FormFieldContainer, TokenAmountPicker } from "src/components";
 import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
+import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
 import { useAddLiquidity } from "./AddLiquidityProvider";
 import { AddLiquiditySummary } from "./AddLiquiditySummary";
 
@@ -238,7 +235,7 @@ const AddLiquidityEditor: FC = () => {
 };
 
 export const AddLiquidityForm = () => {
-	const { canSubmit, onSubmit } = useTransaction();
+	const { onSubmit } = useTransaction();
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
 		(e) => {
@@ -255,9 +252,7 @@ export const AddLiquidityForm = () => {
 				<FormFieldContainer label="Tokens">
 					<AddLiquidityEditor />
 				</FormFieldContainer>
-				<MagicButton type="submit" disabled={!canSubmit}>
-					Add Liquidity
-				</MagicButton>
+				<TransactionSubmitButton>Add Liquidity</TransactionSubmitButton>
 				<AddLiquiditySummary />
 			</div>
 		</form>

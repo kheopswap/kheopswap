@@ -11,10 +11,10 @@ import {
 import {
 	AccountSelect,
 	FormFieldContainer,
-	MagicButton,
 	TokenAmountPicker,
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
+import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
 import { useToken } from "src/hooks";
 import { useCreatePool } from "./CreatePoolProvider";
 import { CreatePoolSummary } from "./CreatePoolSummary";
@@ -24,7 +24,7 @@ export const CreatePoolForm = () => {
 
 	const { data: token } = useToken({ tokenId: formData.token2Id });
 
-	const { canSubmit, onSubmit } = useTransaction();
+	const { onSubmit } = useTransaction();
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
 		(e) => {
@@ -55,9 +55,7 @@ export const CreatePoolForm = () => {
 					</p>
 					<AddLiquidityEditor />
 				</FormFieldContainer>
-				<MagicButton type="submit" disabled={!canSubmit}>
-					Create Liquidity Pool
-				</MagicButton>
+				<TransactionSubmitButton>Create Liquidity Pool</TransactionSubmitButton>
 				<CreatePoolSummary />
 			</div>
 		</form>

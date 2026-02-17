@@ -4,10 +4,10 @@ import {
 	AccountSelect,
 	Balance,
 	FormFieldContainer,
-	MagicButton,
 	TokenAmountPicker,
 } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
+import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
 import { useWalletAccount, useWallets } from "src/hooks";
 import { useTransfer } from "./TransferProvider";
 import { TransferSummary } from "./TransferSummary";
@@ -31,14 +31,7 @@ export const TransferForm = () => {
 		onMaxClick,
 	} = useTransfer();
 
-	const {
-		canSubmit,
-		onSubmit,
-		insufficientBalances,
-		isEthereumNetworkMismatch,
-		onSwitchEthereumNetwork,
-		isSwitchingEthereumNetwork,
-	} = useTransaction();
+	const { onSubmit, insufficientBalances } = useTransaction();
 
 	const { accounts: allAccounts } = useWallets();
 	const account = useWalletAccount({ id: formData.from });
@@ -65,13 +58,9 @@ export const TransferForm = () => {
 		(e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			if (isEthereumNetworkMismatch) {
-				void onSwitchEthereumNetwork();
-				return;
-			}
 			void onSubmit();
 		},
-		[isEthereumNetworkMismatch, onSubmit, onSwitchEthereumNetwork],
+		[onSubmit],
 	);
 
 	const handleAmountInput: FormEventHandler<HTMLInputElement> = useCallback(
@@ -132,18 +121,7 @@ export const TransferForm = () => {
 						onMaxClick={onMaxClick}
 					/>
 				</FormFieldContainer>
-				<MagicButton
-					type="submit"
-					disabled={
-						isEthereumNetworkMismatch ? isSwitchingEthereumNetwork : !canSubmit
-					}
-				>
-					{isEthereumNetworkMismatch
-						? isSwitchingEthereumNetwork
-							? "Switching network..."
-							: "Switch network"
-						: "Transfer"}
-				</MagicButton>
+				<TransactionSubmitButton>Transfer</TransactionSubmitButton>
 				<TransferSummary />
 			</div>
 		</form>

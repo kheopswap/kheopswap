@@ -1,13 +1,14 @@
 import { type FormEventHandler, useCallback } from "react";
-import { AccountSelect, FormFieldContainer, MagicButton } from "src/components";
+import { AccountSelect, FormFieldContainer } from "src/components";
 import { useTransaction } from "src/features/transaction/TransactionProvider";
+import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
 import { useSwap } from "./SwapProvider";
 import { SwapSummary } from "./SwapSummary";
 import { SwapTokensEditor } from "./SwapTokensEditor";
 
 export const SwapForm = () => {
 	const { from, onFromChange, tokenIn } = useSwap();
-	const { onSubmit, canSubmit } = useTransaction();
+	const { onSubmit } = useTransaction();
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
 		(e) => {
@@ -35,9 +36,7 @@ export const SwapForm = () => {
 					<SwapTokensEditor />
 				</FormFieldContainer>
 
-				<MagicButton type="submit" disabled={!canSubmit}>
-					Swap
-				</MagicButton>
+				<TransactionSubmitButton>Swap</TransactionSubmitButton>
 
 				<SwapSummary />
 			</div>
