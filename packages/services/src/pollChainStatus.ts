@@ -48,7 +48,7 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 		stop();
 	};
 
-	const staleWatchCache = new Map<ChainId, number>();
+	const staleWatchCache = new Map<ChainId, ReturnType<typeof setTimeout>>();
 
 	loadingStatusByChain$.subscribe((statusByChain) => {
 		for (const key in statusByChain) {
