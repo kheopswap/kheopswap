@@ -1,84 +1,31 @@
-import { Transition, TransitionChild } from "@headlessui/react";
+import { Dialog } from "@base-ui-components/react/dialog";
 import { cn } from "@kheopswap/utils";
-import {
-	type FC,
-	type MouseEventHandler,
-	type ReactNode,
-	useCallback,
-	useMemo,
-} from "react";
-import { createPortal } from "react-dom";
+import { type FC, type ReactNode, useCallback } from "react";
 
 type DrawerAnchor = "top" | "right" | "bottom" | "left";
-
-type AnchorClasses = {
-	position: string;
-	drawer?: string;
-	enterFrom: string;
-	enterTo: string;
-	leaveFrom: string;
-	leaveTo: string;
-};
-
-const getAnchorClasses = (
-	anchor: DrawerAnchor,
-	withContainer: boolean,
-): AnchorClasses => {
-	const position = withContainer ? "absolute" : "fixed";
-	const leftRight = withContainer
-		? "h-full max-w-full"
-		: "h-screen max-w-[100vw]";
-	const topBottom = withContainer
-		? "w-full max-h-full"
-		: "w-screen max-h-screen";
-
-	switch (anchor) {
-		case "right":
-			return {
-				position,
-				drawer: cn("right-0 top-0", position, leftRight),
-				enterFrom: "translate-x-full",
-				enterTo: "translate-x-0",
-				leaveFrom: "translate-x-0",
-				leaveTo: "translate-x-full",
-			};
-		case "left":
-			return {
-				position,
-				drawer: cn("left-0 top-0", position, leftRight),
-				enterFrom: "-translate-x-full",
-				enterTo: "translate-x-0",
-				leaveFrom: "translate-x-0",
-				leaveTo: "-translate-x-full",
-			};
-		case "top":
-			return {
-				position,
-				drawer: cn("left-0 top-0", position, topBottom),
-				enterFrom: "-translate-y-full",
-				enterTo: "translate-y-0",
-				leaveFrom: "translate-y-0",
-				leaveTo: "-translate-y-full",
-			};
-		case "bottom":
-			return {
-				position,
-				drawer: cn("bottom-0 left-0", position, topBottom),
-				enterFrom: "translate-y-full",
-				enterTo: "translate-y-0",
-				leaveFrom: "translate-y-0",
-				leaveTo: "translate-y-full",
-			};
-	}
-};
 
 type DrawerProps = {
 	anchor: DrawerAnchor;
 	children: ReactNode;
 	isOpen?: boolean;
 	className?: string;
-	containerId?: string;
 	onDismiss?: () => void;
+};
+
+const anchorPositionClass: Record<DrawerAnchor, string> = {
+	right: "right-0 top-0 h-dvh",
+	left: "left-0 top-0 h-dvh",
+	top: "left-0 top-0 w-screen",
+	bottom: "left-0 bottom-0 w-screen",
+};
+
+const anchorAnimationClass: Record<DrawerAnchor, string> = {
+	right:
+		"data-[open]:translate-x-0 data-[starting-style]:translate-x-full data-[closed]:translate-x-full",
+	left: "data-[open]:translate-x-0 data-[starting-style]:-translate-x-full data-[closed]:-translate-x-full",
+	top: "data-[open]:translate-y-0 data-[starting-style]:-translate-y-full data-[closed]:-translate-y-full",
+	bottom:
+		"data-[open]:translate-y-0 data-[starting-style]:translate-y-full data-[closed]:translate-y-full",
 };
 
 export const Drawer: FC<DrawerProps> = ({
@@ -86,60 +33,40 @@ export const Drawer: FC<DrawerProps> = ({
 	children,
 	isOpen,
 	className,
-	containerId,
 	onDismiss,
 }) => {
-	const handleDismiss: MouseEventHandler<HTMLDivElement> = useCallback(
-		(e) => {
-			if (!onDismiss) return;
-
-			e.stopPropagation();
-			onDismiss();
+	const handleOpenChange = useCallback(
+		(open: boolean) => {
+			if (!open) onDismiss?.();
 		},
 		[onDismiss],
 	);
 
-	const { position, drawer, enterFrom, enterTo, leaveFrom, leaveTo } = useMemo(
-		() => getAnchorClasses(anchor, !!containerId),
-		[anchor, containerId],
-	);
-
-	const container =
-		(containerId && document.getElementById(containerId)) || document.body;
-
-	return createPortal(
-		<Transition show={!!isOpen}>
-			{/* Background overlay */}
-			<TransitionChild
-				as="div"
-				className={cn(
-					"left-0 top-0 z-30 size-full bg-black/50",
-					onDismiss ? "cursor-pointer" : "cursor-not-allowed",
-					position,
-				)}
-				enter="transition-opacity ease-linear duration-300"
-				enterFrom="opacity-0"
-				enterTo="opacity-100"
-				leave="transition-opacity ease-linear duration-300"
-				leaveFrom="opacity-100"
-				leaveTo="opacity-0"
-				onClick={handleDismiss}
-			/>
-
-			{/* Drawer */}
-			<TransitionChild
-				as="aside"
-				className={cn("z-40 shadow-2xl", position, drawer, className)}
-				enter="transition-transform ease-in-out duration-300 transform"
-				enterFrom={enterFrom}
-				enterTo={enterTo}
-				leave="transition-transform ease-in-out duration-300 transform"
-				leaveFrom={leaveFrom}
-				leaveTo={leaveTo}
-			>
-				{children}
-			</TransitionChild>
-		</Transition>,
-		container,
+	return (
+		<Dialog.Root open={!!isOpen} onOpenChange={handleOpenChange}>
+			<Dialog.Portal>
+				<Dialog.Backdrop
+					className={cn(
+						"fixed inset-0 z-30 bg-black/50",
+						"transition-opacity duration-300 ease-linear",
+						"data-open:opacity-100",
+						"data-starting-style:opacity-0",
+						"data-closed:opacity-0",
+						!onDismiss && "cursor-not-allowed",
+					)}
+				/>
+				<Dialog.Popup
+					className={cn(
+						"fixed z-40 shadow-2xl outline-hidden",
+						"transition-transform duration-300 ease-in-out",
+						anchorPositionClass[anchor],
+						anchorAnimationClass[anchor],
+						className,
+					)}
+				>
+					{children}
+				</Dialog.Popup>
+			</Dialog.Portal>
+		</Dialog.Root>
 	);
 };

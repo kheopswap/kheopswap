@@ -1,86 +1,64 @@
-import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
+import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
 import { cn } from "@kheopswap/utils";
-import * as React from "react";
-import {
-	TooltipContext,
-	type TooltipOptions,
-	useTooltip,
-	useTooltipContext,
-} from "./useTooltip";
+import { createContext, type FC, type ReactNode, useContext } from "react";
 
-export function Tooltip({
-	children,
-	...options
-}: { children: React.ReactNode } & TooltipOptions) {
-	// This can accept any props as options, e.g. `placement`,
-	// or other positioning options.
-	const tooltip = useTooltip(options);
+type Side = "top" | "right" | "bottom" | "left";
+type Align = "start" | "center" | "end";
+
+type TooltipPlacement = Side | `${Side}-start` | `${Side}-end`;
+
+const PlacementContext = createContext<{
+	side: Side;
+	align: Align;
+}>({ side: "bottom", align: "center" });
+
+export const Tooltip: FC<{
+	children: ReactNode;
+	placement?: TooltipPlacement;
+}> = ({ children, placement }) => {
+	const side = (placement?.split("-")[0] as Side | undefined) ?? "bottom";
+	const align = placement?.includes("-")
+		? (placement.split("-")[1] as "start" | "end")
+		: "center";
+
 	return (
-		<TooltipContext.Provider value={tooltip}>
-			{children}
-		</TooltipContext.Provider>
+		<PlacementContext.Provider value={{ side, align }}>
+			<BaseTooltip.Provider delay={250}>
+				<BaseTooltip.Root>{children}</BaseTooltip.Root>
+			</BaseTooltip.Provider>
+		</PlacementContext.Provider>
 	);
-}
+};
 
-export const TooltipTrigger = React.forwardRef<
-	HTMLElement,
-	React.HTMLProps<HTMLElement> & { asChild?: boolean }
->(function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
-	const context = useTooltipContext();
-	// biome-ignore lint/suspicious/noExplicitAny: from template
-	const childrenRef = (children as any).ref;
-	const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
+export const TooltipTrigger: FC<{
+	children: ReactNode;
+	asChild?: boolean;
+	className?: string;
+	onClick?: React.MouseEventHandler;
+}> = ({ children, className, onClick }) => (
+	<BaseTooltip.Trigger className={className} onClick={onClick}>
+		{children}
+	</BaseTooltip.Trigger>
+);
 
-	// `asChild` allows the user to pass any element as the anchor
-	if (asChild && React.isValidElement(children)) {
-		return React.cloneElement(children, {
-			...context.getReferenceProps({
-				ref,
-				...props,
-				...(children.props as object),
-			}),
-			"data-state": context.open ? "open" : "closed",
-		} as React.HTMLAttributes<HTMLElement>);
-	}
+export const TooltipContent: FC<{
+	children: ReactNode;
+	className?: string;
+}> = ({ children, className }) => {
+	const { side, align } = useContext(PlacementContext);
 
 	return (
-		<button
-			ref={ref}
-			// The user can style the trigger based on the state
-			data-state={context.open ? "open" : "closed"}
-			{...context.getReferenceProps(props)}
-		>
-			{children}
-		</button>
-	);
-});
-
-export const TooltipContent = React.forwardRef<
-	HTMLDivElement,
-	React.HTMLProps<HTMLDivElement>
->(function TooltipContent({ ...props }, propRef) {
-	const context = useTooltipContext();
-	const ref = useMergeRefs([context.refs.setFloating, propRef]);
-
-	return (
-		<FloatingPortal>
-			{context.open && (
-				<div
-					ref={ref}
+		<BaseTooltip.Portal>
+			<BaseTooltip.Positioner side={side} sideOffset={5} align={align}>
+				<BaseTooltip.Popup
 					className={cn(
 						"z-50 rounded-sm border border-neutral-700 bg-neutral-950 px-3 py-2 text-xs text-neutral-300 shadow-sm",
-						props.className,
+						className,
 					)}
-					style={{
-						position: context.strategy,
-						top: context.y ?? 0,
-						left: context.x ?? 0,
-						visibility: context.x == null ? "hidden" : "visible",
-						...props.style,
-					}}
-					{...context.getFloatingProps(props)}
-				/>
-			)}
-		</FloatingPortal>
+				>
+					{children}
+				</BaseTooltip.Popup>
+			</BaseTooltip.Positioner>
+		</BaseTooltip.Portal>
 	);
-});
+};

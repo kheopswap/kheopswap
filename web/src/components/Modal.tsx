@@ -1,7 +1,6 @@
-import { Transition, TransitionChild } from "@headlessui/react";
+import { Dialog } from "@base-ui-components/react/dialog";
 import { cn } from "@kheopswap/utils";
-import { type FC, Fragment, type ReactNode } from "react";
-import { useScrollLock } from "usehooks-ts";
+import { type FC, type ReactNode, useCallback } from "react";
 
 type Modal = {
 	isOpen: boolean;
@@ -9,57 +8,40 @@ type Modal = {
 	onDismiss?: () => void;
 };
 
-const ScrollLock = () => {
-	useScrollLock({ autoLock: true });
-	return null;
-};
-
 export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
-	return (
-		<Transition appear show={isOpen} as={Fragment}>
-			<TransitionChild
-				as="div"
-				className={cn("fixed inset-0 z-20 bg-black/80")}
-				enter="ease-out duration-300"
-				enterFrom="opacity-0"
-				enterTo="opacity-100"
-				leave="ease-in duration-200"
-				leaveFrom="opacity-100"
-				leaveTo="opacity-0"
-			/>
+	const handleOpenChange = useCallback(
+		(open: boolean) => {
+			if (!open) onDismiss?.();
+		},
+		[onDismiss],
+	);
 
-			{/** biome-ignore lint/a11y/noStaticElementInteractions: legacy */}
-			<div
-				role="presentation"
-				onClick={onDismiss}
-				className={cn(
-					"fixed inset-0 z-30",
-					"flex min-h-full items-center justify-center p-4 text-center",
-					onDismiss && "cursor-pointer",
-				)}
-			>
-				{/** biome-ignore lint/a11y/noStaticElementInteractions: legacy */}
-				<div
-					role="presentation"
-					className="cursor-default"
-					onClick={(e) => {
-						e.stopPropagation();
-					}}
+	return (
+		<Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
+			<Dialog.Portal>
+				<Dialog.Backdrop
+					className={cn(
+						"fixed inset-0 z-20 bg-black/80",
+						"transition-opacity duration-300 ease-out",
+						"data-open:opacity-100",
+						"data-starting-style:opacity-0",
+						"data-closed:opacity-0",
+						onDismiss && "cursor-pointer",
+					)}
+				/>
+				<Dialog.Popup
+					className={cn(
+						"fixed inset-0 z-30 outline-hidden",
+						"flex min-h-full items-center justify-center p-4 text-center",
+						"transition-[opacity,transform] duration-300 ease-out",
+						"data-open:scale-100 data-open:opacity-100",
+						"data-starting-style:scale-95 data-starting-style:opacity-0",
+						"data-closed:scale-95 data-closed:opacity-0",
+					)}
 				>
-					<TransitionChild
-						as="div"
-						enter="ease-out duration-300"
-						enterFrom="opacity-0 scale-95"
-						enterTo="opacity-100 scale-100"
-						leave="ease-in duration-200"
-						leaveFrom="opacity-100 scale-100"
-						leaveTo="opacity-0 scale-95"
-					>
-						<ScrollLock />
-						{children}
-					</TransitionChild>
-				</div>
-			</div>
-		</Transition>
+					{children}
+				</Dialog.Popup>
+			</Dialog.Portal>
+		</Dialog.Root>
 	);
 };

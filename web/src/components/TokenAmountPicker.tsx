@@ -1,4 +1,3 @@
-import { useMergeRefs } from "@floating-ui/react";
 import type { PolkadotAccount } from "@kheopskit/core";
 import type { Token, TokenId } from "@kheopswap/registry";
 import { cn, isBigInt } from "@kheopswap/utils";
@@ -9,6 +8,7 @@ import {
 	type FC,
 	forwardRef,
 	type InputHTMLAttributes,
+	useCallback,
 	useMemo,
 } from "react";
 import {
@@ -42,7 +42,14 @@ const TokenInput = forwardRef<
 
 	const refFormat = useMaskito(maskito);
 
-	const ref = useMergeRefs([refFormat, refForward]);
+	const ref = useCallback(
+		(node: HTMLInputElement | null) => {
+			refFormat(node);
+			if (typeof refForward === "function") refForward(node);
+			else if (refForward) refForward.current = node;
+		},
+		[refFormat, refForward],
+	);
 
 	return <input ref={ref} {...props} />;
 });

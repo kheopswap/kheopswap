@@ -1,6 +1,7 @@
+import { Dialog } from "@base-ui-components/react/dialog";
 import { cn } from "@kheopswap/utils";
 import CloseIcon from "@w3f/polkadot-icons/solid/Close";
-import { type FC, type ReactNode, useEffect, useRef } from "react";
+import type { FC, ReactNode } from "react";
 
 export const DrawerContainer: FC<{
 	title: ReactNode;
@@ -17,15 +18,8 @@ export const DrawerContainer: FC<{
 	children,
 	onClose,
 }) => {
-	const refContainer = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		refContainer.current?.focus();
-	}, []);
-
 	return (
 		<div
-			tabIndex={-1}
 			className={cn(
 				"flex h-full w-96 max-w-full flex-col bg-neutral-900",
 				className,
@@ -37,20 +31,14 @@ export const DrawerContainer: FC<{
 					headerClassName,
 				)}
 			>
-				<h3>{title}</h3>
+				<Dialog.Title className="text-base font-bold">{title}</Dialog.Title>
 				{onClose && (
-					<button
-						type="button"
-						className="rounded-xs outline-white ring-white focus:outline-hidden focus-visible:ring-1"
-						onClick={onClose}
-					>
+					<Dialog.Close className="rounded-xs outline-white ring-white focus:outline-hidden focus-visible:ring-1">
 						<CloseIcon className="size-5 fill-white" />
-					</button>
+					</Dialog.Close>
 				)}
 			</div>
 			<div
-				tabIndex={-1}
-				ref={refContainer}
 				className={cn(
 					"flex grow flex-col gap-4 overflow-y-auto overflow-x-hidden p-3",
 					contentClassName,
