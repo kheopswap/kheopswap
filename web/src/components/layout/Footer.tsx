@@ -19,7 +19,7 @@ export const Footer = () => {
 				<ChainBlockNumbers />
 			</div>
 			<div className="hidden flex-col items-center gap-1 text-center text-xs text-neutral-500 sm:flex">
-				<div className="">Powered by polkadot-api and smoldot</div>
+				<div className="">Powered by polkadot-api and kheopskit</div>
 				<LoadingStatus />
 			</div>
 			<div className="flex items-center gap-4">
