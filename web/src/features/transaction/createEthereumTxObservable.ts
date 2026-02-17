@@ -1,7 +1,13 @@
 import type { ChainId } from "@kheopswap/registry";
 import { logger, sleep } from "@kheopswap/utils";
 import type { PolkadotClient, TxEvent } from "polkadot-api";
-import { filter, firstValueFrom, Observable } from "rxjs";
+import {
+	filter,
+	firstValueFrom,
+	map,
+	Observable,
+	type Subscription,
+} from "rxjs";
 
 const RUNTIME_PALLETS_ADDR = "0x6d6f646c70792f70616464720000000000000000";
 
@@ -104,8 +110,9 @@ const fetchBlockEvents = async (
  *    with decoded Substrate events (SwapExecuted, TransactionFeePaid, etc.)
  * 3. { type: "finalized" }         — when the block is finalized
  *
- * Before querying System.Events, we wait for PAPI's chain head to be aware of
- * the block and pin it to prevent unpinning during the query.
+ * The Ethereum receipt provides a keccak256 block hash, but PAPI uses blake2b-256
+ * Substrate hashes. We resolve the Substrate hash by block number using PAPI's
+ * blocks$ observable, subscribing before sending the tx so we never miss a block.
  *
  * Errors (user rejection, timeout) go through the Observable error channel.
  */
@@ -124,9 +131,31 @@ export const createEthereumTxObservable = ({
 }): Observable<TxEvent> =>
 	new Observable((subscriber) => {
 		let cancelled = false;
-		let releaseBlock: (() => void) | undefined;
+		const heldBlocks: Array<() => void> = [];
+		let blocksSub: Subscription | undefined;
 
 		const run = async () => {
+			// Get PAPI client BEFORE sending the tx so we can subscribe to blocks$
+			// and capture Substrate block hashes before our block is produced.
+			const client = await getClient();
+
+			if (cancelled) return;
+
+			// Watch blocks as PAPI discovers them, recording Substrate hashes by
+			// number. We hodl each block to prevent PAPI from unpinning it before
+			// we can query its events. This runs from tx send to finalization
+			// (~10-30 blocks), so the held set stays small.
+			// blocks$ replays finalized + descendants synchronously on subscribe.
+			const blocksByNumber = new Map<number, string>();
+			blocksSub = client.blocks$.subscribe((block) => {
+				blocksByNumber.set(block.number, block.hash);
+				try {
+					heldBlocks.push(client.hodlBlock(block.hash));
+				} catch {
+					// Block might have been unpinned already — still record the hash
+				}
+			});
+
 			const txHash = (await walletClient.request({
 				method: "eth_sendTransaction",
 				params: [
@@ -143,46 +172,52 @@ export const createEthereumTxObservable = ({
 
 			subscriber.next({ type: "broadcasted", txHash });
 
-			// Start getting PAPI client in parallel with receipt polling
-			const [receipt, client] = await Promise.all([
-				waitForReceipt(walletClient, txHash),
-				getClient(),
-			]);
+			const receipt = await waitForReceipt(walletClient, txHash);
 
 			if (cancelled) return;
 
-			const blockHash = receipt.blockHash ?? txHash;
 			const blockNumber = Number.parseInt(receipt.blockNumber ?? "0x0", 16);
 			const txIndex = Number.parseInt(receipt.transactionIndex ?? "0x0", 16);
 
-			// Wait for PAPI's chain head to be aware of blocks at our height.
-			// This ensures the block is pinned before we try to query it.
-			await firstValueFrom(
-				client.bestBlocks$.pipe(
-					filter((blocks) => (blocks[0]?.number ?? 0) >= blockNumber),
-				),
-			);
+			// Resolve the Substrate block hash from the block number.
+			// The Ethereum receipt gives a keccak256 hash that PAPI cannot use;
+			// we look up the blake2b-256 Substrate hash by number instead.
+			let substrateBlockHash = blocksByNumber.get(blockNumber);
+
+			if (!substrateBlockHash) {
+				// Block not yet captured — wait for bestBlocks$ to include it.
+				substrateBlockHash = await firstValueFrom(
+					client.bestBlocks$.pipe(
+						map((blocks) => blocks.find((b) => b.number === blockNumber)?.hash),
+						filter((hash): hash is string => !!hash),
+					),
+				);
+
+				// Hodl it since we discovered it via bestBlocks$, not our blocks$ sub
+				try {
+					heldBlocks.push(client.hodlBlock(substrateBlockHash));
+				} catch {
+					logger.warn("[eth-tx] Could not pin block, it may have been pruned", {
+						chainId,
+						substrateBlockHash,
+					});
+				}
+			}
 
 			if (cancelled) return;
-
-			// Pin the block to prevent PAPI from unpinning it during our event query
-			try {
-				releaseBlock = client.hodlBlock(blockHash);
-			} catch {
-				logger.warn("[eth-tx] Could not pin block, it may have been pruned", {
-					chainId,
-					blockHash,
-				});
-			}
 
 			// Fetch decoded Substrate events from the block
 			let blockEvents: Awaited<ReturnType<typeof fetchBlockEvents>>;
 			try {
-				blockEvents = await fetchBlockEvents(client, blockHash, txIndex);
+				blockEvents = await fetchBlockEvents(
+					client,
+					substrateBlockHash,
+					txIndex,
+				);
 			} catch (err) {
 				logger.warn(
 					"[eth-tx] Failed to fetch block events, proceeding without them",
-					{ chainId, blockHash, txIndex, err },
+					{ chainId, blockHash: substrateBlockHash, txIndex, err },
 				);
 				const ok = receipt.status === "0x1" || receipt.status === "0x01";
 				blockEvents = ok
@@ -200,7 +235,7 @@ export const createEthereumTxObservable = ({
 			if (cancelled) return;
 
 			const block = {
-				hash: blockHash,
+				hash: substrateBlockHash,
 				number: blockNumber,
 				index: txIndex,
 			};
@@ -238,6 +273,7 @@ export const createEthereumTxObservable = ({
 
 		return () => {
 			cancelled = true;
-			releaseBlock?.();
+			blocksSub?.unsubscribe();
+			for (const release of heldBlocks) release();
 		};
 	});
