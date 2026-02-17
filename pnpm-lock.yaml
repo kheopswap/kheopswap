@@ -79,9 +79,6 @@ importers:
         specifier: ^1.23.3
         version: 1.23.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2)
     devDependencies:
-      '@kheopswap/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@kheopswap/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -270,9 +267,6 @@ importers:
       '@polkadot-api/substrate-bindings':
         specifier: ^0.17.0
         version: 0.17.0
-      '@polkadot-ui/assets':
-        specifier: 0.0.1-alpha.2
-        version: 0.0.1-alpha.2
       '@react-rxjs/core':
         specifier: ^0.10.8
         version: 0.10.8(react@19.2.4)(rxjs@7.8.2)
@@ -1240,9 +1234,6 @@ packages:
 
   '@polkadot-api/ws-provider@0.7.5':
     resolution: {integrity: sha512-2ZLEo0PAFeuOx2DUDkbex85HZMf9lgnmZ8oGB5+NaButIydkoqXy5SHYJNPc45GcZy2tvwzImMZInNMLa5GJhg==}
-
-  '@polkadot-ui/assets@0.0.1-alpha.2':
-    resolution: {integrity: sha512-E6RDLMP1SJs62YWRY4VJ8nPpYbjZGIgGQiZZO/rDfhRmm7qPPcmUfYXeI/4FQ21psjLVB6iBxbFS8FsqyFWp6w==}
 
   '@react-aria/focus@3.21.2':
     resolution: {integrity: sha512-JWaCR7wJVggj+ldmM/cb/DXFg47CXR55lznJhZBh4XVqJjMKwaOOqpT5vNN7kpC1wUpXicGNuDnJDN1S/+6dhQ==}
@@ -5584,8 +5575,6 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
-
-  '@polkadot-ui/assets@0.0.1-alpha.2': {}
 
   '@react-aria/focus@3.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
