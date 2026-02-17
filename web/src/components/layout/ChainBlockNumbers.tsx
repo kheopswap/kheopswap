@@ -31,8 +31,14 @@ export const ChainBlockNumbers = () => {
 
 	return (
 		<div className=" text-neutral-500 flex flex-col gap-1 text-xs">
-			<div>Best: {best ?? "–"}</div>
-			<div>Finalized: {finalized ?? "–"}</div>
+			<div>Best: {best ?? <Placeholder />}</div>
+			<div>Finalized: {finalized ?? <Placeholder />}</div>
 		</div>
 	);
 };
+
+const Placeholder = () => (
+	<span className="text-neutral-800 bg-neutral-800 animate-pulse rounded-xs">
+		00000000
+	</span>
+);
