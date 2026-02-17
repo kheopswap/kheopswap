@@ -2,7 +2,14 @@ import type { ChainId } from "@kheopswap/registry";
 import { logger, sleep } from "@kheopswap/utils";
 import type { PolkadotClient, TxEvent } from "polkadot-api";
 import type { Subscription } from "rxjs";
-import { filter, firstValueFrom, map, Observable } from "rxjs";
+import {
+	filter,
+	firstValueFrom,
+	map,
+	merge,
+	Observable,
+	switchMap,
+} from "rxjs";
 
 const RUNTIME_PALLETS_ADDR = "0x6d6f646c70792f70616464720000000000000000";
 
@@ -106,8 +113,11 @@ const fetchBlockEvents = async (
  * 3. { type: "finalized" }         — when the block is finalized
  *
  * The Ethereum receipt provides a keccak256 block hash, but PAPI uses blake2b-256
- * Substrate hashes. We resolve the Substrate hash by block number using PAPI's
- * blocks$ observable, subscribing before sending the tx so we never miss a block.
+ * Substrate hashes. We resolve the Substrate hash by block number using two
+ * strategies raced together:
+ * - blocks$ / bestBlocks$: captures blocks as the light client reports them
+ * - System.BlockHash storage query: fallback when the light client is slow and
+ *   finalization jumps past our block (so it never appears in bestBlocks$)
  *
  * Errors (user rejection, timeout) go through the Observable error channel.
  */
@@ -180,15 +190,42 @@ export const createEthereumTxObservable = ({
 			let substrateBlockHash = blocksByNumber.get(blockNumber);
 
 			if (!substrateBlockHash) {
-				// Block not yet captured — wait for bestBlocks$ to include it.
+				// Block not yet captured by blocks$ — race two strategies:
+				// 1. bestBlocks$: works when the light client is keeping up and
+				//    the block appears as unfinalized or latest-finalized.
+				// 2. finalizedBlock$ → System.BlockHash: works when the light
+				//    client is slow and finalization jumps past our block
+				//    (so it never individually appears in bestBlocks$).
 				substrateBlockHash = await firstValueFrom(
-					client.bestBlocks$.pipe(
-						map((blocks) => blocks.find((b) => b.number === blockNumber)?.hash),
-						filter((hash): hash is string => !!hash),
+					merge(
+						client.bestBlocks$.pipe(
+							map(
+								(blocks) => blocks.find((b) => b.number === blockNumber)?.hash,
+							),
+							filter((hash): hash is string => !!hash),
+						),
+						client.finalizedBlock$.pipe(
+							filter((b) => b.number > blockNumber),
+							switchMap(async () => {
+								const unsafeApi = client.getUnsafeApi();
+								// System.BlockHash stores hashes for the last 256 blocks
+								// biome-ignore lint/style/noNonNullAssertion: System.BlockHash always exists
+								const hash = (await unsafeApi.query.System!.BlockHash!.getValue(
+									blockNumber,
+								)) as string;
+								return hash;
+							}),
+							filter(
+								(hash): hash is string =>
+									!!hash &&
+									hash !==
+										"0x0000000000000000000000000000000000000000000000000000000000000000",
+							),
+						),
 					),
 				);
 
-				// Hodl it since we discovered it via bestBlocks$, not our blocks$ sub
+				// Hodl it if possible — may fail for already-finalized blocks
 				try {
 					heldBlocks.push(client.hodlBlock(substrateBlockHash));
 				} catch {

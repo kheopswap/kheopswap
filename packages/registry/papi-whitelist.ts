@@ -13,6 +13,7 @@ export const whitelist: WhiteListEntry[] = [
 	"tx.ForeignAssets.transfer",
 	"tx.Utility.batch_all",
 	"query.System.Account",
+	"query.System.BlockHash",
 	"query.System.Number",
 	"query.AssetConversion.Pools",
 	"query.PoolAssets.Asset",
