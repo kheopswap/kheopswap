@@ -62,8 +62,13 @@ const DEFAULT_FOLLOW_UP_DATA = {};
  * Used by both Polkadot and Ethereum transaction flows.
  *
  * The subscription self-terminates when a "finalized" or "error" event is received.
+ * A safety timeout (10 minutes) ensures the subscription is cleaned up if neither
+ * event arrives (e.g. due to a dropped connection).
+ *
  * It is intentionally not tied to component lifecycle so transactions survive navigation.
  */
+const TX_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+
 const subscribeTxEvents = (
 	txId: string,
 	txEvents$: Observable<TxEvent>,
@@ -75,6 +80,17 @@ const subscribeTxEvents = (
 		shareReplay(1),
 	);
 
+	const cleanup = () => {
+		clearTimeout(safetyTimeout);
+		sub.unsubscribe();
+	};
+
+	const safetyTimeout = setTimeout(() => {
+		logger.warn("Transaction timed out without finalized/error event", txId);
+		updateTransactionStatus(txId, "failed");
+		sub.unsubscribe();
+	}, TX_TIMEOUT_MS);
+
 	const sub = obs$.subscribe((x) => {
 		logger.log("Transaction status update", x);
 
@@ -84,7 +100,7 @@ const subscribeTxEvents = (
 			appendTxEvent(txId, x);
 		}
 
-		if (x.type === "finalized") sub.unsubscribe();
+		if (x.type === "finalized") cleanup();
 
 		if (x.type === "error") {
 			logger.error("Transaction error", x.error);
@@ -110,7 +126,7 @@ const subscribeTxEvents = (
 				appendTxEvent(txId, x);
 			}
 
-			sub.unsubscribe();
+			cleanup();
 		}
 	});
 };
@@ -163,7 +179,18 @@ const useTransactionProvider = ({
 		try {
 			setIsSwitchingEthereumNetwork(true);
 			await account.client.switchChain({ id: targetEvmChainId });
-		} catch {
+		} catch (switchError) {
+			// EIP-1193 error code 4001 = user rejected the request
+			if (
+				typeof switchError === "object" &&
+				switchError !== null &&
+				"code" in switchError &&
+				(switchError as { code: number }).code === 4001
+			) {
+				return;
+			}
+
+			// Chain not recognized — try adding it first
 			try {
 				await account.client.request({
 					method: "wallet_addEthereumChain",

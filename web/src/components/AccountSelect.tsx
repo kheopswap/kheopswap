@@ -19,8 +19,6 @@ import { PolkadotIdenticon } from "./PolkadotIdenticon";
 import { Styles } from "./styles";
 import { WalletIcon } from "./WalletIcon";
 
-type SelectableAccount = WalletAccount;
-
 const AddressRow: FC<{ address: string; className?: string }> = ({
 	address,
 	className,
@@ -48,7 +46,7 @@ const AddressRow: FC<{ address: string; className?: string }> = ({
 	);
 };
 
-const AccountRow: FC<{ account: SelectableAccount; className?: string }> = ({
+const AccountRow: FC<{ account: WalletAccount; className?: string }> = ({
 	account,
 	className,
 }) => {

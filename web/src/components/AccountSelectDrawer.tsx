@@ -22,8 +22,6 @@ import { Styles } from "./styles";
 import { Tokens } from "./Tokens";
 import { WalletIcon } from "./WalletIcon";
 
-type SelectableAccount = WalletAccount;
-
 const getPlatformLabel = (platform: string) =>
 	platform === "ethereum" ? "Ethereum" : "Polkadot";
 
@@ -60,7 +58,7 @@ const WalletButton: FC<{
 );
 
 const AccountButton: FC<{
-	account: SelectableAccount;
+	account: WalletAccount;
 	selected?: boolean;
 	disabled?: boolean;
 	balance?: BalanceWithStableSummary;

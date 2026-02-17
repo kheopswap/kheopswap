@@ -16,6 +16,7 @@ import {
 	of,
 	shareReplay,
 	switchMap,
+	timer,
 } from "rxjs";
 import type { LoadingStatus } from "../common";
 
@@ -49,9 +50,13 @@ export const getResolvedSubstrateAddress$ = ({
 				}),
 				from(getApi(chainId)).pipe(
 					switchMap((api) =>
-						from(
-							api.query.Revive.OriginalAccount.getValue(
-								getEthereumAddressFixedSizeBinary(address),
+						timer(0, 30_000).pipe(
+							switchMap(() =>
+								from(
+									api.query.Revive.OriginalAccount.getValue(
+										getEthereumAddressFixedSizeBinary(address),
+									),
+								),
 							),
 						),
 					),

@@ -24,6 +24,8 @@ export const isValidAnyAddress = (address: string): boolean =>
 /**
  * Convert an EVM address to a Substrate SS58 address using the Revive pallet's
  * fallback derivation: 20 bytes of the EVM address + 12 bytes of 0xEE.
+ *
+ * @see https://github.com/paritytech/polkadot-sdk/blob/main/substrate/frame/revive/src/address.rs — `AccountId32Mapper::to_fallback_account_id`
  */
 export const getSs58AddressFallback = (
 	evmAddress: `0x${string}`,

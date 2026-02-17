@@ -50,12 +50,16 @@ const waitForReceipt = async (
 	while (Date.now() < deadline) {
 		if (signal?.aborted) throw new Error("Transaction was cancelled");
 
-		const receipt = (await client.request({
-			method: "eth_getTransactionReceipt",
-			params: [txHash],
-		})) as EthereumTransactionReceipt | null;
+		try {
+			const receipt = (await client.request({
+				method: "eth_getTransactionReceipt",
+				params: [txHash],
+			})) as EthereumTransactionReceipt | null;
 
-		if (receipt) return receipt;
+			if (receipt) return receipt;
+		} catch (err) {
+			logger.warn("eth_getTransactionReceipt RPC error, retrying", { err });
+		}
 
 		await sleep(delay);
 		delay = Math.min(delay * 1.5, maxDelay);
