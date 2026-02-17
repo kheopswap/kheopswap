@@ -27,6 +27,7 @@ export const whitelist: WhiteListEntry[] = [
 	"query.Balances.TotalIssuance",
 	"query.PolkadotXcm.SafeXcmVersion",
 	"query.Revive.OriginalAccount",
+	"query.System.Events",
 	"const.AssetConversion.LPFee",
 	"const.Balances.ExistentialDeposit",
 	"api.AssetConversionApi.*",
