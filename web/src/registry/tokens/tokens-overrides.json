@@ -1,5 +1,61 @@
 [
 	{
+		"id": "native::pah",
+		"logo": "./img/tokens/DOT.svg"
+	},
+	{
+		"id": "native::kah",
+		"logo": "./img/tokens/KSM.svg"
+	},
+	{
+		"id": "native::wah",
+		"logo": "./img/tokens/WND.svg"
+	},
+	{
+		"id": "native::pasah",
+		"logo": "./img/tokens/PAS.png"
+	},
+	{
+		"id": "asset::pah::1984",
+		"logo": "./img/tokens/USDT.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::pah::1337",
+		"logo": "./img/tokens/USDC.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::pah::30",
+		"logo": "./img/tokens/DED.svg",
+		"verified": true
+	},
+	{
+		"id": "asset::pah::23",
+		"logo": "./img/tokens/PINK.png",
+		"verified": true
+	},
+	{
+		"id": "asset::kah::1984",
+		"logo": "./img/tokens/USDT.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::kah::8",
+		"logo": "./img/tokens/RMRK.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::kah::50000002",
+		"logo": "./img/tokens/DUSD.webp?rounded",
+		"verified": true
+	},
+	{
+		"id": "asset::wah::20120608",
+		"logo": "./img/tokens/KTT.webp",
+		"verified": true
+	},
+	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBWdAF8NQA",
 		"logo": "./img/tokens/AJUN.svg",
 		"verified": true

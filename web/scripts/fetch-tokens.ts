@@ -1,0 +1,790 @@
+/**
+ * Standalone Node.js script to fetch all tokens from Asset Hub chains via RPC
+ * and write one JSON file per chain to src/registry/tokens/.
+ *
+ * Each output file is a flat TokenNoId[] array (no `id` field – the app
+ * computes IDs at import time).
+ *
+ * Ethereum-origin foreign assets (Snowbridge) are enriched by calling the
+ * ERC20 contract's name(), symbol() and decimals() via a public Ethereum
+ * RPC. Results are cached in scripts/erc20-cache.json and refreshed at most
+ * monthly.
+ *
+ * Run from the repository root:
+ *   node --run fetch-tokens
+ *   node --run fetch-tokens -- --chains pah,kah
+ *   node --run fetch-tokens -- --timeout 60000
+ *
+ * Or directly from the web/ folder:
+ *   node --experimental-transform-types scripts/fetch-tokens.ts
+ */
+
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { kah, pah, pasah, wah } from "@polkadot-api/descriptors";
+import { createClient, type PolkadotClient, type TypedApi } from "polkadot-api";
+import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
+import { getWsProvider } from "polkadot-api/ws-provider/node";
+import { firstValueFrom } from "rxjs";
+
+// ---------------------------------------------------------------------------
+// Chain & descriptor config
+// ---------------------------------------------------------------------------
+
+const CHAINS = [
+	{
+		id: "pah",
+		name: "Polkadot Asset Hub",
+		wsUrl: [
+			"wss://rpc-asset-hub-polkadot.luckyfriday.io",
+			"wss://sys.ibp.network/asset-hub-polkadot",
+			"wss://asset-hub-polkadot.dotters.network",
+			"wss://polkadot-asset-hub-rpc.polkadot.io",
+		],
+		descriptors: pah,
+	},
+	{
+		id: "kah",
+		name: "Kusama Asset Hub",
+		wsUrl: [
+			"wss://sys.ibp.network/statemine",
+			"wss://kusama-asset-hub-rpc.polkadot.io",
+			"wss://sys.dotters.network/statemine",
+			"wss://rpc-asset-hub-kusama.luckyfriday.io",
+		],
+		descriptors: kah,
+	},
+	{
+		id: "wah",
+		name: "Westend Asset Hub",
+		wsUrl: [
+			"wss://sys.ibp.network/westmint",
+			"wss://sys.dotters.network/westmint",
+			"wss://westend-asset-hub-rpc.polkadot.io",
+		],
+		descriptors: wah,
+	},
+	{
+		id: "pasah",
+		name: "Paseo Asset Hub",
+		wsUrl: [
+			"wss://sys.ibp.network/asset-hub-paseo",
+			"wss://asset-hub-paseo.dotters.network",
+			"wss://pas-rpc.stakeworld.io/assethub",
+		],
+		descriptors: pasah,
+	},
+] as const;
+
+type ChainConfig = (typeof CHAINS)[number];
+
+/** Output directory – tokens land next to the registry source files. */
+const OUTPUT_DIR = resolve(import.meta.dirname, "../src/registry/tokens");
+
+/** ERC20 metadata cache file path (committed to repo). */
+const ERC20_CACHE_PATH = resolve(import.meta.dirname, "erc20-cache.json");
+
+/** Re-fetch ERC20 metadata only when the cached entry is older than this. */
+const ERC20_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+/** Public Ethereum JSON-RPC endpoints (tried in order). */
+const ETHEREUM_RPC_URLS = [
+	"https://ethereum-rpc.publicnode.com",
+	"https://eth.drpc.org",
+	"https://rpc.ankr.com/eth",
+];
+
+// ---------------------------------------------------------------------------
+// JSON serialization helpers (handles bigint + Binary)
+//
+// Must match the app's safeStringify so that token IDs (which embed
+// lz-string–compressed JSON of the location) are identical.
+// ---------------------------------------------------------------------------
+
+const safeStringify = (value: unknown): string => {
+	if (!value) return value?.toString() ?? "";
+	return JSON.stringify(value, (_, v) => {
+		if (typeof v === "bigint") return `bigint:${v.toString()}`;
+		if (v && typeof v === "object" && typeof v.asHex === "function")
+			return `binary:${v.asHex()}`;
+		return v;
+	});
+};
+
+/**
+ * Top-level JSON replacer for writing files.
+ * Same rules as safeStringify so location objects round-trip correctly.
+ */
+const jsonReplacer = (_key: string, value: unknown) => {
+	if (typeof value === "bigint") return `bigint:${value.toString()}`;
+	if (
+		value &&
+		typeof value === "object" &&
+		typeof (value as { asHex?: unknown }).asHex === "function"
+	)
+		return `binary:${(value as { asHex: () => string }).asHex()}`;
+	return value;
+};
+
+// ---------------------------------------------------------------------------
+// TokenNoId shapes (mirrors the app's types, minus `id`)
+// ---------------------------------------------------------------------------
+
+// biome-ignore lint/suspicious/noExplicitAny: union of all token shapes used only for serialisation
+type TokenNoId = Record<string, any>;
+
+// ---------------------------------------------------------------------------
+// ERC20 RPC + CoinGecko cache & enrichment
+// ---------------------------------------------------------------------------
+
+interface Erc20CacheEntry {
+	fetchedAt: string;
+	tokenName: string;
+	symbol: string;
+	decimals: number;
+	image: string;
+}
+
+type Erc20Cache = Record<string, Erc20CacheEntry>;
+
+function loadErc20Cache(): Erc20Cache {
+	try {
+		if (existsSync(ERC20_CACHE_PATH)) {
+			return JSON.parse(readFileSync(ERC20_CACHE_PATH, "utf-8"));
+		}
+	} catch (err) {
+		console.warn(
+			"  [erc20] Failed to load cache, starting fresh:",
+			err instanceof Error ? err.message : err,
+		);
+	}
+	return {};
+}
+
+function saveErc20Cache(cache: Erc20Cache): void {
+	const sorted = Object.fromEntries(
+		Object.entries(cache).sort(([a], [b]) => a.localeCompare(b)),
+	);
+	writeFileSync(
+		ERC20_CACHE_PATH,
+		`${JSON.stringify(sorted, null, "\t")}\n`,
+		"utf-8",
+	);
+}
+
+function isEthereumOrigin(token: TokenNoId): boolean {
+	const interior = token.location?.interior;
+	if (interior?.type !== "X2") return false;
+	const [junction0, junction1] = interior.value ?? [];
+	return (
+		junction0?.type === "GlobalConsensus" &&
+		junction0.value?.type === "Ethereum" &&
+		junction1?.type === "AccountKey20"
+	);
+}
+
+/**
+ * Extract the hex contract address from an Ethereum-origin foreign asset.
+ * The address is stored as `"binary:0x..."` after JSON serialization, but at
+ * this point the value is still a PAPI Binary instance or a raw string.
+ */
+function getContractAddress(token: TokenNoId): string | null {
+	try {
+		const key = token.location.interior.value[1].value.key;
+		// key may be a PAPI Binary with asHex(), or a pre-serialized "binary:0x…" string
+		const hex: string =
+			typeof key === "string"
+				? key.replace(/^binary:/, "")
+				: typeof key?.asHex === "function"
+					? key.asHex()
+					: "";
+		return hex?.startsWith("0x") ? hex.toLowerCase() : null;
+	} catch {
+		return null;
+	}
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// ---------------------------------------------------------------------------
+// ERC20 RPC helpers – call name(), symbol(), decimals() on Ethereum mainnet
+// ---------------------------------------------------------------------------
+
+/** Standard ERC20 function selectors (4 bytes, no arguments). */
+const ERC20_SELECTORS = {
+	name: "0x06fdde03",
+	symbol: "0x95d89b41",
+	decimals: "0x313ce567",
+} as const;
+
+/**
+ * Execute a single `eth_call` against the first responsive Ethereum RPC.
+ * Tries each URL in ETHEREUM_RPC_URLS in order; throws if all fail.
+ */
+async function ethCall(to: string, data: string): Promise<string> {
+	let lastError: Error | undefined;
+	for (const rpcUrl of ETHEREUM_RPC_URLS) {
+		try {
+			const res = await fetch(rpcUrl, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					jsonrpc: "2.0",
+					id: 1,
+					method: "eth_call",
+					params: [{ to, data }, "latest"],
+				}),
+			});
+			const json = (await res.json()) as {
+				result?: string;
+				error?: { message: string };
+			};
+			if (json.error) throw new Error(json.error.message);
+			if (json.result) return json.result;
+			throw new Error("Empty result from eth_call");
+		} catch (err) {
+			lastError = err instanceof Error ? err : new Error(String(err));
+		}
+	}
+	throw lastError ?? new Error("All Ethereum RPC endpoints failed");
+}
+
+/** Decode an ABI-encoded string (returned by name() and symbol()). */
+function decodeAbiString(hex: string): string {
+	// Remove 0x prefix
+	const data = hex.startsWith("0x") ? hex.slice(2) : hex;
+	if (data.length < 128) return ""; // minimum: offset(32) + length(32) + data(32)
+	// Offset to string data (first 32 bytes) — usually 0x20
+	const offset = Number.parseInt(data.slice(0, 64), 16) * 2;
+	// String byte length (next 32 bytes at offset)
+	const length = Number.parseInt(data.slice(offset, offset + 64), 16);
+	// The UTF-8 bytes
+	const strHex = data.slice(offset + 64, offset + 64 + length * 2);
+	return Buffer.from(strHex, "hex").toString("utf-8");
+}
+
+/** Decode a uint8 return value (returned by decimals()). */
+function decodeUint8(hex: string): number {
+	const data = hex.startsWith("0x") ? hex.slice(2) : hex;
+	return Number.parseInt(data, 16);
+}
+
+/**
+ * Fetch ERC20 metadata (name, symbol, decimals) via direct contract calls.
+ * Returns `null` if the contract does not implement ERC20 (all 3 calls fail).
+ */
+async function fetchErc20Metadata(
+	contractAddress: string,
+): Promise<{ tokenName: string; symbol: string; decimals: number } | null> {
+	const results = await Promise.allSettled([
+		ethCall(contractAddress, ERC20_SELECTORS.name),
+		ethCall(contractAddress, ERC20_SELECTORS.symbol),
+		ethCall(contractAddress, ERC20_SELECTORS.decimals),
+	]);
+
+	const nameResult =
+		results[0].status === "fulfilled" ? decodeAbiString(results[0].value) : "";
+	const symbolResult =
+		results[1].status === "fulfilled" ? decodeAbiString(results[1].value) : "";
+	const decimalsResult =
+		results[2].status === "fulfilled" ? decodeUint8(results[2].value) : 0;
+
+	// If we couldn't get any info at all, treat as not an ERC20
+	if (!nameResult && !symbolResult && !decimalsResult) return null;
+
+	return {
+		tokenName: nameResult,
+		symbol: symbolResult,
+		decimals: decimalsResult,
+	};
+}
+
+// ---------------------------------------------------------------------------
+// CoinGecko – free API for token logos
+// ---------------------------------------------------------------------------
+
+/**
+ * CoinGecko delay between calls (ms).
+ * Without API key the free tier is very aggressive (~5-10 req/min).
+ * With a demo key the limit is 30 req/min → 2s is safe.
+ */
+const COINGECKO_DELAY_WITH_KEY_MS = 2_000;
+const COINGECKO_DELAY_NO_KEY_MS = 6_000;
+
+/** Maximum retries for CoinGecko 429 (rate limit) responses. */
+const COINGECKO_MAX_RETRIES = 3;
+
+/**
+ * Hard cap on CoinGecko API calls per script invocation.
+ * Can be overridden with COINGECKO_BUDGET_PER_RUN.
+ */
+const coingeckoBudgetFromEnv = Number(
+	process.env.COINGECKO_BUDGET_PER_RUN ?? "500",
+);
+const COINGECKO_BUDGET_PER_RUN =
+	Number.isFinite(coingeckoBudgetFromEnv) && coingeckoBudgetFromEnv > 0
+		? Math.floor(coingeckoBudgetFromEnv)
+		: 500;
+
+/** Tracks CoinGecko API calls within this script run. */
+let coingeckoCalls = 0;
+
+/**
+ * Fetch the logo URL for an Ethereum token from CoinGecko's free API.
+ * When an API key is provided it is sent as `x-cg-demo-api-key` header.
+ * Retries with exponential backoff on 429 (rate limited).
+ * Returns an empty string if the token is unknown, budget is exhausted,
+ * or all retries fail.
+ */
+async function fetchCoinGeckoImage(
+	contractAddress: string,
+	apiKey: string | undefined,
+): Promise<string> {
+	if (coingeckoCalls >= COINGECKO_BUDGET_PER_RUN) {
+		console.log("  [coingecko] Budget exhausted, skipping remaining logos");
+		return "";
+	}
+
+	const url = `https://api.coingecko.com/api/v3/coins/ethereum/contract/${contractAddress}`;
+	const headers: Record<string, string> = { Accept: "application/json" };
+	if (apiKey) headers["x-cg-demo-api-key"] = apiKey;
+
+	const delayMs = apiKey
+		? COINGECKO_DELAY_WITH_KEY_MS
+		: COINGECKO_DELAY_NO_KEY_MS;
+
+	for (let attempt = 0; attempt <= COINGECKO_MAX_RETRIES; attempt++) {
+		try {
+			coingeckoCalls++;
+			const res = await fetch(url, { headers });
+
+			if (res.status === 429) {
+				// Rate limited — back off and retry
+				const backoff = delayMs * 2 ** attempt;
+				console.log(
+					`  [coingecko] Rate limited, retrying in ${backoff / 1000}s...`,
+				);
+				await sleep(backoff);
+				continue;
+			}
+
+			if (!res.ok) return "";
+			const json = (await res.json()) as {
+				image?: { large?: string; small?: string; thumb?: string };
+			};
+			return json.image?.large ?? json.image?.small ?? "";
+		} catch {
+			return "";
+		}
+	}
+	return "";
+}
+
+// ---------------------------------------------------------------------------
+// Cache refresh — combines ERC20 RPC + CoinGecko
+// ---------------------------------------------------------------------------
+
+/**
+ * Refresh the ERC20 cache for the given tokens.
+ * Only fetches entries that are missing or older than ERC20_MAX_AGE_MS.
+ * ERC20 RPC calls are parallelised; CoinGecko calls are rate-limited.
+ */
+async function refreshErc20Cache(
+	cache: Erc20Cache,
+	tokens: TokenNoId[],
+	coingeckoApiKey: string | undefined,
+): Promise<void> {
+	// Collect unique contract addresses from Ethereum-origin foreign assets
+	const addresses = new Set<string>();
+	for (const token of tokens) {
+		if (token.type !== "foreign-asset" || !isEthereumOrigin(token)) continue;
+		const addr = getContractAddress(token);
+		if (addr) addresses.add(addr);
+	}
+
+	const now = Date.now();
+	const staleAddresses = [...addresses].filter((addr) => {
+		const entry = cache[addr];
+		if (!entry) return true;
+		return now - new Date(entry.fetchedAt).getTime() > ERC20_MAX_AGE_MS;
+	});
+
+	if (staleAddresses.length === 0) {
+		console.log("  [erc20] Cache is up-to-date, nothing to fetch");
+		return;
+	}
+
+	console.log(
+		`  [erc20] Fetching metadata for ${staleAddresses.length} contract(s)...`,
+	);
+
+	// Step 1: Fetch ERC20 metadata sequentially (public RPCs rate-limit parallel bursts)
+	const metadataResults: Array<{
+		addr: string;
+		metadata: Awaited<ReturnType<typeof fetchErc20Metadata>>;
+	}> = [];
+	for (const addr of staleAddresses) {
+		const metadata = await fetchErc20Metadata(addr).catch(() => null);
+		metadataResults.push({ addr, metadata });
+		// Small delay to avoid public RPC rate limits
+		await sleep(200);
+	}
+
+	// Step 2: Fetch CoinGecko images sequentially (rate-limited)
+	const delayMs = coingeckoApiKey
+		? COINGECKO_DELAY_WITH_KEY_MS
+		: COINGECKO_DELAY_NO_KEY_MS;
+	let fetched = 0;
+	for (const { addr, metadata } of metadataResults) {
+		if (!metadata) {
+			console.log(`  [erc20] ${addr} — not a valid ERC20, skipping`);
+			continue;
+		}
+
+		// Rate-limit CoinGecko (skip delay before first call)
+		if (fetched > 0) await sleep(delayMs);
+		const image = await fetchCoinGeckoImage(addr, coingeckoApiKey);
+
+		cache[addr] = {
+			fetchedAt: new Date().toISOString(),
+			tokenName: metadata.tokenName,
+			symbol: metadata.symbol,
+			decimals: metadata.decimals,
+			image,
+		};
+		fetched++;
+
+		if (image) {
+			console.log(`  [erc20] ${addr} → ${metadata.symbol} (with logo)`);
+		} else {
+			console.log(`  [erc20] ${addr} → ${metadata.symbol} (no logo)`);
+		}
+	}
+
+	console.log(`  [erc20] Fetched ${fetched}/${staleAddresses.length} token(s)`);
+	console.log(
+		`  [coingecko] API calls this run: ${coingeckoCalls}/${COINGECKO_BUDGET_PER_RUN}`,
+	);
+}
+
+/**
+ * Enrich Ethereum-origin foreign asset tokens from the ERC20 cache.
+ * Fills missing symbol, name, decimals; sets logo if available.
+ */
+function enrichFromErc20Cache(tokens: TokenNoId[], cache: Erc20Cache): void {
+	for (const token of tokens) {
+		if (token.type !== "foreign-asset" || !isEthereumOrigin(token)) continue;
+
+		const addr = getContractAddress(token);
+		if (!addr) continue;
+
+		const cached = cache[addr];
+		if (!cached) continue;
+
+		if (!token.symbol && cached.symbol) token.symbol = cached.symbol;
+		if (!token.name && cached.tokenName) token.name = cached.tokenName;
+		if (!token.decimals && cached.decimals) token.decimals = cached.decimals;
+		if (!token.logo && cached.image) token.logo = cached.image;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Fetchers — each returns TokenNoId[] (no `id` field)
+// ---------------------------------------------------------------------------
+
+async function fetchAssetTokens(
+	chain: ChainConfig,
+	api: TypedApi<ChainConfig["descriptors"]>,
+	signal: AbortSignal,
+): Promise<TokenNoId[]> {
+	console.log(`  [${chain.id}] Fetching asset metadata + asset info...`);
+
+	const [metadatas, assets] = await Promise.all([
+		api.query.Assets.Metadata.getEntries({ at: "best", signal }),
+		api.query.Assets.Asset.getEntries({ at: "best", signal }),
+	]);
+	console.log(
+		`  [${chain.id}] Found ${metadatas.length} asset metadatas, ${assets.length} asset infos`,
+	);
+
+	// Build a map of assetId → is_sufficient from Assets.Asset
+	const sufficientMap = new Map<number, boolean>();
+	for (const a of assets)
+		sufficientMap.set(a.keyArgs[0], a.value.is_sufficient);
+
+	return metadatas.map((d) => {
+		const assetId = d.keyArgs[0];
+		return {
+			type: "asset",
+			chainId: chain.id,
+			decimals: d.value.decimals,
+			symbol: d.value.symbol.asText(),
+			name: d.value.name.asText(),
+			logo: undefined,
+			assetId,
+			verified: false,
+			isSufficient: sufficientMap.get(assetId) ?? false,
+		};
+	});
+}
+
+async function fetchPoolAssetTokens(
+	chain: ChainConfig,
+	api: TypedApi<ChainConfig["descriptors"]>,
+	signal: AbortSignal,
+): Promise<TokenNoId[]> {
+	console.log(`  [${chain.id}] Fetching pool assets...`);
+	const entries = await api.query.PoolAssets.Asset.getEntries({
+		at: "best",
+		signal,
+	});
+	console.log(`  [${chain.id}] Found ${entries.length} pool assets`);
+
+	return entries.map((d) => {
+		const poolAssetId = d.keyArgs[0];
+		return {
+			type: "pool-asset",
+			chainId: chain.id,
+			decimals: 0,
+			symbol: "",
+			name: "",
+			logo: undefined,
+			poolAssetId,
+			isSufficient: false,
+		};
+	});
+}
+
+async function fetchForeignAssetTokens(
+	chain: ChainConfig,
+	api: TypedApi<ChainConfig["descriptors"]>,
+	signal: AbortSignal,
+): Promise<TokenNoId[]> {
+	console.log(`  [${chain.id}] Fetching foreign assets...`);
+
+	const [assets, metadatas] = await Promise.all([
+		api.query.ForeignAssets.Asset.getEntries({ at: "best", signal }),
+		api.query.ForeignAssets.Metadata.getEntries({ at: "best", signal }),
+	]);
+	console.log(
+		`  [${chain.id}] Found ${assets.length} foreign assets (${metadatas.length} with metadata)`,
+	);
+
+	return assets
+		.map((d) => {
+			const location = d.keyArgs[0];
+			const metadata = metadatas.find(
+				(m) => safeStringify(m.keyArgs[0]) === safeStringify(d.keyArgs[0]),
+			)?.value;
+
+			const symbol = metadata?.symbol.asText() ?? "";
+			const decimals = metadata?.decimals ?? 0;
+			const name = metadata?.name.asText() ?? "";
+			const isSufficient = d.value.is_sufficient ?? false;
+
+			return {
+				type: "foreign-asset",
+				chainId: chain.id,
+				decimals,
+				symbol,
+				name,
+				logo: undefined,
+				location,
+				verified: false,
+				isSufficient,
+			};
+		})
+		.filter((t) => {
+			// Keep Ethereum-origin tokens even without on-chain metadata —
+			// they can be enriched from ERC20 RPC + CoinGecko later.
+			if (isEthereumOrigin(t)) return true;
+			return t.symbol && t.name;
+		});
+}
+
+// ---------------------------------------------------------------------------
+// Per-chain orchestration
+// ---------------------------------------------------------------------------
+
+async function fetchTokensForChain(
+	chain: ChainConfig,
+	timeout: number,
+): Promise<TokenNoId[]> {
+	console.log(`\nConnecting to ${chain.name} (${chain.id})...`);
+
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), timeout);
+
+	let client: PolkadotClient | undefined;
+
+	try {
+		client = createClient(
+			withPolkadotSdkCompat(getWsProvider(chain.wsUrl as unknown as string[])),
+		);
+		const api = client.getTypedApi(chain.descriptors);
+
+		// Wait for the chain to be reachable
+		console.log(`  [${chain.id}] Waiting for first block...`);
+		await Promise.race([
+			firstValueFrom(client.bestBlocks$),
+			new Promise<never>((_, reject) =>
+				setTimeout(
+					() => reject(new Error(`Timeout waiting for ${chain.id}`)),
+					timeout,
+				),
+			),
+		]);
+		console.log(`  [${chain.id}] Connected`);
+
+		const signal = controller.signal;
+
+		const tokens: TokenNoId[] = [];
+
+		// Fetch each type independently so a failure in one doesn't lose the others
+		for (const [label, fetcher] of [
+			["assets", () => fetchAssetTokens(chain, api, signal)],
+			["pool assets", () => fetchPoolAssetTokens(chain, api, signal)],
+			["foreign assets", () => fetchForeignAssetTokens(chain, api, signal)],
+		] as const) {
+			try {
+				const result = await (fetcher as () => Promise<TokenNoId[]>)();
+				tokens.push(...result);
+			} catch (err) {
+				console.error(
+					`  [${chain.id}] Failed to fetch ${label}:`,
+					err instanceof Error ? err.message : err,
+				);
+			}
+		}
+
+		const assetCount = tokens.filter((t) => t.type === "asset").length;
+		const poolCount = tokens.filter((t) => t.type === "pool-asset").length;
+		const foreignCount = tokens.filter(
+			(t) => t.type === "foreign-asset",
+		).length;
+		console.log(
+			`  [${chain.id}] Total: ${tokens.length} tokens (${assetCount} assets + ${poolCount} pool assets + ${foreignCount} foreign assets)`,
+		);
+		return tokens;
+	} catch (err) {
+		console.error(
+			`  [${chain.id}] Error:`,
+			err instanceof Error ? err.message : err,
+		);
+		return [];
+	} finally {
+		clearTimeout(timer);
+		client?.destroy();
+	}
+}
+
+// ---------------------------------------------------------------------------
+// CLI
+// ---------------------------------------------------------------------------
+
+function parseArgs() {
+	const args = process.argv.slice(2);
+	let chainFilter: string[] | null = null;
+	let timeout = 120_000;
+
+	for (let i = 0; i < args.length; i++) {
+		switch (args[i]) {
+			case "--chains":
+				chainFilter = args[++i]?.split(",").map((s) => s.trim()) ?? null;
+				break;
+			case "--timeout":
+				timeout = Number(args[++i] ?? timeout);
+				break;
+			case "--help":
+				console.log(`Usage: node --run fetch-tokens [-- options]
+
+Options:
+  --chains <chain1,chain2> Comma-separated chain IDs to fetch (default: all)
+                           Available: pah, kah, wah, pasah
+  --timeout <ms>           Per-chain timeout in ms (default: 120000)
+  --help                   Show this help
+
+Environment:
+  COINGECKO_API_KEY        CoinGecko Demo API key (optional, improves rate limits).
+                           Set in web/.env.local for local runs,
+                           or as a GitHub secret for CI.
+	COINGECKO_BUDGET_PER_RUN Maximum CoinGecko calls per run (optional, default: 500).
+
+Output files are written to src/registry/tokens/tokens.<chainId>.json`);
+				process.exit(0);
+		}
+	}
+
+	return { chainFilter, timeout };
+}
+
+async function main() {
+	const { chainFilter, timeout } = parseArgs();
+
+	const chainsToFetch = chainFilter
+		? CHAINS.filter((c) => chainFilter.includes(c.id))
+		: [...CHAINS];
+
+	if (chainsToFetch.length === 0) {
+		console.error(
+			`No matching chains found. Available: ${CHAINS.map((c) => c.id).join(", ")}`,
+		);
+		process.exit(1);
+	}
+
+	console.log(
+		`Fetching tokens from ${chainsToFetch.length} chain(s): ${chainsToFetch.map((c) => c.id).join(", ")}`,
+	);
+	console.log(`Timeout per chain: ${timeout}ms`);
+	console.log(`Output directory: ${OUTPUT_DIR}`);
+
+	// 1. Fetch tokens from all chains into memory
+	const tokensByChain = new Map<string, TokenNoId[]>();
+	for (const chain of chainsToFetch) {
+		const tokens = await fetchTokensForChain(chain, timeout);
+		if (tokens.length > 0) tokensByChain.set(chain.id, tokens);
+	}
+
+	// 2. ERC20 + CoinGecko enrichment for Ethereum-origin foreign assets
+	const allTokens = [...tokensByChain.values()].flat();
+
+	const erc20Cache = loadErc20Cache();
+	const coingeckoApiKey = process.env.COINGECKO_API_KEY;
+	console.log(
+		`\n[erc20] Enriching Ethereum-origin tokens via ERC20 RPC + CoinGecko${coingeckoApiKey ? " (with API key)" : ""}`,
+	);
+	await refreshErc20Cache(erc20Cache, allTokens, coingeckoApiKey);
+	saveErc20Cache(erc20Cache);
+
+	// Apply cached data (even without fresh fetches, the cache may have data from prior runs)
+	enrichFromErc20Cache(allTokens, erc20Cache);
+
+	// 3. Write per-chain files
+	let totalTokens = 0;
+	for (const [chainId, tokens] of tokensByChain) {
+		// Final filter: drop foreign assets still missing symbol+name after enrichment
+		const filtered = tokens.filter((t) => {
+			if (t.type === "foreign-asset") return t.symbol && t.name;
+			return true;
+		});
+
+		const filePath = resolve(OUTPUT_DIR, `tokens.${chainId}.json`);
+		const jsonContent = `${JSON.stringify(filtered, jsonReplacer, "\t")}\n`;
+		writeFileSync(filePath, jsonContent, "utf-8");
+		console.log(
+			`  [${chainId}] Wrote ${filtered.length} tokens to tokens.${chainId}.json`,
+		);
+		totalTokens += filtered.length;
+	}
+
+	console.log(
+		`\nDone! Wrote ${totalTokens} tokens across ${tokensByChain.size} file(s).`,
+	);
+
+	process.exit(0);
+}
+
+main().catch((err) => {
+	console.error("Fatal error:", err);
+	process.exit(1);
+});

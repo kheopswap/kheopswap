@@ -1,0 +1,9514 @@
+[
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "love",
+		"name": "道阻且长，温暖坚定-爱情/love",
+		"logo": "",
+		"assetId": 22222005,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VDOT",
+		"name": "VDOT",
+		"logo": "",
+		"assetId": 50000074,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TOM",
+		"name": "Tomcoin",
+		"logo": "",
+		"assetId": 9999,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KAIBYO",
+		"name": "KAIBYO",
+		"logo": "",
+		"assetId": 22222087,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ELONA",
+		"name": "Elona Musk",
+		"logo": "",
+		"assetId": 20090142,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "VP",
+		"name": "Virtus Pro",
+		"logo": "",
+		"assetId": 50000428,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "WETH",
+		"name": "Wrapped Ether",
+		"logo": "",
+		"assetId": 100,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TUNG",
+		"name": "Tung Tung Tung Tung Tung Tung Sahur",
+		"logo": "",
+		"assetId": 50000133,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAD",
+		"name": "MEMEPAD NO FUN",
+		"logo": "",
+		"assetId": 22222041,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "UNION",
+		"name": "UNION",
+		"logo": "",
+		"assetId": 56,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "IGNORE",
+		"name": "TestTestTest",
+		"logo": "",
+		"assetId": 50000055,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "EMBRE",
+		"name": "DELTA Coins",
+		"logo": "",
+		"assetId": 50000121,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "bb",
+		"name": "bibi",
+		"logo": "",
+		"assetId": 50000122,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HUB",
+		"name": "HUB Swap",
+		"logo": "",
+		"assetId": 482,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "XCMS",
+		"name": "XCM_Shib",
+		"logo": "",
+		"assetId": 22222025,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "GVN",
+		"name": "GAVIN",
+		"logo": "",
+		"assetId": 81,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TYLOO",
+		"name": "TYLOO",
+		"logo": "",
+		"assetId": 50000388,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 16,
+		"symbol": "TTLedg",
+		"name": "TTLedger",
+		"logo": "",
+		"assetId": 50000050,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TEXP",
+		"name": "Test EXP",
+		"logo": "",
+		"assetId": 50000323,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONA",
+		"name": "Moneta",
+		"logo": "",
+		"assetId": 200,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "YUNGOG",
+		"name": "Yung Kong Khan",
+		"logo": "",
+		"assetId": 50000138,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MIBR",
+		"name": "MIBR",
+		"logo": "",
+		"assetId": 50000254,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TT2",
+		"name": "TT2",
+		"logo": "",
+		"assetId": 50000030,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FAZE",
+		"name": "FaZe Clan",
+		"logo": "",
+		"assetId": 50000153,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ENCE",
+		"name": "ENCE",
+		"logo": "",
+		"assetId": 50000430,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "123",
+		"name": "123",
+		"logo": "",
+		"assetId": 123,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe8",
+		"name": "TestMeme8",
+		"logo": "",
+		"assetId": 52,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MrBear",
+		"name": "Bearableguy123",
+		"logo": "",
+		"assetId": 50000067,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PLAY",
+		"name": "PLAY",
+		"logo": "",
+		"assetId": 9000,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DUCK",
+		"name": "DUCK_DOT",
+		"logo": "",
+		"assetId": 2222,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000284,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MDMA",
+		"name": "MDMA",
+		"logo": "",
+		"assetId": 58,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "SHL",
+		"name": "SHELL",
+		"logo": "",
+		"assetId": 222,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PASSION",
+		"name": "Passion UA",
+		"logo": "",
+		"assetId": 50000360,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000372,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "Lester",
+		"name": "Lester",
+		"logo": "",
+		"assetId": 50000038,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PHUDAO",
+		"name": "PolkadotHungaryDAO",
+		"logo": "",
+		"assetId": 50000012,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ARMY",
+		"name": "BITCOIN_ARMY",
+		"logo": "",
+		"assetId": 50000003,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "LIQUS",
+		"name": "Liqus Coin",
+		"logo": "",
+		"assetId": 50000393,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe6Pump",
+		"name": "PumpMyBags",
+		"logo": "",
+		"assetId": 47,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BILL",
+		"name": "Billcoin - Polkadot",
+		"logo": "",
+		"assetId": 50000075,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "AZK",
+		"name": "Azkal Token",
+		"logo": "",
+		"assetId": 50000128,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VIT",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000347,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPIRIT",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000268,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BENJI",
+		"name": "Benji Coin",
+		"logo": "",
+		"assetId": 50000083,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ECSTATIC",
+		"name": "ECSTATIC",
+		"logo": "",
+		"assetId": 50000301,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CATWIF",
+		"name": "CAT WIF SWEATER",
+		"logo": "",
+		"assetId": 50,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "BEER",
+		"name": "BEER",
+		"logo": "",
+		"assetId": 25518,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VIT",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000311,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TMN",
+		"name": "TrumpMuskNexus",
+		"logo": "",
+		"assetId": 50000015,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 2,
+		"symbol": "BEEFY",
+		"name": "BEEFY",
+		"logo": "",
+		"assetId": 420,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SIX",
+		"name": "six",
+		"logo": "",
+		"assetId": 110,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "BEAST",
+		"name": "Mr. Beast Coin",
+		"logo": "",
+		"assetId": 10,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NFLR",
+		"name": "NIFFLER",
+		"logo": "",
+		"assetId": 1001,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "COKE",
+		"name": "Polkacaine",
+		"logo": "",
+		"assetId": 22222028,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PUA",
+		"name": "Passion UA",
+		"logo": "",
+		"assetId": 50000416,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000343,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MOUZ",
+		"name": "MOUZ",
+		"logo": "",
+		"assetId": 50000255,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GR",
+		"name": "GREECE",
+		"logo": "",
+		"assetId": 22222079,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000148,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DOTFUR",
+		"name": "Polkadot Fur",
+		"logo": "",
+		"assetId": 50000114,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "M80",
+		"name": "M80",
+		"logo": "",
+		"assetId": 50000285,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "test1",
+		"name": "TEST",
+		"logo": "",
+		"assetId": 20090110,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FALC",
+		"name": "Falcons",
+		"logo": "",
+		"assetId": 50000405,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "POLISD",
+		"name": "Polkadot  Insider",
+		"logo": "",
+		"assetId": 22222024,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "ICE",
+		"name": "IceCreamToken",
+		"logo": "",
+		"assetId": 256,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "NERDS",
+		"name": "NERDS",
+		"logo": "",
+		"assetId": 50000006,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CHILL",
+		"name": "CHILLGUY",
+		"logo": "",
+		"assetId": 50000042,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Mill",
+		"name": "Million",
+		"logo": "",
+		"assetId": 22222070,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PI",
+		"name": "Polkadot Insider",
+		"logo": "",
+		"assetId": 22222019,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "SUS",
+		"name": "Sus",
+		"logo": "",
+		"assetId": 20090130,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GAME",
+		"name": "GameCoin",
+		"logo": "",
+		"assetId": 108,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TYLOO",
+		"name": "TYLOO",
+		"logo": "",
+		"assetId": 50000365,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TESTV2",
+		"name": "Testing v2",
+		"logo": "",
+		"assetId": 1111,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 16,
+		"symbol": "USDT",
+		"name": "POLKADOT-USDT",
+		"logo": "",
+		"assetId": 202406,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SOPHIA",
+		"name": "Sophia",
+		"logo": "",
+		"assetId": 22222084,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ALIEN",
+		"name": "ALIEN",
+		"logo": "",
+		"assetId": 22222008,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "RITA",
+		"name": "Rita",
+		"logo": "",
+		"assetId": 50000160,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DOGE",
+		"name": "DOGE",
+		"logo": "",
+		"assetId": 300,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000292,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "$PGH",
+		"name": "Steelers",
+		"logo": "",
+		"assetId": 22222046,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "EFI",
+		"name": "Efinity Token",
+		"logo": "",
+		"assetId": 4,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DDT",
+		"name": "DIGITAL DOT",
+		"logo": "",
+		"assetId": 22222043,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 2,
+		"symbol": "SAX",
+		"name": "SAXEMBERG GULDEN",
+		"logo": "",
+		"assetId": 48,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FOMO",
+		"name": "FomoKing",
+		"logo": "",
+		"assetId": 50000051,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BIG",
+		"name": "BIG",
+		"logo": "",
+		"assetId": 50000245,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "AGA",
+		"name": "AMS GLOBAL ARBITRAGE",
+		"logo": "",
+		"assetId": 50000000,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "RIDEMY",
+		"name": "See-Saw",
+		"logo": "",
+		"assetId": 22222064,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "WBTC",
+		"name": "Wrapped Bitcoin",
+		"logo": "",
+		"assetId": 21,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ECSTATIC",
+		"name": "ECSTATIC",
+		"logo": "",
+		"assetId": 50000288,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "IMP",
+		"name": "Imperial Esports",
+		"logo": "",
+		"assetId": 50000306,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TYLOO",
+		"name": "TYLOO",
+		"logo": "",
+		"assetId": 50000349,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DOKA",
+		"name": "DOKA",
+		"logo": "",
+		"assetId": 333,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SHIVER",
+		"name": "CLOTHES OFF",
+		"logo": "",
+		"assetId": 22222050,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LIQUID",
+		"name": "Team Liquid",
+		"logo": "",
+		"assetId": 50000269,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "BULL",
+		"name": "BULL",
+		"logo": "",
+		"assetId": 28,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "MATIC",
+		"name": "Matic",
+		"logo": "",
+		"assetId": 20090109,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "ttt",
+		"name": "test",
+		"logo": "",
+		"assetId": 7006,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG",
+		"name": "Loooong",
+		"logo": "",
+		"assetId": 20090138,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000261,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "LINK",
+		"name": "LINK",
+		"logo": "",
+		"assetId": 67,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "StabCP",
+		"name": "Cypress Stable Coin",
+		"logo": "",
+		"assetId": 20,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000373,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN[B3]",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000196,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "Grift ",
+		"name": "Grifters",
+		"logo": "",
+		"assetId": 20090140,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "gold",
+		"name": "gold",
+		"logo": "",
+		"assetId": 999,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DED",
+		"name": "DED",
+		"logo": "",
+		"assetId": 30,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KUS",
+		"name": "The Kusamarian",
+		"logo": "",
+		"assetId": 50000010,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "PEPE",
+		"name": "PEPE",
+		"logo": "",
+		"assetId": 39,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "STEDMN",
+		"name": "Steadman",
+		"logo": "",
+		"assetId": 50000161,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "COKE",
+		"name": "COCA KOLA",
+		"logo": "",
+		"assetId": 10101,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "GK8",
+		"name": "Test1",
+		"logo": "",
+		"assetId": 50000319,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000338,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST[B4]",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000200,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "DOTMA",
+		"name": "DOTMATIONS",
+		"logo": "",
+		"assetId": 101,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "SHIB",
+		"name": "SHIB",
+		"logo": "",
+		"assetId": 38,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000382,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "RVGAV",
+		"name": "Remote Viewed Gav",
+		"logo": "",
+		"assetId": 20090147,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PEPE",
+		"name": "PEPE•ON•DOT•TO•THE•MOON ",
+		"logo": "",
+		"assetId": 46,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GIGDOT",
+		"name": "GIGADOT",
+		"logo": "",
+		"assetId": 50000092,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BSOD",
+		"name": "Blue Screen of Death",
+		"logo": "",
+		"assetId": 20090133,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Shit",
+		"name": "Poop",
+		"logo": "",
+		"assetId": 22222036,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000371,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NYBORG",
+		"name": "NYBORG",
+		"logo": "",
+		"assetId": 50000002,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "Cypress",
+		"name": "Cypress Capital",
+		"logo": "",
+		"assetId": 99,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MeTest",
+		"name": "MemeTest",
+		"logo": "",
+		"assetId": 34,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONGOLZ",
+		"name": "The MongolZ",
+		"logo": "",
+		"assetId": 50000147,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONGZ",
+		"name": "The MongolZ",
+		"logo": "",
+		"assetId": 50000387,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST[B5]",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000209,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PLS",
+		"name": "Pleasance",
+		"logo": "",
+		"assetId": 22222058,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMeL",
+		"name": "TestMemeLast",
+		"logo": "",
+		"assetId": 22222002,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NRG",
+		"name": "NRG",
+		"logo": "",
+		"assetId": 50000427,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TXM",
+		"name": "TRUMPXMUSK",
+		"logo": "",
+		"assetId": 50000018,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GL",
+		"name": "GamerLegion",
+		"logo": "",
+		"assetId": 50000304,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MPC",
+		"name": "My Pacman Coin",
+		"logo": "",
+		"assetId": 50000103,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000289,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LuaC",
+		"name": "EternLuaCheia",
+		"logo": "",
+		"assetId": 50000022,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "JJK",
+		"name": "JJK",
+		"logo": "",
+		"assetId": 50000089,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOI",
+		"name": "DOTTIE",
+		"logo": "",
+		"assetId": 20090114,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DOGA",
+		"name": "DOGA",
+		"logo": "",
+		"assetId": 16,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "MRSL",
+		"name": "Mursal",
+		"logo": "",
+		"assetId": 50000389,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "web3",
+		"name": "web3.online",
+		"logo": "",
+		"assetId": 11,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 7,
+		"symbol": "ggg",
+		"name": "ggggggg",
+		"logo": "",
+		"assetId": 50000335,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LEI",
+		"name": "leimu",
+		"logo": "",
+		"assetId": 50000076,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST[[T1]]",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000235,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NIN",
+		"name": "synergy AI",
+		"logo": "",
+		"assetId": 22222051,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "TEST6",
+		"name": "TESTV6",
+		"logo": "",
+		"assetId": 50000117,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LEGACY",
+		"name": "Legacy",
+		"logo": "",
+		"assetId": 50000260,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "yv",
+		"name": "yovel",
+		"logo": "",
+		"assetId": 50000322,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FNATIC",
+		"name": "Fnatic",
+		"logo": "",
+		"assetId": 50000299,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MOUZ",
+		"name": "MOUZ",
+		"logo": "",
+		"assetId": 50000313,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BET",
+		"name": "BetBoom Team",
+		"logo": "",
+		"assetId": 50000264,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CDOG",
+		"name": "Costco Hotdog",
+		"logo": "",
+		"assetId": 22222020,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "REZ",
+		"name": "REZ",
+		"logo": "",
+		"assetId": 50000395,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "SCAH",
+		"name": "ShaharCoin",
+		"logo": "",
+		"assetId": 50000368,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FNATIC",
+		"name": "Fnatic",
+		"logo": "",
+		"assetId": 50000251,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Kaibyō",
+		"name": "Kaibyō",
+		"logo": "",
+		"assetId": 22222073,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "$JAM",
+		"name": "JAM",
+		"logo": "",
+		"assetId": 22222074,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000300,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "AUR",
+		"name": "Aurora",
+		"logo": "",
+		"assetId": 50000409,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "txt",
+		"name": "txt",
+		"logo": "",
+		"assetId": 20090111,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TS",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000142,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "DED",
+		"name": "DOT is Dead",
+		"logo": "",
+		"assetId": 30035,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ALPHA",
+		"name": "Alpha Investoor",
+		"logo": "",
+		"assetId": 22222062,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe14",
+		"name": "TestMeme14",
+		"logo": "",
+		"assetId": 75,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "MDGA",
+		"name": "Make DOT Great Again",
+		"logo": "",
+		"assetId": 20090119,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FALC",
+		"name": "Team Falcons",
+		"logo": "",
+		"assetId": 50000377,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DEMO",
+		"name": "DEMO",
+		"logo": "",
+		"assetId": 111,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "IBW",
+		"name": "Itchy bomb weed ",
+		"logo": "",
+		"assetId": 20090121,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TS",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000151,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DUD",
+		"name": "Inverse_WUD",
+		"logo": "",
+		"assetId": 22222075,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PUNT",
+		"name": "COUPUNT",
+		"logo": "",
+		"assetId": 50000110,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000353,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "X",
+		"name": "X",
+		"logo": "",
+		"assetId": 22222022,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "COM",
+		"name": "COMMA",
+		"logo": "",
+		"assetId": 50000065,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TESTING",
+		"name": "Testing",
+		"logo": "",
+		"assetId": 122,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FALC",
+		"name": "Team Falcons",
+		"logo": "",
+		"assetId": 50000361,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DOGE",
+		"name": "DOGE",
+		"logo": "",
+		"assetId": 66,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PUMP",
+		"name": "PUMP",
+		"logo": "",
+		"assetId": 50000017,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ROTKO",
+		"name": "ROTKO",
+		"logo": "",
+		"assetId": 50000137,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HYPS",
+		"name": "HappyPaisa",
+		"logo": "",
+		"assetId": 50000040,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST[B15]",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000233,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DGC",
+		"name": "dogocoin",
+		"logo": "",
+		"assetId": 50000279,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VITAL[B5]",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000207,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST[B14]",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000231,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "ma",
+		"name": "mark",
+		"logo": "",
+		"assetId": 50000130,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GAME",
+		"name": "GameDAO",
+		"logo": "",
+		"assetId": 555,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "COMPLEX",
+		"name": "Complexity",
+		"logo": "",
+		"assetId": 50000242,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "EMSK",
+		"name": "Elon Musk",
+		"logo": "",
+		"assetId": 50000369,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "JAMD",
+		"name": "JAM DODGER",
+		"logo": "",
+		"assetId": 2828,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MCP",
+		"name": "Micro",
+		"logo": "",
+		"assetId": 57,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BBB",
+		"name": "Big Balls Ben",
+		"logo": "",
+		"assetId": 22222021,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DOLF",
+		"name": "Artist with mustache",
+		"logo": "",
+		"assetId": 50000105,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "china",
+		"name": "china",
+		"logo": "",
+		"assetId": 22222009,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "LEAP",
+		"name": "Dot Leap",
+		"logo": "",
+		"assetId": 14,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 2,
+		"symbol": "LPHP",
+		"name": "Cooperative Liquidity Token",
+		"logo": "",
+		"assetId": 6,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "VALU",
+		"name": "Value Coin ",
+		"logo": "",
+		"assetId": 50000337,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TST",
+		"name": "Test",
+		"logo": "",
+		"assetId": 65454,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPIRIT",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000362,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LULL",
+		"name": "LULLMARKET",
+		"logo": "",
+		"assetId": 50000159,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "lish",
+		"name": "lishay",
+		"logo": "",
+		"assetId": 669,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "COMPLEX",
+		"name": "Complexity",
+		"logo": "",
+		"assetId": 50000249,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BNDT",
+		"name": "BANDIT the CAT",
+		"logo": "",
+		"assetId": 8889,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "MOON",
+		"name": "MOON",
+		"logo": "",
+		"assetId": 19,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONGOLZ",
+		"name": "The MongolZ",
+		"logo": "",
+		"assetId": 50000156,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "STINK",
+		"name": "STINK",
+		"logo": "",
+		"assetId": 42069,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "V",
+		"name": "Victory!",
+		"logo": "",
+		"assetId": 22222068,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000262,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "dot",
+		"name": "DOT",
+		"logo": "",
+		"assetId": 50000336,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000283,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "XT2",
+		"name": "X Test 2",
+		"logo": "",
+		"assetId": 50000127,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DMSTR",
+		"name": "DOT Master",
+		"logo": "",
+		"assetId": 20090143,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HoPhap",
+		"name": "Ho Phap",
+		"logo": "",
+		"assetId": 50000078,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DEDX",
+		"name": "DEDISDED",
+		"logo": "",
+		"assetId": 20090117,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NAVI",
+		"name": "Natus Vincere",
+		"logo": "",
+		"assetId": 50000408,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "G2",
+		"name": "G2 Esports",
+		"logo": "",
+		"assetId": 50000305,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "SOLETH",
+		"name": "Sol Ethereum",
+		"logo": "",
+		"assetId": 20090112,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "roo",
+		"name": "polkaroo",
+		"logo": "",
+		"assetId": 50000095,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DVCAT",
+		"name": "Darth Vader Cat",
+		"logo": "",
+		"assetId": 20090131,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "VITALITY",
+		"name": "Vitality",
+		"logo": "",
+		"assetId": 50000398,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TSN",
+		"name": "Trustless Supercomputing Networks",
+		"logo": "",
+		"assetId": 1107,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOTTY",
+		"name": "Dotty the Polkadot",
+		"logo": "",
+		"assetId": 1212,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NAVI",
+		"name": "Natus Vincere",
+		"logo": "",
+		"assetId": 50000145,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CRYXR",
+		"name": "CRYPTOXR",
+		"logo": "",
+		"assetId": 50000085,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GABI",
+		"name": "Gabicoin",
+		"logo": "",
+		"assetId": 50000008,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "JAMTON",
+		"name": "JAMTON",
+		"logo": "",
+		"assetId": 22222078,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "1111",
+		"name": "meme",
+		"logo": "",
+		"assetId": 50000088,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe12",
+		"name": "TestMeme12",
+		"logo": "",
+		"assetId": 73,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LOTY",
+		"name": "LOTY",
+		"logo": "",
+		"assetId": 50000069,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PASSION",
+		"name": "Passion UA",
+		"logo": "",
+		"assetId": 50000354,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "TRQ",
+		"name": "Turquoise",
+		"logo": "",
+		"assetId": 77,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOGE",
+		"name": "DOGE (Polkadot Asset Hub)",
+		"logo": "",
+		"assetId": 35,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "dog",
+		"name": "dotdog",
+		"logo": "",
+		"assetId": 22222029,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TAPE",
+		"name": "TAPE",
+		"logo": "",
+		"assetId": 9002,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FALC",
+		"name": "Team Falcons",
+		"logo": "",
+		"assetId": 50000384,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "UK",
+		"name": "United Kingdom",
+		"logo": "",
+		"assetId": 50000037,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LC",
+		"name": "Lua Cheia",
+		"logo": "",
+		"assetId": 50000021,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPIRIT",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000385,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "lishy",
+		"name": "lish",
+		"logo": "",
+		"assetId": 50000086,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PASSION",
+		"name": "Passion UA",
+		"logo": "",
+		"assetId": 50000383,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SLEEMO",
+		"name": "SUPERLEEMO",
+		"logo": "",
+		"assetId": 50000107,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CLAY",
+		"name": "ClayOnDot",
+		"logo": "",
+		"assetId": 36,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GIO",
+		"name": "Gio Coin",
+		"logo": "",
+		"assetId": 420666,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DOTZ",
+		"name": "DOTZILLA",
+		"logo": "",
+		"assetId": 22222053,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "EMR",
+		"name": "Emorphic LLC",
+		"logo": "",
+		"assetId": 1747,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PARITY",
+		"name": "PARITY",
+		"logo": "",
+		"assetId": 50000124,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DON",
+		"name": "Paydon Utility Token",
+		"logo": "",
+		"assetId": 50000111,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN[B4]",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000199,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TRASLA",
+		"name": "TRASLA",
+		"logo": "",
+		"assetId": 50000281,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "WOOD",
+		"name": "WOOD",
+		"logo": "",
+		"assetId": 31,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TT3",
+		"name": "TT3",
+		"logo": "",
+		"assetId": 50000031,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VIT",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000386,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KATRNA",
+		"name": "Katrina",
+		"logo": "",
+		"assetId": 50000162,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONGZ",
+		"name": "The MongolZ",
+		"logo": "",
+		"assetId": 50000267,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "COCOA",
+		"name": "COCOA",
+		"logo": "",
+		"assetId": 33,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOTCOIN",
+		"name": "DOTCOIN: The Meme Coin for DOT Holders",
+		"logo": "",
+		"assetId": 20090115,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "M80",
+		"name": "M80",
+		"logo": "",
+		"assetId": 50000422,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "SIN",
+		"name": "Sinners",
+		"logo": "",
+		"assetId": 50000434,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BMC",
+		"name": "BestMemeCoin",
+		"logo": "",
+		"assetId": 50000063,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000352,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DOTFUR",
+		"name": "Polkadot Fur",
+		"logo": "",
+		"assetId": 50000113,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA[[T1]]",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000237,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "HORN",
+		"name": "HORN",
+		"logo": "",
+		"assetId": 301,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FAZE",
+		"name": "FaZe Clan",
+		"logo": "",
+		"assetId": 50000144,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LuaCh",
+		"name": "LuaCheia",
+		"logo": "",
+		"assetId": 50000039,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ECSTATIC",
+		"name": "ECSTATIC",
+		"logo": "",
+		"assetId": 50000257,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "🥐",
+		"name": "Croissant",
+		"logo": "",
+		"assetId": 20090122,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HYDRA",
+		"name": "HydraCoin",
+		"logo": "",
+		"assetId": 2020,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VIRTUS",
+		"name": "Virtus.pro",
+		"logo": "",
+		"assetId": 50000302,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe4",
+		"name": "TestMeme4",
+		"logo": "",
+		"assetId": 41,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PXPS",
+		"name": "PixelPulse",
+		"logo": "",
+		"assetId": 5318008,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BRLd",
+		"name": "BRLd",
+		"logo": "",
+		"assetId": 50000318,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CKLD",
+		"name": "CuckolDAO",
+		"logo": "",
+		"assetId": 50000139,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 3,
+		"symbol": "TST",
+		"name": "Test Token",
+		"logo": "",
+		"assetId": 50000072,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "VDOT",
+		"name": "VDOT",
+		"logo": "",
+		"assetId": 50000073,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ASTRAL",
+		"name": "Astralis",
+		"logo": "",
+		"assetId": 50000275,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "CATNIP",
+		"name": "CATNIP",
+		"logo": "",
+		"assetId": 71,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TEST",
+		"name": "TEST",
+		"logo": "",
+		"assetId": 37362,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LCE",
+		"name": "Lua Cheia Eterna",
+		"logo": "",
+		"assetId": 50000023,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000239,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "SKL",
+		"name": "SKULL",
+		"logo": "",
+		"assetId": 44,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000297,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "OFIR",
+		"name": "OFIR",
+		"logo": "",
+		"assetId": 50000328,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000435,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PASSION",
+		"name": "Passion UA",
+		"logo": "",
+		"assetId": 50000376,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SAPIEN",
+		"name": "Homosapien Sapien",
+		"logo": "",
+		"assetId": 22222077,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000358,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TRUMP",
+		"name": "Donald Pump",
+		"logo": "",
+		"assetId": 50000016,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "Meme",
+		"name": "Cypress Meme",
+		"logo": "",
+		"assetId": 15,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BUG",
+		"name": "BUG",
+		"logo": "",
+		"assetId": 9202,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 16,
+		"symbol": "VRT",
+		"name": "vr_test",
+		"logo": "",
+		"assetId": 50000093,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FNC",
+		"name": "Fnatic",
+		"logo": "",
+		"assetId": 50000423,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MKY",
+		"name": "Monkey",
+		"logo": "",
+		"assetId": 50000084,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TM",
+		"name": "Trump meme",
+		"logo": "",
+		"assetId": 22222013,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPIRIT",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000346,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TP",
+		"name": "Trump President meme",
+		"logo": "",
+		"assetId": 22222010,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "WUDFUD",
+		"name": "R2D2100 WUD FUD",
+		"logo": "",
+		"assetId": 22222071,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "GK8TEST",
+		"name": "Test2",
+		"logo": "",
+		"assetId": 50000366,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TT4",
+		"name": "TT4",
+		"logo": "",
+		"assetId": 50000032,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NIP",
+		"name": "Ninjas In Pyjamas",
+		"logo": "",
+		"assetId": 50000253,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PHC",
+		"name": "Polkadot Hungary",
+		"logo": "",
+		"assetId": 50000054,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "COCA",
+		"name": "COCA",
+		"logo": "",
+		"assetId": 78,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "GTOKEN",
+		"name": "G Token",
+		"logo": "",
+		"assetId": 50000058,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NAVI",
+		"name": "Natus Vincere",
+		"logo": "",
+		"assetId": 50000274,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DSTINK",
+		"name": "DEGEN STINK",
+		"logo": "",
+		"assetId": 20090128,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ENCE",
+		"name": "ENCE",
+		"logo": "",
+		"assetId": 50000240,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "SUN",
+		"name": "SUN",
+		"logo": "",
+		"assetId": 61,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PEPE",
+		"name": "PEPE ON POLKADOT TO THE MOON",
+		"logo": "",
+		"assetId": 40,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "OG",
+		"name": "OG",
+		"logo": "",
+		"assetId": 50000432,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CHUG",
+		"name": "Chuggin Wif Chad",
+		"logo": "",
+		"assetId": 20090144,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GWUD",
+		"name": "GigaWUD",
+		"logo": "",
+		"assetId": 50000131,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "BTC",
+		"name": "BTC",
+		"logo": "",
+		"assetId": 2,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PIG",
+		"name": "PIG MEME",
+		"logo": "",
+		"assetId": 50000025,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "IC",
+		"name": "Inner Circle",
+		"logo": "",
+		"assetId": 50000431,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DBX",
+		"name": "DBX",
+		"logo": "",
+		"assetId": 789,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PMATIC",
+		"name": "Polkadot Polygon",
+		"logo": "",
+		"assetId": 20090106,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "D€",
+		"name": "digital euro",
+		"logo": "",
+		"assetId": 50000136,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000375,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 3,
+		"symbol": "TTT",
+		"name": "TestTest",
+		"logo": "",
+		"assetId": 3164,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CPLS",
+		"name": "Create Pools",
+		"logo": "",
+		"assetId": 1828,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ALEX",
+		"name": "adotlex",
+		"logo": "",
+		"assetId": 50000035,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "9INE",
+		"name": "9INE",
+		"logo": "",
+		"assetId": 50000433,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "POO",
+		"name": "Pookie",
+		"logo": "",
+		"assetId": 20090116,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VRN",
+		"name": "Viresinnumeris",
+		"logo": "",
+		"assetId": 22222031,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GIT",
+		"name": "GIOTTO",
+		"logo": "",
+		"assetId": 22222014,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FURIA",
+		"name": "Furia",
+		"logo": "",
+		"assetId": 50000397,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FUT",
+		"name": "FUT Esports",
+		"logo": "",
+		"assetId": 50000418,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "TSTD",
+		"name": "Test Asseted",
+		"logo": "",
+		"assetId": 1810,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FCD",
+		"name": "FUCK CHAOS DAO",
+		"logo": "",
+		"assetId": 20090129,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "SATS",
+		"name": "SATS",
+		"logo": "",
+		"assetId": 678,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "🙀",
+		"name": "F*c*Giotto",
+		"logo": "",
+		"assetId": 22222034,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe13",
+		"name": "TestMeme13",
+		"logo": "",
+		"assetId": 74,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000143,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "STEEBOR",
+		"name": "STEEBOOOOORRR",
+		"logo": "",
+		"assetId": 70,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 7,
+		"symbol": "oac2",
+		"name": "ofiracc2",
+		"logo": "",
+		"assetId": 50000314,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VITAL[B3]",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000195,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "THAT",
+		"name": "Henry Alexander Coin",
+		"logo": "",
+		"assetId": 50000066,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CLOUD",
+		"name": "Cloud Token",
+		"logo": "",
+		"assetId": 50000327,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HTG",
+		"name": "Hawk Tuah Girl",
+		"logo": "",
+		"assetId": 20090136,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000339,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CLAY",
+		"name": "ClayOnDot",
+		"logo": "",
+		"assetId": 32,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": ".WH",
+		"name": "DOT wif Hat",
+		"logo": "",
+		"assetId": 22222035,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ANGRY",
+		"name": "ANGRY",
+		"logo": "",
+		"assetId": 82,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BBQ",
+		"name": "BIG BBQ",
+		"logo": "",
+		"assetId": 22222065,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "STREAK",
+		"name": "Substreak Token",
+		"logo": "",
+		"assetId": 2106,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "LSCAT",
+		"name": "LA SAI CAT",
+		"logo": "",
+		"assetId": 9527,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NAVI",
+		"name": "Natus Vincere",
+		"logo": "",
+		"assetId": 50000154,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "FISH",
+		"name": "FISH",
+		"logo": "",
+		"assetId": 27,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "STAR",
+		"name": "STAR",
+		"logo": "",
+		"assetId": 89,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VIT",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000273,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PHU",
+		"name": "PolkadotHungary",
+		"logo": "",
+		"assetId": 50000013,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "OMG2",
+		"name": "OhMyGod2",
+		"logo": "",
+		"assetId": 22222001,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TEST_TOKEN",
+		"name": "Test_token",
+		"logo": "",
+		"assetId": 50000396,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000294,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000357,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TEAM_SPIRIT",
+		"name": "Team_spirit",
+		"logo": "",
+		"assetId": 50000400,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CORE",
+		"name": "The Core",
+		"logo": "",
+		"assetId": 22222042,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "WOLF",
+		"name": "WOLF",
+		"logo": "",
+		"assetId": 22222018,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TT",
+		"name": "TT",
+		"logo": "",
+		"assetId": 50000019,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "U.S.A.",
+		"name": "Made in the USA",
+		"logo": "",
+		"assetId": 50000080,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONGZ",
+		"name": "The MongolZ",
+		"logo": "",
+		"assetId": 50000348,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe7",
+		"name": "TestMeme7",
+		"logo": "",
+		"assetId": 49,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DONUT",
+		"name": "Singularity Block",
+		"logo": "",
+		"assetId": 22222044,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "SPRT",
+		"name": "Spirit",
+		"logo": "",
+		"assetId": 50000406,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "VSC",
+		"name": "Virto SwapCash",
+		"logo": "",
+		"assetId": 868367,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NAT",
+		"name": "Nikola Test",
+		"logo": "",
+		"assetId": 5361,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NOFAP",
+		"name": "1Milion NoFAP",
+		"logo": "",
+		"assetId": 50000048,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GATO",
+		"name": "Top Gato",
+		"logo": "",
+		"assetId": 50000238,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GL",
+		"name": "GamerLegion",
+		"logo": "",
+		"assetId": 50000420,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "TESTV5",
+		"name": "TESTV5",
+		"logo": "",
+		"assetId": 50000116,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "JTO",
+		"name": "JTO",
+		"logo": "",
+		"assetId": 2829,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NotFun",
+		"name": "NotFun",
+		"logo": "",
+		"assetId": 50000091,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "$USA",
+		"name": "Made in America",
+		"logo": "",
+		"assetId": 50000082,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KSM",
+		"name": "KUSAMA",
+		"logo": "",
+		"assetId": 22222037,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe9",
+		"name": "TestMeme9",
+		"logo": "",
+		"assetId": 53,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "IMP",
+		"name": "Imperial",
+		"logo": "",
+		"assetId": 50000419,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FAZE",
+		"name": "FaZe",
+		"logo": "",
+		"assetId": 50000407,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PVSN",
+		"name": "Parivision",
+		"logo": "",
+		"assetId": 50000414,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "SHRIMP",
+		"name": "SHRIMP",
+		"logo": "",
+		"assetId": 29,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NOFU",
+		"name": "Sssssneg",
+		"logo": "",
+		"assetId": 50000135,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NIPS",
+		"name": "NIPPIE",
+		"logo": "",
+		"assetId": 1970,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GAVUN",
+		"name": "Gavun Wud 1980",
+		"logo": "",
+		"assetId": 42,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NRG",
+		"name": "NRG",
+		"logo": "",
+		"assetId": 50000259,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FALCONS",
+		"name": "Falcons",
+		"logo": "",
+		"assetId": 50000399,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GOOD",
+		"name": "Goodman",
+		"logo": "",
+		"assetId": 22222059,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "B8",
+		"name": "B8",
+		"logo": "",
+		"assetId": 50000248,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "RACOIN",
+		"name": "RA FILM COIN",
+		"logo": "",
+		"assetId": 50000108,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "USA",
+		"name": "United States",
+		"logo": "",
+		"assetId": 50000020,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe5",
+		"name": "TestMeme5",
+		"logo": "",
+		"assetId": 43,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "eSIM",
+		"name": "eSIM",
+		"logo": "",
+		"assetId": 50000282,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DWH",
+		"name": "Deer Wif Hat",
+		"logo": "",
+		"assetId": 7777777,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FAZE",
+		"name": "FaZe Clan",
+		"logo": "",
+		"assetId": 50000310,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DOTA",
+		"name": "DOTA",
+		"logo": "",
+		"assetId": 2001,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HERE",
+		"name": "Here You Go",
+		"logo": "",
+		"assetId": 50000053,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe2L",
+		"name": "TestMeme2L",
+		"logo": "",
+		"assetId": 22222003,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DTS",
+		"name": "DOTCAST",
+		"logo": "",
+		"assetId": 22222039,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "PLX",
+		"name": "PLX",
+		"logo": "",
+		"assetId": 5,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 4,
+		"symbol": "DOTA",
+		"name": "DOTA",
+		"logo": "",
+		"assetId": 18,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ASSET",
+		"name": "AssetPortal1",
+		"logo": "",
+		"assetId": 50000134,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BOYS",
+		"name": "BOYS",
+		"logo": "",
+		"assetId": 83,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "lucky7",
+		"name": "lucky7",
+		"logo": "",
+		"assetId": 7,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "NICO",
+		"name": "Nico",
+		"logo": "",
+		"assetId": 50000391,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TL",
+		"name": "Liquid",
+		"logo": "",
+		"assetId": 50000412,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VITALITY",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000146,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "AST",
+		"name": "Astralis",
+		"logo": "",
+		"assetId": 50000410,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TOP",
+		"name": "TOP",
+		"logo": "",
+		"assetId": 22222055,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TT5",
+		"name": "TT5",
+		"logo": "",
+		"assetId": 50000033,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GAVUN",
+		"name": "GAVUN WOOD",
+		"logo": "",
+		"assetId": 4242,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "POKA",
+		"name": "POKA",
+		"logo": "",
+		"assetId": 26,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HELLOWORLD",
+		"name": "Helloworld",
+		"logo": "",
+		"assetId": 50000118,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ABC",
+		"name": "ABC",
+		"logo": "",
+		"assetId": 50000367,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 4,
+		"symbol": "FINT",
+		"name": "Fintra",
+		"logo": "",
+		"assetId": 50000392,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ETH",
+		"name": "Ethereum",
+		"logo": "",
+		"assetId": 1010,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BNG",
+		"name": "BEAN GUY",
+		"logo": "",
+		"assetId": 22222072,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FLY",
+		"name": "FlyQuest",
+		"logo": "",
+		"assetId": 50000309,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "WUD",
+		"name": "WUD",
+		"logo": "",
+		"assetId": 201,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "USDt",
+		"name": "Tether USD",
+		"logo": "",
+		"assetId": 1984,
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000246,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LOVA",
+		"name": "AIWeb3",
+		"logo": "",
+		"assetId": 50000028,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FUT",
+		"name": "FUT Esports",
+		"logo": "",
+		"assetId": 50000277,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LBGC",
+		"name": "LBG Coin",
+		"logo": "",
+		"assetId": 50000096,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOTC",
+		"name": "Dotcoin",
+		"logo": "",
+		"assetId": 20090104,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VIT",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000363,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Ax",
+		"name": "Axlo",
+		"logo": "",
+		"assetId": 22222082,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "OG",
+		"name": "OG",
+		"logo": "",
+		"assetId": 50000243,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Bna",
+		"name": "Banana",
+		"logo": "",
+		"assetId": 50000112,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "BTC",
+		"name": "BTC",
+		"logo": "",
+		"assetId": 20090103,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NOTDED",
+		"name": "TRUMP",
+		"logo": "",
+		"assetId": 20090118,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ANU",
+		"name": "Anunnaki",
+		"logo": "",
+		"assetId": 22222085,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BROHHH",
+		"name": "BROHHH",
+		"logo": "",
+		"assetId": 50000102,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "OF2",
+		"name": "OFIR2",
+		"logo": "",
+		"assetId": 50000291,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "MIA",
+		"name": "Inter Miami",
+		"logo": "",
+		"assetId": 50000004,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MOUZ",
+		"name": "MOUZ",
+		"logo": "",
+		"assetId": 50000149,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000141,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "test1",
+		"name": "TEST",
+		"logo": "",
+		"assetId": 20090124,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BORK",
+		"name": "BORK",
+		"logo": "",
+		"assetId": 690,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PKSK",
+		"name": "Polkasharks",
+		"logo": "",
+		"assetId": 22222048,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "MPACT",
+		"name": "MPACT",
+		"logo": "",
+		"assetId": 33441,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LUX",
+		"name": "LuxCharm",
+		"logo": "",
+		"assetId": 50000052,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000293,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "HLG",
+		"name": "HelloGhost",
+		"logo": "",
+		"assetId": 777777,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "KNRY",
+		"name": "KANARY",
+		"logo": "",
+		"assetId": 22,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NEHT",
+		"name": "Neha test",
+		"logo": "",
+		"assetId": 72,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 7,
+		"symbol": "PGOLD",
+		"name": "Polkagold",
+		"logo": "",
+		"assetId": 79,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VOR",
+		"name": "VORY",
+		"logo": "",
+		"assetId": 22222038,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LEGACY",
+		"name": "Legacy",
+		"logo": "",
+		"assetId": 50000303,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GZLP",
+		"name": "GIGA ZALUPA TRUMP",
+		"logo": "",
+		"assetId": 50000123,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "777",
+		"name": "777",
+		"logo": "",
+		"assetId": 777,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KOL",
+		"name": "Kolkadot",
+		"logo": "",
+		"assetId": 86,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "test1",
+		"name": "TEST",
+		"logo": "",
+		"assetId": 20090113,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "AAPL",
+		"name": "Apple",
+		"logo": "",
+		"assetId": 22222076,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "OPT",
+		"name": "Optimize",
+		"logo": "",
+		"assetId": 50000101,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BMAD",
+		"name": "Bill is Mad",
+		"logo": "",
+		"assetId": 50000046,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MOUZ",
+		"name": "MOUZ",
+		"logo": "",
+		"assetId": 50000158,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "ANT",
+		"name": "ANT",
+		"logo": "",
+		"assetId": 567,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Mongolz",
+		"name": "Mongolz",
+		"logo": "",
+		"assetId": 50000390,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000359,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HGVH",
+		"name": "hguyguy",
+		"logo": "",
+		"assetId": 457,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Coin68",
+		"name": "Coin68",
+		"logo": "",
+		"assetId": 68,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe10",
+		"name": "TestMeme10",
+		"logo": "",
+		"assetId": 54,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LURPIS",
+		"name": "LURPIS",
+		"logo": "",
+		"assetId": 22222023,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KOYM",
+		"name": "KUSAMAOBAMAYOMAMA",
+		"logo": "",
+		"assetId": 22222088,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "MNT",
+		"name": "Monte",
+		"logo": "",
+		"assetId": 50000429,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DUW",
+		"name": "Inverse WUD",
+		"logo": "",
+		"assetId": 22222066,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "RNET",
+		"name": "ROTKO NETWORKS",
+		"logo": "",
+		"assetId": 181,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PEPA",
+		"name": "PEPA",
+		"logo": "",
+		"assetId": 50000045,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TDC",
+		"name": "TODODECRIPTO",
+		"logo": "",
+		"assetId": 22222027,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "KTRL",
+		"name": "KTRL",
+		"logo": "",
+		"assetId": 9003,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "H@SH",
+		"name": "OG Block H@SH",
+		"logo": "",
+		"assetId": 22222033,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "JAM",
+		"name": "JAM JAM NFT FUSION",
+		"logo": "",
+		"assetId": 50000119,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "GGI",
+		"name": "Gagi",
+		"logo": "",
+		"assetId": 1313,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "LUNCH",
+		"name": "LUNCH",
+		"logo": "",
+		"assetId": 20090120,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ECSTATIC",
+		"name": "ECSTATIC",
+		"logo": "",
+		"assetId": 50000436,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PRDOG",
+		"name": "Porkydog",
+		"logo": "",
+		"assetId": 24,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CATTO",
+		"name": "CAT",
+		"logo": "",
+		"assetId": 50000370,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "OF",
+		"name": "ofir",
+		"logo": "",
+		"assetId": 50000290,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GOVD",
+		"name": "OpenGOV Drama Show",
+		"logo": "",
+		"assetId": 20090123,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "TESTV4",
+		"name": "TESTV4",
+		"logo": "",
+		"assetId": 50000115,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HDXt",
+		"name": "Hydratest",
+		"logo": "",
+		"assetId": 50000043,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "dot",
+		"name": "amin",
+		"logo": "",
+		"assetId": 2023,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ZALUPA",
+		"name": "ZALUPA",
+		"logo": "",
+		"assetId": 22222067,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "ATC",
+		"name": "ANT COIN",
+		"logo": "",
+		"assetId": 90,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe",
+		"name": "TestMeme",
+		"logo": "",
+		"assetId": 50000081,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "USDOGE",
+		"name": "U.S.Doge Collectible",
+		"logo": "",
+		"assetId": 50000098,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FALC",
+		"name": "Team Falcons",
+		"logo": "",
+		"assetId": 50000355,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SANTA",
+		"name": "SantaDOT",
+		"logo": "",
+		"assetId": 22222017,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GOVD",
+		"name": "OpenGov Drama",
+		"logo": "",
+		"assetId": 80,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DIA",
+		"name": "DotIsAlive",
+		"logo": "",
+		"assetId": 50000026,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPIRIT[B14]",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000232,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DUSTY",
+		"name": "Dusty",
+		"logo": "",
+		"assetId": 20090139,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000152,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "i1DOT",
+		"name": "i1DOT",
+		"logo": "",
+		"assetId": 50000007,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NIP",
+		"name": "Ninjas In Pyjamas",
+		"logo": "",
+		"assetId": 50000417,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "JUNK",
+		"name": "JUNK",
+		"logo": "",
+		"assetId": 1864,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "JOE",
+		"name": "JOE",
+		"logo": "",
+		"assetId": 8,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "MTT",
+		"name": "Mtesttoken",
+		"logo": "",
+		"assetId": 50000176,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST[B3]",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000197,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HYDRA",
+		"name": "HydraCoin",
+		"logo": "",
+		"assetId": 45,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TT6",
+		"name": "TT6",
+		"logo": "",
+		"assetId": 50000034,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SIN",
+		"name": "Sinner",
+		"logo": "",
+		"assetId": 50000321,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DARK",
+		"name": "DARK",
+		"logo": "",
+		"assetId": 50000079,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GREEN",
+		"name": "GreenNFT",
+		"logo": "",
+		"assetId": 22222080,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "tMPC",
+		"name": "MPc Test",
+		"logo": "",
+		"assetId": 50000125,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DIO",
+		"name": "Idiom.AI",
+		"logo": "",
+		"assetId": 22222057,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DOGE",
+		"name": "DOGE",
+		"logo": "",
+		"assetId": 10000,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "KH5usdt",
+		"name": "KH5 Polkadot Asst Hub USDT",
+		"logo": "",
+		"assetId": 8277,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAUL",
+		"name": "Paul",
+		"logo": "",
+		"assetId": 50000163,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "VIT",
+		"name": "Vitality",
+		"logo": "",
+		"assetId": 50000404,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPIRIT[B15]",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000234,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "OK",
+		"name": "OK",
+		"logo": "",
+		"assetId": 59,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "ETL",
+		"name": "ETL",
+		"logo": "",
+		"assetId": 50000071,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "HOOT",
+		"name": "Jellied Owls",
+		"logo": "",
+		"assetId": 2820,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FALC",
+		"name": "Team Falcons",
+		"logo": "",
+		"assetId": 50000345,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "omr",
+		"name": "omri",
+		"logo": "",
+		"assetId": 50000230,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SHAWN",
+		"name": "Shawn Tabrizi",
+		"logo": "",
+		"assetId": 50000099,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "TEST",
+		"name": "Test",
+		"logo": "",
+		"assetId": 50000315,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "B8",
+		"name": "B8",
+		"logo": "",
+		"assetId": 50000241,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PP",
+		"name": "Pink Pengui",
+		"logo": "",
+		"assetId": 20090125,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HELLO",
+		"name": "Inu Zeta 1",
+		"logo": "",
+		"assetId": 22222069,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LIQUID",
+		"name": "Team Liquid",
+		"logo": "",
+		"assetId": 50000308,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NaCl",
+		"name": "Salt",
+		"logo": "",
+		"assetId": 22222007,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "JAMA",
+		"name": "JAMA",
+		"logo": "",
+		"assetId": 51,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DMX",
+		"name": "DONT MUZZLE THE OX",
+		"logo": "",
+		"assetId": 20090135,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "water",
+		"name": "Water",
+		"logo": "",
+		"assetId": 50000041,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BUNS",
+		"name": "BUNS",
+		"logo": "",
+		"assetId": 1234,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "GM",
+		"name": "Gentle Mates",
+		"logo": "",
+		"assetId": 50000421,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "clay",
+		"name": "CLAY",
+		"logo": "",
+		"assetId": 404,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MRSHE",
+		"name": "Mr. Shekels",
+		"logo": "",
+		"assetId": 22222016,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOTCOIN",
+		"name": "Dotcoin",
+		"logo": "",
+		"assetId": 20090134,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "BRZ",
+		"name": "BRZ Token",
+		"logo": "",
+		"assetId": 1000,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LUCKY",
+		"name": "Lucky 777",
+		"logo": "",
+		"assetId": 22222049,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FNATIC",
+		"name": "Fnatic",
+		"logo": "",
+		"assetId": 50000286,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BIG",
+		"name": "BIG",
+		"logo": "",
+		"assetId": 50000252,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BB",
+		"name": "BetBoom",
+		"logo": "",
+		"assetId": 50000424,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "AUROR",
+		"name": "Aurora Gaming",
+		"logo": "",
+		"assetId": 50000266,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ZEST",
+		"name": "LEMON",
+		"logo": "",
+		"assetId": 50000106,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 2,
+		"symbol": "HOBO",
+		"name": "HOBO",
+		"logo": "",
+		"assetId": 8008,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOPE ",
+		"name": "Dope",
+		"logo": "",
+		"assetId": 20090146,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HYB",
+		"name": "Honey Badger",
+		"logo": "",
+		"assetId": 50000044,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FAZE[[T1]]",
+		"name": "FaZe Clan",
+		"logo": "",
+		"assetId": 50000236,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Ekuke",
+		"name": "Ekuke",
+		"logo": "",
+		"assetId": 50000049,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GWIF",
+		"name": "Gavwifhat",
+		"logo": "",
+		"assetId": 22222047,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DEEZ",
+		"name": "Deez Nuts",
+		"logo": "",
+		"assetId": 50000047,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PIGS",
+		"name": "Pink Pigs",
+		"logo": "",
+		"assetId": 22222030,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BTC.",
+		"name": "Bitcoin",
+		"logo": "",
+		"assetId": 50000109,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PASSION",
+		"name": "Passion UA",
+		"logo": "",
+		"assetId": 50000256,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BIFF",
+		"name": "Biff",
+		"logo": "",
+		"assetId": 22222086,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "ANT",
+		"name": "ANT",
+		"logo": "",
+		"assetId": 60,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "DOGMOON",
+		"name": "🚀🚀🚀 Dog Moon 🚀🚀🚀",
+		"logo": "",
+		"assetId": 20090126,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FLIP",
+		"name": "Flipper",
+		"logo": "",
+		"assetId": 50000094,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FAZECLAN",
+		"name": "Faze Clan",
+		"logo": "",
+		"assetId": 50000401,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "fv",
+		"name": "faivel",
+		"logo": "",
+		"assetId": 50000280,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "SITE",
+		"name": "SiteToken",
+		"logo": "",
+		"assetId": 1992,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "W3D",
+		"name": "Web3 Decentralized",
+		"logo": "",
+		"assetId": 50000068,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "3DM",
+		"name": "3DMAX",
+		"logo": "",
+		"assetId": 50000411,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONGZ",
+		"name": "The MongolZ",
+		"logo": "",
+		"assetId": 50000364,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GABIC",
+		"name": "Gabicat",
+		"logo": "",
+		"assetId": 50000009,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ROCK",
+		"name": "ROCK DOGG ",
+		"logo": "",
+		"assetId": 20090145,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "CHAOS",
+		"name": "CHAOS",
+		"logo": "",
+		"assetId": 6666,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GAOB",
+		"name": "GodIsAwayOnBusiness",
+		"logo": "",
+		"assetId": 50000070,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPAM",
+		"name": "SPAM GUY",
+		"logo": "",
+		"assetId": 50000057,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "SKEM",
+		"name": "DED is skem",
+		"logo": "",
+		"assetId": 2121,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000157,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000380,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NNN",
+		"name": "No Nut November",
+		"logo": "",
+		"assetId": 50000011,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "NCTR",
+		"name": "Apillon",
+		"logo": "",
+		"assetId": 1024,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000374,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 16,
+		"symbol": "ABCT",
+		"name": "Rustbridge Quantum AI Blockchain",
+		"logo": "",
+		"assetId": 50000438,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LION",
+		"name": "LION HACK",
+		"logo": "",
+		"assetId": 50000060,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NAVI",
+		"name": "Natus Vincere",
+		"logo": "",
+		"assetId": 50000312,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "no1",
+		"name": "no1",
+		"logo": "",
+		"assetId": 1,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "Beggar",
+		"name": "The Beggars Club",
+		"logo": "",
+		"assetId": 20090132,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TSHY",
+		"name": "TUSHYCOIN",
+		"logo": "",
+		"assetId": 50000062,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "USDcp",
+		"name": "Cypress Dollar",
+		"logo": "",
+		"assetId": 12,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "WUD",
+		"name": "GAVUN WUD",
+		"logo": "",
+		"assetId": 31337,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe3",
+		"name": "TestMeme3",
+		"logo": "",
+		"assetId": 97,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000341,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "usdc",
+		"name": "usdc",
+		"logo": "",
+		"assetId": 12345,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "GK8",
+		"name": "Test2",
+		"logo": "",
+		"assetId": 50000320,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "kls",
+		"name": "klishay",
+		"logo": "",
+		"assetId": 50000177,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 16,
+		"symbol": "小俊哥usdt",
+		"name": "ＮＯ.1 小俊哥",
+		"logo": "",
+		"assetId": 50000097,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "OMG",
+		"name": "OHMYGOD",
+		"logo": "",
+		"assetId": 22222000,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "TOD",
+		"name": "TOD",
+		"logo": "",
+		"assetId": 20090149,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "O",
+		"name": "Singularity",
+		"logo": "",
+		"assetId": 22222045,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HERO",
+		"name": "HEROIC",
+		"logo": "",
+		"assetId": 50000415,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000287,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DAO",
+		"name": "DAO",
+		"logo": "",
+		"assetId": 2000,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BRIBE",
+		"name": "BRIBE",
+		"logo": "",
+		"assetId": 50000164,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TTT",
+		"name": "tung tung tung tung tung tung tung tung tung sahur",
+		"logo": "",
+		"assetId": 50000132,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "DOT",
+		"name": "DOT",
+		"logo": "",
+		"assetId": 3,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KEK",
+		"name": "KEK",
+		"logo": "",
+		"assetId": 22222056,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FNATIC",
+		"name": "Fnatic",
+		"logo": "",
+		"assetId": 50000244,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "LEEMO",
+		"name": "Leemo",
+		"logo": "",
+		"assetId": 6969,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "COFI",
+		"name": "COFI",
+		"logo": "",
+		"assetId": 55,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KAS",
+		"name": "KAS",
+		"logo": "",
+		"assetId": 1983,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "$FADS",
+		"name": "TenSecondFads",
+		"logo": "",
+		"assetId": 50000027,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DON",
+		"name": "Donkey",
+		"logo": "",
+		"assetId": 22222054,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "USDC",
+		"name": "USD Coin",
+		"logo": "",
+		"assetId": 1337,
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NEMIG",
+		"name": "Nemiga Gaming",
+		"logo": "",
+		"assetId": 50000263,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "DANGER",
+		"name": "Danger Coin",
+		"logo": "",
+		"assetId": 666,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "PND",
+		"name": "PANDA",
+		"logo": "",
+		"assetId": 88,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BOOTY",
+		"name": "Pirate's Booty",
+		"logo": "",
+		"assetId": 8888,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "MTC",
+		"name": "My Test Coin ",
+		"logo": "",
+		"assetId": 112233,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "WIFD",
+		"name": "dog wif dots",
+		"logo": "",
+		"assetId": 17,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "JBM",
+		"name": "JUSTBUYME",
+		"logo": "",
+		"assetId": 63,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "KRAK",
+		"name": "KrakenKash",
+		"logo": "",
+		"assetId": 1180,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HERO",
+		"name": "HEROIC",
+		"logo": "",
+		"assetId": 50000265,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "NT2",
+		"name": "Nikola Test 2",
+		"logo": "",
+		"assetId": 1148,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GBA",
+		"name": "God Bless America",
+		"logo": "",
+		"assetId": 50000024,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "T54",
+		"name": "T54",
+		"logo": "",
+		"assetId": 25,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "MMM",
+		"name": "MMM",
+		"logo": "",
+		"assetId": 20090108,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "UNO",
+		"name": "Uno Coin",
+		"logo": "",
+		"assetId": 50000064,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ECH0",
+		"name": "ECH0IN",
+		"logo": "",
+		"assetId": 50000090,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "HOTU",
+		"name": "HOTU",
+		"logo": "",
+		"assetId": 50000425,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "hawn",
+		"name": "Shawn Too Breezy",
+		"logo": "",
+		"assetId": 20090137,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "GOAT",
+		"name": "The Goat",
+		"logo": "",
+		"assetId": 50000005,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "DAL",
+		"name": "Dalmation",
+		"logo": "",
+		"assetId": 69,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VC",
+		"name": "vc",
+		"logo": "",
+		"assetId": 50000077,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FKDC",
+		"name": "FREE KIM DOTCOM",
+		"logo": "",
+		"assetId": 22222032,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "M80",
+		"name": "M80",
+		"logo": "",
+		"assetId": 50000298,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CO3",
+		"name": "OXYGEN",
+		"logo": "",
+		"assetId": 50000029,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "SPIRIT",
+		"name": "Team Spirit",
+		"logo": "",
+		"assetId": 50000307,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VITAL[B4]",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000198,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "B",
+		"name": "BASTI",
+		"logo": "",
+		"assetId": 22222015,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DMARK",
+		"name": "Deutsche Mark",
+		"logo": "",
+		"assetId": 50000087,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PINK",
+		"name": "PINK",
+		"logo": "",
+		"assetId": 23,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ETH",
+		"name": "ETH",
+		"logo": "",
+		"assetId": 20090105,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "J",
+		"name": "JUAN",
+		"logo": "",
+		"assetId": 50000104,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CLOWNS",
+		"name": "Clownshow",
+		"logo": "",
+		"assetId": 50000056,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "DODA",
+		"name": "DODA",
+		"logo": "",
+		"assetId": 37,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "Guzzler",
+		"name": "Gary",
+		"logo": "",
+		"assetId": 20090141,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "MUR",
+		"name": "mursal",
+		"logo": "",
+		"assetId": 50000334,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "HASH",
+		"name": "HASHONOMICS",
+		"logo": "",
+		"assetId": 5417,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe11",
+		"name": "TestMeme11",
+		"logo": "",
+		"assetId": 65,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FAZE",
+		"name": "FaZe Clan",
+		"logo": "",
+		"assetId": 50000272,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ENCE",
+		"name": "ENCE",
+		"logo": "",
+		"assetId": 50000247,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FC",
+		"name": "Friendly Campers",
+		"logo": "",
+		"assetId": 50000437,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BOMB",
+		"name": "BOMB",
+		"logo": "",
+		"assetId": 9001,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "dm",
+		"name": "dima",
+		"logo": "",
+		"assetId": 50000166,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "gg",
+		"name": "gishay",
+		"logo": "",
+		"assetId": 50000120,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "EDU",
+		"name": "Educoin",
+		"logo": "",
+		"assetId": 149,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 20,
+		"symbol": "FLMG",
+		"name": "Flamingo",
+		"logo": "",
+		"assetId": 2025,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "GAVIN",
+		"name": "GAVIN",
+		"logo": "",
+		"assetId": 1980,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "OG",
+		"name": "OG",
+		"logo": "",
+		"assetId": 50000250,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "Z",
+		"name": "ZStorm",
+		"logo": "",
+		"assetId": 50000316,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "WING",
+		"name": "WING",
+		"logo": "",
+		"assetId": 91,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FAZE",
+		"name": "FaZe Clan",
+		"logo": "",
+		"assetId": 50000179,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "ATOM",
+		"name": "Rare Atom",
+		"logo": "",
+		"assetId": 50000276,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000351,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FURIA",
+		"name": "FURIA",
+		"logo": "",
+		"assetId": 50000342,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "WOOP",
+		"name": "Bohemia Coin",
+		"logo": "",
+		"assetId": 77777,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ETH",
+		"name": "Ethereum",
+		"logo": "",
+		"assetId": 20090107,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PAIN",
+		"name": "PaiN",
+		"logo": "",
+		"assetId": 50000413,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MONAD",
+		"name": "Autonomus Deity.AI",
+		"logo": "",
+		"assetId": 22222061,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "FLY",
+		"name": "FlyQuest",
+		"logo": "",
+		"assetId": 50000271,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "LFG",
+		"name": "Let's Fucking Go",
+		"logo": "",
+		"assetId": 22222006,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CPcoin",
+		"name": "Cypress Coin",
+		"logo": "",
+		"assetId": 64,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PDOG",
+		"name": "Polkadog",
+		"logo": "",
+		"assetId": 4157,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000379,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "BOB",
+		"name": "Moommy",
+		"logo": "",
+		"assetId": 20090148,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "XI",
+		"name": "Xi Jin Ping",
+		"logo": "",
+		"assetId": 50000100,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NOFUN",
+		"name": "MEMEPAD NOFUN",
+		"logo": "",
+		"assetId": 22222040,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VITALITY",
+		"name": "Team Vitality",
+		"logo": "",
+		"assetId": 50000155,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "G2",
+		"name": "G2 Esports",
+		"logo": "",
+		"assetId": 50000270,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DDOT",
+		"name": "Donkey DOT",
+		"logo": "",
+		"assetId": 22222026,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TNL",
+		"name": "TNL",
+		"logo": "",
+		"assetId": 50000278,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "EB",
+		"name": "Eyeballers",
+		"logo": "",
+		"assetId": 50000426,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 3,
+		"symbol": "MVPW",
+		"name": "MVPW Test",
+		"logo": "",
+		"assetId": 6594,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "hed",
+		"name": "hedva",
+		"logo": "",
+		"assetId": 50000140,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "GRL",
+		"name": "GRELIVE",
+		"logo": "",
+		"assetId": 660301,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PAIN[B5]",
+		"name": "paiN Gaming",
+		"logo": "",
+		"assetId": 50000208,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PINT",
+		"name": "Polkadot Index",
+		"logo": "",
+		"assetId": 9,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "CUBO",
+		"name": "Virto Bloque",
+		"logo": "",
+		"assetId": 862812,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "ASX",
+		"name": "AssetX",
+		"logo": "",
+		"assetId": 888,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "WOOD",
+		"name": "WOOD",
+		"logo": "",
+		"assetId": 2024,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PASSION",
+		"name": "Passion UA",
+		"logo": "",
+		"assetId": 50000344,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TATE",
+		"name": "Thunderdome",
+		"logo": "",
+		"assetId": 22222060,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "FUR",
+		"name": "Furia",
+		"logo": "",
+		"assetId": 50000403,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NAR",
+		"name": "Naruto",
+		"logo": "",
+		"assetId": 22222081,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "PM",
+		"name": "Polkadot Mexico",
+		"logo": "",
+		"assetId": 22222011,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PAMPIT",
+		"name": "GREEN CANDLE",
+		"logo": "",
+		"assetId": 20090127,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MOSA",
+		"name": "MOSA",
+		"logo": "",
+		"assetId": 50000014,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMeL3",
+		"name": "TestMemeLast3",
+		"logo": "",
+		"assetId": 22222004,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "CPDOT",
+		"name": "Cypress Polkadot",
+		"logo": "",
+		"assetId": 62,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "DAMN",
+		"name": "DamnCoin",
+		"logo": "",
+		"assetId": 22222012,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 4,
+		"symbol": "yam",
+		"name": "yamit",
+		"logo": "",
+		"assetId": 50000165,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "VIRTUS",
+		"name": "Virtus.pro",
+		"logo": "",
+		"assetId": 50000258,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "RICK",
+		"name": "RickRoll",
+		"logo": "",
+		"assetId": 50000036,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "in",
+		"name": "inon",
+		"logo": "",
+		"assetId": 50000129,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MAXCAT",
+		"name": "White Panther Max",
+		"logo": "",
+		"assetId": 22222063,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MODE",
+		"name": "Quant Full Potato.AI",
+		"logo": "",
+		"assetId": 22222052,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TeMe2",
+		"name": "TestMeme2",
+		"logo": "",
+		"assetId": 92,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BLAST",
+		"name": "BLAST",
+		"logo": "",
+		"assetId": 50000150,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "MTT",
+		"name": "MTestToken",
+		"logo": "",
+		"assetId": 50000178,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "MYMLAN",
+		"name": "MYMLAN",
+		"logo": "",
+		"assetId": 50000061,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PBTC",
+		"name": "Polkadot Bitcoin",
+		"logo": "",
+		"assetId": 2203,
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 56,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 52,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 47,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 50,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 0,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 10,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 4,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 48,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 21,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 28,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 20,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 30,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 39,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 38,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 46,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 34,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 16,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 11,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 57,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 14,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 6,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 19,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 35,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 36,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 31,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 33,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 41,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 44,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 15,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 40,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 2,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 13,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 32,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 27,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 49,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 53,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 29,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 42,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 43,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 5,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 18,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 7,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 26,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 22,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 54,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 24,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 8,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 45,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 51,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 1,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 12,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 3,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 55,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 17,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 25,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 23,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 37,
+		"isSufficient": false
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "pah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"logo": "",
+		"poolAssetId": 9,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "sUSDe",
+		"name": "Staked USDe",
+		"logo": "https://coin-images.coingecko.com/coins/images/33669/large/sUSDe-Symbol-Color.png?1716307680",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x9d39a5de30e57443bff2a8307a4256c8797a3497"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "EQ",
+		"name": "Equilibrium",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 2011
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "WETH",
+		"name": "Wrapped Ether",
+		"logo": "https://coin-images.coingecko.com/coins/images/2518/large/weth.png?1696503332",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "PEPE",
+		"name": "Pepe",
+		"logo": "https://coin-images.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1696528776",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x6982508145454ce325ddbe47a25d4ec3d2311933"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "LDO",
+		"name": "Lido DAO Token",
+		"logo": "https://coin-images.coingecko.com/coins/images/13573/large/Lido_DAO.png?1696513326",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x5a98fcbea516cf06857215779fd812ca3bef1b32"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "PAXG",
+		"name": "Paxos Gold",
+		"logo": "https://coin-images.coingecko.com/coins/images/9519/large/paxgold.png?1696509604",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x45804880de22913dafe09f4980848ece6ecbaf78"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "KSM",
+		"name": "Kusama",
+		"logo": "",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "GlobalConsensus",
+					"value": {
+						"type": "Kusama"
+					}
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "sUSDS",
+		"name": "Savings USDS",
+		"logo": "https://coin-images.coingecko.com/coins/images/52721/large/sUSDS_Coin.png?1734086971",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xa3931d71877c0e7a3148cb7eb4463524fec27fbd"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "WLD",
+		"name": "Worldcoin",
+		"logo": "https://coin-images.coingecko.com/coins/images/31069/large/worldcoin.jpeg?1696529903",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x163f8c2467924be0ae7b5347228cabf260318753"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "ENA",
+		"name": "ENA",
+		"logo": "https://coin-images.coingecko.com/coins/images/36530/large/ethena.png?1711701436",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x57e114b691db790c35207b2e685d4a43181e6061"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "LBTC",
+		"name": "Lombard Staked Bitcoin",
+		"logo": "https://coin-images.coingecko.com/coins/images/39969/large/LBTC_Logo.png?1724959872",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x8236a87084f8b84306f72007f36f2618a5634494"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "TEER",
+		"name": "Integritee TEER",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 2039
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "PLMC",
+		"name": "Polimec",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 3344
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "EURC",
+		"name": "Euro Coin",
+		"logo": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x1abaea1f7c830bd89acc67ec4af516284b1bc33c"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "LAOS",
+		"name": "LAOS",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 3370
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "BNC",
+		"name": "Bifrost Native Token",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2030
+					},
+					{
+						"type": "GeneralKey",
+						"value": {
+							"length": 2,
+							"data": "binary:0x0001000000000000000000000000000000000000000000000000000000000000"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "SKY",
+		"name": "SKY Governance Token",
+		"logo": "https://coin-images.coingecko.com/coins/images/39925/large/sky.jpg?1724827980",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x56072c95faa701256059aa122697b133aded9279"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "USDC",
+		"name": "USDC (Snowbridge)",
+		"logo": "https://coin-images.coingecko.com/coins/images/6319/large/USDC.png?1769615602",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "MYTH",
+		"name": "Mythos",
+		"logo": "https://coin-images.coingecko.com/coins/images/28045/large/Mythos_Logos_200x200.png?1696527059",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xba41ddf06b7ffd89d1267b5a93bfef2424eb2003"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "CGT2.0",
+		"name": "Curio Gas Token",
+		"logo": "https://coin-images.coingecko.com/coins/images/37476/large/Screenshot_2024-05-04_004346.png?1714754678",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x0e186357c323c806c1efdad36d217f7a54b63d18"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "TRAC",
+		"name": "OriginTrail TRAC",
+		"logo": "https://coin-images.coingecko.com/coins/images/1877/large/TRAC.jpg?1696502873",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "tBTC",
+		"name": "tBTC v2",
+		"logo": "https://coin-images.coingecko.com/coins/images/11224/large/0x18084fba666a33d37592fa2633fd49a74dd93a88.png?1696511155",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x18084fba666a33d37592fa2633fd49a74dd93a88"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "wstETH",
+		"name": "Wrapped liquid staked Ether 2.0",
+		"logo": "https://coin-images.coingecko.com/coins/images/18834/large/wstETH.png?1696518295",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "vTAO",
+		"name": "vTAO",
+		"logo": "",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xe9f6d9898f9269b519e1435e6ebaff766c7f46bf"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "TONCOIN",
+		"name": "Wrapped TON Coin",
+		"logo": "https://coin-images.coingecko.com/coins/images/17980/large/photo_2024-09-10_17.09.00.jpeg?1725963446",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x582d872a1b094fc48f5de31d3b73f2d9be47def1"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "DAI",
+		"name": "Dai Stablecoin",
+		"logo": "https://coin-images.coingecko.com/coins/images/9956/large/Badge_Dai.png?1696509996",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x6b175474e89094c44da98b954eedeac495271d0f"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "SHIB",
+		"name": "SHIBA INU",
+		"logo": "https://coin-images.coingecko.com/coins/images/11939/large/shiba.png?1696511800",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "EQD",
+		"name": "Equilibrium Dollar",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2011
+					},
+					{
+						"type": "GeneralKey",
+						"value": {
+							"length": 3,
+							"data": "binary:0x6571640000000000000000000000000000000000000000000000000000000000"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 9,
+		"symbol": "XRT",
+		"name": "Robonomics",
+		"logo": "https://coin-images.coingecko.com/coins/images/7024/large/Robonomics-Network-logo.png?1696507330",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x7de91b204c1c737bcee6f000aaa6569cf7061cb7"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 8,
+		"symbol": "WBTC",
+		"name": "Wrapped BTC",
+		"logo": "https://coin-images.coingecko.com/coins/images/7598/large/WBTCLOGO.png?1764496367",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "GLMR",
+		"name": "Glimmer",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2004
+					},
+					{
+						"type": "PalletInstance",
+						"value": 10
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "MYTH",
+		"name": "Mythos",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 3369
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 10,
+		"symbol": "vDOT",
+		"name": "Voucher DOT",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2030
+					},
+					{
+						"type": "GeneralKey",
+						"value": {
+							"length": 2,
+							"data": "binary:0x0900000000000000000000000000000000000000000000000000000000000000"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "TBTC",
+		"name": "tBTC",
+		"logo": "",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x8daebade922df735c38c80c7ebd708af50815faa"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "HDX",
+		"name": "Hydration",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2034
+					},
+					{
+						"type": "GeneralIndex",
+						"value": "bigint:0"
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "ETH",
+		"name": "Ether",
+		"logo": "",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "GlobalConsensus",
+					"value": {
+						"type": "Ethereum",
+						"value": {
+							"chain_id": "bigint:1"
+						}
+					}
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 15,
+		"symbol": "KILT",
+		"name": "KILT",
+		"logo": "",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x5d3d01fd6d2ad1169b17918eb4f153c6616288eb"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 6,
+		"symbol": "USDT",
+		"name": "Tether USD (Snowbridge)",
+		"logo": "https://coin-images.coingecko.com/coins/images/325/large/Tether.png?1696501661",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xdac17f958d2ee523a2206206994597c13d831ec7"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NEURO",
+		"name": "NEURO",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2043
+					},
+					{
+						"type": "PalletInstance",
+						"value": 10
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "LINK",
+		"name": "ChainLink Token",
+		"logo": "https://coin-images.coingecko.com/coins/images/877/large/Chainlink_Logo_500.png?1760023405",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x514910771af9ca656af840dff83e8264ecf986ca"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "NEURO",
+		"name": "NEURO",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 2043
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 18,
+		"symbol": "AAVE",
+		"name": "Aave Token",
+		"logo": "https://coin-images.coingecko.com/coins/images/12645/large/aave-token-round.png?1720472354",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"decimals": 12,
+		"symbol": "AJUN",
+		"name": "Ajuna Polkadot AJUN",
+		"logo": "",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 2051
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	}
+]

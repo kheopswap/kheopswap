@@ -154,7 +154,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					symbol: "",
 					decimals: 0,
 					name: "",
-					logo: "",
+					logo: undefined,
 					isSufficient: false,
 					...TOKENS_OVERRIDES_MAP[id],
 				}) as Token,
