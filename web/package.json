@@ -11,9 +11,8 @@
 		"papi:update": "papi update polkadot,kusama,westend,kah,pah,wah"
 	},
 	"dependencies": {
-		"@floating-ui/react": "^0.27.17",
+		"@base-ui-components/react": "1.0.0-rc.0",
 		"@fontsource-variable/lexend-deca": "^5.2.10",
-		"@headlessui/react": "^2.2.9",
 		"@heroicons/react": "^2.2.0",
 		"@kheopskit/core": "^0.2.0",
 		"@kheopskit/react": "^2.0.0",

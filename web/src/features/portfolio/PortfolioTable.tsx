@@ -91,6 +91,8 @@ export const PortfolioTable = () => {
 		setSortByCol(column);
 	}, []);
 
+	const handleDismiss = useCallback(() => setSelectedTokenId(null), []);
+
 	return (
 		<div>
 			<SearchInput
@@ -115,7 +117,7 @@ export const PortfolioTable = () => {
 			<PortfolioTokenDrawer
 				tokenId={selectedTokenId}
 				rows={rows}
-				onDismiss={() => setSelectedTokenId(null)}
+				onDismiss={handleDismiss}
 			/>
 		</div>
 	);

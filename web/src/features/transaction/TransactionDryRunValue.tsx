@@ -32,7 +32,7 @@ export const TransactionDryRunSummaryValue = () => {
 
 	return (
 		<Tooltip placement="bottom-end">
-			<TooltipTrigger asChild>
+			<TooltipTrigger render={<div />}>
 				<div
 					className={cn(
 						"flex gap-1 items-center",

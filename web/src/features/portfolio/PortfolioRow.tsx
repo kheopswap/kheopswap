@@ -1,5 +1,6 @@
+import type { TokenId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
-import { type FC, useMemo } from "react";
+import { type FC, memo, useCallback, useMemo } from "react";
 import { Styles, TokenLogo } from "src/components";
 import { useNativeToken } from "src/hooks";
 import { useRelayChains } from "src/state";
@@ -9,19 +10,23 @@ import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 
 type PortfolioRowProps = PortfolioRowData & {
 	visibleCol: PortfolioVisibleCol;
-	onClick: () => void;
+	onSelect: (tokenId: TokenId) => void;
 };
 
-export const PortfolioRow: FC<PortfolioRowProps> = ({
+export const PortfolioRow: FC<PortfolioRowProps> = memo(function PortfolioRow({
 	token,
 	balance,
 	price,
 	visibleCol,
-	onClick,
-}) => {
+	onSelect,
+}) {
 	const { assetHub, stableToken } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
 	const description = useMemo(() => getTokenDescription(token), [token]);
+
+	const handleClick = useCallback(() => {
+		onSelect(token.id);
+	}, [onSelect, token.id]);
 
 	return (
 		<button
@@ -31,7 +36,7 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
 				"grid  h-16 items-center gap-2 rounded-md bg-primary-950/50 px-2 pl-3 pr-3 text-left enabled:hover:bg-primary-900/50 sm:gap-4",
 				"grid-cols-[1fr_120px] sm:grid-cols-[1fr_120px_120px]",
 			)}
-			onClick={onClick}
+			onClick={handleClick}
 		>
 			<div className="flex items-center gap-2 overflow-hidden sm:gap-3 h-full pl-1">
 				<TokenLogo className="inline-block size-10" token={token} />
@@ -65,4 +70,4 @@ export const PortfolioRow: FC<PortfolioRowProps> = ({
 			</div>
 		</button>
 	);
-};
+});

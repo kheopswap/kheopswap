@@ -1,8 +1,9 @@
+import { Switch } from "@base-ui-components/react/switch";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
 import { getChains, type RelayId } from "@kheopswap/registry";
 import { cn } from "@kheopswap/utils";
-import { type ChangeEvent, type FC, useCallback } from "react";
+import { type FC, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Drawer, DrawerContainer, Styles } from "src/components";
 import { ActionRightIcon } from "src/components/icons";
@@ -46,9 +47,9 @@ const DrawerContent: FC<{
 	);
 
 	const handleSetLightClients = useCallback(
-		async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
+		async (checked: boolean): Promise<void> => {
 			if (DISABLE_LIGHT_CLIENTS) return;
-			setLightClient(e.target.checked);
+			setLightClient(checked);
 			onClose();
 			window.location.reload();
 		},
@@ -82,36 +83,29 @@ const DrawerContent: FC<{
 					DISABLE_LIGHT_CLIENTS && "opacity-50 pointer-events-none",
 				)}
 			>
-				<label
-					htmlFor="cbLightClient"
-					className="group flex w-full items-center justify-between"
-				>
+				<div className="group flex w-full items-center justify-between">
 					<div className="grow">Connect via light clients</div>
 
-					<div
+					<Switch.Root
+						checked={effectiveLightClient}
+						onCheckedChange={handleSetLightClients}
+						disabled={DISABLE_LIGHT_CLIENTS}
 						className={cn(
-							"relative inline-flex  items-center",
+							"relative inline-flex h-6 w-11 items-center rounded-full border bg-transparent transition-colors",
+							"data-checked:bg-neutral-500",
+							"focus-visible:ring-1 focus-visible:ring-neutral-200",
 							!DISABLE_LIGHT_CLIENTS && "cursor-pointer",
+							DISABLE_LIGHT_CLIENTS && "opacity-50",
 						)}
 					>
-						<input
-							id="cbLightClient"
-							type="checkbox"
-							className="peer sr-only"
-							checked={effectiveLightClient}
-							disabled={DISABLE_LIGHT_CLIENTS}
-							onChange={handleSetLightClients}
-						/>
-						<div
+						<Switch.Thumb
 							className={cn(
-								"h-6 w-11 rounded-full border bg-transparent ",
-								"after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-['']",
-								"peer-checked:bg-neutral-500 peer-checked:after:translate-x-full peer-checked:after:border-neutral-200 peer-focus-visible:ring-1 peer-focus-visible:ring-neutral-200",
-								DISABLE_LIGHT_CLIENTS && "opacity-50",
+								"absolute left-0.5 top-0.5 size-5 rounded-full border border-neutral-300 bg-white transition-transform",
+								"data-checked:translate-x-full data-checked:border-neutral-200",
 							)}
 						/>
-					</div>
-				</label>
+					</Switch.Root>
+				</div>
 
 				<div className="mt-1 text-sm text-neutral-500">
 					Light clients are blockchain nodes running in your browser. They

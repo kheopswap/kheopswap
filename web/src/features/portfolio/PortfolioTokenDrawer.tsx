@@ -14,11 +14,12 @@ import {
 } from "@kheopswap/utils";
 import {
 	type FC,
+	memo,
 	type ReactNode,
 	useCallback,
 	useEffect,
 	useMemo,
-	useState,
+	useRef,
 } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -468,12 +469,18 @@ export const PortfolioTokenDrawer: FC<{
 	tokenId: TokenId | null;
 	rows: PortfolioRowData[];
 	onDismiss: () => void;
-}> = ({ tokenId, rows, onDismiss }) => {
-	const [tokenRow, setTokenRow] = useState<PortfolioRowData>();
+}> = memo(function PortfolioTokenDrawer({ tokenId, rows, onDismiss }) {
+	// Derive the row synchronously to avoid double-render on open
+	const currentRow = useMemo(
+		() => (tokenId ? rows.find((row) => row.token.id === tokenId) : undefined),
+		[rows, tokenId],
+	);
 
-	useEffect(() => {
-		if (tokenId) setTokenRow(rows.find((row) => row.token.id === tokenId));
-	}, [rows, tokenId]);
+	// Keep the last valid row for the close animation
+	const lastRowRef = useRef<PortfolioRowData | undefined>(undefined);
+	if (currentRow) lastRowRef.current = currentRow;
+
+	const displayRow = currentRow ?? lastRowRef.current;
 
 	return (
 		<Drawer anchor="right" isOpen={!!tokenId} onDismiss={onDismiss}>
@@ -482,8 +489,8 @@ export const PortfolioTokenDrawer: FC<{
 				title={"Token Details"}
 				onClose={onDismiss}
 			>
-				{tokenRow && <DrawerContent tokenRow={tokenRow} />}
+				{displayRow && <DrawerContent tokenRow={displayRow} />}
 			</DrawerContainer>
 		</Drawer>
 	);
-};
+});
