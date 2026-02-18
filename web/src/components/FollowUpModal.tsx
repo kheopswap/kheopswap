@@ -1,8 +1,8 @@
 import type { WalletAccount } from "@kheopskit/core";
-import type { Token } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
 import type { TxEvent } from "polkadot-api";
 import type { FC, PropsWithChildren } from "react";
+import type { Token } from "../registry/tokens/types";
+import { cn } from "../utils/cn";
 
 export type FollowUpTxEvent =
 	| TxEvent

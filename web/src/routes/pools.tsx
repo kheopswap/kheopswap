@@ -1,5 +1,6 @@
-import { Layout, TabTitle } from "src/components";
-import { LiquidityPools } from "src/features/liquidity";
+import { Layout } from "../components/layout/Layout";
+import { TabTitle } from "../components/TabTitle";
+import { LiquidityPools } from "../features/liquidity/pools/LiquidityPools";
 
 export const LiquidityPoolsPage = () => (
 	<Layout>

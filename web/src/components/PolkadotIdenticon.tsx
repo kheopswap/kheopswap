@@ -1,7 +1,7 @@
-import { cn } from "@kheopswap/utils";
 import { blake2b } from "@noble/hashes/blake2";
 import { getSs58AddressInfo } from "polkadot-api";
 import { useMemo } from "react";
+import { cn } from "../utils/cn";
 
 const S = 64;
 const C = S / 2;

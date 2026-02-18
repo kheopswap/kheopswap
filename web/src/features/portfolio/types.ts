@@ -1,5 +1,5 @@
-import type { Token } from "@kheopswap/registry";
-import type { BalanceWithStableSummary } from "src/types";
+import type { Token } from "../../registry/tokens/types";
+import type { BalanceWithStableSummary } from "../../types/balances";
 
 export type PortfolioVisibleCol = "price" | "balance";
 

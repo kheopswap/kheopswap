@@ -3,7 +3,7 @@ import { type FC, type PropsWithChildren, useMemo } from "react";
 import {
 	type CallSpendings,
 	TransactionProvider,
-} from "src/features/transaction/TransactionProvider";
+} from "../../transaction/TransactionProvider";
 import { useCreatePool } from "./CreatePoolProvider";
 
 const getCreatePoolTitle = (

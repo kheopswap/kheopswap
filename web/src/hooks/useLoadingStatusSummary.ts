@@ -1,4 +1,4 @@
-import { loadingStatusSummary$ } from "@kheopswap/services/loadingStatusSummary";
 import { bind } from "@react-rxjs/core";
+import { loadingStatusSummary$ } from "../services/loadingStatusSummary";
 
 export const [useLoadingStatusSummary] = bind(loadingStatusSummary$);

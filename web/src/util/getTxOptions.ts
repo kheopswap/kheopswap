@@ -1,5 +1,5 @@
-import type { XcmV5Multilocation } from "@kheopswap/registry";
 import type { TxOptions } from "polkadot-api";
+import type { XcmV5Multilocation } from "../registry/types/xcm";
 
 // Use `any` for the Ext parameter to match the internal CustomSignedExtensionValues type
 // which is not exported from polkadot-api

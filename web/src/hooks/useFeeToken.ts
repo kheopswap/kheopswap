@@ -1,7 +1,9 @@
-import type { TokenId } from "@kheopswap/registry";
-import { type ChainId, getChainById } from "@kheopswap/registry";
-import { getAddressFromAccountField, logger } from "@kheopswap/utils";
 import { useCallback, useMemo } from "react";
+import { getChainById } from "../registry/chains/chains";
+import type { ChainId } from "../registry/chains/types";
+import type { TokenId } from "../registry/tokens/types";
+import { getAddressFromAccountField } from "../utils/getAddressFromAccountField";
+import { logger } from "../utils/logger";
 import { useFeeTokens } from "./useFeeTokens";
 import { useNativeToken } from "./useNativeToken";
 import { useSetting } from "./useSetting";

@@ -1,12 +1,11 @@
-import type { ChainId, Token } from "@kheopswap/registry";
-import {
-	type ChainTokensState,
-	getTokensByChains$,
-} from "@kheopswap/services/tokens";
 import { values } from "lodash-es";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
+import type { ChainId } from "../registry/chains/types";
+import type { Token } from "../registry/tokens/types";
+import { getTokensByChains$ } from "../services/tokens/service";
+import type { ChainTokensState } from "../services/tokens/state";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];

@@ -1,5 +1,4 @@
 import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
-import { cn } from "@kheopswap/utils";
 import {
 	createContext,
 	type FC,
@@ -7,6 +6,7 @@ import {
 	type ReactNode,
 	useContext,
 } from "react";
+import { cn } from "../../utils/cn";
 
 type Side = "top" | "right" | "bottom" | "left";
 type Align = "start" | "center" | "end";

@@ -1,6 +1,6 @@
-import type { ChainId } from "@kheopswap/registry";
 import type { SS58String } from "polkadot-api";
 import { useEffect, useState } from "react";
+import type { ChainId } from "../registry/chains/types";
 import { useApi } from "./useApi";
 
 type UseNonceProps = {

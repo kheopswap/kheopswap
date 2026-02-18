@@ -1,15 +1,13 @@
 import { useWallets } from "@kheopskit/react";
-import { isBigInt } from "@kheopswap/utils";
 import { type FormEventHandler, useCallback, useMemo } from "react";
-import {
-	AccountSelect,
-	Balance,
-	FormFieldContainer,
-	TokenAmountPicker,
-} from "src/components";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
-import { useWalletAccount } from "src/hooks";
+import { AccountSelect } from "../../components/AccountSelect";
+import { Balance } from "../../components/Balance";
+import { FormFieldContainer } from "../../components/FormFieldContainer";
+import { TokenAmountPicker } from "../../components/TokenAmountPicker";
+import { useWalletAccount } from "../../hooks/useWalletAccount";
+import { isBigInt } from "../../utils/isBigInt";
+import { useTransaction } from "../transaction/TransactionProvider";
+import { TransactionSubmitButton } from "../transaction/TransactionSubmitButton";
 import { useTransfer } from "./TransferProvider";
 import { TransferSummary } from "./TransferSummary";
 

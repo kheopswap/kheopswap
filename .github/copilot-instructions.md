@@ -68,7 +68,6 @@ const api = await getApi(chainId); // waitReady=true by default
 pnpm install                 # Install dependencies (uses corepack)
 pnpm dev                     # Dev with production RPCs
 pnpm check                   # Biome lint + format (auto-fix)
-pnpm papi:update             # Update PAPI chain metadata
 pnpm typecheck               # TypeScript check (web package)
 ```
 

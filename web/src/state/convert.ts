@@ -1,10 +1,4 @@
 import {
-	getChainIdFromTokenId,
-	getTokenId,
-	type TokenId,
-} from "@kheopswap/registry";
-import { getCachedObservable$ } from "@kheopswap/utils";
-import {
 	combineLatest,
 	map,
 	type Observable,
@@ -12,7 +6,10 @@ import {
 	shareReplay,
 	throttleTime,
 } from "rxjs";
-import { getAssetConvertPlancks } from "src/util";
+import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
+import type { TokenId } from "../registry/tokens/types";
+import { getAssetConvertPlancks } from "../util/getAssetConvertPlancks";
+import { getCachedObservable$ } from "../utils/getCachedObservable";
 import { getPoolReserves$ } from "./pools";
 
 type AssetConvertInput = {

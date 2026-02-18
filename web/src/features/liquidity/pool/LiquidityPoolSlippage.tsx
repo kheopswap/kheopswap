@@ -1,9 +1,11 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import { cn } from "@kheopswap/utils";
 import numeral from "numeral";
 import { type FC, useCallback, useMemo } from "react";
-import { Drawer, DrawerContainer } from "src/components";
-import { useOpenClose, useSetting } from "src/hooks";
+import { Drawer } from "../../../components/Drawer";
+import { DrawerContainer } from "../../../components/DrawerContainer";
+import { useOpenClose } from "../../../hooks/useOpenClose";
+import { useSetting } from "../../../hooks/useSetting";
+import { cn } from "../../../utils/cn";
 
 const SlippageButton: FC<{
 	value: number;

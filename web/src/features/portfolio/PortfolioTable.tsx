@@ -1,8 +1,9 @@
-import type { TokenId } from "@kheopswap/registry";
-import { isBigInt, sortBigInt } from "@kheopswap/utils";
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
-import { SearchInput } from "src/components";
-import type { BalanceWithStable } from "src/types";
+import { SearchInput } from "../../components/SearchInput";
+import type { TokenId } from "../../registry/tokens/types";
+import type { BalanceWithStable } from "../../types/balances";
+import { isBigInt } from "../../utils/isBigInt";
+import { sortBigInt } from "../../utils/sortBigInt";
 import { PortfolioHeaderRow } from "./PortfolioHeaderRow";
 import { usePortfolio } from "./PortfolioProvider";
 import { PortfolioRows } from "./PortfolioRows";

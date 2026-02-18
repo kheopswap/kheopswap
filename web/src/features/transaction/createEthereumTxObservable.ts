@@ -1,10 +1,12 @@
-import { type Api, getApi } from "@kheopswap/papi";
-import { type ChainId, getChainById } from "@kheopswap/registry";
-import { logger, sleep } from "@kheopswap/utils";
 import type { TxEvent } from "polkadot-api";
 import { Observable } from "rxjs";
 import type { Address, Client, Hex, PublicClient } from "viem";
 import { createPublicClient, fallback, http } from "viem";
+import { type Api, getApi } from "../../papi/getApi";
+import { getChainById } from "../../registry/chains/chains";
+import type { ChainId } from "../../registry/chains/types";
+import { logger } from "../../utils/logger";
+import { sleep } from "../../utils/sleep";
 
 /**
  * H160 (Ethereum) address of the Revive pallet's "runtime pallets" dispatch precompile on Asset Hub.

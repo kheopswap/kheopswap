@@ -1,7 +1,7 @@
-import { provideContext } from "@kheopswap/utils";
 import { useCallback, useMemo, useState } from "react";
-import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
-import { useExistentialDeposit } from "src/hooks";
+import { useExistentialDeposit } from "../../../../hooks/useExistentialDeposit";
+import { provideContext } from "../../../../utils/provideContext";
+import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidityExtrinsic } from "./useAddLiquidityExtrinsic";
 
 const useAddLiquidityProvider = () => {

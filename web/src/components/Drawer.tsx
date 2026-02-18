@@ -1,6 +1,6 @@
 import { Dialog } from "@base-ui-components/react/dialog";
-import { cn } from "@kheopswap/utils";
 import { type FC, type ReactNode, useCallback } from "react";
+import { cn } from "../utils/cn";
 
 type DrawerAnchor = "top" | "right" | "bottom" | "left";
 

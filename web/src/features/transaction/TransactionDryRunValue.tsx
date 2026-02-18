@@ -1,13 +1,14 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { cn, formatTxError } from "@kheopswap/utils";
 import { useMemo } from "react";
+import { Shimmer } from "../../components/Shimmer";
 import {
-	Shimmer,
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "src/components";
-import { useDryRunError } from "src/hooks";
+} from "../../components/tooltip/Tooltip";
+import { useDryRunError } from "../../hooks/useDryRunError";
+import { cn } from "../../utils/cn";
+import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransaction } from "./TransactionProvider";
 
 export const TransactionDryRunSummaryValue = () => {

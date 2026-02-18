@@ -1,7 +1,7 @@
-import { logger } from "@kheopswap/utils";
 import { keyBy, values } from "lodash-es";
 import { useMemo } from "react";
-import { getBalancesByTokenSummary } from "src/hooks";
+import { getBalancesByTokenSummary } from "../../hooks/useBalancesByTokenSummary";
+import { logger } from "../../utils/logger";
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
 

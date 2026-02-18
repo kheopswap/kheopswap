@@ -1,10 +1,10 @@
-import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
-import { getApi } from "@kheopswap/papi";
-import type { ChainId } from "@kheopswap/registry";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { useSetting } from "src/hooks";
-import { useRelayChains } from "src/state";
+import { DISABLE_LIGHT_CLIENTS } from "../common/constants";
+import { useSetting } from "../hooks/useSetting";
+import { getApi } from "../papi/getApi";
+import type { ChainId } from "../registry/chains/types";
+import { useRelayChains } from "../state/relay";
 
 const waitChainReady = async (chainId: ChainId) => {
 	const api = await getApi(chainId, false);

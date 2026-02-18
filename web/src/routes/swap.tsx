@@ -1,5 +1,6 @@
-import { Layout, PageContent } from "src/components";
-import { Swap } from "src/features/swap";
+import { Layout } from "../components/layout/Layout";
+import { PageContent } from "../components/layout/PageContent";
+import { Swap } from "../features/swap/Swap";
 
 export const SwapPage = () => (
 	<Layout>

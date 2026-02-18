@@ -1,6 +1,8 @@
-import type { Token } from "@kheopswap/registry";
-import { cn, formatDecimals, plancksToTokens } from "@kheopswap/utils";
 import { type FC, useMemo } from "react";
+import type { Token } from "../registry/tokens/types";
+import { cn } from "../utils/cn";
+import { formatDecimals } from "../utils/formatDecimals";
+import { plancksToTokens } from "../utils/plancks";
 import { Pulse } from "./Pulse";
 import { Price } from "./SmallNumber";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";

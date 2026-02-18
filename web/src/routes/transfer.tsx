@@ -1,5 +1,7 @@
-import { Layout, PageContent, TabTitle } from "src/components";
-import { Transfer } from "src/features/transfer";
+import { Layout } from "../components/layout/Layout";
+import { PageContent } from "../components/layout/PageContent";
+import { TabTitle } from "../components/TabTitle";
+import { Transfer } from "../features/transfer/Transfer";
 
 export const TransferPage = () => (
 	<Layout>

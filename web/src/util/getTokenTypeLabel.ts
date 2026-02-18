@@ -1,4 +1,4 @@
-import type { TokenType } from "@kheopswap/registry";
+import type { TokenType } from "../registry/tokens/types";
 
 export const getTokenTypeLabel = (type: TokenType) => {
 	switch (type) {

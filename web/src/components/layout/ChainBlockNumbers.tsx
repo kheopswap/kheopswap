@@ -1,7 +1,7 @@
-import { getApi$ } from "@kheopswap/papi";
 import { bind } from "@react-rxjs/core";
 import { switchMap } from "rxjs";
-import { assetHub$ } from "src/state/relay";
+import { getApi$ } from "../../papi/getApi";
+import { assetHub$ } from "../../state/relay";
 
 const [useBestBlockNumber] = bind(
 	assetHub$.pipe(

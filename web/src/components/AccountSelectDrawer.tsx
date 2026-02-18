@@ -1,18 +1,17 @@
 import type { Wallet, WalletAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
-import type { Token } from "@kheopswap/registry";
-import {
-	cn,
-	isBigInt,
-	isValidAnyAddress,
-	shortenAddress,
-} from "@kheopswap/utils";
 import { fromPairs } from "lodash-es";
 import { type FC, useCallback, useMemo, useState } from "react";
-import { useBalancesWithStables, useToken } from "src/hooks";
-import { useRelayChains } from "src/state";
-import type { BalanceWithStableSummary } from "src/types";
-import { getAccountName } from "src/util";
+import { useBalancesWithStables } from "../hooks/useBalancesWithStables";
+import { useToken } from "../hooks/useToken";
+import type { Token } from "../registry/tokens/types";
+import { useRelayChains } from "../state/relay";
+import type { BalanceWithStableSummary } from "../types/balances";
+import { getAccountName } from "../util/getAccountName";
+import { cn } from "../utils/cn";
+import { isValidAnyAddress } from "../utils/ethereumAddress";
+import { isBigInt } from "../utils/isBigInt";
+import { shortenAddress } from "../utils/shortenAddress";
 import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";

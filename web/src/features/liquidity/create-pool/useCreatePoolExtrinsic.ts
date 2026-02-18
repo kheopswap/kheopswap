@@ -1,14 +1,12 @@
-import { getApi } from "@kheopswap/papi";
-import {
-	getChainById,
-	getXcmV5MultilocationFromTokenId,
-	POOL_TOKEN2_TOKEN_TYPES,
-	parseTokenId,
-	type TokenId,
-} from "@kheopswap/registry";
-import { safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
+import { getApi } from "../../../papi/getApi";
+import { getChainById } from "../../../registry/chains/chains";
+import { parseTokenId } from "../../../registry/tokens/helpers";
+import { POOL_TOKEN2_TOKEN_TYPES } from "../../../registry/tokens/tokens";
+import type { TokenId } from "../../../registry/tokens/types";
+import { getXcmV5MultilocationFromTokenId } from "../../../registry/utils/xcmMultiLocation";
+import { safeQueryKeyPart } from "../../../utils/safeQueryKeyPart";
 
 type UseCreatePoolExtrinsicProps = {
 	tokenId1: TokenId | null | undefined;

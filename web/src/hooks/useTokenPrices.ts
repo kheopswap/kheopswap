@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import { useObservable } from "react-rx";
-import { getTokenPrices$ } from "src/state/prices";
+import { getTokenPrices$ } from "../state/prices";
 
 const DEFAULT_VALUE = { data: [], isLoading: true };
 

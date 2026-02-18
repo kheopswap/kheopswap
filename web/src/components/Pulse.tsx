@@ -1,4 +1,3 @@
-import { cn } from "@kheopswap/utils";
 import {
 	forwardRef,
 	type MutableRefObject,
@@ -7,6 +6,7 @@ import {
 	useEffect,
 	useRef,
 } from "react";
+import { cn } from "../utils/cn";
 
 export const pulseAnimationController = {
 	animations: new Map<HTMLDivElement, Animation>(),

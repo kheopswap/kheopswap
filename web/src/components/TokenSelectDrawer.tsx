@@ -1,21 +1,22 @@
 import type { PolkadotAccount } from "@kheopskit/core";
-import type { Token, TokenId } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
 import { values } from "lodash-es";
 import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
-import { Drawer } from "src/components/Drawer";
-import { DrawerContainer } from "src/components/DrawerContainer";
-import { ActionRightIcon } from "src/components/icons";
-import { SearchInput } from "src/components/SearchInput";
-import { Shimmer } from "src/components/Shimmer";
-import { Styles } from "src/components/styles";
-import { TokenLogo } from "src/components/TokenLogo";
-import { Tokens } from "src/components/Tokens";
-import { useBalancesByTokenSummary } from "src/hooks";
-import { useRelayChains } from "src/state";
-import type { BalanceWithStableSummary } from "src/types";
-import { getTokenDescription } from "src/util";
+import { useBalancesByTokenSummary } from "../hooks/useBalancesByTokenSummary";
+import type { Token, TokenId } from "../registry/tokens/types";
+import { useRelayChains } from "../state/relay";
+import type { BalanceWithStableSummary } from "../types/balances";
+import { getTokenDescription } from "../util/getTokenDescription";
+import { cn } from "../utils/cn";
+import { isBigInt } from "../utils/isBigInt";
+import { Drawer } from "./Drawer";
+import { DrawerContainer } from "./DrawerContainer";
+import { ActionRightIcon } from "./icons";
 import { Pulse } from "./Pulse";
+import { SearchInput } from "./SearchInput";
+import { Shimmer } from "./Shimmer";
+import { Styles } from "./styles";
+import { TokenLogo } from "./TokenLogo";
+import { Tokens } from "./Tokens";
 
 const TokenButton = forwardRef<
 	HTMLButtonElement,

@@ -1,31 +1,27 @@
-import { type TokenId, TRANSFERABLE_TOKEN_TYPES } from "@kheopswap/registry";
-import {
-	getAddressFromAccountField,
-	isNumber,
-	plancksToTokens,
-	provideContext,
-	tokensToPlancks,
-} from "@kheopswap/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router";
-import {
-	useAllTokens,
-	useAssetConvertPlancks,
-	useBalance,
-	useCanAccountReceive,
-	useEstimateFee,
-	useExistentialDeposit,
-	useFeeToken,
-	useNativeToken,
-	useNonce,
-	useResolvedSubstrateAddress,
-	useSetting,
-	useTokenChain,
-	useWalletAccount,
-} from "src/hooks";
-import { useRelayChains } from "src/state";
-import { getFeeAssetLocation } from "src/util";
-import { getTxOptions } from "src/util/getTxOptions";
+import { useAllTokens } from "../../hooks/useAllTokens";
+import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
+import { useBalance } from "../../hooks/useBalance";
+import { useCanAccountReceive } from "../../hooks/useCanAccountReceive";
+import { useEstimateFee } from "../../hooks/useEstimateFee";
+import { useExistentialDeposit } from "../../hooks/useExistentialDeposit";
+import { useFeeToken } from "../../hooks/useFeeToken";
+import { useNativeToken } from "../../hooks/useNativeToken";
+import { useNonce } from "../../hooks/useNonce";
+import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
+import { useSetting } from "../../hooks/useSetting";
+import { useTokenChain } from "../../hooks/useTokenChain";
+import { useWalletAccount } from "../../hooks/useWalletAccount";
+import { TRANSFERABLE_TOKEN_TYPES } from "../../registry/tokens/tokens";
+import type { TokenId } from "../../registry/tokens/types";
+import { useRelayChains } from "../../state/relay";
+import { getFeeAssetLocation } from "../../util/getFeeAssetLocation";
+import { getTxOptions } from "../../util/getTxOptions";
+import { getAddressFromAccountField } from "../../utils/getAddressFromAccountField";
+import { isNumber } from "../../utils/isNumber";
+import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
+import { provideContext } from "../../utils/provideContext";
 import type { TransferFormInputs } from "./schema";
 import { useTransferExtrinsic } from "./useTransferExtrinsic";
 

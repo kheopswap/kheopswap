@@ -1,7 +1,8 @@
-import type { Pool } from "@kheopswap/services/pools";
-import { isBigInt } from "@kheopswap/utils";
 import { useMemo } from "react";
-import { useBalance, useStablePlancks } from "src/hooks";
+import { useBalance } from "../../../hooks/useBalance";
+import { useStablePlancks } from "../../../hooks/useStablePrice";
+import type { Pool } from "../../../services/pools/types";
+import { isBigInt } from "../../../utils/isBigInt";
 
 type UsePoolValuation = {
 	pool: Pool | null;

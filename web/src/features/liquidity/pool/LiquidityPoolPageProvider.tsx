@@ -1,16 +1,14 @@
-import { provideContext } from "@kheopswap/utils";
 import { useMemo } from "react";
 import { useParams } from "react-router";
-import {
-	useNativeToken,
-	usePoolByPoolAssetId,
-	usePoolReserves,
-	useResolvedSubstrateAddress,
-	useSetting,
-	useToken,
-	useWalletAccount,
-} from "src/hooks";
-import { useRelayChains } from "src/state";
+import { useNativeToken } from "../../../hooks/useNativeToken";
+import { usePoolByPoolAssetId } from "../../../hooks/usePoolByPoolAssetId";
+import { usePoolReserves } from "../../../hooks/usePoolReserves";
+import { useResolvedSubstrateAddress } from "../../../hooks/useResolvedSubstrateAddress";
+import { useSetting } from "../../../hooks/useSetting";
+import { useToken } from "../../../hooks/useToken";
+import { useWalletAccount } from "../../../hooks/useWalletAccount";
+import { useRelayChains } from "../../../state/relay";
+import { provideContext } from "../../../utils/provideContext";
 import { useAccountBalancesForPool } from "./useAccountBalancesForPool";
 import { usePoolPosition } from "./usePoolPosition";
 

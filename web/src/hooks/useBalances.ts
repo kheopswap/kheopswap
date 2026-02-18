@@ -1,7 +1,8 @@
-import { type BalanceDef, getBalances$ } from "@kheopswap/services/balances";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
+import { getBalances$ } from "../services/balances/service";
+import type { BalanceDef } from "../services/balances/types";
 
 type UseBalancesProps = {
 	balanceDefs: BalanceDef[] | undefined;

@@ -1,7 +1,9 @@
-import type { TokenId } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
 import type { FC } from "react";
-import { useBalance, useToken } from "src/hooks";
+import { useBalance } from "../hooks/useBalance";
+import { useToken } from "../hooks/useToken";
+import type { TokenId } from "../registry/tokens/types";
+import { cn } from "../utils/cn";
+import { isBigInt } from "../utils/isBigInt";
 import { Shimmer } from "./Shimmer";
 import { Tokens } from "./Tokens";
 

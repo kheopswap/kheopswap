@@ -1,8 +1,9 @@
-import { isBigInt, logger } from "@kheopswap/utils";
 import { groupBy, mapValues, toPairs, values } from "lodash-es";
 import { useMemo } from "react";
-import { useRelayChains } from "src/state";
-import type { BalanceWithStableSummary } from "src/types";
+import { useRelayChains } from "../state/relay";
+import type { BalanceWithStableSummary } from "../types/balances";
+import { isBigInt } from "../utils/isBigInt";
+import { logger } from "../utils/logger";
 import { useBalances } from "./useBalances";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";

@@ -1,5 +1,5 @@
-import { cn } from "@kheopswap/utils";
 import { useMemo } from "react";
+import { cn } from "../utils/cn";
 
 const createRand = (seed: string) => {
 	const seedArray: [number, number, number, number] = [0, 0, 0, 0];

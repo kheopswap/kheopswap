@@ -1,27 +1,20 @@
-import {
-	POOL_TOKEN2_TOKEN_TYPES,
-	type Token,
-	type TokenId,
-} from "@kheopswap/registry";
-import {
-	getAddressFromAccountField,
-	isBigInt,
-	provideContext,
-} from "@kheopswap/utils";
 import { fromPairs, toPairs } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-	useAllTokens,
-	useBalance,
-	useExistentialDeposit,
-	useFeeToken,
-	useNativeToken,
-	usePoolsByChainId,
-	useResolvedSubstrateAddress,
-	useSetting,
-	useWalletAccount,
-} from "src/hooks";
-import { useRelayChains } from "src/state";
+import { useAllTokens } from "../../../hooks/useAllTokens";
+import { useBalance } from "../../../hooks/useBalance";
+import { useExistentialDeposit } from "../../../hooks/useExistentialDeposit";
+import { useFeeToken } from "../../../hooks/useFeeToken";
+import { useNativeToken } from "../../../hooks/useNativeToken";
+import { usePoolsByChainId } from "../../../hooks/usePoolsByChainId";
+import { useResolvedSubstrateAddress } from "../../../hooks/useResolvedSubstrateAddress";
+import { useSetting } from "../../../hooks/useSetting";
+import { useWalletAccount } from "../../../hooks/useWalletAccount";
+import { POOL_TOKEN2_TOKEN_TYPES } from "../../../registry/tokens/tokens";
+import type { Token, TokenId } from "../../../registry/tokens/types";
+import { useRelayChains } from "../../../state/relay";
+import { getAddressFromAccountField } from "../../../utils/getAddressFromAccountField";
+import { isBigInt } from "../../../utils/isBigInt";
+import { provideContext } from "../../../utils/provideContext";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 

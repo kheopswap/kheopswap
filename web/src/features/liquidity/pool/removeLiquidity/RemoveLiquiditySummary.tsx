@@ -1,10 +1,13 @@
 import type { FC } from "react";
 
-import { FormSummary, FormSummaryRow } from "src/components";
-import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
-import { LiquidityPoolSlippage } from "src/features/liquidity/pool/LiquidityPoolSlippage";
-import { TransactionDryRunSummaryValue } from "src/features/transaction/TransactionDryRunValue";
-import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
+import {
+	FormSummary,
+	FormSummaryRow,
+} from "../../../../components/FormSummary";
+import { TransactionDryRunSummaryValue } from "../../../transaction/TransactionDryRunValue";
+import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
+import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
+import { LiquidityPoolSlippage } from "../LiquidityPoolSlippage";
 
 export const RemoveLiquiditySummary: FC = () => {
 	const { lpSlippage } = useLiquidityPoolPage();

@@ -1,8 +1,8 @@
 import { type FormEventHandler, useCallback } from "react";
-import { FormFieldContainer } from "src/components";
-import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
+import { FormFieldContainer } from "../../../../components/FormFieldContainer";
+import { useTransaction } from "../../../transaction/TransactionProvider";
+import { TransactionSubmitButton } from "../../../transaction/TransactionSubmitButton";
+import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { RemoveLiquidityOutcome } from "./RemoveLiquidityOutcome";
 import { useRemoveLiquidity } from "./RemoveLiquidityProvider";
 import { RemoveLiquiditySlider } from "./RemoveLiquiditySlider";

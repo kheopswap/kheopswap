@@ -1,5 +1,5 @@
-import type { TokenId } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
+import type { TokenId } from "../registry/tokens/types";
+import { logger } from "../utils/logger";
 
 export const getAssetConvertPlancks = (
 	plancks: bigint,

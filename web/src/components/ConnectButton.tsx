@@ -1,7 +1,6 @@
 import { UserCircleIcon } from "@heroicons/react/24/outline";
-
-import { AccountSelectDrawer } from "src/components";
-import { useOpenClose } from "src/hooks";
+import { useOpenClose } from "../hooks/useOpenClose";
+import { AccountSelectDrawer } from "./AccountSelectDrawer";
 
 export const ConnectButton = () => {
 	const { open, close, isOpen } = useOpenClose();

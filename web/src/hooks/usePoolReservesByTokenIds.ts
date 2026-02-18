@@ -1,8 +1,8 @@
-import type { TokenId } from "@kheopswap/registry";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
-import { getPoolReserves$ } from "src/state";
+import type { TokenId } from "../registry/tokens/types";
+import { getPoolReserves$ } from "../state/pools";
 
 type UsePoolReservesByTokenIdsProps = {
 	tokenId1: TokenId | null | undefined;

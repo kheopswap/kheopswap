@@ -1,5 +1,5 @@
-import type { TokenId } from "@kheopswap/registry";
 import type { FC } from "react";
+import type { TokenId } from "../../../registry/tokens/types";
 import { CreatePoolForm } from "./CreatePoolForm";
 import { CreatePoolProvider } from "./CreatePoolProvider";
 import { CreatePoolTransactionProvider } from "./CreatePoolTransactionProvider";

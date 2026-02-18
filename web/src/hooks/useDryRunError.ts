@@ -1,8 +1,8 @@
-import type { ChainId } from "@kheopswap/registry";
-import { safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { getDispatchErrorMessage } from "src/util";
+import type { ChainId } from "../registry/chains/types";
+import { getDispatchErrorMessage } from "../util/getDispatchErrorMessage";
+import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 import type { DryRun } from "./useDryRun";
 
 type UseDryRunError = {

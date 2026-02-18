@@ -1,8 +1,8 @@
-import type { Pool } from "@kheopswap/services/pools";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
-import { getAssetHubPoolReserves$ } from "src/state";
+import type { Pool } from "../services/pools/types";
+import { getAssetHubPoolReserves$ } from "../state/pools";
 
 type UsePoolReservesProps = {
 	pool: Pool | null | undefined;

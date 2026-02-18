@@ -1,8 +1,10 @@
-import type { Token } from "@kheopswap/registry";
-import { cn, isBigInt, type TxEvents } from "@kheopswap/utils";
 import { type FC, useMemo } from "react";
-import { Tokens } from "src/components";
-import type { TransactionRecord } from "src/state/transactions";
+import { Tokens } from "../../components/Tokens";
+import type { Token } from "../../registry/tokens/types";
+import type { TransactionRecord } from "../../state/transactions/types";
+import { cn } from "../../utils/cn";
+import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
+import { isBigInt } from "../../utils/isBigInt";
 
 type SwapFollowUpData = {
 	swapPlancksOut: bigint;

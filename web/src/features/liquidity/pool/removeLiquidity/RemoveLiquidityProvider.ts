@@ -1,9 +1,10 @@
-import { getApi } from "@kheopswap/papi";
-import { getXcmV5MultilocationFromTokenId } from "@kheopswap/registry";
-import { provideContext, safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
-import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
+import { getApi } from "../../../../papi/getApi";
+import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
+import { provideContext } from "../../../../utils/provideContext";
+import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
+import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 
 const useRemoveLiquidityProvider = () => {
 	const {

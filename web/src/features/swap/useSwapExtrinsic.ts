@@ -1,13 +1,11 @@
-import { APP_FEE_ADDRESS } from "@kheopswap/constants";
-import { getApi } from "@kheopswap/papi";
-import {
-	getChainById,
-	getChainIdFromTokenId,
-	type TokenId,
-} from "@kheopswap/registry";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import { getTransferExtrinsic } from "src/features/transfer/getTransferExtrinsic";
+import { APP_FEE_ADDRESS } from "../../common/constants";
+import { getApi } from "../../papi/getApi";
+import { getChainById } from "../../registry/chains/chains";
+import { getChainIdFromTokenId } from "../../registry/tokens/helpers";
+import type { TokenId } from "../../registry/tokens/types";
+import { getTransferExtrinsic } from "../transfer/getTransferExtrinsic";
 import { getSwapExtrinsic } from "./getSwapTransaction";
 
 type UseSwapExtrinsic = {

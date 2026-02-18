@@ -2,10 +2,15 @@ import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
 import { Navigate, NavLink, useParams } from "react-router";
 
-import { Layout, PageContent, PageTitle, TabTitle } from "src/components";
-import { LiquidityPool } from "src/features/liquidity";
-import { useNativeToken, usePoolByPoolAssetId, useToken } from "src/hooks";
-import { useRelayChains } from "src/state";
+import { Layout } from "../components/layout/Layout";
+import { PageContent } from "../components/layout/PageContent";
+import { PageTitle } from "../components/layout/PageTitle";
+import { TabTitle } from "../components/TabTitle";
+import { LiquidityPool } from "../features/liquidity/pool/LiquidityPool";
+import { useNativeToken } from "../hooks/useNativeToken";
+import { usePoolByPoolAssetId } from "../hooks/usePoolByPoolAssetId";
+import { useToken } from "../hooks/useToken";
+import { useRelayChains } from "../state/relay";
 
 const usePoolName = () => {
 	const { assetHub } = useRelayChains();

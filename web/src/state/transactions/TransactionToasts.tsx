@@ -1,13 +1,13 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { type FC, useCallback, useEffect, useRef } from "react";
+import { type Id as ToastId, toast } from "react-toastify";
+import { SpinnerBasicIcon } from "../../components/icons";
+import { cn } from "../../utils/cn";
 import {
-	cn,
 	formatTxError,
 	getErrorMessageFromTxEvents,
 	type TxEvents,
-} from "@kheopswap/utils";
-import { type FC, useCallback, useEffect, useRef } from "react";
-import { type Id as ToastId, toast } from "react-toastify";
-import { SpinnerBasicIcon } from "src/components/icons";
+} from "../../utils/getErrorMessageFromTxEvents";
 import { useTransactions } from "./TransactionsProvider";
 import {
 	isTerminalStatus,

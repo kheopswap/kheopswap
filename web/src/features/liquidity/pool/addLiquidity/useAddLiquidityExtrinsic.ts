@@ -1,7 +1,7 @@
-import type { TokenId } from "@kheopswap/registry";
-import { safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
+import type { TokenId } from "../../../../registry/tokens/types";
+import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import {
 	getAddLiquidityExtrinsic,
 	isValidGetAddLiquidityExtrinsicProps,

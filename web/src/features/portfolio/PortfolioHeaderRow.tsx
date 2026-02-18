@@ -1,6 +1,6 @@
-import { cn } from "@kheopswap/utils";
 import { type FC, useCallback } from "react";
-import { ColumnHeaderButton } from "src/components/ColumnHeaderButton";
+import { ColumnHeaderButton } from "../../components/ColumnHeaderButton";
+import { cn } from "../../utils/cn";
 import type { PortfolioRowData, PortfolioSortMode } from "./types";
 
 export const PortfolioHeaderRow: FC<{

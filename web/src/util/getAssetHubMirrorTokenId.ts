@@ -1,4 +1,4 @@
-import type { TokenId } from "@kheopswap/registry";
+import type { TokenId } from "../registry/tokens/types";
 
 /**
  * Previously mapped relay chain native tokens to their asset hub equivalents.

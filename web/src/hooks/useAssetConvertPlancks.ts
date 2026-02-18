@@ -1,14 +1,12 @@
-import type { TokenId } from "@kheopswap/registry";
-import { getTokenById$ } from "@kheopswap/services/tokens";
-import {
-	getCachedObservable$,
-	isBigInt,
-	plancksToTokens,
-} from "@kheopswap/utils";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
-import { getAssetConvert$ } from "src/state";
+import type { TokenId } from "../registry/tokens/types";
+import { getTokenById$ } from "../services/tokens/service";
+import { getAssetConvert$ } from "../state/convert";
+import { getCachedObservable$ } from "../utils/getCachedObservable";
+import { isBigInt } from "../utils/isBigInt";
+import { plancksToTokens } from "../utils/plancks";
 
 type UseAssetConvertPlancks = {
 	tokenIdIn: TokenId | null | undefined;

@@ -2,8 +2,8 @@ import {
 	FormSummary,
 	FormSummaryRow,
 	FormSummarySection,
-} from "src/components";
-import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
+} from "../../../components/FormSummary";
+import { TransactionFeeSummaryValue } from "../../transaction/TransactionFeeSummaryValue";
 
 export const CreatePoolSummary = () => {
 	return (

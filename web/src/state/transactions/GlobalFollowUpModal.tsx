@@ -1,21 +1,21 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { getChainById } from "@kheopswap/registry";
-import {
-	cn,
-	getErrorMessageFromTxEvents,
-	isBigInt,
-	type TxEvents,
-} from "@kheopswap/utils";
 import { type FC, type ReactNode, useMemo } from "react";
-import { type FollowUpData, FollowUpRow } from "src/components/FollowUpModal";
-import { SpinnerIcon } from "src/components/icons";
-import { Modal } from "src/components/Modal";
-import { Pulse } from "src/components/Pulse";
-import { Styles } from "src/components/styles";
-import { Tokens } from "src/components/Tokens";
-import { CreatePoolFollowUpContent } from "src/features/liquidity/create-pool/CreatePoolFollowUpContent";
-import { SwapFollowUpContent } from "src/features/swap/SwapFollowUpContent";
 import urlJoin from "url-join";
+import { type FollowUpData, FollowUpRow } from "../../components/FollowUpModal";
+import { SpinnerIcon } from "../../components/icons";
+import { Modal } from "../../components/Modal";
+import { Pulse } from "../../components/Pulse";
+import { Styles } from "../../components/styles";
+import { Tokens } from "../../components/Tokens";
+import { CreatePoolFollowUpContent } from "../../features/liquidity/create-pool/CreatePoolFollowUpContent";
+import { SwapFollowUpContent } from "../../features/swap/SwapFollowUpContent";
+import { getChainById } from "../../registry/chains/chains";
+import { cn } from "../../utils/cn";
+import {
+	getErrorMessageFromTxEvents,
+	type TxEvents,
+} from "../../utils/getErrorMessageFromTxEvents";
+import { isBigInt } from "../../utils/isBigInt";
 import { useTransactions } from "./TransactionsProvider";
 import type { TransactionRecord } from "./types";
 

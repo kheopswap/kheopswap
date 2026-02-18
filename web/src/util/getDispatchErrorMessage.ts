@@ -1,7 +1,7 @@
-import type { ChainId } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
 import { getLookupFn } from "@polkadot-api/metadata-builders";
 import { unifyMetadata } from "@polkadot-api/substrate-bindings";
+import type { ChainId } from "../registry/chains/types";
+import { logger } from "../utils/logger";
 import { getMetadataV15 } from "./getMetadataV15";
 
 const ERRORS_TRANSACTIONAL = {

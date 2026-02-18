@@ -1,16 +1,13 @@
 import type { WalletAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
-import type { TokenId } from "@kheopswap/registry";
-import {
-	cn,
-	getAddressFromAccountField,
-	isEthereumAddress,
-	isValidAnyAddress,
-	shortenAddress,
-} from "@kheopswap/utils";
 import { type FC, useCallback, useMemo } from "react";
-import { useOpenClose } from "src/hooks";
-import { getAccountName } from "src/util";
+import { useOpenClose } from "../hooks/useOpenClose";
+import type { TokenId } from "../registry/tokens/types";
+import { getAccountName } from "../util/getAccountName";
+import { cn } from "../utils/cn";
+import { isEthereumAddress, isValidAnyAddress } from "../utils/ethereumAddress";
+import { getAddressFromAccountField } from "../utils/getAddressFromAccountField";
+import { shortenAddress } from "../utils/shortenAddress";
 import { AccountIcon } from "./AccountIcon";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
 import { EthereumIdenticon } from "./EthereumIdenticon";

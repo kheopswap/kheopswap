@@ -1,5 +1,3 @@
-import { type ChainAssetHub, getChains } from "@kheopswap/registry";
-import { getTokenById$ } from "@kheopswap/services/tokens";
 import { bind } from "@react-rxjs/core";
 import { isEqual } from "lodash-es";
 import {
@@ -8,7 +6,10 @@ import {
 	map,
 	switchMap,
 } from "rxjs";
-import { relayId$ } from "src/state/location";
+import { getChains } from "../registry/chains/chains";
+import type { ChainAssetHub } from "../registry/chains/types";
+import { getTokenById$ } from "../services/tokens/service";
+import { relayId$ } from "./location";
 
 export const [useRelayChains, relayChains$] = bind(
 	relayId$.pipe(

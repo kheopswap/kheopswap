@@ -1,10 +1,11 @@
-import { type Api, getApi } from "@kheopswap/papi";
-import type { ChainId } from "@kheopswap/registry";
-import { logger, safeQueryKeyPart } from "@kheopswap/utils";
 import { Enum } from "@polkadot-api/substrate-bindings";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import type { AnyTransaction } from "src/types";
+import { type Api, getApi } from "../papi/getApi";
+import type { ChainId } from "../registry/chains/types";
+import type { AnyTransaction } from "../types/transactions";
+import { logger } from "../utils/logger";
+import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 
 type UseDryRunProps = {
 	chainId: ChainId | null | undefined;

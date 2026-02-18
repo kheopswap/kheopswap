@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { ConnectButton } from "src/components/ConnectButton";
+import { ConnectButton } from "../../ConnectButton";
 import { RelaySelect } from "./RelaySelect";
 
 export const Header: FC = () => {

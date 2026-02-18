@@ -1,11 +1,9 @@
-import type { TokenType } from "@kheopswap/registry";
-import {
-	type ChainTokensState,
-	getTokensByChains$,
-} from "@kheopswap/services/tokens";
-import { getCachedObservable$ } from "@kheopswap/utils";
 import { keyBy, values } from "lodash-es";
 import { map, shareReplay, switchMap } from "rxjs";
+import type { TokenType } from "../registry/tokens/types";
+import { getTokensByChains$ } from "../services/tokens/service";
+import type { ChainTokensState } from "../services/tokens/state";
+import { getCachedObservable$ } from "../utils/getCachedObservable";
 import { relayChains$ } from "./relay";
 
 export const getAllTokens$ = (types?: TokenType[]) => {
