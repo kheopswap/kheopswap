@@ -12,6 +12,7 @@
 			"ignore": ["src/types/helpers.ts"]
 		}
 	},
+	"tags": ["-knipignore"],
 	"ignore": ["**/*.d.ts", "**/vite-env.d.ts"],
 	"ignoreExportsUsedInFile": true
 }

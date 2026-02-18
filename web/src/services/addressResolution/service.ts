@@ -5,6 +5,7 @@ import {
 	distinctUntilChanged,
 	from,
 	map,
+	type Observable,
 	of,
 	shareReplay,
 	switchMap,
@@ -20,7 +21,7 @@ import {
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import type { LoadingStatus } from "../common";
 
-export type ResolvedSubstrateAddressState = {
+type ResolvedSubstrateAddressState = {
 	address: SS58String | undefined;
 	status: LoadingStatus;
 };
@@ -31,7 +32,7 @@ export const getResolvedSubstrateAddress$ = ({
 }: {
 	address: string;
 	chainId: ChainId;
-}) => {
+}): Observable<ResolvedSubstrateAddressState> => {
 	if (!isEthereumAddress(address)) {
 		return of({
 			address: address as SS58String,

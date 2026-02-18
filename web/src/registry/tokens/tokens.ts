@@ -31,12 +31,6 @@ export const PORTFOLIO_TOKEN_TYPES: TokenType[] = [
 	"foreign-asset",
 ];
 
-export const TRADABLE_TOKEN_TYPES: TokenType[] = [
-	"native",
-	"asset",
-	"foreign-asset",
-];
-
 export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
 	"native",
 	"asset",

@@ -89,6 +89,7 @@ export const getTokenById$ = (tokenId: TokenId) => {
 	);
 };
 
+/** @knipignore */
 export const getTokensById$ = (
 	tokenIds: TokenId[],
 ): Observable<Record<string, TokenState | undefined>> =>
