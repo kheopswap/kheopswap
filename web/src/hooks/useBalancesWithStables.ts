@@ -11,6 +11,7 @@ import {
 	of,
 	shareReplay,
 	switchMap,
+	throttleTime,
 } from "rxjs";
 import { getStablePlancks$ } from "src/state";
 import type { AccountBalanceWithStable } from "src/types";
@@ -64,6 +65,7 @@ export const useBalancesWithStables = ({
 		);
 
 		return combineLatest(observables).pipe(
+			throttleTime(300, undefined, { leading: true, trailing: true }),
 			map((data) => ({
 				data,
 				isLoading: data.some(

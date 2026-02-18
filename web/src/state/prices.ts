@@ -6,7 +6,14 @@ import {
 } from "@kheopswap/registry";
 import { getCachedObservable$, isBigInt } from "@kheopswap/utils";
 import { values } from "lodash-es";
-import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
+import {
+	combineLatest,
+	map,
+	of,
+	shareReplay,
+	switchMap,
+	throttleTime,
+} from "rxjs";
 import { getAssetConvert$ } from "src/state/convert";
 import { getAssetHubMirrorTokenId } from "src/util";
 import { parseUnits } from "viem";
@@ -89,6 +96,10 @@ export const getTokenPrices$ = (types?: TokenType[]) => {
 				switchMap(({ data: dicTokens, isLoading: isLoadingTokens }) => {
 					const tokens = values(dicTokens);
 					return combineLatest(tokens.map(getTokenPrice$)).pipe(
+						throttleTime(300, undefined, {
+							leading: true,
+							trailing: true,
+						}),
 						map((data) => ({
 							data,
 							isLoading:
