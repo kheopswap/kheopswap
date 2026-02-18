@@ -12,7 +12,7 @@
 		"build": "pnpm --filter web build",
 		"preview": "pnpm --filter web preview",
 		"dev": "pnpm --filter web dev",
-		"clean": "pnpm -r exec rm -rf node_modules && pnpm -r exec rm -rf dist",
+		"clean": "git clean -fdx",
 		"typecheck": "pnpm --filter web typecheck",
 		"check": "biome check --write",
 		"knip": "knip",
@@ -29,8 +29,8 @@
 	"license": "AGPL",
 	"packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48",
 	"devDependencies": {
-		"@polkadot-api/descriptors": "file:.papi/descriptors",
 		"@biomejs/biome": "^2.3.14",
+		"@polkadot-api/descriptors": "file:.papi/descriptors",
 		"knip": "^5.83.0",
 		"polkadot-api": "^1.23.3",
 		"simple-git-hooks": "^2.13.1"
@@ -39,5 +39,8 @@
 		"onlyBuiltDependencies": [
 			"simple-git-hooks"
 		]
+	},
+	"dependencies": {
+		"@polkadot-api/descriptors": "file:.papi/descriptors"
 	}
 }
