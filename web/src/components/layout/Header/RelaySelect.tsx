@@ -1,14 +1,18 @@
 import { Switch } from "@base-ui-components/react/switch";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
-import { getChains, type RelayId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
 import { type FC, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { Drawer, DrawerContainer, Styles } from "src/components";
-import { ActionRightIcon } from "src/components/icons";
-import { useOpenClose, useSetting } from "src/hooks";
-import { useRelayChains } from "src/state";
+import { DISABLE_LIGHT_CLIENTS } from "../../../common/constants";
+import { useOpenClose } from "../../../hooks/useOpenClose";
+import { useSetting } from "../../../hooks/useSetting";
+import { getChains } from "../../../registry/chains/chains";
+import type { RelayId } from "../../../registry/chains/types";
+import { useRelayChains } from "../../../state/relay";
+import { cn } from "../../../utils/cn";
+import { Drawer } from "../../Drawer";
+import { DrawerContainer } from "../../DrawerContainer";
+import { ActionRightIcon } from "../../icons";
+import { Styles } from "../../styles";
 
 const ChainButton: FC<{
 	onClick: () => void;

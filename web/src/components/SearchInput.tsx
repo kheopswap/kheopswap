@@ -1,5 +1,4 @@
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { cn } from "@kheopswap/utils";
 import {
 	type FC,
 	useCallback,
@@ -8,6 +7,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { cn } from "../utils/cn";
 import { Styles } from "./styles";
 
 export const SearchInput: FC<{

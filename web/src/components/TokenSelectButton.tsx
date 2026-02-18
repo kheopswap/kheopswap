@@ -1,10 +1,12 @@
 import type { PolkadotAccount } from "@kheopskit/core";
-import type { Token, TokenId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
 import { type FC, useCallback, useMemo } from "react";
-import { TokenLogo, TokenSelectDrawer } from "src/components";
-import { Styles } from "src/components/styles";
-import { useChainName, useOpenClose } from "src/hooks";
+import { useChainName } from "../hooks/useChainName";
+import { useOpenClose } from "../hooks/useOpenClose";
+import type { Token, TokenId } from "../registry/tokens/types";
+import { cn } from "../utils/cn";
+import { Styles } from "./styles";
+import { TokenLogo } from "./TokenLogo";
+import { TokenSelectDrawer } from "./TokenSelectDrawer";
 
 const TokenButton: FC<{
 	tokenId: TokenId | null | undefined;

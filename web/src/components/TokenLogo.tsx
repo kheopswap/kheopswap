@@ -1,9 +1,8 @@
-import type { Token, TokenId } from "@kheopswap/registry";
-
-import { getChainById } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
 import { type FC, useMemo } from "react";
-import { useToken } from "src/hooks";
+import { useToken } from "../hooks/useToken";
+import { getChainById } from "../registry/chains/chains";
+import type { Token, TokenId } from "../registry/tokens/types";
+import { cn } from "../utils/cn";
 
 const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 	token,

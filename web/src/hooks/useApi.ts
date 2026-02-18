@@ -1,7 +1,7 @@
-import { DISABLE_LIGHT_CLIENTS } from "@kheopswap/constants";
-import { getApi } from "@kheopswap/papi";
-import type { ChainId } from "@kheopswap/registry";
 import { useQuery } from "@tanstack/react-query";
+import { DISABLE_LIGHT_CLIENTS } from "../common/constants";
+import { getApi } from "../papi/getApi";
+import type { ChainId } from "../registry/chains/types";
 import { useSetting } from "./useSetting";
 
 type UseApiProps<Id extends ChainId> = { chainId: Id | null | undefined };

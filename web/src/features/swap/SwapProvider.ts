@@ -1,37 +1,34 @@
-import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "@kheopswap/constants";
-import { getTokenId, parseTokenId, type TokenId } from "@kheopswap/registry";
-import { setSetting } from "@kheopswap/settings";
-import {
-	isBigInt,
-	isNumber,
-	plancksToTokens,
-	provideContext,
-	tokensToPlancks,
-} from "@kheopswap/utils";
 import { keyBy, values } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router";
-import {
-	useAssetConvertPlancks,
-	useBalance,
-	useCanAccountReceive,
-	useEstimateFee,
-	useExistentialDeposit,
-	useFeeToken,
-	useNativeToken,
-	useNonce,
-	usePoolReservesByTokenIds,
-	usePoolSupplies,
-	usePoolsByChainId,
-	useResolvedSubstrateAddress,
-	useSetting,
-	useToken,
-	useTokenChain,
-	useTokensByChainId,
-	useWalletAccount,
-} from "src/hooks";
-import { useRelayChains } from "src/state";
-import { getFeeAssetLocation, getTxOptions } from "src/util";
+import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "../../common/constants";
+import { setSetting } from "../../common/settings";
+import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
+import { useBalance } from "../../hooks/useBalance";
+import { useCanAccountReceive } from "../../hooks/useCanAccountReceive";
+import { useEstimateFee } from "../../hooks/useEstimateFee";
+import { useExistentialDeposit } from "../../hooks/useExistentialDeposit";
+import { useFeeToken } from "../../hooks/useFeeToken";
+import { useNativeToken } from "../../hooks/useNativeToken";
+import { useNonce } from "../../hooks/useNonce";
+import { usePoolReservesByTokenIds } from "../../hooks/usePoolReservesByTokenIds";
+import { usePoolSupplies } from "../../hooks/usePoolSupplies";
+import { usePoolsByChainId } from "../../hooks/usePoolsByChainId";
+import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
+import { useSetting } from "../../hooks/useSetting";
+import { useToken } from "../../hooks/useToken";
+import { useTokenChain } from "../../hooks/useTokenChain";
+import { useTokensByChainId } from "../../hooks/useTokensByChainId";
+import { useWalletAccount } from "../../hooks/useWalletAccount";
+import { getTokenId, parseTokenId } from "../../registry/tokens/helpers";
+import type { TokenId } from "../../registry/tokens/types";
+import { useRelayChains } from "../../state/relay";
+import { getFeeAssetLocation } from "../../util/getFeeAssetLocation";
+import { getTxOptions } from "../../util/getTxOptions";
+import { isBigInt } from "../../utils/isBigInt";
+import { isNumber } from "../../utils/isNumber";
+import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
+import { provideContext } from "../../utils/provideContext";
 import type { SwapFormInputs } from "./schema";
 import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";

@@ -1,11 +1,25 @@
 {
-	"extends": "@kheopswap/typescript-config/vite.json",
 	"compilerOptions": {
-		"allowImportingTsExtensions": true,
-		"baseUrl": ".",
-		"paths": {
-			"src/*": ["./src/*"]
-		}
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"moduleDetection": "force",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noFallthroughCasesInSwitch": true,
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"noEmit": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"jsx": "react-jsx",
+		"allowImportingTsExtensions": true
 	},
 	"include": ["./src"]
 }

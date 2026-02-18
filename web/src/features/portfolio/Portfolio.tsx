@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { TabTitle } from "src/components";
+import { TabTitle } from "../../components/TabTitle";
 import { PortfolioProvider, usePortfolio } from "./PortfolioProvider";
 import { PortfolioTable } from "./PortfolioTable";
 

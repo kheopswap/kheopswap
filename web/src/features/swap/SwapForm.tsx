@@ -1,7 +1,8 @@
 import { type FormEventHandler, useCallback } from "react";
-import { AccountSelect, FormFieldContainer } from "src/components";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
+import { AccountSelect } from "../../components/AccountSelect";
+import { FormFieldContainer } from "../../components/FormFieldContainer";
+import { useTransaction } from "../transaction/TransactionProvider";
+import { TransactionSubmitButton } from "../transaction/TransactionSubmitButton";
 import { useSwap } from "./SwapProvider";
 import { SwapSummary } from "./SwapSummary";
 import { SwapTokensEditor } from "./SwapTokensEditor";

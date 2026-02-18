@@ -1,17 +1,3 @@
-import type { TokenAsset, TokenForeignAsset } from "@kheopswap/registry";
-import {
-	type DisplayProperty,
-	getTokenDisplayProperties,
-	type Token,
-	type TokenId,
-} from "@kheopswap/registry";
-import {
-	cn,
-	getBlockExplorerUrl,
-	isBigInt,
-	shortenAddress,
-	sortBigInt,
-} from "@kheopswap/utils";
 import {
 	type FC,
 	memo,
@@ -22,31 +8,46 @@ import {
 	useRef,
 } from "react";
 import { useNavigate } from "react-router";
+import { AccountIcon } from "../../components/AccountIcon";
+import { AccountSelectDrawer } from "../../components/AccountSelectDrawer";
+import { AddressDisplay } from "../../components/AddressDisplay";
+import { Drawer } from "../../components/Drawer";
+import { DrawerContainer } from "../../components/DrawerContainer";
+import { Pulse } from "../../components/Pulse";
+import { Shimmer } from "../../components/Shimmer";
+import { Styles } from "../../components/styles";
+import { TokenLogo } from "../../components/TokenLogo";
+import { Tokens } from "../../components/Tokens";
 import {
-	AccountIcon,
-	AccountSelectDrawer,
-	AddressDisplay,
-	Drawer,
-	DrawerContainer,
-	Shimmer,
-	Styles,
-	TokenLogo,
-	Tokens,
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "src/components";
-import { Pulse } from "src/components/Pulse";
-import {
-	useNativeToken,
-	useOpenClose,
-	usePoolByTokenId,
-	useTokenChain,
-	useTokenInfo,
-} from "src/hooks";
-import { useRelayChains } from "src/state";
-import type { BalanceWithStable, BalanceWithStableSummary } from "src/types";
-import { getAccountName, getTokenTypeLabel } from "src/util";
+} from "../../components/tooltip/Tooltip";
+import { useNativeToken } from "../../hooks/useNativeToken";
+import { useOpenClose } from "../../hooks/useOpenClose";
+import { usePoolByTokenId } from "../../hooks/usePoolByTokenId";
+import { useTokenChain } from "../../hooks/useTokenChain";
+import { useTokenInfo } from "../../hooks/useTokenInfo";
+import type { DisplayProperty } from "../../registry/tokens/helpers";
+import { getTokenDisplayProperties } from "../../registry/tokens/helpers";
+import type {
+	Token,
+	TokenAsset,
+	TokenForeignAsset,
+	TokenId,
+} from "../../registry/tokens/types";
+import { useRelayChains } from "../../state/relay";
+import type {
+	BalanceWithStable,
+	BalanceWithStableSummary,
+} from "../../types/balances";
+import { getAccountName } from "../../util/getAccountName";
+import { getTokenTypeLabel } from "../../util/getTokenTypeLabel";
+import { cn } from "../../utils/cn";
+import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
+import { isBigInt } from "../../utils/isBigInt";
+import { shortenAddress } from "../../utils/shortenAddress";
+import { sortBigInt } from "../../utils/sortBigInt";
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
 

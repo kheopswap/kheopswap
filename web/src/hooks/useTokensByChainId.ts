@@ -1,5 +1,6 @@
-import type { ChainId, Token } from "@kheopswap/registry";
 import { useMemo } from "react";
+import type { ChainId } from "../registry/chains/types";
+import type { Token } from "../registry/tokens/types";
 import { useTokensByChainIds } from "./useTokensByChainIds";
 
 type UseTokensProps = {

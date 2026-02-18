@@ -1,4 +1,3 @@
-import { plancksToTokens, tokensToPlancks } from "@kheopswap/utils";
 import { keyBy } from "lodash-es";
 import {
 	type FC,
@@ -8,14 +7,13 @@ import {
 	useMemo,
 	useRef,
 } from "react";
-import {
-	AccountSelect,
-	FormFieldContainer,
-	TokenAmountPicker,
-} from "src/components";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { TransactionSubmitButton } from "src/features/transaction/TransactionSubmitButton";
-import { useToken } from "src/hooks";
+import { AccountSelect } from "../../../components/AccountSelect";
+import { FormFieldContainer } from "../../../components/FormFieldContainer";
+import { TokenAmountPicker } from "../../../components/TokenAmountPicker";
+import { useToken } from "../../../hooks/useToken";
+import { plancksToTokens, tokensToPlancks } from "../../../utils/plancks";
+import { useTransaction } from "../../transaction/TransactionProvider";
+import { TransactionSubmitButton } from "../../transaction/TransactionSubmitButton";
 import { useCreatePool } from "./CreatePoolProvider";
 import { CreatePoolSummary } from "./CreatePoolSummary";
 

@@ -1,5 +1,5 @@
-import { Layout } from "src/components";
-import { Portfolio } from "src/features/portfolio";
+import { Layout } from "../components/layout/Layout";
+import { Portfolio } from "../features/portfolio/Portfolio";
 
 export const PortfolioPage = () => (
 	<Layout>

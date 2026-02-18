@@ -1,8 +1,9 @@
-import { getChainIdFromTokenId, type TokenId } from "@kheopswap/registry";
 import { keyBy, values } from "lodash-es";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
-import { getNativeToken } from "src/util";
+import { getChainIdFromTokenId } from "../registry/tokens/helpers";
+import type { TokenId } from "../registry/tokens/types";
+import { getNativeToken } from "../util/getNativeToken";
 import { useBalances } from "./useBalances";
 import { useExistentialDeposit } from "./useExistentialDeposit";
 import { useTokensByChainId } from "./useTokensByChainId";

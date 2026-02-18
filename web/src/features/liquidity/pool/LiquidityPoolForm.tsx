@@ -1,14 +1,13 @@
-import { cn, isBigInt } from "@kheopswap/utils";
 import { type FC, useMemo, useState } from "react";
-import {
-	AccountSelect,
-	FormFieldContainer,
-	Shimmer,
-	TokenLogo,
-	Tokens,
-} from "src/components";
-import { Pulse } from "src/components/Pulse";
-import { useStablePlancks } from "src/hooks";
+import { AccountSelect } from "../../../components/AccountSelect";
+import { FormFieldContainer } from "../../../components/FormFieldContainer";
+import { Pulse } from "../../../components/Pulse";
+import { Shimmer } from "../../../components/Shimmer";
+import { TokenLogo } from "../../../components/TokenLogo";
+import { Tokens } from "../../../components/Tokens";
+import { useStablePlancks } from "../../../hooks/useStablePrice";
+import { cn } from "../../../utils/cn";
+import { isBigInt } from "../../../utils/isBigInt";
 import { AddLiquidity } from "./addLiquidity/AddLiquidity";
 import { useLiquidityPoolPage } from "./LiquidityPoolPageProvider";
 import { RemoveLiquidity } from "./removeLiquidity/RemoveLiquidity";

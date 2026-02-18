@@ -1,10 +1,8 @@
-import type { Token, TokenForeignAsset } from "@kheopswap/registry";
-import {
-	getChainById,
-	getEvmNetworkName,
-	getParachainName,
-} from "@kheopswap/registry";
-import { logger } from "../../../packages/utils/src/logger";
+import { getChainById } from "../registry/chains/chains";
+import { getEvmNetworkName } from "../registry/evmNetworks/evmNetworks";
+import { getParachainName } from "../registry/parachains/parachains";
+import type { Token, TokenForeignAsset } from "../registry/tokens/types";
+import { logger } from "../utils/logger";
 
 const getForeignTokenOrigin = (token: TokenForeignAsset) => {
 	const interior = token.location.interior;

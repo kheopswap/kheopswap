@@ -1,4 +1,3 @@
-import { getRelayIds, type RelayId } from "@kheopswap/registry";
 import { bind } from "@react-rxjs/core";
 import {
 	distinctUntilChanged,
@@ -8,6 +7,8 @@ import {
 	Observable,
 	shareReplay,
 } from "rxjs";
+import { getRelayIds } from "../registry/chains/chains";
+import type { RelayId } from "../registry/chains/types";
 
 export const location$ = new Observable<Location>((subscriber) => {
 	subscriber.next(window.location);

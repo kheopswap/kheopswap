@@ -1,6 +1,9 @@
 import type { WalletAccount } from "@kheopskit/core";
-import type { Token } from "@kheopswap/registry";
-import type { FollowUpTxEvent, FollowUpTxEvents } from "src/components";
+import type {
+	FollowUpTxEvent,
+	FollowUpTxEvents,
+} from "../../components/FollowUpModal";
+import type { Token } from "../../registry/tokens/types";
 
 export type TransactionId = string;
 

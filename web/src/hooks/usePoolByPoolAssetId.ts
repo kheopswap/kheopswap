@@ -1,6 +1,6 @@
-import type { Pool } from "@kheopswap/services/pools";
 import { useMemo } from "react";
-import { useRelayChains } from "src/state";
+import type { Pool } from "../services/pools/types";
+import { useRelayChains } from "../state/relay";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 
 type UsePoolByPoolAssetIdProps = {

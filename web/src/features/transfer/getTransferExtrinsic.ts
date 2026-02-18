@@ -1,12 +1,12 @@
-import { getApi } from "@kheopswap/papi";
-import {
-	getChainById,
-	getChainIdFromTokenId,
-	MultiAddress,
-	parseTokenId,
-	type TokenId,
-} from "@kheopswap/registry";
+import { MultiAddress } from "@polkadot-api/descriptors";
 import type { SS58String } from "polkadot-api";
+import { getApi } from "../../papi/getApi";
+import { getChainById } from "../../registry/chains/chains";
+import {
+	getChainIdFromTokenId,
+	parseTokenId,
+} from "../../registry/tokens/helpers";
+import type { TokenId } from "../../registry/tokens/types";
 
 export const getTransferExtrinsic = async (
 	tokenId: TokenId,

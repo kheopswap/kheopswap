@@ -1,6 +1,6 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
-import { useLiquidityPoolPage } from "src/features/liquidity/pool/LiquidityPoolPageProvider";
-import { TransactionProvider } from "src/features/transaction/TransactionProvider";
+import { TransactionProvider } from "../../../transaction/TransactionProvider";
+import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useRemoveLiquidity } from "./RemoveLiquidityProvider";
 
 const getRemoveLiquidityTitle = (

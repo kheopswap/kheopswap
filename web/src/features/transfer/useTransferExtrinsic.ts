@@ -1,6 +1,6 @@
-import type { TokenId } from "@kheopswap/registry";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
+import type { TokenId } from "../../registry/tokens/types";
 import { getTransferExtrinsic } from "./getTransferExtrinsic";
 
 type UseTransferExtrinsicProps = {

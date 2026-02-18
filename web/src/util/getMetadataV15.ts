@@ -1,7 +1,8 @@
-import { getApi } from "@kheopswap/papi";
-import type { ChainId } from "@kheopswap/registry";
-import { getCachedPromise, logger } from "@kheopswap/utils";
 import { decAnyMetadata } from "@polkadot-api/substrate-bindings";
+import { getApi } from "../papi/getApi";
+import type { ChainId } from "../registry/chains/types";
+import { getCachedPromise } from "../utils/getCachedPromise";
+import { logger } from "../utils/logger";
 
 export const getMetadataV15 = (chainId: ChainId) =>
 	getCachedPromise("getMetadataV15", chainId, async () => {

@@ -1,10 +1,10 @@
-import type { TokenId } from "@kheopswap/registry";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map, type Observable, switchMap } from "rxjs";
-import { getAssetConvertMulti$ } from "src/state/convert";
-import { stableToken$ } from "src/state/relay";
-import { getAssetHubMirrorTokenId } from "src/util";
+import type { TokenId } from "../registry/tokens/types";
+import { getAssetConvertMulti$ } from "../state/convert";
+import { stableToken$ } from "../state/relay";
+import { getAssetHubMirrorTokenId } from "../util/getAssetHubMirrorTokenId";
 
 type UseStablePlancksProps = {
 	inputs: { tokenId: TokenId; plancks: bigint | undefined }[];

@@ -1,11 +1,14 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import type { TokenId } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
 import { keyBy } from "lodash-es";
 import { type FC, useCallback, useMemo } from "react";
-import { Shimmer, TokenSelectDrawer, Tokens } from "src/components";
-import { useTransaction } from "src/features/transaction/TransactionProvider";
-import { useOpenClose } from "src/hooks";
+import { Shimmer } from "../../components/Shimmer";
+import { TokenSelectDrawer } from "../../components/TokenSelectDrawer";
+import { Tokens } from "../../components/Tokens";
+import { useOpenClose } from "../../hooks/useOpenClose";
+import type { TokenId } from "../../registry/tokens/types";
+import { cn } from "../../utils/cn";
+import { isBigInt } from "../../utils/isBigInt";
+import { useTransaction } from "./TransactionProvider";
 
 export const TransactionFeeSummaryValue: FC = () => {
 	const { isOpen, open, close } = useOpenClose();

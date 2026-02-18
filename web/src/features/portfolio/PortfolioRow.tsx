@@ -1,10 +1,11 @@
-import type { TokenId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
 import { type FC, memo, useCallback, useMemo } from "react";
-import { Styles, TokenLogo } from "src/components";
-import { useNativeToken } from "src/hooks";
-import { useRelayChains } from "src/state";
-import { getTokenDescription } from "src/util";
+import { Styles } from "../../components/styles";
+import { TokenLogo } from "../../components/TokenLogo";
+import { useNativeToken } from "../../hooks/useNativeToken";
+import type { TokenId } from "../../registry/tokens/types";
+import { useRelayChains } from "../../state/relay";
+import { getTokenDescription } from "../../util/getTokenDescription";
+import { cn } from "../../utils/cn";
 import { TokenBalancesSummary } from "./PortfolioDataCell";
 import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 

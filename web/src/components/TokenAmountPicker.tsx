@@ -1,6 +1,4 @@
 import type { PolkadotAccount } from "@kheopskit/core";
-import type { Token, TokenId } from "@kheopswap/registry";
-import { cn, isBigInt } from "@kheopswap/utils";
 import { maskitoNumberOptionsGenerator } from "@maskito/kit";
 import { useMaskito } from "@maskito/react";
 import {
@@ -11,16 +9,15 @@ import {
 	useCallback,
 	useMemo,
 } from "react";
-import {
-	StablePrice,
-	Tokens,
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "src/components";
+import type { Token, TokenId } from "../registry/tokens/types";
+import { cn } from "../utils/cn";
+import { isBigInt } from "../utils/isBigInt";
 import { Shimmer } from "./Shimmer";
+import { StablePrice } from "./StablePrice";
 import { Styles } from "./styles";
 import { TokenSelectButton } from "./TokenSelectButton";
+import { Tokens } from "./Tokens";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
 const TokenInput = forwardRef<
 	HTMLInputElement,

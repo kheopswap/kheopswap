@@ -1,7 +1,7 @@
-import { getRelayIds } from "@kheopswap/registry";
 import type { FC, PropsWithChildren } from "react";
 import { Navigate, Outlet, useParams } from "react-router";
-import { ChainInitNotification } from "src/components";
+import { ChainInitNotification } from "../../components/ChainInitNotification";
+import { getRelayIds } from "../../registry/chains/chains";
 
 const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
 	const { relayId } = useParams();

@@ -1,10 +1,3 @@
-import {
-	getTokenId,
-	type Token,
-	type TokenId,
-	type TokenType,
-} from "@kheopswap/registry";
-import { getCachedObservable$, isBigInt } from "@kheopswap/utils";
 import { values } from "lodash-es";
 import {
 	combineLatest,
@@ -14,9 +7,13 @@ import {
 	switchMap,
 	throttleTime,
 } from "rxjs";
-import { getAssetConvert$ } from "src/state/convert";
-import { getAssetHubMirrorTokenId } from "src/util";
 import { parseUnits } from "viem";
+import { getTokenId } from "../registry/tokens/helpers";
+import type { Token, TokenId, TokenType } from "../registry/tokens/types";
+import { getAssetHubMirrorTokenId } from "../util/getAssetHubMirrorTokenId";
+import { getCachedObservable$ } from "../utils/getCachedObservable";
+import { isBigInt } from "../utils/isBigInt";
+import { getAssetConvert$ } from "./convert";
 import { assetHub$, stableToken$ } from "./relay";
 import { getAllTokens$ } from "./tokens";
 

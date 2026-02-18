@@ -1,6 +1,6 @@
-import { DEV } from "@kheopswap/constants";
-import { logger } from "@kheopswap/utils";
 import { type FC, useEffect, useRef } from "react";
+import { DEV } from "../common/constants";
+import { logger } from "../utils/logger";
 
 const SHOULD_LOG = DEV || true; // TODO only DEV
 

@@ -2,10 +2,14 @@ import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
 import { Navigate, NavLink, useParams } from "react-router";
 
-import { Layout, PageContent, PageTitle, TabTitle } from "src/components";
-import { CreatePool } from "src/features/liquidity/create-pool";
-import { useNativeToken, useToken } from "src/hooks";
-import { useRelayChains } from "src/state";
+import { Layout } from "../components/layout/Layout";
+import { PageContent } from "../components/layout/PageContent";
+import { PageTitle } from "../components/layout/PageTitle";
+import { TabTitle } from "../components/TabTitle";
+import { CreatePool } from "../features/liquidity/create-pool/CreatePool";
+import { useNativeToken } from "../hooks/useNativeToken";
+import { useToken } from "../hooks/useToken";
+import { useRelayChains } from "../state/relay";
 
 export const CreateLiquidityPoolPage = () => {
 	const { relayId, tokenId } = useParams();

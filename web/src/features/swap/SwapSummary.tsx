@@ -1,8 +1,8 @@
-import { isBigInt } from "@kheopswap/utils";
 import type { FC, ReactNode } from "react";
-import { Tokens } from "src/components";
-import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
+import { Tokens } from "../../components/Tokens";
+import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
+import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
 import { Slippage } from "./Slippage";
 import { useSwap } from "./SwapProvider";

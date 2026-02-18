@@ -1,7 +1,7 @@
-import type { TokenId } from "@kheopswap/registry";
-import { cn } from "@kheopswap/utils";
 import { type FC, memo } from "react";
-import { Shimmer } from "src/components";
+import { Shimmer } from "../../components/Shimmer";
+import type { TokenId } from "../../registry/tokens/types";
+import { cn } from "../../utils/cn";
 import { PortfolioRow } from "./PortfolioRow";
 import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 

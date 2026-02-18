@@ -1,10 +1,10 @@
-import type { ChainId } from "@kheopswap/registry";
-import { getResolvedSubstrateAddress$ } from "@kheopswap/services/addressResolution";
-import { isEthereumAddress } from "@kheopswap/utils";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { catchError, map, of } from "rxjs";
+import type { ChainId } from "../registry/chains/types";
+import { getResolvedSubstrateAddress$ } from "../services/addressResolution/service";
+import { isEthereumAddress } from "../utils/ethereumAddress";
 
 type UseResolvedSubstrateAddressProps = {
 	address: string | null | undefined;

@@ -1,7 +1,8 @@
-import type { Chain } from "@kheopswap/registry";
-import { parseTokenId, type TokenId } from "@kheopswap/registry";
 import { useMemo } from "react";
-import { useRelayChains } from "src/state";
+import type { Chain } from "../registry/chains/types";
+import { parseTokenId } from "../registry/tokens/helpers";
+import type { TokenId } from "../registry/tokens/types";
+import { useRelayChains } from "../state/relay";
 
 type UseTokenChainProps<T extends TokenId | null | undefined> = {
 	tokenId: T;

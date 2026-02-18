@@ -1,6 +1,6 @@
 import { useDeferredValue } from "react";
-import { DiscordIcon, GitHubIcon, XDotComIcon } from "src/components/icons";
-import { useLoadingStatusSummary } from "src/hooks";
+import { useLoadingStatusSummary } from "../../hooks/useLoadingStatusSummary";
+import { DiscordIcon, GitHubIcon, XDotComIcon } from "../icons";
 import { ChainBlockNumbers } from "./ChainBlockNumbers";
 
 const LoadingStatus = () => {

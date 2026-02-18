@@ -1,14 +1,13 @@
 import { useWallets } from "@kheopskit/react";
-import { PORTFOLIO_TOKEN_TYPES } from "@kheopswap/registry";
-import { logger, provideContext } from "@kheopswap/utils";
 import { values } from "lodash-es";
 import { useMemo } from "react";
-import {
-	useAllTokens,
-	useAssetHubTVL,
-	useBalancesWithStables,
-	useTokenPrices,
-} from "src/hooks";
+import { useAllTokens } from "../../hooks/useAllTokens";
+import { useAssetHubTVL } from "../../hooks/useAssetHubTVL";
+import { useBalancesWithStables } from "../../hooks/useBalancesWithStables";
+import { useTokenPrices } from "../../hooks/useTokenPrices";
+import { PORTFOLIO_TOKEN_TYPES } from "../../registry/tokens/tokens";
+import { logger } from "../../utils/logger";
+import { provideContext } from "../../utils/provideContext";
 
 export const usePortfolioProvider = () => {
 	const stop = logger.cumulativeTimer("usePortfolioProvicer");

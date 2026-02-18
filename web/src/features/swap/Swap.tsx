@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { TabTitle } from "src/components";
+import { TabTitle } from "../../components/TabTitle";
 import { SwapForm } from "./SwapForm";
 import { SwapProvider, useSwap } from "./SwapProvider";
 import { SwapTransactionProvider } from "./SwapTransactionProvider";

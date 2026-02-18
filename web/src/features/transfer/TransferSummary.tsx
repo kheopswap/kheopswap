@@ -2,9 +2,9 @@ import {
 	FormSummary,
 	FormSummaryRow,
 	FormSummarySection,
-} from "src/components";
-import { TransactionFeeSummaryValue } from "src/features/transaction/TransactionFeeSummaryValue";
+} from "../../components/FormSummary";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
+import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 
 export const TransferSummary = () => {
 	return (

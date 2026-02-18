@@ -1,7 +1,7 @@
-import { getApi } from "@kheopswap/papi";
-import type { Chain } from "@kheopswap/registry";
-import { logger } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
+import { getApi } from "../../papi/getApi";
+import type { Chain } from "../../registry/chains/types";
+import { logger } from "../../utils/logger";
 
 type UseAssetConvertionLPFeeProps = { chain: Chain };
 

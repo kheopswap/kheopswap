@@ -18,13 +18,8 @@ export default defineConfig({
 			overlay: { initialIsOpen: "error" },
 		}),
 	],
-	resolve: {
-		alias: {
-			src: "/src",
-		},
-	},
 	optimizeDeps: {
-		exclude: ["../packages/papi/.papi"],
+		exclude: ["../.papi"],
 	},
 	define: {
 		"process.env": {}, // workaround WalletConnect provider bug

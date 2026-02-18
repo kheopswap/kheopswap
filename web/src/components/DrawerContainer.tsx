@@ -1,7 +1,7 @@
 import { Dialog } from "@base-ui-components/react/dialog";
-import { cn } from "@kheopswap/utils";
 import CloseIcon from "@w3f/polkadot-icons/solid/Close";
 import type { FC, ReactNode } from "react";
+import { cn } from "../utils/cn";
 
 export const DrawerContainer: FC<{
 	title: ReactNode;

@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
-import { MagicButton } from "src/components";
+import { MagicButton } from "../../components/MagicButton";
 import { useTransaction } from "./TransactionProvider";
 
 type TransactionSubmitButtonProps = PropsWithChildren<{

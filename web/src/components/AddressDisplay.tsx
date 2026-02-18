@@ -2,17 +2,20 @@ import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/24/solid";
 import type { WalletAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
-import { cn, logger, notifyError, shortenAddress } from "@kheopswap/utils";
 import { type FC, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
-import { getAccountName } from "src/util";
 import { useCopyToClipboard } from "usehooks-ts";
 import { isAddress as isEvmAddress } from "viem";
+import { getAccountName } from "../util/getAccountName";
+import { cn } from "../utils/cn";
+import { logger } from "../utils/logger";
+import { notifyError } from "../utils/notifyError";
+import { shortenAddress } from "../utils/shortenAddress";
 import { AccountIcon } from "./AccountIcon";
 import { EthereumIdenticon } from "./EthereumIdenticon";
 import { PolkadotIdenticon } from "./PolkadotIdenticon";
 import { Pulse } from "./Pulse";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
 const AddressAvatar: FC<{
 	address: string;

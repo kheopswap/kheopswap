@@ -1,6 +1,6 @@
-import { DEV } from "@kheopswap/constants";
 import { useCallback, useMemo } from "react";
 import { useNavigate, useParams, useRouteError } from "react-router";
+import { DEV } from "../common/constants";
 
 export const ErrorBoundaryPage = () => {
 	const error = useRouteError();

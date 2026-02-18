@@ -1,10 +1,11 @@
-import type { Token } from "@kheopswap/registry";
-import type { Pool } from "@kheopswap/services/pools";
-import { isBigInt, logger } from "@kheopswap/utils";
 import { useMemo } from "react";
-import { getPoolReserves } from "src/helpers/getPoolReserves";
-import { getAssetConvertPlancks } from "src/util/getAssetConvertPlancks";
+import { getPoolReserves } from "../../../helpers/getPoolReserves";
 import { useBalances } from "../../../hooks/useBalances";
+import type { Token } from "../../../registry/tokens/types";
+import type { Pool } from "../../../services/pools/types";
+import { getAssetConvertPlancks } from "../../../util/getAssetConvertPlancks";
+import { isBigInt } from "../../../utils/isBigInt";
+import { logger } from "../../../utils/logger";
 
 export type PoolWithValuation = Pool & {
 	valuation: bigint | null;

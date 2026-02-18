@@ -1,17 +1,4 @@
 import {
-	getChainIdFromTokenId,
-	parseTokenId,
-	type TokenId,
-} from "@kheopswap/registry";
-import { getBalance$ } from "@kheopswap/services/balances";
-import { getPoolsByChain$ } from "@kheopswap/services/pools";
-import { getCachedObservable$, isBigInt } from "@kheopswap/utils";
-import type { LoadingStatus } from "node_modules/@kheopswap/services/src/common";
-import type {
-	AssetConvertionPoolDef,
-	Pool,
-} from "node_modules/@kheopswap/services/src/pools/types";
-import {
 	combineLatest,
 	map,
 	type Observable,
@@ -19,6 +6,17 @@ import {
 	shareReplay,
 	switchMap,
 } from "rxjs";
+import {
+	getChainIdFromTokenId,
+	parseTokenId,
+} from "../registry/tokens/helpers";
+import type { TokenId } from "../registry/tokens/types";
+import { getBalance$ } from "../services/balances/service";
+import type { LoadingStatus } from "../services/common";
+import { getPoolsByChain$ } from "../services/pools/service";
+import type { AssetConvertionPoolDef, Pool } from "../services/pools/types";
+import { getCachedObservable$ } from "../utils/getCachedObservable";
+import { isBigInt } from "../utils/isBigInt";
 
 const getIsLoading = (...loadingStatuses: LoadingStatus[]) =>
 	loadingStatuses.some((status) => status !== "loaded");

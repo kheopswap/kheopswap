@@ -1,8 +1,8 @@
-import { safeQueryKeyPart } from "@kheopswap/utils";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import type { AnyTransaction } from "src/types";
-import type { TxOptionsWithChargeAssetTxPayment } from "src/util/getTxOptions";
+import type { AnyTransaction } from "../types/transactions";
+import type { TxOptionsWithChargeAssetTxPayment } from "../util/getTxOptions";
+import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 
 type UseEstimateFeeProps = {
 	from: SS58String | null | undefined;

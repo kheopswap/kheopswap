@@ -1,7 +1,4 @@
 import type { WalletAccount } from "@kheopskit/core";
-import type { Token, TokenId } from "@kheopswap/registry";
-import { getBalance$ } from "@kheopswap/services/balances";
-import { getCachedObservable$ } from "@kheopswap/utils";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import {
@@ -13,8 +10,11 @@ import {
 	switchMap,
 	throttleTime,
 } from "rxjs";
-import { getStablePlancks$ } from "src/state";
-import type { AccountBalanceWithStable } from "src/types";
+import type { Token, TokenId } from "../registry/tokens/types";
+import { getBalance$ } from "../services/balances/service";
+import { getStablePlancks$ } from "../state/prices";
+import type { AccountBalanceWithStable } from "../types/balances";
+import { getCachedObservable$ } from "../utils/getCachedObservable";
 
 type UseAccountBalancesWithStablesProps = {
 	tokens: Token[] | TokenId[] | null | undefined;

@@ -1,18 +1,16 @@
 import { useWallets } from "@kheopskit/react";
+import { uniq } from "lodash-es";
+import { useMemo } from "react";
+import { useNativeToken } from "../../../hooks/useNativeToken";
+import { usePoolsByChainId } from "../../../hooks/usePoolsByChainId";
+import { useToken } from "../../../hooks/useToken";
+import { useTokensByChainId } from "../../../hooks/useTokensByChainId";
 import type {
 	TokenAsset,
 	TokenForeignAsset,
 	TokenNative,
-} from "@kheopswap/registry";
-import { uniq } from "lodash-es";
-import { useMemo } from "react";
-import {
-	useNativeToken,
-	usePoolsByChainId,
-	useToken,
-	useTokensByChainId,
-} from "src/hooks";
-import { useRelayChains } from "src/state";
+} from "../../../registry/tokens/types";
+import { useRelayChains } from "../../../state/relay";
 import {
 	type PoolWithPositions,
 	usePoolWithPositions,

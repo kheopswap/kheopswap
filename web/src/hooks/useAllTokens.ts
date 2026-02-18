@@ -1,7 +1,7 @@
-import type { TokenType } from "@kheopswap/registry";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
-import { getAllTokens$ } from "src/state";
+import type { TokenType } from "../registry/tokens/types";
+import { getAllTokens$ } from "../state/tokens";
 
 type UseAllTokensProps = {
 	types?: TokenType[];

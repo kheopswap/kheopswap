@@ -1,4 +1,4 @@
-import { cn } from "@kheopswap/utils";
+import { cn } from "../utils/cn";
 
 export const Styles = {
 	field: cn(
