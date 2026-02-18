@@ -21,11 +21,11 @@ const anchorPositionClass: Record<DrawerAnchor, string> = {
 
 const anchorAnimationClass: Record<DrawerAnchor, string> = {
 	right:
-		"data-[open]:translate-x-0 data-[starting-style]:translate-x-full data-[closed]:translate-x-full",
-	left: "data-[open]:translate-x-0 data-[starting-style]:-translate-x-full data-[closed]:-translate-x-full",
-	top: "data-[open]:translate-y-0 data-[starting-style]:-translate-y-full data-[closed]:-translate-y-full",
+		"data-open:translate-x-0 data-starting-style:translate-x-full data-closed:translate-x-full",
+	left: "data-open:translate-x-0 data-starting-style:-translate-x-full data-closed:-translate-x-full",
+	top: "data-open:translate-y-0 data-starting-style:-translate-y-full data-closed:-translate-y-full",
 	bottom:
-		"data-[open]:translate-y-0 data-[starting-style]:translate-y-full data-[closed]:translate-y-full",
+		"data-open:translate-y-0 data-starting-style:translate-y-full data-closed:translate-y-full",
 };
 
 export const Drawer: FC<DrawerProps> = ({

@@ -1,6 +1,12 @@
 import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
 import { cn } from "@kheopswap/utils";
-import { createContext, type FC, type ReactNode, useContext } from "react";
+import {
+	createContext,
+	type FC,
+	type ReactElement,
+	type ReactNode,
+	useContext,
+} from "react";
 
 type Side = "top" | "right" | "bottom" | "left";
 type Align = "start" | "center" | "end";
@@ -32,11 +38,11 @@ export const Tooltip: FC<{
 
 export const TooltipTrigger: FC<{
 	children: ReactNode;
-	asChild?: boolean;
+	render?: ReactElement<Record<string, unknown>>;
 	className?: string;
 	onClick?: React.MouseEventHandler;
-}> = ({ children, className, onClick }) => (
-	<BaseTooltip.Trigger className={className} onClick={onClick}>
+}> = ({ children, render, className, onClick }) => (
+	<BaseTooltip.Trigger render={render} className={className} onClick={onClick}>
 		{children}
 	</BaseTooltip.Trigger>
 );

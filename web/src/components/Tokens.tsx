@@ -47,7 +47,7 @@ const NormalTokens: FC<TokenProps> = ({
 
 	return (
 		<Tooltip>
-			<TooltipTrigger asChild>
+			<TooltipTrigger render={<span />}>
 				<Pulse
 					as="span"
 					pulse={pulse}
@@ -83,7 +83,7 @@ const TokenPrice: FC<TokenProps> = ({
 
 	return (
 		<Tooltip>
-			<TooltipTrigger asChild>
+			<TooltipTrigger render={<span />}>
 				<Pulse
 					as="span"
 					pulse={pulse}

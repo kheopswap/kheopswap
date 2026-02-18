@@ -30,7 +30,7 @@ export const StablePrice: FC<{
 
 	return (
 		<Tooltip>
-			<TooltipTrigger asChild>
+			<TooltipTrigger render={<span />}>
 				<span className={cn("whitespace-nowrap", className)}>
 					{prefix}
 					{formatDecimals(price, 2)} {stableToken?.symbol}
