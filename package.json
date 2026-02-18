@@ -23,7 +23,7 @@
 		"prepare": "simple-git-hooks"
 	},
 	"simple-git-hooks": {
-		"pre-commit": ".githooks/pre-commit.sh"
+		"pre-commit": "pnpm biome check --staged --error-on-warnings --no-errors-on-unmatched"
 	},
 	"keywords": [],
 	"author": "Kheops",
