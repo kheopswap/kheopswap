@@ -10,7 +10,7 @@ corepack enable
 pnpm install
 
 # optionally, update PAPI metadata from live networks
-# pnpm papi:update
+# pnpm papi update
 
 pnpm dev
 ```

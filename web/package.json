@@ -7,8 +7,7 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"typecheck": "tsc --noEmit -p tsconfig.app.json",
-		"papi:update": "papi update polkadot,kusama,westend,kah,pah,wah"
+		"typecheck": "tsc --noEmit -p tsconfig.app.json"
 	},
 	"dependencies": {
 		"@base-ui-components/react": "1.0.0-rc.0",

@@ -16,7 +16,6 @@
 		"typecheck": "pnpm --filter web typecheck",
 		"check": "biome check --write",
 		"knip": "knip",
-		"papi:update": "papi update",
 		"papi": "papi",
 		"papi:build": "papi --whitelist papi-whitelist.ts",
 		"postinstall": "papi",
