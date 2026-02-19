@@ -1,3 +1,4 @@
+import { logger } from "../../utils/logger";
 import { safeParse, safeStringify } from "../../utils/serialization";
 import { getValidTokenLogo } from "../../utils/tokenLogo";
 import tokensKah from "./generated/tokens.kah.json";
@@ -51,6 +52,14 @@ export const KNOWN_TOKENS_MAP = Object.fromEntries(
 export const TOKENS_OVERRIDES_MAP = Object.fromEntries(
 	TOKENS_OVERRIDES.map((a) => [a.id, normalizeTokenLogo(a)]),
 ) as Record<TokenId, Partial<Token>>;
+
+// Validate that every override id references an existing token
+for (const override of TOKENS_OVERRIDES) {
+	if (!KNOWN_TOKENS_MAP[override.id])
+		logger.warn(
+			`tokens-overrides.json: id "${override.id}" does not match any known token`,
+		);
+}
 
 export const PORTFOLIO_TOKEN_TYPES: TokenType[] = [
 	"native",

@@ -106,16 +106,6 @@
 		"logo": "./img/tokens/TNKR.svg",
 		"verified": true
 	},
-	{
-		"id": "foreign-asset::rah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoB1GEgTwAJiAC+Jo0A=",
-		"logo": "./img/tokens/WND.svg",
-		"verified": true
-	},
-	{
-		"id": "foreign-asset::wah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAlIgGNdREAF9jhoA==",
-		"logo": "./img/tokens/ROC.svg",
-		"verified": true
-	},
 
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA",
@@ -345,13 +335,6 @@
 		"decimals": 18,
 		"name": "PAX Gold (Snowbridge)",
 		"logo": "./img/tokens/PAXG.png"
-	},
-	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8osvKrAGZKpwBWSoAOJzErdBgYABYAMxgIMWSIAHYIHy6ujpgGiABODoD/AF1AoA===",
-		"symbol": "CFG",
-		"decimals": 18,
-		"name": "Centrifuge",
-		"logo": "./img/tokens/CFG.svg?rounded"
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgB2GB8fABYxADYATh8nMXLG5KsAZlKU8rF0GHqADlKnGogarp9hnyHk+r9AgF1AoA===",
