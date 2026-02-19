@@ -33,31 +33,27 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
-import { kah, pah, pasah, wah } from "@polkadot-api/descriptors";
 import lzs from "lz-string";
 import { createClient, type PolkadotClient, type TypedApi } from "polkadot-api";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
 import { getWsProvider } from "polkadot-api/ws-provider";
 import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
+import { DESCRIPTORS_ASSET_HUB } from "../src/registry/chains/descriptors.ts";
 import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
 import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
 import { mapAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapAssetTokensFromEntries.ts";
 import { mapForeignAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapForeignAssetTokensFromEntries.ts";
 import { mapPoolAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapPoolAssetTokensFromEntries.ts";
+import { safeJsonReplacer, safeStringify } from "../src/utils/serialization.ts";
+import { sleep } from "../src/utils/sleep.ts";
 
 // ---------------------------------------------------------------------------
 // Chain & descriptor config
 // ---------------------------------------------------------------------------
 
-const DESCRIPTORS_BY_CHAIN = {
-	pah,
-	kah,
-	wah,
-	pasah,
-} as const;
-
-type ChainId = keyof typeof DESCRIPTORS_BY_CHAIN;
+/** Matches the app's ChainId — derived from the shared descriptors object. */
+type ChainId = keyof typeof DESCRIPTORS_ASSET_HUB;
 
 type RegistryChain = {
 	id: string;
@@ -69,7 +65,7 @@ type ChainConfig = {
 	id: ChainId;
 	name: string;
 	wsUrl: string[];
-	descriptors: (typeof DESCRIPTORS_BY_CHAIN)[ChainId];
+	descriptors: (typeof DESCRIPTORS_ASSET_HUB)[ChainId];
 };
 
 const CHAINS = (
@@ -82,13 +78,13 @@ const CHAINS = (
 )
 	.filter(
 		(chain): chain is RegistryChain & { id: ChainId } =>
-			chain.id in DESCRIPTORS_BY_CHAIN,
+			chain.id in DESCRIPTORS_ASSET_HUB,
 	)
 	.map((chain) => ({
 		id: chain.id,
 		name: chain.name,
 		wsUrl: chain.wsUrl,
-		descriptors: DESCRIPTORS_BY_CHAIN[chain.id],
+		descriptors: DESCRIPTORS_ASSET_HUB[chain.id],
 	}));
 
 /** Output directory – tokens land next to the registry source files. */
@@ -122,38 +118,6 @@ const CLIENT_DESTROY_TIMEOUT_MS = 10_000;
 
 /** Maximum time to wait for Discord webhook notification requests. */
 const DISCORD_NOTIFY_TIMEOUT_MS = 5_000;
-
-// ---------------------------------------------------------------------------
-// JSON serialization helpers (handles bigint + Binary)
-//
-// Must match the app's safeStringify so that token IDs (which embed
-// lz-string–compressed JSON of the location) are identical.
-// ---------------------------------------------------------------------------
-
-const safeStringify = (value: unknown): string => {
-	if (!value) return value?.toString() ?? "";
-	return JSON.stringify(value, (_, v) => {
-		if (typeof v === "bigint") return `bigint:${v.toString()}`;
-		if (v && typeof v === "object" && typeof v.asHex === "function")
-			return `binary:${v.asHex()}`;
-		return v;
-	});
-};
-
-/**
- * Top-level JSON replacer for writing files.
- * Same rules as safeStringify so location objects round-trip correctly.
- */
-const jsonReplacer = (_key: string, value: unknown) => {
-	if (typeof value === "bigint") return `bigint:${value.toString()}`;
-	if (
-		value &&
-		typeof value === "object" &&
-		typeof (value as { asHex?: unknown }).asHex === "function"
-	)
-		return `binary:${(value as { asHex: () => string }).asHex()}`;
-	return value;
-};
 
 // ---------------------------------------------------------------------------
 // TokenNoId shapes (mirrors the app's types, minus `id`)
@@ -193,7 +157,19 @@ function loadErc20Cache(): Erc20Cache {
 
 function saveErc20Cache(cache: Erc20Cache): void {
 	const sorted = Object.fromEntries(
-		Object.entries(cache).sort(([a], [b]) => a.localeCompare(b)),
+		Object.entries(cache)
+			.sort(([a], [b]) => a.localeCompare(b))
+			.map(([key, entry]) => [
+				key,
+				{
+					fetchedAt: entry.fetchedAt,
+					tokenName: entry.tokenName,
+					symbol: entry.symbol,
+					decimals: entry.decimals,
+					...(entry.coingeckoId != null && { coingeckoId: entry.coingeckoId }),
+					...(entry.image != null && { image: entry.image }),
+				},
+			]),
 	);
 	writeFileSync(
 		ERC20_CACHE_PATH,
@@ -222,8 +198,6 @@ function getContractAddress(token: TokenNoId): string | null {
 		return null;
 	}
 }
-
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function destroyClient(
 	client: PolkadotClient | undefined,
@@ -784,8 +758,17 @@ async function refreshErc20Cache(
 					)
 				: undefined;
 
+		const existing = cache[addr];
+		const dataChanged =
+			!existing ||
+			existing.tokenName !== metadata.tokenName ||
+			existing.symbol !== metadata.symbol ||
+			existing.decimals !== metadata.decimals ||
+			existing.coingeckoId !== coingeckoData?.id ||
+			existing.image !== image;
+
 		cache[addr] = {
-			fetchedAt: new Date().toISOString(),
+			fetchedAt: dataChanged ? new Date().toISOString() : existing.fetchedAt,
 			tokenName: metadata.tokenName,
 			symbol: metadata.symbol,
 			decimals: metadata.decimals,
@@ -923,9 +906,7 @@ async function fetchTokensForChain(
 	let client: PolkadotClient | undefined;
 
 	try {
-		client = createClient(
-			withPolkadotSdkCompat(getWsProvider(chain.wsUrl as unknown as string[])),
-		);
+		client = createClient(withPolkadotSdkCompat(getWsProvider(chain.wsUrl)));
 		const api = client.getTypedApi(chain.descriptors);
 
 		// Wait for the chain to be reachable
@@ -1102,7 +1083,7 @@ async function main() {
 			.sort((a, b) => a.id.localeCompare(b.id));
 
 		const filePath = resolve(OUTPUT_DIR, `tokens.${chainId}.json`);
-		const jsonContent = `${JSON.stringify(outputTokens, jsonReplacer, "\t")}\n`;
+		const jsonContent = `${JSON.stringify(outputTokens, safeJsonReplacer, "\t")}\n`;
 		writeFileSync(filePath, jsonContent, "utf-8");
 		console.log(
 			`  [${chainId}] Wrote ${filtered.length} tokens to tokens.${chainId}.json`,

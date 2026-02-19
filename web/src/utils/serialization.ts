@@ -3,19 +3,17 @@ import { Binary } from "polkadot-api";
 import { isBigInt } from "./isBigInt.ts";
 import { isBinary } from "./isBinary.ts";
 
+export const safeJsonReplacer = (_key: string, value: unknown) =>
+	isBigInt(value)
+		? `bigint:${value.toString()}`
+		: isBinary(value)
+			? `binary:${value.asHex()}`
+			: value;
+
 export const safeStringify = (value: unknown, format?: boolean) => {
 	if (!value) return value?.toString() ?? "";
 
-	return JSON.stringify(
-		value,
-		(_, value) =>
-			isBigInt(value)
-				? `bigint:${value.toString()}`
-				: isBinary(value)
-					? `binary:${value.asHex()}`
-					: value,
-		format ? 2 : undefined,
-	);
+	return JSON.stringify(value, safeJsonReplacer, format ? 2 : undefined);
 };
 
 export const safeParse = <T = unknown>(value: string): T => {
