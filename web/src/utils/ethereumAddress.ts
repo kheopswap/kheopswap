@@ -8,8 +8,6 @@ import { fromHex } from "polkadot-api/utils";
 import { isAddress } from "viem";
 import { isValidSs58Address } from "./isValidSs58Address";
 
-export { ss58ToEthereum } from "@polkadot-api/sdk-ink";
-
 const EVM_SUFFIX = new Uint8Array(12).fill(0xee);
 
 const accountIdCodec = AccountId();

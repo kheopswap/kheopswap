@@ -20,7 +20,6 @@
 		"@maskito/react": "^5.1.0",
 		"@noble/hashes": "^1.8.0",
 		"@polkadot-api/descriptors": "file:../.papi/descriptors",
-		"@polkadot-api/sdk-ink": "^0.6.2",
 		"@react-rxjs/core": "^0.10.8",
 		"@reown/appkit": "^1.8.17",
 		"@substrate/connect": "^2.1.8",
