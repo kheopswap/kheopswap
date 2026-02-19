@@ -5,6 +5,7 @@
 		"decimals": 10,
 		"symbol": "DOT",
 		"name": "Polkadot",
+		"logo": "./img/tokens/DOT.svg",
 		"isSufficient": true
 	},
 	{
@@ -13,6 +14,7 @@
 		"decimals": 12,
 		"symbol": "KSM",
 		"name": "Kusama",
+		"logo": "./img/tokens/KSM.svg",
 		"isSufficient": true
 	},
 	{
@@ -21,6 +23,7 @@
 		"decimals": 12,
 		"symbol": "WND",
 		"name": "Westend",
+		"logo": "./img/tokens/WND.svg",
 		"isSufficient": true
 	},
 	{
@@ -29,6 +32,7 @@
 		"decimals": 10,
 		"symbol": "PAS",
 		"name": "Paseo",
+		"logo": "./img/tokens/PAS.png",
 		"isSufficient": true
 	}
 ]

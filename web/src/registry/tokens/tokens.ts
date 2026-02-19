@@ -1,3 +1,4 @@
+import { safeParse, safeStringify } from "../../utils/serialization";
 import { getValidTokenLogo } from "../../utils/tokenLogo";
 import tokensKah from "./generated/tokens.kah.json";
 import tokensPah from "./generated/tokens.pah.json";
@@ -8,13 +9,24 @@ import tokensNative from "./tokens-native.json";
 import tokensOverridesJson from "./tokens-overrides.json";
 import type { Token, TokenId, TokenNoId, TokenType } from "./types";
 
-const TOKENS = [
-	...tokensNative,
-	...tokensPah,
-	...tokensKah,
-	...tokensWah,
-	...tokensPasah,
-] as TokenNoId[];
+const normalizeForeignTokenLocation = (token: TokenNoId): TokenNoId => {
+	if (token.type !== "foreign-asset") return token;
+
+	return {
+		...token,
+		location: safeParse(safeStringify(token.location)),
+	};
+};
+
+const TOKENS = (
+	[
+		...tokensNative,
+		...tokensPah,
+		...tokensKah,
+		...tokensWah,
+		...tokensPasah,
+	] as TokenNoId[]
+).map(normalizeForeignTokenLocation);
 const TOKENS_OVERRIDES = tokensOverridesJson as ({
 	id: TokenId;
 } & Partial<TokenNoId>)[];
