@@ -45,52 +45,46 @@ import sharp from "sharp";
 // Chain & descriptor config
 // ---------------------------------------------------------------------------
 
-const CHAINS = [
-	{
-		id: "pah",
-		name: "Polkadot Asset Hub",
-		wsUrl: [
-			"wss://rpc-asset-hub-polkadot.luckyfriday.io",
-			"wss://sys.ibp.network/asset-hub-polkadot",
-			"wss://asset-hub-polkadot.dotters.network",
-			"wss://polkadot-asset-hub-rpc.polkadot.io",
-		],
-		descriptors: pah,
-	},
-	{
-		id: "kah",
-		name: "Kusama Asset Hub",
-		wsUrl: [
-			"wss://sys.ibp.network/statemine",
-			"wss://kusama-asset-hub-rpc.polkadot.io",
-			"wss://sys.dotters.network/statemine",
-			"wss://rpc-asset-hub-kusama.luckyfriday.io",
-		],
-		descriptors: kah,
-	},
-	{
-		id: "wah",
-		name: "Westend Asset Hub",
-		wsUrl: [
-			"wss://sys.ibp.network/westmint",
-			"wss://sys.dotters.network/westmint",
-			"wss://westend-asset-hub-rpc.polkadot.io",
-		],
-		descriptors: wah,
-	},
-	{
-		id: "pasah",
-		name: "Paseo Asset Hub",
-		wsUrl: [
-			"wss://sys.ibp.network/asset-hub-paseo",
-			"wss://asset-hub-paseo.dotters.network",
-			"wss://pas-rpc.stakeworld.io/assethub",
-		],
-		descriptors: pasah,
-	},
-] as const;
+const DESCRIPTORS_BY_CHAIN = {
+	pah,
+	kah,
+	wah,
+	pasah,
+} as const;
 
-type ChainConfig = (typeof CHAINS)[number];
+type ChainId = keyof typeof DESCRIPTORS_BY_CHAIN;
+
+type RegistryChain = {
+	id: string;
+	name: string;
+	wsUrl: string[];
+};
+
+type ChainConfig = {
+	id: ChainId;
+	name: string;
+	wsUrl: string[];
+	descriptors: (typeof DESCRIPTORS_BY_CHAIN)[ChainId];
+};
+
+const CHAINS = (
+	JSON.parse(
+		readFileSync(
+			resolve(import.meta.dirname, "../src/registry/chains/chains.prod.json"),
+			"utf-8",
+		),
+	) as RegistryChain[]
+)
+	.filter(
+		(chain): chain is RegistryChain & { id: ChainId } =>
+			chain.id in DESCRIPTORS_BY_CHAIN,
+	)
+	.map((chain) => ({
+		id: chain.id,
+		name: chain.name,
+		wsUrl: chain.wsUrl,
+		descriptors: DESCRIPTORS_BY_CHAIN[chain.id],
+	}));
 
 /** Output directory – tokens land next to the registry source files. */
 const OUTPUT_DIR = resolve(import.meta.dirname, "../src/registry/tokens");
@@ -114,6 +108,12 @@ const ETHEREUM_RPC_URLS = [
 	"https://eth.drpc.org",
 	"https://rpc.ankr.com/eth",
 ];
+
+/** Maximum time to wait for client shutdown before continuing. */
+const CLIENT_DESTROY_TIMEOUT_MS = 10_000;
+
+/** Maximum time to wait for Discord webhook notification requests. */
+const DISCORD_NOTIFY_TIMEOUT_MS = 5_000;
 
 // ---------------------------------------------------------------------------
 // JSON serialization helpers (handles bigint + Binary)
@@ -228,6 +228,25 @@ function getContractAddress(token: TokenNoId): string | null {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+async function destroyClient(
+	client: PolkadotClient | undefined,
+	chainId: string,
+): Promise<void> {
+	if (!client) return;
+
+	try {
+		await Promise.race([
+			Promise.resolve(client.destroy()),
+			sleep(CLIENT_DESTROY_TIMEOUT_MS),
+		]);
+	} catch (err) {
+		console.warn(
+			`  [${chainId}] Failed during client destroy:`,
+			err instanceof Error ? err.message : String(err),
+		);
+	}
+}
+
 const truncate = (input: string, maxLength: number): string =>
 	input.length <= maxLength ? input : `${input.slice(0, maxLength - 3)}...`;
 
@@ -236,6 +255,50 @@ const nonFatalWarnings: string[] = [];
 const pushNonFatalWarning = (message: string) => {
 	nonFatalWarnings.push(message);
 };
+
+async function postDiscordWebhook(
+	webhookUrl: string,
+	body: { content: string },
+	label: "failure notification" | "warnings summary",
+): Promise<void> {
+	const controller = new AbortController();
+	const timeoutId = setTimeout(
+		() => controller.abort(),
+		DISCORD_NOTIFY_TIMEOUT_MS,
+	);
+
+	try {
+		const response = await fetch(webhookUrl, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(body),
+			signal: controller.signal,
+		});
+
+		if (!response.ok) {
+			console.error(`[discord] Failed to send ${label} (${response.status})`);
+		}
+	} catch (notificationErr) {
+		if (
+			notificationErr instanceof Error &&
+			notificationErr.name === "AbortError"
+		) {
+			console.error(
+				`[discord] Timed out sending ${label} after ${DISCORD_NOTIFY_TIMEOUT_MS}ms`,
+			);
+			return;
+		}
+
+		console.error(
+			`[discord] Failed to send ${label}:`,
+			notificationErr instanceof Error
+				? notificationErr.message
+				: String(notificationErr),
+		);
+	} finally {
+		clearTimeout(timeoutId);
+	}
+}
 
 async function notifyDiscordFailure(error: unknown): Promise<void> {
 	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
@@ -263,25 +326,7 @@ async function notifyDiscordFailure(error: unknown): Promise<void> {
 		].join("\n"),
 	};
 
-	try {
-		const response = await fetch(webhookUrl, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(body),
-		});
-		if (!response.ok) {
-			console.error(
-				`[discord] Failed to send failure notification (${response.status})`,
-			);
-		}
-	} catch (notificationErr) {
-		console.error(
-			"[discord] Failed to send failure notification:",
-			notificationErr instanceof Error
-				? notificationErr.message
-				: String(notificationErr),
-		);
-	}
+	await postDiscordWebhook(webhookUrl, body, "failure notification");
 }
 
 async function notifyDiscordWarningsSummary(warnings: string[]): Promise<void> {
@@ -309,25 +354,7 @@ async function notifyDiscordWarningsSummary(warnings: string[]): Promise<void> {
 		].join("\n"),
 	};
 
-	try {
-		const response = await fetch(webhookUrl, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(body),
-		});
-		if (!response.ok) {
-			console.error(
-				`[discord] Failed to send warnings summary (${response.status})`,
-			);
-		}
-	} catch (notificationErr) {
-		console.error(
-			"[discord] Failed to send warnings summary:",
-			notificationErr instanceof Error
-				? notificationErr.message
-				: String(notificationErr),
-		);
-	}
+	await postDiscordWebhook(webhookUrl, body, "warnings summary");
 }
 
 function getTokenId(token: TokenNoId): string {
@@ -937,14 +964,18 @@ async function fetchTokensForChain(
 
 		// Wait for the chain to be reachable
 		console.log(`  [${chain.id}] Waiting for first block...`);
+		const waitForBlockTimeout = new Promise<never>((_, reject) => {
+			const timerId = setTimeout(
+				() => reject(new Error(`Timeout waiting for ${chain.id}`)),
+				timeout,
+			);
+			controller.signal.addEventListener("abort", () => clearTimeout(timerId), {
+				once: true,
+			});
+		});
 		await Promise.race([
 			firstValueFrom(client.bestBlocks$),
-			new Promise<never>((_, reject) =>
-				setTimeout(
-					() => reject(new Error(`Timeout waiting for ${chain.id}`)),
-					timeout,
-				),
-			),
+			waitForBlockTimeout,
 		]);
 		console.log(`  [${chain.id}] Connected`);
 
@@ -986,7 +1017,8 @@ async function fetchTokensForChain(
 		return [];
 	} finally {
 		clearTimeout(timer);
-		client?.destroy();
+		controller.abort();
+		await destroyClient(client, chain.id);
 	}
 }
 
@@ -1119,8 +1151,12 @@ async function main() {
 	await notifyDiscordWarningsSummary(nonFatalWarnings);
 }
 
-main().catch(async (err) => {
-	console.error("Fatal error:", err);
-	await notifyDiscordFailure(err);
-	process.exit(1);
-});
+main()
+	.then(() => {
+		process.exit(0);
+	})
+	.catch(async (err) => {
+		console.error("Fatal error:", err);
+		await notifyDiscordFailure(err);
+		process.exit(1);
+	});
