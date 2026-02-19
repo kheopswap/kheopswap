@@ -1,4 +1,4 @@
-import { type FC, useMemo, useState } from "react";
+import { type FC, useMemo, useRef, useState } from "react";
 import { useToken } from "../hooks/useToken";
 import { getChainById } from "../registry/chains/chains";
 import type { Token, TokenId } from "../registry/tokens/types";
@@ -16,13 +16,16 @@ const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 		() => (token ? getChainById(token.chainId) : null),
 		[token],
 	);
-	const logo = useMemo(
-		() => getValidTokenLogo(token?.logo) ?? FALLBACK_LOGO_SRC,
-		[token?.logo],
-	);
-	const logoSrc = logoLoadError
-		? FALLBACK_LOGO_SRC
-		: (logo ?? FALLBACK_LOGO_SRC);
+	const logo = useMemo(() => getValidTokenLogo(token?.logo), [token?.logo]);
+
+	// Reset error state when the logo URL changes (e.g. background watcher fills it in)
+	const prevLogoRef = useRef(logo);
+	if (prevLogoRef.current !== logo) {
+		prevLogoRef.current = logo;
+		if (logoLoadError) setLogoLoadError(false);
+	}
+
+	const logoSrc = logoLoadError || !logo ? FALLBACK_LOGO_SRC : logo;
 
 	return (
 		<div className={cn("relative size-6 shrink-0", className)}>
@@ -35,11 +38,10 @@ const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 					setLogoLoadError(true);
 					event.currentTarget.src = FALLBACK_LOGO_SRC;
 				}}
-				onLoad={() => setLogoLoadError(false)}
 				className={cn(
 					"size-full",
 					logo?.endsWith("?rounded") && "rounded-full",
-					logo === FALLBACK_LOGO_SRC && "grayscale brightness-75",
+					!logo && "grayscale brightness-75",
 				)}
 			/>
 			{chain && chain.logo !== token?.logo && (

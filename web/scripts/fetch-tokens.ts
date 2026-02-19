@@ -2,8 +2,12 @@
  * Standalone Node.js script to fetch all tokens from Asset Hub chains via RPC
  * and write one JSON file per chain to src/registry/tokens/.
  *
- * Each output file is a flat TokenNoId[] array (no `id` field – the app
- * computes IDs at import time).
+ * Each output file is a flat token array with deterministic `id` fields,
+ * sorted lexicographically by `id`.
+ *
+ * Generated files (`tokens.<networkId>.json`) are read-only snapshots and
+ * must not be edited manually. Manual changes belong in tokens-overrides.json
+ * and must target tokens by exact `id`.
  *
  * Ethereum-origin foreign assets (Snowbridge) are enriched by calling the
  * ERC20 contract's name(), symbol() and decimals() via a public Ethereum
@@ -19,13 +23,23 @@
  *   node --experimental-transform-types scripts/fetch-tokens.ts
  */
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	copyFileSync,
+	existsSync,
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	unlinkSync,
+	writeFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import { kah, pah, pasah, wah } from "@polkadot-api/descriptors";
+import lzs from "lz-string";
 import { createClient, type PolkadotClient, type TypedApi } from "polkadot-api";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
 import { getWsProvider } from "polkadot-api/ws-provider/node";
 import { firstValueFrom } from "rxjs";
+import sharp from "sharp";
 
 // ---------------------------------------------------------------------------
 // Chain & descriptor config
@@ -83,6 +97,13 @@ const OUTPUT_DIR = resolve(import.meta.dirname, "../src/registry/tokens");
 
 /** ERC20 metadata cache file path (committed to repo). */
 const ERC20_CACHE_PATH = resolve(import.meta.dirname, "erc20-cache.json");
+
+/** Downloaded CoinGecko logo directory (under web/public). */
+const COINGECKO_LOGO_DIR_ABS = resolve(
+	import.meta.dirname,
+	"../public/img/tokens/coingecko",
+);
+const COINGECKO_LOGO_DIR_REL = "/img/tokens/coingecko";
 
 /** Re-fetch ERC20 metadata only when the cached entry is older than this. */
 const ERC20_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -142,7 +163,8 @@ interface Erc20CacheEntry {
 	tokenName: string;
 	symbol: string;
 	decimals: number;
-	image: string;
+	coingeckoId?: string;
+	image?: string;
 }
 
 type Erc20Cache = Record<string, Erc20CacheEntry>;
@@ -205,6 +227,270 @@ function getContractAddress(token: TokenNoId): string | null {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+const truncate = (input: string, maxLength: number): string =>
+	input.length <= maxLength ? input : `${input.slice(0, maxLength - 3)}...`;
+
+const nonFatalWarnings: string[] = [];
+
+const pushNonFatalWarning = (message: string) => {
+	nonFatalWarnings.push(message);
+};
+
+async function notifyDiscordFailure(error: unknown): Promise<void> {
+	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+	if (!webhookUrl) return;
+
+	const message =
+		error instanceof Error
+			? `${error.name}: ${error.message}\n${error.stack ?? ""}`
+			: String(error);
+	const runUrl =
+		process.env.GITHUB_SERVER_URL &&
+		process.env.GITHUB_REPOSITORY &&
+		process.env.GITHUB_RUN_ID
+			? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+			: null;
+
+	const body = {
+		content: [
+			"🚨 `pnpm fetch-tokens` failed",
+			`Repository: ${process.env.GITHUB_REPOSITORY ?? "local"}`,
+			runUrl ? `Run: ${runUrl}` : "Run: local",
+			"```",
+			truncate(message, 1500),
+			"```",
+		].join("\n"),
+	};
+
+	try {
+		const response = await fetch(webhookUrl, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(body),
+		});
+		if (!response.ok) {
+			console.error(
+				`[discord] Failed to send failure notification (${response.status})`,
+			);
+		}
+	} catch (notificationErr) {
+		console.error(
+			"[discord] Failed to send failure notification:",
+			notificationErr instanceof Error
+				? notificationErr.message
+				: String(notificationErr),
+		);
+	}
+}
+
+async function notifyDiscordWarningsSummary(warnings: string[]): Promise<void> {
+	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+	if (!webhookUrl) return;
+	if (warnings.length === 0) return;
+
+	const uniqueWarnings = [...new Set(warnings)];
+	const summary = uniqueWarnings.map((line) => `- ${line}`).join("\n");
+	const runUrl =
+		process.env.GITHUB_SERVER_URL &&
+		process.env.GITHUB_REPOSITORY &&
+		process.env.GITHUB_RUN_ID
+			? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+			: null;
+
+	const body = {
+		content: [
+			"⚠️ `pnpm fetch-tokens` completed with warnings",
+			`Repository: ${process.env.GITHUB_REPOSITORY ?? "local"}`,
+			runUrl ? `Run: ${runUrl}` : "Run: local",
+			"```",
+			truncate(summary, 1500),
+			"```",
+		].join("\n"),
+	};
+
+	try {
+		const response = await fetch(webhookUrl, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(body),
+		});
+		if (!response.ok) {
+			console.error(
+				`[discord] Failed to send warnings summary (${response.status})`,
+			);
+		}
+	} catch (notificationErr) {
+		console.error(
+			"[discord] Failed to send warnings summary:",
+			notificationErr instanceof Error
+				? notificationErr.message
+				: String(notificationErr),
+		);
+	}
+}
+
+function getTokenId(token: TokenNoId): string {
+	switch (token.type) {
+		case "native":
+			return `native::${token.chainId}`;
+		case "asset":
+			return `asset::${token.chainId}::${token.assetId}`;
+		case "pool-asset":
+			return `pool-asset::${token.chainId}::${token.poolAssetId}`;
+		case "foreign-asset":
+			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}`;
+		default:
+			throw new Error(`Unsupported token type: ${String(token.type)}`);
+	}
+}
+
+function getEthereumContractAddresses(tokens: TokenNoId[]): string[] {
+	const addresses = new Set<string>();
+	for (const token of tokens) {
+		if (token.type !== "foreign-asset" || !isEthereumOrigin(token)) continue;
+		const addr = getContractAddress(token);
+		if (addr) addresses.add(addr);
+	}
+	return [...addresses];
+}
+
+function sanitizeFileNamePart(input: string): string {
+	return input
+		.toLowerCase()
+		.replace(/[^a-z0-9-_]/g, "-")
+		.replace(/-+/g, "-")
+		.replace(/^-|-$/g, "");
+}
+
+function getCoinGeckoLogoRelativePath(coingeckoId: string): string {
+	return `${COINGECKO_LOGO_DIR_REL}/${sanitizeFileNamePart(coingeckoId)}.webp`;
+}
+
+function getCoinGeckoLogoFilePath(coingeckoId: string): string {
+	return resolve(
+		COINGECKO_LOGO_DIR_ABS,
+		`${sanitizeFileNamePart(coingeckoId)}.webp`,
+	);
+}
+
+async function downloadCoinGeckoLogoAsWebp(
+	coingeckoId: string,
+	imageUrl: string,
+): Promise<string | undefined> {
+	if (!imageUrl) return undefined;
+	if (!/^https?:\/\//.test(imageUrl)) return imageUrl;
+
+	mkdirSync(COINGECKO_LOGO_DIR_ABS, { recursive: true });
+
+	const relativePath = getCoinGeckoLogoRelativePath(coingeckoId);
+	const filePath = getCoinGeckoLogoFilePath(coingeckoId);
+
+	if (existsSync(filePath)) return relativePath;
+
+	try {
+		const response = await fetch(imageUrl);
+		if (!response.ok) return undefined;
+
+		const sourceBuffer = Buffer.from(await response.arrayBuffer());
+		const webpBuffer = await sharp(sourceBuffer)
+			.webp({ quality: 82 })
+			.toBuffer();
+		writeFileSync(filePath, webpBuffer);
+		return relativePath;
+	} catch {
+		return undefined;
+	}
+}
+
+async function migrateCachedImagesToLocal(
+	cache: Erc20Cache,
+	tokens: TokenNoId[],
+	coingeckoApiKey: string | undefined,
+): Promise<void> {
+	const addresses = getEthereumContractAddresses(tokens);
+	let migrated = 0;
+	let copied = 0;
+
+	for (const addr of addresses) {
+		const cached = cache[addr];
+		if (!cached?.image) continue;
+
+		let coingeckoId = cached.coingeckoId;
+		if (!coingeckoId) {
+			const coingeckoData = await fetchCoinGeckoTokenData(
+				addr,
+				coingeckoApiKey,
+			);
+			coingeckoId = coingeckoData?.id;
+			if (coingeckoId) {
+				cached.coingeckoId = coingeckoId;
+				cache[addr] = cached;
+			}
+		}
+
+		if (!coingeckoId) continue;
+
+		const expectedImagePath = getCoinGeckoLogoRelativePath(coingeckoId);
+		if (cached.image === expectedImagePath) continue;
+
+		if (/^https?:\/\//.test(cached.image)) {
+			const localLogo = await downloadCoinGeckoLogoAsWebp(
+				coingeckoId,
+				cached.image,
+			);
+			if (!localLogo) continue;
+
+			cache[addr] = { ...cached, image: localLogo, coingeckoId };
+			migrated++;
+			continue;
+		}
+
+		if (!cached.image.startsWith(`${COINGECKO_LOGO_DIR_REL}/`)) continue;
+
+		const sourcePath = resolve(import.meta.dirname, `../public${cached.image}`);
+		const targetPath = getCoinGeckoLogoFilePath(coingeckoId);
+
+		if (!existsSync(sourcePath)) continue;
+		if (!existsSync(targetPath)) {
+			copyFileSync(sourcePath, targetPath);
+			copied++;
+		}
+
+		cache[addr] = { ...cached, image: expectedImagePath, coingeckoId };
+	}
+
+	if (migrated > 0) {
+		console.log(
+			`  [erc20] Migrated ${migrated} cached logo URL(s) to local WebP`,
+		);
+	}
+	if (copied > 0) {
+		console.log(
+			`  [erc20] Renamed ${copied} cached local logo(s) to CoinGecko IDs`,
+		);
+	}
+}
+
+function cleanupUnusedCoinGeckoLogos(cache: Erc20Cache): void {
+	if (!existsSync(COINGECKO_LOGO_DIR_ABS)) return;
+
+	const usedFiles = new Set(
+		Object.values(cache)
+			.map((entry) => entry.image)
+			.filter((image): image is string =>
+				Boolean(image?.startsWith(`${COINGECKO_LOGO_DIR_REL}/`)),
+			)
+			.map((image) => image.split("/").at(-1) ?? ""),
+	);
+
+	for (const fileName of readdirSync(COINGECKO_LOGO_DIR_ABS)) {
+		if (!fileName.endsWith(".webp")) continue;
+		if (usedFiles.has(fileName)) continue;
+
+		unlinkSync(resolve(COINGECKO_LOGO_DIR_ABS, fileName));
+	}
+}
 
 // ---------------------------------------------------------------------------
 // ERC20 RPC helpers – call name(), symbol(), decimals() on Ethereum mainnet
@@ -330,19 +616,19 @@ const COINGECKO_BUDGET_PER_RUN =
 let coingeckoCalls = 0;
 
 /**
- * Fetch the logo URL for an Ethereum token from CoinGecko's free API.
+ * Fetch CoinGecko token metadata for an Ethereum contract.
  * When an API key is provided it is sent as `x-cg-demo-api-key` header.
  * Retries with exponential backoff on 429 (rate limited).
- * Returns an empty string if the token is unknown, budget is exhausted,
+ * Returns undefined if the token is unknown, budget is exhausted,
  * or all retries fail.
  */
-async function fetchCoinGeckoImage(
+async function fetchCoinGeckoTokenData(
 	contractAddress: string,
 	apiKey: string | undefined,
-): Promise<string> {
+): Promise<{ id?: string; imageUrl?: string } | undefined> {
 	if (coingeckoCalls >= COINGECKO_BUDGET_PER_RUN) {
 		console.log("  [coingecko] Budget exhausted, skipping remaining logos");
-		return "";
+		return undefined;
 	}
 
 	const url = `https://api.coingecko.com/api/v3/coins/ethereum/contract/${contractAddress}`;
@@ -364,20 +650,39 @@ async function fetchCoinGeckoImage(
 				console.log(
 					`  [coingecko] Rate limited, retrying in ${backoff / 1000}s...`,
 				);
+				if (attempt === COINGECKO_MAX_RETRIES) {
+					pushNonFatalWarning(
+						`[coingecko] ${contractAddress}: rate limited after ${COINGECKO_MAX_RETRIES + 1} attempts`,
+					);
+				}
 				await sleep(backoff);
 				continue;
 			}
 
-			if (!res.ok) return "";
+			if (!res.ok) {
+				pushNonFatalWarning(
+					`[coingecko] ${contractAddress}: HTTP ${res.status}`,
+				);
+				return undefined;
+			}
 			const json = (await res.json()) as {
+				id?: string;
 				image?: { large?: string; small?: string; thumb?: string };
 			};
-			return json.image?.large ?? json.image?.small ?? "";
-		} catch {
-			return "";
+			return {
+				id: json.id,
+				imageUrl: json.image?.large ?? json.image?.small,
+			};
+		} catch (err) {
+			if (attempt === COINGECKO_MAX_RETRIES) {
+				pushNonFatalWarning(
+					`[coingecko] ${contractAddress}: ${err instanceof Error ? err.message : String(err)}`,
+				);
+			}
+			return undefined;
 		}
 	}
-	return "";
+	return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -394,16 +699,10 @@ async function refreshErc20Cache(
 	tokens: TokenNoId[],
 	coingeckoApiKey: string | undefined,
 ): Promise<void> {
-	// Collect unique contract addresses from Ethereum-origin foreign assets
-	const addresses = new Set<string>();
-	for (const token of tokens) {
-		if (token.type !== "foreign-asset" || !isEthereumOrigin(token)) continue;
-		const addr = getContractAddress(token);
-		if (addr) addresses.add(addr);
-	}
+	const addresses = getEthereumContractAddresses(tokens);
 
 	const now = Date.now();
-	const staleAddresses = [...addresses].filter((addr) => {
+	const staleAddresses = addresses.filter((addr) => {
 		const entry = cache[addr];
 		if (!entry) return true;
 		return now - new Date(entry.fetchedAt).getTime() > ERC20_MAX_AGE_MS;
@@ -425,6 +724,11 @@ async function refreshErc20Cache(
 	}> = [];
 	for (const addr of staleAddresses) {
 		const metadata = await fetchErc20Metadata(addr).catch(() => null);
+		if (!metadata) {
+			pushNonFatalWarning(
+				`[erc20] ${addr}: metadata fetch failed or contract is not valid ERC20`,
+			);
+		}
 		metadataResults.push({ addr, metadata });
 		// Small delay to avoid public RPC rate limits
 		await sleep(200);
@@ -443,13 +747,21 @@ async function refreshErc20Cache(
 
 		// Rate-limit CoinGecko (skip delay before first call)
 		if (fetched > 0) await sleep(delayMs);
-		const image = await fetchCoinGeckoImage(addr, coingeckoApiKey);
+		const coingeckoData = await fetchCoinGeckoTokenData(addr, coingeckoApiKey);
+		const image =
+			coingeckoData?.id && coingeckoData?.imageUrl
+				? await downloadCoinGeckoLogoAsWebp(
+						coingeckoData.id,
+						coingeckoData.imageUrl,
+					)
+				: undefined;
 
 		cache[addr] = {
 			fetchedAt: new Date().toISOString(),
 			tokenName: metadata.tokenName,
 			symbol: metadata.symbol,
 			decimals: metadata.decimals,
+			coingeckoId: coingeckoData?.id,
 			image,
 		};
 		fetched++;
@@ -650,9 +962,10 @@ async function fetchTokensForChain(
 				const result = await (fetcher as () => Promise<TokenNoId[]>)();
 				tokens.push(...result);
 			} catch (err) {
-				console.error(
-					`  [${chain.id}] Failed to fetch ${label}:`,
-					err instanceof Error ? err.message : err,
+				const message = err instanceof Error ? err.message : String(err);
+				console.error(`  [${chain.id}] Failed to fetch ${label}:`, message);
+				pushNonFatalWarning(
+					`[${chain.id}] Failed to fetch ${label}: ${message}`,
 				);
 			}
 		}
@@ -667,10 +980,9 @@ async function fetchTokensForChain(
 		);
 		return tokens;
 	} catch (err) {
-		console.error(
-			`  [${chain.id}] Error:`,
-			err instanceof Error ? err.message : err,
-		);
+		const message = err instanceof Error ? err.message : String(err);
+		console.error(`  [${chain.id}] Error:`, message);
+		pushNonFatalWarning(`[${chain.id}] RPC/connectivity error: ${message}`);
 		return [];
 	} finally {
 		clearTimeout(timer);
@@ -708,7 +1020,9 @@ Environment:
   COINGECKO_API_KEY        CoinGecko Demo API key (optional, improves rate limits).
                            Set in web/.env.local for local runs,
                            or as a GitHub secret for CI.
-	COINGECKO_BUDGET_PER_RUN Maximum CoinGecko calls per run (optional, default: 500).
+	DISCORD_WEBHOOK_URL      Discord webhook URL (optional).
+													 Sends an error notification when the script fails.
+  COINGECKO_BUDGET_PER_RUN Maximum CoinGecko calls per run (optional, default: 500).
 
 Output files are written to src/registry/tokens/tokens.<chainId>.json`);
 				process.exit(0);
@@ -726,10 +1040,9 @@ async function main() {
 		: [...CHAINS];
 
 	if (chainsToFetch.length === 0) {
-		console.error(
+		throw new Error(
 			`No matching chains found. Available: ${CHAINS.map((c) => c.id).join(", ")}`,
 		);
-		process.exit(1);
 	}
 
 	console.log(
@@ -742,7 +1055,13 @@ async function main() {
 	const tokensByChain = new Map<string, TokenNoId[]>();
 	for (const chain of chainsToFetch) {
 		const tokens = await fetchTokensForChain(chain, timeout);
-		if (tokens.length > 0) tokensByChain.set(chain.id, tokens);
+		if (tokens.length > 0) {
+			tokensByChain.set(chain.id, tokens);
+		} else {
+			pushNonFatalWarning(
+				`[${chain.id}] No tokens written (chain unavailable or fetch failed)`,
+			);
+		}
 	}
 
 	// 2. ERC20 + CoinGecko enrichment for Ethereum-origin foreign assets
@@ -754,6 +1073,8 @@ async function main() {
 		`\n[erc20] Enriching Ethereum-origin tokens via ERC20 RPC + CoinGecko${coingeckoApiKey ? " (with API key)" : ""}`,
 	);
 	await refreshErc20Cache(erc20Cache, allTokens, coingeckoApiKey);
+	await migrateCachedImagesToLocal(erc20Cache, allTokens, coingeckoApiKey);
+	cleanupUnusedCoinGeckoLogos(erc20Cache);
 	saveErc20Cache(erc20Cache);
 
 	// Apply cached data (even without fresh fetches, the cache may have data from prior runs)
@@ -768,8 +1089,22 @@ async function main() {
 			return true;
 		});
 
+		const outputTokens = filtered
+			.map((token) => {
+				const withId = {
+					...token,
+					id: getTokenId(token),
+				} as TokenNoId & { id: string; logo?: string };
+				if (!withId.logo) {
+					const { logo: _, ...rest } = withId;
+					return rest;
+				}
+				return withId;
+			})
+			.sort((a, b) => a.id.localeCompare(b.id));
+
 		const filePath = resolve(OUTPUT_DIR, `tokens.${chainId}.json`);
-		const jsonContent = `${JSON.stringify(filtered, jsonReplacer, "\t")}\n`;
+		const jsonContent = `${JSON.stringify(outputTokens, jsonReplacer, "\t")}\n`;
 		writeFileSync(filePath, jsonContent, "utf-8");
 		console.log(
 			`  [${chainId}] Wrote ${filtered.length} tokens to tokens.${chainId}.json`,
@@ -781,10 +1116,11 @@ async function main() {
 		`\nDone! Wrote ${totalTokens} tokens across ${tokensByChain.size} file(s).`,
 	);
 
-	process.exit(0);
+	await notifyDiscordWarningsSummary(nonFatalWarnings);
 }
 
-main().catch((err) => {
+main().catch(async (err) => {
 	console.error("Fatal error:", err);
+	await notifyDiscordFailure(err);
 	process.exit(1);
 });

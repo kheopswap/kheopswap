@@ -5,7 +5,6 @@
 		"decimals": 10,
 		"symbol": "DOT",
 		"name": "Polkadot",
-		"logo": "",
 		"isSufficient": true
 	},
 	{
@@ -14,7 +13,6 @@
 		"decimals": 12,
 		"symbol": "KSM",
 		"name": "Kusama",
-		"logo": "",
 		"isSufficient": true
 	},
 	{
@@ -23,7 +21,6 @@
 		"decimals": 12,
 		"symbol": "WND",
 		"name": "Westend",
-		"logo": "",
 		"isSufficient": true
 	},
 	{
@@ -32,7 +29,6 @@
 		"decimals": 10,
 		"symbol": "PAS",
 		"name": "Paseo",
-		"logo": "",
 		"isSufficient": true
 	}
 ]

@@ -17,7 +17,7 @@ export type TokenNativeNoId = {
 	decimals: number;
 	symbol: string;
 	name: string;
-	logo: string;
+	logo?: string;
 	verified: undefined;
 	isSufficient: true;
 };
@@ -28,7 +28,7 @@ export type TokenAssetNoId = {
 	decimals: number;
 	symbol: string;
 	name: string;
-	logo: string;
+	logo?: string;
 	assetId: number;
 	verified: boolean;
 	isSufficient: boolean;
@@ -40,7 +40,7 @@ export type TokenPoolAssetNoId = {
 	decimals: number; // TODO set to 0
 	symbol: string; // TODO remove
 	name: string; // TODO remove
-	logo: string; // TODO remove
+	logo?: string; // TODO remove
 	poolAssetId: number;
 	verified: undefined;
 	isSufficient: false;
@@ -52,7 +52,7 @@ export type TokenForeignAssetNoId = {
 	decimals: number; // TODO set to 0
 	symbol: string; // TODO remove
 	name: string; // TODO remove
-	logo: string; // TODO remove
+	logo?: string; // TODO remove
 	location: XcmV5Multilocation;
 	verified: boolean;
 	isSufficient: boolean;
