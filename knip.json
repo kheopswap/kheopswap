@@ -6,7 +6,7 @@
 			"project": []
 		},
 		"web": {
-			"entry": ["src/main.tsx"],
+			"entry": ["src/main.tsx", "scripts/fetch-tokens.ts"],
 			"project": ["src/**/*.{ts,tsx}"],
 			"ignoreDependencies": ["tailwindcss"],
 			"ignore": ["src/types/helpers.ts"]
