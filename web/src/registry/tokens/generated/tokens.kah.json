@@ -1,0 +1,3256 @@
+[
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "DOG",
+		"name": "Polkadog",
+		"assetId": 0,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::0"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 14,
+		"symbol": "L T",
+		"name": "Listen Token",
+		"assetId": 1,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "USDC",
+		"name": "USDC",
+		"assetId": 10,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::10"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "Chralt",
+		"name": "Chralt",
+		"assetId": 100,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::100"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "SPARK",
+		"name": "SPARK TOKEN",
+		"assetId": 1000,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1000"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "---",
+		"name": " ---",
+		"assetId": 101,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::101"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "DRX",
+		"name": "DREx distributed renewable ",
+		"assetId": 102,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::102"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "USDT",
+		"name": "USDT",
+		"assetId": 11,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::11"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "JAM",
+		"name": "JAM DUNA on Kusama",
+		"assetId": 1107,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1107"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "NO1",
+		"name": "NO1",
+		"assetId": 111,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::111"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "MTVD",
+		"name": "Mantiev Token",
+		"assetId": 1111,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1111"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "KVC",
+		"name": "1KV.CLUB",
+		"assetId": 11111,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::11111"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "OAT",
+		"name": "Other Asset",
+		"assetId": 1121,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1121"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "XEN",
+		"name": "XEntropy",
+		"assetId": 1123,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1123"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "WITEK",
+		"name": "WitekCoin",
+		"assetId": 1155,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1155"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "BUSD",
+		"name": "BUSD",
+		"assetId": 12,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::12"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "OAT",
+		"name": "Other Asset Token",
+		"assetId": 120,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::120"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "GOD",
+		"name": "GOD",
+		"assetId": 1225,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1225"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "NFT",
+		"name": "NFT",
+		"assetId": 123,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::123"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "KSM",
+		"name": "Kusama",
+		"assetId": 1234,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1234"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "DREX",
+		"name": "Drexall",
+		"assetId": 12345,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::12345"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "DMX",
+		"name": "DummyXC20",
+		"assetId": 123456,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::123456"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 13,
+		"symbol": "LN",
+		"name": "LuckyNumber",
+		"assetId": 13,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::13"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "GCT",
+		"name": "Gacy Test",
+		"assetId": 1311,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1311"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "TACP",
+		"name": "TestACP",
+		"assetId": 1313,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1313"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 3,
+		"symbol": "DMO",
+		"name": "Demo",
+		"assetId": 131313,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::131313"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "TIP",
+		"name": "Test In Prod",
+		"assetId": 1337,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1337"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "Abc",
+		"name": "Abc",
+		"assetId": 138,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::138"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "DOT",
+		"name": "Polkadot",
+		"assetId": 14,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::14"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "HYDR",
+		"name": "Hydrogen line",
+		"assetId": 1420,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1420"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "SPOT",
+		"name": "Spot access token",
+		"assetId": 1441,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1441"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "Web3",
+		"name": "Web3",
+		"assetId": 15,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::15"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "bcd",
+		"name": "bcd",
+		"assetId": 1526,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1526"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "ARIS",
+		"name": "PolarisDAO",
+		"assetId": 16,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::16"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "STRGZN",
+		"name": "Stargazing",
+		"assetId": 1607,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1607"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "Tokens",
+		"name": "Tokens",
+		"assetId": 168,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::168"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "ali",
+		"name": "ali",
+		"assetId": 1688,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1688"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "MEME",
+		"name": "MEME",
+		"assetId": 17,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::17"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "KST",
+		"name": "Kusama Test",
+		"assetId": 177,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::177"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "HEI",
+		"name": "HEIHEI",
+		"assetId": 18,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::18"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "ZLK",
+		"name": "Zenlink Network Token",
+		"assetId": 188,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::188"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 5,
+		"symbol": "BKNRY",
+		"name": "BABY KNRY",
+		"assetId": 1899,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1899"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "SHOT",
+		"name": "Shot",
+		"assetId": 19,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::19"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "USDt",
+		"name": "Tether USD",
+		"assetId": 1984,
+		"verified": false,
+		"isSufficient": true,
+		"id": "asset::kah::1984"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 3,
+		"symbol": "USDt",
+		"name": "Tether USD",
+		"assetId": 19840,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::19840"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 16,
+		"symbol": "web3",
+		"name": "Jeff3",
+		"assetId": 1985,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1985"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "ADVERT2",
+		"name": "Fanaria - Most Advanced NFT",
+		"assetId": 1999,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::1999"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "PNN",
+		"name": "Polkanuannuan",
+		"assetId": 2,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "BFKK",
+		"name": "Berlin FKK Paradise😎",
+		"assetId": 20,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::20"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 5,
+		"symbol": "SIX",
+		"name": "HEINEKEN",
+		"assetId": 200,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::200"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "USDT",
+		"name": "TetherUSDT",
+		"assetId": 2000,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2000"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "WAVE",
+		"name": "wave network",
+		"assetId": 2021,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2021"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "FLMG",
+		"name": "Flamingo",
+		"assetId": 2025,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2025"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "RWS",
+		"name": "Robonomics web Services",
+		"assetId": 2048,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2048"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "Android",
+		"name": "DoAndroidsDreamOfElectricSheep?",
+		"assetId": 2049,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2049"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 9,
+		"symbol": "CUT",
+		"name": "Carbon Unit Token",
+		"assetId": 2050,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2050"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "XRT",
+		"name": "Robonomics",
+		"assetId": 2077,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2077"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "ELEV",
+		"name": "ELEVATE_DAO",
+		"assetId": 21,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::21"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "LOVE",
+		"name": "LOVE",
+		"assetId": 214,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::214"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "STH",
+		"name": "Smoothie",
+		"assetId": 22,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::22"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "STM",
+		"name": "STATEMINE",
+		"assetId": 220204,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::220204"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 3,
+		"symbol": "RON",
+		"name": "RON",
+		"assetId": 22060,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::22060"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "PNEO",
+		"name": "Planet Neo Token",
+		"assetId": 222,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::222"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "BILL",
+		"name": "BILLCOIN",
+		"assetId": 223,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::223"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "SIK",
+		"name": "SikCoin",
+		"assetId": 224,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::224"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "ETAR",
+		"name": "Educational Tarantula",
+		"assetId": 2284739,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2284739"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 3,
+		"symbol": "KOJO",
+		"name": "DLTKOJO",
+		"assetId": 23,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::23"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "Tsn",
+		"name": "Testiranje",
+		"assetId": 2323,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2323"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 1,
+		"symbol": "test",
+		"name": "PolkaTest",
+		"assetId": 24,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::24"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "BABE",
+		"name": "Polkababes",
+		"assetId": 25,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::25"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "BLACK",
+		"name": "BLACK",
+		"assetId": 252,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::252"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "BUNGA",
+		"name": "BUNGA BUNGA",
+		"assetId": 26,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::26"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "RUNE",
+		"name": "Valhello.app",
+		"assetId": 27,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::27"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 7,
+		"symbol": "LAC",
+		"name": "Ladycoin",
+		"assetId": 28,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::28"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "HOOT",
+		"name": "Jellied Owls",
+		"assetId": 2820,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2820"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "CODES",
+		"name": "COUPONS",
+		"assetId": 29,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::29"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "WOOD",
+		"name": "WOOD",
+		"assetId": 2993,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::2993"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "Meow",
+		"name": "Catsama",
+		"assetId": 3,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "GOL",
+		"name": "Fucho",
+		"assetId": 30,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::30"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "PWS",
+		"name": "PolkaWarriors",
+		"assetId": 300,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::300"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "GRAIN",
+		"name": "GRAIN Token",
+		"assetId": 3000,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3000"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "DUCK",
+		"name": "DUCK Currency",
+		"assetId": 3001,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3001"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "ACT",
+		"name": "AutomatedCoffeeToken",
+		"assetId": 3077,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3077"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "ki",
+		"name": "Genki",
+		"assetId": 31,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::31"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "RTT",
+		"name": "Retreat",
+		"assetId": 314159,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::314159"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "FAV",
+		"name": "Favor",
+		"assetId": 32,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::32"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "BUSSY",
+		"name": "Ladyboi",
+		"assetId": 33,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::33"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 9,
+		"symbol": "MVPW",
+		"name": "MVP Workshop",
+		"assetId": 3327,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3327"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "A42",
+		"name": "Attic42",
+		"assetId": 3328,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3328"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "Token",
+		"name": "Token",
+		"assetId": 333,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::333"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 9,
+		"symbol": "PLX",
+		"name": "PLX",
+		"assetId": 34,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::34"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "345",
+		"name": "345",
+		"assetId": 345,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::345"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "LUCKY",
+		"name": "Lucky Friday",
+		"assetId": 35,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::35"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "RRT",
+		"name": "Ruined Records Token",
+		"assetId": 36,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::36"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "uni",
+		"name": "uni",
+		"assetId": 360,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::360"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "time",
+		"name": "time",
+		"assetId": 365,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::365"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "MNCH",
+		"name": "Munchkin",
+		"assetId": 37,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::37"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "fast",
+		"name": "fast",
+		"assetId": 3721,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3721"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "wETH",
+		"name": "wETH",
+		"assetId": 374,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::374"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "KAA",
+		"name": "KAA test",
+		"assetId": 377,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::377"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "KODA",
+		"name": "KODA",
+		"assetId": 383,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::383"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "DSCAN",
+		"name": "DotScanner.com",
+		"assetId": 39,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::39"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 16,
+		"symbol": "KAI ",
+		"name": "HAPPY",
+		"assetId": 3913,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3913"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "GMK",
+		"name": "GoldMark",
+		"assetId": 3943,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::3943"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "HAPPY",
+		"name": "Happy",
+		"assetId": 4,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::4"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "ERIC",
+		"name": "Eric",
+		"assetId": 40,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::40"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "MAXI",
+		"name": "MAXI",
+		"assetId": 404,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::404"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "GOOSE",
+		"name": "GooseCoin",
+		"assetId": 41,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::41"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "NRNF",
+		"name": "No Risk - No Fun",
+		"assetId": 42,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::42"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "BLAZE",
+		"name": "BLAZE",
+		"assetId": 420,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::420"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "INTRN",
+		"name": "👶☕ intern coin 🥶🌝",
+		"assetId": 42069,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::42069"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "SHIB",
+		"name": "Polka SHIBA INU",
+		"assetId": 4206969,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::4206969"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "TTT",
+		"name": "Tricky-NFT.art Treasure Token",
+		"assetId": 43,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::43"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "ADVNCE",
+		"name": "Most Advanced Coin",
+		"assetId": 44,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::44"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 15,
+		"symbol": "CRIB",
+		"name": "CRIB",
+		"assetId": 45,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::45"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "FAN",
+		"name": "FANARIA",
+		"assetId": 46,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::46"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "EUR",
+		"name": "Euro",
+		"assetId": 47,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::47"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 9,
+		"symbol": "LWOOF",
+		"name": "Jacques le Woof",
+		"assetId": 48,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::48"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "DIAN",
+		"name": "ENDIANNESS",
+		"assetId": 49,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::49"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "BEER",
+		"name": "BeerCoin",
+		"assetId": 5,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::5"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "PROMO",
+		"name": "PromoTeam",
+		"assetId": 50,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "$DED",
+		"name": "DOT is DED",
+		"assetId": 500,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::500"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "NWEST",
+		"name": "NWEST",
+		"assetId": 50000000,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000000"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "YSBC",
+		"name": "Your Stable Coin",
+		"assetId": 50000001,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000001"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "dUSD",
+		"name": "decent",
+		"assetId": 50000002,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000002"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "USDd",
+		"name": "Digital Dollar",
+		"assetId": 50000003,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000003"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "TEST45",
+		"name": "TESTINGV45",
+		"assetId": 50000004,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000004"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "TKY",
+		"name": "TurkeyCoin",
+		"assetId": 50000005,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000005"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "LGT",
+		"name": "Longevity",
+		"assetId": 50000006,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000006"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "SBC",
+		"name": "Stable Coin",
+		"assetId": 50000007,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::50000007"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "STONE",
+		"name": "STONE",
+		"assetId": 51,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::51"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "♥♥♥",
+		"name": "Love",
+		"assetId": 520,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::520"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "belove",
+		"name": "belove",
+		"assetId": 5201314,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::5201314"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "MTS",
+		"name": "DIVING",
+		"assetId": 55,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::55"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "GAME",
+		"name": "gamedao.co",
+		"assetId": 555,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::555"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "EREN",
+		"name": "Eren Yilmaz",
+		"assetId": 598,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::598"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "ZKPD",
+		"name": "ZKP DAO",
+		"assetId": 6,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::6"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "GAV",
+		"name": "GavCoin",
+		"assetId": 60,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::60"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "CRY",
+		"name": "CRYPTONITAS",
+		"assetId": 61,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::61"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 4,
+		"symbol": "oh!",
+		"name": "oh!",
+		"assetId": 64,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::64"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "DAI",
+		"name": "DAI",
+		"assetId": 66,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::66"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "BAD",
+		"name": "Evil Corp",
+		"assetId": 666,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::666"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "GRB",
+		"name": "GEAR BONUS",
+		"assetId": 677,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::677"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 16,
+		"symbol": "VHM",
+		"name": "drhuongtx",
+		"assetId": 6789,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::6789"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "ADVERT",
+		"name": "Fanaria on Twitter: @FanariaNFT",
+		"assetId": 68,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::68"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "NICE",
+		"name": "NICE",
+		"assetId": 69,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::69"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "CHAOS",
+		"name": "Chaos",
+		"assetId": 69420,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::69420"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "CHAOS",
+		"name": "expectchaos.com",
+		"assetId": 6967,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::6967"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 1,
+		"symbol": "DOS",
+		"name": "DogeSeven",
+		"assetId": 7,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::7"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "KRSU",
+		"name": "KarasuCoin",
+		"assetId": 70,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::70"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "OAK",
+		"name": "OAK Network Token",
+		"assetId": 71,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::71"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "cipher",
+		"name": "ohzomdmrkyc.gybvn",
+		"assetId": 75,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::75"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "TSM",
+		"name": "Test Me",
+		"assetId": 756,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::756"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "bLd",
+		"name": "bLd",
+		"assetId": 759,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::759"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "Crypto",
+		"name": "Crypto",
+		"assetId": 77,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::77"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "GOD",
+		"name": "Heaven",
+		"assetId": 777,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::777"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "lucky7",
+		"name": "lucky7",
+		"assetId": 7777,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::7777"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "DEFI",
+		"name": "DeFi The World",
+		"assetId": 777777,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::777777"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "king",
+		"name": "king",
+		"assetId": 7777777,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::7777777"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "RMRK",
+		"name": "RMRK.app",
+		"assetId": 8,
+		"verified": false,
+		"isSufficient": true,
+		"id": "asset::kah::8"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "KSMFS",
+		"name": "Kusama File Coin",
+		"assetId": 80815,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::80815"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "RUEPP",
+		"name": "RUEPP Coin",
+		"assetId": 80816,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::80816"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "FRALEY",
+		"name": "FRALEY Coin",
+		"assetId": 80817,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::80817"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "TEMU",
+		"name": "DEDY",
+		"assetId": 81,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::81"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "TBUX",
+		"name": "Teddy Bucks",
+		"assetId": 813,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::813"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "YAYOI",
+		"name": "YAYOI",
+		"assetId": 841,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::841"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "DED",
+		"name": "DOTisDED",
+		"assetId": 85,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::85"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 9,
+		"symbol": "CUBO",
+		"name": "Virto CUBO",
+		"assetId": 862812,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::862812"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 2,
+		"symbol": "VCOP",
+		"name": "VIrto COP",
+		"assetId": 863012,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::863012"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "XEXR",
+		"name": "Xexr",
+		"assetId": 87,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::87"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "BTC",
+		"name": "BTC",
+		"assetId": 88,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::88"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "top",
+		"name": "top",
+		"assetId": 8848,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::8848"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "LUCK",
+		"name": "LUCK",
+		"assetId": 888,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::888"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "BAILEGO",
+		"name": "SHIBATALES",
+		"assetId": 88888,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::88888"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 1,
+		"symbol": "TOT",
+		"name": "TakeTime",
+		"assetId": 9,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::9"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 1,
+		"symbol": "SATS",
+		"name": "Satoshi",
+		"assetId": 90,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::90"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "KPOTS",
+		"name": "KPOTS",
+		"assetId": 9000,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::9000"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "TMJ",
+		"name": "Tamo Junto",
+		"assetId": 91,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::91"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "911",
+		"name": "911",
+		"assetId": 911,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::911"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "LUL",
+		"name": "TEST123231",
+		"assetId": 95834,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::95834"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "BITCOIN",
+		"name": "BITCOIN",
+		"assetId": 99,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::99"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "CBDC",
+		"name": "CBDC",
+		"assetId": 999,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::999"
+	},
+	{
+		"type": "asset",
+		"chainId": "kah",
+		"decimals": 20,
+		"symbol": "BTC",
+		"name": "BTC",
+		"assetId": 9999,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::kah::9999"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "WUD",
+		"name": "GAVUN WUD",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X4",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Polkadot"
+						}
+					},
+					{
+						"type": "Parachain",
+						"value": 1000
+					},
+					{
+						"type": "PalletInstance",
+						"value": 50
+					},
+					{
+						"type": "GeneralIndex",
+						"value": "bigint:31337"
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKgAzL4NDQDsFgC6lkA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "USDt",
+		"name": "Tether USD (Polkadot)",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X4",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Polkadot"
+						}
+					},
+					{
+						"type": "Parachain",
+						"value": 1000
+					},
+					{
+						"type": "PalletInstance",
+						"value": 50
+					},
+					{
+						"type": "GeneralIndex",
+						"value": "bigint:1984"
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKi+AJwAHEzmALqWQA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "USDC",
+		"name": "USD Coin (Polkadot)",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X4",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Polkadot"
+						}
+					},
+					{
+						"type": "Parachain",
+						"value": 1000
+					},
+					{
+						"type": "PalletInstance",
+						"value": 50
+					},
+					{
+						"type": "GeneralIndex",
+						"value": "bigint:1337"
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoAsI2AbhADYCuNqA2uVR4gA4uyIAjDgGEicJPCScUrDtzIhK1WgAUi7ANYQAJkQQgAvucwCtqENugQAxgAsIeZiDZceARgAMgVY2Qg7s7DAIAJJyCBBwTjQqPmgArP7BGoK0wvAEHDFGMAAent5qduI4AOZ4CKi+AMyNAOwWALqWQA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 10,
+		"symbol": "DOT",
+		"name": "Polkadot",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "GlobalConsensus",
+					"value": {
+						"type": "Polkadot"
+					}
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": true,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAFIuwDWEACZEEIAL7nTQA="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "ETH",
+		"name": "Ether",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "GlobalConsensus",
+					"value": {
+						"type": "Ethereum",
+						"value": {
+							"chain_id": "bigint:1"
+						}
+					}
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": true,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoBRBAAsCMTgFtmINlx6gAxjoh4A+jgAmtUTgDmeBKiYBfP36A=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "wstETH",
+		"name": "Wrapped liquid staked Ether 2.0",
+		"logo": "/img/tokens/coingecko/wrapped-steth.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzAGYATisAVgAOH3K66rqxOsr6qzEfarEnZLFK8oanCAA2K2rKuph0KwhUwIBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "AAVE",
+		"name": "Aave Token",
+		"logo": "/img/tokens/coingecko/aave.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AdgAzKwA2KoBWZOSrAA4AFghSqognUpgATitegGYWwdKxStqIK0HBmHQnJwg+gP8AXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "TBTC",
+		"name": "tBTC",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x8daebade922df735c38c80c7ebd708af50815faa"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADicIGAknGABOdHQnADMAdgBmAFYrNtKrUuSrFqqnFuTSiCaOsZ8OpogIAP8AXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "LBTC",
+		"name": "Lombard Staked Bitcoin",
+		"logo": "/img/tokens/coingecko/lombard-staked-btc.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x8236a87084f8b84306f72007f36f2618a5634494"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ADnQAZgA2CFKAdmTSgBYAM1KxZorkqpa6lOS6luqW9CqfUogAViqKpqaATiaA/wBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "PEPE",
+		"name": "Pepe",
+		"logo": "/img/tokens/coingecko/pepe.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x6982508145454ce325ddbe47a25d4ec3d2311933"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANgBOAA50AFZkyp8AFhrmxqsYAGZapycxGEaAdghuxpgrDqd0Dp8fco6OgP8AXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "DAI",
+		"name": "Dai Stablecoin",
+		"logo": "/img/tokens/coingecko/dai.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x6b175474e89094c44da98b954eedeac495271d0f"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ANjEfAHYAVgAWStqYAA4ATmSW2qta2qcIFqaxFrqYGCcYCC6h9EqfJ2SAMwD/AF1AoA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "SHIB",
+		"name": "SHIBA INU",
+		"logo": "/img/tokens/coingecko/shiba-inu.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ATgBWCCcANh8xZIgfcuSnAHZS9B9SpysAM2qAFhgfGGqo5J9e5LFBqwGrGkCAXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "sUSDe",
+		"name": "Staked USDe",
+		"logo": "/img/tokens/coingecko/ethena-staked-usde.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x9d39a5de30e57443bff2a8307a4256c8797a3497"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8ATicAZlKIAFYnGArkmBqAdgAWNoqxADNu9AgADkaWiDb0GoA2KwGW0pGKtrmA/wBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "SKY",
+		"name": "SKY Governance Token",
+		"logo": "/img/tokens/coingecko/sky.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x56072c95faa701256059aa122697b133aded9279"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgA2ZIB2dCsATlKAMwgIKuSfdArk0rqWjvRyuqqxHwBmUYgnGCc69Cq6gP8AXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 9,
+		"symbol": "TONCOIN",
+		"name": "Wrapped TON Coin",
+		"logo": "/img/tokens/coingecko/the-open-network.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x582d872a1b094fc48f5de31d3b73f2d9be47def1"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgAOdCdygHZ0CB8xZIBOABYAMytW8vbSpxgAZh8nAbEagfaq5rEYVpr+9r9AgF1AoA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "LDO",
+		"name": "Lido DAO Token",
+		"logo": "/img/tokens/coingecko/lido-dao.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x5a98fcbea516cf06857215779fd812ca3bef1b32"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVggATgAOADMrMRgIUp8ANisa5Jaq0oB2dB9enoqapyqfdCsIAGYGmp8xKcZAgF1AoA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "LINK",
+		"name": "ChainLink Token",
+		"logo": "/img/tokens/coingecko/chainlink.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x514910771af9ca656af840dff83e8264ecf986ca"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVh8AFgBOH2SAdjqfCAAzKqsIADZSjpaADgrkp2bm3oBmGF70DoqYK1bejvaA/wBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 15,
+		"symbol": "KILT",
+		"name": "KILT",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x5d3d01fd6d2ad1169b17918eb4f153c6616288eb"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVicAZidknwAzJwA2J3QIJx8fBoBOMR8Adk6fAA4YMQAWWp9SiqsGho70QeGxAP8AXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "tBTC",
+		"name": "tBTC v2",
+		"logo": "/img/tokens/coingecko/tbtc.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x18084fba666a33d37592fa2633fd49a74dd93a88"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fAA5ksoAWADMJADZGiABmZqdmgHYAVgBOdBqIdHrWmqcqnogOqqcnHuaIMrKA/wBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "EURC",
+		"name": "Euro Coin",
+		"logo": "/img/tokens/coingecko/euro-coin.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x1abaea1f7c830bd89acc67ec4af516284b1bc33c"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8fCAkYCB8AMwB2KwAOAGZksScGgE4IKIA2WpgrABYIaoBWHx70BsGxHzErJqarAP8AXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "sUSDS",
+		"name": "Savings USDS",
+		"logo": "/img/tokens/coingecko/susds.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xa3931d71877c0e7a3148cb7eb4463524fec27fbd"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IAGYATjKfJwB2HwAOWtqrZJha8p8AFgarMVqYMS6ugDYygFZ0LoAzGCt0WumxF0CAXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "USDC",
+		"name": "USDC (Snowbridge)",
+		"logo": "/img/tokens/coingecko/usd-coin.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8IZLEADgA2AE4anysq9B8KsQBmKqsfJx8apwAWCHQYGpgxZKsYDuSqsf6KgP8AXUCgA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "MYTH",
+		"name": "Mythos",
+		"logo": "/img/tokens/coingecko/mythos.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xba41ddf06b7ffd89d1267b5a93bfef2424eb2003"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8JABYfJycAM2SANjEAdmrqpwAOAE4nH3Q6xrEAVggOgGYxaphq9DLpmDEU5JGA/wBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 6,
+		"symbol": "USDT",
+		"name": "USDT (Snowbridge)",
+		"logo": "/img/tokens/coingecko/tether.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xdac17f958d2ee523a2206206994597c13d831ec7"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8nCCsfAHYAMwBOAFYADid0GBh69ABmCHQUgDZ+2tqAFnrayorOp0bOnxgrSoD/AF1AoA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "WETH",
+		"name": "Wrapped Ether",
+		"logo": "/img/tokens/coingecko/weth.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8rZPQISoBmAE4xdHQqgDMYAA4nZIhkmABWKwAWJvQAdhgIJxrk1qqrYZ6ANijGQIBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 8,
+		"symbol": "WBTC",
+		"name": "Wrapped BTC",
+		"logo": "/img/tokens/coingecko/wrapped-bitcoin.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA90dAA2ZIAzCCsAVhg6uoAWdAgAdnaAZggIZuaqsSsqmCcq9qsfAE4uofR6qamA/wBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "CGT2.0",
+		"name": "Curio Gas Token",
+		"logo": "/img/tokens/coingecko/curio-gas-token.webp",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:1"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "binary:0x0e186357c323c806c1efdad36d217f7a54b63d18"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA9kmB8ADgA2AGYAVgB2Kxr0GqsK5KqrHxgAMycIJxqqp3QfBt6GiDqAFjFap0qA/wBdQKA=="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "TNKR",
+		"name": "Tinkernet",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2125
+					},
+					{
+						"type": "GeneralIndex",
+						"value": "bigint:0"
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48G6BgFYAvpgHVaAcXgEOASTgATGAA85C7rQBGOAOZ4EqAAwh1AXXXqgA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 18,
+		"symbol": "MOVR",
+		"name": "MOVR Token",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2023
+					},
+					{
+						"type": "PalletInstance",
+						"value": 10
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgYBmAL6YB1WqPbsYCAJJwkCCHHE1WHbmnTKNAXQ0agA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "vKSM",
+		"name": "Voucher KSM",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2001
+					},
+					{
+						"type": "GeneralKey",
+						"value": {
+							"length": 2,
+							"data": "binary:0x0104000000000000000000000000000000000000000000000000000000000000"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmXoAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0DbABMICCLQBGeaBVTKAB5qygAsqhGRUdExsXHx0SDq6gC6yUA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "BNC",
+		"name": "Bifrost Native Coin",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2001
+					},
+					{
+						"type": "GeneralKey",
+						"value": {
+							"length": 2,
+							"data": "binary:0x0001000000000000000000000000000000000000000000000000000000000000"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmXoAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0DbABMICCLQBGeaBVTKAB6qaiFh4RGRUdExUSDq6gC6CUA==="
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "TEER",
+		"name": "Integritee TEER",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 2015
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA"
+	},
+	{
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"decimals": 12,
+		"symbol": "FREN",
+		"name": "FREN",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 2123
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false,
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmdPIDMAX3VA=="
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 0,
+		"isSufficient": false,
+		"id": "pool-asset::kah::0"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 1,
+		"isSufficient": false,
+		"id": "pool-asset::kah::1"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 10,
+		"isSufficient": false,
+		"id": "pool-asset::kah::10"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 11,
+		"isSufficient": false,
+		"id": "pool-asset::kah::11"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 12,
+		"isSufficient": false,
+		"id": "pool-asset::kah::12"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 13,
+		"isSufficient": false,
+		"id": "pool-asset::kah::13"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 14,
+		"isSufficient": false,
+		"id": "pool-asset::kah::14"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 15,
+		"isSufficient": false,
+		"id": "pool-asset::kah::15"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 16,
+		"isSufficient": false,
+		"id": "pool-asset::kah::16"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 17,
+		"isSufficient": false,
+		"id": "pool-asset::kah::17"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 18,
+		"isSufficient": false,
+		"id": "pool-asset::kah::18"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 2,
+		"isSufficient": false,
+		"id": "pool-asset::kah::2"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 3,
+		"isSufficient": false,
+		"id": "pool-asset::kah::3"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 4,
+		"isSufficient": false,
+		"id": "pool-asset::kah::4"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 5,
+		"isSufficient": false,
+		"id": "pool-asset::kah::5"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 6,
+		"isSufficient": false,
+		"id": "pool-asset::kah::6"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 7,
+		"isSufficient": false,
+		"id": "pool-asset::kah::7"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 8,
+		"isSufficient": false,
+		"id": "pool-asset::kah::8"
+	},
+	{
+		"type": "pool-asset",
+		"chainId": "kah",
+		"decimals": 0,
+		"symbol": "",
+		"name": "",
+		"poolAssetId": 9,
+		"isSufficient": false,
+		"id": "pool-asset::kah::9"
+	}
+]

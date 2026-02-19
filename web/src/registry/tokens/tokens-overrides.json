@@ -1,5 +1,45 @@
 [
 	{
+		"id": "asset::pah::1984",
+		"logo": "./img/tokens/USDT.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::pah::1337",
+		"logo": "./img/tokens/USDC.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::pah::30",
+		"logo": "./img/tokens/DED.svg",
+		"verified": true
+	},
+	{
+		"id": "asset::pah::23",
+		"logo": "./img/tokens/PINK.png",
+		"verified": true
+	},
+	{
+		"id": "asset::kah::1984",
+		"logo": "./img/tokens/USDT.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::kah::8",
+		"logo": "./img/tokens/RMRK.webp",
+		"verified": true
+	},
+	{
+		"id": "asset::kah::50000002",
+		"logo": "./img/tokens/DUSD.webp?rounded",
+		"verified": true
+	},
+	{
+		"id": "asset::wah::20120608",
+		"logo": "./img/tokens/KTT.webp",
+		"verified": true
+	},
+	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBWdAF8NQA",
 		"logo": "./img/tokens/AJUN.svg",
 		"verified": true
@@ -64,16 +104,6 @@
 	{
 		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48G6BgFYAvpgHVaAcXgEOASTgATGAA85C7rQBGOAOZ4EqAAwh1AXXXqgA===",
 		"logo": "./img/tokens/TNKR.svg",
-		"verified": true
-	},
-	{
-		"id": "foreign-asset::rah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoB1GEgTwAJiAC+Jo0A=",
-		"logo": "./img/tokens/WND.svg",
-		"verified": true
-	},
-	{
-		"id": "foreign-asset::wah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAlIgGNdREAF9jhoA==",
-		"logo": "./img/tokens/ROC.svg",
 		"verified": true
 	},
 
@@ -305,13 +335,6 @@
 		"decimals": 18,
 		"name": "PAX Gold (Snowbridge)",
 		"logo": "./img/tokens/PAXG.png"
-	},
-	{
-		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8osvKrAGZKpwBWSoAOJzErdBgYABYAMxgIMWSIAHYIHy6ujpgGiABODoD/AF1AoA===",
-		"symbol": "CFG",
-		"decimals": 18,
-		"name": "Centrifuge",
-		"logo": "./img/tokens/CFG.svg?rounded"
 	},
 	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE1zxoClRkgA8AVgB2GB8fABYxADYATh8nMXLG5KsAZlKU8rF0GHqADlKnGogarp9hnyHk+r9AgF1AoA===",

@@ -1,5 +1,6 @@
 import {
 	forwardRef,
+	type HTMLAttributes,
 	type MutableRefObject,
 	type ReactNode,
 	type Ref,
@@ -53,10 +54,10 @@ type PulseProps = {
 	pulse?: boolean;
 	className?: string;
 	children?: ReactNode;
-};
+} & Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">;
 
 export const Pulse = forwardRef<HTMLDivElement, PulseProps>(
-	({ as: Component = "div", pulse, className, children }, ref) => {
+	({ as: Component = "div", pulse, className, children, ...rest }, ref) => {
 		const localRef = useRef<HTMLDivElement>(null);
 
 		useEffect(() => {
@@ -72,7 +73,11 @@ export const Pulse = forwardRef<HTMLDivElement, PulseProps>(
 		}, [pulse]);
 
 		return (
-			<Component ref={mergeRefs(localRef, ref)} className={cn(className)}>
+			<Component
+				ref={mergeRefs(localRef, ref)}
+				className={cn(className)}
+				{...rest}
+			>
 				{children}
 			</Component>
 		);

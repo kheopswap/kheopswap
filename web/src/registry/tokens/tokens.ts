@@ -1,19 +1,47 @@
+import { logger } from "../../utils/logger";
+import { safeParse, safeStringify } from "../../utils/serialization";
+import { getValidTokenLogo } from "../../utils/tokenLogo";
+import tokensKah from "./generated/tokens.kah.json";
+import tokensPah from "./generated/tokens.pah.json";
+import tokensPasah from "./generated/tokens.pasah.json";
+import tokensWah from "./generated/tokens.wah.json";
 import { getTokenId } from "./helpers";
-import tokensJson from "./tokens.json";
+import tokensNative from "./tokens-native.json";
 import tokensOverridesJson from "./tokens-overrides.json";
 import type { Token, TokenId, TokenNoId, TokenType } from "./types";
 
-const TOKENS = tokensJson as TokenNoId[];
+const normalizeForeignTokenLocation = (token: TokenNoId): TokenNoId => {
+	if (token.type !== "foreign-asset") return token;
+
+	return {
+		...token,
+		location: safeParse(safeStringify(token.location)),
+	};
+};
+
+const TOKENS = (
+	[
+		...tokensNative,
+		...tokensPah,
+		...tokensKah,
+		...tokensWah,
+		...tokensPasah,
+	] as TokenNoId[]
+).map(normalizeForeignTokenLocation);
 const TOKENS_OVERRIDES = tokensOverridesJson as ({
 	id: TokenId;
 } & Partial<TokenNoId>)[];
 
+const normalizeTokenLogo = <T extends { logo?: string }>(token: T): T => ({
+	...token,
+	logo: getValidTokenLogo(token.logo),
+});
+
 export const KNOWN_TOKENS_LIST = TOKENS.map(
 	(token) =>
 		({
-			...token,
+			...normalizeTokenLogo(token),
 			id: getTokenId(token),
-			verified: true,
 		}) as Token,
 );
 
@@ -22,8 +50,16 @@ export const KNOWN_TOKENS_MAP = Object.fromEntries(
 ) as Record<TokenId, Token>;
 
 export const TOKENS_OVERRIDES_MAP = Object.fromEntries(
-	TOKENS_OVERRIDES.map((a) => [a.id, a]),
+	TOKENS_OVERRIDES.map((a) => [a.id, normalizeTokenLogo(a)]),
 ) as Record<TokenId, Partial<Token>>;
+
+// Validate that every override id references an existing token
+for (const override of TOKENS_OVERRIDES) {
+	if (!KNOWN_TOKENS_MAP[override.id])
+		logger.warn(
+			`tokens-overrides.json: id "${override.id}" does not match any known token`,
+		);
+}
 
 export const PORTFOLIO_TOKEN_TYPES: TokenType[] = [
 	"native",

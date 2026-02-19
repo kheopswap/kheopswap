@@ -18,6 +18,7 @@
 		"knip": "knip",
 		"papi": "papi",
 		"papi:build": "papi --whitelist papi-whitelist.ts",
+		"fetch-tokens": "cd web && node --experimental-transform-types --env-file-if-exists=.env.local scripts/fetch-tokens.ts",
 		"postinstall": "papi",
 		"prepare": "simple-git-hooks"
 	},
@@ -37,6 +38,7 @@
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
+			"sharp",
 			"simple-git-hooks"
 		]
 	},
