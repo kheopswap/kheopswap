@@ -1,6 +1,6 @@
 /**
  * Standalone Node.js script to fetch all tokens from Asset Hub chains via RPC
- * and write one JSON file per chain to src/registry/tokens/.
+ * and write one JSON file per chain to src/registry/tokens/generated/.
  *
  * Each output file is a flat token array with deterministic `id` fields,
  * sorted lexicographically by `id`.
@@ -37,9 +37,14 @@ import { kah, pah, pasah, wah } from "@polkadot-api/descriptors";
 import lzs from "lz-string";
 import { createClient, type PolkadotClient, type TypedApi } from "polkadot-api";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
-import { getWsProvider } from "polkadot-api/ws-provider/node";
+import { getWsProvider } from "polkadot-api/ws-provider";
 import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
+import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
+import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
+import { mapAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapAssetTokensFromEntries.ts";
+import { mapForeignAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapForeignAssetTokensFromEntries.ts";
+import { mapPoolAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapPoolAssetTokensFromEntries.ts";
 
 // ---------------------------------------------------------------------------
 // Chain & descriptor config
@@ -87,7 +92,10 @@ const CHAINS = (
 	}));
 
 /** Output directory – tokens land next to the registry source files. */
-const OUTPUT_DIR = resolve(import.meta.dirname, "../src/registry/tokens");
+const OUTPUT_DIR = resolve(
+	import.meta.dirname,
+	"../src/registry/tokens/generated",
+);
 
 /** ERC20 metadata cache file path (committed to repo). */
 const ERC20_CACHE_PATH = resolve(import.meta.dirname, "erc20-cache.json");
@@ -191,17 +199,6 @@ function saveErc20Cache(cache: Erc20Cache): void {
 		ERC20_CACHE_PATH,
 		`${JSON.stringify(sorted, null, "\t")}\n`,
 		"utf-8",
-	);
-}
-
-function isEthereumOrigin(token: TokenNoId): boolean {
-	const interior = token.location?.interior;
-	if (interior?.type !== "X2") return false;
-	const [junction0, junction1] = interior.value ?? [];
-	return (
-		junction0?.type === "GlobalConsensus" &&
-		junction0.value?.type === "Ethereum" &&
-		junction1?.type === "AccountKey20"
 	);
 }
 
@@ -375,7 +372,11 @@ function getTokenId(token: TokenNoId): string {
 function getEthereumContractAddresses(tokens: TokenNoId[]): string[] {
 	const addresses = new Set<string>();
 	for (const token of tokens) {
-		if (token.type !== "foreign-asset" || !isEthereumOrigin(token)) continue;
+		if (
+			token.type !== "foreign-asset" ||
+			!isEthereumOriginLocation(token.location)
+		)
+			continue;
 		const addr = getContractAddress(token);
 		if (addr) addresses.add(addr);
 	}
@@ -812,7 +813,11 @@ async function refreshErc20Cache(
  */
 function enrichFromErc20Cache(tokens: TokenNoId[], cache: Erc20Cache): void {
 	for (const token of tokens) {
-		if (token.type !== "foreign-asset" || !isEthereumOrigin(token)) continue;
+		if (
+			token.type !== "foreign-asset" ||
+			!isEthereumOriginLocation(token.location)
+		)
+			continue;
 
 		const addr = getContractAddress(token);
 		if (!addr) continue;
@@ -846,25 +851,11 @@ async function fetchAssetTokens(
 		`  [${chain.id}] Found ${metadatas.length} asset metadatas, ${assets.length} asset infos`,
 	);
 
-	// Build a map of assetId → is_sufficient from Assets.Asset
-	const sufficientMap = new Map<number, boolean>();
-	for (const a of assets)
-		sufficientMap.set(a.keyArgs[0], a.value.is_sufficient);
-
-	return metadatas.map((d) => {
-		const assetId = d.keyArgs[0];
-		return {
-			type: "asset",
-			chainId: chain.id,
-			decimals: d.value.decimals,
-			symbol: d.value.symbol.asText(),
-			name: d.value.name.asText(),
-			logo: undefined,
-			assetId,
-			verified: false,
-			isSufficient: sufficientMap.get(assetId) ?? false,
-		};
-	});
+	return mapAssetTokensFromEntries(
+		chain.id,
+		metadatas,
+		createSufficientMap(assets),
+	);
 }
 
 async function fetchPoolAssetTokens(
@@ -879,19 +870,7 @@ async function fetchPoolAssetTokens(
 	});
 	console.log(`  [${chain.id}] Found ${entries.length} pool assets`);
 
-	return entries.map((d) => {
-		const poolAssetId = d.keyArgs[0];
-		return {
-			type: "pool-asset",
-			chainId: chain.id,
-			decimals: 0,
-			symbol: "",
-			name: "",
-			logo: undefined,
-			poolAssetId,
-			isSufficient: false,
-		};
-	});
+	return mapPoolAssetTokensFromEntries(chain.id, entries);
 }
 
 async function fetchForeignAssetTokens(
@@ -909,36 +888,23 @@ async function fetchForeignAssetTokens(
 		`  [${chain.id}] Found ${assets.length} foreign assets (${metadatas.length} with metadata)`,
 	);
 
-	return assets
-		.map((d) => {
-			const location = d.keyArgs[0];
-			const metadata = metadatas.find(
-				(m) => safeStringify(m.keyArgs[0]) === safeStringify(d.keyArgs[0]),
-			)?.value;
+	const metadataLocations = new Set(
+		metadatas.map((entry) => safeStringify(entry.keyArgs[0])),
+	);
 
-			const symbol = metadata?.symbol.asText() ?? "";
-			const decimals = metadata?.decimals ?? 0;
-			const name = metadata?.name.asText() ?? "";
-			const isSufficient = d.value.is_sufficient ?? false;
+	for (const asset of assets) {
+		const locationKey = safeStringify(asset.keyArgs[0]);
+		if (metadataLocations.has(locationKey)) continue;
+		if (isEthereumOriginLocation(asset.keyArgs[0])) continue;
 
-			return {
-				type: "foreign-asset",
-				chainId: chain.id,
-				decimals,
-				symbol,
-				name,
-				logo: undefined,
-				location,
-				verified: false,
-				isSufficient,
-			};
-		})
-		.filter((t) => {
-			// Keep Ethereum-origin tokens even without on-chain metadata —
-			// they can be enriched from ERC20 RPC + CoinGecko later.
-			if (isEthereumOrigin(t)) return true;
-			return t.symbol && t.name;
-		});
+		const warning = `[${chain.id}] Ignored non-Ethereum foreign asset without metadata: ${truncate(locationKey, 220)}`;
+		console.warn(`  [${chain.id}] ${warning}`);
+		pushNonFatalWarning(warning);
+	}
+
+	return mapForeignAssetTokensFromEntries(chain.id, assets, metadatas, {
+		keepEthereumWithoutMetadata: true,
+	});
 }
 
 // ---------------------------------------------------------------------------
@@ -1056,7 +1022,7 @@ Environment:
 													 Sends an error notification when the script fails.
   COINGECKO_BUDGET_PER_RUN Maximum CoinGecko calls per run (optional, default: 500).
 
-Output files are written to src/registry/tokens/tokens.<chainId>.json`);
+Output files are written to src/registry/tokens/generated/tokens.<chainId>.json`);
 				process.exit(0);
 		}
 	}

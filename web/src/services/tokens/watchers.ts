@@ -9,6 +9,12 @@ import { getChainById } from "../../registry/chains/chains";
 import type { Chain, ChainId } from "../../registry/chains/types";
 import { getTokenId } from "../../registry/tokens/helpers";
 import {
+	createSufficientMap,
+	mapAssetTokensFromEntries,
+	mapForeignAssetTokensFromEntries,
+	mapPoolAssetTokensFromEntries,
+} from "../../registry/tokens/mappers";
+import {
 	KNOWN_TOKENS_MAP,
 	TOKENS_OVERRIDES_MAP,
 } from "../../registry/tokens/tokens";
@@ -49,29 +55,29 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 
 	stop();
 
-	const foreignAssetTokens = assets
-		.map((d) => ({
+	const foreignAssetTokens = mapForeignAssetTokensFromEntries(
+		chain.id,
+		assets,
+		metadatas,
+	)
+		.map((tokenNoId) => ({
 			id: getTokenId({
 				type: "foreign-asset",
 				chainId: chain.id,
-				location: d.keyArgs[0],
+				location: tokenNoId.location,
 			}),
-			location: d.keyArgs[0],
-			metadata: metadatas.find(
-				//lodash isEqual doesn't work with bigints
-				(m) => safeStringify(m.keyArgs[0]) === safeStringify(d.keyArgs[0]),
-			)?.value,
+			...tokenNoId,
 		}))
-		.map(({ id, location, metadata }) =>
+		.map(({ id, location, symbol, decimals, name }) =>
 			Object.assign(
 				{
 					id,
 					type: "foreign-asset",
 					chainId: chain.id,
 					location,
-					symbol: metadata?.symbol.asText(),
-					decimals: metadata?.decimals,
-					name: metadata?.name.asText(),
+					symbol,
+					decimals,
+					name,
 					logo: "./img/tokens/asset.svg",
 					verified: false,
 				} as Token,
@@ -135,14 +141,14 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	});
 	stop();
 
-	const assetTokens = tokens
-		.map((lp) => ({
+	const assetTokens = mapPoolAssetTokensFromEntries(chain.id, tokens)
+		.map((tokenNoId) => ({
 			id: getTokenId({
 				type: "pool-asset",
 				chainId: chain.id,
-				poolAssetId: lp.keyArgs[0],
+				poolAssetId: tokenNoId.poolAssetId,
 			}),
-			poolAssetId: lp.keyArgs[0],
+			poolAssetId: tokenNoId.poolAssetId,
 		}))
 		.map(
 			({ id, poolAssetId }) =>
@@ -179,13 +185,11 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	});
 	stop();
 
-	const assetTokens = tokens
-		.map((d) => ({
-			assetId: d.keyArgs[0],
-			symbol: d.value.symbol.asText(),
-			decimals: d.value.decimals,
-			name: d.value.name.asText(),
-		}))
+	const assetTokens = mapAssetTokensFromEntries(
+		chain.id,
+		tokens,
+		createSufficientMap([]),
+	)
 		.map((d) => ({
 			...d,
 			id: getTokenId({

@@ -1,6 +1,6 @@
 import { createClient, type PolkadotClient } from "polkadot-api";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
-import { getWsProvider } from "polkadot-api/ws-provider/web";
+import { getWsProvider } from "polkadot-api/ws-provider";
 import { getChainById } from "../registry/chains/chains";
 import type { Chain, ChainId } from "../registry/chains/types";
 import { getCachedPromise } from "../utils/getCachedPromise";

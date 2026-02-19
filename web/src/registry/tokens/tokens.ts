@@ -1,9 +1,9 @@
 import { getValidTokenLogo } from "../../utils/tokenLogo";
+import tokensKah from "./generated/tokens.kah.json";
+import tokensPah from "./generated/tokens.pah.json";
+import tokensPasah from "./generated/tokens.pasah.json";
+import tokensWah from "./generated/tokens.wah.json";
 import { getTokenId } from "./helpers";
-import tokensKah from "./tokens.kah.json";
-import tokensPah from "./tokens.pah.json";
-import tokensPasah from "./tokens.pasah.json";
-import tokensWah from "./tokens.wah.json";
 import tokensNative from "./tokens-native.json";
 import tokensOverridesJson from "./tokens-overrides.json";
 import type { Token, TokenId, TokenNoId, TokenType } from "./types";
