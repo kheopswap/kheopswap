@@ -9,6 +9,7 @@ export const Shimmer: FC<{ children?: ReactNode; className?: string }> = ({
 	return (
 		<Pulse
 			pulse
+			aria-hidden="true"
 			className={cn(
 				"select-none rounded-sm",
 				className,
