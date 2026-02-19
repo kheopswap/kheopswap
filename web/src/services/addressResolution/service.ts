@@ -14,7 +14,7 @@ import {
 import { getApi } from "../../papi/getApi";
 import type { ChainId } from "../../registry/chains/types";
 import {
-	getEthereumAddressFixedSizeBinary,
+	getEthereumAddressSizedHex,
 	getSs58AddressFallback,
 	isEthereumAddress,
 } from "../../utils/ethereumAddress";
@@ -55,7 +55,7 @@ export const getResolvedSubstrateAddress$ = ({
 							switchMap(() =>
 								from(
 									api.query.Revive.OriginalAccount.getValue(
-										getEthereumAddressFixedSizeBinary(address),
+										getEthereumAddressSizedHex(address),
 									),
 								),
 							),

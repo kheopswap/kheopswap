@@ -1,5 +1,5 @@
 import { bind } from "@react-rxjs/core";
-import { switchMap } from "rxjs";
+import { map, switchMap } from "rxjs";
 import { getApi$ } from "../../papi/getApi";
 import { assetHub$ } from "../../state/relay";
 
@@ -7,9 +7,10 @@ const [useBestBlockNumber] = bind(
 	assetHub$.pipe(
 		switchMap((assetHub) =>
 			getApi$(assetHub.id).pipe(
-				switchMap((api) => api.query.System.Number.watchValue("best")),
+				switchMap((api) => api.query.System.Number.watchValue({ at: "best" })),
 			),
 		),
+		map((update) => update.value),
 	),
 	null,
 );
@@ -18,9 +19,12 @@ const [useFinalizedBlockNumber] = bind(
 	assetHub$.pipe(
 		switchMap((assetHub) =>
 			getApi$(assetHub.id).pipe(
-				switchMap((api) => api.query.System.Number.watchValue("finalized")),
+				switchMap((api) =>
+					api.query.System.Number.watchValue({ at: "finalized" }),
+				),
 			),
 		),
+		map((update) => update.value),
 	),
 	null,
 );

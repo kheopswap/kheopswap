@@ -343,7 +343,7 @@ const useTransactionProvider = ({
 				}
 
 				const encodedCallData = await call.getEncodedData();
-				const callData = toHex(encodedCallData.asBytes());
+				const callData = toHex(encodedCallData);
 
 				txEvents$ = createEthereumTxObservable({
 					account,

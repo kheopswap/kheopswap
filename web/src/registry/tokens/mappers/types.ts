@@ -1,13 +1,9 @@
-export type TextLike = {
-	asText: () => string;
-};
-
 export type AssetMetadataEntry = {
 	keyArgs: [number];
 	value: {
 		decimals: number;
-		symbol: TextLike;
-		name: TextLike;
+		symbol: Uint8Array;
+		name: Uint8Array;
 	};
 };
 
@@ -44,7 +40,7 @@ export type ForeignMetadataEntry<
 	keyArgs: [Location];
 	value: {
 		decimals: number;
-		symbol: TextLike;
-		name: TextLike;
+		symbol: Uint8Array;
+		name: Uint8Array;
 	};
 };

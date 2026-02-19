@@ -6,7 +6,7 @@
 			"wsUrl": "wss://rpc-asset-hub-polkadot.luckyfriday.io",
 			"metadata": ".papi/scale/pah.scale",
 			"genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
-			"codeHash": "0x459e6d0d0ce817a0332b56c9fa22a5b0e7b2fd0f7c59adb2d761cd9ff8441274"
+			"codeHash": "0xc9a41123542a13aefbf7f98350fd1284c9eb403385697412d697fc1c955abb65"
 		},
 		"kah": {
 			"wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",

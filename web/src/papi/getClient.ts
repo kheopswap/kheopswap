@@ -1,6 +1,5 @@
 import { createClient, type PolkadotClient } from "polkadot-api";
-import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
-import { getWsProvider } from "polkadot-api/ws-provider";
+import { getWsProvider } from "polkadot-api/ws";
 import { getChainById } from "../registry/chains/chains";
 import type { Chain, ChainId } from "../registry/chains/types";
 import { getCachedPromise } from "../utils/getCachedPromise";
@@ -40,10 +39,7 @@ const getAssetHubClient = async (chain: Chain, options: ClientOptions) => {
 	const { id: chainId, relay: relayId } = chain;
 
 	if (!options.lightClients || !hasChainSpec(chainId) || !hasChainSpec(relayId))
-		return createClient(
-			withPolkadotSdkCompat(getWsProvider(chain.wsUrl)),
-			metadataCacheOptions,
-		);
+		return createClient(getWsProvider(chain.wsUrl), metadataCacheOptions);
 
 	const [relayChainSpec, paraChainSpec] = await Promise.all([
 		getChainSpec(relayId),

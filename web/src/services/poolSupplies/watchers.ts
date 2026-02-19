@@ -75,11 +75,11 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 		filter((pool) => !!pool),
 		distinctUntilChanged<Pool>(isEqual),
 		mergeMap((pool) =>
-			api.query.PoolAssets.Asset.watchValue(pool.poolAssetId, "best"),
+			api.query.PoolAssets.Asset.watchValue(pool.poolAssetId, { at: "best" }),
 		),
 	);
 
-	const supplySub = chainPool$.subscribe((assetPool) => {
+	const supplySub = chainPool$.subscribe(({ value: assetPool }) => {
 		const supply = assetPool?.supply || 0n;
 		updatePoolSupply(poolSupplyId, supply);
 	});

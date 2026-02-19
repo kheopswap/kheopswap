@@ -199,11 +199,11 @@ export const getTokenDisplayProperties = (token: Token): DisplayProperty[] => {
 					},
 					{
 						label: "Contract address",
-						value: interior.value[1].value.key.asHex(),
+						value: interior.value[1].value.key,
 						format: "address",
 						url: getBlockExplorerUrl(
 							network?.explorerUrl,
-							interior.value[1].value.key.asHex(),
+							interior.value[1].value.key,
 							"address",
 						),
 					},

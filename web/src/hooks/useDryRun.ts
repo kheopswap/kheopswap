@@ -1,6 +1,5 @@
-import { Enum } from "@polkadot-api/substrate-bindings";
 import { useQuery } from "@tanstack/react-query";
-import type { SS58String } from "polkadot-api";
+import { Enum, type SS58String } from "polkadot-api";
 import { type Api, getApi } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
 import type { AnyTransaction } from "../types/transactions";

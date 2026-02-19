@@ -66,5 +66,5 @@ export const getScChainProvider = ({
 }: ScProviderProps) => {
 	client ??= createScClient();
 
-	return getSmProvider(getScChain({ chainId, relayChainId, chainSpec }));
+	return getSmProvider(() => getScChain({ chainId, relayChainId, chainSpec }));
 };

@@ -26,8 +26,10 @@ export const useNonce = ({ account, chainId }: UseNonceProps) => {
 
 		setState({ data: undefined, isLoading: true, error: null });
 
-		const sub = api.query.System.Account.watchValue(account, "best").subscribe({
-			next: (accountInfo) => {
+		const sub = api.query.System.Account.watchValue(account, {
+			at: "best",
+		}).subscribe({
+			next: ({ value: accountInfo }) => {
 				setState({
 					data: accountInfo.nonce,
 					isLoading: false,

@@ -55,10 +55,10 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		case "native": {
 			const [minBalance, supply$] = await Promise.all([
 				api.constants.Balances.ExistentialDeposit(),
-				api.query.Balances.TotalIssuance.watchValue("best"),
+				api.query.Balances.TotalIssuance.watchValue({ at: "best" }),
 			]);
 
-			return supply$.subscribe((supply) => {
+			return supply$.subscribe(({ value: supply }) => {
 				updateTokenInfo({
 					id: tokenId as TokenIdNative,
 					type: "native",
@@ -69,12 +69,11 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		}
 
 		case "asset": {
-			const tokenInfo$ = api.query.Assets.Asset.watchValue(
-				token.assetId,
-				"best",
-			);
+			const tokenInfo$ = api.query.Assets.Asset.watchValue(token.assetId, {
+				at: "best",
+			});
 
-			return tokenInfo$.subscribe((asset) => {
+			return tokenInfo$.subscribe(({ value: asset }) => {
 				if (asset)
 					updateTokenInfo({
 						id: tokenId as TokenIdAsset,
@@ -94,10 +93,10 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		case "foreign-asset": {
 			const tokenInfo$ = api.query.ForeignAssets.Asset.watchValue(
 				token.location,
-				"best",
+				{ at: "best" },
 			);
 
-			return tokenInfo$.subscribe((asset) => {
+			return tokenInfo$.subscribe(({ value: asset }) => {
 				if (asset)
 					updateTokenInfo({
 						id: tokenId as TokenIdForeignAsset,
@@ -117,10 +116,10 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		case "pool-asset": {
 			const tokenInfo$ = api.query.PoolAssets.Asset.watchValue(
 				token.poolAssetId,
-				"best",
+				{ at: "best" },
 			);
 
-			return tokenInfo$.subscribe((asset) => {
+			return tokenInfo$.subscribe(({ value: asset }) => {
 				if (asset)
 					updateTokenInfo({
 						id: tokenId as TokenIdPoolAsset,

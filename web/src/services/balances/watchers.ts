@@ -60,9 +60,11 @@ const watchBalance = async (balanceId: BalanceId) => {
 
 	switch (token.type) {
 		case "native": {
-			const account$ = api.query.System.Account.watchValue(address, "best");
+			const account$ = api.query.System.Account.watchValue(address, {
+				at: "best",
+			});
 
-			return account$.subscribe((account) => {
+			return account$.subscribe(({ value: account }) => {
 				const balance = account.data.free - account.data.frozen;
 
 				updateBalance(balanceId, balance);
@@ -72,10 +74,10 @@ const watchBalance = async (balanceId: BalanceId) => {
 			const account$ = api.query.Assets.Account.watchValue(
 				token.assetId,
 				address,
-				"best",
+				{ at: "best" },
 			);
 
-			return account$.subscribe((account) => {
+			return account$.subscribe(({ value: account }) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
 				updateBalance(balanceId, balance);
@@ -85,10 +87,10 @@ const watchBalance = async (balanceId: BalanceId) => {
 			const account$ = api.query.PoolAssets.Account.watchValue(
 				token.poolAssetId,
 				address,
-				"best",
+				{ at: "best" },
 			);
 
-			return account$.subscribe((account) => {
+			return account$.subscribe(({ value: account }) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
 				updateBalance(balanceId, balance);
@@ -98,10 +100,10 @@ const watchBalance = async (balanceId: BalanceId) => {
 			const account$ = api.query.ForeignAssets.Account.watchValue(
 				token.location,
 				address,
-				"best",
+				{ at: "best" },
 			);
 
-			return account$.subscribe((account) => {
+			return account$.subscribe(({ value: account }) => {
 				const balance =
 					account?.status.type === "Liquid" ? account.balance : 0n;
 				updateBalance(balanceId, balance);

@@ -1,3 +1,4 @@
+import { Binary } from "polkadot-api";
 import { safeStringify } from "../../../utils/serialization.ts";
 import { isEthereumOriginLocation } from "./isEthereumOriginLocation.ts";
 import type {
@@ -31,9 +32,9 @@ export function mapForeignAssetTokensFromEntries<
 				(meta) =>
 					safeStringify(meta.keyArgs[0]) === safeStringify(asset.keyArgs[0]),
 			)?.value;
-			const symbol = metadata?.symbol.asText() ?? "";
+			const symbol = metadata ? Binary.toText(metadata.symbol) : "";
 			const decimals = metadata?.decimals ?? 0;
-			const name = metadata?.name.asText() ?? "";
+			const name = metadata ? Binary.toText(metadata.name) : "";
 			const isSufficient = asset.value.is_sufficient ?? false;
 			return {
 				type: "foreign-asset" as const,

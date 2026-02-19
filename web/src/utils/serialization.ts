@@ -1,13 +1,12 @@
 import { Binary } from "polkadot-api";
 
 import { isBigInt } from "./isBigInt.ts";
-import { isBinary } from "./isBinary.ts";
 
 export const safeJsonReplacer = (_key: string, value: unknown) =>
 	isBigInt(value)
 		? `bigint:${value.toString()}`
-		: isBinary(value)
-			? `binary:${value.asHex()}`
+		: value instanceof Uint8Array
+			? `binary:${Binary.toHex(value)}`
 			: value;
 
 export const safeStringify = (value: unknown, format?: boolean) => {
