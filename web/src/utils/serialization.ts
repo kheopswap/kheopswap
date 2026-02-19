@@ -1,7 +1,7 @@
 import { Binary } from "polkadot-api";
 
-import { isBigInt } from "./isBigInt";
-import { isBinary } from "./isBinary";
+import { isBigInt } from "./isBigInt.ts";
+import { isBinary } from "./isBinary.ts";
 
 export const safeStringify = (value: unknown, format?: boolean) => {
 	if (!value) return value?.toString() ?? "";
