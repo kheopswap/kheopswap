@@ -290,7 +290,7 @@ async function notifyDiscordFailure(error: unknown): Promise<void> {
 		content: [
 			"🚨 `pnpm fetch-tokens` failed",
 			`Repository: ${process.env.GITHUB_REPOSITORY ?? "local"}`,
-			runUrl ? `Run: ${runUrl}` : "Run: local",
+			runUrl ? `Run: <${runUrl}>` : "Run: local",
 			"```",
 			truncate(message, 1500),
 			"```",
@@ -318,7 +318,7 @@ async function notifyDiscordWarningsSummary(warnings: string[]): Promise<void> {
 		content: [
 			"⚠️ `pnpm fetch-tokens` completed with warnings",
 			`Repository: ${process.env.GITHUB_REPOSITORY ?? "local"}`,
-			runUrl ? `Run: ${runUrl}` : "Run: local",
+			runUrl ? `Run: <${runUrl}>` : "Run: local",
 			"```",
 			truncate(summary, 1500),
 			"```",
