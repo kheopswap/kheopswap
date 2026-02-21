@@ -110,7 +110,7 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 					) {
 						logger.warn(
 							"Contract:",
-							token.location.interior.value[1].value.key.asHex(),
+							token.location.interior.value[1].value.key,
 						);
 					}
 				}

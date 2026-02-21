@@ -35,8 +35,7 @@ import {
 import { resolve } from "node:path";
 import lzs from "lz-string";
 import { createClient, type PolkadotClient, type TypedApi } from "polkadot-api";
-import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
-import { getWsProvider } from "polkadot-api/ws-provider";
+import { getWsProvider } from "polkadot-api/ws";
 import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
 import { DESCRIPTORS_ASSET_HUB } from "../src/registry/chains/descriptors.ts";
@@ -180,19 +179,14 @@ function saveErc20Cache(cache: Erc20Cache): void {
 
 /**
  * Extract the hex contract address from an Ethereum-origin foreign asset.
- * The address is stored as `"binary:0x..."` after JSON serialization, but at
- * this point the value is still a PAPI Binary instance or a raw string.
+ * In PAPI v2, AccountKey20.key is a SizedHex (hex string).
  */
 function getContractAddress(token: TokenNoId): string | null {
 	try {
 		const key = token.location.interior.value[1].value.key;
-		// key may be a PAPI Binary with asHex(), or a pre-serialized "binary:0x…" string
+		// key is a SizedHex string in v2, or a pre-serialized "binary:0x…" string
 		const hex: string =
-			typeof key === "string"
-				? key.replace(/^binary:/, "")
-				: typeof key?.asHex === "function"
-					? key.asHex()
-					: "";
+			typeof key === "string" ? key.replace(/^binary:/, "") : "";
 		return hex?.startsWith("0x") ? hex.toLowerCase() : null;
 	} catch {
 		return null;
@@ -906,7 +900,7 @@ async function fetchTokensForChain(
 	let client: PolkadotClient | undefined;
 
 	try {
-		client = createClient(withPolkadotSdkCompat(getWsProvider(chain.wsUrl)));
+		client = createClient(getWsProvider(chain.wsUrl));
 		const api = client.getTypedApi(chain.descriptors);
 
 		// Wait for the chain to be reachable

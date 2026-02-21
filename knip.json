@@ -8,7 +8,11 @@
 		"web": {
 			"entry": ["src/main.tsx", "scripts/fetch-tokens.ts"],
 			"project": ["src/**/*.{ts,tsx}"],
-			"ignoreDependencies": ["tailwindcss"],
+			"ignoreDependencies": [
+				"tailwindcss",
+				"@polkadot-api/metadata-builders",
+				"@polkadot-api/substrate-bindings"
+			],
 			"ignore": ["src/types/helpers.ts"]
 		}
 	},

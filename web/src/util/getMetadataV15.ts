@@ -12,7 +12,7 @@ export const getMetadataV15 = (chainId: ChainId) =>
 			const binary = await api.apis.Metadata.metadata_at_version(15);
 			if (!binary) throw new Error("Could not fetch metadata");
 
-			const decoded = decAnyMetadata(binary.asBytes());
+			const decoded = decAnyMetadata(binary);
 			if (decoded.metadata.tag !== "v15")
 				throw new Error("Unexpected metadata version");
 

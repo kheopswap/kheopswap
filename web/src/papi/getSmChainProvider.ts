@@ -2,7 +2,7 @@ import { getSmProvider } from "polkadot-api/sm-provider";
 import type { ChainId, RelayId } from "../registry/chains/types";
 import { getCachedPromise } from "../utils/getCachedPromise";
 
-type Chain = Awaited<Parameters<typeof getSmProvider>[0]>;
+type Chain = Awaited<ReturnType<Parameters<typeof getSmProvider>[0]>>;
 
 type ChainDef = {
 	chainId: ChainId;
@@ -35,5 +35,5 @@ export const getSmChainProvider = async (
 	const relay = relayDef ? await loadChain(relayDef) : undefined;
 	const chain = await loadChain(chainDef, relay);
 
-	return getSmProvider(chain);
+	return getSmProvider(() => Promise.resolve(chain));
 };

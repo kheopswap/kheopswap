@@ -1,9 +1,12 @@
-import { AccountId, FixedSizeBinary, type SS58String } from "polkadot-api";
+import {
+	AccountId,
+	Binary,
+	type SizedHex,
+	type SS58String,
+} from "polkadot-api";
 import { fromHex } from "polkadot-api/utils";
 import { isAddress } from "viem";
 import { isValidSs58Address } from "./isValidSs58Address";
-
-export { ss58ToEthereum } from "@polkadot-api/sdk-ink";
 
 const EVM_SUFFIX = new Uint8Array(12).fill(0xee);
 
@@ -38,16 +41,16 @@ export const getSs58AddressFallback = (
 };
 
 /**
- * Convert an EVM address to a FixedSizeBinary<20> (H160-compatible) value.
+ * Convert an EVM address to a SizedHex<20> (H160-compatible) value.
  */
-export const getEthereumAddressFixedSizeBinary = (
+export const getEthereumAddressSizedHex = (
 	evmAddress: `0x${string}`,
-): FixedSizeBinary<20> => {
-	const binary = FixedSizeBinary.fromHex(evmAddress) as FixedSizeBinary<20>;
+): SizedHex<20> => {
+	const bytes = Binary.fromHex(evmAddress);
 
-	if (binary.asBytes().length !== 20) {
+	if (bytes.length !== 20) {
 		throw new Error("Invalid ethereum address byte length");
 	}
 
-	return binary;
+	return evmAddress.toLowerCase() as SizedHex<20>;
 };

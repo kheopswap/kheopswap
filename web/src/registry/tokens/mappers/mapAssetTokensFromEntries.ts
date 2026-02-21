@@ -1,3 +1,4 @@
+import { Binary } from "polkadot-api";
 import type { AssetMetadataEntry } from "./types.ts";
 
 export function mapAssetTokensFromEntries(
@@ -21,8 +22,8 @@ export function mapAssetTokensFromEntries(
 			type: "asset",
 			chainId,
 			decimals: entry.value.decimals,
-			symbol: entry.value.symbol.asText(),
-			name: entry.value.name.asText(),
+			symbol: Binary.toText(entry.value.symbol),
+			name: Binary.toText(entry.value.name),
 			logo: undefined,
 			assetId,
 			verified: false,

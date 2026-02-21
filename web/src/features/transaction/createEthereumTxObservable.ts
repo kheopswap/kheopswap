@@ -121,7 +121,7 @@ const waitForSubstrateBlockHash = async (
 					signal,
 				},
 			);
-			const hash = blockHashValue.asHex();
+			const hash = blockHashValue;
 
 			if (hash && hash !== ZERO_HASH) return hash;
 		} catch (err) {
@@ -154,7 +154,7 @@ const waitForFinalization = async (
 				blockNumber,
 				{ at: "finalized", signal },
 			);
-			const finalizedHash = finalizedHashValue.asHex();
+			const finalizedHash = finalizedHashValue;
 
 			if (finalizedHash && finalizedHash !== ZERO_HASH) {
 				if (finalizedHash !== expectedHash) {

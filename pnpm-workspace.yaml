@@ -7,3 +7,6 @@ minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   - "@kheopskit/core"
   - "@kheopskit/react"
+  - "polkadot-api"
+  - "@polkadot-api/*"
+  - "@types/node"
