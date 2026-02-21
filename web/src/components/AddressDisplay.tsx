@@ -4,7 +4,6 @@ import type { WalletAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
 import { type FC, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
-import { useCopyToClipboard } from "usehooks-ts";
 import { isAddress as isEvmAddress } from "viem";
 import { getAccountName } from "../util/getAccountName";
 import { cn } from "../utils/cn";
@@ -44,7 +43,15 @@ export const AddressDisplay: FC<{
 	pulse?: boolean;
 }> = ({ address, url, pulse, className, iconClassName }) => {
 	const { accounts } = useWallets();
-	const [, copyToClipboard] = useCopyToClipboard();
+
+	const copyToClipboard = useCallback(async (text: string) => {
+		try {
+			await navigator.clipboard.writeText(text);
+			return true;
+		} catch {
+			return false;
+		}
+	}, []);
 
 	const account = useMemo(
 		() => accounts.find((a) => a.address === address),

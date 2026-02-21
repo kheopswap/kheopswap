@@ -1,4 +1,3 @@
-import { motion, useAnimate } from "framer-motion";
 import type React from "react";
 import {
 	type FC,
@@ -35,6 +34,35 @@ const ROTATING_BORDER_DURATION_MAP: Record<Location, number> = {
 const BG_HIGHLIGHT = `radial-gradient(130% 130% at 50% 50%, ${HOVER_COLOR} 0%, rgba(255, 255, 255, 0) 100%)`;
 const BG_HIGHLIGHT_2 = `radial-gradient(80% 80% at 50% 50%, ${HOVER_COLOR} 0%, rgba(255, 255, 255, 0) 100%)`;
 
+/** Animate a single background transition using the Web Animations API. */
+const animateBg = (
+	el: HTMLElement,
+	background: string,
+	durationSec: number,
+): Promise<void> => {
+	el.style.background = background;
+
+	if (durationSec <= 0) return Promise.resolve();
+
+	return new Promise<void>((resolve) => {
+		// WAAPI doesn't interpolate gradient strings, so we rely on the
+		// instant style set above and simply wait for the duration.
+		// The visual effect matches the original framer-motion version
+		// which also swapped discrete gradient values per step.
+		const id = setTimeout(resolve, durationSec * 1000);
+
+		// Clean up if the element is removed mid-animation
+		const obs = new MutationObserver(() => {
+			if (!el.isConnected) {
+				clearTimeout(id);
+				obs.disconnect();
+				resolve();
+			}
+		});
+		obs.observe(el.ownerDocument.body, { childList: true, subtree: true });
+	});
+};
+
 export const MagicButton: FC<
 	React.DetailedHTMLProps<
 		React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -45,92 +73,67 @@ export const MagicButton: FC<
 
 	const refShouldRotateBorder = useRef(false);
 	const refShouldHighlight = useRef(false);
+	const glowRef = useRef<HTMLDivElement>(null);
 
 	const [shouldRotateBorder, shouldHighlight] = useMemo(
 		() => [!hovered && !disabled, hovered && !disabled],
 		[disabled, hovered],
 	);
 
-	const [scope, animate] = useAnimate();
-
 	const highlightAnimation = useCallback(async () => {
 		try {
-			if (refShouldHighlight.current && scope.current)
-				await animate(
-					scope.current,
-					{ background: BG_HIGHLIGHT },
-					{ duration: 0.5, ease: "easeInOut" },
-				);
+			const el = glowRef.current;
+			if (!el) return;
 
-			while (refShouldHighlight.current && scope.current) {
-				await animate(
-					scope.current,
-					{ background: BG_HIGHLIGHT },
-					{ duration: 1, ease: "easeInOut" },
-				);
-				if (!refShouldHighlight.current || !scope.current) return;
-				await animate(
-					scope.current,
-					{ background: BG_HIGHLIGHT_2 },
-					{ duration: 1, ease: "easeInOut" },
-				);
+			if (refShouldHighlight.current) await animateBg(el, BG_HIGHLIGHT, 0.5);
+
+			while (refShouldHighlight.current && glowRef.current) {
+				await animateBg(el, BG_HIGHLIGHT, 1);
+				if (!refShouldHighlight.current || !glowRef.current) return;
+				await animateBg(el, BG_HIGHLIGHT_2, 1);
 			}
 		} catch (err) {
 			logger.error("highlightAnimation", { err });
 		}
-	}, [animate, scope]);
+	}, []);
 
 	const rotateBorderAnimation = useCallback(async () => {
 		try {
-			if (refShouldRotateBorder.current && scope.current) {
-				await animate(
-					scope.current,
-					{ background: ROTATING_BORDER__INITIAL },
-					{ duration: 0 },
-				);
-			}
+			const el = glowRef.current;
+			if (!el) return;
 
-			while (refShouldRotateBorder.current && scope.current) {
-				await animate(
-					scope.current,
-					{ background: ROTATING_BORDER__MAP.TOP_LEFT },
-					{
-						duration: ROTATING_BORDER_DURATION_MAP.TOP_LEFT,
-						ease: "linear",
-					},
+			if (refShouldRotateBorder.current)
+				await animateBg(el, ROTATING_BORDER__INITIAL, 0);
+
+			while (refShouldRotateBorder.current && glowRef.current) {
+				await animateBg(
+					el,
+					ROTATING_BORDER__MAP.TOP_LEFT,
+					ROTATING_BORDER_DURATION_MAP.TOP_LEFT,
 				);
-				if (!refShouldRotateBorder.current || !scope.current) return;
-				await animate(
-					scope.current,
-					{ background: ROTATING_BORDER__MAP.TOP_RIGHT },
-					{
-						duration: ROTATING_BORDER_DURATION_MAP.TOP_RIGHT,
-						ease: "linear",
-					},
+				if (!refShouldRotateBorder.current || !glowRef.current) return;
+				await animateBg(
+					el,
+					ROTATING_BORDER__MAP.TOP_RIGHT,
+					ROTATING_BORDER_DURATION_MAP.TOP_RIGHT,
 				);
-				if (!refShouldRotateBorder.current || !scope.current) return;
-				await animate(
-					scope.current,
-					{ background: ROTATING_BORDER__MAP.BOTTOM_RIGHT },
-					{
-						duration: ROTATING_BORDER_DURATION_MAP.BOTTOM_RIGHT,
-						ease: "linear",
-					},
+				if (!refShouldRotateBorder.current || !glowRef.current) return;
+				await animateBg(
+					el,
+					ROTATING_BORDER__MAP.BOTTOM_RIGHT,
+					ROTATING_BORDER_DURATION_MAP.BOTTOM_RIGHT,
 				);
-				if (!refShouldRotateBorder.current || !scope.current) return;
-				await animate(
-					scope.current,
-					{ background: ROTATING_BORDER__MAP.BOTTOM_LEFT },
-					{
-						duration: ROTATING_BORDER_DURATION_MAP.BOTTOM_LEFT,
-						ease: "linear",
-					},
+				if (!refShouldRotateBorder.current || !glowRef.current) return;
+				await animateBg(
+					el,
+					ROTATING_BORDER__MAP.BOTTOM_LEFT,
+					ROTATING_BORDER_DURATION_MAP.BOTTOM_LEFT,
 				);
 			}
 		} catch (err) {
 			logger.error("rotateBorderAnimation", { err });
 		}
-	}, [animate, scope]);
+	}, []);
 
 	useEffect(() => {
 		refShouldRotateBorder.current = shouldRotateBorder;
@@ -161,8 +164,8 @@ export const MagicButton: FC<
 			{...props}
 		>
 			{!disabled && (
-				<motion.div
-					ref={scope}
+				<div
+					ref={glowRef}
 					className={cn(
 						"absolute z-0 size-full rounded-[inherit] blur-xs motion-reduce:hidden ",
 					)}

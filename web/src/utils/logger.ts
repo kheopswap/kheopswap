@@ -1,8 +1,6 @@
-import { interval } from "rxjs";
 import { DEV } from "../common/constants";
 
 const isDevMode = DEV;
-const printCumulativeTimers = false;
 
 const NO_OP = () => {};
 
@@ -34,47 +32,5 @@ export const logger = {
 			}
 		: () => NO_OP,
 
-	cumulativeTimer: isDevMode
-		? (label: string) => {
-				const start = performance.now();
-
-				return () => {
-					const duration = performance.now() - start;
-					incrementCumulativeTimer(label, duration);
-				};
-			}
-		: () => NO_OP,
+	cumulativeTimer: (_label?: string) => NO_OP,
 };
-
-const CUMULATIVE_TIMERS = new Map<
-	string,
-	{ count: number; duration: number }
->();
-
-const incrementCumulativeTimer = (label: string, duration: number) => {
-	if (!CUMULATIVE_TIMERS.has(label))
-		CUMULATIVE_TIMERS.set(label, { count: 1, duration });
-	else {
-		const existing = CUMULATIVE_TIMERS.get(label);
-		if (existing) {
-			existing.count++;
-			existing.duration += duration;
-		}
-	}
-};
-
-if (isDevMode) {
-	interval(5000).subscribe(() => {
-		if (!printCumulativeTimers) return;
-		const timers = Array.from(CUMULATIVE_TIMERS.entries())
-			.map(([label, { count, duration }]) => ({
-				label,
-				duration: Math.round(duration),
-				count,
-				tpr: duration / count,
-			}))
-			.sort((t1, t2) => t2.duration - t1.duration);
-
-		if (timers.length) console.table(timers);
-	});
-}

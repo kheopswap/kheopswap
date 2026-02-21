@@ -1,21 +1,18 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import numeral from "numeral";
 import { type FC, useCallback, useMemo } from "react";
 import { Drawer } from "../../components/Drawer";
 import { DrawerContainer } from "../../components/DrawerContainer";
 import { useOpenClose } from "../../hooks/useOpenClose";
 import { useSetting } from "../../hooks/useSetting";
 import { cn } from "../../utils/cn";
+import { formatPercent } from "../../utils/formatPercent";
 
 const SlippageButton: FC<{
 	value: number;
 	selected?: boolean;
 	onClick: () => void;
 }> = ({ value, selected, onClick }) => {
-	const strSlippage = useMemo(
-		() => `${numeral(value * 100).format("0.[00]")}%`,
-		[value],
-	);
+	const strSlippage = useMemo(() => formatPercent(value), [value]);
 
 	return (
 		<button
@@ -72,10 +69,7 @@ const SlippageDrawerContent: FC<{ onClose: () => void }> = ({ onClose }) => {
 export const Slippage: FC<{ value: number }> = ({ value }) => {
 	const { isOpen, open, close } = useOpenClose();
 
-	const strSlippage = useMemo(
-		() => `${numeral(value * 100).format("0.[00]")}%`,
-		[value],
-	);
+	const strSlippage = useMemo(() => formatPercent(value), [value]);
 
 	return (
 		<>
