@@ -26,8 +26,9 @@ export type StorageToken = Pick<Token, "id" | "chainId" | "type"> &
 localStorage.removeItem(getLocalStorageKey("tokens"));
 localStorage.removeItem(getLocalStorageKey("tokens::v2"));
 localStorage.removeItem(getLocalStorageKey("tokens::v3"));
+localStorage.removeItem(getLocalStorageKey("tokens::v4"));
 
-const STORAGE_KEY = getLocalStorageKey("tokens::v4");
+const STORAGE_KEY = getLocalStorageKey("tokens::v5");
 
 const loadTokens = (): Record<string, StorageToken> => {
 	try {
