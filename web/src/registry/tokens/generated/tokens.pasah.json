@@ -3049,6 +3049,17 @@
 	{
 		"type": "asset",
 		"chainId": "pasah",
+		"decimals": 6,
+		"symbol": "fUSDCx",
+		"name": "Fake USD Coin X",
+		"assetId": 50000380,
+		"verified": false,
+		"isSufficient": false,
+		"id": "asset::pasah::50000380"
+	},
+	{
+		"type": "asset",
+		"chainId": "pasah",
 		"decimals": 5,
 		"symbol": "lop",
 		"name": "lop",
