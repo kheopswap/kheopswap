@@ -107,6 +107,26 @@ Features follow structure: `features/{name}/` with Provider, Form, components
 - **Code quality bar**: Always produce elegant, pristine, human-maintainable code. Split logic into appropriate sub-components, hooks, and files when it improves clarity, cohesion, and long-term maintainability.
 - **Chain-specific runtime APIs**: When runtime call signatures differ by chain, handle them explicitly with `switch (api.chainId)` and keep the logic simple. Do not use speculative multi-attempt fallback loops across different signatures.
 
+## DevTools MCP Verification Workflow
+
+After implementing UI or visual changes, systematically verify them using DevTools MCP (Chrome browser automation). Follow this workflow:
+
+1. **Check availability**: Before any DevTools interaction, call `list_pages` to confirm the MCP browser is reachable. If it fails, ask the user to start the DevTools MCP browser.
+2. **Navigate**: Use `navigate_page` to open `http://localhost:5173` (the only allowed port). Ensure the dev server is running first.
+3. **Take a snapshot**: Use `take_snapshot` to get the accessibility tree and discover element UIDs for interaction.
+4. **Visual verification**: Use `take_screenshot` to capture the current viewport. Compare against expected appearance. Take multiple screenshots over time to verify animations or transitions.
+5. **Interact and verify**: Use `hover`, `click`, `fill`, etc. to simulate user actions, then screenshot again to verify the resulting state.
+6. **Inspect computed styles**: Use `evaluate_script` to query DOM properties when visual inspection alone is insufficient (e.g., checking animation states, computed CSS values, element dimensions).
+
+### Verification Checklist
+
+- [ ] Idle/default state renders correctly
+- [ ] Hover states and transitions work as expected
+- [ ] State changes (e.g., hover → idle) transition smoothly
+- [ ] Animations are smooth, not teleporting or flickering
+- [ ] Text and layout are not broken by changes
+- [ ] Disabled states render correctly (if applicable)
+
 ## Before Completing Any Task
 
 Always run these commands to validate changes:

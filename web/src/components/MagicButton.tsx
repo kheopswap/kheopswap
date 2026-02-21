@@ -10,57 +10,116 @@ import {
 import { cn } from "../utils/cn";
 import { logger } from "../utils/logger";
 
-type Location = "TOP_LEFT" | "BOTTOM_LEFT" | "BOTTOM_RIGHT" | "TOP_RIGHT";
-
 const ANIMATION_DURATION_BASE = 1.5;
 const ROTATING_BORDER_COLOR = "#00B2FF";
-const HOVER_COLOR = "#00B2FF";
 
-const ROTATING_BORDER__INITIAL = `radial-gradient(0% 0% at 0% 0%, ${ROTATING_BORDER_COLOR} 0%, rgba(255, 255, 255, 0) 100%)`;
-const ROTATING_BORDER__MAP: Record<Location, string> = {
-	TOP_LEFT: `radial-gradient(20% 50% at 0% 0%, ${ROTATING_BORDER_COLOR} 0%, rgba(255, 255, 255, 0) 100%)`,
-	TOP_RIGHT: `radial-gradient(20% 50% at 100% 0%, ${ROTATING_BORDER_COLOR}  0%, rgba(255, 255, 255, 0) 100%)`,
-	BOTTOM_RIGHT: `radial-gradient(20% 50% at 100% 100%, ${ROTATING_BORDER_COLOR}  0%, rgba(255, 255, 255, 0) 100%)`,
-	BOTTOM_LEFT: `radial-gradient(20% 50% at 0% 100%, ${ROTATING_BORDER_COLOR}  0%, rgba(255, 255, 255, 0) 100%)`,
+// Corner positions for the rotating border glow (x%, y%)
+const CORNERS = [
+	{ x: 0, y: 0 }, // TOP_LEFT
+	{ x: 100, y: 0 }, // TOP_RIGHT
+	{ x: 100, y: 100 }, // BOTTOM_RIGHT
+	{ x: 0, y: 100 }, // BOTTOM_LEFT
+] as const;
+
+// Duration (seconds) per edge segment
+const CORNER_DURATIONS = [
+	ANIMATION_DURATION_BASE * 0.25, // TL → TR
+	ANIMATION_DURATION_BASE * 1, // TR → BR  (long edge)
+	ANIMATION_DURATION_BASE * 0.25, // BR → BL
+	ANIMATION_DURATION_BASE * 1, // BL → TL  (long edge)
+];
+
+/** Cancel all running WAAPI animations on an element and commit styles. */
+const cancelAnimations = (el: HTMLElement) => {
+	for (const a of el.getAnimations()) a.cancel();
 };
 
-const ROTATING_BORDER_DURATION_MAP: Record<Location, number> = {
-	TOP_LEFT: ANIMATION_DURATION_BASE * 0.25,
-	TOP_RIGHT: ANIMATION_DURATION_BASE * 1,
-	BOTTOM_RIGHT: ANIMATION_DURATION_BASE * 0.25,
-	BOTTOM_LEFT: ANIMATION_DURATION_BASE * 1,
-};
-
-const BG_HIGHLIGHT = `radial-gradient(130% 130% at 50% 50%, ${HOVER_COLOR} 0%, rgba(255, 255, 255, 0) 100%)`;
-const BG_HIGHLIGHT_2 = `radial-gradient(80% 80% at 50% 50%, ${HOVER_COLOR} 0%, rgba(255, 255, 255, 0) 100%)`;
-
-/** Animate a single background transition using the Web Animations API. */
-const animateBg = (
+/**
+ * Animates a positioned glow element around the button edges using WAAPI.
+ * Uses `left`/`top` keyframes which WAAPI interpolates natively.
+ */
+const runRotateBorderAnimation = async (
 	el: HTMLElement,
-	background: string,
-	durationSec: number,
-): Promise<void> => {
-	el.style.background = background;
+	shouldContinue: () => boolean,
+) => {
+	try {
+		cancelAnimations(el);
 
-	if (durationSec <= 0) return Promise.resolve();
+		// Reset to small spot for edge rotation
+		el.style.width = "40%";
+		el.style.height = "40%";
+		el.style.left = "0%";
+		el.style.top = "0%";
+		el.style.opacity = "1";
+		el.style.filter = "blur(8px)";
 
-	return new Promise<void>((resolve) => {
-		// WAAPI doesn't interpolate gradient strings, so we rely on the
-		// instant style set above and simply wait for the duration.
-		// The visual effect matches the original framer-motion version
-		// which also swapped discrete gradient values per step.
-		const id = setTimeout(resolve, durationSec * 1000);
+		while (shouldContinue() && el.isConnected) {
+			for (let i = 0; i < CORNERS.length; i++) {
+				if (!shouldContinue() || !el.isConnected) return;
 
-		// Clean up if the element is removed mid-animation
-		const obs = new MutationObserver(() => {
-			if (!el.isConnected) {
-				clearTimeout(id);
-				obs.disconnect();
-				resolve();
+				const next = CORNERS[(i + 1) % CORNERS.length];
+				const duration = CORNER_DURATIONS[i];
+				if (!next || duration === undefined) continue;
+
+				const anim = el.animate(
+					[
+						{}, // from current position
+						{ left: `${next.x}%`, top: `${next.y}%` },
+					],
+					{ duration: duration * 1000, easing: "linear", fill: "forwards" },
+				);
+
+				await anim.finished;
+				// Commit the final value so next animation starts from here
+				el.style.left = `${next.x}%`;
+				el.style.top = `${next.y}%`;
+				anim.cancel();
 			}
-		});
-		obs.observe(el.ownerDocument.body, { childList: true, subtree: true });
-	});
+		}
+	} catch (err) {
+		logger.error("rotateBorderAnimation", { err });
+	}
+};
+
+const runHighlightAnimation = async (
+	el: HTMLElement,
+	shouldContinue: () => boolean,
+) => {
+	try {
+		if (!shouldContinue() || !el.isConnected) return;
+
+		cancelAnimations(el);
+
+		// Oversized glow centered on button so it bleeds past edges
+		el.style.width = "120%";
+		el.style.height = "300%";
+		el.style.left = "50%";
+		el.style.top = "50%";
+		el.style.filter = "blur(20px)";
+		el.style.opacity = "1";
+
+		// Gentle pulse loop
+		while (shouldContinue() && el.isConnected) {
+			const pulse = el.animate(
+				[
+					{ transform: "translate(-50%,-50%) scale(1)" },
+					{ transform: "translate(-50%,-50%) scale(0.7)" },
+				],
+				{
+					duration: 1200,
+					easing: "ease-in-out",
+					direction: "alternate",
+					iterations: 2,
+					fill: "forwards",
+				},
+			);
+			await pulse.finished;
+			pulse.cancel();
+			el.style.transform = "translate(-50%, -50%)";
+		}
+	} catch (err) {
+		logger.error("highlightAnimation", { err });
+	}
 };
 
 export const MagicButton: FC<
@@ -80,59 +139,16 @@ export const MagicButton: FC<
 		[disabled, hovered],
 	);
 
-	const highlightAnimation = useCallback(async () => {
-		try {
-			const el = glowRef.current;
-			if (!el) return;
-
-			if (refShouldHighlight.current) await animateBg(el, BG_HIGHLIGHT, 0.5);
-
-			while (refShouldHighlight.current && glowRef.current) {
-				await animateBg(el, BG_HIGHLIGHT, 1);
-				if (!refShouldHighlight.current || !glowRef.current) return;
-				await animateBg(el, BG_HIGHLIGHT_2, 1);
-			}
-		} catch (err) {
-			logger.error("highlightAnimation", { err });
-		}
+	const rotateBorderAnimation = useCallback(async () => {
+		const el = glowRef.current;
+		if (!el) return;
+		await runRotateBorderAnimation(el, () => refShouldRotateBorder.current);
 	}, []);
 
-	const rotateBorderAnimation = useCallback(async () => {
-		try {
-			const el = glowRef.current;
-			if (!el) return;
-
-			if (refShouldRotateBorder.current)
-				await animateBg(el, ROTATING_BORDER__INITIAL, 0);
-
-			while (refShouldRotateBorder.current && glowRef.current) {
-				await animateBg(
-					el,
-					ROTATING_BORDER__MAP.TOP_LEFT,
-					ROTATING_BORDER_DURATION_MAP.TOP_LEFT,
-				);
-				if (!refShouldRotateBorder.current || !glowRef.current) return;
-				await animateBg(
-					el,
-					ROTATING_BORDER__MAP.TOP_RIGHT,
-					ROTATING_BORDER_DURATION_MAP.TOP_RIGHT,
-				);
-				if (!refShouldRotateBorder.current || !glowRef.current) return;
-				await animateBg(
-					el,
-					ROTATING_BORDER__MAP.BOTTOM_RIGHT,
-					ROTATING_BORDER_DURATION_MAP.BOTTOM_RIGHT,
-				);
-				if (!refShouldRotateBorder.current || !glowRef.current) return;
-				await animateBg(
-					el,
-					ROTATING_BORDER__MAP.BOTTOM_LEFT,
-					ROTATING_BORDER_DURATION_MAP.BOTTOM_LEFT,
-				);
-			}
-		} catch (err) {
-			logger.error("rotateBorderAnimation", { err });
-		}
+	const highlightAnimation = useCallback(async () => {
+		const el = glowRef.current;
+		if (!el) return;
+		await runHighlightAnimation(el, () => refShouldHighlight.current);
 	}, []);
 
 	useEffect(() => {
@@ -164,12 +180,21 @@ export const MagicButton: FC<
 			{...props}
 		>
 			{!disabled && (
-				<div
-					ref={glowRef}
-					className={cn(
-						"absolute z-0 size-full rounded-[inherit] blur-xs motion-reduce:hidden ",
-					)}
-				/>
+				<div className="pointer-events-none absolute z-0 size-full overflow-visible rounded-[inherit]">
+					<div
+						ref={glowRef}
+						className="motion-reduce:hidden absolute"
+						style={{
+							width: "40%",
+							height: "40%",
+							left: "0%",
+							top: "0%",
+							transform: "translate(-50%, -50%)",
+							background: `radial-gradient(circle, ${ROTATING_BORDER_COLOR} 0%, rgba(255,255,255,0) 70%)`,
+							filter: "blur(8px)",
+						}}
+					/>
+				</div>
 			)}
 			<div className="absolute z-10 size-full overflow-hidden rounded-[inherit] p-px ">
 				<div
