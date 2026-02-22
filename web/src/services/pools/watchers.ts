@@ -72,7 +72,6 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 
 const watchPoolsByChain = (chainId: ChainId) => {
 	const watchController = new AbortController();
-	// let stop = false;
 	let retryTimeout = 3_000;
 
 	const refresh = async () => {

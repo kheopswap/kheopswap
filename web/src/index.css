@@ -368,3 +368,84 @@
 	--toastify-text-color-warning: #fafafa;
 	--toastify-text-color-error: #fafafa;
 }
+
+/* MagicButton glow animation — CSS @property enables smooth gradient interpolation */
+@property --glow-x {
+	syntax: "<percentage>";
+	initial-value: 0%;
+	inherits: false;
+}
+@property --glow-y {
+	syntax: "<percentage>";
+	initial-value: 0%;
+	inherits: false;
+}
+@property --glow-w {
+	syntax: "<percentage>";
+	initial-value: 20%;
+	inherits: false;
+}
+@property --glow-h {
+	syntax: "<percentage>";
+	initial-value: 50%;
+	inherits: false;
+}
+
+.magic-glow {
+	background: radial-gradient(
+		var(--glow-w) var(--glow-h) at var(--glow-x) var(--glow-y),
+		#00b2ff 0%,
+		rgba(255, 255, 255, 0) 100%
+	);
+}
+
+.magic-glow--rotate {
+	animation: magic-rotate-border 3.75s linear infinite;
+}
+
+.magic-glow--highlight {
+	--glow-x: 50%;
+	--glow-y: 50%;
+	animation: magic-highlight 2s ease-in-out infinite;
+}
+
+/*
+ * Rotating border: glow travels clockwise around the button edges.
+ * Timing mirrors original: TL→TR 0.375s, TR→BR 1.5s, BR→BL 0.375s, BL→TL 1.5s
+ * As percentages of 3.75s total: 10%, 50%, 60%, 100%
+ */
+@keyframes magic-rotate-border {
+	0% {
+		--glow-x: 0%;
+		--glow-y: 100%;
+	}
+	10% {
+		--glow-x: 0%;
+		--glow-y: 0%;
+	}
+	50% {
+		--glow-x: 100%;
+		--glow-y: 0%;
+	}
+	60% {
+		--glow-x: 100%;
+		--glow-y: 100%;
+	}
+	100% {
+		--glow-x: 0%;
+		--glow-y: 100%;
+	}
+}
+
+/* Highlight: pulsing glow centred on hover */
+@keyframes magic-highlight {
+	0%,
+	100% {
+		--glow-w: 130%;
+		--glow-h: 130%;
+	}
+	50% {
+		--glow-w: 80%;
+		--glow-h: 80%;
+	}
+}

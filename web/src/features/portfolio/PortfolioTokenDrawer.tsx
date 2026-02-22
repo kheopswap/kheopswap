@@ -3,7 +3,6 @@ import {
 	memo,
 	type ReactNode,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 } from "react";
@@ -451,10 +450,6 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 const DrawerContent: FC<{
 	tokenRow: PortfolioRowData;
 }> = ({ tokenRow }) => {
-	useEffect(() => {
-		console.debug("tokenRow", tokenRow);
-	}, [tokenRow]);
-
 	return (
 		<div>
 			<Header token={tokenRow.token} />

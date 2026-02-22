@@ -1,6 +1,6 @@
-import numeral from "numeral";
 import type { FC } from "react";
 import { cn } from "../../utils/cn";
+import { formatPercent } from "../../utils/formatPercent";
 
 export const PriceImpact: FC<{ value: number; className?: string }> = ({
 	value,
@@ -14,7 +14,7 @@ export const PriceImpact: FC<{ value: number; className?: string }> = ({
 				className,
 			)}
 		>
-			{numeral(value * 100).format("0.[00]")}%
+			{formatPercent(value)}
 		</span>
 	);
 };

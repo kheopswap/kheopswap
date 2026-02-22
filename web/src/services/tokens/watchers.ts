@@ -120,8 +120,6 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 			return true;
 		});
 
-	logger.info("foreign assets", foreignAssetTokens);
-
 	updateTokensStore(chain.id, "foreign-asset", foreignAssetTokens);
 };
 
