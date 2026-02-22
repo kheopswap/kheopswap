@@ -1,4 +1,3 @@
-import { fromPairs } from "lodash-es";
 import { BehaviorSubject, distinctUntilChanged, map, shareReplay } from "rxjs";
 import { getChains } from "../registry/chains/chains";
 import type { ChainId } from "../registry/chains/types";
@@ -22,10 +21,9 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 	const key = crypto.randomUUID();
 
 	const statusByChain$ = new BehaviorSubject<Record<ChainId, LoadingStatus>>(
-		fromPairs(getChains().map((chain) => [chain.id, "stale"])) as Record<
-			ChainId,
-			LoadingStatus
-		>,
+		Object.fromEntries(
+			getChains().map((chain) => [chain.id, "stale"]),
+		) as Record<ChainId, LoadingStatus>,
 	);
 
 	const loadingStatusByChain$ = statusByChain$
@@ -40,12 +38,10 @@ export const pollChainStatus = (label: string, refreshTimeout: number) => {
 		const chainIds = Array.isArray(chainId) ? chainId : [chainId];
 
 		if (chainIds.some((id) => statusByChain$.value[id] !== status))
-			statusByChain$.next(
-				Object.assign(
-					statusByChain$.value,
-					fromPairs(chainIds.map((id) => [id, status])),
-				),
-			);
+			statusByChain$.next({
+				...statusByChain$.value,
+				...Object.fromEntries(chainIds.map((id) => [id, status])),
+			});
 
 		stop();
 	};

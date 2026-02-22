@@ -69,6 +69,7 @@ export const TokenAmountPicker: FC<{
 	isLoadingBalance?: boolean;
 	onMaxClick?: () => void;
 	isComputingValue?: boolean;
+	inputLabel?: string;
 }> = ({
 	inputProps,
 	tokenId,
@@ -85,6 +86,7 @@ export const TokenAmountPicker: FC<{
 	onMaxClick,
 
 	isComputingValue,
+	inputLabel,
 }) => {
 	const token = useMemo(
 		() => (tokenId ? tokens?.[tokenId] : undefined),
@@ -108,6 +110,7 @@ export const TokenAmountPicker: FC<{
 					spellCheck={false}
 					autoComplete="off"
 					autoCorrect="off"
+					aria-label={inputLabel ?? "Token amount"}
 					className={cn(
 						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left text-2xl font-semibold text-white placeholder:text-white/50 focus:border-none focus:outline-hidden focus:ring-0",
 						isComputingValue && "invisible",

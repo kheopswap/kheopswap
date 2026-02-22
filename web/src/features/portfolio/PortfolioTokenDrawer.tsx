@@ -3,7 +3,6 @@ import {
 	memo,
 	type ReactNode,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 } from "react";
@@ -41,10 +40,10 @@ import type {
 	BalanceWithStable,
 	BalanceWithStableSummary,
 } from "../../types/balances";
-import { getAccountName } from "../../util/getAccountName";
-import { getTokenTypeLabel } from "../../util/getTokenTypeLabel";
 import { cn } from "../../utils/cn";
+import { getAccountName } from "../../utils/getAccountName";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
+import { getTokenTypeLabel } from "../../utils/getTokenTypeLabel";
 import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
 import { sortBigInt } from "../../utils/sortBigInt";
@@ -451,10 +450,6 @@ const TokenDetails = ({ row }: { row: PortfolioRowData }) => {
 const DrawerContent: FC<{
 	tokenRow: PortfolioRowData;
 }> = ({ tokenRow }) => {
-	useEffect(() => {
-		console.debug("tokenRow", tokenRow);
-	}, [tokenRow]);
-
 	return (
 		<div>
 			<Header token={tokenRow.token} />

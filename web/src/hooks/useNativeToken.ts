@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { Chain } from "../registry/chains/types";
 import type { TokenNative } from "../registry/tokens/types";
-import { getNativeToken } from "../util/getNativeToken";
+import { getNativeToken } from "../utils/getNativeToken";
 
 type UseNativeTokenProps<T extends Chain | null | undefined> = {
 	chain: T;

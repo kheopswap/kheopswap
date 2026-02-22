@@ -16,6 +16,7 @@ const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
 	<button
 		type="button"
 		onClick={onClick}
+		aria-label="Swap token direction"
 		className={cn(
 			Styles.button,
 			"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  p-2",
@@ -93,6 +94,7 @@ export const SwapTokensEditor = () => {
 				balance={balanceIn}
 				isLoadingBalance={isLoadingBalanceIn}
 				onMaxClick={onMaxClick}
+				inputLabel="Amount to swap"
 			/>
 			<SwapTokensButton onClick={onSwapTokens} />
 			<TokenAmountPicker
@@ -107,6 +109,7 @@ export const SwapTokensEditor = () => {
 				balance={balanceOut}
 				isLoadingBalance={isLoadingBalanceOut}
 				isComputingValue={isLoadingAmountOut}
+				inputLabel="Amount to receive"
 			/>
 		</div>
 	);

@@ -118,6 +118,7 @@ export const TransferForm = () => {
 						balance={balanceSender}
 						isLoadingBalance={isLoadingBalanceSender}
 						onMaxClick={onMaxClick}
+						inputLabel="Transfer amount"
 					/>
 				</FormFieldContainer>
 				<TransactionSubmitButton>Transfer</TransactionSubmitButton>

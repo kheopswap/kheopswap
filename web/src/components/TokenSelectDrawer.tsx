@@ -1,12 +1,12 @@
 import type { PolkadotAccount } from "@kheopskit/core";
 import { values } from "lodash-es";
-import { type FC, forwardRef, useCallback, useMemo, useState } from "react";
+import { type FC, memo, useCallback, useMemo, useState } from "react";
 import { useBalancesByTokenSummary } from "../hooks/useBalancesByTokenSummary";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
-import { getTokenDescription } from "../util/getTokenDescription";
 import { cn } from "../utils/cn";
+import { getTokenDescription } from "../utils/getTokenDescription";
 import { isBigInt } from "../utils/isBigInt";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
@@ -18,26 +18,23 @@ import { Styles } from "./styles";
 import { TokenLogo } from "./TokenLogo";
 import { Tokens } from "./Tokens";
 
-const TokenButton = forwardRef<
-	HTMLButtonElement,
-	React.DetailedHTMLProps<
-		React.ButtonHTMLAttributes<HTMLButtonElement>,
-		HTMLButtonElement
-	> & {
-		token: Token;
-		balances?: BalanceWithStableSummary;
-		selected?: boolean;
-		onClick: () => void;
-	}
->(({ token, balances, selected, onClick }, ref) => {
+const TokenButton = memo<{
+	token: Token;
+	balances?: BalanceWithStableSummary;
+	selected?: boolean;
+	onSelect: (tokenId: TokenId) => void;
+}>(({ token, balances, selected, onSelect }) => {
 	const { stableToken } = useRelayChains();
 	const description = useMemo(() => getTokenDescription(token), [token]);
 
+	const handleClick = useCallback(() => {
+		onSelect(token.id);
+	}, [onSelect, token.id]);
+
 	return (
 		<button
-			ref={ref}
 			type="button"
-			onClick={onClick}
+			onClick={handleClick}
 			className={cn(
 				Styles.button,
 				"flex h-16 w-full items-center gap-3 overflow-hidden rounded-md p-2 pl-4 pr-3",
@@ -123,13 +120,6 @@ const TokenSelectDrawerContent: FC<{
 }> = ({ tokenId, tokens: tokensMap, accounts, isLoading, onChange }) => {
 	const [search, setSearch] = useState("");
 
-	const handleClick = useCallback(
-		(id: TokenId) => () => {
-			onChange(id);
-		},
-		[onChange],
-	);
-
 	const tokens = useMemo(() => values(tokensMap ?? {}), [tokensMap]);
 
 	const { data: balances } = useBalancesByTokenSummary({
@@ -181,7 +171,7 @@ const TokenSelectDrawerContent: FC<{
 					key={t.id}
 					token={t}
 					balances={balances?.[t.id]}
-					onClick={handleClick(t.id)}
+					onSelect={onChange}
 					selected={t.id === tokenId}
 				/>
 			))}

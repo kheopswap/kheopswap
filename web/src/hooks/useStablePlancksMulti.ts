@@ -4,7 +4,7 @@ import { map, type Observable, switchMap } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
 import { getAssetConvertMulti$ } from "../state/convert";
 import { stableToken$ } from "../state/relay";
-import { getAssetHubMirrorTokenId } from "../util/getAssetHubMirrorTokenId";
+import { getAssetHubMirrorTokenId } from "../utils/getAssetHubMirrorTokenId";
 
 type UseStablePlancksProps = {
 	inputs: { tokenId: TokenId; plancks: bigint | undefined }[];

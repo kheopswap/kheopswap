@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import type { ChainId } from "../registry/chains/types";
-import { getDispatchErrorMessage } from "../util/getDispatchErrorMessage";
+import { getDispatchErrorMessage } from "../utils/getDispatchErrorMessage";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 import type { DryRun } from "./useDryRun";
 

@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router";
+import { useCallback, useEffect, useMemo } from "react";
 import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
 import { useBalance } from "../../hooks/useBalance";
@@ -9,93 +8,37 @@ import { useExistentialDeposit } from "../../hooks/useExistentialDeposit";
 import { useFeeToken } from "../../hooks/useFeeToken";
 import { useNativeToken } from "../../hooks/useNativeToken";
 import { useNonce } from "../../hooks/useNonce";
+import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
 import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
-import { useSetting } from "../../hooks/useSetting";
 import { useTokenChain } from "../../hooks/useTokenChain";
-import { useWalletAccount } from "../../hooks/useWalletAccount";
 import { TRANSFERABLE_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
-import { getFeeAssetLocation } from "../../util/getFeeAssetLocation";
-import { getTxOptions } from "../../util/getTxOptions";
 import { getAddressFromAccountField } from "../../utils/getAddressFromAccountField";
+import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
+import { getTxOptions } from "../../utils/getTxOptions";
 import { isNumber } from "../../utils/isNumber";
 import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
 import { provideContext } from "../../utils/provideContext";
 import type { TransferFormInputs } from "./schema";
 import { useTransferExtrinsic } from "./useTransferExtrinsic";
 
-const getPersistedTransferDraft = (
-	key: string,
-): Partial<TransferFormInputs> => {
-	if (typeof window === "undefined") return {};
-
-	try {
-		const raw = window.sessionStorage.getItem(key);
-		if (!raw) return {};
-
-		const parsed = JSON.parse(raw) as unknown;
-		if (!parsed || typeof parsed !== "object") return {};
-
-		return parsed as Partial<TransferFormInputs>;
-	} catch {
-		return {};
-	}
-};
-
-const useFormData = () => {
-	const { assetHub } = useRelayChains();
-	const ahNativeToken = useNativeToken({ chain: assetHub });
-	const storageKey = `transfer-form-draft::${assetHub.relay}`;
-
-	const location = useLocation();
-
-	const [defaultAccountId, setDefaultAccountId] =
-		useSetting("defaultAccountId");
-
-	const account = useWalletAccount({ id: defaultAccountId });
-	const persistedDraft = useMemo(
-		() => getPersistedTransferDraft(storageKey),
-		[storageKey],
-	);
-
-	const defaultValues = useMemo<TransferFormInputs>(
-		() => ({
-			from: account?.id ?? "",
-			tokenId: ahNativeToken?.id ?? "",
-			amount: "",
-			to: "",
-			...location.state,
-			...persistedDraft,
-		}),
-		[account?.id, ahNativeToken?.id, location.state, persistedDraft],
-	);
-
-	const [formData, setFormData] = useState<TransferFormInputs>(defaultValues);
-
-	// account won't be available on first render
-	useEffect(() => {
-		if (!formData.from && defaultValues.from)
-			setFormData((prev) => ({ ...prev, from: defaultValues.from }));
-	}, [defaultValues.from, formData.from]);
-
-	useEffect(() => {
-		if (formData.from) setDefaultAccountId(formData.from);
-	}, [formData.from, setDefaultAccountId]);
-
-	useEffect(() => {
-		if (typeof window === "undefined") return;
-		window.sessionStorage.setItem(storageKey, JSON.stringify(formData));
-	}, [formData, storageKey]);
-
-	return [formData, setFormData] as const;
-};
-
 const useTransferProvider = () => {
-	const [formData, setFormData] = useFormData();
-
 	const { assetHub } = useRelayChains();
 	const defaultToken = useNativeToken({ chain: assetHub });
+
+	const baseDefaults = useMemo<TransferFormInputs>(
+		() => ({
+			from: "",
+			tokenId: (defaultToken?.id ?? "") as TokenId,
+			amount: "",
+			to: "",
+		}),
+		[defaultToken?.id],
+	);
+
+	const [formData, setFormData] =
+		usePersistedFormDraft<TransferFormInputs>(baseDefaults);
 
 	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
 		types: TRANSFERABLE_TOKEN_TYPES,

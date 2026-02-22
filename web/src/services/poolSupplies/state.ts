@@ -1,35 +1,29 @@
 import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
+import type { PoolSuppliesStoreData } from "./store";
 import { poolSuppliesStore$ } from "./store";
 import { poolSuppliesSubscriptions$ } from "./subscriptions";
-import type { PoolSupplyId, PoolSupplyState, StoredPoolSupply } from "./types";
+import type { PoolSupplyId, PoolSupplyState } from "./types";
 import { poolSuppliesStatuses$ } from "./watchers";
 
 const combineState = (
 	poolSupplyIds: string[],
 	statuses: Record<string, LoadingStatus>,
-	poolSupplies: StoredPoolSupply[],
+	poolSupplies: PoolSuppliesStoreData,
 ): Record<PoolSupplyId, PoolSupplyState> => {
 	const stop = logger.cumulativeTimer("poolSupplies.combineState");
 
 	try {
-		const supplyByPoolSupplyId = new Map<PoolSupplyId, string>(
-			poolSupplies.map((s) => [s.id, s.supply] as const),
-		);
-
 		const allPoolSupplyIds = [
-			...new Set<PoolSupplyId>(
-				poolSupplyIds.concat([...supplyByPoolSupplyId.keys()]),
-			),
+			...new Set<PoolSupplyId>(poolSupplyIds.concat(Object.keys(poolSupplies))),
 		];
 
 		return Object.fromEntries(
 			allPoolSupplyIds.map((poolSupplyId) => {
 				const status = statuses[poolSupplyId] ?? "stale";
-				const supply = supplyByPoolSupplyId.has(poolSupplyId)
-					? BigInt(supplyByPoolSupplyId.get(poolSupplyId) as string)
-					: undefined;
+				const supplyStr = poolSupplies[poolSupplyId];
+				const supply = supplyStr !== undefined ? BigInt(supplyStr) : undefined;
 
 				return [poolSupplyId, { status, supply }];
 			}),
@@ -48,7 +42,7 @@ const combineState = (
 export const poolSuppliesState$ = combineLatest([
 	poolSuppliesSubscriptions$, // unique subscriptions
 	poolSuppliesStatuses$, // status of each subscription
-	poolSuppliesStore$, // stored supplies
+	poolSuppliesStore$, // stored supplies (dictionary)
 ]).pipe(
 	throttleTime(100, undefined, { leading: true, trailing: true }),
 	map(([poolSupplyIds, statuses, poolSupplies]) =>

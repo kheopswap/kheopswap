@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 import type { AnyTransaction } from "../types/transactions";
-import type { TxOptionsWithChargeAssetTxPayment } from "../util/getTxOptions";
+import type { TxOptionsWithChargeAssetTxPayment } from "../utils/getTxOptions";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 
 type UseEstimateFeeProps = {

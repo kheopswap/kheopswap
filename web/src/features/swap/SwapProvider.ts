@@ -1,582 +1,125 @@
-import { keyBy, values } from "lodash-es";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router";
-import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "../../common/constants";
-import { setSetting } from "../../common/settings";
-import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
-import { useBalance } from "../../hooks/useBalance";
-import { useCanAccountReceive } from "../../hooks/useCanAccountReceive";
-import { useEstimateFee } from "../../hooks/useEstimateFee";
-import { useExistentialDeposit } from "../../hooks/useExistentialDeposit";
-import { useFeeToken } from "../../hooks/useFeeToken";
-import { useNativeToken } from "../../hooks/useNativeToken";
-import { useNonce } from "../../hooks/useNonce";
-import { usePoolReservesByTokenIds } from "../../hooks/usePoolReservesByTokenIds";
-import { usePoolSupplies } from "../../hooks/usePoolSupplies";
-import { usePoolsByChainId } from "../../hooks/usePoolsByChainId";
-import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
-import { useSetting } from "../../hooks/useSetting";
-import { useToken } from "../../hooks/useToken";
-import { useTokenChain } from "../../hooks/useTokenChain";
-import { useTokensByChainId } from "../../hooks/useTokensByChainId";
-import { useWalletAccount } from "../../hooks/useWalletAccount";
-import { getTokenId, parseTokenId } from "../../registry/tokens/helpers";
-import type { TokenId } from "../../registry/tokens/types";
-import { useRelayChains } from "../../state/relay";
-import { getFeeAssetLocation } from "../../util/getFeeAssetLocation";
-import { getTxOptions } from "../../util/getTxOptions";
-import { isBigInt } from "../../utils/isBigInt";
-import { isNumber } from "../../utils/isNumber";
-import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
+import { useMemo } from "react";
 import { provideContext } from "../../utils/provideContext";
-import type { SwapFormInputs } from "./schema";
-import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
-import { useSwapExtrinsic } from "./useSwapExtrinsic";
-
-const getPersistedSwapDraft = (key: string): Partial<SwapFormInputs> => {
-	if (typeof window === "undefined") return {};
-
-	try {
-		const raw = window.sessionStorage.getItem(key);
-		if (!raw) return {};
-
-		const parsed = JSON.parse(raw) as unknown;
-		if (!parsed || typeof parsed !== "object") return {};
-
-		return parsed as Partial<SwapFormInputs>;
-	} catch {
-		return {};
-	}
-};
-
-const useFormData = () => {
-	const { assetHub } = useRelayChains();
-	const nativeToken = useNativeToken({ chain: assetHub });
-	const storageKey = `swap-form-draft::${assetHub.relay}`;
-
-	const location = useLocation();
-
-	const [defaultAccountId, setDefaultAccountId] =
-		useSetting("defaultAccountId");
-
-	// account won't be available on first render
-	const account = useWalletAccount({ id: defaultAccountId });
-	const persistedDraft = useMemo(
-		() => getPersistedSwapDraft(storageKey),
-		[storageKey],
-	);
-
-	const defaultValues = useMemo<SwapFormInputs>(
-		() => ({
-			from: account?.id ?? "",
-			to: "",
-			tokenIdIn: nativeToken?.id ?? "",
-			tokenIdOut: "",
-			amountIn: "",
-			...location.state,
-			...persistedDraft,
-		}),
-		[account?.id, nativeToken?.id, location.state, persistedDraft],
-	);
-
-	const [formData, setFormData] = useState<SwapFormInputs>(defaultValues);
-
-	// account won't be available on first render
-	useEffect(() => {
-		if (!formData.from && defaultValues.from)
-			setFormData((prev) => ({ ...prev, from: defaultValues.from }));
-	}, [defaultValues.from, formData.from]);
-
-	useEffect(() => {
-		if (formData.from) setDefaultAccountId(formData.from);
-	}, [formData.from, setDefaultAccountId]);
-
-	useEffect(() => {
-		if (typeof window === "undefined") return;
-		window.sessionStorage.setItem(storageKey, JSON.stringify(formData));
-	}, [formData, storageKey]);
-
-	return [formData, setFormData] as const;
-};
-
-type SwapInputsProps = {
-	tokenIdIn: TokenId;
-	amountIn: string;
-};
-
-const useSwapInputs = ({ tokenIdIn, amountIn }: SwapInputsProps) => {
-	const { data: tokenIn } = useToken({ tokenId: tokenIdIn });
-
-	const [plancksIn, feeIn, totalIn, isValidAmountIn] = useMemo(() => {
-		if (!amountIn || !tokenIn) return [null, null, null, true];
-		try {
-			const totalIn = tokensToPlancks(amountIn, tokenIn.decimals);
-
-			const appCommissionPercent =
-				!!APP_FEE_ADDRESS && !!APP_FEE_PERCENT ? APP_FEE_PERCENT : 0;
-			// fee = 0.3% of totalIn
-			const feeNum =
-				totalIn * BigInt(Number(appCommissionPercent * 10000).toFixed());
-			const fee = feeNum / 1000000n;
-			const plancksIn = totalIn - fee;
-
-			return [plancksIn, fee, totalIn, true];
-		} catch (_err) {
-			return [null, null, null, false];
-		}
-	}, [amountIn, tokenIn]);
-
-	const { data: checkCanAccountReceive } = useCanAccountReceive({
-		address: APP_FEE_ADDRESS,
-		tokenId: tokenIdIn,
-		plancks: feeIn,
-	});
-
-	const [swapPlancksIn, appCommission] = useMemo(() => {
-		return checkCanAccountReceive?.canReceive
-			? [plancksIn, feeIn]
-			: [totalIn, 0n];
-	}, [checkCanAccountReceive?.canReceive, feeIn, plancksIn, totalIn]);
-
-	return { swapPlancksIn, appCommission, totalIn, isValidAmountIn };
-};
+import { useSwapCall } from "./useSwapCall";
+import { useSwapFees } from "./useSwapFees";
+import { useSwapFormState } from "./useSwapFormState";
+import { useSwapPricing } from "./useSwapPricing";
 
 const useSwapProvider = () => {
-	const { assetHub } = useRelayChains();
-	const [formData, setFormData] = useFormData();
+	// 1. Form state & persistence
+	const formState = useSwapFormState();
 
-	const { data: allTokens, isLoading: isLoadingAllTokens } = useTokensByChainId(
-		{
-			chainId: assetHub.id,
-		},
-	);
-	const { data: pools, isLoading: isLoadingPools } = usePoolsByChainId({
-		chainId: assetHub.id,
+	// 2. Pricing, AMM math & validation
+	const pricing = useSwapPricing({
+		tokenIdIn: formState.tokenIdIn,
+		tokenIdOut: formState.tokenIdOut,
+		amountIn: formState.formData.amountIn,
+		accountAddress: formState.account?.address,
 	});
 
-	const pairs = useMemo(() => pools?.map((p) => p.tokenIds) ?? [], [pools]);
-
-	const { data: poolSupplies } = usePoolSupplies({ pairs });
-
-	const [tokens, isLoadingTokens] = useMemo(() => {
-		const swappableAssetIds =
-			pools
-				?.filter((p) => {
-					const supplyState = poolSupplies.find(
-						(s) =>
-							s.pair.includes(p.tokenIds[0]) && s.pair.includes(p.tokenIds[1]),
-					);
-					return !!supplyState?.supply;
-				})
-				.flatMap((p) => p.tokenIds) ?? [];
-		return [
-			keyBy(
-				values(allTokens).filter(
-					(t) => t.type === "native" || swappableAssetIds.includes(t.id),
-				) ?? [],
-				"id",
-			),
-			isLoadingAllTokens ||
-				isLoadingPools ||
-				poolSupplies.some((s) => s.isLoading),
-		];
-	}, [allTokens, isLoadingAllTokens, isLoadingPools, poolSupplies, pools]);
-
-	const { tokenIdIn, tokenIdOut, from } = useMemo(
-		() => ({
-			from: formData.from,
-			tokenIdIn: formData.tokenIdIn as TokenId | undefined,
-			tokenIdOut: formData.tokenIdOut as TokenId | undefined,
-		}),
-		[formData],
-	);
-
-	const account = useWalletAccount({ id: from });
-	const { resolvedAddress: resolvedSubstrateAddress } =
-		useResolvedSubstrateAddress({
-			address: account?.address,
-			chainId: assetHub.id,
-		});
-	const [slippage, setSlippage] = useSetting("slippage");
-
-	const { data: reserves, isLoading: isLoadingReserves } =
-		usePoolReservesByTokenIds({
-			tokenId1: tokenIdIn,
-			tokenId2: tokenIdOut,
-		});
-
-	const { data: lpFee, isLoading: isLoadingLpFee } = useAssetConvertionLPFee({
-		chain: assetHub,
+	// 3. Transaction payload assembly
+	const callData = useSwapCall({
+		tokenIdIn: formState.tokenIdIn,
+		tokenIdOut: formState.tokenIdOut,
+		swapPlancksIn: pricing.swapPlancksIn,
+		minPlancksOut: pricing.minPlancksOut,
+		dest: formState.resolvedSubstrateAddress,
+		appCommission: pricing.appCommission,
+		tokenIn: pricing.tokenIn,
+		edTokenIn: pricing.edTokenIn,
+		slippage: pricing.slippage,
+		tokenOut: pricing.tokenOut,
+		swapPlancksOut: pricing.swapPlancksOut,
 	});
 
-	const { data: balanceIn, isLoading: isLoadingBalanceIn } = useBalance({
-		address: account?.address,
-		tokenId: tokenIdIn,
-	});
-	const { data: balanceOut, isLoading: isLoadingBalanceOut } = useBalance({
-		address: account?.address,
-		tokenId: tokenIdOut,
-	});
-
-	// if we got these 3, everything else can be derived
-	const isLoading = useMemo(
-		() => isLoadingReserves || isLoadingLpFee || isLoadingBalanceIn,
-		[isLoadingBalanceIn, isLoadingLpFee, isLoadingReserves],
-	);
-
-	const [reserveIn, reserveOut] = useMemo(
-		() => reserves ?? [undefined, undefined],
-		[reserves],
-	);
-
-	const { data: tokenIn } = useToken({ tokenId: tokenIdIn });
-	const { data: tokenOut } = useToken({ tokenId: tokenIdOut });
-
-	const { swapPlancksIn, appCommission, totalIn, isValidAmountIn } =
-		useSwapInputs(formData);
-
-	const [swapPlancksOut, protocolCommission] = useMemo(() => {
-		// https://github.com/paritytech/substrate/blob/e076bdad1fefb5a0e2461acf7e2cab1192f3c9f3/frame/asset-conversion/src/lib.rs#L1108
-		if (!lpFee || !reserveIn || !reserveOut || !swapPlancksIn)
-			return [undefined, undefined];
-
-		const safeMultiplier = 1000n;
-
-		if (reserveIn === 0n || reserveOut === 0n) throw new Error("No liquidity");
-
-		const amountInWithFee = swapPlancksIn * (safeMultiplier - BigInt(lpFee));
-		const protocolCommission =
-			(safeMultiplier * swapPlancksIn - amountInWithFee) / safeMultiplier;
-		const numerator = amountInWithFee * reserveOut;
-		const denominator = reserveIn * safeMultiplier + amountInWithFee;
-		const plancksOut = numerator / denominator;
-		return [plancksOut, protocolCommission];
-	}, [lpFee, swapPlancksIn, reserveIn, reserveOut]);
-
-	const amountOut = useMemo(() => {
-		if (!swapPlancksOut || !tokenOut) return "";
-		return plancksToTokens(swapPlancksOut, tokenOut.decimals);
-	}, [swapPlancksOut, tokenOut]);
-
-	const isLoadingAmountOut =
-		!!swapPlancksIn && !!tokenIn && !!tokenOut && !swapPlancksOut && isLoading;
-
-	const { plancksOut: rawPlancksOut } = useAssetConvertPlancks({
-		tokenIdIn,
-		tokenIdOut,
-		plancks: totalIn,
+	// 4. Fee estimation & max click
+	const fees = useSwapFees({
+		from: formState.from,
+		accountAddress: formState.account?.address,
+		tokenIdIn: formState.tokenIdIn,
+		tokenIn: pricing.tokenIn,
+		balanceIn: pricing.balanceIn,
+		edTokenIn: pricing.edTokenIn,
+		call: callData.call,
+		fakeCall: callData.fakeCall,
+		setFormData: formState.setFormData,
 	});
 
-	const priceImpact = useMemo(() => {
-		// ratio difference between rawplancksout and swapplancksout
-		if (!rawPlancksOut || !swapPlancksOut) return undefined;
-
-		return (
-			-Number((10000n * (rawPlancksOut - swapPlancksOut)) / rawPlancksOut) /
-			10000
-		);
-	}, [rawPlancksOut, swapPlancksOut]);
-
-	const minPlancksOut = useMemo(() => {
-		if (!swapPlancksOut || slippage === undefined) return null;
-		const safetyDecimal = 10000n;
-		return (
-			(swapPlancksOut *
-				(safetyDecimal - BigInt(slippage * Number(safetyDecimal)))) /
-			safetyDecimal
-		);
-	}, [swapPlancksOut, slippage]);
-
-	const hasInsufficientBalance = useMemo(() => {
-		return balanceIn === undefined || totalIn === null
-			? false
-			: balanceIn < totalIn;
-	}, [balanceIn, totalIn]);
-
-	const hasInsufficientLiquidity = useMemo(() => {
-		return reserveIn === 0n && reserveOut === 0n;
-	}, [reserveIn, reserveOut]);
-
-	const isPoolNotFound = useMemo(
-		() => tokenIn && tokenOut && !reserves && !isLoadingReserves,
-		[tokenIn, tokenOut, reserves, isLoadingReserves],
-	);
-
+	// Cross-concern: validity depends on form + pricing
 	const isValidInput = useMemo(() => {
-		return account && tokenIn && tokenOut && !!totalIn;
-	}, [account, tokenIn, tokenOut, totalIn]);
+		return (
+			formState.account &&
+			pricing.tokenIn &&
+			pricing.tokenOut &&
+			!!pricing.totalIn
+		);
+	}, [formState.account, pricing.tokenIn, pricing.tokenOut, pricing.totalIn]);
 
 	const isValid = useMemo(() => {
 		return (
 			isValidInput &&
-			!hasInsufficientBalance &&
-			!hasInsufficientLiquidity &&
-			!!swapPlancksOut
+			!pricing.hasInsufficientBalance &&
+			!pricing.hasInsufficientLiquidity &&
+			!!pricing.swapPlancksOut
 		);
 	}, [
 		isValidInput,
-		hasInsufficientBalance,
-		hasInsufficientLiquidity,
-		swapPlancksOut,
+		pricing.hasInsufficientBalance,
+		pricing.hasInsufficientLiquidity,
+		pricing.swapPlancksOut,
 	]);
 
-	const { data: edTokenIn } = useExistentialDeposit({
-		tokenId: tokenIdIn,
-	});
-
-	const { feeToken, isLoading: isLoadingFeeToken } = useFeeToken({
-		accountId: from,
-		chainId: tokenIn?.chainId,
-	});
-
-	const { data: call } = useSwapExtrinsic({
-		tokenIdIn,
-		tokenIdOut,
-		amountIn: swapPlancksIn,
-		amountOutMin: minPlancksOut,
-		dest: resolvedSubstrateAddress,
-		appCommission,
-	});
-
-	// fake call for fee estimation up front
-	const { data: fakeCall } = useSwapExtrinsic({
-		tokenIdIn,
-		tokenIdOut,
-		amountIn: tokenIn && edTokenIn, // arbitrary amount
-		amountOutMin: 0n,
-		dest: resolvedSubstrateAddress,
-		appCommission: tokenIn && edTokenIn, // arbitrary amount
-	});
-
-	const { data: nonce } = useNonce({
-		account: account?.address,
-		chainId: assetHub.id,
-	});
-
-	const txOptions = useMemo(() => {
-		if (!isNumber(nonce) || !feeToken) return undefined;
-		return getTxOptions({
-			asset: feeToken ? getFeeAssetLocation(feeToken) : undefined,
-			mortality: { mortal: true, period: 64 },
-			nonce,
-		});
-	}, [feeToken, nonce]);
-
-	const { data: feeEstimateNative, isLoading: isLoadingFeeEstimateNative } =
-		useEstimateFee({
-			from: account?.address,
-			call: call ?? fakeCall,
-			options: txOptions,
-		});
-
-	const tokenChain = useTokenChain({ tokenId: formData.tokenIdIn as TokenId });
-	const nativeToken = useNativeToken({ chain: tokenChain });
-
-	const { isLoading: isLoadingFeeEstimateConvert, plancksOut: feeEstimate } =
-		useAssetConvertPlancks({
-			tokenIdIn: nativeToken?.id,
-			tokenIdOut: feeToken?.id,
-			plancks: feeEstimateNative,
-		});
-
-	const isLoadingFeeEstimate =
-		isLoadingFeeToken ||
-		isLoadingFeeEstimateNative ||
-		isLoadingFeeEstimateConvert;
-
-	useEffect(() => {
-		// if user changes chain, reset tokens
-		if (!assetHub) return;
-
-		const tokenIn = formData.tokenIdIn
-			? parseTokenId(formData.tokenIdIn as TokenId)
-			: null;
-		const tokenOut = formData.tokenIdOut
-			? parseTokenId(formData.tokenIdOut as TokenId)
-			: null;
-
-		const isInvalidTokenIn =
-			tokenIn?.chainId && tokenIn.chainId !== assetHub.id;
-		const isInvalidTokenOut =
-			tokenOut?.chainId && tokenOut.chainId !== assetHub.id;
-
-		if (isInvalidTokenIn || isInvalidTokenOut) {
-			const nativeTokenId = getTokenId({
-				type: "native",
-				chainId: assetHub.id,
-			});
-			setFormData((prev) => ({
-				...prev,
-				tokenIdIn: nativeTokenId,
-				tokenIdOut: "",
-			}));
-		}
-	}, [assetHub, formData, setFormData]);
-
-	const onFromChange = useCallback(
-		(accountId: string) => {
-			setSetting("defaultAccountId", accountId);
-			setFormData((prev) => ({ ...prev, from: accountId }));
-		},
-		[setFormData],
-	);
-
-	const onAmountInChange = useCallback(
-		(amountIn: string) => {
-			setFormData((prev) => ({ ...prev, amountIn }));
-		},
-		[setFormData],
-	);
-
-	const followUpData = useMemo(() => {
-		return { slippage, tokenOut, minPlancksOut, swapPlancksOut };
-	}, [minPlancksOut, slippage, swapPlancksOut, tokenOut]);
-
-	const { data: checkCanReceive, isLoading: isCheckingRecipient } =
-		useCanAccountReceive({
-			address: account?.address,
-			tokenId: tokenIdOut,
-			plancks: minPlancksOut,
-		});
-
-	const outputErrorMessage = useMemo(() => {
-		if (checkCanReceive?.reason) return checkCanReceive.reason;
-		if (hasInsufficientLiquidity) return "Insufficient liquidity";
-		if (isPoolNotFound) return "Liquidity pool not found";
-		return null;
-	}, [hasInsufficientLiquidity, isPoolNotFound, checkCanReceive?.reason]);
-
-	const onTokenInChange = (tokenId: TokenId) => {
-		const nativeTokenId = getTokenId({
-			type: "native",
-			chainId: assetHub.id,
-		});
-
-		if (tokenId !== nativeTokenId)
-			setFormData((prev) => ({
-				...prev,
-				tokenIdIn: tokenId,
-				tokenIdOut: nativeTokenId,
-			}));
-		else if (tokenIdOut === nativeTokenId)
-			setFormData((prev) => ({
-				...prev,
-				tokenIdIn: tokenId,
-				tokenIdOut: formData.tokenIdIn,
-			}));
-		else
-			setFormData((prev) => ({
-				...prev,
-				tokenIdIn: tokenId,
-			}));
-	};
-
-	const onTokenOutChange = useCallback(
-		(tokenId: TokenId) => {
-			const nativeTokenId = getTokenId({
-				type: "native",
-				chainId: assetHub.id,
-			});
-
-			if (tokenId !== nativeTokenId)
-				setFormData((prev) => ({
-					...prev,
-					tokenIdIn: nativeTokenId,
-					tokenIdOut: tokenId,
-				}));
-			else if (tokenIdIn === nativeTokenId)
-				setFormData((prev) => ({
-					...prev,
-					tokenIdIn: prev.tokenIdOut,
-					tokenIdOut: tokenId,
-				}));
-			else
-				setFormData((prev) => ({
-					...prev,
-					tokenIdOut: tokenId,
-				}));
-		},
-		[assetHub.id, tokenIdIn, setFormData],
-	);
-
-	const onSwapTokens = useCallback(() => {
-		setFormData((prev) => ({
-			...prev,
-			tokenIdIn: prev.tokenIdOut,
-			tokenIdOut: prev.tokenIdIn,
-		}));
-	}, [setFormData]);
-
-	const onMaxClick = useCallback(() => {
-		if (tokenIn && balanceIn && isBigInt(edTokenIn) && isBigInt(feeEstimate)) {
-			let plancks = balanceIn;
-			const fees = feeEstimate;
-			const ed = edTokenIn;
-
-			if (tokenIn.type === "native" && 2n * fees + ed <= plancks)
-				plancks -= 2n * fees + ed;
-
-			setFormData((prev) => ({
-				...prev,
-				amountIn: plancksToTokens(plancks, tokenIn.decimals),
-			}));
-		}
-	}, [balanceIn, feeEstimate, edTokenIn, tokenIn, setFormData]);
-
-	const onReset = useCallback(() => {
-		setFormData((prev) => ({ ...prev, amountIn: "" }));
-	}, [setFormData]);
-
-	const res = {
-		formData,
-		from,
-		sender: account?.address,
-		recipient: account?.address, // TODO
-		amountOut,
-		isLoadingLpFee,
-		isLoadingReserves,
-		isLoading,
-		swapPlancksOut,
-		totalIn,
-		minPlancksOut,
-		tokens,
-		isLoadingTokens,
-		isLoadingBalanceIn,
-		isLoadingBalanceOut,
-		isLoadingAmountOut,
-		tokenIn,
-		tokenOut,
-		slippage,
-		balanceIn,
-		balanceOut,
+	return {
+		formData: formState.formData,
+		from: formState.from,
+		sender: formState.account?.address,
+		recipient: formState.account?.address, // TODO
+		amountOut: pricing.amountOut,
+		isLoadingLpFee: pricing.isLoadingLpFee,
+		isLoadingReserves: pricing.isLoadingReserves,
+		isLoading: pricing.isLoading,
+		swapPlancksOut: pricing.swapPlancksOut,
+		totalIn: pricing.totalIn,
+		minPlancksOut: pricing.minPlancksOut,
+		tokens: pricing.tokens,
+		isLoadingTokens: pricing.isLoadingTokens,
+		isLoadingBalanceIn: pricing.isLoadingBalanceIn,
+		isLoadingBalanceOut: pricing.isLoadingBalanceOut,
+		isLoadingAmountOut: pricing.isLoadingAmountOut,
+		tokenIn: pricing.tokenIn,
+		tokenOut: pricing.tokenOut,
+		slippage: pricing.slippage,
+		balanceIn: pricing.balanceIn,
+		balanceOut: pricing.balanceOut,
 		isValid,
-		isValidAmountIn,
-		hasInsufficientBalance,
-		hasInsufficientLiquidity,
-		call: outputErrorMessage || isCheckingRecipient ? undefined : call,
-		fakeCall: fakeCall,
-		isLoadingFeeToken,
-		isLoadingFeeEstimate,
-		isPoolNotFound,
-		priceImpact,
-		reserveIn,
-		reserveOut,
-		appCommission,
-		protocolCommission,
-		outputErrorMessage,
-		followUpData,
+		isValidAmountIn: pricing.isValidAmountIn,
+		hasInsufficientBalance: pricing.hasInsufficientBalance,
+		hasInsufficientLiquidity: pricing.hasInsufficientLiquidity,
+		call:
+			pricing.outputErrorMessage || pricing.isCheckingRecipient
+				? undefined
+				: callData.call,
+		fakeCall: callData.fakeCall,
+		isLoadingFeeToken: fees.isLoadingFeeToken,
+		isLoadingFeeEstimate: fees.isLoadingFeeEstimate,
+		isPoolNotFound: pricing.isPoolNotFound,
+		priceImpact: pricing.priceImpact,
+		reserveIn: pricing.reserveIn,
+		reserveOut: pricing.reserveOut,
+		appCommission: pricing.appCommission,
+		protocolCommission: pricing.protocolCommission,
+		outputErrorMessage: pricing.outputErrorMessage,
+		followUpData: callData.followUpData,
 
-		setSlippage,
-		onFromChange,
-		onTokenInChange,
-		onTokenOutChange,
-		onSwapTokens,
-		onMaxClick,
-		onAmountInChange,
-		onReset,
+		setSlippage: pricing.setSlippage,
+		onFromChange: formState.onFromChange,
+		onTokenInChange: formState.onTokenInChange,
+		onTokenOutChange: formState.onTokenOutChange,
+		onSwapTokens: formState.onSwapTokens,
+		onMaxClick: fees.onMaxClick,
+		onAmountInChange: formState.onAmountInChange,
+		onReset: formState.onReset,
 	};
-
-	return res;
 };
 
 export const [SwapProvider, useSwap] = provideContext(useSwapProvider);

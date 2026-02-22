@@ -61,18 +61,17 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 		.filter((p): p is AssetConvertionPoolDef => !!p)
 		.filter((p): p is AssetConvertionPoolDef => p.tokenIds.every((t) => !!t));
 
-	const currentPools = poolsStore$.value;
+	const currentChainPools = poolsStore$.value[chain.id] ?? [];
 
-	const otherPools = currentPools.filter((t) => t.chainId !== chain.id);
-
-	const newValue = [...otherPools, ...pools];
-
-	if (!isEqual(currentPools, newValue)) poolsStore$.next(newValue);
+	if (!isEqual(currentChainPools, pools))
+		poolsStore$.next({
+			...poolsStore$.value,
+			[chain.id]: pools,
+		});
 };
 
 const watchPoolsByChain = (chainId: ChainId) => {
 	const watchController = new AbortController();
-	// let stop = false;
 	let retryTimeout = 3_000;
 
 	const refresh = async () => {

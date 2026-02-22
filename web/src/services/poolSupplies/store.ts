@@ -3,23 +3,35 @@ import { DEV_IGNORE_STORAGE } from "../../common/constants";
 import { getLocalStorageKey } from "../../utils/getLocalStorageKey";
 import { logger } from "../../utils/logger";
 import { safeParse, safeStringify } from "../../utils/serialization";
-import type { StoredPoolSupply } from "./types";
+import type { PoolSupplyId, StoredPoolSupply } from "./types";
 
 const STORAGE_KEY = getLocalStorageKey("poolSupplies");
 
-const load = (): StoredPoolSupply[] => {
+/** Dictionary-backed store: PoolSupplyId → serialized bigint supply */
+export type PoolSuppliesStoreData = Record<PoolSupplyId, string>;
+
+const load = (): PoolSuppliesStoreData => {
 	try {
-		if (DEV_IGNORE_STORAGE) return [];
+		if (DEV_IGNORE_STORAGE) return {};
 
 		const strPools = localStorage.getItem(STORAGE_KEY);
-		return strPools ? safeParse(strPools) : [];
+		if (!strPools) return {};
+
+		const parsed: StoredPoolSupply[] | PoolSuppliesStoreData =
+			safeParse(strPools);
+
+		// Migrate from legacy array format
+		if (Array.isArray(parsed))
+			return Object.fromEntries(parsed.map((p) => [p.id, p.supply]));
+
+		return parsed;
 	} catch (err) {
 		logger.error("Failed to load pool supplies", err);
-		return [];
+		return {};
 	}
 };
 
-const save = (poolSupplies: StoredPoolSupply[]) => {
+const save = (poolSupplies: PoolSuppliesStoreData) => {
 	try {
 		localStorage.setItem(STORAGE_KEY, safeStringify(poolSupplies));
 	} catch (err) {
@@ -29,8 +41,7 @@ const save = (poolSupplies: StoredPoolSupply[]) => {
 
 const stop = logger.timer("initializing poolSupplies store");
 
-// TODO change to a dictionary for faster lookups and updates
-export const poolSuppliesStore$ = new BehaviorSubject<StoredPoolSupply[]>(
+export const poolSuppliesStore$ = new BehaviorSubject<PoolSuppliesStoreData>(
 	load(),
 );
 

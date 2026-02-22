@@ -270,7 +270,7 @@ export const GlobalFollowUpModal: FC = () => {
 	};
 
 	return (
-		<Modal isOpen>
+		<Modal isOpen aria-label={openTransaction.title ?? "Transaction status"}>
 			<FollowUpModalInner
 				followUp={followUpData}
 				onClose={handleClose}

@@ -1,15 +1,15 @@
 import type { Wallet, WalletAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
 import { fromPairs } from "lodash-es";
-import { type FC, useCallback, useMemo, useState } from "react";
+import { type FC, memo, useCallback, useMemo, useState } from "react";
 import { useBalancesWithStables } from "../hooks/useBalancesWithStables";
 import { useToken } from "../hooks/useToken";
 import type { Token } from "../registry/tokens/types";
 import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
-import { getAccountName } from "../util/getAccountName";
 import { cn } from "../utils/cn";
 import { isValidAnyAddress } from "../utils/ethereumAddress";
+import { getAccountName } from "../utils/getAccountName";
 import { isBigInt } from "../utils/isBigInt";
 import { shortenAddress } from "../utils/shortenAddress";
 import { AccountIcon } from "./AccountIcon";
@@ -56,29 +56,25 @@ const WalletButton: FC<{
 	</button>
 );
 
-const AccountButton: FC<{
+const AccountButton = memo<{
 	account: WalletAccount;
 	selected?: boolean;
 	disabled?: boolean;
 	balance?: BalanceWithStableSummary;
 	token?: Token | null;
 	stableToken?: Token;
-	onClick: () => void;
-}> = ({
-	account,
-	selected,
-	balance,
-	token,
-	stableToken,
-	disabled,
-	onClick,
-}) => {
+	onSelect: (accountId: string) => void;
+}>(({ account, selected, balance, token, stableToken, disabled, onSelect }) => {
 	const accountName = useMemo(() => getAccountName(account), [account]);
+
+	const handleClick = useCallback(() => {
+		onSelect(account.id);
+	}, [onSelect, account.id]);
 
 	return (
 		<button
 			type="button"
-			onClick={onClick}
+			onClick={handleClick}
 			disabled={disabled}
 			className={cn(
 				Styles.button,
@@ -132,7 +128,8 @@ const AccountButton: FC<{
 			)}
 		</button>
 	);
-};
+});
+AccountButton.displayName = "AccountButton";
 
 const AddressInput: FC<{
 	address: string;
@@ -246,8 +243,8 @@ const AccountSelectDrawerContent: FC<{
 		return idOrAddress && isValidAnyAddress(idOrAddress) ? idOrAddress : "";
 	}, [idOrAddress]);
 
-	const handleClick = useCallback(
-		(id: string) => () => {
+	const handleAccountSelect = useCallback(
+		(id: string) => {
 			onChange?.(id);
 		},
 		[onChange],
@@ -337,7 +334,7 @@ const AccountSelectDrawerContent: FC<{
 								balance={balanceByAccount[account.address]}
 								token={token}
 								stableToken={stableToken}
-								onClick={handleClick(account.id)}
+								onSelect={handleAccountSelect}
 								disabled={!onChange}
 							/>
 						))}

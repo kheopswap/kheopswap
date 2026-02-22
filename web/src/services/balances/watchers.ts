@@ -22,9 +22,10 @@ const updateBalanceLoadingStatus = (
 	const stop = logger.cumulativeTimer("updateBalanceLoadingStatus");
 
 	if (statusByBalanceId$.value[balanceId] !== status)
-		statusByBalanceId$.next(
-			Object.assign(statusByBalanceId$.value, { [balanceId]: status }),
-		);
+		statusByBalanceId$.next({
+			...statusByBalanceId$.value,
+			[balanceId]: status,
+		});
 
 	stop();
 };
@@ -36,11 +37,10 @@ const updateBalance = (balanceId: BalanceId, balance: bigint) => {
 
 	// update balances store if necessary
 	if (balancesStore$.value[balanceId]?.balance !== balance)
-		balancesStore$.next(
-			Object.assign(balancesStore$.value, {
-				[balanceId]: { address, tokenId, balance },
-			}),
-		);
+		balancesStore$.next({
+			...balancesStore$.value,
+			[balanceId]: { address, tokenId, balance },
+		});
 
 	// indicate it's loaded
 	updateBalanceLoadingStatus(balanceId, "loaded");

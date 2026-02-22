@@ -1,6 +1,5 @@
 import lzs from "lz-string";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
-import { logger } from "../../utils/logger";
 import { safeParse, safeStringify } from "../../utils/serialization";
 import { getChainById } from "../chains/chains";
 import type { ChainId } from "../chains/types";
@@ -24,7 +23,6 @@ import type {
 	TokenTypePoolAsset,
 } from "./types";
 
-/** @knipignore */
 export const isTokenIdNative = (
 	tokenId: TokenId | null | undefined,
 ): tokenId is TokenIdNative => {
@@ -37,7 +35,6 @@ export const isTokenIdNative = (
 	}
 };
 
-/** @knipignore */
 export const isTokenIdAsset = (
 	tokenId: TokenId | null | undefined,
 ): tokenId is TokenIdAsset => {
@@ -99,7 +96,6 @@ export const parseTokenId = (
 				throw new Error(`Unsupported token type: ${tokenId}`);
 		}
 	} catch (cause) {
-		logger.error(`Failed to parse token id: ${tokenId}`, { cause });
 		throw new Error(`Failed to parse token id: ${tokenId}`, { cause });
 	}
 };

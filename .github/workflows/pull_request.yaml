@@ -32,6 +32,9 @@ jobs:
       - name: Knip (unused files & dependencies)
         run: pnpm knip --include files,dependencies,devDependencies
 
+      - name: Test
+        run: pnpm test
+
       - name: Typecheck
         run: pnpm typecheck
 

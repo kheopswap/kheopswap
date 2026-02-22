@@ -10,7 +10,7 @@ import {
 import { parseUnits } from "viem";
 import { getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId, TokenType } from "../registry/tokens/types";
-import { getAssetHubMirrorTokenId } from "../util/getAssetHubMirrorTokenId";
+import { getAssetHubMirrorTokenId } from "../utils/getAssetHubMirrorTokenId";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 import { isBigInt } from "../utils/isBigInt";
 import { getAssetConvert$ } from "./convert";

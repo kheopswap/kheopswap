@@ -10,6 +10,7 @@ export const ColumnHeaderButton: FC<{
 	return (
 		<button
 			type="button"
+			aria-pressed={selected}
 			className={cn(
 				"text-xs text-neutral-500",
 				className,

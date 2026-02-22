@@ -52,6 +52,7 @@ export const SearchInput: FC<{
 				ref={refInput}
 				type="text"
 				placeholder={placeholder}
+				aria-label={placeholder ?? "Search"}
 				className={
 					"grow bg-transparent outline-hidden placeholder:text-neutral-600"
 				}
@@ -61,6 +62,7 @@ export const SearchInput: FC<{
 				type="button"
 				className={cn("rounded-xs", !search && "invisible")}
 				onClick={handleResetClick}
+				aria-label="Clear search"
 			>
 				<XMarkIcon className="size-5 stroke-white" />
 			</button>

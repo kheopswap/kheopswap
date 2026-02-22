@@ -1,27 +1,25 @@
-import { groupBy } from "lodash-es";
 import { combineLatest, map, shareReplay } from "rxjs";
 import type { ChainId } from "../../registry/chains/types";
 import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
+import type { PoolsStoreData } from "./store";
 import { poolsStore$ } from "./store";
 import type { Pool } from "./types";
 import { chainPoolsStatuses$ } from "./watchers";
 
 const combineState = (
 	statusByChain: Record<ChainId, LoadingStatus>,
-	allPools: Pool[],
+	poolsByChain: PoolsStoreData,
 ): Record<ChainId, { status: LoadingStatus; pools: Pool[] }> => {
 	const stop = logger.cumulativeTimer("pools.combineState");
 
 	try {
-		const poolsByChain = groupBy(allPools, "chainId");
-
 		return Object.fromEntries(
 			Object.entries(statusByChain).map(([chainId, status]) => [
 				chainId,
 				{
 					status,
-					pools: poolsByChain[chainId] ?? [],
+					pools: poolsByChain[chainId as ChainId] ?? [],
 				},
 			]),
 		) as Record<ChainId, { status: LoadingStatus; pools: Pool[] }>;
@@ -37,6 +35,8 @@ export const poolsByChainState$ = combineLatest([
 	chainPoolsStatuses$,
 	poolsStore$,
 ]).pipe(
-	map(([statusByChain, allPools]) => combineState(statusByChain, allPools)),
+	map(([statusByChain, poolsByChain]) =>
+		combineState(statusByChain, poolsByChain),
+	),
 	shareReplay(1),
 );

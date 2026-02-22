@@ -2,7 +2,7 @@ import { type FC, useEffect, useRef } from "react";
 import { DEV } from "../common/constants";
 import { logger } from "../utils/logger";
 
-const SHOULD_LOG = DEV || true; // TODO only DEV
+const SHOULD_LOG = DEV;
 
 export const SuspenseMonitorInner: FC<{ label: string }> = ({ label }) => {
 	const refStart = useRef(performance.now());

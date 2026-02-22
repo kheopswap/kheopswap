@@ -143,7 +143,6 @@ const consolidateTokens = (
 		return lastConsolidatedTokens;
 	}
 
-	const stop = logger.timer("consolidate tokensStore$");
 	const availableChainIds = getAvailableChainIds();
 
 	const tokensMap: Record<string, Token> = {};
@@ -157,7 +156,6 @@ const consolidateTokens = (
 	lastStorageTokensMap = storageTokensMap;
 	lastConsolidatedTokens = tokensMap;
 
-	stop();
 	return tokensMap;
 };
 

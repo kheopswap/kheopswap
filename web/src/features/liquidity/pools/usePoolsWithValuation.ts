@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { getPoolReserves } from "../../../helpers/getPoolReserves";
 import { useBalances } from "../../../hooks/useBalances";
 import type { Token } from "../../../registry/tokens/types";
 import type { Pool } from "../../../services/pools/types";
-import { getAssetConvertPlancks } from "../../../util/getAssetConvertPlancks";
+import { getAssetConvertPlancks } from "../../../utils/getAssetConvertPlancks";
+import { getPoolReserves } from "../../../utils/getPoolReserves";
 import { isBigInt } from "../../../utils/isBigInt";
 import { logger } from "../../../utils/logger";
 
