@@ -8,7 +8,7 @@ import { getApi } from "../../papi/getApi";
 import { getChainById } from "../../registry/chains/chains";
 import type { Chain, ChainId } from "../../registry/chains/types";
 import { TOKENS_BLACKLIST } from "../../registry/tokens/blacklist";
-import { getTokenId } from "../../registry/tokens/helpers";
+import { buildToken } from "../../registry/tokens/buildToken";
 import {
 	createSufficientMap,
 	mapAssetTokensFromEntries,
@@ -61,31 +61,18 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 		assets,
 		metadatas,
 	)
-		.map((tokenNoId) => ({
-			id: getTokenId({
-				type: "foreign-asset",
+		.map((tokenNoId) => {
+			const token = buildToken({
+				...tokenNoId,
 				chainId: chain.id,
-				location: tokenNoId.location,
-			}),
-			...tokenNoId,
-		}))
-		.map(({ id, location, symbol, decimals, name }) =>
-			Object.assign(
-				{
-					id,
-					type: "foreign-asset",
-					chainId: chain.id,
-					location,
-					symbol,
-					decimals,
-					name,
-					logo: "./img/tokens/asset.svg",
-					verified: false,
-				} as Token,
-				KNOWN_TOKENS_MAP[id],
-				TOKENS_OVERRIDES_MAP[id],
-			),
-		)
+				logo: "./img/tokens/asset.svg",
+			});
+			return Object.assign(
+				token,
+				KNOWN_TOKENS_MAP[token.id],
+				TOKENS_OVERRIDES_MAP[token.id],
+			);
+		})
 		.filter((token) => {
 			if (TOKENS_BLACKLIST.has(token.id)) return false;
 			if (!token.symbol || !isNumber(token.decimals) || !token.name) {
@@ -141,30 +128,16 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	});
 	stop();
 
-	const assetTokens = mapPoolAssetTokensFromEntries(chain.id, tokens)
-		.map((tokenNoId) => ({
-			id: getTokenId({
-				type: "pool-asset",
+	const assetTokens = mapPoolAssetTokensFromEntries(chain.id, tokens).map(
+		(tokenNoId) => {
+			const token = buildToken({
+				...tokenNoId,
 				chainId: chain.id,
-				poolAssetId: tokenNoId.poolAssetId,
-			}),
-			poolAssetId: tokenNoId.poolAssetId,
-		}))
-		.map(
-			({ id, poolAssetId }) =>
-				({
-					id,
-					type: "pool-asset",
-					chainId: chain.id,
-					poolAssetId,
-					symbol: "",
-					decimals: 0,
-					name: "",
-					logo: undefined,
-					isSufficient: false,
-					...TOKENS_OVERRIDES_MAP[id],
-				}) as Token,
-		);
+				verified: undefined,
+			});
+			return Object.assign(token, TOKENS_OVERRIDES_MAP[token.id]) as Token;
+		},
+	);
 
 	updateTokensStore(
 		chain.id,
@@ -193,33 +166,20 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 		chain.id,
 		tokens,
 		createSufficientMap([]),
-	)
-		.map((d) => ({
-			...d,
-			id: getTokenId({
-				type: "asset",
-				chainId: chain.id,
-				assetId: d.assetId,
-			}),
-		}))
-		.map(({ id, assetId, symbol, decimals, name }) =>
-			Object.assign(
-				{
-					id,
-					type: "asset",
-					chainId: chain.id,
-					assetId,
-					symbol,
-					decimals,
-					name,
-					logo: "./img/tokens/asset.svg",
-					verified: false,
-					isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
-				} as Token,
-				KNOWN_TOKENS_MAP[id],
-				TOKENS_OVERRIDES_MAP[id],
-			),
+	).map((tokenNoId) => {
+		const token = buildToken({
+			...tokenNoId,
+			chainId: chain.id,
+			logo: "./img/tokens/asset.svg",
+			verified: false,
+			isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
+		});
+		return Object.assign(
+			token,
+			KNOWN_TOKENS_MAP[token.id],
+			TOKENS_OVERRIDES_MAP[token.id],
 		);
+	});
 
 	updateTokensStore(
 		chain.id,

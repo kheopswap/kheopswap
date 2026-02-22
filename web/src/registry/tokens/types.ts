@@ -1,5 +1,5 @@
-import type { ChainId } from "../chains/types";
-import type { XcmV5Multilocation } from "../types/xcm";
+import type { ChainId } from "../chains/types.ts";
+import type { XcmV5Multilocation } from "../types/xcm.ts";
 
 export type TokenTypeNative = "native";
 export type TokenTypeAsset = "asset";
@@ -64,12 +64,6 @@ export type TokenForeignAssetNoId = {
 	verified: boolean;
 	isSufficient: boolean;
 };
-
-export type TokenNoId =
-	| TokenNativeNoId
-	| TokenAssetNoId
-	| TokenPoolAssetNoId
-	| TokenForeignAssetNoId;
 
 /* declaration */
 export type TokenIdNative = string; // `native::${ChainId}`;

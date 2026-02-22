@@ -40,6 +40,7 @@ import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
 import YAML from "yaml";
 import { DESCRIPTORS_ASSET_HUB } from "../src/registry/chains/descriptors.ts";
+import { buildToken } from "../src/registry/tokens/buildToken.ts";
 import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
 import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
 import { mapAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapAssetTokensFromEntries.ts";
@@ -1050,60 +1051,6 @@ Output files are written to src/registry/tokens/generated/tokens.<chainId>.json`
 	return { chainFilter, timeout };
 }
 
-type OrderedTokenOutput = {
-	id: string;
-	type: string;
-	chainId: string;
-	[key: string]: unknown;
-};
-
-/** Reorder token properties to match runtime construction order (watchers.ts). */
-function toOrderedOutput(token: TokenNoId): OrderedTokenOutput {
-	const id = getTokenId(token);
-	switch (token.type) {
-		case "asset":
-			return {
-				id,
-				type: token.type,
-				chainId: token.chainId,
-				assetId: token.assetId,
-				symbol: token.symbol,
-				decimals: token.decimals,
-				name: token.name,
-				...(token.logo ? { logo: token.logo } : {}),
-				verified: token.verified,
-				isSufficient: token.isSufficient,
-			};
-		case "pool-asset":
-			return {
-				id,
-				type: token.type,
-				chainId: token.chainId,
-				poolAssetId: token.poolAssetId,
-				symbol: token.symbol,
-				decimals: token.decimals,
-				name: token.name,
-				...(token.logo ? { logo: token.logo } : {}),
-				isSufficient: token.isSufficient,
-			};
-		case "foreign-asset":
-			return {
-				id,
-				type: token.type,
-				chainId: token.chainId,
-				symbol: token.symbol,
-				decimals: token.decimals,
-				name: token.name,
-				...(token.logo ? { logo: token.logo } : {}),
-				location: token.location,
-				verified: token.verified,
-				isSufficient: token.isSufficient,
-			};
-		default:
-			throw new Error(`Unexpected token type: ${(token as TokenNoId).type}`);
-	}
-}
-
 async function main() {
 	const { chainFilter, timeout } = parseArgs();
 
@@ -1180,7 +1127,7 @@ async function main() {
 		});
 
 		const outputTokens = filtered
-			.map((token) => toOrderedOutput(token))
+			.map((token) => buildToken(token as Parameters<typeof buildToken>[0]))
 			.sort((a, b) => a.id.localeCompare(b.id));
 
 		const filePath = resolve(OUTPUT_DIR, `tokens.${chainId}.json`);

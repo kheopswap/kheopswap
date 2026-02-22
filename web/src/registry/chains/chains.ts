@@ -8,8 +8,6 @@ import type {
 	RelayId,
 } from "./types";
 
-export const PARA_ID_ASSET_HUB = 1000;
-
 const CHAINS = chainsProdJson as Chain[];
 
 const CHAINS_MAP = Object.fromEntries(CHAINS.map((chain) => [chain.id, chain]));

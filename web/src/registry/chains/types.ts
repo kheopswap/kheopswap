@@ -1,7 +1,6 @@
-import type { PARA_ID_ASSET_HUB } from "./chains";
-import type { DescriptorsAssetHub } from "./descriptors";
+import type { DescriptorsAssetHub } from "./descriptors.ts";
 
-export type ParaIdAssetHub = typeof PARA_ID_ASSET_HUB;
+export type ParaIdAssetHub = 1000;
 
 export type ChainIdAssetHub = keyof DescriptorsAssetHub;
 export type ChainId = ChainIdAssetHub;
