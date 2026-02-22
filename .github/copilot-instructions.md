@@ -2,21 +2,27 @@
 
 ## Project Overview
 
-Kheopswap is a decentralized exchange for the Polkadot Asset Hub, built as a pnpm monorepo with React/TypeScript frontend and reactive state management via RxJS.
+Kheopswap is a decentralized exchange for the Polkadot Asset Hub, built with React/TypeScript and reactive state management via RxJS. The project uses pnpm with a single `web/` workspace package.
 
 ## Architecture
 
-### Monorepo Structure
+### Project Structure
 
 ```
-packages/
-├── constants/     # Environment flags, config (APP_FEE_*)
-├── papi/          # Polkadot API wrapper using polkadot-api library
+web/src/
+├── common/        # Constants (APP_FEE_*), settings, environment flags
+├── components/    # Shared UI components
+├── features/      # Feature modules (swap, transfer, liquidity, portfolio, transaction)
+├── helpers/       # Helper functions (getExistentialDeposit, getPoolReserves)
+├── hooks/         # React hooks (useBalance, useToken, usePoolReserves, etc.)
+├── papi/          # Polkadot API wrapper (getApi, light client management)
 ├── registry/      # Chain definitions, token types, PAPI descriptors
+├── routes/        # Route definitions
 ├── services/      # Reactive data services (balances, tokens, pools)
-├── settings/      # User preference management
-├── utils/         # Shared utilities (provideContext, getCachedObservable$)
-web/               # Vite + React frontend application
+├── state/         # Global state (relay, pools, prices, tokens, transactions)
+├── types/         # Shared TypeScript types
+├── util/          # Utility functions (getTxOptions, getDispatchErrorMessage, etc.)
+└── utils/         # Core utilities (provideContext, getCachedObservable$, formatDecimals, etc.)
 ```
 
 ### Key Patterns
@@ -29,17 +35,24 @@ export const getBalance$ = (def: BalanceDef) =>
   getCachedObservable$("getBalance$", balanceId, () => new Observable(...));
 ```
 
-**Context Providers** - Use `provideContext` utility from `@kheopswap/utils` for feature state:
+**Context Providers** - Use `provideContext` utility from `utils/provideContext` for feature state:
 
 ```typescript
 // Creates [Provider, useHook] tuple from a hook
 export const [SwapProvider, useSwap] = provideContext(useSwapProvider);
 ```
 
-**React-RxJS Bindings** - Global state uses `@react-rxjs/core` `bind()`:
+**React-RxJS Bindings** - Global state uses `@react-rxjs/core` `bind()` for derived observables:
 
 ```typescript
 export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...));
+```
+
+**React-RX Hooks** - Components subscribe to observables using `useObservable()` from `react-rx`:
+
+```typescript
+import { useObservable } from "react-rx";
+const token = useObservable(token$, defaultValue);
 ```
 
 **Chain Types** - All supported chains are Asset Hubs (pah, kah, wah, pasah):
@@ -51,7 +64,7 @@ isChainIdAssetHub(id);          // Type guard for ChainIdAssetHub
 
 ### API Access
 
-Always use `getApi()` from `@kheopswap/papi` - it handles light client vs RPC selection and caching:
+Always use `getApi()` from `papi/getApi` - it handles light client vs RPC selection and caching:
 
 ```typescript
 const api = await getApi(chainId); // waitReady=true by default
@@ -64,17 +77,20 @@ const api = await getApi(chainId); // waitReady=true by default
 
 ## Development Commands
 
+Requires Node.js >= 24.
+
 ```bash
-pnpm install                 # Install dependencies (uses corepack)
+pnpm install                 # Install dependencies (runs papi codegen via postinstall)
 pnpm dev                     # Dev with production RPCs
 pnpm check                   # Biome lint + format (auto-fix)
 pnpm typecheck               # TypeScript check (web package)
+pnpm knip                    # Check for unused dependencies/files/exports
 ```
 
 ## Code Conventions
 
-- **Linting**: Biome handles formatting and linting. Pre-commit hook via simple-git-hooks runs `biome check --write`
-- **Imports**: Use `@kheopswap/*` workspace aliases. Web uses `src/` alias for absolute imports
+- **Linting**: Biome handles formatting and linting. Pre-commit hook via simple-git-hooks runs `biome check --staged --error-on-warnings --no-errors-on-unmatched`
+- **Imports**: Use relative paths for all imports (no path aliases are configured)
 - **File naming**: Features in `web/src/features/`, hooks in `web/src/hooks/`, providers end with `Provider.ts(x)`
 - **Observable naming**: Suffix with `$` (e.g., `assetHubChains$`, `getBalance$`)
 - **State loading**: Always handle `isLoading` + `data` pattern for async states
@@ -82,15 +98,17 @@ pnpm typecheck               # TypeScript check (web package)
 
 ## Token & Chain Types
 
-Token IDs encode chain + type: `"pah::asset::1984"` (Polkadot Asset Hub, asset type, id 1984)
+Token IDs encode type + chain: `"asset::pah::1984"` (asset type, Polkadot Asset Hub, id 1984)
 
 ```typescript
 // Parse/create token IDs
-const tokenId = getTokenId({ chainId, type, onChainId });
-const { chainId, type, onChainId } = parseTokenId(tokenId);
+const tokenId = getTokenId({ type: "asset", chainId: "pah", assetId: 1984 });
+const parsed = parseTokenId(tokenId);
+// parsed: { type: "asset", chainId: "pah", assetId: 1984 }
+// Other token types: "native", "pool-asset", "foreign-asset"
 ```
 
-Chain configurations are in `chains.prod.json`.
+Chain configurations are in `web/src/registry/chains/chains.prod.json`.
 
 ## Feature Development
 
@@ -114,6 +132,7 @@ Always run these commands to validate changes:
 ```bash
 pnpm check      # Lint and format with Biome (auto-fixes issues)
 pnpm typecheck  # Verify TypeScript types compile correctly
+pnpm knip       # Check for unused dependencies/files/exports
 ```
 
-Fix any errors before considering the task complete.
+Fix any errors, and update documentation (README.md, copilot-instructions.md) if necessary, before considering the task complete.
