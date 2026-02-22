@@ -1,4 +1,4 @@
-import { Dialog } from "@base-ui-components/react/dialog";
+import { Dialog } from "@base-ui/react/dialog";
 import { type FC, type ReactNode, useCallback } from "react";
 import { cn } from "../utils/cn";
 
@@ -31,7 +31,7 @@ export const Modal: FC<Modal> = ({
 						"transition-opacity duration-300 ease-out",
 						"data-open:opacity-100",
 						"data-starting-style:opacity-0",
-						"data-closed:opacity-0",
+						"data-ending-style:opacity-0",
 						onDismiss && "cursor-pointer",
 					)}
 				/>
@@ -43,7 +43,7 @@ export const Modal: FC<Modal> = ({
 						"transition-[opacity,transform] duration-300 ease-out",
 						"data-open:scale-100 data-open:opacity-100",
 						"data-starting-style:scale-95 data-starting-style:opacity-0",
-						"data-closed:scale-95 data-closed:opacity-0",
+						"data-ending-style:scale-95 data-ending-style:opacity-0",
 					)}
 				>
 					{children}

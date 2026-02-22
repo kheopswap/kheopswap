@@ -1,4 +1,4 @@
-import { Dialog } from "@base-ui-components/react/dialog";
+import { Dialog } from "@base-ui/react/dialog";
 import CloseIcon from "@w3f/polkadot-icons/solid/Close";
 import type { FC, ReactNode } from "react";
 import { cn } from "../utils/cn";

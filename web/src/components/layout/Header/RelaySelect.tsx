@@ -1,4 +1,4 @@
-import { Switch } from "@base-ui-components/react/switch";
+import { Switch } from "@base-ui/react/switch";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";

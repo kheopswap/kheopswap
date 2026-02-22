@@ -1,4 +1,4 @@
-import { blake2b } from "@noble/hashes/blake2";
+import { blake2b } from "@noble/hashes/blake2.js";
 import { getSs58AddressInfo } from "polkadot-api";
 import { useMemo } from "react";
 import { cn } from "../utils/cn";

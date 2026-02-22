@@ -1,4 +1,4 @@
-import { Dialog } from "@base-ui-components/react/dialog";
+import { Dialog } from "@base-ui/react/dialog";
 import { type FC, type ReactNode, useCallback } from "react";
 import { cn } from "../utils/cn";
 
@@ -21,11 +21,11 @@ const anchorPositionClass: Record<DrawerAnchor, string> = {
 
 const anchorAnimationClass: Record<DrawerAnchor, string> = {
 	right:
-		"data-open:translate-x-0 data-starting-style:translate-x-full data-closed:translate-x-full",
-	left: "data-open:translate-x-0 data-starting-style:-translate-x-full data-closed:-translate-x-full",
-	top: "data-open:translate-y-0 data-starting-style:-translate-y-full data-closed:-translate-y-full",
+		"data-open:translate-x-0 data-starting-style:translate-x-full data-ending-style:translate-x-full",
+	left: "data-open:translate-x-0 data-starting-style:-translate-x-full data-ending-style:-translate-x-full",
+	top: "data-open:translate-y-0 data-starting-style:-translate-y-full data-ending-style:-translate-y-full",
 	bottom:
-		"data-open:translate-y-0 data-starting-style:translate-y-full data-closed:translate-y-full",
+		"data-open:translate-y-0 data-starting-style:translate-y-full data-ending-style:translate-y-full",
 };
 
 export const Drawer: FC<DrawerProps> = ({
@@ -51,7 +51,7 @@ export const Drawer: FC<DrawerProps> = ({
 						"transition-opacity duration-300 ease-linear",
 						"data-open:opacity-100",
 						"data-starting-style:opacity-0",
-						"data-closed:opacity-0",
+						"data-ending-style:opacity-0",
 						!onDismiss && "cursor-not-allowed",
 					)}
 				/>
