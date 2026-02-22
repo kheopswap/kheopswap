@@ -208,6 +208,7 @@ const AddLiquidityEditor: FC = () => {
 				balance={accountBalances?.[0]}
 				isLoadingBalance={isLoadingAccountBalances}
 				onMaxClick={handleMaxClick("token1")}
+				inputLabel="Native token amount"
 			/>
 			<TokenAmountPicker
 				inputProps={{
@@ -227,6 +228,7 @@ const AddLiquidityEditor: FC = () => {
 				balance={accountBalances?.[1]}
 				isLoadingBalance={isLoadingAccountBalances}
 				onMaxClick={handleMaxClick("token2")}
+				inputLabel="Asset token amount"
 			/>
 		</div>
 	);

@@ -1,5 +1,6 @@
 import { useDeferredValue } from "react";
 import { useLoadingStatusSummary } from "../../hooks/useLoadingStatusSummary";
+import { ErrorBoundary } from "../ErrorBoundary";
 import { DiscordIcon, GitHubIcon, XDotComIcon } from "../icons";
 import { ChainBlockNumbers } from "./ChainBlockNumbers";
 
@@ -16,7 +17,9 @@ export const Footer = () => {
 	return (
 		<div className="flex w-full items-center justify-between gap-6 bg-black/20 px-4 py-3 text-xs text-neutral-300 sm:px-6">
 			<div>
-				<ChainBlockNumbers />
+				<ErrorBoundary fallback={null}>
+					<ChainBlockNumbers />
+				</ErrorBoundary>
 			</div>
 			<div className="hidden flex-col items-center gap-1 text-center text-xs text-neutral-500 sm:flex">
 				<div className="">Powered by polkadot-api and kheopskit</div>

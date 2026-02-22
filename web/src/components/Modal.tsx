@@ -6,9 +6,15 @@ type Modal = {
 	isOpen: boolean;
 	children: ReactNode;
 	onDismiss?: () => void;
+	"aria-label"?: string;
 };
 
-export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
+export const Modal: FC<Modal> = ({
+	isOpen,
+	children,
+	onDismiss,
+	"aria-label": ariaLabel,
+}) => {
 	const handleOpenChange = useCallback(
 		(open: boolean) => {
 			if (!open) onDismiss?.();
@@ -30,6 +36,7 @@ export const Modal: FC<Modal> = ({ isOpen, children, onDismiss }) => {
 					)}
 				/>
 				<Dialog.Popup
+					aria-label={ariaLabel}
 					className={cn(
 						"fixed inset-0 z-30 outline-hidden",
 						"flex min-h-full items-center justify-center p-4 text-center",

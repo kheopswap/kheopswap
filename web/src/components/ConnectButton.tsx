@@ -7,7 +7,7 @@ export const ConnectButton = () => {
 
 	return (
 		<>
-			<button type="button" onClick={open}>
+			<button type="button" onClick={open} aria-label="Connect wallet">
 				<UserCircleIcon className="size-6" />
 			</button>
 			<AccountSelectDrawer

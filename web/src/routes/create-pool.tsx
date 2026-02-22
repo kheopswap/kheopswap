@@ -2,6 +2,7 @@ import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
 import { Navigate, NavLink, useParams } from "react-router";
 
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Layout } from "../components/layout/Layout";
 import { PageContent } from "../components/layout/PageContent";
 import { PageTitle } from "../components/layout/PageTitle";
@@ -44,7 +45,9 @@ export const CreateLiquidityPoolPage = () => {
 					<ChevronRightIcon className="inline size-[0.8em]" /> Create {poolName}
 				</PageTitle>
 				<PageContent>
-					<CreatePool tokenId={tokenId} />
+					<ErrorBoundary>
+						<CreatePool tokenId={tokenId} />
+					</ErrorBoundary>
 				</PageContent>
 			</div>
 			<TabTitle title={`Create Pool ${poolName}`} />

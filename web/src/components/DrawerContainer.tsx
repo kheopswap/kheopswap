@@ -33,7 +33,10 @@ export const DrawerContainer: FC<{
 			>
 				<Dialog.Title className="text-base font-bold">{title}</Dialog.Title>
 				{onClose && (
-					<Dialog.Close className="rounded-xs outline-white ring-white focus:outline-hidden focus-visible:ring-1">
+					<Dialog.Close
+						aria-label="Close"
+						className="rounded-xs outline-white ring-white focus:outline-hidden focus-visible:ring-1"
+					>
 						<CloseIcon className="size-5 fill-white" />
 					</Dialog.Close>
 				)}

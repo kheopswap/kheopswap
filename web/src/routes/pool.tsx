@@ -2,6 +2,7 @@ import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
 import { Navigate, NavLink, useParams } from "react-router";
 
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Layout } from "../components/layout/Layout";
 import { PageContent } from "../components/layout/PageContent";
 import { PageTitle } from "../components/layout/PageTitle";
@@ -57,7 +58,11 @@ export const LiquidityPoolPage = () => {
 						</>
 					)}
 				</PageTitle>
-				<PageContent>{poolName ? <LiquidityPool /> : "Loading..."}</PageContent>
+				<PageContent>
+					<ErrorBoundary>
+						{poolName ? <LiquidityPool /> : "Loading..."}
+					</ErrorBoundary>
+				</PageContent>
 			</div>
 			<TabTitle title={poolName ? `${poolName} LP` : "Pool"} />
 		</Layout>
