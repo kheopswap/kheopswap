@@ -13,6 +13,12 @@ import { useToken } from "../../hooks/useToken";
 import { useTokensByChainId } from "../../hooks/useTokensByChainId";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
+import {
+	getAmmOutput,
+	getMinAmountOut,
+	getPriceImpact,
+	splitAppCommission,
+} from "../../utils/ammMath";
 import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
 import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
 
@@ -43,10 +49,10 @@ const useSwapInputs = ({
 
 			const appCommissionPercent =
 				!!APP_FEE_ADDRESS && !!APP_FEE_PERCENT ? APP_FEE_PERCENT : 0;
-			const feeNum =
-				totalIn * BigInt(Number(appCommissionPercent * 10000).toFixed());
-			const fee = feeNum / 1000000n;
-			const plancksIn = totalIn - fee;
+			const { plancksIn, appFee: fee } = splitAppCommission(
+				totalIn,
+				appCommissionPercent,
+			);
 
 			return [plancksIn, fee, totalIn, true];
 		} catch (_err) {
@@ -160,17 +166,13 @@ export const useSwapPricing = ({
 		if (!lpFee || !reserveIn || !reserveOut || !swapPlancksIn)
 			return [undefined, undefined];
 
-		const safeMultiplier = 1000n;
-
-		if (reserveIn === 0n || reserveOut === 0n) throw new Error("No liquidity");
-
-		const amountInWithFee = swapPlancksIn * (safeMultiplier - BigInt(lpFee));
-		const protocolCommission =
-			(safeMultiplier * swapPlancksIn - amountInWithFee) / safeMultiplier;
-		const numerator = amountInWithFee * reserveOut;
-		const denominator = reserveIn * safeMultiplier + amountInWithFee;
-		const plancksOut = numerator / denominator;
-		return [plancksOut, protocolCommission];
+		const { amountOut, protocolCommission } = getAmmOutput(
+			swapPlancksIn,
+			reserveIn,
+			reserveOut,
+			lpFee,
+		);
+		return [amountOut, protocolCommission];
 	}, [lpFee, swapPlancksIn, reserveIn, reserveOut]);
 
 	const amountOut = useMemo(() => {
@@ -189,20 +191,12 @@ export const useSwapPricing = ({
 
 	const priceImpact = useMemo(() => {
 		if (!rawPlancksOut || !swapPlancksOut) return undefined;
-		return (
-			-Number((10000n * (rawPlancksOut - swapPlancksOut)) / rawPlancksOut) /
-			10000
-		);
+		return getPriceImpact(rawPlancksOut, swapPlancksOut);
 	}, [rawPlancksOut, swapPlancksOut]);
 
 	const minPlancksOut = useMemo(() => {
 		if (!swapPlancksOut || slippage === undefined) return null;
-		const safetyDecimal = 10000n;
-		return (
-			(swapPlancksOut *
-				(safetyDecimal - BigInt(slippage * Number(safetyDecimal)))) /
-			safetyDecimal
-		);
+		return getMinAmountOut(swapPlancksOut, slippage);
 	}, [swapPlancksOut, slippage]);
 
 	const hasInsufficientBalance = useMemo(() => {

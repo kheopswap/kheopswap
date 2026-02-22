@@ -8,6 +8,7 @@ import { useNonce } from "../../hooks/useNonce";
 import { useTokenChain } from "../../hooks/useTokenChain";
 import type { Token, TokenId } from "../../registry/tokens/types";
 import type { AnyTransaction } from "../../types/transactions";
+import { getMaxSwapAmount } from "../../utils/ammMath";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
 import { getTxOptions } from "../../utils/getTxOptions";
 import { isBigInt } from "../../utils/isBigInt";
@@ -81,12 +82,12 @@ export const useSwapFees = ({
 
 	const onMaxClick = useCallback(() => {
 		if (tokenIn && balanceIn && isBigInt(edTokenIn) && isBigInt(feeEstimate)) {
-			let plancks = balanceIn;
-			const fees = feeEstimate;
-			const ed = edTokenIn;
-
-			if (tokenIn.type === "native" && 2n * fees + ed <= plancks)
-				plancks -= 2n * fees + ed;
+			const plancks = getMaxSwapAmount(
+				balanceIn,
+				feeEstimate,
+				edTokenIn,
+				tokenIn.type === "native",
+			);
 
 			setFormData((prev) => ({
 				...prev,
