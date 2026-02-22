@@ -37,10 +37,14 @@ export type TokenAssetNoId = {
 export type TokenPoolAssetNoId = {
 	type: TokenTypePoolAsset;
 	chainId: ChainId;
-	decimals: number; // TODO set to 0
-	symbol: string; // TODO remove
-	name: string; // TODO remove
-	logo?: string; // TODO remove
+	/** Always 0 for pool-asset tokens (LP tokens). */
+	decimals: number;
+	/** Always "" — kept for Token union compatibility. */
+	symbol: string;
+	/** Always "" — kept for Token union compatibility. */
+	name: string;
+	/** Always undefined — kept for Token union compatibility. */
+	logo?: string;
 	poolAssetId: number;
 	verified: undefined;
 	isSufficient: false;
@@ -49,10 +53,13 @@ export type TokenPoolAssetNoId = {
 export type TokenForeignAssetNoId = {
 	type: TokenTypeForeignAsset;
 	chainId: ChainId;
-	decimals: number; // TODO set to 0
-	symbol: string; // TODO remove
-	name: string; // TODO remove
-	logo?: string; // TODO remove
+	/** Populated from on-chain metadata at runtime. */
+	decimals: number;
+	/** Populated from on-chain metadata at runtime. */
+	symbol: string;
+	/** Populated from on-chain metadata at runtime. */
+	name: string;
+	logo?: string;
 	location: XcmV5Multilocation;
 	verified: boolean;
 	isSufficient: boolean;

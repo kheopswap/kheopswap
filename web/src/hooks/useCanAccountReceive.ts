@@ -3,7 +3,7 @@ import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { getChainIdFromTokenId } from "../registry/tokens/helpers";
 import type { TokenId } from "../registry/tokens/types";
-import { getNativeToken } from "../util/getNativeToken";
+import { getNativeToken } from "../utils/getNativeToken";
 import { useBalances } from "./useBalances";
 import { useExistentialDeposit } from "./useExistentialDeposit";
 import { useTokensByChainId } from "./useTokensByChainId";

@@ -27,9 +27,9 @@ import {
 } from "../../state/transactions/transactionStore";
 import type { TransactionType } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
-import { getFeeAssetLocation } from "../../util/getFeeAssetLocation";
-import { getTxOptions } from "../../util/getTxOptions";
 import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
+import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
+import { getTxOptions } from "../../utils/getTxOptions";
 import { logger } from "../../utils/logger";
 import { notifyError } from "../../utils/notifyError";
 import { provideContext } from "../../utils/provideContext";

@@ -4,8 +4,8 @@ import { TokenLogo } from "../../components/TokenLogo";
 import { useNativeToken } from "../../hooks/useNativeToken";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
-import { getTokenDescription } from "../../util/getTokenDescription";
 import { cn } from "../../utils/cn";
+import { getTokenDescription } from "../../utils/getTokenDescription";
 import { TokenBalancesSummary } from "./PortfolioDataCell";
 import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
 

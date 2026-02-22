@@ -5,7 +5,7 @@ import type { Token } from "../../registry/tokens/types";
 import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
 import { tokensStore$ } from "./store";
-import { sortTokens } from "./util";
+import { sortTokens } from "./utils";
 import { chainTokensStatuses$ } from "./watchers";
 
 export type ChainTokensState = {

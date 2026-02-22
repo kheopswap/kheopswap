@@ -13,7 +13,6 @@ web/src/
 ├── common/        # Constants (APP_FEE_*), settings, environment flags
 ├── components/    # Shared UI components
 ├── features/      # Feature modules (swap, transfer, liquidity, portfolio, transaction)
-├── helpers/       # Helper functions (getExistentialDeposit, getPoolReserves)
 ├── hooks/         # React hooks (useBalance, useToken, usePoolReserves, etc.)
 ├── papi/          # Polkadot API wrapper (getApi, light client management)
 ├── registry/      # Chain definitions, token types, PAPI descriptors
@@ -21,8 +20,7 @@ web/src/
 ├── services/      # Reactive data services (balances, tokens, pools)
 ├── state/         # Global state (relay, pools, prices, tokens, transactions)
 ├── types/         # Shared TypeScript types
-├── util/          # Utility functions (getTxOptions, getDispatchErrorMessage, etc.)
-└── utils/         # Core utilities (provideContext, getCachedObservable$, formatDecimals, etc.)
+└── utils/         # All utility & helper functions (single namespace)
 ```
 
 ### Key Patterns
@@ -42,18 +40,26 @@ export const getBalance$ = (def: BalanceDef) =>
 export const [SwapProvider, useSwap] = provideContext(useSwapProvider);
 ```
 
-**React-RxJS Bindings** - Global state uses `@react-rxjs/core` `bind()` for derived observables:
+**Reactive Convention — `bind()` vs `useObservable()`**
 
-```typescript
-export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...));
-```
+Two reactive bridges coexist with clear, distinct roles:
 
-**React-RX Hooks** - Components subscribe to observables using `useObservable()` from `react-rx`:
+- **`bind()` (`@react-rxjs/core`)** — Use for **global/singleton derived state** where the observable is static and shared across the entire app. Returns a `[useHook, observable$]` tuple that auto-subscribes via the root `<Subscribe>` boundary. Used in `state/`, `hooks/useSetting`, `hooks/useLoadingStatusSummary`, and layout components.
 
-```typescript
-import { useObservable } from "react-rx";
-const token = useObservable(token$, defaultValue);
-```
+  ```typescript
+  // Good: static derived observable, used globally
+  export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...));
+  ```
+
+- **`useObservable()` (`react-rx`)** — Use for **parameterized/dynamic subscriptions** where the observable is constructed per-call from hook arguments (e.g., token IDs, chain IDs). This is the dominant pattern in `hooks/`.
+
+  ```typescript
+  // Good: observable depends on parameters passed to the hook
+  import { useObservable } from "react-rx";
+  const token = useObservable(token$(tokenId), defaultValue);
+  ```
+
+**Rule of thumb:** If the observable takes parameters → `useObservable()`. If it's a singleton derived stream → `bind()`.
 
 **Chain Types** - All supported chains are Asset Hubs (pah, kah, wah, pasah):
 
