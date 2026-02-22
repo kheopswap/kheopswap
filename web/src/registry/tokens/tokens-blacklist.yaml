@@ -1,0 +1,21 @@
+# Token IDs to exclude from fetch-tokens output.
+# Blacklisted tokens are skipped entirely: no metadata/icon fetch, no JSON output.
+#
+# Token ID format examples:
+#   - native::pah
+#   - asset::pah::1984
+#   - pool-asset::pah::42
+#   - foreign-asset::pah::<compressed-location>
+#
+# To find a token's ID, check the generated tokens.<chainId>.json files
+# or the fetch-tokens console output.
+
+blacklist: 
+  # invalid contracts
+  - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyADzEAZgAWCAA2AE50Gsz0H0zMiVqYADMfdAheqwB2eoAOdFH/GFHuoYgfLppwgF1woA===
+  - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyAD3R0GB9KpwAWGAA2MSsnRv90CAB2AGZA9CdW7trMgDMrMQBOTsqYEYAOCbDQgF1woA===
+  - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyADxgAMwBmdAgxGAh/ADZ6ior/ABYKpp8nCCqfAE4IAHYBn0zBgA4nJoqxKwbBsNCAXXCgA
+  - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyADwBOcpgAdgAWAGZygDZaq0z6prErdAAOcvqfADMxfxaen2qnMVreiAhqwer/RnCAXXCgA
+  - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyADwAzSoBOKoB2ADZagA50JwAWeoTM/3qAZkynH3L6mAkxHyaxdF70Nqd68baw0IBdcKA==
+  # non-Ethereum foreign assets without metadata (symbol+name)
+  - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AWAKzyADAF8NQA

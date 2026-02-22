@@ -7,6 +7,7 @@ import {
 import { getApi } from "../../papi/getApi";
 import { getChainById } from "../../registry/chains/chains";
 import type { Chain, ChainId } from "../../registry/chains/types";
+import { TOKENS_BLACKLIST } from "../../registry/tokens/blacklist";
 import { getTokenId } from "../../registry/tokens/helpers";
 import {
 	createSufficientMap,
@@ -86,6 +87,7 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 			),
 		)
 		.filter((token) => {
+			if (TOKENS_BLACKLIST.has(token.id)) return false;
 			if (!token.symbol || !isNumber(token.decimals) || !token.name) {
 				logger.warn("No metadata found for foreign asset", {
 					id: token.id,
@@ -164,7 +166,11 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 				}) as Token,
 		);
 
-	updateTokensStore(chain.id, "pool-asset", assetTokens);
+	updateTokensStore(
+		chain.id,
+		"pool-asset",
+		assetTokens.filter((t) => !TOKENS_BLACKLIST.has(t.id)),
+	);
 };
 
 const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
@@ -215,7 +221,11 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 			),
 		);
 
-	updateTokensStore(chain.id, "asset", assetTokens);
+	updateTokensStore(
+		chain.id,
+		"asset",
+		assetTokens.filter((t) => !TOKENS_BLACKLIST.has(t.id)),
+	);
 };
 
 const watchTokensByChain = (chainId: ChainId) => {

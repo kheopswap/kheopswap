@@ -1,14 +1,21 @@
+import YAML from "yaml";
 import { logger } from "../../utils/logger";
 import { safeParse, safeStringify } from "../../utils/serialization";
 import { getValidTokenLogo } from "../../utils/tokenLogo";
+import { TOKENS_BLACKLIST } from "./blacklist";
 import tokensKah from "./generated/tokens.kah.json";
 import tokensPah from "./generated/tokens.pah.json";
 import tokensPasah from "./generated/tokens.pasah.json";
 import tokensWah from "./generated/tokens.wah.json";
 import { getTokenId } from "./helpers";
-import tokensNative from "./tokens-native.json";
-import tokensOverridesJson from "./tokens-overrides.json";
+import tokensNativeYaml from "./tokens-native.yaml?raw";
+import tokensOverridesYaml from "./tokens-overrides.yaml?raw";
 import type { Token, TokenId, TokenNoId, TokenType } from "./types";
+
+const tokensNative = YAML.parse(tokensNativeYaml) as TokenNoId[];
+const tokensOverridesJson = YAML.parse(tokensOverridesYaml) as ({
+	id: TokenId;
+} & Partial<TokenNoId>)[];
 
 const normalizeForeignTokenLocation = (token: TokenNoId): TokenNoId => {
 	if (token.type !== "foreign-asset") return token;
@@ -28,9 +35,7 @@ const TOKENS = (
 		...tokensPasah,
 	] as TokenNoId[]
 ).map(normalizeForeignTokenLocation);
-const TOKENS_OVERRIDES = tokensOverridesJson as ({
-	id: TokenId;
-} & Partial<TokenNoId>)[];
+const TOKENS_OVERRIDES = tokensOverridesJson;
 
 const normalizeTokenLogo = <T extends { logo?: string }>(token: T): T => ({
 	...token,
@@ -43,7 +48,7 @@ export const KNOWN_TOKENS_LIST = TOKENS.map(
 			...normalizeTokenLogo(token),
 			id: getTokenId(token),
 		}) as Token,
-);
+).filter((token) => !TOKENS_BLACKLIST.has(token.id));
 
 export const KNOWN_TOKENS_MAP = Object.fromEntries(
 	KNOWN_TOKENS_LIST.map((a) => [a.id, a]),
@@ -57,7 +62,7 @@ export const TOKENS_OVERRIDES_MAP = Object.fromEntries(
 for (const override of TOKENS_OVERRIDES) {
 	if (!KNOWN_TOKENS_MAP[override.id])
 		logger.warn(
-			`tokens-overrides.json: id "${override.id}" does not match any known token`,
+			`tokens-overrides: id "${override.id}" does not match any known token`,
 		);
 }
 

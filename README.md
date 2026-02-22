@@ -21,7 +21,7 @@ Token snapshots are maintained by `pnpm fetch-tokens` (locally) and by the sched
 
 - `web/src/registry/tokens/tokens.[networkId].json` files are **automatically generated**.
 - These generated files should **never be modified manually**.
-- Manual token edits belong only in `web/src/registry/tokens/tokens-overrides.json`.
+- Manual token edits belong only in `web/src/registry/tokens/tokens-overrides.yaml`.
 
 ### Override rules
 
@@ -29,7 +29,7 @@ Token snapshots are maintained by `pnpm fetch-tokens` (locally) and by the sched
 - The `id` must match an existing generated token id.
 - Typical maintenance flow:
 	1. Find/copy the token `id` from `tokens.[networkId].json`.
-	2. Add/update the corresponding entry in `tokens-overrides.json`.
+	2. Add/update the corresponding entry in `tokens-overrides.yaml`.
 	3. Regenerate snapshots with `pnpm fetch-tokens` when needed.
 
 ### Environment variables used by `pnpm fetch-tokens`

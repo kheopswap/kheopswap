@@ -6,7 +6,7 @@
  * sorted lexicographically by `id`.
  *
  * Generated files (`tokens.<networkId>.json`) are read-only snapshots and
- * must not be edited manually. Manual changes belong in tokens-overrides.json
+ * must not be edited manually. Manual changes belong in tokens-overrides.yaml
  * and must target tokens by exact `id`.
  *
  * Ethereum-origin foreign assets (Snowbridge) are enriched by calling the
@@ -38,6 +38,7 @@ import { createClient, type PolkadotClient, type TypedApi } from "polkadot-api";
 import { getWsProvider } from "polkadot-api/ws";
 import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
+import YAML from "yaml";
 import { DESCRIPTORS_ASSET_HUB } from "../src/registry/chains/descriptors.ts";
 import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
 import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
@@ -91,6 +92,20 @@ const OUTPUT_DIR = resolve(
 	import.meta.dirname,
 	"../src/registry/tokens/generated",
 );
+
+/** Token blacklist file path. */
+const BLACKLIST_PATH = resolve(
+	import.meta.dirname,
+	"../src/registry/tokens/tokens-blacklist.yaml",
+);
+
+/** Load blacklisted token IDs from the YAML file. */
+function loadBlacklist(): Set<string> {
+	if (!existsSync(BLACKLIST_PATH)) return new Set();
+	const content = readFileSync(BLACKLIST_PATH, "utf-8");
+	const parsed = YAML.parse(content) as { blacklist?: string[] } | null;
+	return new Set(parsed?.blacklist ?? []);
+}
 
 /** ERC20 metadata cache file path (committed to repo). */
 const ERC20_CACHE_PATH = resolve(import.meta.dirname, "erc20-cache.json");
@@ -337,8 +352,11 @@ function getTokenId(token: TokenNoId): string {
 	}
 }
 
-function getEthereumContractAddresses(tokens: TokenNoId[]): string[] {
-	const addresses = new Set<string>();
+function getEthereumContractAddresses(tokens: TokenNoId[]): {
+	addresses: string[];
+	addrToTokenId: Map<string, string>;
+} {
+	const addrToTokenId = new Map<string, string>();
 	for (const token of tokens) {
 		if (
 			token.type !== "foreign-asset" ||
@@ -346,9 +364,10 @@ function getEthereumContractAddresses(tokens: TokenNoId[]): string[] {
 		)
 			continue;
 		const addr = getContractAddress(token);
-		if (addr) addresses.add(addr);
+		if (addr && !addrToTokenId.has(addr))
+			addrToTokenId.set(addr, getTokenId(token));
 	}
-	return [...addresses];
+	return { addresses: [...addrToTokenId.keys()], addrToTokenId };
 }
 
 function sanitizeFileNamePart(input: string): string {
@@ -404,11 +423,12 @@ async function migrateCachedImagesToLocal(
 	tokens: TokenNoId[],
 	coingeckoApiKey: string | undefined,
 ): Promise<void> {
-	const addresses = getEthereumContractAddresses(tokens);
+	const { addresses, addrToTokenId } = getEthereumContractAddresses(tokens);
 	let migrated = 0;
 	let copied = 0;
 
 	for (const addr of addresses) {
+		const tokenId = addrToTokenId.get(addr) ?? addr;
 		const cached = cache[addr];
 		if (!cached?.image) continue;
 
@@ -416,6 +436,7 @@ async function migrateCachedImagesToLocal(
 		if (!coingeckoId) {
 			const coingeckoData = await fetchCoinGeckoTokenData(
 				addr,
+				tokenId,
 				coingeckoApiKey,
 			);
 			coingeckoId = coingeckoData?.id;
@@ -620,6 +641,7 @@ let coingeckoCalls = 0;
  */
 async function fetchCoinGeckoTokenData(
 	contractAddress: string,
+	tokenId: string,
 	apiKey: string | undefined,
 ): Promise<{ id?: string; imageUrl?: string } | undefined> {
 	if (coingeckoCalls >= COINGECKO_BUDGET_PER_RUN) {
@@ -644,11 +666,11 @@ async function fetchCoinGeckoTokenData(
 				// Rate limited — back off and retry
 				const backoff = delayMs * 2 ** attempt;
 				console.log(
-					`  [coingecko] Rate limited, retrying in ${backoff / 1000}s...`,
+					`  [coingecko] ${tokenId}: rate limited, retrying in ${backoff / 1000}s...`,
 				);
 				if (attempt === COINGECKO_MAX_RETRIES) {
 					pushNonFatalWarning(
-						`[coingecko] ${contractAddress}: rate limited after ${COINGECKO_MAX_RETRIES + 1} attempts`,
+						`[coingecko] ${tokenId} (${contractAddress}): rate limited after ${COINGECKO_MAX_RETRIES + 1} attempts`,
 					);
 				}
 				await sleep(backoff);
@@ -657,7 +679,7 @@ async function fetchCoinGeckoTokenData(
 
 			if (!res.ok) {
 				pushNonFatalWarning(
-					`[coingecko] ${contractAddress}: HTTP ${res.status}`,
+					`[coingecko] ${tokenId} (${contractAddress}): HTTP ${res.status}`,
 				);
 				return undefined;
 			}
@@ -672,7 +694,7 @@ async function fetchCoinGeckoTokenData(
 		} catch (err) {
 			if (attempt === COINGECKO_MAX_RETRIES) {
 				pushNonFatalWarning(
-					`[coingecko] ${contractAddress}: ${err instanceof Error ? err.message : String(err)}`,
+					`[coingecko] ${tokenId} (${contractAddress}): ${err instanceof Error ? err.message : String(err)}`,
 				);
 			}
 			return undefined;
@@ -695,7 +717,7 @@ async function refreshErc20Cache(
 	tokens: TokenNoId[],
 	coingeckoApiKey: string | undefined,
 ): Promise<void> {
-	const addresses = getEthereumContractAddresses(tokens);
+	const { addresses, addrToTokenId } = getEthereumContractAddresses(tokens);
 
 	const now = Date.now();
 	const staleAddresses = addresses.filter((addr) => {
@@ -719,10 +741,16 @@ async function refreshErc20Cache(
 		metadata: Awaited<ReturnType<typeof fetchErc20Metadata>>;
 	}> = [];
 	for (const addr of staleAddresses) {
-		const metadata = await fetchErc20Metadata(addr).catch(() => null);
+		const tokenId = addrToTokenId.get(addr) ?? addr;
+		const metadata = await fetchErc20Metadata(addr).catch((err) => {
+			console.warn(
+				`  [erc20] ${tokenId} (${addr}): metadata fetch error: ${err instanceof Error ? err.message : String(err)}`,
+			);
+			return null;
+		});
 		if (!metadata) {
 			pushNonFatalWarning(
-				`[erc20] ${addr}: metadata fetch failed or contract is not valid ERC20`,
+				`[erc20] ${tokenId} (${addr}): metadata fetch failed or not valid ERC20`,
 			);
 		}
 		metadataResults.push({ addr, metadata });
@@ -736,14 +764,21 @@ async function refreshErc20Cache(
 		: COINGECKO_DELAY_NO_KEY_MS;
 	let fetched = 0;
 	for (const { addr, metadata } of metadataResults) {
+		const tokenId = addrToTokenId.get(addr) ?? addr;
 		if (!metadata) {
-			console.log(`  [erc20] ${addr} — not a valid ERC20, skipping`);
+			console.log(
+				`  [erc20] ${tokenId} (${addr}) — not a valid ERC20, skipping`,
+			);
 			continue;
 		}
 
 		// Rate-limit CoinGecko (skip delay before first call)
 		if (fetched > 0) await sleep(delayMs);
-		const coingeckoData = await fetchCoinGeckoTokenData(addr, coingeckoApiKey);
+		const coingeckoData = await fetchCoinGeckoTokenData(
+			addr,
+			tokenId,
+			coingeckoApiKey,
+		);
 		const image =
 			coingeckoData?.id && coingeckoData?.imageUrl
 				? await downloadCoinGeckoLogoAsWebp(
@@ -772,9 +807,13 @@ async function refreshErc20Cache(
 		fetched++;
 
 		if (image) {
-			console.log(`  [erc20] ${addr} → ${metadata.symbol} (with logo)`);
+			console.log(
+				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (with logo)`,
+			);
 		} else {
-			console.log(`  [erc20] ${addr} → ${metadata.symbol} (no logo)`);
+			console.log(
+				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (no logo)`,
+			);
 		}
 	}
 
@@ -874,8 +913,14 @@ async function fetchForeignAssetTokens(
 		if (metadataLocations.has(locationKey)) continue;
 		if (isEthereumOriginLocation(asset.keyArgs[0])) continue;
 
-		const warning = `[${chain.id}] Ignored non-Ethereum foreign asset without metadata: ${truncate(locationKey, 220)}`;
-		console.warn(`  [${chain.id}] ${warning}`);
+		const tokenId = getTokenId({
+			type: "foreign-asset",
+			chainId: chain.id,
+			location: asset.keyArgs[0],
+		});
+		const warning = `[${chain.id}] Ignored non-Ethereum foreign asset without metadata: ${tokenId}`;
+		console.warn(`  ${warning}`);
+		console.log(asset.keyArgs[0]);
 		pushNonFatalWarning(warning);
 	}
 
@@ -1005,6 +1050,60 @@ Output files are written to src/registry/tokens/generated/tokens.<chainId>.json`
 	return { chainFilter, timeout };
 }
 
+type OrderedTokenOutput = {
+	id: string;
+	type: string;
+	chainId: string;
+	[key: string]: unknown;
+};
+
+/** Reorder token properties to match runtime construction order (watchers.ts). */
+function toOrderedOutput(token: TokenNoId): OrderedTokenOutput {
+	const id = getTokenId(token);
+	switch (token.type) {
+		case "asset":
+			return {
+				id,
+				type: token.type,
+				chainId: token.chainId,
+				assetId: token.assetId,
+				symbol: token.symbol,
+				decimals: token.decimals,
+				name: token.name,
+				...(token.logo ? { logo: token.logo } : {}),
+				verified: token.verified,
+				isSufficient: token.isSufficient,
+			};
+		case "pool-asset":
+			return {
+				id,
+				type: token.type,
+				chainId: token.chainId,
+				poolAssetId: token.poolAssetId,
+				symbol: token.symbol,
+				decimals: token.decimals,
+				name: token.name,
+				...(token.logo ? { logo: token.logo } : {}),
+				isSufficient: token.isSufficient,
+			};
+		case "foreign-asset":
+			return {
+				id,
+				type: token.type,
+				chainId: token.chainId,
+				symbol: token.symbol,
+				decimals: token.decimals,
+				name: token.name,
+				...(token.logo ? { logo: token.logo } : {}),
+				location: token.location,
+				verified: token.verified,
+				isSufficient: token.isSufficient,
+			};
+		default:
+			throw new Error(`Unexpected token type: ${(token as TokenNoId).type}`);
+	}
+}
+
 async function main() {
 	const { chainFilter, timeout } = parseArgs();
 
@@ -1024,10 +1123,22 @@ async function main() {
 	console.log(`Timeout per chain: ${timeout}ms`);
 	console.log(`Output directory: ${OUTPUT_DIR}`);
 
+	// 0. Load blacklist
+	const blacklist = loadBlacklist();
+	if (blacklist.size > 0) {
+		console.log(`Blacklisted token IDs: ${blacklist.size}`);
+	}
+
 	// 1. Fetch tokens from all chains into memory
 	const tokensByChain = new Map<string, TokenNoId[]>();
 	for (const chain of chainsToFetch) {
-		const tokens = await fetchTokensForChain(chain, timeout);
+		const allChainTokens = await fetchTokensForChain(chain, timeout);
+		const tokens = allChainTokens.filter((t) => !blacklist.has(getTokenId(t)));
+		if (tokens.length < allChainTokens.length) {
+			console.log(
+				`  [${chain.id}] Excluded ${allChainTokens.length - tokens.length} blacklisted token(s)`,
+			);
+		}
 		if (tokens.length > 0) {
 			tokensByChain.set(chain.id, tokens);
 		} else {
@@ -1058,22 +1169,18 @@ async function main() {
 	for (const [chainId, tokens] of tokensByChain) {
 		// Final filter: drop foreign assets still missing symbol+name after enrichment
 		const filtered = tokens.filter((t) => {
-			if (t.type === "foreign-asset") return t.symbol && t.name;
+			if (t.type === "foreign-asset" && (!t.symbol || !t.name)) {
+				const id = getTokenId(t);
+				console.warn(
+					`  [${chainId}] Dropping foreign asset without symbol/name: ${id}`,
+				);
+				return false;
+			}
 			return true;
 		});
 
 		const outputTokens = filtered
-			.map((token) => {
-				const withId = {
-					...token,
-					id: getTokenId(token),
-				} as TokenNoId & { id: string; logo?: string };
-				if (!withId.logo) {
-					const { logo: _, ...rest } = withId;
-					return rest;
-				}
-				return withId;
-			})
+			.map((token) => toOrderedOutput(token))
 			.sort((a, b) => a.id.localeCompare(b.id));
 
 		const filePath = resolve(OUTPUT_DIR, `tokens.${chainId}.json`);

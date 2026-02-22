@@ -1,0 +1,241 @@
+- id: asset::pah::1984
+  logo: ./img/tokens/USDT.webp
+  verified: true
+- id: asset::pah::1337
+  logo: ./img/tokens/USDC.webp
+  verified: true
+- id: asset::pah::30
+  logo: ./img/tokens/DED.svg
+  verified: true
+- id: asset::pah::23
+  logo: ./img/tokens/PINK.png
+  verified: true
+- id: asset::kah::1984
+  logo: ./img/tokens/USDT.webp
+  verified: true
+- id: asset::kah::8
+  logo: ./img/tokens/RMRK.webp
+  verified: true
+- id: asset::kah::50000002
+  logo: ./img/tokens/DUSD.webp?rounded
+  verified: true
+- id: asset::wah::20120608
+  logo: ./img/tokens/KTT.webp
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBWdAF8NQA
+  logo: ./img/tokens/AJUN.svg
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABmUAWAL6YB1WqPbsYCAJJwkCCHHE1WHbmnTKNAXQ0agA
+  logo: ./img/tokens/GLMR.webp
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQDYAnAF8NQA
+  logo: ./img/tokens/MYTH.webp?rounded
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABnToAvpgHVaAcXgEOAaRgU5C7mRDt4AcwSS0AZmwATCAgi1lADwBsAKwA7Oh+ACzKkVHRMbFx8QmJUSDq6gC6qUA
+  logo: ./img/tokens/EQD.svg
+  verified: false
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMygL6YB1WgHF4BDgGkYFOQu5kQ7eAHMEktA2wATCAgi1lAD2X/0fyDgkNCw8IjI0JANDQBdWKA===
+  logo: ./img/tokens/BNC.svg
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoBpBRAC2EEAF9jhoA==
+  logo: ./img/tokens/KSM.svg
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADytk9AhSgGYATjF0dDKAMxgADidkiGSYAFYrABY69AB2GAgnCuTGsqt+joA2KMZAgF1AoA===
+  logo: ./img/tokens/ETH.png
+  symbol: WETH.e
+  name: Wrapped Ethereum (Snowbridge)
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzp0AX3VA==
+  logo: ./img/tokens/EQ.svg
+  verified: false
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMAFgC+mAdVoBxeAQ4BJOABMYADzkLutAEY4A5ngSplITQF1NmoA==
+  logo: ./img/tokens/HDX.svg
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMygL6YB1WgHF4BDgGkYFOQu5kQ7eAHMEktA2wATCAgi1lAD2UBOZSDgkNCw8IjIqPCQDQ0AXTigA=
+  logo: ./img/tokens/VDOT.svg
+  verified: true
+- id: foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgYBmAL6YB1WqPbsYCAJJwkCCHHE1WHbmnTKNAXQ0agA
+  logo: ./img/tokens/MOVR.webp
+  verified: true
+- id: foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoAFIuwDWEACZEEIAL7nTQA=
+  logo: ./img/tokens/DOT.svg
+  verified: true
+- id: foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48G6BgFYAvpgHVaAcXgEOASTgATGAA85C7rQBGOAOZ4EqAAwh1AXXXqgA===
+  logo: ./img/tokens/TNKR.svg
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwA2AE4ADnQAVmTSnwAWCvraqxgAZkqnJzEYWoB2CHbamCsWp3QWnx9ilpaA/wBdQKA==
+  logo: ./img/tokens/PEPE.webp?rounded
+  symbol: PEPE.e
+  name: Pepe (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwhksQAOADYATgqfKzL0HxKxAGYyqx8nHwqnABYIdBgKmDFkqxgW5LKh7pKA/wBdQKA==
+  logo: ./img/tokens/USDC.webp
+  symbol: USDC.e
+  name: USDC (Snowbridge)
+  decimals: 6
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBWCABOAA4AMysxGAhCnwA2KwrkhrLCgHZ0H06OkoqnMp90KwgAZhqKnzExxkCAXUCgA
+  logo: ./img/tokens/LDO.svg
+  symbol: LDO.e
+  name: Lido DAO Token (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwAOdABmADYIQoB2ZMKAFgAzQrF6kuSyhqqU5KqG8ob0Mp9CiABWMpK6uoBOOoD/AF1AoA===
+  logo: ./img/tokens/LBTC.webp
+  symbol: LBTC.e
+  name: Lombard BTC (Snowbridge)
+  decimals: 8
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADx8ICRgIHwAzAHYrAA4AZmSxJxqATggogDZKmCsAFghygFYfDvQa3rEfMSs6uqsA/wBdQKA==
+  logo: ./img/tokens/EURC.svg
+  symbol: EURC.e
+  name: EURC (Snowbridge)
+  decimals: 6
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBWADZkgHZ0KwBOQoAzCAgy5J90EuTCqoaW9GKqsrEfAGZBiCcYJyr0MqqA/wBdQKA==
+  logo: ./img/tokens/SKY.webp
+  symbol: SKY.e
+  name: SKY Governance Token (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBWJwBmJ2SfADMnADYndAgnHx8agE4xHwB2Vp8ADhgxABZKn0KSqxqalvRe/rEA/wBdQKA==
+  logo: ./img/tokens/KILT.svg
+  symbol: KILT.e
+  name: KILT (Snowbridge)
+  decimals: 15
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBWHwAWAE4fZIB2Kp8IADMyqwgANkKWhoAOEuSnevrOgGYYTvQWkpgrRs6W5oD/AF1AoA===
+  logo: ./img/tokens/LINK.svg
+  symbol: LINK.e
+  name: ChainLink Token (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwkAFh8nJwAzZIA2MQB2cvKnAA4ATicfdCrasQBWCBaAZjFymHL0IvGYMRTkgYD/AF1AoA===
+  logo: ./img/tokens/MYTH.webp?rounded
+  symbol: MYTH.e
+  name: Mythos (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADx8ADmSigBYAMwkANlqIAGZ6p3qAdgBWAE50Coh0asaKpzKOiBaypycO+ogiooD/AF1AoA===
+  logo: ./img/tokens/tBTC.webp
+  symbol: tBTC.e
+  name: tBTC v2 (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwB2ADMAZgBOKwBWAA4fYqryqrEq0uqrMR9ysSdksVLimqcIADYrctKqmHQrCFTAgF1AoA===
+  logo: ./img/tokens/wstETH.webp?rounded
+  symbol: wstETH.e
+  name: Wrapped liquid staked Ether 2.0 (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBWAA50J2KAdnQIHzFkgE4AFgAzK0bi5sKnGABmHycesQqe5rL6sRhGiu7mv0CAXUCgA
+  logo: ./img/tokens/TONCOIN.webp
+  symbol: TON.e
+  name: Wrapped TON Coin (Snowbridge)
+  decimals: 9
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwA2MR8AdgBWABZSypgADgBOZIbKq0rKpwgGurEGqpgYJxgINr70Up8nZIAzAP8AXUCgA
+  logo: ./img/tokens/DAI.webp
+  symbol: DAI.e
+  name: Dai Stablecoin (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBOAFYIJwA2HzFkiB9i5KcAdkL0H0KnKwAzcoAWGB8Ycqjkn07ksV6rHqsaQIBdQKA==
+  logo: ./img/tokens/SHIB.webp
+  symbol: SHIB.e
+  name: SHIBA INU (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSAD3R0ADZkgDMIKwBWGCqqgBZ0CAB2ZoBmCAh6+rKxKzKYJzLmqx8ATja+9GqxsYD/AF1AoA===
+  logo: ./img/tokens/WBTC.webp
+  symbol: WBTC.e
+  name: Wrapped BTC (Snowbridge)
+  decimals: 8
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwAOJwgYCScYAE50dCcAMwB2AGYAVismwqtC5KsGsqcG5MKIOpahnxa6iAgA/wBdQKA==
+  logo: ./img/tokens/tBTC.webp
+  symbol: tBTC.e
+  name: tBTC (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADycIKx8AdgAzAE4AVgAOJ3QYGGr0AGYIdBSANm7KyoAWasrSktanWtafGCtSgP8AXUCgA
+  logo: ./img/tokens/USDT.webp
+  symbol: USDT.e
+  name: Tether USD (Snowbridge)
+  decimals: 6
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwB2ADMrADYygFZk5KsADgAWCEKyiCdCmABOK06AZgbewrFSyogrXt6YdCcnCC6A/wBdQKA==
+  logo: ./img/tokens/KILT.webp
+  symbol: KILT.e
+  name: KILT (Snowbridge)
+  decimals: -15
+  verified: false
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBOJwBmQogAVicYEuSYCoB2ABYmkrEAM3b0CAAOWoaIJvQKgDYrHobCgZKmqYD/AF1AoA===
+  logo: ./img/tokens/sUSDe.webp
+  symbol: sUSDe.e
+  name: Staked USDe (Snowbridge)
+  decimals: 18
+  verified: false
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwgAZgBOIp8nAHYfAA5KyqtkmErinwAWGqsxSpgxNraANiKAVnQ2gDMYK3RK8bEXQIBdQKA==
+  logo: ./img/tokens/sUSDS.webp
+  symbol: sUSDS.e
+  name: Savings USDS (Snowbridge)
+  decimals: 18
+  verified: false
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwB2ADMrADYygFZk5KsADgAWCEKyiCdCmABOK06AZgbewrFSyogrXt6YdCcnCC6A/wBdQKA==
+  logo: ./img/tokens/AAVE.webp
+  symbol: AAVE
+  name: Aave Token (Snowbridge)
+  decimals: 18
+  verified: true
+- id: foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA
+  logo: ./img/tokens/TEER.webp?rounded
+  symbol: TEER
+  name: Integritee (Kusama)
+  decimals: 12
+  verified: true
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBmAJwBfTUA===
+  logo: ./img/tokens/TEER.webp?rounded
+  symbol: TEER
+  name: Integritee (Polkadot)
+  decimals: 12
+  verified: true
+- id: asset::pah::17
+  logo: ./img/tokens/WIFD.svg
+- id: asset::pah::690
+  logo: ./img/tokens/BORK.webp
+- id: asset::pah::31337
+  logo: ./img/tokens/WUD.webp
+- id: asset::pah::42069
+  logo: ./img/tokens/STINK.webp?rounded
+- id: asset::pah::18
+  logo: ./img/tokens/DOTA.webp?rounded
+- id: asset::pah::555
+  logo: ./img/tokens/GAME.svg?rounded
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQHYADAF8NQA
+  logo: ./img/tokens/LAOS.svg
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoBRBAAsCMTgFtmINlx6gAxjoh4A+jgAmtUTgDmeBKiYBfP36A==
+  logo: ./img/tokens/ETH.png
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgAsAZgC+mAdVqj27GAgCScJAghxxNVh25p0yzQF1NmoA===
+  logo: ./img/tokens/NEURO.webp?rounded
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwAWAFYADmTC0vKnGHR0AE4fAGYnCAAzGGT6tsL68tLKmCsYADYhiTaAdlKA/wBdQKA==
+  symbol: PAXG
+  decimals: 18
+  name: PAX Gold (Snowbridge)
+  logo: ./img/tokens/PAXG.png
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADwBWAHYYHx8AFjEANgBOHycxYtrkqwBmQpTisXQYaoAOQqcKiAq2n36fPuTqv0CAXUCgA
+  symbol: ENA
+  decimals: 18
+  name: Ethena
+  logo: ./img/tokens/ENA.svg
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADxgATgAzADYnIoAOapKi9DKisQBWHyKYHwAWAGZmmDKYCRKSgHYysqsRks6ysRKA/wBdQKA==
+  symbol: vTAO
+  decimals: 18
+  name: Virtual TAO
+  logo: ./img/tokens/vTAO.svg
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSADx8ANgBmADMADit0ABYigHYATlqxGGSIGHqxAFYSmvr0dCqIMTL0IuSSnwr63oD/AF1AoA===
+  symbol: WLD
+  decimals: 18
+  name: Worldcoin
+  logo: ./img/tokens/WLD.webp?rounded
