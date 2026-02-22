@@ -30,22 +30,20 @@ const updatePoolSupplyLoadingStatus = (
 ) => {
 	if (statusByPoolSupplyId$.value[poolSupplyId] === status) return;
 
-	statusByPoolSupplyId$.next(
-		Object.assign(statusByPoolSupplyId$.value, { [poolSupplyId]: status }),
-	);
+	statusByPoolSupplyId$.next({
+		...statusByPoolSupplyId$.value,
+		[poolSupplyId]: status,
+	});
 };
 
 const updatePoolSupply = (poolSupplyId: PoolSupplyId, supply: bigint) => {
-	// TODO change store to a dictionary
-	const existing = poolSuppliesStore$.value.find((p) => p.id === poolSupplyId);
+	const supplyStr = supply.toString();
 
-	if (!existing || existing.supply !== supply.toString()) {
-		const newSupplies = poolSuppliesStore$.value
-			.filter((p) => p.id !== poolSupplyId)
-			.concat({ id: poolSupplyId, supply: supply.toString() });
-
-		// update balances store
-		poolSuppliesStore$.next(newSupplies);
+	if (poolSuppliesStore$.value[poolSupplyId] !== supplyStr) {
+		poolSuppliesStore$.next({
+			...poolSuppliesStore$.value,
+			[poolSupplyId]: supplyStr,
+		});
 	}
 
 	// indicate it's loaded

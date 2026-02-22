@@ -20,18 +20,15 @@ export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
 export const addBalanceSubscription = (balanceId: string) => {
 	const subscriptionId = crypto.randomUUID();
 
-	allBalanceSubscriptions$.next(
-		Object.assign(allBalanceSubscriptions$.value, {
-			[subscriptionId]: balanceId,
-		}),
-	);
+	allBalanceSubscriptions$.next({
+		...allBalanceSubscriptions$.value,
+		[subscriptionId]: balanceId,
+	});
 
 	return subscriptionId;
 };
 
 export const removeBalancesSubscription = (id: string) => {
-	const current = allBalanceSubscriptions$.value;
-	delete current[id];
-
-	allBalanceSubscriptions$.next(current);
+	const { [id]: _, ...rest } = allBalanceSubscriptions$.value;
+	allBalanceSubscriptions$.next(rest);
 };
