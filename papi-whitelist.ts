@@ -33,6 +33,7 @@ export const whitelist: WhiteListEntry[] = [
 	"query.System.Events",
 	"const.AssetConversion.LPFee",
 	"const.Balances.ExistentialDeposit",
+	"api.AuraApi.slot_duration",
 	"api.AssetConversionApi.*",
 	"api.DryRunApi.*",
 	"api.Metadata.metadata_at_version",

@@ -5,6 +5,7 @@ import { createPublicClient, fallback, http } from "viem";
 import { type Api, getApi } from "../../papi/getApi";
 import { getChainById } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
+import { getBlockDurationMs } from "../../utils/getBlockDurationMs";
 import { logger } from "../../utils/logger";
 import { sleep } from "../../utils/sleep";
 
@@ -21,11 +22,22 @@ const RUNTIME_PALLETS_ADDR = "0x6d6f646c70792f70616464720000000000000000";
 const ZERO_HASH =
 	"0x0000000000000000000000000000000000000000000000000000000000000000";
 
-const RECEIPT_TIMEOUT_MS = 120_000;
-const BLOCK_HASH_LOOKUP_TIMEOUT_MS = 60_000;
-const FINALIZATION_WAIT_TIMEOUT_MS = 120_000;
 const BLOCK_HASH_POLL_INTERVAL_MS = 500;
 const FINALIZATION_POLL_INTERVAL_MS = 1000;
+
+/**
+ * Computes timeouts for each phase of the Ethereum→Substrate transaction tracking
+ * pipeline, scaled from the chain's expected block duration.
+ *
+ * - Receipt:       ~20 blocks — enough time for the Ethereum RPC to index the receipt.
+ * - Block hash:    ~10 blocks — time for the Substrate RPC to sync to the block.
+ * - Finalization:  ~20 blocks — time for the block to be finalized on the relay chain.
+ */
+const getTimeouts = (blockDurationMs: number) => ({
+	receiptMs: blockDurationMs * 20,
+	blockHashMs: blockDurationMs * 10,
+	finalizationMs: blockDurationMs * 20,
+});
 
 export type EthereumWalletClient = Pick<Client, "request">;
 export type EthereumAccount = {
@@ -78,11 +90,12 @@ const createEthereumPublicClient = (
 const waitForReceipt = async (
 	publicClient: PublicClient,
 	txHash: Hex,
+	timeoutMs: number,
 	signal?: AbortSignal,
 ) => {
 	let delay = 1000;
 	const maxDelay = 5000;
-	const deadline = Date.now() + RECEIPT_TIMEOUT_MS;
+	const deadline = Date.now() + timeoutMs;
 
 	while (Date.now() < deadline) {
 		if (signal?.aborted) throw new Error("Transaction was cancelled");
@@ -106,9 +119,10 @@ const waitForReceipt = async (
 const waitForSubstrateBlockHash = async (
 	api: Api<ChainId>,
 	blockNumber: number,
+	timeoutMs: number,
 	signal?: AbortSignal,
 ): Promise<string> => {
-	const deadline = Date.now() + BLOCK_HASH_LOOKUP_TIMEOUT_MS;
+	const deadline = Date.now() + timeoutMs;
 
 	while (Date.now() < deadline) {
 		if (signal?.aborted) throw new Error("Transaction was cancelled");
@@ -140,9 +154,10 @@ const waitForFinalization = async (
 	api: Api<ChainId>,
 	blockNumber: number,
 	expectedHash: string,
+	timeoutMs: number,
 	signal?: AbortSignal,
 ): Promise<string> => {
-	const deadline = Date.now() + FINALIZATION_WAIT_TIMEOUT_MS;
+	const deadline = Date.now() + timeoutMs;
 	let attempts = 0;
 
 	while (Date.now() < deadline) {
@@ -244,6 +259,8 @@ export const createEthereumTxObservable = ({
 		const run = async () => {
 			const api = await getApi(chainId);
 			const chain = getChainById(chainId);
+			const blockDurationMs = await getBlockDurationMs(api);
+			const timeouts = getTimeouts(blockDurationMs);
 			const publicRpcUrls = chain?.evmRpcUrl ?? [];
 			const from = account.address as Address;
 
@@ -269,6 +286,7 @@ export const createEthereumTxObservable = ({
 			const receipt = await waitForReceipt(
 				publicClient,
 				txHash,
+				timeouts.receiptMs,
 				abortController.signal,
 			);
 			if (abortController.signal.aborted) return;
@@ -279,6 +297,7 @@ export const createEthereumTxObservable = ({
 			const substrateBlockHash = await waitForSubstrateBlockHash(
 				api,
 				blockNumber,
+				timeouts.blockHashMs,
 				abortController.signal,
 			);
 
@@ -329,6 +348,7 @@ export const createEthereumTxObservable = ({
 				api,
 				blockNumber,
 				substrateBlockHash,
+				timeouts.finalizationMs,
 				abortController.signal,
 			);
 
