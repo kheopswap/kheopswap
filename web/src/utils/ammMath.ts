@@ -73,7 +73,7 @@ export const getMinAmountOut = (
  * Split the app commission from the total user input.
  *
  * @param totalIn  Total plancks the user entered.
- * @param appFeePercent  App fee as a ratio (e.g. 0.005 → 0.5%).
+ * @param appFeePercent  App fee as a percentage (e.g. 0.3 → 0.3%).
  * @returns `{ plancksIn, appFee }` — net input for the swap and the fee portion.
  */
 export const splitAppCommission = (

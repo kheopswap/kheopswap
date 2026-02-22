@@ -146,7 +146,7 @@ describe("getMinAmountOut", () => {
 });
 
 describe("splitAppCommission", () => {
-	it("splits fee correctly for 0.5% commission", () => {
+	it("splits fee correctly for 0.005% commission", () => {
 		const total = 1_000_000n;
 		const { plancksIn, appFee } = splitAppCommission(total, 0.005);
 		// feeNum = 1_000_000 * (0.005 * 10000) = 1_000_000 * 50 = 50_000_000

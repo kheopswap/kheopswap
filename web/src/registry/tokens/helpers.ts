@@ -23,7 +23,6 @@ import type {
 	TokenTypePoolAsset,
 } from "./types";
 
-/** @knipignore */
 export const isTokenIdNative = (
 	tokenId: TokenId | null | undefined,
 ): tokenId is TokenIdNative => {
@@ -36,7 +35,6 @@ export const isTokenIdNative = (
 	}
 };
 
-/** @knipignore */
 export const isTokenIdAsset = (
 	tokenId: TokenId | null | undefined,
 ): tokenId is TokenIdAsset => {
