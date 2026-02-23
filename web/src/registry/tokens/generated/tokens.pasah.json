@@ -3080,6 +3080,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000383",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000383,
+		"symbol": "TKN",
+		"decimals": 6,
+		"name": "My Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
