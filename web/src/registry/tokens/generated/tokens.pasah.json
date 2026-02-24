@@ -3091,39 +3091,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000391",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000391,
-		"symbol": "E2EJQZ",
-		"decimals": 18,
-		"name": "E2E MM07IJQZ",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000392",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000392,
-		"symbol": "E2EJQZ",
-		"decimals": 18,
-		"name": "E2E MM07IJQZ",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000393",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000393,
-		"symbol": "E2EJQZ",
-		"decimals": 18,
-		"name": "E2E MM07IJQZ",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000394",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3164,6 +3131,50 @@
 		"symbol": "TD1771935152950",
 		"decimals": 18,
 		"name": "TestDeploy_1771935152950",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000398",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000398,
+		"symbol": "TF1771937036257",
+		"decimals": 18,
+		"name": "TestFlow_1771937036257",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000399",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000399,
+		"symbol": "TS1771937738802",
+		"decimals": 18,
+		"name": "TestSupabase_1771937738802",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000400",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000400,
+		"symbol": "TD1771938169430",
+		"decimals": 18,
+		"name": "TestDevDB_1771938169430",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000401",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000401,
+		"symbol": "VD1771938434008",
+		"decimals": 18,
+		"name": "VerifyDev_1771938434008",
 		"verified": false,
 		"isSufficient": false
 	},
