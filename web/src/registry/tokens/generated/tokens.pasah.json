@@ -3091,6 +3091,50 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000391",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000391,
+		"symbol": "E2EJQZ",
+		"decimals": 18,
+		"name": "E2E MM07IJQZ",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000392",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000392,
+		"symbol": "E2EJQZ",
+		"decimals": 18,
+		"name": "E2E MM07IJQZ",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000393",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000393,
+		"symbol": "E2EJQZ",
+		"decimals": 18,
+		"name": "E2E MM07IJQZ",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000394",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000394,
+		"symbol": "E2E0GK",
+		"decimals": 18,
+		"name": "E2E MM07P0GK",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
