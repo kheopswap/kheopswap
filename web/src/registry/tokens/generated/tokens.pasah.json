@@ -3113,6 +3113,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000404",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000404,
+		"symbol": "UHUY",
+		"decimals": 9,
+		"name": "Uhuy Coin",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000405",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000405,
+		"symbol": "oUSDT",
+		"decimals": 6,
+		"name": "Omni USD Test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
