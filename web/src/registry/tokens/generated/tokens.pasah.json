@@ -3135,6 +3135,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000406",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000406,
+		"symbol": "FUSD",
+		"decimals": 6,
+		"name": "Fake USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000407",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000407,
+		"symbol": "BRKB",
+		"decimals": 8,
+		"name": "Berkshire Hathaway B",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
