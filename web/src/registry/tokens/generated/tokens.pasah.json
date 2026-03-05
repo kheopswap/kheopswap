@@ -3157,6 +3157,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000408",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000408,
+		"symbol": "PI",
+		"decimals": 18,
+		"name": "PI",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000409",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000409,
+		"symbol": "PIN",
+		"decimals": 18,
+		"name": "Pineapple",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
