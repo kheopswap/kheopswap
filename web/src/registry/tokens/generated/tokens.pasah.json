@@ -3179,6 +3179,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000410",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000410,
+		"symbol": "TKN1",
+		"decimals": 18,
+		"name": "Token 1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
