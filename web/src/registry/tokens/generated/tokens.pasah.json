@@ -3212,6 +3212,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000413",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000413,
+		"symbol": "pUSD",
+		"decimals": 18,
+		"name": "People USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3498,6 +3509,16 @@
 		"type": "pool-asset",
 		"chainId": "pasah",
 		"poolAssetId": 13,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pasah::14",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 14,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
