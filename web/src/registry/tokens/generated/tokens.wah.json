@@ -5764,6 +5764,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000334",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000334,
+		"symbol": "WIN",
+		"decimals": 6,
+		"name": "Woink",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
