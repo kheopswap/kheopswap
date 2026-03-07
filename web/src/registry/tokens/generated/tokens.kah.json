@@ -1430,6 +1430,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::kah::50000008",
+		"type": "asset",
+		"chainId": "kah",
+		"assetId": 50000008,
+		"symbol": "TKSM",
+		"decimals": 6,
+		"name": "Test Kusama",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::kah::51",
 		"type": "asset",
 		"chainId": "kah",

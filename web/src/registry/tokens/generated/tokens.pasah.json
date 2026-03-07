@@ -3223,6 +3223,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000414",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000414,
+		"symbol": "NPAS",
+		"decimals": 6,
+		"name": "New Paseo",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
