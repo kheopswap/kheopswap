@@ -3234,6 +3234,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000415",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000415,
+		"symbol": "LNH",
+		"decimals": 18,
+		"name": "LNH",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000416",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000416,
+		"symbol": "LNH",
+		"decimals": 18,
+		"name": "LNH",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
