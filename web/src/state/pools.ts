@@ -54,8 +54,8 @@ export const getAssetHubPoolReserves$ = (
 	pool: AssetConvertionPoolDef | null,
 ): Observable<{ reserves: [bigint, bigint] | null; isLoading: boolean }> =>
 	getCachedObservable$(
-		"getPoolReserves$",
-		pool?.poolAssetId.toString() ?? "null",
+		"getAssetHubPoolReserves$",
+		pool ? `${pool.chainId}::${pool.poolAssetId}` : "null",
 		() => {
 			if (!pool) return of({ reserves: null, isLoading: false });
 
