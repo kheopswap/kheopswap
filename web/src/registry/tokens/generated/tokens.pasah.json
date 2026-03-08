@@ -3256,6 +3256,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000417",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000417,
+		"symbol": "OMMY",
+		"decimals": 18,
+		"name": "OMMY",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000418",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000418,
+		"symbol": "BUS",
+		"decimals": 18,
+		"name": "Bus",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
