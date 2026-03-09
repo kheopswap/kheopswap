@@ -23,6 +23,7 @@
  *   node --experimental-transform-types scripts/fetch-tokens.ts
  */
 
+import { createHash } from "node:crypto";
 import {
 	copyFileSync,
 	existsSync,
@@ -93,6 +94,9 @@ const OUTPUT_DIR = resolve(
 	import.meta.dirname,
 	"../src/registry/tokens/generated",
 );
+
+/** Persisted SHA-256 of the last warnings sent to Discord. */
+const WARNINGS_HASH_PATH = resolve(import.meta.dirname, ".last-warnings-hash");
 
 /** Token blacklist file path. */
 const BLACKLIST_PATH = resolve(
@@ -311,11 +315,28 @@ async function notifyDiscordFailure(error: unknown): Promise<void> {
 }
 
 async function notifyDiscordWarningsSummary(warnings: string[]): Promise<void> {
-	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-	if (!webhookUrl) return;
+	const uniqueWarnings = [...new Set(warnings)].sort();
+	const canonical = uniqueWarnings.join("\n");
+	const hash = createHash("sha256").update(canonical).digest("hex");
+
+	const previousHash = existsSync(WARNINGS_HASH_PATH)
+		? readFileSync(WARNINGS_HASH_PATH, "utf-8").trim()
+		: "";
+
+	writeFileSync(WARNINGS_HASH_PATH, `${hash}\n`, "utf-8");
+
 	if (warnings.length === 0) return;
 
-	const uniqueWarnings = [...new Set(warnings)];
+	if (hash === previousHash) {
+		console.log(
+			"[discord] Warnings unchanged since last run, skipping notification.",
+		);
+		return;
+	}
+
+	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+	if (!webhookUrl) return;
+
 	const summary = uniqueWarnings.map((line) => `- ${line}`).join("\n");
 	const runUrl =
 		process.env.GITHUB_SERVER_URL &&
