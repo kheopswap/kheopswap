@@ -3311,6 +3311,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000422",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000422,
+		"symbol": "CYB",
+		"decimals": 18,
+		"name": "Cyb",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000423",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000423,
+		"symbol": "BOOK",
+		"decimals": 18,
+		"name": "book",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
