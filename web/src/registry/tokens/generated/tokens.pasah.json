@@ -3333,6 +3333,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000424",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000424,
+		"symbol": "WOW",
+		"decimals": 18,
+		"name": "wow1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
