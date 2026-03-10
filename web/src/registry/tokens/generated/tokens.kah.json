@@ -1441,6 +1441,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::kah::50000009",
+		"type": "asset",
+		"chainId": "kah",
+		"assetId": 50000009,
+		"symbol": "KTEST",
+		"decimals": 6,
+		"name": "Kusama Test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::kah::51",
 		"type": "asset",
 		"chainId": "kah",

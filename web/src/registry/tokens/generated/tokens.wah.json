@@ -5775,6 +5775,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000336",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000336,
+		"symbol": "NPAS",
+		"decimals": 6,
+		"name": "New Paseo",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
