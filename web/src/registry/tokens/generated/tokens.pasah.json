@@ -3355,6 +3355,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000426",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000426,
+		"symbol": "RHY",
+		"decimals": 18,
+		"name": "Rhy",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
