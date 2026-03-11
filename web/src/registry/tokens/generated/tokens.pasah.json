@@ -3366,6 +3366,61 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000427",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000427,
+		"symbol": "AG448",
+		"decimals": 18,
+		"name": "AsyncGrad7448",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000428",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000428,
+		"symbol": "AG757",
+		"decimals": 18,
+		"name": "AsyncGrad2757",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000429",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000429,
+		"symbol": "AGOQGE",
+		"decimals": 18,
+		"name": "AG342231OQGE",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000430",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000430,
+		"symbol": "AGX4SJ",
+		"decimals": 18,
+		"name": "AG207604X4SJ",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000431",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000431,
+		"symbol": "AGI0EU",
+		"decimals": 18,
+		"name": "AG459933I0EU",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
