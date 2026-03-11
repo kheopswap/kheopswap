@@ -3421,6 +3421,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000432",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000432,
+		"symbol": "START",
+		"decimals": 18,
+		"name": "Start",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
