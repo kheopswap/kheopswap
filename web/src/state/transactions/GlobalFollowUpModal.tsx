@@ -1,6 +1,5 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { type FC, type ReactNode, useMemo } from "react";
-import urlJoin from "url-join";
+import type { FC, ReactNode } from "react";
 import { type FollowUpData, FollowUpRow } from "../../components/FollowUpModal";
 import { SpinnerIcon } from "../../components/icons";
 import { Modal } from "../../components/Modal";
@@ -9,15 +8,11 @@ import { Styles } from "../../components/styles";
 import { Tokens } from "../../components/Tokens";
 import { CreatePoolFollowUpContent } from "../../features/liquidity/create-pool/CreatePoolFollowUpContent";
 import { SwapFollowUpContent } from "../../features/swap/SwapFollowUpContent";
-import { getChainById } from "../../registry/chains/chains";
 import { cn } from "../../utils/cn";
-import {
-	getErrorMessageFromTxEvents,
-	type TxEvents,
-} from "../../utils/getErrorMessageFromTxEvents";
 import { isBigInt } from "../../utils/isBigInt";
 import { useTransactions } from "./TransactionsProvider";
 import type { TransactionRecord } from "./types";
+import { type FollowUpResult, useFollowUpStatus } from "./useFollowUpStatus";
 
 const getFollowUpContent = (tx: TransactionRecord): ReactNode => {
 	switch (tx.type) {
@@ -39,7 +34,7 @@ const convertToFollowUpData = (tx: TransactionRecord): FollowUpData => ({
 });
 
 const FollowUpResultIcon: FC<{
-	result: "loading" | "success" | "error";
+	result: FollowUpResult;
 	className?: string;
 }> = ({ result, className }) => (
 	<div className={cn("relative size-24", className)}>
@@ -75,114 +70,17 @@ const FollowUpModalInner: FC<{
 	title?: string;
 	children?: ReactNode;
 }> = ({ followUp, onClose, canAlwaysClose = false, title, children }) => {
-	const chain = useMemo(
-		() => getChainById(followUp.feeToken.chainId),
-		[followUp.feeToken.chainId],
-	);
-
-	const blockExplorerUrl = useMemo(() => {
-		if (!chain?.blockExplorerUrl) return null;
-
-		for (const event of followUp.txEvents) {
-			switch (event.type) {
-				case "signed":
-				case "broadcasted":
-				case "txBestBlocksState":
-				case "finalized":
-					return urlJoin(chain.blockExplorerUrl, "tx", event.txHash);
-				default:
-					break;
-			}
-		}
-		return null;
-	}, [followUp, chain]);
-
-	const error = useMemo(
-		() =>
-			followUp.txEvents.find(
-				(e): e is { type: "error"; error: unknown } => e.type === "error",
-			)?.error,
-		[followUp.txEvents],
-	);
-
-	const [message, canClose, result] = useMemo<
-		[string, boolean, "loading" | "success" | "error"]
-	>(() => {
-		if (error) return ["Transaction failed", true, "error"];
-
-		const finalized = followUp.txEvents.find(
-			(event) => event.type === "finalized",
-		);
-		if (finalized?.type === "finalized") {
-			return finalized.ok
-				? ["Transaction succeeded", true, "success"]
-				: ["Transaction failed", true, "error"];
-		}
-
-		const best = followUp.txEvents.find(
-			(event) => event.type === "txBestBlocksState",
-		);
-		if (best?.type === "txBestBlocksState" && best.found) {
-			return best.ok
-				? ["Waiting for finalization", true, "success"]
-				: ["Waiting for finalization", true, "error"];
-		}
-
-		const broadcasted = followUp.txEvents.find(
-			(event) => event.type === "broadcasted",
-		);
-		if (broadcasted?.type === "broadcasted")
-			return ["Transaction submitted...", false, "loading"];
-
-		const signed = followUp.txEvents.find((event) => event.type === "signed");
-		if (signed?.type === "signed")
-			return ["Submitting transaction...", false, "loading"];
-
-		// Use walletName from the account if available (from kheopskit)
-		const extensionName = followUp.account.walletName;
-
-		return [`Approve in ${extensionName}`, false, "loading"];
-	}, [followUp, error]);
-
-	const [individualEvents, errorMessage, isPendingFinalization, isFinalized] =
-		useMemo<[TxEvents, string | null, boolean, boolean]>(() => {
-			const allEvents: TxEvents = followUp.txEvents.flatMap(
-				(e) =>
-					(e.type === "finalized" && e.events) ||
-					(e.type === "txBestBlocksState" && e.found && e.events) ||
-					[],
-			);
-
-			const errorMessage = error
-				? ((error as Error).message ?? error.toString() ?? "Unknown error")
-				: null;
-			const txFailedErrorMessage = followUp.txEvents.some(
-				(e) =>
-					(e.type === "finalized" && !e.ok) ||
-					(e.type === "txBestBlocksState" && e.found && !e.ok),
-			)
-				? getErrorMessageFromTxEvents(allEvents) // TODO cleanup, since papi 1.13 no need to lookup for extrinsic failed, we have event.dispatchError
-				: null;
-
-			return [
-				allEvents,
-				errorMessage ?? txFailedErrorMessage ?? null,
-				result !== "loading" &&
-					!followUp.txEvents.some((e) => e.type === "finalized"),
-				followUp.txEvents.some((e) => e.type === "finalized"),
-			];
-		}, [followUp.txEvents, result, error]);
-
-	const effectiveFee = useMemo(() => {
-		if (result !== "success") return null;
-		const actualFee = individualEvents.find(
-			(e) =>
-				(e.type === "TransactionPayment" &&
-					e.value.type === "TransactionFeePaid") ||
-				(e.type === "AssetTxPayment" && e.value.type === "AssetTxFeePaid"),
-		)?.value.value.actual_fee;
-		return actualFee ? BigInt(actualFee) : null;
-	}, [individualEvents, result]);
+	const {
+		blockExplorerUrl,
+		error,
+		message,
+		canClose,
+		result,
+		errorMessage,
+		isPendingFinalization,
+		isFinalized,
+		effectiveFee,
+	} = useFollowUpStatus(followUp);
 
 	return (
 		<div
