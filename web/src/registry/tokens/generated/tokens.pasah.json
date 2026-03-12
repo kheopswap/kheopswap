@@ -3498,6 +3498,61 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000440",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000440,
+		"symbol": "BUS",
+		"decimals": 18,
+		"name": "Bus",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000441",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000441,
+		"symbol": "GIF",
+		"decimals": 18,
+		"name": "gif1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000442",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000442,
+		"symbol": "GIFT2",
+		"decimals": 18,
+		"name": "gif2",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000443",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000443,
+		"symbol": "GIF3",
+		"decimals": 18,
+		"name": "GIF3",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000444",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000444,
+		"symbol": "OMMY",
+		"decimals": 18,
+		"name": "ommy",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
