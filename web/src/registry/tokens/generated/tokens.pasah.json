@@ -3810,6 +3810,16 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::pasah::16",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 16,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pasah::2",
 		"type": "pool-asset",
 		"chainId": "pasah",
