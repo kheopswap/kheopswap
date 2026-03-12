@@ -27,6 +27,7 @@
 		"@substrate/connect": "^2.1.8",
 		"@talismn/orb": "0.3.6",
 		"@tanstack/react-query": "^5.90.21",
+		"@tanstack/react-virtual": "^3.13.21",
 		"@w3f/polkadot-icons": "^1.0.0",
 		"clsx": "^2.1.1",
 		"idb-keyval": "^6.2.2",

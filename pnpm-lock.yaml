@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@polkadot-api/descriptors':
         specifier: file:.papi/descriptors
-        version: file:.papi/descriptors(polkadot-api@2.0.0-rc.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10))
+        version: file:.papi/descriptors(polkadot-api@2.0.0-rc.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2))
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.4.4
@@ -56,7 +56,7 @@ importers:
         version: 2.0.1
       '@polkadot-api/descriptors':
         specifier: file:../.papi/descriptors
-        version: file:.papi/descriptors(polkadot-api@2.0.0-rc.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10))
+        version: file:.papi/descriptors(polkadot-api@2.0.0-rc.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2))
       '@react-rxjs/core':
         specifier: ^0.10.8
         version: 0.10.8(react@19.2.4)(rxjs@7.8.2)
@@ -72,6 +72,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.90.21
         version: 5.90.21(react@19.2.4)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.21
+        version: 3.13.21(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@w3f/polkadot-icons':
         specifier: ^1.0.0
         version: 1.0.0(react@19.2.4)
@@ -2057,6 +2060,15 @@ packages:
     resolution: {integrity: sha512-0Lu6y5t+tvlTJMTO7oh5NSpJfpg/5D41LlThfepTixPYkJ0sE2Jj0m0f6yYqujBwIXlId87e234+MxG3D3g7kg==}
     peerDependencies:
       react: ^18 || ^19
+
+  '@tanstack/react-virtual@3.13.21':
+    resolution: {integrity: sha512-SYXFrmrbPgXBvf+HsOsKhFgqSe4M6B29VHOsX9Jih9TlNkNkDWx0hWMiMLUghMEzyUz772ndzdEeCEBx+3GIZw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/virtual-core@3.13.21':
+    resolution: {integrity: sha512-ww+fmLHyCbPSf7JNbWZP3g7wl6SdNo3ah5Aiw+0e9FDErkVHLKprYUrwTm7dF646FtEkN/KkAKPYezxpmvOjxw==}
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -5266,7 +5278,7 @@ snapshots:
       '@polkadot-api/known-chains': 0.10.0
       '@polkadot-api/metadata-compatibility': 0.5.1
       '@polkadot-api/observable-client': 0.18.2(rxjs@7.8.2)
-      '@polkadot-api/sm-provider': 0.2.0(@polkadot-api/smoldot@0.3.15(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      '@polkadot-api/sm-provider': 0.2.0(@polkadot-api/smoldot@0.3.15)
       '@polkadot-api/smoldot': 0.3.15(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot-api/substrate-bindings': 0.19.0
       '@polkadot-api/substrate-client': 0.6.0
@@ -5304,7 +5316,7 @@ snapshots:
       '@polkadot-api/substrate-bindings': 0.19.0
       '@polkadot-api/utils': 0.3.0
 
-  '@polkadot-api/descriptors@file:.papi/descriptors(polkadot-api@2.0.0-rc.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10))':
+  '@polkadot-api/descriptors@file:.papi/descriptors(polkadot-api@2.0.0-rc.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2))':
     dependencies:
       polkadot-api: 2.0.0-rc.3(@swc/core@1.15.11(@swc/helpers@0.5.18))(bufferutil@4.1.0)(jiti@2.6.1)(postcss@8.5.6)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.8.2)
 
@@ -5378,7 +5390,7 @@ snapshots:
       '@polkadot-api/substrate-bindings': 0.19.0
       '@polkadot-api/utils': 0.3.0
 
-  '@polkadot-api/sm-provider@0.2.0(@polkadot-api/smoldot@0.3.15(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
+  '@polkadot-api/sm-provider@0.2.0(@polkadot-api/smoldot@0.3.15)':
     dependencies:
       '@polkadot-api/json-rpc-provider': 0.1.0
       '@polkadot-api/json-rpc-provider-proxy': 0.3.0
@@ -6632,6 +6644,14 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.90.20
       react: 19.2.4
+
+  '@tanstack/react-virtual@3.13.21(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@tanstack/virtual-core': 3.13.21
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@tanstack/virtual-core@3.13.21': {}
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
@@ -8721,7 +8741,7 @@ snapshots:
       '@polkadot-api/pjs-signer': 0.6.21
       '@polkadot-api/polkadot-signer': 0.1.6
       '@polkadot-api/signer': 0.2.15
-      '@polkadot-api/sm-provider': 0.2.0(@polkadot-api/smoldot@0.3.15(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      '@polkadot-api/sm-provider': 0.2.0(@polkadot-api/smoldot@0.3.15)
       '@polkadot-api/smoldot': 0.3.15(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot-api/substrate-bindings': 0.19.0
       '@polkadot-api/substrate-client': 0.6.0
