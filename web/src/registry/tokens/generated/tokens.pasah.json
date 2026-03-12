@@ -3432,6 +3432,50 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000433",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000433,
+		"symbol": "LIVE",
+		"decimals": 18,
+		"name": "Live",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000434",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000434,
+		"symbol": "LIVE",
+		"decimals": 18,
+		"name": "Live",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000435",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000435,
+		"symbol": "KAS",
+		"decimals": 18,
+		"name": "KAS",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000436",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000436,
+		"symbol": "KAS",
+		"decimals": 18,
+		"name": "KAS",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3728,6 +3772,16 @@
 		"type": "pool-asset",
 		"chainId": "pasah",
 		"poolAssetId": 14,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pasah::15",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 15,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
