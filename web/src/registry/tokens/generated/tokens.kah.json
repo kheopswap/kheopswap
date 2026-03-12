@@ -3046,6 +3046,26 @@
 		"isSufficient": false
 	},
 	{
+		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwAWABwBfTUA===",
+		"type": "foreign-asset",
+		"chainId": "kah",
+		"symbol": "XRT",
+		"decimals": 9,
+		"name": "Robonomics",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 2048
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "foreign-asset::kah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAzoArAF8NQA",
 		"type": "foreign-asset",
 		"chainId": "kah",

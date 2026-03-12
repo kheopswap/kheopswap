@@ -3476,6 +3476,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000437",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000437,
+		"symbol": "SSI",
+		"decimals": 18,
+		"name": "SSI",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000438",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000438,
+		"symbol": "HOYOYO",
+		"decimals": 18,
+		"name": "Hoyoyo",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
