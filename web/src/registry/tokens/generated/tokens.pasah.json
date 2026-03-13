@@ -3553,6 +3553,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000445",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000445,
+		"symbol": "SONO",
+		"decimals": 10,
+		"name": "sonotxt governance",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
