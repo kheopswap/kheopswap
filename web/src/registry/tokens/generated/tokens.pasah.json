@@ -3564,6 +3564,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000446",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000446,
+		"symbol": "GYULA",
+		"decimals": 10,
+		"name": "Gyula Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3880,6 +3891,16 @@
 		"type": "pool-asset",
 		"chainId": "pasah",
 		"poolAssetId": 16,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pasah::17",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 17,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",

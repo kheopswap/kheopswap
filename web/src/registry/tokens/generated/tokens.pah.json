@@ -8623,6 +8623,32 @@
 		"isSufficient": false
 	},
 	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgCcAFgC+mAdVqj27GAgCScJAghxxNVh25p0yzQF1NmoA===",
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"symbol": "PEN",
+		"decimals": 12,
+		"name": "Pendulum",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2094
+					},
+					{
+						"type": "PalletInstance",
+						"value": 10
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMAFgC+mAdVoBxeAQ4BJOABMYADzkLutAEY4A5ngSplITQF1NmoA==",
 		"type": "foreign-asset",
 		"chainId": "pah",
@@ -9486,6 +9512,16 @@
 		"type": "pool-asset",
 		"chainId": "pah",
 		"poolAssetId": 61,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::62",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 62,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
