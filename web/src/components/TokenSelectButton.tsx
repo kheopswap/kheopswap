@@ -32,6 +32,11 @@ const TokenButton: FC<{
 			)}
 			disabled={disabled}
 			onClick={onClick}
+			aria-label={
+				token
+					? `Selected token: ${token.symbol}${chainName ? ` on ${chainName}` : ""}. Change token`
+					: "Select token"
+			}
 		>
 			{token && <TokenLogo token={token} className="size-8" />}
 			<div

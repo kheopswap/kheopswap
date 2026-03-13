@@ -21,7 +21,7 @@ export const HorizontalNav: FC = () => {
 	const { accounts } = useWallets();
 	const { relayId } = useParams();
 	return (
-		<div>
+		<nav aria-label="Main navigation">
 			<div
 				className={cn(
 					"my-2 flex w-full justify-center px-2 text-sm min-[340px]:gap-1 min-[360px]:gap-2 sm:my-6 sm:text-base",
@@ -36,6 +36,6 @@ export const HorizontalNav: FC = () => {
 					<span className="hidden min-[440px]:inline">Liquidity </span>Pools
 				</NavItem>
 			</div>
-		</div>
+		</nav>
 	);
 };

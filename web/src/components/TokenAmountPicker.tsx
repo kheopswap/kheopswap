@@ -172,6 +172,7 @@ export const TokenAmountPicker: FC<{
 											"text-neutral-300",
 										)}
 										onClick={onMaxClick}
+										aria-label="Use maximum balance"
 									>
 										MAX
 									</button>

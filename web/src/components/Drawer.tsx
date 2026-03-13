@@ -9,6 +9,7 @@ type DrawerProps = {
 	children: ReactNode;
 	isOpen?: boolean;
 	className?: string;
+	"aria-label"?: string;
 	onDismiss?: () => void;
 };
 
@@ -33,6 +34,7 @@ export const Drawer: FC<DrawerProps> = ({
 	children,
 	isOpen,
 	className,
+	"aria-label": ariaLabel,
 	onDismiss,
 }) => {
 	const handleOpenChange = useCallback(
@@ -56,6 +58,7 @@ export const Drawer: FC<DrawerProps> = ({
 					)}
 				/>
 				<Dialog.Popup
+					aria-label={ariaLabel}
 					className={cn(
 						"fixed z-40 shadow-2xl outline-hidden",
 						"transition-transform duration-300 ease-in-out",
