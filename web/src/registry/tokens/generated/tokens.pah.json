@@ -9452,10 +9452,40 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::pah::59",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 59,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pah::6",
 		"type": "pool-asset",
 		"chainId": "pah",
 		"poolAssetId": 6,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::60",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 60,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::61",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 61,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
