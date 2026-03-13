@@ -33,7 +33,7 @@
 		"@biomejs/biome": "^2.4.4",
 		"@polkadot-api/descriptors": "file:.papi/descriptors",
 		"knip": "^5.85.0",
-		"polkadot-api": "2.0.0-rc.3",
+		"polkadot-api": "2.0.0-rc.4",
 		"simple-git-hooks": "^2.13.1"
 	},
 	"pnpm": {
