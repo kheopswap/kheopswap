@@ -1452,6 +1452,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::kah::50000010",
+		"type": "asset",
+		"chainId": "kah",
+		"assetId": 50000010,
+		"symbol": "TROND",
+		"decimals": 6,
+		"name": "Tron Demo",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::kah::51",
 		"type": "asset",
 		"chainId": "kah",
