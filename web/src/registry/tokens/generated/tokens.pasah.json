@@ -3630,6 +3630,94 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000452",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000452,
+		"symbol": "SUB1",
+		"decimals": 18,
+		"name": "SUB1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000453",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000453,
+		"symbol": "SUB2",
+		"decimals": 18,
+		"name": "SUB2",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000454",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000454,
+		"symbol": "TKN16",
+		"decimals": 18,
+		"name": "Token 16",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000455",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000455,
+		"symbol": "EVM2",
+		"decimals": 18,
+		"name": "EVM2",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000456",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000456,
+		"symbol": "SUB3",
+		"decimals": 18,
+		"name": "SUB3",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000457",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000457,
+		"symbol": "EVM3",
+		"decimals": 18,
+		"name": "EVM3",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000458",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000458,
+		"symbol": "EVM4",
+		"decimals": 18,
+		"name": "EVM4",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000459",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000459,
+		"symbol": "SUB4",
+		"decimals": 18,
+		"name": "SUB4",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

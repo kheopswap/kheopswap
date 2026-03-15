@@ -9538,6 +9538,26 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::pah::64",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 64,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::65",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 65,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pah::7",
 		"type": "pool-asset",
 		"chainId": "pah",
