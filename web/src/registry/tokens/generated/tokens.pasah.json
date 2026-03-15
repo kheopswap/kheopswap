@@ -3575,6 +3575,61 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000447",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000447,
+		"symbol": "TKN9",
+		"decimals": 18,
+		"name": "Token 9",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000448",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000448,
+		"symbol": "TKN10",
+		"decimals": 18,
+		"name": "Token 10",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000449",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000449,
+		"symbol": "TODAY",
+		"decimals": 18,
+		"name": "Today",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000450",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000450,
+		"symbol": "TOME",
+		"decimals": 18,
+		"name": "Tom",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000451",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000451,
+		"symbol": "TOMEVM",
+		"decimals": 18,
+		"name": "TOMEVM",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
