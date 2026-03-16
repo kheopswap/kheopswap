@@ -3784,6 +3784,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000466",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000466,
+		"symbol": "FFF",
+		"decimals": 18,
+		"name": "FFF",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000467",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000467,
+		"symbol": "DDD",
+		"decimals": 18,
+		"name": "ddd",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
