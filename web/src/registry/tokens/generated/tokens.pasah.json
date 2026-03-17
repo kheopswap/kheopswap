@@ -3267,6 +3267,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000468",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000468,
+		"symbol": "ZERO",
+		"decimals": 18,
+		"name": "zero",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000469",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000469,
+		"symbol": "PLL",
+		"decimals": 18,
+		"name": "PLL",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
