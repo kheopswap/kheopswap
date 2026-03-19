@@ -3278,6 +3278,50 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000538",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000538,
+		"symbol": "TKN0",
+		"decimals": 18,
+		"name": "Token 0",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000539",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000539,
+		"symbol": "P0",
+		"decimals": 18,
+		"name": "P0",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000540",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000540,
+		"symbol": "P1",
+		"decimals": 18,
+		"name": "P1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000541",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000541,
+		"symbol": "P2",
+		"decimals": 18,
+		"name": "P2",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
