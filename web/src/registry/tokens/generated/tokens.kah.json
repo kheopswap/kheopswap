@@ -2207,7 +2207,6 @@
 		"symbol": "CGT2.0",
 		"decimals": 18,
 		"name": "Curio Gas Token",
-		"logo": "/img/tokens/coingecko/curio-gas-token.webp",
 		"location": {
 			"parents": 2,
 			"interior": {

@@ -1,11 +1,9 @@
 {
 	"0x0e186357c323c806c1efdad36d217f7a54b63d18": {
-		"fetchedAt": "2026-02-18T17:42:26.540Z",
+		"fetchedAt": "2026-03-20T18:31:41.479Z",
 		"tokenName": "Curio Gas Token",
 		"symbol": "CGT2.0",
-		"decimals": 18,
-		"coingeckoId": "curio-gas-token",
-		"image": "/img/tokens/coingecko/curio-gas-token.webp"
+		"decimals": 18
 	},
 	"0x163f8c2467924be0ae7b5347228cabf260318753": {
 		"fetchedAt": "2026-02-18T17:37:27.191Z",
@@ -204,8 +202,8 @@
 		"image": "/img/tokens/coingecko/weth.webp"
 	},
 	"0xcccccccccc33d538dbc2ee4feab0a7a1ff4e8a94": {
-		"fetchedAt": "2026-02-18T17:37:18.385Z",
-		"tokenName": "",
+		"fetchedAt": "2026-03-20T18:31:21.925Z",
+		"tokenName": "Centrifuge",
 		"symbol": "CFG",
 		"decimals": 18,
 		"coingeckoId": "centrifuge-2",
