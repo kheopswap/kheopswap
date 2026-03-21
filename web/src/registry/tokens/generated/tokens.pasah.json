@@ -3410,24 +3410,13 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000550",
+		"id": "asset::pasah::50000564",
 		"type": "asset",
 		"chainId": "pasah",
-		"assetId": 50000550,
+		"assetId": 50000564,
 		"symbol": "P7",
 		"decimals": 18,
-		"name": "p7",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000551",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000551,
-		"symbol": "P7",
-		"decimals": 18,
-		"name": "p7",
+		"name": "P7",
 		"verified": false,
 		"isSufficient": false
 	},
