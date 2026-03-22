@@ -5786,6 +5786,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000340",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000340,
+		"symbol": "CBCT",
+		"decimals": 10,
+		"name": "Carbonchain Testnet",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
