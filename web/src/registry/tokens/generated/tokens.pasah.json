@@ -3652,6 +3652,50 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000685",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000685,
+		"symbol": "PIGBRO",
+		"decimals": 18,
+		"name": "豬大哥沒死",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000686",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000686,
+		"symbol": "ZIP",
+		"decimals": 18,
+		"name": "ZIP",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000687",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000687,
+		"symbol": "CHINE",
+		"decimals": 18,
+		"name": "繁體字是中國的嗎？",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000688",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000688,
+		"symbol": "WUD",
+		"decimals": 18,
+		"name": "Gavun Wud",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
