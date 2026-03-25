@@ -3531,6 +3531,127 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000673",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000673,
+		"symbol": "E0",
+		"decimals": 18,
+		"name": "E0",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000674",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000674,
+		"symbol": "PI",
+		"decimals": 18,
+		"name": "PI",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000675",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000675,
+		"symbol": "E1",
+		"decimals": 18,
+		"name": "E1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000676",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000676,
+		"symbol": "EGGX",
+		"decimals": 18,
+		"name": "EGGX",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000677",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000677,
+		"symbol": "EGGX",
+		"decimals": 18,
+		"name": "EGGX",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000678",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000678,
+		"symbol": "EGGX",
+		"decimals": 18,
+		"name": "EGGX",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000680",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000680,
+		"symbol": "HOYOYO",
+		"decimals": 18,
+		"name": "hoyoyo",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000681",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000681,
+		"symbol": "PUPU",
+		"decimals": 18,
+		"name": "PUPU",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000682",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000682,
+		"symbol": "PUPU",
+		"decimals": 18,
+		"name": "PUPU",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000683",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000683,
+		"symbol": "PUPU",
+		"decimals": 18,
+		"name": "PUPU",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000684",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000684,
+		"symbol": "EGGX",
+		"decimals": 18,
+		"name": "EGGX",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
