@@ -3762,6 +3762,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000695",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000695,
+		"symbol": "E3",
+		"decimals": 18,
+		"name": "E3",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000696",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000696,
+		"symbol": "ELVIS",
+		"decimals": 18,
+		"name": "Elvis",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
