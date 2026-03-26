@@ -3707,6 +3707,61 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000690",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000690,
+		"symbol": "E1",
+		"decimals": 18,
+		"name": "E1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000691",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000691,
+		"symbol": "S1",
+		"decimals": 18,
+		"name": "S1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000692",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000692,
+		"symbol": "E2",
+		"decimals": 18,
+		"name": "E2",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000693",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000693,
+		"symbol": "NYWT",
+		"decimals": 18,
+		"name": "nyawit",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000694",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000694,
+		"symbol": "E2",
+		"decimals": 18,
+		"name": "사랑해요",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
