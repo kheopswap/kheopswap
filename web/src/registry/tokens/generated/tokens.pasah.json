@@ -3696,6 +3696,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000689",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000689,
+		"symbol": "PPZ",
+		"decimals": 18,
+		"name": "pepez",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
