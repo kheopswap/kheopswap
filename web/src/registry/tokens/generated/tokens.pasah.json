@@ -3784,6 +3784,39 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000697",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000697,
+		"symbol": "CASPER",
+		"decimals": 18,
+		"name": "CASPER",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000698",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000698,
+		"symbol": "tUSD",
+		"decimals": 6,
+		"name": "Test USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000699",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000699,
+		"symbol": "tNVDA",
+		"decimals": 6,
+		"name": "Test NVIDIA",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
