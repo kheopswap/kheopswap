@@ -3850,6 +3850,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000703",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000703,
+		"symbol": "MAMACITA",
+		"decimals": 18,
+		"name": "Mamacita",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
