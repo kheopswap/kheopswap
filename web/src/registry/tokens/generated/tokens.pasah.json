@@ -3828,6 +3828,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000701",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000701,
+		"symbol": "SPEKTOBRUT",
+		"decimals": 18,
+		"name": "SPEK TOBRUT",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000702",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000702,
+		"symbol": "HOYOYO",
+		"decimals": 18,
+		"name": "HOYOYO",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
