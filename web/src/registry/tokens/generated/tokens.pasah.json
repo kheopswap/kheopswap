@@ -3817,6 +3817,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000700",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000700,
+		"symbol": "OHNO",
+		"decimals": 18,
+		"name": "OHNO",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
