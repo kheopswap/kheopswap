@@ -3861,6 +3861,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000704",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000704,
+		"symbol": "PING",
+		"decimals": 18,
+		"name": "PING",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
