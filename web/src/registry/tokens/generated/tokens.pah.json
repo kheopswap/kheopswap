@@ -9643,10 +9643,50 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::pah::67",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 67,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::68",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 68,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::69",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 69,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pah::7",
 		"type": "pool-asset",
 		"chainId": "pah",
 		"poolAssetId": 7,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::70",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 70,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
