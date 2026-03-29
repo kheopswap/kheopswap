@@ -6754,6 +6754,39 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000476",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000476,
+		"symbol": "JIN",
+		"decimals": 18,
+		"name": "Jinex Coin",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000477",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000477,
+		"symbol": "USDJ",
+		"decimals": 6,
+		"name": "Jinex USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000478",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000478,
+		"symbol": "EURJ",
+		"decimals": 6,
+		"name": "Jinex EUR",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
