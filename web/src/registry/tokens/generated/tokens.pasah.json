@@ -3872,6 +3872,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000705",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000705,
+		"symbol": "KSBN",
+		"decimals": 18,
+		"name": "KASBON",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
