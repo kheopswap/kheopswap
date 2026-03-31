@@ -5797,6 +5797,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000341",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000341,
+		"symbol": "bch",
+		"decimals": 2,
+		"name": "bch",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",

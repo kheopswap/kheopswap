@@ -3817,6 +3817,39 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000727",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000727,
+		"symbol": "P005",
+		"decimals": 18,
+		"name": "P005",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000728",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000728,
+		"symbol": "P006",
+		"decimals": 18,
+		"name": "P006",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000729",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000729,
+		"symbol": "P007",
+		"decimals": 18,
+		"name": "P007",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
