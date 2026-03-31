@@ -3597,50 +3597,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000680",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000680,
-		"symbol": "HOYOYO",
-		"decimals": 18,
-		"name": "hoyoyo",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000681",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000681,
-		"symbol": "PUPU",
-		"decimals": 18,
-		"name": "PUPU",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000682",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000682,
-		"symbol": "PUPU",
-		"decimals": 18,
-		"name": "PUPU",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000683",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000683,
-		"symbol": "PUPU",
-		"decimals": 18,
-		"name": "PUPU",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000684",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3674,17 +3630,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000687",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000687,
-		"symbol": "CHINE",
-		"decimals": 18,
-		"name": "繁體字是中國的嗎？",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000688",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3707,39 +3652,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000690",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000690,
-		"symbol": "E1",
-		"decimals": 18,
-		"name": "E1",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000691",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000691,
-		"symbol": "S1",
-		"decimals": 18,
-		"name": "S1",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000692",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000692,
-		"symbol": "E2",
-		"decimals": 18,
-		"name": "E2",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000693",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3747,28 +3659,6 @@
 		"symbol": "NYWT",
 		"decimals": 18,
 		"name": "nyawit",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000694",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000694,
-		"symbol": "E2",
-		"decimals": 18,
-		"name": "사랑해요",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000695",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000695,
-		"symbol": "E3",
-		"decimals": 18,
-		"name": "E3",
 		"verified": false,
 		"isSufficient": false
 	},
@@ -3839,17 +3729,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000702",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000702,
-		"symbol": "HOYOYO",
-		"decimals": 18,
-		"name": "HOYOYO",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000703",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3879,160 +3758,6 @@
 		"symbol": "KSBN",
 		"decimals": 18,
 		"name": "KASBON",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000706",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000706,
-		"symbol": "RTA",
-		"decimals": 18,
-		"name": "REVM Test Asset",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000707",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000707,
-		"symbol": "RTA",
-		"decimals": 18,
-		"name": "REVM Test Asset",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000708",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000708,
-		"symbol": "RE2E",
-		"decimals": 18,
-		"name": "REVM E2E 924309",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000709",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000709,
-		"symbol": "RE2E",
-		"decimals": 18,
-		"name": "REVM E2E 291533",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000710",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000710,
-		"symbol": "RE2E",
-		"decimals": 18,
-		"name": "REVM E2E 278515",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000711",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000711,
-		"symbol": "R1",
-		"decimals": 18,
-		"name": "R1",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000712",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000712,
-		"symbol": "R2",
-		"decimals": 18,
-		"name": "R2",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000713",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000713,
-		"symbol": "RE2E",
-		"decimals": 18,
-		"name": "REVM E2E 360192",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000714",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000714,
-		"symbol": "E2E",
-		"decimals": 18,
-		"name": "E2E-799808",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000715",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000715,
-		"symbol": "EB",
-		"decimals": 18,
-		"name": "E2E-Buy-5340",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000716",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000716,
-		"symbol": "BS",
-		"decimals": 18,
-		"name": "BuySell-0733",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000717",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000717,
-		"symbol": "BS",
-		"decimals": 18,
-		"name": "BuySell-6893",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000718",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000718,
-		"symbol": "BS",
-		"decimals": 18,
-		"name": "BuySell-9020",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000719",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000719,
-		"symbol": "CMP",
-		"decimals": 18,
-		"name": "Complete-7202",
 		"verified": false,
 		"isSufficient": false
 	},
