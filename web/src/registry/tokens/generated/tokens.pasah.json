@@ -3883,6 +3883,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000733",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000733,
+		"symbol": "RUN",
+		"decimals": 18,
+		"name": "RUN",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
