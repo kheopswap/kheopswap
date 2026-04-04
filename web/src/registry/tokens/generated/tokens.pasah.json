@@ -3905,6 +3905,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000735",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000735,
+		"symbol": "GLCH",
+		"decimals": 18,
+		"name": "GLITCH",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000736",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000736,
+		"symbol": "JAMY",
+		"decimals": 18,
+		"name": "JAMY",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
