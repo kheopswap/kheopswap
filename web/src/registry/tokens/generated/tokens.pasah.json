@@ -3938,6 +3938,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000738",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000738,
+		"symbol": "KASP",
+		"decimals": 18,
+		"name": "Kasper Coin",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

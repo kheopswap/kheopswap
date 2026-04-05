@@ -9726,6 +9726,96 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::pah::71",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 71,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::72",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 72,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::73",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 73,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::74",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 74,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::75",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 75,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::76",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 76,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::77",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 77,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::78",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 78,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::79",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 79,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pah::8",
 		"type": "pool-asset",
 		"chainId": "pah",
