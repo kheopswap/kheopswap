@@ -3949,6 +3949,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000739",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000739,
+		"symbol": "E3",
+		"decimals": 18,
+		"name": "E3",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000740",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000740,
+		"symbol": "PTV",
+		"decimals": 12,
+		"name": "PaseoTestVault",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
