@@ -5808,6 +5808,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000342",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000342,
+		"symbol": "pUSD",
+		"decimals": 6,
+		"name": "pUSD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",

@@ -4653,6 +4653,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000803",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000803,
+		"symbol": "ALKES",
+		"decimals": 12,
+		"name": "Alkes Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
