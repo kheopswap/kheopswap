@@ -4664,6 +4664,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000804",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000804,
+		"symbol": "PEACOC",
+		"decimals": 12,
+		"name": "Peacock Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
