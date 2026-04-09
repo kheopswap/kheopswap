@@ -4686,6 +4686,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000806",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000806,
+		"symbol": "APXV",
+		"decimals": 18,
+		"name": "ApexVelocity",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000807",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000807,
+		"symbol": "TORQ",
+		"decimals": 18,
+		"name": "TORQ ",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
