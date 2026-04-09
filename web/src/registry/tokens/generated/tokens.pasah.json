@@ -4708,6 +4708,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000808",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000808,
+		"symbol": "BUDDY",
+		"decimals": 18,
+		"name": "Wag Buddy",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

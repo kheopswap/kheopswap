@@ -5816,7 +5816,7 @@
 		"decimals": 6,
 		"name": "pUSD",
 		"verified": false,
-		"isSufficient": false
+		"isSufficient": true
 	},
 	{
 		"id": "asset::wah::501",
