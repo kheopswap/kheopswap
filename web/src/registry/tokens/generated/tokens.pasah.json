@@ -3520,28 +3520,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000672",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000672,
-		"symbol": "P0",
-		"decimals": 18,
-		"name": "P0",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000673",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000673,
-		"symbol": "E0",
-		"decimals": 18,
-		"name": "E0",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000674",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3549,17 +3527,6 @@
 		"symbol": "PI",
 		"decimals": 18,
 		"name": "PI",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000675",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000675,
-		"symbol": "E1",
-		"decimals": 18,
-		"name": "E1",
 		"verified": false,
 		"isSufficient": false
 	},
@@ -3762,50 +3729,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000722",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000722,
-		"symbol": "P001",
-		"decimals": 18,
-		"name": "P001",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000723",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000723,
-		"symbol": "P002",
-		"decimals": 18,
-		"name": "P002",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000724",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000724,
-		"symbol": "P003",
-		"decimals": 18,
-		"name": "P003",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000725",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000725,
-		"symbol": "P004",
-		"decimals": 18,
-		"name": "P004",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000726",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3817,72 +3740,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000727",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000727,
-		"symbol": "P005",
-		"decimals": 18,
-		"name": "P005",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000728",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000728,
-		"symbol": "P006",
-		"decimals": 18,
-		"name": "P006",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000729",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000729,
-		"symbol": "P007",
-		"decimals": 18,
-		"name": "P007",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000730",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000730,
-		"symbol": "P008",
-		"decimals": 18,
-		"name": "P008",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000731",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000731,
-		"symbol": "P009",
-		"decimals": 18,
-		"name": "P009",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000732",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000732,
-		"symbol": "P010",
-		"decimals": 18,
-		"name": "P010",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000733",
 		"type": "asset",
 		"chainId": "pasah",
@@ -3890,17 +3747,6 @@
 		"symbol": "RUN",
 		"decimals": 18,
 		"name": "RUN",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000734",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000734,
-		"symbol": "E1",
-		"decimals": 18,
-		"name": "E1",
 		"verified": false,
 		"isSufficient": false
 	},
@@ -3923,39 +3769,6 @@
 		"symbol": "JAMY",
 		"decimals": 18,
 		"name": "JAMY",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000737",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000737,
-		"symbol": "E2",
-		"decimals": 18,
-		"name": "E2",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000738",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000738,
-		"symbol": "KASP",
-		"decimals": 18,
-		"name": "Kasper Coin",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000739",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000739,
-		"symbol": "E3",
-		"decimals": 18,
-		"name": "E3",
 		"verified": false,
 		"isSufficient": false
 	},
@@ -4055,17 +3868,6 @@
 		"symbol": "BETA",
 		"decimals": 12,
 		"name": "Beta Token",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000749",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000749,
-		"symbol": "P11",
-		"decimals": 18,
-		"name": "P11",
 		"verified": false,
 		"isSufficient": false
 	},
@@ -4202,17 +4004,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000762",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000762,
-		"symbol": "P12",
-		"decimals": 18,
-		"name": "P12",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000763",
 		"type": "asset",
 		"chainId": "pasah",
@@ -4323,17 +4114,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pasah::50000773",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000773,
-		"symbol": "E4",
-		"decimals": 18,
-		"name": "E4",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pasah::50000774",
 		"type": "asset",
 		"chainId": "pasah",
@@ -4352,17 +4132,6 @@
 		"symbol": "BETA",
 		"decimals": 12,
 		"name": "Beta Token",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000776",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000776,
-		"symbol": "E5",
-		"decimals": 18,
-		"name": "E5",
 		"verified": false,
 		"isSufficient": false
 	},
@@ -4671,28 +4440,6 @@
 		"symbol": "PEACOC",
 		"decimals": 12,
 		"name": "Peacock Token",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000805",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000805,
-		"symbol": "P130",
-		"decimals": 18,
-		"name": "p130",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pasah::50000806",
-		"type": "asset",
-		"chainId": "pasah",
-		"assetId": 50000806,
-		"symbol": "APXV",
-		"decimals": 18,
-		"name": "ApexVelocity",
 		"verified": false,
 		"isSufficient": false
 	},
