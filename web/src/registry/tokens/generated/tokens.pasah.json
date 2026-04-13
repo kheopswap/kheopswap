@@ -4499,6 +4499,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000837",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000837,
+		"symbol": "M004",
+		"decimals": 18,
+		"name": "M004",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
