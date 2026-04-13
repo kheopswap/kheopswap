@@ -3173,7 +3173,7 @@
 		"chainId": "pasah",
 		"assetId": 50000413,
 		"symbol": "pUSD",
-		"decimals": 18,
+		"decimals": 6,
 		"name": "People USD",
 		"verified": false,
 		"isSufficient": false
@@ -4506,6 +4506,17 @@
 		"symbol": "M004",
 		"decimals": 18,
 		"name": "M004",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000840",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000840,
+		"symbol": "M005",
+		"decimals": 18,
+		"name": "M005",
 		"verified": false,
 		"isSufficient": false
 	},
