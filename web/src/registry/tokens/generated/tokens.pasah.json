@@ -4521,6 +4521,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000841",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000841,
+		"symbol": "E1",
+		"decimals": 18,
+		"name": "E1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
