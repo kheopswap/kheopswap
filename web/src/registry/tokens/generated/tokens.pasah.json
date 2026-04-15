@@ -4543,6 +4543,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000843",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000843,
+		"symbol": "M007",
+		"decimals": 18,
+		"name": "M007",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
