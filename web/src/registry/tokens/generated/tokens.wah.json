@@ -7048,6 +7048,16 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::wah::110",
+		"type": "pool-asset",
+		"chainId": "wah",
+		"poolAssetId": 110,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::wah::12",
 		"type": "pool-asset",
 		"chainId": "wah",
