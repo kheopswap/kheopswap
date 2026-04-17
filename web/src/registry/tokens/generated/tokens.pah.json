@@ -6787,76 +6787,21 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pah::50000488",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000488,
-		"symbol": "USDt",
-		"decimals": 6,
-		"name": "Tether USD",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pah::50000489",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000489,
-		"symbol": "USDt",
-		"decimals": 6,
-		"name": "Tether USD",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pah::50000490",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000490,
-		"symbol": "USDt",
-		"decimals": 6,
-		"name": "Tether USD",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pah::50000491",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000491,
-		"symbol": "USDt",
-		"decimals": 6,
-		"name": "Tether USD",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pah::50000492",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000492,
-		"symbol": "USDt",
-		"decimals": 6,
-		"name": "Tether USD",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
-		"id": "asset::pah::50000493",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000493,
-		"symbol": "USDt",
-		"decimals": 6,
-		"name": "Tether USD",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pah::50000495",
 		"type": "asset",
 		"chainId": "pah",
 		"assetId": 50000495,
+		"symbol": "USDt",
+		"decimals": 6,
+		"name": "Tether USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000496",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000496,
 		"symbol": "USDt",
 		"decimals": 6,
 		"name": "Tether USD",
