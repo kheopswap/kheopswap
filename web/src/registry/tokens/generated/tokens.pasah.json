@@ -4587,6 +4587,61 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000851",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000851,
+		"symbol": "GRD",
+		"decimals": 18,
+		"name": "Grad-9756",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000852",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000852,
+		"symbol": "Y001",
+		"decimals": 18,
+		"name": "Y001",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000853",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000853,
+		"symbol": "Y002",
+		"decimals": 18,
+		"name": "Y002",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000854",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000854,
+		"symbol": "MRHI",
+		"decimals": 18,
+		"name": "MR Probe Hi-Gas 1660",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000855",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000855,
+		"symbol": "LOK5623",
+		"decimals": 18,
+		"name": "Limit OK 1776401215623",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
