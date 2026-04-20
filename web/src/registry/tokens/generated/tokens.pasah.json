@@ -4653,6 +4653,138 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000860",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000860,
+		"symbol": "TTA",
+		"decimals": 18,
+		"name": "TestToken Alpha",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000861",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000861,
+		"symbol": "TTB",
+		"decimals": 6,
+		"name": "TestToken Beta",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000862",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000862,
+		"symbol": "TTG",
+		"decimals": 12,
+		"name": "TestToken Gamma",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000863",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000863,
+		"symbol": "TTD",
+		"decimals": 0,
+		"name": "TestToken Delta",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000864",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000864,
+		"symbol": "E1",
+		"decimals": 18,
+		"name": "E1",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000865",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000865,
+		"symbol": "PUSD",
+		"decimals": 6,
+		"name": "Paseo USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000866",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000866,
+		"symbol": "PGOLD",
+		"decimals": 18,
+		"name": "Paseo Gold",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000867",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000867,
+		"symbol": "PSILV",
+		"decimals": 18,
+		"name": "Paseo Silver",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000868",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000868,
+		"symbol": "PPTS",
+		"decimals": 0,
+		"name": "Paseo Points",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000869",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000869,
+		"symbol": "PSTB",
+		"decimals": 18,
+		"name": "Paseo Stable",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000870",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000870,
+		"symbol": "PTT",
+		"decimals": 12,
+		"name": "Paseo Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000871",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000871,
+		"symbol": "PRWD",
+		"decimals": 8,
+		"name": "Paseo Reward",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
