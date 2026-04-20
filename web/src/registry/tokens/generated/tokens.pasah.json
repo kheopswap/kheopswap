@@ -4785,6 +4785,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000872",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000872,
+		"symbol": "Y003",
+		"decimals": 18,
+		"name": "Y003",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

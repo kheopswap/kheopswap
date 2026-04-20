@@ -6809,6 +6809,105 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000497",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000497,
+		"symbol": "BLAST",
+		"decimals": 12,
+		"name": "BLAST",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000498",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000498,
+		"symbol": "VIT",
+		"decimals": 12,
+		"name": "Vitality",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000499",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000499,
+		"symbol": "FUR",
+		"decimals": 12,
+		"name": "FURIA",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000500",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000500,
+		"symbol": "NAVI",
+		"decimals": 12,
+		"name": "Natus Vincere",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000501",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000501,
+		"symbol": "AST",
+		"decimals": 12,
+		"name": "Astralis",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000502",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000502,
+		"symbol": "G2",
+		"decimals": 12,
+		"name": "G2",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000503",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000503,
+		"symbol": "FAZE",
+		"decimals": 12,
+		"name": "FaZe",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000504",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000504,
+		"symbol": "GL",
+		"decimals": 12,
+		"name": "GamerLegion",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000505",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000505,
+		"symbol": "FUT",
+		"decimals": 12,
+		"name": "FUT Esports",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
