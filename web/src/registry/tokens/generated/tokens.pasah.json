@@ -4829,6 +4829,72 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000876",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000876,
+		"symbol": "TEST",
+		"decimals": 18,
+		"name": "Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000877",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000877,
+		"symbol": "TEST",
+		"decimals": 18,
+		"name": "Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000878",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000878,
+		"symbol": "TEST",
+		"decimals": 18,
+		"name": "Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000879",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000879,
+		"symbol": "TEST",
+		"decimals": 18,
+		"name": "Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000880",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000880,
+		"symbol": "TEST",
+		"decimals": 18,
+		"name": "Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000881",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000881,
+		"symbol": "TEST",
+		"decimals": 18,
+		"name": "Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
