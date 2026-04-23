@@ -4895,6 +4895,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000882",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000882,
+		"symbol": "T001",
+		"decimals": 18,
+		"name": "T001",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

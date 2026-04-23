@@ -8858,6 +8858,32 @@
 		"isSufficient": false
 	},
 	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMAFgC+mAdVoBxeAQ4BJOABMYADzkLutAEY4A5ngSoGnkJoC6mzUA=",
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"symbol": "HOLLAR",
+		"decimals": 18,
+		"name": "HOLLAR",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2034
+					},
+					{
+						"type": "GeneralIndex",
+						"value": "bigint:222"
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMAFgC+mAdVoBxeAQ4BJOABMYADzkLutAEY4A5ngSplITQF1NmoA==",
 		"type": "foreign-asset",
 		"chainId": "pah",
