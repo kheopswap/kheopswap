@@ -3173,7 +3173,7 @@
 		"chainId": "pasah",
 		"assetId": 50000413,
 		"symbol": "pUSD",
-		"decimals": 18,
+		"decimals": 6,
 		"name": "People USD",
 		"verified": false,
 		"isSufficient": false
