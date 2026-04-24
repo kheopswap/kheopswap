@@ -4906,6 +4906,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000883",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000883,
+		"symbol": "TEST",
+		"decimals": 18,
+		"name": "Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
