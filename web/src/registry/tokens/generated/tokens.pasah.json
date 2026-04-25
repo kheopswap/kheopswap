@@ -4917,6 +4917,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000884",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000884,
+		"symbol": "T001",
+		"decimals": 18,
+		"name": "T001",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000885",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000885,
+		"symbol": "T002",
+		"decimals": 18,
+		"name": "T002",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
