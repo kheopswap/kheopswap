@@ -6908,6 +6908,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000506",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000506,
+		"symbol": "C001",
+		"decimals": 18,
+		"name": "C001",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
