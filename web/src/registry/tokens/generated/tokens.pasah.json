@@ -4972,6 +4972,39 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000889",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000889,
+		"symbol": "JAMY",
+		"decimals": 18,
+		"name": "JAMY",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000890",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000890,
+		"symbol": "PING",
+		"decimals": 18,
+		"name": "PING",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000891",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000891,
+		"symbol": "CASPER",
+		"decimals": 18,
+		"name": "CASPER",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
@@ -5204,6 +5237,26 @@
 		"isSufficient": false
 	},
 	{
+		"id": "foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQHYlAX3VA==",
+		"type": "foreign-asset",
+		"chainId": "pasah",
+		"symbol": "TMOS",
+		"decimals": 18,
+		"name": "Test Mosaic Coin",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 3377
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pasah::0",
 		"type": "pool-asset",
 		"chainId": "pasah",
@@ -5298,6 +5351,16 @@
 		"type": "pool-asset",
 		"chainId": "pasah",
 		"poolAssetId": 17,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pasah::18",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 18,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
