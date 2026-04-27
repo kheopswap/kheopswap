@@ -4950,6 +4950,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000887",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000887,
+		"symbol": "EGGX",
+		"decimals": 18,
+		"name": "EGGX",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000888",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000888,
+		"symbol": "XON",
+		"decimals": 12,
+		"name": "XODE XON",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
