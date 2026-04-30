@@ -185,6 +185,14 @@
 		"coingeckoId": "origintrail",
 		"image": "/img/tokens/coingecko/origintrail.webp"
 	},
+	"0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206": {
+		"fetchedAt": "2026-04-30T19:04:02.270Z",
+		"tokenName": "Nexo",
+		"symbol": "NEXO",
+		"decimals": 18,
+		"coingeckoId": "nexo",
+		"image": "/img/tokens/coingecko/nexo.webp"
+	},
 	"0xba41ddf06b7ffd89d1267b5a93bfef2424eb2003": {
 		"fetchedAt": "2026-02-18T17:42:24.250Z",
 		"tokenName": "Mythos",
@@ -208,6 +216,14 @@
 		"decimals": 18,
 		"coingeckoId": "centrifuge-2",
 		"image": "/img/tokens/coingecko/centrifuge-2.webp"
+	},
+	"0xd166337499e176bbc38a1fbd113ab144e5bd2df7": {
+		"fetchedAt": "2026-04-30T19:04:04.465Z",
+		"tokenName": "Staked USDat",
+		"symbol": "sUSDat",
+		"decimals": 18,
+		"coingeckoId": "saturn-susdat",
+		"image": "/img/tokens/coingecko/saturn-susdat.webp"
 	},
 	"0xdac17f958d2ee523a2206206994597c13d831ec7": {
 		"fetchedAt": "2026-02-18T17:42:55.214Z",
