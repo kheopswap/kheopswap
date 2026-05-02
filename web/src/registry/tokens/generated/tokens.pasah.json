@@ -5016,6 +5016,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000893",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000893,
+		"symbol": "D003",
+		"decimals": 18,
+		"name": "D003",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
