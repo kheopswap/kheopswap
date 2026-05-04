@@ -6919,6 +6919,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000507",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000507,
+		"symbol": "BELL",
+		"decimals": 18,
+		"name": "Bell",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
