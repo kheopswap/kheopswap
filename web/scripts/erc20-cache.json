@@ -46,12 +46,10 @@
 		"image": "/img/tokens/coingecko/pax-gold.webp"
 	},
 	"0x514910771af9ca656af840dff83e8264ecf986ca": {
-		"fetchedAt": "2026-02-18T17:38:44.567Z",
+		"fetchedAt": "2026-05-05T13:04:26.055Z",
 		"tokenName": "ChainLink Token",
 		"symbol": "LINK",
-		"decimals": 18,
-		"coingeckoId": "chainlink",
-		"image": "/img/tokens/coingecko/chainlink.webp"
+		"decimals": 18
 	},
 	"0x56072c95faa701256059aa122697b133aded9279": {
 		"fetchedAt": "2026-02-18T17:42:19.720Z",

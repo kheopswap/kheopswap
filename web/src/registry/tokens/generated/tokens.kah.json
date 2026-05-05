@@ -2647,7 +2647,6 @@
 		"symbol": "LINK",
 		"decimals": 18,
 		"name": "ChainLink Token",
-		"logo": "/img/tokens/coingecko/chainlink.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
