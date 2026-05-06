@@ -6952,6 +6952,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000510",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000510,
+		"symbol": "VOVINA",
+		"decimals": 10,
+		"name": "VOVINA Sovereign Reserve",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",

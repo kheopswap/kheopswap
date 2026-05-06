@@ -5104,6 +5104,116 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000916",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000916,
+		"symbol": "AZE",
+		"decimals": 18,
+		"name": "Azelfafage Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000917",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000917,
+		"symbol": "RAP",
+		"decimals": 18,
+		"name": "Rapeto Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000918",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000918,
+		"symbol": "MOL",
+		"decimals": 18,
+		"name": "Moldoveanu Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000919",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000919,
+		"symbol": "MOU",
+		"decimals": 18,
+		"name": "Mouhoun Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000920",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000920,
+		"symbol": "KOE",
+		"decimals": 18,
+		"name": "Koeia Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000921",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000921,
+		"symbol": "SIR",
+		"decimals": 18,
+		"name": "Sirius Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000922",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000922,
+		"symbol": "BUN",
+		"decimals": 18,
+		"name": "Buna Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000923",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000923,
+		"symbol": "JIS",
+		"decimals": 18,
+		"name": "Jishui Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000925",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000925,
+		"symbol": "NYA",
+		"decimals": 18,
+		"name": "Nyamien Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000926",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000926,
+		"symbol": "CAP",
+		"decimals": 18,
+		"name": "Capella Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
