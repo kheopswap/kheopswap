@@ -6930,6 +6930,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000508",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000508,
+		"symbol": "TOJ",
+		"decimals": 18,
+		"name": "Tears Of Joy",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000509",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000509,
+		"symbol": "WUD",
+		"decimals": 18,
+		"name": "Gavun Wud",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
