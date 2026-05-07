@@ -10095,6 +10095,16 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::pah::80",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 80,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pah::9",
 		"type": "pool-asset",
 		"chainId": "pah",
