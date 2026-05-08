@@ -37,6 +37,14 @@
 		"coingeckoId": "wrapped-bitcoin",
 		"image": "/img/tokens/coingecko/wrapped-bitcoin.webp"
 	},
+	"0x38eeb52f0771140d10c4e9a9a72349a329fe8a6a": {
+		"fetchedAt": "2026-05-08T01:32:36.269Z",
+		"tokenName": "apyUSD",
+		"symbol": "apyUSD",
+		"decimals": 18,
+		"coingeckoId": "apyusd",
+		"image": "/img/tokens/coingecko/apyusd.webp"
+	},
 	"0x45804880de22913dafe09f4980848ece6ecbaf78": {
 		"fetchedAt": "2026-02-18T17:34:47.126Z",
 		"tokenName": "Paxos Gold",
