@@ -6963,6 +6963,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000511",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000511,
+		"symbol": "DOTTY",
+		"decimals": 18,
+		"name": "Dotty",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
