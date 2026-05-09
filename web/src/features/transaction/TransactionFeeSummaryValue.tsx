@@ -53,7 +53,7 @@ export const TransactionFeeSummaryValue: FC = () => {
 
 	return (
 		<>
-			{!!feeToken && isBigInt(feeEstimate) ? (
+			{feeToken && isBigInt(feeEstimate) ? (
 				account?.platform === "polkadot" &&
 				feeTokens &&
 				feeTokens.length > 1 ? (

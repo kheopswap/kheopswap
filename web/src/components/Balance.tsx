@@ -18,7 +18,7 @@ export const Balance: FC<{
 		tokenId,
 	});
 
-	if (!!token && isBigInt(balance))
+	if (token && isBigInt(balance))
 		return (
 			<Tokens
 				plancks={balance}

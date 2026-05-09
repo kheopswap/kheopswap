@@ -18,7 +18,7 @@ export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 
 	const callSpendings = useMemo<CallSpendings>(
 		() =>
-			token && !!plancks
+			token && plancks
 				? {
 						[token.id]: { plancks, allowDeath: true },
 					}

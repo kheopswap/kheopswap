@@ -56,7 +56,7 @@ export const SwapTokensEditor = () => {
 	const { insufficientBalances } = useTransaction();
 
 	const inputErrorMessage = useMemo(() => {
-		if (!!formData.amountIn && !isBigInt(totalIn)) return "Invalid amount";
+		if (formData.amountIn && !isBigInt(totalIn)) return "Invalid amount";
 		return insufficientBalances[tokenIn?.id ?? ""];
 	}, [formData.amountIn, insufficientBalances, totalIn, tokenIn?.id]);
 

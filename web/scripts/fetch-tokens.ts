@@ -47,6 +47,10 @@ import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEther
 import { mapAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapAssetTokensFromEntries.ts";
 import { mapForeignAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapForeignAssetTokensFromEntries.ts";
 import { mapPoolAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapPoolAssetTokensFromEntries.ts";
+import type {
+	ForeignAssetEntry,
+	ForeignMetadataEntry,
+} from "../src/registry/tokens/mappers/types.ts";
 import { safeJsonReplacer, safeStringify } from "../src/utils/serialization.ts";
 import { sleep } from "../src/utils/sleep.ts";
 
@@ -918,10 +922,11 @@ async function fetchForeignAssetTokens(
 ): Promise<TokenNoId[]> {
 	console.log(`  [${chain.id}] Fetching foreign assets...`);
 
-	const [assets, metadatas] = await Promise.all([
-		api.query.ForeignAssets.Asset.getEntries({ at: "best", signal }),
-		api.query.ForeignAssets.Metadata.getEntries({ at: "best", signal }),
-	]);
+	const [assets, metadatas]: [ForeignAssetEntry[], ForeignMetadataEntry[]] =
+		await Promise.all([
+			api.query.ForeignAssets.Asset.getEntries({ at: "best", signal }),
+			api.query.ForeignAssets.Metadata.getEntries({ at: "best", signal }),
+		]);
 	console.log(
 		`  [${chain.id}] Found ${assets.length} foreign assets (${metadatas.length} with metadata)`,
 	);

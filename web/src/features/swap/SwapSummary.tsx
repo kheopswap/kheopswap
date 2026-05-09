@@ -40,7 +40,7 @@ export const SwapSummary = () => {
 					value={
 						isPoolNotFound ? (
 							<div className="text-error-500">Pool not found</div>
-						) : !!reserveIn && !!reserveOut && !!tokenIn && !!tokenOut ? (
+						) : reserveIn && reserveOut && tokenIn && tokenOut ? (
 							<div className="flex flex-wrap justify-end">
 								<Tokens plancks={reserveIn} token={tokenIn} />
 								<span className="mx-1">/</span>

@@ -17,8 +17,7 @@ export const usePoolSupply = ({
 	tokenId2,
 }: UsePoolSupplyProps): UsePoolSupplyResult => {
 	const pairs = useMemo<TokenIdsPair[]>(
-		() =>
-			!!tokenId1 && !!tokenId2 ? [[tokenId1, tokenId2] as TokenIdsPair] : [],
+		() => (tokenId1 && tokenId2 ? [[tokenId1, tokenId2] as TokenIdsPair] : []),
 		[tokenId1, tokenId2],
 	);
 
