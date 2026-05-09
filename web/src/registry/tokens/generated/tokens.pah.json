@@ -6974,6 +6974,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000513",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000513,
+		"symbol": "PIGBRO",
+		"decimals": 18,
+		"name": "Love Pig Brother",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
