@@ -36,7 +36,7 @@ export const SwapTransactionProvider: FC<PropsWithChildren> = ({
 
 	const callSpendings = useMemo<CallSpendings>(
 		() =>
-			tokenIn && !!totalIn
+			tokenIn && totalIn
 				? {
 						[tokenIn.id]: { plancks: totalIn, allowDeath: true },
 					}

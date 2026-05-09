@@ -48,7 +48,7 @@ const useSwapInputs = ({
 			const totalIn = tokensToPlancks(amountIn, tokenIn.decimals);
 
 			const appCommissionPercent =
-				!!APP_FEE_ADDRESS && !!APP_FEE_PERCENT ? APP_FEE_PERCENT : 0;
+				APP_FEE_ADDRESS && APP_FEE_PERCENT ? APP_FEE_PERCENT : 0;
 			const { plancksIn, appFee: fee } = splitAppCommission(
 				totalIn,
 				appCommissionPercent,

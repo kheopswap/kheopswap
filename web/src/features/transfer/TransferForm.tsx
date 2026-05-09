@@ -43,7 +43,7 @@ export const TransferForm = () => {
 	);
 
 	const inputErrorMessage = useMemo(() => {
-		if (!!formData.amount && !isBigInt(plancks)) return "Invalid amount";
+		if (formData.amount && !isBigInt(plancks)) return "Invalid amount";
 		return insufficientBalances[token?.id ?? ""] ?? outputErrorMessage;
 	}, [
 		formData.amount,

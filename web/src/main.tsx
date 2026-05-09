@@ -56,7 +56,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 				<QueryClientProvider client={queryClient}>
 					<Subscribe fallback={<SuspenseMonitor label="Subscribe" />}>
 						<TransactionsProvider>
-							<RouterProvider router={router} unstable_useTransitions={false} />
+							<RouterProvider router={router} />
 							<GlobalFollowUpModal />
 							<TransactionToasts />
 						</TransactionsProvider>
