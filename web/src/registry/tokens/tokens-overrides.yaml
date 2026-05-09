@@ -239,3 +239,5 @@
   decimals: 18
   name: Worldcoin
   logo: ./img/tokens/WLD.webp?rounded
+- id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGEAF9AzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGtE2mSAD2SYHwAOADYAZgBWAHYrCvQKqxLksqsfGAAzJwgnCrKndB8azpqIKoAWMUqnUoD/AF1AoA===
+  logo: ./img/tokens/CGT.webp?rounded
