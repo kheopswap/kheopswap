@@ -6,21 +6,12 @@
 			"project": []
 		},
 		"web": {
-			"entry": [
-				"src/main.tsx",
-				"scripts/fetch-tokens.ts",
-				"src/**/*.test.{ts,tsx}"
-			],
+			"entry": ["scripts/fetch-tokens.ts", "src/**/*.test.{ts,tsx}"],
 			"project": ["src/**/*.{ts,tsx}"],
-			"ignoreDependencies": [
-				"tailwindcss",
-				"@polkadot-api/metadata-builders",
-				"@polkadot-api/substrate-bindings"
-			],
+			"ignoreDependencies": ["tailwindcss"],
 			"ignore": ["src/types/helpers.ts"]
 		}
 	},
 	"tags": ["-knipignore"],
-	"ignore": ["**/*.d.ts", "**/vite-env.d.ts"],
 	"ignoreExportsUsedInFile": true
 }
