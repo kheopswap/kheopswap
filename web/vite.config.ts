@@ -18,6 +18,21 @@ export default defineConfig({
 			overlay: { initialIsOpen: "error" },
 		}),
 	],
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks(id) {
+					const normalized = id.replaceAll("\\", "/");
+					if (
+						normalized.includes("/node_modules/viem/") ||
+						normalized.includes("/node_modules/ox/")
+					) {
+						return "viem";
+					}
+				},
+			},
+		},
+	},
 	optimizeDeps: {
 		exclude: ["../.papi"],
 	},
