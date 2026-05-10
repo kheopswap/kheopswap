@@ -6985,6 +6985,39 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000514",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000514,
+		"symbol": "SLICE",
+		"decimals": 18,
+		"name": "Coretime Slice",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000515",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000515,
+		"symbol": "WUD",
+		"decimals": 18,
+		"name": "Gavun Wud",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000516",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000516,
+		"symbol": "WUD",
+		"decimals": 18,
+		"name": "GAVUN WUD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
