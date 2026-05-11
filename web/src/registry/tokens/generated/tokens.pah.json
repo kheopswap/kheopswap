@@ -7029,6 +7029,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000518",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000518,
+		"symbol": "REGIDOT",
+		"decimals": 18,
+		"name": "Reginald Dot",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
