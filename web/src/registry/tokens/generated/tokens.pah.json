@@ -7040,6 +7040,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000519",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000519,
+		"symbol": "PLAW",
+		"decimals": 18,
+		"name": "Pepe Law",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000520",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000520,
+		"symbol": "DOT",
+		"decimals": 18,
+		"name": "GuiGui",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
