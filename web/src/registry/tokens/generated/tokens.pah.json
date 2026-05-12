@@ -7062,6 +7062,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000521",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000521,
+		"symbol": "RIBEYE",
+		"decimals": 18,
+		"name": "Steak&Eggs",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
