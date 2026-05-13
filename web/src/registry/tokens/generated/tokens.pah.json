@@ -7073,6 +7073,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000522",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000522,
+		"symbol": "WOOD",
+		"decimals": 18,
+		"name": "Where’s Wood?",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000523",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000523,
+		"symbol": "DED",
+		"decimals": 18,
+		"name": "DOT is DED",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
