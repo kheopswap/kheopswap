@@ -7095,6 +7095,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000524",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000524,
+		"symbol": "WUDKA",
+		"decimals": 18,
+		"name": "WUDKA",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
