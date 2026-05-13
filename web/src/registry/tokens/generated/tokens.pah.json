@@ -7106,6 +7106,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000525",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000525,
+		"symbol": "MWINK",
+		"decimals": 18,
+		"name": "MoonWink",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
