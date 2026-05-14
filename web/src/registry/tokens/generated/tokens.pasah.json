@@ -5280,6 +5280,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000938",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000938,
+		"symbol": "T13",
+		"decimals": 18,
+		"name": "T13",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

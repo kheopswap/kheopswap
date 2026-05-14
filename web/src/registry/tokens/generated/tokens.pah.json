@@ -7117,6 +7117,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000526",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000526,
+		"symbol": "C003",
+		"decimals": 18,
+		"name": "C003",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
