@@ -5291,6 +5291,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000939",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000939,
+		"symbol": "tUSDC",
+		"decimals": 6,
+		"name": "Test USDC",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
