@@ -5302,6 +5302,50 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000943",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000943,
+		"symbol": "tUSDC",
+		"decimals": 6,
+		"name": "Test USDC",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000944",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000944,
+		"symbol": "T14",
+		"decimals": 18,
+		"name": "T14",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000945",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000945,
+		"symbol": "T12",
+		"decimals": 18,
+		"name": "T12",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000946",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000946,
+		"symbol": "T15",
+		"decimals": 18,
+		"name": "T15",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

@@ -7128,6 +7128,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000527",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000527,
+		"symbol": "MOTH",
+		"decimals": 18,
+		"name": "mothmandot",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
