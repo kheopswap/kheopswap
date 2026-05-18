@@ -7139,6 +7139,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000528",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000528,
+		"symbol": "NEA",
+		"decimals": 18,
+		"name": "Nea",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
