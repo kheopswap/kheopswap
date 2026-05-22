@@ -5379,6 +5379,61 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000950",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000950,
+		"symbol": "ALRA",
+		"decimals": 18,
+		"name": "Alrami Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000951",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000951,
+		"symbol": "AZEL",
+		"decimals": 18,
+		"name": "Azelfafage Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000952",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000952,
+		"symbol": "ATIK",
+		"decimals": 18,
+		"name": "Atik Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000953",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000953,
+		"symbol": "TEST",
+		"decimals": 10,
+		"name": "TEST COIN",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50000954",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000954,
+		"symbol": "SECU",
+		"decimals": 18,
+		"name": "Secundahyadum Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
