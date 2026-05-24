@@ -7150,6 +7150,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000529",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000529,
+		"symbol": "JAM",
+		"decimals": 18,
+		"name": "JAM Chain",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
