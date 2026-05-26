@@ -7161,6 +7161,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000530",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000530,
+		"symbol": "TRMEM0",
+		"decimals": 0,
+		"name": "Terra Member v0",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
