@@ -7172,6 +7172,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000531",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000531,
+		"symbol": "ROCK",
+		"decimals": 20,
+		"name": "ROCKY DOGGG",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
