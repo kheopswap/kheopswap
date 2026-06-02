@@ -9570,6 +9570,26 @@
 		"isSufficient": false
 	},
 	{
+		"id": "foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQHYlAX3VA==",
+		"type": "foreign-asset",
+		"chainId": "pah",
+		"symbol": "MOS",
+		"decimals": 18,
+		"name": "Mosaic Coin",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 3377
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pah::0",
 		"type": "pool-asset",
 		"chainId": "pah",
@@ -10364,6 +10384,16 @@
 		"type": "pool-asset",
 		"chainId": "pah",
 		"poolAssetId": 80,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::81",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 81,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
