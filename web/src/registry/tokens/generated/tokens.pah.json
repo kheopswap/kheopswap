@@ -7183,6 +7183,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000532",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000532,
+		"symbol": "voucher",
+		"decimals": 20,
+		"name": "claim rewards @ polkadot.ru",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
