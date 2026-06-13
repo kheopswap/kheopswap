@@ -6,19 +6,19 @@
 			"wsUrl": "wss://rpc-asset-hub-polkadot.luckyfriday.io",
 			"metadata": ".papi/scale/pah.scale",
 			"genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
-			"codeHash": "0xb160d880adc0954728ebd255ba4d8b28266fae3b564d82670a486c5c63028778"
+			"codeHash": "0x709936f59b33d2fdb7f39414ade3b2a2852c568e1f414b1f09c225dcc14730cb"
 		},
 		"kah": {
 			"wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
 			"metadata": ".papi/scale/kah.scale",
 			"genesis": "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a",
-			"codeHash": "0x75086dc1a829e7a39bef2398d082e29adb23511defe35fd26a829798af49942b"
+			"codeHash": "0x7619228ef8715fd44c26d1e3b69cc3d32bb621932dc66832eeedfb1e4ea09fcd"
 		},
 		"wah": {
 			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
 			"metadata": ".papi/scale/wah.scale",
 			"genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
-			"codeHash": "0x05fd17071c955a0648780614559a2c9e128cfd8e7607197950ab8cd1ba150a3d"
+			"codeHash": "0xa09a9a9cc9cd3a06448455bf4326cbc65ed9bc32fb45addac4ff4597664e401f"
 		},
 		"pasah": {
 			"wsUrl": "wss://asset-hub-paseo.dotters.network",
