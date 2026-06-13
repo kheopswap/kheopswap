@@ -116,6 +116,31 @@ function loadBlacklist(): Set<string> {
 	return new Set(parsed?.blacklist ?? []);
 }
 
+/** Manual token overrides file path. */
+const OVERRIDES_PATH = resolve(
+	import.meta.dirname,
+	"../src/registry/tokens/tokens-overrides.yaml",
+);
+
+/**
+ * Load the set of token IDs that already carry a manual `logo` override.
+ * These don't need a CoinGecko lookup — the override wins at runtime — so the
+ * enrichment step skips them (avoids redundant 404s and saves API budget).
+ */
+function loadOverrideLogoIds(): Set<string> {
+	if (!existsSync(OVERRIDES_PATH)) return new Set();
+	const content = readFileSync(OVERRIDES_PATH, "utf-8");
+	const parsed = YAML.parse(content) as Array<{
+		id?: string;
+		logo?: string;
+	}> | null;
+	const ids = new Set<string>();
+	for (const entry of parsed ?? []) {
+		if (entry?.id && entry.logo) ids.add(entry.id);
+	}
+	return ids;
+}
+
 /** ERC20 metadata cache file path (committed to repo). */
 const ERC20_CACHE_PATH = resolve(import.meta.dirname, "erc20-cache.json");
 
@@ -742,6 +767,7 @@ async function refreshErc20Cache(
 	cache: Erc20Cache,
 	tokens: TokenNoId[],
 	coingeckoApiKey: string | undefined,
+	overrideLogoIds: Set<string>,
 ): Promise<void> {
 	const { addresses, addrToTokenId } = getEthereumContractAddresses(tokens);
 
@@ -798,13 +824,15 @@ async function refreshErc20Cache(
 			continue;
 		}
 
-		// Rate-limit CoinGecko (skip delay before first call)
-		if (fetched > 0) await sleep(delayMs);
-		const coingeckoData = await fetchCoinGeckoTokenData(
-			addr,
-			tokenId,
-			coingeckoApiKey,
-		);
+		// A manual logo override wins at runtime — don't waste a CoinGecko call
+		// (these contracts are often not indexed by address and just 404).
+		const skipCoinGecko = overrideLogoIds.has(tokenId);
+
+		// Rate-limit CoinGecko (skip delay before the first real call)
+		if (!skipCoinGecko && coingeckoCalls > 0) await sleep(delayMs);
+		const coingeckoData = skipCoinGecko
+			? undefined
+			: await fetchCoinGeckoTokenData(addr, tokenId, coingeckoApiKey);
 		const image =
 			coingeckoData?.id && coingeckoData?.imageUrl
 				? await downloadCoinGeckoLogoAsWebp(
@@ -832,7 +860,11 @@ async function refreshErc20Cache(
 		};
 		fetched++;
 
-		if (image) {
+		if (skipCoinGecko) {
+			console.log(
+				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (manual logo override, skipped CoinGecko)`,
+			);
+		} else if (image) {
 			console.log(
 				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (with logo)`,
 			);
@@ -1096,10 +1128,14 @@ async function main() {
 	console.log(`Timeout per chain: ${timeout}ms`);
 	console.log(`Output directory: ${OUTPUT_DIR}`);
 
-	// 0. Load blacklist
+	// 0. Load blacklist + manual logo overrides
 	const blacklist = loadBlacklist();
 	if (blacklist.size > 0) {
 		console.log(`Blacklisted token IDs: ${blacklist.size}`);
+	}
+	const overrideLogoIds = loadOverrideLogoIds();
+	if (overrideLogoIds.size > 0) {
+		console.log(`Tokens with manual logo override: ${overrideLogoIds.size}`);
 	}
 
 	// 1. Fetch tokens from all chains into memory
@@ -1129,7 +1165,12 @@ async function main() {
 	console.log(
 		`\n[erc20] Enriching Ethereum-origin tokens via ERC20 RPC + CoinGecko${coingeckoApiKey ? " (with API key)" : ""}`,
 	);
-	await refreshErc20Cache(erc20Cache, allTokens, coingeckoApiKey);
+	await refreshErc20Cache(
+		erc20Cache,
+		allTokens,
+		coingeckoApiKey,
+		overrideLogoIds,
+	);
 	await migrateCachedImagesToLocal(erc20Cache, allTokens, coingeckoApiKey);
 	cleanupUnusedCoinGeckoLogos(erc20Cache);
 	saveErc20Cache(erc20Cache);

@@ -1,6 +1,15 @@
 packages:
   - web
 
+allowBuilds:
+  '@reown/appkit': false
+  '@swc/core': false
+  bufferutil: false
+  esbuild: false
+  sharp: true
+  simple-git-hooks: true
+  utf-8-validate: false
+
 # don't install NPM dependencies which were published less than 3 days ago
 # provides some buffer time for the package maintainer / wider community to detect and publicise malicious package versions
 minimumReleaseAge: 4320
@@ -10,3 +19,15 @@ minimumReleaseAgeExclude:
   - "polkadot-api"
   - "@polkadot-api/*"
   - "@types/node"
+
+# moved from package.json "pnpm" field (pnpm 11 no longer reads it, see https://pnpm.io/settings)
+overrides:
+  axios: "^1.17.0"
+  # GHSA: qs DoS, patched >=6.15.2 (single dev-only copy via vite-plugin-node-polyfills)
+  qs: "^6.15.2"
+  # GHSA: ws uninitialized memory disclosure, patched >=8.20.1. Only the 8.x copies are
+  # affected; ws@7 (walletconnect) is out of range and left untouched.
+  "ws@>=8.0.0 <8.20.1": "^8.21.0"
+  # NOTE: esbuild advisories (dev-only) patched in 0.28.1, but that release is <3 days old —
+  # held back by minimumReleaseAge. Revisit next maintenance pass.
+  # NOTE: elliptic@6.6.1 (low, dev-only crypto-browserify polyfill) has no patched release yet.
