@@ -8149,7 +8149,6 @@
 		"symbol": "WBTC",
 		"decimals": 8,
 		"name": "Wrapped BTC",
-		"logo": "/img/tokens/coingecko/wrapped-bitcoin.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8183,7 +8182,6 @@
 		"symbol": "PEPE",
 		"decimals": 18,
 		"name": "Pepe",
-		"logo": "/img/tokens/coingecko/pepe.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8217,7 +8215,6 @@
 		"symbol": "DAI",
 		"decimals": 18,
 		"name": "Dai Stablecoin",
-		"logo": "/img/tokens/coingecko/dai.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8251,7 +8248,6 @@
 		"symbol": "LBTC",
 		"decimals": 8,
 		"name": "Lombard Staked Bitcoin",
-		"logo": "/img/tokens/coingecko/lombard-staked-btc.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8318,7 +8314,6 @@
 		"symbol": "PAXG",
 		"decimals": 18,
 		"name": "Paxos Gold",
-		"logo": "/img/tokens/coingecko/pax-gold.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8352,7 +8347,6 @@
 		"symbol": "wstETH",
 		"decimals": 18,
 		"name": "Wrapped liquid staked Ether 2.0",
-		"logo": "/img/tokens/coingecko/wrapped-steth.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8386,7 +8380,6 @@
 		"symbol": "AAVE",
 		"decimals": 18,
 		"name": "Aave Token",
-		"logo": "/img/tokens/coingecko/aave.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8488,7 +8481,6 @@
 		"symbol": "SHIB",
 		"decimals": 18,
 		"name": "SHIBA INU",
-		"logo": "/img/tokens/coingecko/shiba-inu.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8522,7 +8514,6 @@
 		"symbol": "sUSDe",
 		"decimals": 18,
 		"name": "Staked USDe",
-		"logo": "/img/tokens/coingecko/ethena-staked-usde.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8556,7 +8547,6 @@
 		"symbol": "TONCOIN",
 		"decimals": 9,
 		"name": "Wrapped TON Coin",
-		"logo": "/img/tokens/coingecko/the-open-network.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8590,7 +8580,6 @@
 		"symbol": "SKY",
 		"decimals": 18,
 		"name": "SKY Governance Token",
-		"logo": "/img/tokens/coingecko/sky.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8624,7 +8613,6 @@
 		"symbol": "ENA",
 		"decimals": 18,
 		"name": "ENA",
-		"logo": "/img/tokens/coingecko/ethena.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8658,7 +8646,6 @@
 		"symbol": "LDO",
 		"decimals": 18,
 		"name": "Lido DAO Token",
-		"logo": "/img/tokens/coingecko/lido-dao.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8759,7 +8746,6 @@
 		"symbol": "sUSDS",
 		"decimals": 18,
 		"name": "Savings USDS",
-		"logo": "/img/tokens/coingecko/susds.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8827,7 +8813,6 @@
 		"symbol": "USDC",
 		"decimals": 6,
 		"name": "USDC (Snowbridge)",
-		"logo": "/img/tokens/coingecko/usd-coin.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8861,7 +8846,6 @@
 		"symbol": "MYTH",
 		"decimals": 18,
 		"name": "Mythos",
-		"logo": "/img/tokens/coingecko/mythos.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8895,7 +8879,6 @@
 		"symbol": "tBTC",
 		"decimals": 18,
 		"name": "tBTC v2",
-		"logo": "/img/tokens/coingecko/tbtc.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8929,7 +8912,6 @@
 		"symbol": "WLD",
 		"decimals": 18,
 		"name": "Worldcoin",
-		"logo": "/img/tokens/coingecko/worldcoin-wld.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -8963,7 +8945,6 @@
 		"symbol": "EURC",
 		"decimals": 6,
 		"name": "Euro Coin",
-		"logo": "/img/tokens/coingecko/euro-coin.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -9064,7 +9045,6 @@
 		"symbol": "USDT",
 		"decimals": 6,
 		"name": "Tether USD (Snowbridge)",
-		"logo": "/img/tokens/coingecko/tether.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
@@ -9132,7 +9112,6 @@
 		"symbol": "WETH",
 		"decimals": 18,
 		"name": "Wrapped Ether",
-		"logo": "/img/tokens/coingecko/weth.webp",
 		"location": {
 			"parents": 2,
 			"interior": {

@@ -6,36 +6,28 @@
 		"decimals": 18
 	},
 	"0x163f8c2467924be0ae7b5347228cabf260318753": {
-		"fetchedAt": "2026-02-18T17:37:27.191Z",
+		"fetchedAt": "2026-06-13T08:43:50.162Z",
 		"tokenName": "Worldcoin",
 		"symbol": "WLD",
-		"decimals": 18,
-		"coingeckoId": "worldcoin-wld",
-		"image": "/img/tokens/coingecko/worldcoin-wld.webp"
+		"decimals": 18
 	},
 	"0x18084fba666a33d37592fa2633fd49a74dd93a88": {
-		"fetchedAt": "2026-02-18T17:42:31.480Z",
+		"fetchedAt": "2026-06-13T08:43:59.029Z",
 		"tokenName": "tBTC v2",
 		"symbol": "tBTC",
-		"decimals": 18,
-		"coingeckoId": "tbtc",
-		"image": "/img/tokens/coingecko/tbtc.webp"
+		"decimals": 18
 	},
 	"0x1abaea1f7c830bd89acc67ec4af516284b1bc33c": {
-		"fetchedAt": "2026-02-18T17:42:17.424Z",
+		"fetchedAt": "2026-06-13T08:43:52.332Z",
 		"tokenName": "Euro Coin",
 		"symbol": "EURC",
-		"decimals": 6,
-		"coingeckoId": "euro-coin",
-		"image": "/img/tokens/coingecko/euro-coin.webp"
+		"decimals": 6
 	},
 	"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
-		"fetchedAt": "2026-02-18T17:42:48.372Z",
+		"fetchedAt": "2026-06-13T08:44:01.198Z",
 		"tokenName": "Wrapped BTC",
 		"symbol": "WBTC",
-		"decimals": 8,
-		"coingeckoId": "wrapped-bitcoin",
-		"image": "/img/tokens/coingecko/wrapped-bitcoin.webp"
+		"decimals": 8
 	},
 	"0x38eeb52f0771140d10c4e9a9a72349a329fe8a6a": {
 		"fetchedAt": "2026-05-08T01:32:36.269Z",
@@ -46,12 +38,10 @@
 		"image": "/img/tokens/coingecko/apyusd.webp"
 	},
 	"0x45804880de22913dafe09f4980848ece6ecbaf78": {
-		"fetchedAt": "2026-02-18T17:34:47.126Z",
+		"fetchedAt": "2026-06-13T08:43:49.977Z",
 		"tokenName": "Paxos Gold",
 		"symbol": "PAXG",
-		"decimals": 18,
-		"coingeckoId": "pax-gold",
-		"image": "/img/tokens/coingecko/pax-gold.webp"
+		"decimals": 18
 	},
 	"0x514910771af9ca656af840dff83e8264ecf986ca": {
 		"fetchedAt": "2026-06-04T14:27:42.978Z",
@@ -62,36 +52,28 @@
 		"image": "/img/tokens/coingecko/chainlink.webp"
 	},
 	"0x56072c95faa701256059aa122697b133aded9279": {
-		"fetchedAt": "2026-02-18T17:42:19.720Z",
+		"fetchedAt": "2026-06-13T08:43:56.763Z",
 		"tokenName": "SKY Governance Token",
 		"symbol": "SKY",
-		"decimals": 18,
-		"coingeckoId": "sky",
-		"image": "/img/tokens/coingecko/sky.webp"
+		"decimals": 18
 	},
 	"0x57e114b691db790c35207b2e685d4a43181e6061": {
-		"fetchedAt": "2026-02-18T17:37:31.533Z",
+		"fetchedAt": "2026-06-13T08:43:50.162Z",
 		"tokenName": "ENA",
 		"symbol": "ENA",
-		"decimals": 18,
-		"coingeckoId": "ethena",
-		"image": "/img/tokens/coingecko/ethena.webp"
+		"decimals": 18
 	},
 	"0x582d872a1b094fc48f5de31d3b73f2d9be47def1": {
-		"fetchedAt": "2026-02-18T17:42:38.766Z",
+		"fetchedAt": "2026-06-13T08:43:59.029Z",
 		"tokenName": "Wrapped TON Coin",
 		"symbol": "TONCOIN",
-		"decimals": 9,
-		"coingeckoId": "the-open-network",
-		"image": "/img/tokens/coingecko/the-open-network.webp"
+		"decimals": 9
 	},
 	"0x5a98fcbea516cf06857215779fd812ca3bef1b32": {
-		"fetchedAt": "2026-02-18T17:34:44.657Z",
+		"fetchedAt": "2026-06-13T08:43:49.977Z",
 		"tokenName": "Lido DAO Token",
 		"symbol": "LDO",
-		"decimals": 18,
-		"coingeckoId": "lido-dao",
-		"image": "/img/tokens/coingecko/lido-dao.webp"
+		"decimals": 18
 	},
 	"0x5d3d01fd6d2ad1169b17918eb4f153c6616288eb": {
 		"fetchedAt": "2026-02-18T17:42:52.875Z",
@@ -100,20 +82,16 @@
 		"decimals": 15
 	},
 	"0x6982508145454ce325ddbe47a25d4ec3d2311933": {
-		"fetchedAt": "2026-02-18T17:34:42.184Z",
+		"fetchedAt": "2026-06-13T08:43:49.977Z",
 		"tokenName": "Pepe",
 		"symbol": "PEPE",
-		"decimals": 18,
-		"coingeckoId": "pepe",
-		"image": "/img/tokens/coingecko/pepe.webp"
+		"decimals": 18
 	},
 	"0x6b175474e89094c44da98b954eedeac495271d0f": {
-		"fetchedAt": "2026-02-18T17:42:41.075Z",
+		"fetchedAt": "2026-06-13T08:43:59.029Z",
 		"tokenName": "Dai Stablecoin",
 		"symbol": "DAI",
-		"decimals": 18,
-		"coingeckoId": "dai",
-		"image": "/img/tokens/coingecko/dai.webp"
+		"decimals": 18
 	},
 	"0x7de91b204c1c737bcee6f000aaa6569cf7061cb7": {
 		"fetchedAt": "2026-02-18T17:42:46.066Z",
@@ -124,28 +102,22 @@
 		"image": "/img/tokens/coingecko/robonomics-network.webp"
 	},
 	"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
-		"fetchedAt": "2026-02-18T17:42:34.169Z",
+		"fetchedAt": "2026-06-13T08:43:59.029Z",
 		"tokenName": "Wrapped liquid staked Ether 2.0",
 		"symbol": "wstETH",
-		"decimals": 18,
-		"coingeckoId": "wrapped-steth",
-		"image": "/img/tokens/coingecko/wrapped-steth.webp"
+		"decimals": 18
 	},
 	"0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
-		"fetchedAt": "2026-02-18T17:38:48.911Z",
+		"fetchedAt": "2026-06-13T08:44:01.199Z",
 		"tokenName": "Aave Token",
 		"symbol": "AAVE",
-		"decimals": 18,
-		"coingeckoId": "aave",
-		"image": "/img/tokens/coingecko/aave.webp"
+		"decimals": 18
 	},
 	"0x8236a87084f8b84306f72007f36f2618a5634494": {
-		"fetchedAt": "2026-02-18T17:42:15.126Z",
+		"fetchedAt": "2026-06-13T08:43:50.162Z",
 		"tokenName": "Lombard Staked Bitcoin",
 		"symbol": "LBTC",
-		"decimals": 8,
-		"coingeckoId": "lombard-staked-btc",
-		"image": "/img/tokens/coingecko/lombard-staked-btc.webp"
+		"decimals": 8
 	},
 	"0x8daebade922df735c38c80c7ebd708af50815faa": {
 		"fetchedAt": "2026-02-18T17:42:50.625Z",
@@ -154,36 +126,28 @@
 		"decimals": 18
 	},
 	"0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce": {
-		"fetchedAt": "2026-02-18T17:42:43.749Z",
+		"fetchedAt": "2026-06-13T08:43:59.029Z",
 		"tokenName": "SHIBA INU",
 		"symbol": "SHIB",
-		"decimals": 18,
-		"coingeckoId": "shiba-inu",
-		"image": "/img/tokens/coingecko/shiba-inu.webp"
+		"decimals": 18
 	},
 	"0x9d39a5de30e57443bff2a8307a4256c8797a3497": {
-		"fetchedAt": "2026-02-18T17:34:37.653Z",
+		"fetchedAt": "2026-06-13T08:43:49.977Z",
 		"tokenName": "Staked USDe",
 		"symbol": "sUSDe",
-		"decimals": 18,
-		"coingeckoId": "ethena-staked-usde",
-		"image": "/img/tokens/coingecko/ethena-staked-usde.webp"
+		"decimals": 18
 	},
 	"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
-		"fetchedAt": "2026-02-18T17:42:21.940Z",
+		"fetchedAt": "2026-06-13T08:43:56.763Z",
 		"tokenName": "USD Coin",
 		"symbol": "USDC",
-		"decimals": 6,
-		"coingeckoId": "usd-coin",
-		"image": "/img/tokens/coingecko/usd-coin.webp"
+		"decimals": 6
 	},
 	"0xa3931d71877c0e7a3148cb7eb4463524fec27fbd": {
-		"fetchedAt": "2026-02-18T17:37:22.837Z",
+		"fetchedAt": "2026-06-13T08:43:50.162Z",
 		"tokenName": "Savings USDS",
 		"symbol": "sUSDS",
-		"decimals": 18,
-		"coingeckoId": "susds",
-		"image": "/img/tokens/coingecko/susds.webp"
+		"decimals": 18
 	},
 	"0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f": {
 		"fetchedAt": "2026-02-18T17:42:28.924Z",
@@ -202,20 +166,16 @@
 		"image": "/img/tokens/coingecko/nexo.webp"
 	},
 	"0xba41ddf06b7ffd89d1267b5a93bfef2424eb2003": {
-		"fetchedAt": "2026-02-18T17:42:24.250Z",
+		"fetchedAt": "2026-06-13T08:43:56.763Z",
 		"tokenName": "Mythos",
 		"symbol": "MYTH",
-		"decimals": 18,
-		"coingeckoId": "mythos",
-		"image": "/img/tokens/coingecko/mythos.webp"
+		"decimals": 18
 	},
 	"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
-		"fetchedAt": "2026-02-18T17:34:39.875Z",
+		"fetchedAt": "2026-06-13T08:43:49.977Z",
 		"tokenName": "Wrapped Ether",
 		"symbol": "WETH",
-		"decimals": 18,
-		"coingeckoId": "weth",
-		"image": "/img/tokens/coingecko/weth.webp"
+		"decimals": 18
 	},
 	"0xcccccccccc33d538dbc2ee4feab0a7a1ff4e8a94": {
 		"fetchedAt": "2026-03-20T18:31:21.925Z",
@@ -234,12 +194,10 @@
 		"image": "/img/tokens/coingecko/saturn-susdat.webp"
 	},
 	"0xdac17f958d2ee523a2206206994597c13d831ec7": {
-		"fetchedAt": "2026-02-18T17:42:55.214Z",
+		"fetchedAt": "2026-06-13T08:44:01.199Z",
 		"tokenName": "Tether USD",
 		"symbol": "USDT",
-		"decimals": 6,
-		"coingeckoId": "tether",
-		"image": "/img/tokens/coingecko/tether.webp"
+		"decimals": 6
 	},
 	"0xe9f6d9898f9269b519e1435e6ebaff766c7f46bf": {
 		"fetchedAt": "2026-02-18T17:42:36.405Z",
