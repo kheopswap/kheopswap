@@ -1,8 +1,8 @@
-import type { WalletAccount } from "@kheopskit/core";
 import type { TxEvent } from "polkadot-api";
 import { useCallback } from "react";
 import { catchError, type Observable, of, shareReplay } from "rxjs";
 import { toHex } from "viem";
+import type { WalletAccount } from "../../common/kheopskit";
 import type { ChainId } from "../../registry/chains/types";
 import type { Token } from "../../registry/tokens/types";
 import {

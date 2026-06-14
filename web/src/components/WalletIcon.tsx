@@ -1,6 +1,6 @@
-import { useWallets } from "@kheopskit/react";
 import GenericWalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
 import { type FC, useMemo } from "react";
+import { useWallets } from "../common/kheopskit";
 import { cn } from "../utils/cn";
 
 export const WalletIcon: FC<{

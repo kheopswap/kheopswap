@@ -1,4 +1,7 @@
-import type { KheopskitConfig } from "@kheopskit/core";
+import type { AccountOf, WalletOf } from "@kheopskit/core";
+import { ethereum } from "@kheopskit/core/ethereum";
+import { polkadot } from "@kheopskit/core/polkadot";
+import { createKheopskit } from "@kheopskit/react";
 import { defineChain } from "@reown/appkit/networks";
 import { WALLET_CONNECT_PROJECT_ID } from "./constants";
 
@@ -128,8 +131,10 @@ const paseoAssetHubEvm = defineEthereumNetwork({
 	],
 });
 
-export const kheopskitConfig: Partial<KheopskitConfig> = {
-	platforms: ["polkadot", "ethereum"],
+const platforms = [polkadot(), ethereum()] as const;
+
+export const { KheopskitProvider, useWallets } = createKheopskit({
+	platforms,
 	autoReconnect: true,
 	walletConnect: WALLET_CONNECT_PROJECT_ID
 		? {
@@ -153,4 +158,10 @@ export const kheopskitConfig: Partial<KheopskitConfig> = {
 			}
 		: undefined,
 	debug: false,
-};
+});
+
+/** Account union precise to the configured platforms (polkadot + ethereum). */
+export type WalletAccount = AccountOf<(typeof platforms)[number]>;
+/** Wallet union precise to the configured platforms. */
+export type Wallet = WalletOf<(typeof platforms)[number]>;
+export type { PolkadotAccount } from "@kheopskit/core/polkadot";

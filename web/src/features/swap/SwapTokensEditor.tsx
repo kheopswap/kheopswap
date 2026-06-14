@@ -1,6 +1,6 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
-import { useWallets } from "@kheopskit/react";
 import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
+import { useWallets } from "../../common/kheopskit";
 import { Styles } from "../../components/styles";
 import { TokenAmountPicker } from "../../components/TokenAmountPicker";
 import { useWalletAccount } from "../../hooks/useWalletAccount";

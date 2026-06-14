@@ -1,6 +1,6 @@
-import type { WalletAccount } from "@kheopskit/core";
-import { useWallets } from "@kheopskit/react";
 import { type FC, useCallback, useMemo } from "react";
+import type { WalletAccount } from "../common/kheopskit";
+import { useWallets } from "../common/kheopskit";
 import { useOpenClose } from "../hooks/useOpenClose";
 import type { TokenId } from "../registry/tokens/types";
 import { cn } from "../utils/cn";

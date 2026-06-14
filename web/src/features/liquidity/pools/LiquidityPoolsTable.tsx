@@ -1,5 +1,5 @@
-import { useWallets } from "@kheopskit/react";
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import { useWallets } from "../../../common/kheopskit";
 import { SearchInput } from "../../../components/SearchInput";
 import { LiquidityPoolsHeaderRow } from "./LiquidityPoolsHeaderRow";
 import { LiquidityPoolsRows } from "./LiquidityPoolsRows";

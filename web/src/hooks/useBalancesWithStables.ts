@@ -1,4 +1,3 @@
-import type { WalletAccount } from "@kheopskit/core";
 import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import {
@@ -10,6 +9,7 @@ import {
 	switchMap,
 	throttleTime,
 } from "rxjs";
+import type { WalletAccount } from "../common/kheopskit";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { getBalance$ } from "../services/balances/service";
 import { getStablePlancks$ } from "../state/prices";

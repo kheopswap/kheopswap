@@ -1,5 +1,5 @@
-import { useWallets } from "@kheopskit/react";
 import { type FormEventHandler, useCallback, useMemo } from "react";
+import { useWallets } from "../../common/kheopskit";
 import { AccountSelect } from "../../components/AccountSelect";
 import { Balance } from "../../components/Balance";
 import { FormFieldContainer } from "../../components/FormFieldContainer";

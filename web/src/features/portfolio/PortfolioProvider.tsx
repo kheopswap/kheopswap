@@ -1,6 +1,6 @@
-import { useWallets } from "@kheopskit/react";
 import { values } from "lodash-es";
 import { useMemo } from "react";
+import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetHubTVL } from "../../hooks/useAssetHubTVL";
 import { useBalancesWithStables } from "../../hooks/useBalancesWithStables";
