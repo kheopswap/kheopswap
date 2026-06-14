@@ -1,7 +1,11 @@
 import { fromPairs } from "lodash-es";
 import { useCallback, useMemo } from "react";
 import type { WalletAccount } from "../common/kheopskit";
-import { useWallets } from "../common/kheopskit";
+import {
+	isInjectedWallet,
+	isWalletConnectWallet,
+	useWallets,
+} from "../common/kheopskit";
 import { useBalancesWithStables } from "../hooks/useBalancesWithStables";
 import { useToken } from "../hooks/useToken";
 import { useRelayChains } from "../state/relay";
@@ -90,21 +94,10 @@ export const useAccountDrawerContent = ({
 	}, [accounts, balanceByAccount]);
 
 	const { injectedWallets, walletConnectWallets } = useMemo(
-		() =>
-			wallets.reduce(
-				(acc, wallet) => {
-					if (wallet.type === "injected") {
-						acc.injectedWallets.push(wallet);
-					} else if (wallet.type === "appKit") {
-						acc.walletConnectWallets.push(wallet);
-					}
-					return acc;
-				},
-				{
-					injectedWallets: [] as typeof wallets,
-					walletConnectWallets: [] as typeof wallets,
-				},
-			),
+		() => ({
+			injectedWallets: wallets.filter(isInjectedWallet),
+			walletConnectWallets: wallets.filter(isWalletConnectWallet),
+		}),
 		[wallets],
 	);
 
