@@ -1,9 +1,45 @@
+import type { AppKit } from "@reown/appkit";
 import { useCallback, useMemo, useState } from "react";
+import {
+	getEvmAppKitNetwork,
+	isWalletConnectWallet,
+	useWallets,
+} from "../../common/kheopskit";
 import { useNativeToken } from "../../hooks/useNativeToken";
 import { useWalletAccount } from "../../hooks/useWalletAccount";
 import { getChainById } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import { notifyError } from "../../utils/notifyError";
+
+/** EIP-1193 code 4001 = user rejected the request. */
+const isUserRejection = (error: unknown): boolean =>
+	typeof error === "object" &&
+	error !== null &&
+	"code" in error &&
+	(error as { code: unknown }).code === 4001;
+
+/**
+ * True when the wallet can't switch/add a chain from the dapp — e.g. mobile
+ * WalletConnect wallets that don't implement the chain-management RPC methods.
+ * Covers JSON-RPC -32601 (method not found), EIP-1193 4200 (unsupported method)
+ * and the matching error messages viem surfaces.
+ */
+const isUnsupportedSwitch = (error: unknown): boolean => {
+	if (typeof error !== "object" || error === null) return false;
+	const code = "code" in error ? (error as { code: unknown }).code : undefined;
+	if (code === -32601 || code === 4200) return true;
+	const message =
+		"message" in error &&
+		typeof (error as { message: unknown }).message === "string"
+			? (error as { message: string }).message.toLowerCase()
+			: "";
+	return (
+		message.includes("does not exist") ||
+		message.includes("not available") ||
+		message.includes("method not found") ||
+		message.includes("not supported")
+	);
+};
 
 type UseTransactionEthereumProps = {
 	signer: string | null | undefined;
@@ -15,6 +51,7 @@ export const useTransactionEthereum = ({
 	chainId,
 }: UseTransactionEthereumProps) => {
 	const account = useWalletAccount({ id: signer });
+	const { wallets } = useWallets();
 	const [isSwitchingEthereumNetwork, setIsSwitchingEthereumNetwork] =
 		useState(false);
 
@@ -32,6 +69,16 @@ export const useTransactionEthereum = ({
 		[account],
 	);
 
+	// AppKit instance backing this account when it's connected over
+	// WalletConnect — the escape hatch kheopskit exposes on the WC connector.
+	const walletConnectAppKit = useMemo(() => {
+		if (!account) return null;
+		const wallet = wallets.find((w) => w.id === account.walletId);
+		return wallet && isWalletConnectWallet(wallet)
+			? (wallet.appKit as unknown as AppKit)
+			: null;
+	}, [wallets, account]);
+
 	const isEthereumNetworkMismatch = useMemo(() => {
 		if (!isEthereumAccount) return false;
 		if (!targetEvmChainId || !connectedEvmChainId) return false;
@@ -43,19 +90,41 @@ export const useTransactionEthereum = ({
 
 		try {
 			setIsSwitchingEthereumNetwork(true);
-			await account.client.switchChain({ id: targetEvmChainId });
-		} catch (switchError) {
-			// EIP-1193 error code 4001 = user rejected the request
-			if (
-				typeof switchError === "object" &&
-				switchError !== null &&
-				"code" in switchError &&
-				(switchError as { code: number }).code === 4001
-			) {
+
+			// WalletConnect sessions don't support the injected-wallet chain RPC
+			// methods (wallet_switchEthereumChain / wallet_addEthereumChain), so
+			// switch the active network through AppKit instead.
+			if (walletConnectAppKit) {
+				const network = getEvmAppKitNetwork(targetEvmChainId);
+				if (!network)
+					throw new Error(
+						`No AppKit network configured for chain ${targetEvmChainId}`,
+					);
+				await walletConnectAppKit.switchNetwork(network, {
+					throwOnFailure: true,
+				});
 				return;
 			}
 
-			// Chain not recognized — try adding it first
+			await account.client.switchChain({ id: targetEvmChainId });
+		} catch (switchError) {
+			if (isUserRejection(switchError)) return;
+
+			// WalletConnect can't switch from the dapp, or the injected wallet
+			// reported the switch method as unsupported: ask the user to switch
+			// manually rather than surfacing a raw RPC error.
+			if (walletConnectAppKit || isUnsupportedSwitch(switchError)) {
+				notifyError(
+					new Error(
+						`Couldn't switch your wallet to ${
+							chain?.name ?? "the target network"
+						}. Please switch network manually in your wallet, then try again.`,
+					),
+				);
+				return;
+			}
+
+			// Injected wallet: chain not recognized — try adding it first.
 			try {
 				await account.client.request({
 					method: "wallet_addEthereumChain",
@@ -83,6 +152,7 @@ export const useTransactionEthereum = ({
 		}
 	}, [
 		account,
+		walletConnectAppKit,
 		chain?.evmBlockExplorers,
 		chain?.evmRpcUrl,
 		chain?.name,

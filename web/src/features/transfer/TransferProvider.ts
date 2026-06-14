@@ -236,7 +236,12 @@ const useTransferProvider = () => {
 		onReset,
 
 		call:
-			outputErrorMessage || isCheckingRecipient || isResolvingRecipient
+			outputErrorMessage ||
+			isResolvingRecipient ||
+			// Once we've affirmatively confirmed the recipient can receive, don't let
+			// a slow or stuck balance subscription (isCheckingRecipient lingering on
+			// one unresolved sufficient-asset query) keep blocking submission.
+			(isCheckingRecipient && checkCanAccountReceive?.canReceive !== true)
 				? undefined
 				: call,
 		fakeCall,
