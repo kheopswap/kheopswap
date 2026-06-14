@@ -112,7 +112,7 @@ const polkadotAssetHubEvm = defineEthereumNetwork({
 	symbol: "DOT",
 	http: [
 		"https://eth-rpc.polkadot.io",
-		"https://services.polkadothub-rpc.com/mainnet",
+		// "https://services.polkadothub-rpc.com/mainnet", # buggy, returns null on getTransactionByHash for transactions that exist
 	],
 });
 
