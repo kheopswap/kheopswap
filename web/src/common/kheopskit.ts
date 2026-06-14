@@ -110,7 +110,10 @@ const polkadotAssetHubEvm = defineEthereumNetwork({
 	id: "420420419",
 	name: "Polkadot Asset Hub",
 	symbol: "DOT",
-	http: ["https://asset-hub-eth-rpc.polkadot.io"],
+	http: [
+		"https://eth-rpc.polkadot.io",
+		"https://services.polkadothub-rpc.com/mainnet",
+	],
 });
 
 const kusamaAssetHubEvm = defineEthereumNetwork({
@@ -136,6 +139,22 @@ const paseoAssetHubEvm = defineEthereumNetwork({
 		"https://services.polkadothub-rpc.com/testnet",
 	],
 });
+
+const evmNetworks = [
+	polkadotAssetHubEvm,
+	kusamaAssetHubEvm,
+	westendAssetHubEvm,
+	paseoAssetHubEvm,
+];
+
+/**
+ * AppKit network object for a given EVM chain id. Used to switch the active
+ * network of a WalletConnect session — WC wallets don't support the injected
+ * `wallet_switchEthereumChain` / `wallet_addEthereumChain` RPC methods, so the
+ * switch has to go through AppKit's `switchNetwork`.
+ */
+export const getEvmAppKitNetwork = (evmChainId: number) =>
+	evmNetworks.find((network) => Number(network.id) === evmChainId);
 
 const platforms = [polkadot(), ethereum()] as const;
 
