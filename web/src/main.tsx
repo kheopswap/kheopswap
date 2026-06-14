@@ -3,14 +3,13 @@ import "./index.css";
 
 import "@fontsource-variable/lexend-deca";
 
-import { KheopskitProvider } from "@kheopskit/react";
 import { Subscribe } from "@react-rxjs/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
 import { DEV } from "./common/constants";
-import { kheopskitConfig } from "./common/kheopskit";
+import { KheopskitProvider } from "./common/kheopskit";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
 import { Toasts } from "./components/Toasts";
@@ -52,7 +51,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 				<AppErrorFallback error={error} onReset={reset} />
 			)}
 		>
-			<KheopskitProvider config={kheopskitConfig}>
+			<KheopskitProvider>
 				<QueryClientProvider client={queryClient}>
 					<Subscribe fallback={<SuspenseMonitor label="Subscribe" />}>
 						<TransactionsProvider>

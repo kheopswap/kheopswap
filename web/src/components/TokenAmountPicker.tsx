@@ -1,4 +1,3 @@
-import type { PolkadotAccount } from "@kheopskit/core";
 import { maskitoNumberOptionsGenerator } from "@maskito/kit";
 import { useMaskito } from "@maskito/react";
 import {
@@ -9,6 +8,7 @@ import {
 	useCallback,
 	useMemo,
 } from "react";
+import type { PolkadotAccount } from "../common/kheopskit";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { cn } from "../utils/cn";
 import { isBigInt } from "../utils/isBigInt";

@@ -1,5 +1,5 @@
-import type { PolkadotAccount } from "@kheopskit/core";
 import { type FC, useCallback, useMemo } from "react";
+import type { PolkadotAccount } from "../common/kheopskit";
 import { useChainName } from "../hooks/useChainName";
 import { useOpenClose } from "../hooks/useOpenClose";
 import type { Token, TokenId } from "../registry/tokens/types";

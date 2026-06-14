@@ -1,10 +1,10 @@
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/24/solid";
-import type { WalletAccount } from "@kheopskit/core";
-import { useWallets } from "@kheopskit/react";
 import { type FC, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import { isAddress as isEvmAddress } from "viem";
+import type { WalletAccount } from "../common/kheopskit";
+import { useWallets } from "../common/kheopskit";
 import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 import { cn } from "../utils/cn";
 import { getAccountName } from "../utils/getAccountName";

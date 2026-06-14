@@ -1,7 +1,7 @@
-import type { WalletAccount } from "@kheopskit/core";
 import { TalismanOrb } from "@talismn/orb";
 import type { FC } from "react";
 import { isHex } from "viem";
+import type { WalletAccount } from "../common/kheopskit";
 import { cn } from "../utils/cn";
 import { EthereumIdenticon } from "./EthereumIdenticon";
 import { PolkadotIdenticon } from "./PolkadotIdenticon";

@@ -1,6 +1,6 @@
-import type { WalletAccount } from "@kheopskit/core";
 import type { TxEvent } from "polkadot-api";
 import type { FC, PropsWithChildren } from "react";
+import type { WalletAccount } from "../common/kheopskit";
 import type { Token } from "../registry/tokens/types";
 import { cn } from "../utils/cn";
 

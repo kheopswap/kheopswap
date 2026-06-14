@@ -1,5 +1,5 @@
-import type { Wallet, WalletAccount } from "@kheopskit/core";
 import { type FC, memo, useCallback, useMemo, useState } from "react";
+import type { Wallet, WalletAccount } from "../common/kheopskit";
 import type { Token } from "../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";

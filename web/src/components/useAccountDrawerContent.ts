@@ -1,7 +1,7 @@
-import type { WalletAccount } from "@kheopskit/core";
-import { useWallets } from "@kheopskit/react";
 import { fromPairs } from "lodash-es";
 import { useCallback, useMemo } from "react";
+import type { WalletAccount } from "../common/kheopskit";
+import { useWallets } from "../common/kheopskit";
 import { useBalancesWithStables } from "../hooks/useBalancesWithStables";
 import { useToken } from "../hooks/useToken";
 import { useRelayChains } from "../state/relay";
@@ -50,7 +50,7 @@ export const useAccountDrawerContent = ({
 				const wallet = wallets.find((w) => w.id === walletId);
 				if (!wallet) return;
 				if (isConnected) {
-					wallet.disconnect();
+					await wallet.disconnect();
 				} else {
 					await wallet.connect();
 				}

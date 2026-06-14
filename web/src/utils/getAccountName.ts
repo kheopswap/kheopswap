@@ -1,4 +1,4 @@
-import type { WalletAccount } from "@kheopskit/core";
+import type { WalletAccount } from "../common/kheopskit";
 
 /**
  * Extracts the display name from a WalletAccount.

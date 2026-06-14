@@ -1,6 +1,6 @@
-import { useWallets } from "@kheopskit/react";
 import { uniq } from "lodash-es";
 import { useMemo } from "react";
+import { useWallets } from "../../../common/kheopskit";
 import { useNativeToken } from "../../../hooks/useNativeToken";
 import { usePoolsByChainId } from "../../../hooks/usePoolsByChainId";
 import { useToken } from "../../../hooks/useToken";

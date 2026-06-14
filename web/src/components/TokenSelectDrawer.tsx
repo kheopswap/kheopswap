@@ -1,6 +1,6 @@
-import type { PolkadotAccount } from "@kheopskit/core";
 import { values } from "lodash-es";
 import { type FC, memo, useCallback, useMemo, useState } from "react";
+import type { PolkadotAccount } from "../common/kheopskit";
 import { useBalancesByTokenSummary } from "../hooks/useBalancesByTokenSummary";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { useRelayChains } from "../state/relay";

@@ -1,4 +1,4 @@
-import type { WalletAccount } from "@kheopskit/core";
+import type { WalletAccount } from "../../common/kheopskit";
 import type {
 	FollowUpTxEvent,
 	FollowUpTxEvents,
