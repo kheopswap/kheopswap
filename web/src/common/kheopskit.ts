@@ -1,4 +1,10 @@
-import type { AccountOf, WalletOf } from "@kheopskit/core";
+import {
+	type AccountOf,
+	isInjectedWallet,
+	isWalletConnectWallet,
+	type WalletConnectWallet,
+	type WalletOf,
+} from "@kheopskit/core";
 import { ethereum } from "@kheopskit/core/ethereum";
 import { polkadot } from "@kheopskit/core/polkadot";
 import { createKheopskit } from "@kheopskit/react";
@@ -162,6 +168,11 @@ export const { KheopskitProvider, useWallets } = createKheopskit({
 
 /** Account union precise to the configured platforms (polkadot + ethereum). */
 export type WalletAccount = AccountOf<(typeof platforms)[number]>;
-/** Wallet union precise to the configured platforms. */
-export type Wallet = WalletOf<(typeof platforms)[number]>;
+/**
+ * Wallet union precise to the configured platforms: each platform's injected
+ * wallets plus the single, platform-less WalletConnect connector.
+ */
+export type Wallet = WalletOf<(typeof platforms)[number]> | WalletConnectWallet;
 export type { PolkadotAccount } from "@kheopskit/core/polkadot";
+
+export { isInjectedWallet, isWalletConnectWallet };

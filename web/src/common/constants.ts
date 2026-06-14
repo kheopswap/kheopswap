@@ -7,10 +7,8 @@ export const APP_KEY = "kheopswap";
 export const APP_FEE_ADDRESS = import.meta.env.VITE_APP_FEE_ADDRESS;
 export const APP_FEE_PERCENT = Number(import.meta.env.VITE_APP_FEE_PERCENT);
 
-// temporarily disable WC
-export const WALLET_CONNECT_PROJECT_ID = Date.now()
-	? ""
-	: (import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID ?? "");
+export const WALLET_CONNECT_PROJECT_ID =
+	import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID ?? "";
 
 export const POOLS_CACHE_DURATION = 300_000;
 export const TOKENS_CACHE_DURATION = 300_000;

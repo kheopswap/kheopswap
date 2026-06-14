@@ -1,5 +1,9 @@
 import { type FC, memo, useCallback, useMemo, useState } from "react";
-import type { Wallet, WalletAccount } from "../common/kheopskit";
+import {
+	isWalletConnectWallet,
+	type Wallet,
+	type WalletAccount,
+} from "../common/kheopskit";
 import type { Token } from "../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
@@ -22,34 +26,44 @@ const getPlatformLabel = (platform: string) =>
 const WalletButton: FC<{
 	wallet: Wallet;
 	onClick: () => void;
-}> = ({ wallet, onClick }) => (
-	<button
-		type="button"
-		onClick={onClick}
-		className={cn(
-			"flex w-full items-center justify-between gap-3 rounded-md border p-2 px-4 text-left",
-			wallet.isConnected
-				? "border-green-700 hover:bg-green-500/10"
-				: "hover:bg-white/10",
-		)}
-	>
-		<div className="size-8 shrink-0">
-			<WalletIcon walletId={wallet.id} className="size-8" />
-		</div>
-		<div className="grow text-left">
-			{wallet.name}
-			<span className="ml-1 text-xs text-neutral-500">
-				({getPlatformLabel(wallet.platform)})
-			</span>
-		</div>
-		<div
+}> = ({ wallet, onClick }) => {
+	// The WalletConnect connector spans platforms (its `platforms` are only known
+	// once connected); injected wallets are bound to a single platform.
+	const platformLabel = isWalletConnectWallet(wallet)
+		? wallet.platforms.map(getPlatformLabel).join(" + ")
+		: getPlatformLabel(wallet.platform);
+
+	return (
+		<button
+			type="button"
+			onClick={onClick}
 			className={cn(
-				"size-2 rounded-full",
-				wallet.isConnected ? "bg-success-500" : "bg-error-500",
+				"flex w-full items-center justify-between gap-3 rounded-md border p-2 px-4 text-left",
+				wallet.isConnected
+					? "border-green-700 hover:bg-green-500/10"
+					: "hover:bg-white/10",
 			)}
-		/>
-	</button>
-);
+		>
+			<div className="size-8 shrink-0">
+				<WalletIcon walletId={wallet.id} className="size-8" />
+			</div>
+			<div className="grow text-left">
+				{wallet.name}
+				{platformLabel && (
+					<span className="ml-1 text-xs text-neutral-500">
+						({platformLabel})
+					</span>
+				)}
+			</div>
+			<div
+				className={cn(
+					"size-2 rounded-full",
+					wallet.isConnected ? "bg-success-500" : "bg-error-500",
+				)}
+			/>
+		</button>
+	);
+};
 
 const AccountButton = memo<{
 	account: WalletAccount;
