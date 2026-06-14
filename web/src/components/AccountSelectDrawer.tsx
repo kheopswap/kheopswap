@@ -196,7 +196,7 @@ const AccountSelectDrawerContent: FC<{
 		sortedAccounts,
 		balanceByAccount,
 		injectedWallets,
-		walletConnectWallet,
+		walletConnectWallets,
 		address,
 		handleWalletClick,
 		handleAccountSelect,
@@ -233,19 +233,18 @@ const AccountSelectDrawerContent: FC<{
 					<div className="mb-1">No wallets found</div>
 				)}
 			</div>
-			{walletConnectWallet && (
+			{!!walletConnectWallets.length && (
 				<div>
 					<h4>External wallets</h4>
 					<ul className="mt-2 flex flex-col gap-2">
-						<li>
-							<WalletButton
-								wallet={walletConnectWallet}
-								onClick={handleWalletClick(
-									walletConnectWallet.id,
-									walletConnectWallet.isConnected,
-								)}
-							/>
-						</li>
+						{walletConnectWallets.map((wallet) => (
+							<li key={wallet.id}>
+								<WalletButton
+									wallet={wallet}
+									onClick={handleWalletClick(wallet.id, wallet.isConnected)}
+								/>
+							</li>
+						))}
 					</ul>
 				</div>
 			)}

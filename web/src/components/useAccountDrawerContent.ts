@@ -93,8 +93,8 @@ export const useAccountDrawerContent = ({
 		() => wallets.filter((w) => w.type === "injected"),
 		[wallets],
 	);
-	const walletConnectWallet = useMemo(
-		() => wallets.find((w) => w.type === "appKit"),
+	const walletConnectWallets = useMemo(
+		() => wallets.filter((w) => w.type === "appKit"),
 		[wallets],
 	);
 
@@ -105,7 +105,7 @@ export const useAccountDrawerContent = ({
 		sortedAccounts,
 		balanceByAccount,
 		injectedWallets,
-		walletConnectWallet,
+		walletConnectWallets,
 		address,
 		handleWalletClick,
 		handleAccountSelect,
