@@ -89,12 +89,22 @@ export const useAccountDrawerContent = ({
 		});
 	}, [accounts, balanceByAccount]);
 
-	const injectedWallets = useMemo(
-		() => wallets.filter((w) => w.type === "injected"),
-		[wallets],
-	);
-	const walletConnectWallets = useMemo(
-		() => wallets.filter((w) => w.type === "appKit"),
+	const { injectedWallets, walletConnectWallets } = useMemo(
+		() =>
+			wallets.reduce(
+				(acc, wallet) => {
+					if (wallet.type === "injected") {
+						acc.injectedWallets.push(wallet);
+					} else if (wallet.type === "appKit") {
+						acc.walletConnectWallets.push(wallet);
+					}
+					return acc;
+				},
+				{
+					injectedWallets: [] as typeof wallets,
+					walletConnectWallets: [] as typeof wallets,
+				},
+			),
 		[wallets],
 	);
 
