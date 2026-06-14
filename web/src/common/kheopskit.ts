@@ -134,10 +134,7 @@ const paseoAssetHubEvm = defineEthereumNetwork({
 	id: "420420417",
 	name: "Paseo Asset Hub",
 	symbol: "PAS",
-	http: [
-		"https://eth-rpc-testnet.polkadot.io",
-		"https://services.polkadothub-rpc.com/testnet",
-	],
+	http: ["https://eth-rpc-testnet.polkadot.io"],
 });
 
 const evmNetworks = [
