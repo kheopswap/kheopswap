@@ -6017,6 +6017,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001009",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001009,
+		"symbol": "L0002",
+		"decimals": 18,
+		"name": "L0002",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
