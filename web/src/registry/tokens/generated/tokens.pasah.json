@@ -6028,6 +6028,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001010",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001010,
+		"symbol": "BATC",
+		"decimals": 6,
+		"name": "Brave Test USDC",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50001011",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001011,
+		"symbol": "XBBC",
+		"decimals": 12,
+		"name": "Outer Heaven Coin",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
