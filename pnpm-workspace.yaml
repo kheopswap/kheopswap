@@ -25,9 +25,20 @@ overrides:
   axios: "^1.17.0"
   # GHSA: qs DoS, patched >=6.15.2 (single dev-only copy via vite-plugin-node-polyfills)
   qs: "^6.15.2"
-  # GHSA: ws uninitialized memory disclosure, patched >=8.20.1. Only the 8.x copies are
-  # affected; ws@7 (walletconnect) is out of range and left untouched.
-  "ws@>=8.0.0 <8.20.1": "^8.21.0"
-  # NOTE: esbuild advisories (dev-only) patched in 0.28.1, but that release is <3 days old —
-  # held back by minimumReleaseAge. Revisit next maintenance pass.
-  # NOTE: elliptic@6.6.1 (low, dev-only crypto-browserify polyfill) has no patched release yet.
+  # GHSA-fjxv-7rqg-78g4: form-data unsafe random boundary (CRLF injection), patched >=4.0.6.
+  # Runtime copy pulled via axios > @coinbase/cdp-sdk > @reown/appkit.
+  form-data: "^4.0.6"
+  # GHSA: ws memory-exhaustion DoS (high) on >=8.0.0 <8.21.0, plus an earlier uninitialized
+  # memory disclosure. Pin all affected 8.x copies to >=8.21.0; ws@7 (walletconnect) is out
+  # of range and left untouched.
+  "ws@>=8.0.0 <8.21.0": "^8.21.0"
+  # GHSA: undici TLS cert-validation bypass (high) + cache disclosure (moderate), patched
+  # >=7.28.0. Dev-only copy via jsdom > vitest.
+  undici: "^7.28.0"
+  # NOTE: esbuild GHSA-g7r4-m6w7-qqqr (low) — arbitrary file read via esbuild's OWN dev server
+  # on Windows. Not applicable: this repo dev-serves through vite, not `esbuild serve`. esbuild
+  # is a peer-only dep here (vite + rollup-plugin-esbuild peer onto it; no package declares it as
+  # a real dep), so a `overrides` pin doesn't bump it — pnpm keeps the auto-installed 0.27.3. To
+  # force >=0.28.1 we'd have to add a synthetic root devDependency; not worth it for this.
+  # NOTE: elliptic (low, dev-only crypto-browserify polyfill) advisory GHSA-848j-6mx2-7j84
+  # claims a >=6.6.2 patch, but npm's latest is still 6.6.1 — no installable fix yet. Revisit.
