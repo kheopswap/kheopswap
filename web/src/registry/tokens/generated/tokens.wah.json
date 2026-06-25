@@ -5819,6 +5819,28 @@
 		"isSufficient": true
 	},
 	{
+		"id": "asset::wah::50000343",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000343,
+		"symbol": "VVS",
+		"decimals": 12,
+		"name": "VVS Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::wah::50000344",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000344,
+		"symbol": "VVS",
+		"decimals": 12,
+		"name": "VVS Test Token",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
