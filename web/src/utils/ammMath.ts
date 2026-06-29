@@ -6,12 +6,28 @@
  */
 
 /**
+ * Resolve the denominator (accuracy) for the AssetConversion `LPFee` constant.
+ *
+ * Modern pallet-asset-conversion stores `LPFee` as a `Permill` (e.g. 3000 → 0.3%,
+ * accuracy 1_000_000) and computes the output against `Permill::ACCURACY`. Older
+ * runtimes (e.g. Paseo Asset Hub) store it as a plain integer in parts-per-thousand
+ * (e.g. 3 → 0.3%, accuracy 1_000) and compute `1000 - LPFee`, which constrains legacy
+ * values to `< 1000`. papi decodes both flavours to a bare `number`, dropping the unit,
+ * so we recover it from that invariant: any value `>= 1000` can only be a `Permill`.
+ *
+ * @param lpFee  Raw `AssetConversion.LPFee` value as decoded by papi.
+ * @returns The matching denominator: `1_000_000n` (Permill) or `1_000n` (legacy).
+ */
+export const getLpFeeUnit = (lpFee: number): bigint =>
+	lpFee >= 1000 ? 1_000_000n : 1_000n;
+
+/**
  * Compute the output amount for a constant-product AMM swap, applying the LP fee.
  *
  * @param amountIn  Input amount in plancks.
  * @param reserveIn  Reserve of the input asset.
  * @param reserveOut  Reserve of the output asset.
- * @param lpFee  LP fee in parts-per-thousand (e.g. 3 → 0.3%).
+ * @param lpFee  Raw `AssetConversion.LPFee` value (Permill e.g. 3000, or legacy per-mille e.g. 3).
  * @returns `{ amountOut, protocolCommission }` — output plancks and the fee retained by the pool.
  */
 export const getAmmOutput = (
@@ -22,12 +38,11 @@ export const getAmmOutput = (
 ): { amountOut: bigint; protocolCommission: bigint } => {
 	if (reserveIn === 0n || reserveOut === 0n) throw new Error("No liquidity");
 
-	const safeMultiplier = 1000n;
-	const amountInWithFee = amountIn * (safeMultiplier - BigInt(lpFee));
-	const protocolCommission =
-		(safeMultiplier * amountIn - amountInWithFee) / safeMultiplier;
+	const feeUnit = getLpFeeUnit(lpFee);
+	const amountInWithFee = amountIn * (feeUnit - BigInt(lpFee));
+	const protocolCommission = (feeUnit * amountIn - amountInWithFee) / feeUnit;
 	const numerator = amountInWithFee * reserveOut;
-	const denominator = reserveIn * safeMultiplier + amountInWithFee;
+	const denominator = reserveIn * feeUnit + amountInWithFee;
 	const amountOut = numerator / denominator;
 
 	return { amountOut, protocolCommission };

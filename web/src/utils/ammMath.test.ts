@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
 	getAmmOutput,
+	getLpFeeUnit,
 	getMaxSwapAmount,
 	getMinAmountOut,
 	getPriceImpact,
@@ -92,6 +93,49 @@ describe("getAmmOutput", () => {
 			0,
 		);
 		expect(amountOut).toBeLessThan(1_000_000_000_000n);
+	});
+
+	// Regression: Polkadot/Kusama/Westend Asset Hub migrated LPFee to a `Permill`
+	// (3000 → 0.3%, accuracy 1_000_000). With the legacy 1_000 denominator,
+	// `1000 - 3000` went negative and produced a negative output (and a bogus
+	// price impact). See https://github.com/.../swap-lpfee-permill-scale
+	it("handles a Permill LPFee (3000 = 0.3%) without going negative", () => {
+		// 4 DOT in, reserves ~784.2 DOT / 663.2 USDC.e (real pool from the bug report)
+		const { amountOut, protocolCommission } = getAmmOutput(
+			40_000_000_000n, // 4 DOT (10 decimals)
+			7_842_000_000_000n, // 784.2 DOT
+			663_200_000n, // 663.2 USDC.e (6 decimals)
+			3000, // Permill: 0.3%
+		);
+		// expected ≈ 4 * 0.997 * 663.2 / (784.2 + 4*0.997) ≈ 3.3556 USDC.e
+		expect(amountOut).toBeGreaterThan(3_300_000n);
+		expect(amountOut).toBeLessThan(3_400_000n);
+		// 0.3% protocol commission of the input
+		expect(protocolCommission).toBe((40_000_000_000n * 3000n) / 1_000_000n);
+	});
+
+	it("Permill protocol commission matches fee fraction", () => {
+		const input = 10_000_000n;
+		const { protocolCommission } = getAmmOutput(
+			input,
+			1_000_000_000n,
+			1_000_000_000n,
+			3000, // 0.3% as Permill
+		);
+		expect(protocolCommission).toBe((input * 3000n) / 1_000_000n);
+	});
+});
+
+describe("getLpFeeUnit", () => {
+	it("treats values >= 1000 as Permill (accuracy 1_000_000)", () => {
+		expect(getLpFeeUnit(3000)).toBe(1_000_000n);
+		expect(getLpFeeUnit(1000)).toBe(1_000_000n);
+	});
+
+	it("treats values < 1000 as legacy per-mille (accuracy 1_000)", () => {
+		expect(getLpFeeUnit(3)).toBe(1_000n);
+		expect(getLpFeeUnit(0)).toBe(1_000n);
+		expect(getLpFeeUnit(999)).toBe(1_000n);
 	});
 });
 
