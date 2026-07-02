@@ -34,7 +34,7 @@ const save = (balances: Record<string, StoredBalance>) => {
 	}
 };
 
-const stop = logger.timer("initialiwing balances store");
+const stop = logger.timer("initializing balances store");
 export const balancesStore$ = new BehaviorSubject<
 	Record<string, StoredBalance>
 >(load());
