@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useObservable } from "react-rx";
 import { map } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
-import { getPoolReserves$ } from "../state/pools";
+import { getPoolReserves$ } from "../services/pools/reserves";
 
 type UsePoolReservesByTokenIdsProps = {
 	tokenId1: TokenId | null | undefined;
