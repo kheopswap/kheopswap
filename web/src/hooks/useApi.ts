@@ -1,26 +1,48 @@
-import { useQuery } from "@tanstack/react-query";
-import { DISABLE_LIGHT_CLIENTS } from "../common/constants";
-import { getApi } from "../papi/getApi";
+import { useMemo } from "react";
+import { useObservable } from "react-rx";
+import { catchError, map, of } from "rxjs";
+import { type Api, getApi$ } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
-import { useSetting } from "./useSetting";
 
 type UseApiProps<Id extends ChainId> = { chainId: Id | null | undefined };
 
-export const useApi = <Id extends ChainId>({ chainId }: UseApiProps<Id>) => {
-	const [lightClients] = useSetting("lightClients");
-	const effectiveLightClients = !DISABLE_LIGHT_CLIENTS && lightClients;
+type UseApiResult<Id extends ChainId> = {
+	data: Api<Id> | null;
+	isLoading: boolean;
+	error: unknown;
+};
 
-	return useQuery({
-		queryKey: ["api", chainId, effectiveLightClients],
-		queryFn: () => {
-			if (!chainId) return null;
-			return getApi(chainId, true);
-		},
-		refetchInterval: false,
-		refetchIntervalInBackground: false,
-		refetchOnWindowFocus: false,
-		refetchOnMount: false,
-		refetchOnReconnect: false,
-		structuralSharing: false,
-	});
+export const useApi = <Id extends ChainId>({
+	chainId,
+}: UseApiProps<Id>): UseApiResult<Id> => {
+	const api$ = useMemo(
+		() =>
+			chainId
+				? getApi$<Id>(chainId).pipe(
+						map(
+							(api): UseApiResult<Id> => ({
+								data: api,
+								isLoading: false,
+								error: null,
+							}),
+						),
+						catchError((error) =>
+							of<UseApiResult<Id>>({ data: null, isLoading: false, error }),
+						),
+					)
+				: of<UseApiResult<Id>>({ data: null, isLoading: false, error: null }),
+		[chainId],
+	);
+
+	const defaultValue = useMemo(
+		() =>
+			({
+				data: null,
+				isLoading: !!chainId,
+				error: null,
+			}) as UseApiResult<Id>,
+		[chainId],
+	);
+
+	return useObservable(api$, defaultValue);
 };
