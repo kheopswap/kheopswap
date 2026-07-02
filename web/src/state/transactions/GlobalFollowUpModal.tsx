@@ -6,24 +6,17 @@ import { Modal } from "../../components/Modal";
 import { Pulse } from "../../components/Pulse";
 import { Styles } from "../../components/styles";
 import { Tokens } from "../../components/Tokens";
-import { CreatePoolFollowUpContent } from "../../features/liquidity/create-pool/CreatePoolFollowUpContent";
-import { SwapFollowUpContent } from "../../features/swap/SwapFollowUpContent";
 import { cn } from "../../utils/cn";
 import { isBigInt } from "../../utils/isBigInt";
 import { useTransactions } from "./TransactionsProvider";
-import type { TransactionRecord } from "./types";
+import type { TransactionRecord, TransactionType } from "./types";
 import { type FollowUpResult, useFollowUpStatus } from "./useFollowUpStatus";
 
-const getFollowUpContent = (tx: TransactionRecord): ReactNode => {
-	switch (tx.type) {
-		case "swap":
-			return <SwapFollowUpContent transaction={tx} />;
-		case "createPool":
-			return <CreatePoolFollowUpContent transaction={tx} />;
-		default:
-			return null;
-	}
-};
+// Feature-specific follow-up renderers are injected from the composition root
+// (main.tsx) so this state-layer component never imports from features/
+export type FollowUpContentMap = Partial<
+	Record<TransactionType, FC<{ transaction: TransactionRecord }>>
+>;
 
 const convertToFollowUpData = (tx: TransactionRecord): FollowUpData => ({
 	txEvents: tx.txEvents,
@@ -156,7 +149,9 @@ const FollowUpModalInner: FC<{
 	);
 };
 
-export const GlobalFollowUpModal: FC = () => {
+export const GlobalFollowUpModal: FC<{
+	contentMap: FollowUpContentMap;
+}> = ({ contentMap }) => {
 	const { openTransaction, closeModal } = useTransactions();
 
 	if (!openTransaction) return null;
@@ -167,6 +162,8 @@ export const GlobalFollowUpModal: FC = () => {
 		closeModal(openTransaction.id);
 	};
 
+	const Content = contentMap[openTransaction.type];
+
 	return (
 		<Modal isOpen aria-label={openTransaction.title ?? "Transaction status"}>
 			<FollowUpModalInner
@@ -175,7 +172,7 @@ export const GlobalFollowUpModal: FC = () => {
 				canAlwaysClose
 				title={openTransaction.title}
 			>
-				{getFollowUpContent(openTransaction)}
+				{Content && <Content transaction={openTransaction} />}
 			</FollowUpModalInner>
 		</Modal>
 	);
