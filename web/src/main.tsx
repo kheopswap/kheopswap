@@ -13,8 +13,13 @@ import { KheopskitProvider } from "./common/kheopskit";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
 import { Toasts } from "./components/Toasts";
+import { CreatePoolFollowUpContent } from "./features/liquidity/create-pool/CreatePoolFollowUpContent";
+import { SwapFollowUpContent } from "./features/swap/SwapFollowUpContent";
 import { router } from "./routes";
-import { GlobalFollowUpModal } from "./state/transactions/GlobalFollowUpModal";
+import {
+	type FollowUpContentMap,
+	GlobalFollowUpModal,
+} from "./state/transactions/GlobalFollowUpModal";
 import { TransactionsProvider } from "./state/transactions/TransactionsProvider";
 import { TransactionToasts } from "./state/transactions/TransactionToasts";
 import { preloadFont } from "./utils/preloadFont";
@@ -44,6 +49,11 @@ preloadFont();
 
 const queryClient = new QueryClient();
 
+const followUpContentMap: FollowUpContentMap = {
+	swap: SwapFollowUpContent,
+	createPool: CreatePoolFollowUpContent,
+};
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 	<React.StrictMode>
 		<ErrorBoundary
@@ -56,7 +66,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 					<Subscribe fallback={<SuspenseMonitor label="Subscribe" />}>
 						<TransactionsProvider>
 							<RouterProvider router={router} />
-							<GlobalFollowUpModal />
+							<GlobalFollowUpModal contentMap={followUpContentMap} />
 							<TransactionToasts />
 						</TransactionsProvider>
 					</Subscribe>

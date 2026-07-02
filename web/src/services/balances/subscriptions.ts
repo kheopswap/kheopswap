@@ -5,7 +5,7 @@ import type { BalanceId } from "./types";
 
 // represent the list of balances that must be watched
 const allBalanceSubscriptions$ = new BehaviorSubject<
-	// key = subscripption id
+	// key = subscription id
 	// value = BalanceId
 	Record<string, string>
 >({});

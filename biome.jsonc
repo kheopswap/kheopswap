@@ -5,6 +5,12 @@
 		"clientKind": "git",
 		"useIgnoreFile": true
 	},
+	"files": {
+		// svg assets are decorative (chain/token logos, icons); accessibility is
+		// handled at the <img>/svgr usage site, and biome 2.5's html parser
+		// chokes on legacy DOCTYPE svgs
+		"includes": ["**", "!**/*.svg"]
+	},
 	"assist": {
 		"actions": {
 			"source": {
@@ -15,7 +21,7 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"suspicious": {
 				// "noConsole": "warn"
 			},

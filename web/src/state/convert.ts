@@ -8,9 +8,9 @@ import {
 } from "rxjs";
 import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import type { TokenId } from "../registry/tokens/types";
+import { getPoolReserves$ } from "../services/pools/reserves";
 import { getAssetConvertPlancks } from "../utils/getAssetConvertPlancks";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
-import { getPoolReserves$ } from "./pools";
 
 type AssetConvertInput = {
 	tokenIdIn: TokenId;

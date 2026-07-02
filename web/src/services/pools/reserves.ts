@@ -9,14 +9,14 @@ import {
 import {
 	getChainIdFromTokenId,
 	parseTokenId,
-} from "../registry/tokens/helpers";
-import type { TokenId } from "../registry/tokens/types";
-import { getBalance$ } from "../services/balances/service";
-import type { LoadingStatus } from "../services/common";
-import { getPoolsByChain$ } from "../services/pools/service";
-import type { AssetConvertionPoolDef, Pool } from "../services/pools/types";
-import { getCachedObservable$ } from "../utils/getCachedObservable";
-import { isBigInt } from "../utils/isBigInt";
+} from "../../registry/tokens/helpers";
+import type { TokenId } from "../../registry/tokens/types";
+import { getCachedObservable$ } from "../../utils/getCachedObservable";
+import { isBigInt } from "../../utils/isBigInt";
+import { getBalance$ } from "../balances/service";
+import type { LoadingStatus } from "../common";
+import { getPoolsByChain$ } from "./service";
+import type { AssetConvertionPoolDef, Pool } from "./types";
 
 const getIsLoading = (...loadingStatuses: LoadingStatus[]) =>
 	loadingStatuses.some((status) => status !== "loaded");
