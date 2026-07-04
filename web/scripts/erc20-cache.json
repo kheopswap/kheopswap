@@ -44,12 +44,10 @@
 		"decimals": 18
 	},
 	"0x514910771af9ca656af840dff83e8264ecf986ca": {
-		"fetchedAt": "2026-06-04T14:27:42.978Z",
+		"fetchedAt": "2026-07-04T18:50:28.093Z",
 		"tokenName": "ChainLink Token",
 		"symbol": "LINK",
-		"decimals": 18,
-		"coingeckoId": "chainlink",
-		"image": "/img/tokens/coingecko/chainlink.webp"
+		"decimals": 18
 	},
 	"0x56072c95faa701256059aa122697b133aded9279": {
 		"fetchedAt": "2026-06-13T08:43:56.763Z",
