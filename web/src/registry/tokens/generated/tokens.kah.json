@@ -1463,6 +1463,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::kah::50000011",
+		"type": "asset",
+		"chainId": "kah",
+		"assetId": 50000011,
+		"symbol": "KSM",
+		"decimals": 12,
+		"name": "KSM",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::kah::51",
 		"type": "asset",
 		"chainId": "kah",

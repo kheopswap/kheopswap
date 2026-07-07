@@ -5841,6 +5841,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000345",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000345,
+		"symbol": "XBB",
+		"decimals": 12,
+		"name": "Outer Heaven Coin",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::wah::50000346",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000346,
+		"symbol": "BATC",
+		"decimals": 6,
+		"name": "Brave USDC Test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
