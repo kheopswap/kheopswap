@@ -6072,6 +6072,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000534",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000534,
+		"symbol": "DOT",
+		"decimals": 10,
+		"name": "DOT",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
