@@ -6083,6 +6083,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000535",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000535,
+		"symbol": "werfwerf",
+		"decimals": 16,
+		"name": "ewfgewrg",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",

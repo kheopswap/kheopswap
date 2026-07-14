@@ -6083,6 +6083,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50000535",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50000535,
+		"symbol": "werfwerf",
+		"decimals": 16,
+		"name": "ewfgewrg",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::51",
 		"type": "asset",
 		"chainId": "pasah",
