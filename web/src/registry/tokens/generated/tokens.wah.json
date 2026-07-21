@@ -5863,6 +5863,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000347",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000347,
+		"symbol": "fDOT",
+		"decimals": 10,
+		"name": "FakeDot",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
