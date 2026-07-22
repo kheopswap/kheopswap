@@ -9279,6 +9279,16 @@
 		"isSufficient": false
 	},
 	{
+		"id": "pool-asset::pasah::82",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 82,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::pasah::9",
 		"type": "pool-asset",
 		"chainId": "pasah",
