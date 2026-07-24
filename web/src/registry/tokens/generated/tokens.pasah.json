@@ -8369,6 +8369,26 @@
 		"isSufficient": false
 	},
 	{
+		"id": "foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmACzoA7AF8NQA",
+		"type": "foreign-asset",
+		"chainId": "pasah",
+		"symbol": "XON",
+		"decimals": 12,
+		"name": "Xode",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 3417
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQA4lAX3VA==",
 		"type": "foreign-asset",
 		"chainId": "pasah",
