@@ -64,7 +64,6 @@
 		"wsUrl": [
 			"wss://sys.ibp.network/asset-hub-paseo",
 			"wss://asset-hub-paseo.dotters.network",
-			"wss://pas-rpc.stakeworld.io/assethub",
 			"wss://sys.turboflakes.io/asset-hub-paseo"
 		],
 		"evmChainId": 420420417,

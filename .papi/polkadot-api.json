@@ -21,7 +21,7 @@
 			"codeHash": "0xa09a9a9cc9cd3a06448455bf4326cbc65ed9bc32fb45addac4ff4597664e401f"
 		},
 		"pasah": {
-			"wsUrl": "wss://asset-hub-paseo.dotters.network",
+			"wsUrl": "wss://sys.turboflakes.io/asset-hub-paseo",
 			"metadata": ".papi/scale/pasah.scale",
 			"genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
 			"codeHash": "0xfddf30fb88912790c5c7efd5918a9498821a80e22d5604ae115f4ed4b3580048"
