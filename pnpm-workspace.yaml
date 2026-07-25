@@ -27,6 +27,10 @@ minimumReleaseAgeExclude:
   # 2026-07-22T15:04Z, i.e. inside the window. Remove on/after 2026-07-25T15:04Z, once the
   # locked version has aged past minimumReleaseAge on its own.
   - "react-router"
+  # TEMPORARY — 0.14.4 crashes the dev server on TypeScript 7 (upstream issue #777); the fix
+  # landed in 0.14.5, published 2026-07-22T10:07Z, i.e. inside the window. Remove on/after
+  # 2026-07-25T10:07Z, once the locked version has aged past minimumReleaseAge on its own.
+  - "vite-plugin-checker"
 
 # moved from package.json "pnpm" field (pnpm 11 no longer reads it, see https://pnpm.io/settings)
 overrides:
