@@ -13,7 +13,7 @@ export default defineConfig({
 		react(),
 		svgr(),
 		checker({
-			typescript: true,
+			typescript: { tsconfigPath: "tsconfig.app.json" },
 			biome: true,
 			overlay: { initialIsOpen: "error" },
 		}),
