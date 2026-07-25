@@ -92,7 +92,7 @@ const AccountButton = memo<{
 				"disabled:border-transparent disabled:opacity-100",
 			)}
 		>
-			<AccountIcon account={account} className="size-8" />
+			<AccountIcon account={account} className="size-8 shrink-0" />
 			<div className="flex grow flex-col items-start justify-center overflow-hidden">
 				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
 					<div className="truncate">
