@@ -1,4 +1,4 @@
-import { createHashRouter, Navigate } from "react-router";
+import { createHashRouter, Navigate, useParams } from "react-router";
 
 import { CreateLiquidityPoolPage } from "./create-pool";
 import { ErrorBoundaryPage } from "./error";
@@ -8,6 +8,14 @@ import { PortfolioPage } from "./portfolio";
 import { AppWithRelay } from "./providers/AppWithRelay";
 import { SwapPage } from "./swap";
 import { TransferPage } from "./transfer";
+
+// relative targets resolve against the matched path, which for the catch-all route
+// includes the unmatched segments - it would redirect to `<unknown path>/swap`, match
+// the catch-all again, and loop until the URL is unusable
+const RedirectToSwap = () => {
+	const { relayId } = useParams();
+	return <Navigate to={`/${relayId}/swap`} replace />;
+};
 
 export const router = createHashRouter([
 	{
@@ -41,11 +49,11 @@ export const router = createHashRouter([
 			},
 			{
 				path: "",
-				element: <Navigate to="swap" replace />,
+				element: <RedirectToSwap />,
 			},
 			{
 				path: "*",
-				element: <Navigate to="swap" replace />,
+				element: <RedirectToSwap />,
 			},
 		],
 	},
