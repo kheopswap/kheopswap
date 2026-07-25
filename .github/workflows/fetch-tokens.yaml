@@ -23,10 +23,11 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v6
 
+      # see pull_request.yaml — package.json's `engines` range would let CI drift across majors
       - name: Use Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: "package.json"
+          node-version-file: ".node-version"
           cache: "pnpm"
 
       # see pull_request.yaml — papi's postinstall codegen dominates the install step otherwise
