@@ -9,7 +9,11 @@
 		// svg assets are decorative (chain/token logos, icons); accessibility is
 		// handled at the <img>/svgr usage site, and biome 2.5's html parser
 		// chokes on legacy DOCTYPE svgs
-		"includes": ["**", "!**/*.svg"]
+		//
+		// .papi is written by the papi CLI (polkadot-api.json on every `papi update`,
+		// descriptors/package.json on every codegen). It uses 2-space indent, which the
+		// pre-commit hook would reject on every refresh - don't fight a generator.
+		"includes": ["**", "!**/*.svg", "!.papi"]
 	},
 	"assist": {
 		"actions": {
