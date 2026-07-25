@@ -1,30 +1,30 @@
 {
-	"version": 0,
-	"descriptorPath": ".papi/descriptors",
-	"entries": {
-		"pah": {
-			"wsUrl": "wss://rpc-asset-hub-polkadot.luckyfriday.io",
-			"metadata": ".papi/scale/pah.scale",
-			"genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
-			"codeHash": "0xd8c8c132cd1f51504af2cd45c8dd7c5565dff0a4e9d7fde72daa8975c58ef961"
-		},
-		"kah": {
-			"wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
-			"metadata": ".papi/scale/kah.scale",
-			"genesis": "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a",
-			"codeHash": "0x7619228ef8715fd44c26d1e3b69cc3d32bb621932dc66832eeedfb1e4ea09fcd"
-		},
-		"wah": {
-			"wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
-			"metadata": ".papi/scale/wah.scale",
-			"genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
-			"codeHash": "0x2c3497974c04d29e36bac8e2c6c478928e49a66b2c91e2d2133a92716ab4d503"
-		},
-		"pasah": {
-			"wsUrl": "wss://sys.turboflakes.io/asset-hub-paseo",
-			"metadata": ".papi/scale/pasah.scale",
-			"genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
-			"codeHash": "0x73bb1c8197a2d7786be576b499faa2703c52b88580f1c7d03f141cf6642bcd5b"
-		}
-	}
+  "version": 0,
+  "descriptorPath": ".papi/descriptors",
+  "entries": {
+    "pah": {
+      "wsUrl": "wss://rpc-asset-hub-polkadot.luckyfriday.io",
+      "metadata": ".papi/scale/pah.scale",
+      "genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
+      "codeHash": "0xd8c8c132cd1f51504af2cd45c8dd7c5565dff0a4e9d7fde72daa8975c58ef961"
+    },
+    "kah": {
+      "wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
+      "metadata": ".papi/scale/kah.scale",
+      "genesis": "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a",
+      "codeHash": "0x7619228ef8715fd44c26d1e3b69cc3d32bb621932dc66832eeedfb1e4ea09fcd"
+    },
+    "wah": {
+      "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
+      "metadata": ".papi/scale/wah.scale",
+      "genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
+      "codeHash": "0x2c3497974c04d29e36bac8e2c6c478928e49a66b2c91e2d2133a92716ab4d503"
+    },
+    "pasah": {
+      "wsUrl": "wss://sys.turboflakes.io/asset-hub-paseo",
+      "metadata": ".papi/scale/pasah.scale",
+      "genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
+      "codeHash": "0x73bb1c8197a2d7786be576b499faa2703c52b88580f1c7d03f141cf6642bcd5b"
+    }
+  }
 }
