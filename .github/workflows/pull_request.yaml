@@ -12,31 +12,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: "package.json"
           cache: "pnpm"
 
+      # papi runs on postinstall and generating descriptors from scratch takes ~40s, which is
+      # most of the install step. It validates restored descriptors against the codeHash in
+      # polkadot-api.json and regenerates them on mismatch, so an approximate restore is safe.
+      - name: Restore papi descriptors
+        uses: actions/cache@v6
+        with:
+          path: .papi/descriptors
+          key: papi-${{ runner.os }}-${{ hashFiles('.papi/polkadot-api.json', '.papi/scale/**', 'pnpm-lock.yaml') }}
+          restore-keys: |
+            papi-${{ runner.os }}-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # cheapest checks first, so an obvious failure reports without waiting on the slow ones
       - name: Biome check
         run: pnpm biome ci --error-on-warnings .
+
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Knip (unused files & dependencies)
         run: pnpm knip --include files,dependencies,devDependencies
 
       - name: Test
         run: pnpm test
-
-      - name: Typecheck
-        run: pnpm typecheck
 
       - name: Build
         run: pnpm build
