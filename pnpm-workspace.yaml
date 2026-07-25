@@ -14,11 +14,19 @@ allowBuilds:
 # provides some buffer time for the package maintainer / wider community to detect and publicise malicious package versions
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  # First-party packages published by this org — the buffer exists to catch a compromised
+  # third-party publisher, which doesn't apply here. Remove only if @kheopskit stops being ours.
   - "@kheopskit/core"
   - "@kheopskit/react"
+  # Core dependency, pinned to exact versions and tracked closely (descriptors are regenerated
+  # against it). Kept so an upstream hotfix can be installed the day it ships. Remove if we're
+  # willing to sit 3 days behind on papi releases.
   - "polkadot-api"
   - "@polkadot-api/*"
-  - "@types/node"
+  # TEMPORARY — GHSA-qwww-vcr4-c8h2 (high) is only patched in react-router 8.3.0, published
+  # 2026-07-22T15:04Z, i.e. inside the window. Remove on/after 2026-07-25T15:04Z, once the
+  # locked version has aged past minimumReleaseAge on its own.
+  - "react-router"
 
 # moved from package.json "pnpm" field (pnpm 11 no longer reads it, see https://pnpm.io/settings)
 overrides:
