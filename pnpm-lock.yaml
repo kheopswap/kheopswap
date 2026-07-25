@@ -80,8 +80,8 @@ importers:
         specifier: ^2.1.8
         version: 2.1.8(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@talismn/orb':
-        specifier: 0.4.3
-        version: 0.4.3(react@19.2.8)
+        specifier: 1.0.0
+        version: 1.0.0(react@19.2.8)
       '@tanstack/react-query':
         specifier: ^5.101.4
         version: 5.101.4(react@19.2.8)
@@ -2242,14 +2242,14 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@talismn/crypto@0.3.5':
-    resolution: {integrity: sha512-c10WMjV8rKA3GbbJw0+EGDFn1kmcXI1vfo+z+zvrSl2qGG5gZW/G4iispwat3zfishfAV2u4vxjF+0OvekuM5g==}
+  '@talismn/crypto@1.0.0':
+    resolution: {integrity: sha512-gg7TYGI8F7EvCaxNTAxoi2ImhIGTDwsZ1Plkd3hDSSTe+NRFidkh0fawP919fxo5E53sQx8AAFHhkhLAgDxIgw==}
     engines: {node: '>=20'}
 
-  '@talismn/orb@0.4.3':
-    resolution: {integrity: sha512-kKs4chiB2q4IkLriHAoZSRN0hJW25lJiZRUr+BmSm0f0Qkwore/1IXZYnpXs2XQbS5NjQN7M5EiiAmv6ebgLSw==}
+  '@talismn/orb@1.0.0':
+    resolution: {integrity: sha512-LrWoZCaLMpGWXNQ6+AbUKo6Y2kl39pCR65SWwBmTaxgWn+WRh8JrqHTI5vKjriduQ0Z9JekOBNbqATUAz+sciw==}
     peerDependencies:
-      react: '*'
+      react: '>=18.2.0'
 
   '@tanstack/query-core@5.101.4':
     resolution: {integrity: sha512-gNwcvOJcRbLWPOLG/2OBm+zM+Yv+MKsXKEOWC57USuZDEsI71hEErQsiEGx5wX9rzWWkfwM0fVSPoiIFSsxfiw==}
@@ -6294,7 +6294,7 @@ snapshots:
 
   '@scure/bip32@1.7.0':
     dependencies:
-      '@noble/curves': 1.9.1
+      '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
 
@@ -7022,7 +7022,7 @@ snapshots:
       tailwindcss: 4.3.3
       vite: 8.1.5(@types/node@24.13.3)(esbuild@0.27.3)(jiti@2.7.0)(yaml@2.9.0)
 
-  '@talismn/crypto@0.3.5':
+  '@talismn/crypto@1.0.0':
     dependencies:
       '@noble/ciphers': 2.2.0
       '@noble/curves': 2.2.0
@@ -7036,9 +7036,9 @@ snapshots:
       mlkem: 2.7.0
       scale-ts: 1.6.1
 
-  '@talismn/orb@0.4.3(react@19.2.8)':
+  '@talismn/orb@1.0.0(react@19.2.8)':
     dependencies:
-      '@talismn/crypto': 0.3.5
+      '@talismn/crypto': 1.0.0
       blueimp-md5: 2.19.0
       color: 4.2.3
       react: 19.2.8
