@@ -6215,6 +6215,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001031",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001031,
+		"symbol": "tDTR",
+		"decimals": 2,
+		"name": "tDTR",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
