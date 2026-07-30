@@ -1474,6 +1474,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::kah::50000012",
+		"type": "asset",
+		"chainId": "kah",
+		"assetId": 50000012,
+		"symbol": "KSM",
+		"decimals": 12,
+		"name": "Kusama",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::kah::51",
 		"type": "asset",
 		"chainId": "kah",
