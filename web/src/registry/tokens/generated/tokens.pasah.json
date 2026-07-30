@@ -6226,6 +6226,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001032",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001032,
+		"symbol": "ZKSA",
+		"decimals": 6,
+		"name": "zkdot Spike Alpha",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50001033",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001033,
+		"symbol": "ZKSB",
+		"decimals": 6,
+		"name": "zkdot Spike Beta",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
