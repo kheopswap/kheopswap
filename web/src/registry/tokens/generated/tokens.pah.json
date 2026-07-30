@@ -6094,6 +6094,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000536",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000536,
+		"symbol": "JAMKB",
+		"decimals": 18,
+		"name": "JAMKB",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
