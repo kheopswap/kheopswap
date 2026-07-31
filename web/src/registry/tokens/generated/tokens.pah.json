@@ -6105,6 +6105,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000537",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000537,
+		"symbol": "DOT",
+		"decimals": 10,
+		"name": "Polkadot",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000538",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000538,
+		"symbol": "DOT",
+		"decimals": 10,
+		"name": "Polkadot",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
