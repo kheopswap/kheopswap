@@ -1,6 +1,6 @@
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { catchError, map, of } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import { getResolvedSubstrateAddress$ } from "../services/addressResolution/service";
@@ -56,7 +56,7 @@ export const useResolvedSubstrateAddress = ({
 		);
 	}, [address, chainId]);
 
-	return useObservable(obs, {
+	return useSyncObservable(obs, {
 		resolvedAddress: null,
 		isLoading: !!address && isEthereumAddress(address) && !!chainId,
 	});

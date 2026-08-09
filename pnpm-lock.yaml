@@ -122,8 +122,8 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-rx:
-        specifier: ^4.2.3
-        version: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+        specifier: ^5.1.1
+        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
       react-toastify:
         specifier: ^11.1.0
         version: 11.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -3712,12 +3712,6 @@ packages:
     resolution: {integrity: sha512-nK28WOo+QIjBkDduTINE4JkF/UJJKyf2EJxvJKfblDpyg0Q+pkOHNTL0Qwy6NP6FhE/EnzV73BxxqcJaXY9anw==}
     engines: {node: '>= 0.4'}
 
-  observable-callback@1.0.3:
-    resolution: {integrity: sha512-VlS275UyPnwdMtzxDgr/lCiOUyq9uXNll3vdwzDcJ6PB/LuO7gLmxAQopcCA3JoFwwujBwyA7/tP5TXZwWSXew==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      rxjs: ^6.5 || ^7
-
   obug@2.1.4:
     resolution: {integrity: sha512-4a+OsYv9UktOJKE+l1A4OufDgdRF9PifWj+tJnHURo/P+WOxpG4GzUFL9qCalmWauao6ogiG+QvnCovwPoyAWA==}
     engines: {node: '>=12.20.0'}
@@ -3963,11 +3957,6 @@ packages:
   randomfill@1.0.4:
     resolution: {integrity: sha512-87lcbR8+MhcWcUiQ+9e+Rwx8MyR2P7qnt15ynUlbm3TU/fjbgz4GsvfSUDTemtCCtVCqb4ZcEFlyPNTh9bBTLw==}
 
-  react-compiler-runtime@1.0.0:
-    resolution: {integrity: sha512-rRfjYv66HlG8896yPUDONgKzG5BxZD1nV9U6rkm+7VCuvQc903C4MjcoZR4zPw53IKSOX9wMQVpA1IAbRtzQ7w==}
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
-
   react-dom@19.2.8:
     resolution: {integrity: sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==}
     peerDependencies:
@@ -3986,11 +3975,12 @@ packages:
       react-dom:
         optional: true
 
-  react-rx@4.2.3:
-    resolution: {integrity: sha512-AzuecrOdmoIgVA/wYCCFUnWc1nFtu+6sd++uH03gYAHte/ujYApHPOPEgSlWbKDhMjiXrcYtzv9IJrxwtmurIw==}
+  react-rx@5.1.1:
+    resolution: {integrity: sha512-4GNme4kL2F825aNnsIDqrOSxK6j6tjkpVdbdeILS8WMWOpX1QFO/Wyb28WREYZmcXr9Vys4ZV7yDdw6k9OxuMQ==}
+    engines: {node: '>=22.12'}
     peerDependencies:
-      react: ^18.3 || >=19.0.0-0
-      rxjs: ^7
+      react: ^19.2
+      rxjs: ^7.2
 
   react-toastify@11.1.0:
     resolution: {integrity: sha512-e9h23x3phN0wbFeB6yovmWp7lobzV4CaCH0LO8nVP6H7Y+3GbcLpIzMm9dJhcp1RXbpyfvjgpfXqO80QAmn7sg==}
@@ -8699,10 +8689,6 @@ snapshots:
       has-symbols: 1.1.0
       object-keys: 1.1.1
 
-  observable-callback@1.0.3(rxjs@7.8.2):
-    dependencies:
-      rxjs: 7.8.2
-
   obug@2.1.4: {}
 
   ofetch@1.5.1:
@@ -9062,10 +9048,6 @@ snapshots:
       randombytes: 2.1.0
       safe-buffer: 5.2.1
 
-  react-compiler-runtime@1.0.0(react@19.2.8):
-    dependencies:
-      react: 19.2.8
-
   react-dom@19.2.8(react@19.2.8):
     dependencies:
       react: 19.2.8
@@ -9080,11 +9062,9 @@ snapshots:
     optionalDependencies:
       react-dom: 19.2.8(react@19.2.8)
 
-  react-rx@4.2.3(react@19.2.8)(rxjs@7.8.2):
+  react-rx@5.1.1(react@19.2.8)(rxjs@7.8.2):
     dependencies:
-      observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.2.8
-      react-compiler-runtime: 1.0.0(react@19.2.8)
       rxjs: 7.8.2
       use-effect-event: 2.0.3(react@19.2.8)
 

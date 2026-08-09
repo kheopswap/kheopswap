@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { TokenId, TokenInfo } from "../registry/tokens/types";
 import { getTokenInfos$ } from "../services/tokenInfos/service";
@@ -46,5 +46,5 @@ export const useTokenInfos = ({
 		[tokenIds],
 	);
 
-	return useObservable(tokenInfos$, defaultResult);
+	return useSyncObservable(tokenInfos$, defaultResult);
 };

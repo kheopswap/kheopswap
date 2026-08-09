@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import { getAssetHubPoolReserves$ } from "../services/pools/reserves";
 import type { Pool } from "../services/pools/types";
@@ -19,5 +19,5 @@ export const usePoolReserves = ({ pool }: UsePoolReservesProps) => {
 		[pool],
 	);
 
-	return useObservable(obs, DEFAULT_VALUE);
+	return useSyncObservable(obs, DEFAULT_VALUE);
 };

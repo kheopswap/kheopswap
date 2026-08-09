@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map, of } from "rxjs";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { getTokenById$ } from "../services/tokens/service";
@@ -35,5 +35,5 @@ export const useToken = ({ tokenId }: UseTokenProps): UseTokenResult => {
 		[tokenId],
 	);
 
-	return useObservable(token$, defaultValue);
+	return useSyncObservable(token$, defaultValue);
 };

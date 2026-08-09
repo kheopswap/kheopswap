@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import { getPoolsByChain$ } from "../services/pools/service";
@@ -33,5 +33,5 @@ export const usePoolsByChainId = ({
 		[chainId],
 	);
 
-	return useObservable(pools$, defaultValue);
+	return useSyncObservable(pools$, defaultValue);
 };
