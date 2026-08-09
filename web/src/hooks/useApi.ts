@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { catchError, map, of } from "rxjs";
 import { type Api, getApi$ } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
@@ -44,5 +44,5 @@ export const useApi = <Id extends ChainId>({
 		[chainId],
 	);
 
-	return useObservable(api$, defaultValue);
+	return useSyncObservable(api$, defaultValue);
 };

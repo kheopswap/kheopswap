@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map, type Observable, switchMap } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
 import { getAssetConvertMulti$ } from "../state/convert";
@@ -44,5 +44,5 @@ export const useStablePlancksMulti = ({
 }: UseStablePlancksProps): UseStablePlancksResult => {
 	const obs = useMemo(() => getStablePlancksMulti$(inputs), [inputs]);
 
-	return useObservable(obs, DEFAULT_VALUE);
+	return useSyncObservable(obs, DEFAULT_VALUE);
 };

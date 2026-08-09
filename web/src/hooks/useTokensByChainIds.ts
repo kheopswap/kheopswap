@@ -1,6 +1,6 @@
 import { values } from "lodash-es";
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import type { Token } from "../registry/tokens/types";
@@ -44,5 +44,5 @@ export const useTokensByChainIds = ({
 		[chainIds],
 	);
 
-	return useObservable(tokens$, defaultValue);
+	return useSyncObservable(tokens$, defaultValue);
 };

@@ -1,6 +1,6 @@
 import { isEqual, values } from "lodash-es";
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import {
 	distinctUntilChanged,
 	map,
@@ -41,7 +41,7 @@ export const useFeeTokens = ({
 		[chainId, address],
 	);
 
-	return useObservable(feeTokens$, DEFAULT_VALUES);
+	return useSyncObservable(feeTokens$, DEFAULT_VALUES);
 };
 
 const getFeeTokens$ = (

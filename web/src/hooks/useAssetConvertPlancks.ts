@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
 import { getTokenById$ } from "../services/tokens/service";
@@ -31,7 +31,7 @@ export const useAssetConvertPlancks = ({
 		[tokenIdIn, tokenIdOut, plancks],
 	);
 
-	return useObservable(obs, DEFAULT_VALUE_PLANCKS);
+	return useSyncObservable(obs, DEFAULT_VALUE_PLANCKS);
 };
 
 const DEFAULT_VALUE_PRICE = {
@@ -51,7 +51,7 @@ export const useAssetConvertPrice = ({
 		[tokenIdIn, tokenIdOut, plancks],
 	);
 
-	return useObservable(obs, DEFAULT_VALUE_PRICE);
+	return useSyncObservable(obs, DEFAULT_VALUE_PRICE);
 };
 
 const NO_TOKEN_RESULT = { token: null, status: "loaded" };
