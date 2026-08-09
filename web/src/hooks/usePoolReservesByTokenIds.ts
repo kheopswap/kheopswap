@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
 import { getPoolReserves$ } from "../services/pools/reserves";
@@ -23,5 +23,5 @@ export const usePoolReservesByTokenIds = ({
 		[tokenId1, tokenId2],
 	);
 
-	return useObservable(obs, DEFAULT_VALUE);
+	return useSyncObservable(obs, DEFAULT_VALUE);
 };

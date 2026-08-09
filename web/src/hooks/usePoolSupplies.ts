@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { TokenIdsPair } from "../registry/tokens/types";
 import { getPoolSupplies$ } from "../services/poolSupplies/service";
@@ -41,5 +41,5 @@ export const usePoolSupplies = ({
 		[pairs],
 	);
 
-	return useObservable(poolSupplies$, defaultValue);
+	return useSyncObservable(poolSupplies$, defaultValue);
 };

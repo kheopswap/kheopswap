@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable } from "react-rx";
+import { useSyncObservable } from "react-rx";
 import {
 	combineLatest,
 	map,
@@ -76,5 +76,5 @@ export const useBalancesWithStables = ({
 		);
 	}, [accounts, tokens]);
 
-	return useObservable(obs, DEFAULT_VALUE);
+	return useSyncObservable(obs, DEFAULT_VALUE);
 };
