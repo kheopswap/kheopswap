@@ -6127,6 +6127,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000539",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000539,
+		"symbol": "D",
+		"decimals": 18,
+		"name": "D",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
