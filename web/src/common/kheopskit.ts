@@ -102,8 +102,8 @@ const paseoAssetHub = defineSubstrateNetwork({
 	name: "Paseo Asset Hub",
 	symbol: "PAS",
 	decimals: 10,
-	http: ["https://sys.ibp.network/asset-hub-paseo"],
-	webSocket: ["wss://sys.ibp.network/asset-hub-paseo"],
+	http: ["https://sys.turboflakes.io/asset-hub-paseo"],
+	webSocket: ["wss://sys.turboflakes.io/asset-hub-paseo"],
 });
 
 const polkadotAssetHubEvm = defineEthereumNetwork({

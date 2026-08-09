@@ -4,10 +4,11 @@
 		"name": "Polkadot Asset Hub",
 		"wsUrl": [
 			"wss://rpc-asset-hub-polkadot.luckyfriday.io",
-			"wss://sys.ibp.network/asset-hub-polkadot",
-			"wss://asset-hub-polkadot.dotters.network",
 			"wss://polkadot-asset-hub-rpc.polkadot.io",
-			"wss://dot-rpc.stakeworld.io/assethub"
+			"wss://dot-rpc.stakeworld.io/assethub",
+			"wss://asset-hub-polkadot-rpc.n.dwellir.com",
+			"wss://sys.turboflakes.io/asset-hub-polkadot",
+			"wss://asset-hub-polkadot.rpc.amforc.com"
 		],
 		"evmChainId": 420420419,
 		"evmRpcUrl": ["https://eth-rpc.polkadot.io"],
@@ -22,11 +23,12 @@
 		"id": "kah",
 		"name": "Kusama Asset Hub",
 		"wsUrl": [
-			"wss://sys.ibp.network/statemine",
-			"wss://kusama-asset-hub-rpc.polkadot.io",
-			"wss://sys.dotters.network/statemine",
 			"wss://rpc-asset-hub-kusama.luckyfriday.io",
-			"wss://ksm-rpc.stakeworld.io/assethub"
+			"wss://kusama-asset-hub-rpc.polkadot.io",
+			"wss://ksm-rpc.stakeworld.io/assethub",
+			"wss://asset-hub-kusama-rpc.n.dwellir.com",
+			"wss://sys.turboflakes.io/asset-hub-kusama",
+			"wss://asset-hub-kusama.rpc.amforc.com"
 		],
 		"evmChainId": 420420418,
 		"evmRpcUrl": ["https://kusama-asset-hub-eth-rpc.polkadot.io"],
@@ -43,9 +45,9 @@
 		"id": "wah",
 		"name": "Westend Asset Hub",
 		"wsUrl": [
-			"wss://sys.ibp.network/westmint",
-			"wss://sys.dotters.network/westmint",
-			"wss://westend-asset-hub-rpc.polkadot.io"
+			"wss://westend-asset-hub-rpc.polkadot.io",
+			"wss://asset-hub-westend-rpc.n.dwellir.com",
+			"wss://sys.turboflakes.io/asset-hub-westend"
 		],
 		"evmChainId": 420420421,
 		"evmRpcUrl": ["https://westend-asset-hub-eth-rpc.polkadot.io"],
@@ -62,9 +64,8 @@
 		"id": "pasah",
 		"name": "Paseo Asset Hub",
 		"wsUrl": [
-			"wss://sys.ibp.network/asset-hub-paseo",
-			"wss://asset-hub-paseo.dotters.network",
-			"wss://sys.turboflakes.io/asset-hub-paseo"
+			"wss://sys.turboflakes.io/asset-hub-paseo",
+			"wss://asset-hub-paseo-rpc.n.dwellir.com"
 		],
 		"evmChainId": 420420417,
 		"evmRpcUrl": ["https://eth-rpc-testnet.polkadot.io"],
