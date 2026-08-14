@@ -7954,7 +7954,6 @@
 		"symbol": "sUSDat",
 		"decimals": 18,
 		"name": "Staked USDat",
-		"logo": "/img/tokens/coingecko/saturn-susdat.webp",
 		"location": {
 			"parents": 2,
 			"interior": {
