@@ -6138,6 +6138,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000540",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000540,
+		"symbol": "1337",
+		"decimals": 2,
+		"name": "Elite Coin",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000541",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000541,
+		"symbol": "kUSD",
+		"decimals": 2,
+		"name": "kUSD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
