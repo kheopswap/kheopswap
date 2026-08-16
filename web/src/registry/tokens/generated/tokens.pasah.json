@@ -6259,6 +6259,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001035",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001035,
+		"symbol": "DTRV",
+		"decimals": 2,
+		"name": "DETOUR VOUCHER",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50001036",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001036,
+		"symbol": "tDTR",
+		"decimals": 2,
+		"name": "tDTR",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
