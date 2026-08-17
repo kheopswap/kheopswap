@@ -6160,6 +6160,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000542",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000542,
+		"symbol": "NIULAI",
+		"decimals": 18,
+		"name": "牛来",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
