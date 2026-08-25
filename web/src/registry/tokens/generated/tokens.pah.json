@@ -6171,6 +6171,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000543",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000543,
+		"symbol": "MAO",
+		"decimals": 0,
+		"name": "MaorTest2",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
