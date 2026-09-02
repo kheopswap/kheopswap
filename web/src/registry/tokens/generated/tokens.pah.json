@@ -6182,6 +6182,39 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000545",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000545,
+		"symbol": "USDt",
+		"decimals": 6,
+		"name": "Tether USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000546",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000546,
+		"symbol": "DOT",
+		"decimals": 10,
+		"name": "DOT",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::50000547",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000547,
+		"symbol": "DOT",
+		"decimals": 10,
+		"name": "DOT",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
