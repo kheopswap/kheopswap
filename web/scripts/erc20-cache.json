@@ -184,10 +184,12 @@
 		"image": "/img/tokens/coingecko/centrifuge-2.webp"
 	},
 	"0xd166337499e176bbc38a1fbd113ab144e5bd2df7": {
-		"fetchedAt": "2026-08-14T12:34:33.247Z",
+		"fetchedAt": "2026-09-13T15:08:40.445Z",
 		"tokenName": "Staked USDat",
 		"symbol": "sUSDat",
-		"decimals": 18
+		"decimals": 18,
+		"coingeckoId": "saturn-susdat",
+		"image": "/img/tokens/coingecko/saturn-susdat.webp"
 	},
 	"0xdac17f958d2ee523a2206206994597c13d831ec7": {
 		"fetchedAt": "2026-06-13T08:44:01.199Z",
