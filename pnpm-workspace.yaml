@@ -27,8 +27,10 @@ minimumReleaseAgeExclude:
 # moved from package.json "pnpm" field (pnpm 11 no longer reads it, see https://pnpm.io/settings)
 overrides:
   axios: "^1.17.0"
-  # GHSA: qs DoS, patched >=6.15.2 (single dev-only copy via vite-plugin-node-polyfills)
-  qs: "^6.15.2"
+  # GHSA-x5fp-wj9c-mxmx (array-limit bypass via bracket-key comma parsing) and GHSA-4mjr-xmp4-gh2g
+  # (DoS via attacker-controlled isBuffer), plus the earlier qs DoS. All patched >=6.16.0.
+  # Dev-only copy via vite-plugin-node-polyfills.
+  qs: "^6.16.0"
   # GHSA-fjxv-7rqg-78g4: form-data unsafe random boundary (CRLF injection), patched >=4.0.6.
   # Runtime copy pulled via axios > @coinbase/cdp-sdk > @reown/appkit.
   form-data: "^4.0.6"
@@ -40,12 +42,18 @@ overrides:
   # four moderates (response desync, CRLF via blob type, two Cache-Control parsing issues).
   # All patched >=7.29.0. Dev-only copy via jsdom > vitest.
   undici: "^7.29.0"
-  # GHSA-5p4m-2wfm-xmqj: js-yaml quadratic CPU consumption in !!omap resolution (high),
-  # patched >=4.3.1. Dev-only copy via vite-plugin-svgr > @svgr/core > cosmiconfig.
-  "js-yaml@4": "^4.3.1"
+  # GHSA-5p4m-2wfm-xmqj (quadratic CPU consumption in !!omap resolution) and GHSA-2883-xcg3-v3hh
+  # (maxTotalMergeKeys does not limit CPU use), both high, patched >=4.3.2. Dev-only copy
+  # via vite-plugin-svgr > @svgr/core > cosmiconfig.
+  "js-yaml@4": "^4.3.2"
   # GHSA-2v37-7h3g-55p8: nanoid custom generators loop indefinitely on size 0 (high), patched
-  # >=3.3.17. Dev-only copy via vite > postcss. Scoped to 3.x so unrelated majors are untouched.
-  "nanoid@3": "^3.3.17"
+  # >=3.3.18. Dev-only copy via vite > postcss. Scoped to 3.x so unrelated majors are untouched.
+  "nanoid@3": "^3.3.18"
+  # GHSA-ggr8-5vv4-36mx: deepmerge-ts stack exhaustion on deeply nested merges (high), patched
+  # >=8.0.0. Dev-only copy via polkadot-api > @polkadot-api/cli > write-package, which declares
+  # ^7.1.0; the override crosses that major deliberately (papi codegen only merges its own small
+  # package.json objects).
+  deepmerge-ts: "^8.0.0"
   # GHSA-fxqj-rqcc-2cmp: postcss reads arbitrary .map files via attacker-controlled
   # sourceMappingURL when `from` is unset (moderate), patched >=8.5.23. Dev-only copy via vite.
   postcss: "^8.5.23"
