@@ -12,7 +12,15 @@ export type FollowUpResult = "loading" | "success" | "error";
 export const useFollowUpStatus = (followUp: FollowUpData) => {
 	const blockExplorerUrl = useMemo(() => {
 		const chain = getChainById(followUp.feeToken.chainId);
-		if (!chain?.blockExplorerUrl) return null;
+		if (!chain) return null;
+
+		// Ethereum accounts submit through the Revive precompile, so their txHash is an
+		// EVM transaction hash that only the EVM explorer can resolve.
+		const [baseUrl, path] =
+			followUp.account.platform === "ethereum"
+				? [chain.evmBlockExplorers?.[0], "tx"]
+				: [chain.blockExplorerUrl, "extrinsic"];
+		if (!baseUrl) return null;
 
 		for (const event of followUp.txEvents) {
 			switch (event.type) {
@@ -20,7 +28,7 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 				case "broadcasted":
 				case "txBestBlocksState":
 				case "finalized":
-					return urlJoin(chain.blockExplorerUrl, "extrinsic", event.txHash);
+					return urlJoin(baseUrl, path, event.txHash);
 				default:
 					break;
 			}
