@@ -7,8 +7,7 @@ import type { BalanceId } from "./types";
 const allBalanceSubscriptions$ = new BehaviorSubject<
 	// key = subscription id
 	// value = BalanceId
-	Record<string, string>
->({});
+	Record<string, string>>({});
 
 // Unique active subscriptions (1 per token+address)
 export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
