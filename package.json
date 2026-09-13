@@ -30,10 +30,10 @@
 	"license": "AGPL",
 	"packageManager": "pnpm@11.20.0+sha512.9a6f330a95b66446ea088faf1521405a8a01f07fde7124cc9958dfed52d4bb436737e65b08f85f37b46fcba375092558ac51262b816844b22f63406ed166bfee",
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.7",
-		"knip": "^6.32.0",
+		"@biomejs/biome": "^2.5.12",
+		"knip": "^6.35.1",
 		"polkadot-api": "3.1.0",
-		"simple-git-hooks": "^2.13.1"
+		"simple-git-hooks": "^2.14.0"
 	},
 	"dependencies": {
 		"@polkadot-api/descriptors": "file:.papi/descriptors"
