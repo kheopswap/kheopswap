@@ -21,11 +21,8 @@ export const SwapFollowUpContent: FC<{
 
 	const individualEvents = useMemo<TxEvents>(
 		() =>
-			txEvents.flatMap(
-				(e) =>
-					(e.type === "finalized" && e.events) ||
-					(e.type === "txBestBlocksState" && e.found && e.events) ||
-					[],
+			txEvents.flatMap((e) =>
+				e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
 			),
 		[txEvents],
 	);

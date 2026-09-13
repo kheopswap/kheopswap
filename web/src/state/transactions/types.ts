@@ -46,12 +46,14 @@ export const getStatusFromEvent = (
 	switch (event.type) {
 		case "pending":
 			return "pending";
-		case "signed":
+		case "created":
 			return "signed";
 		case "broadcasted":
 			return "broadcasted";
-		case "txBestBlocksState":
-			return event.found ? (event.ok ? "inBlock" : "failed") : "broadcasted";
+		case "inBestBlock":
+			return event.ok ? "inBlock" : "failed";
+		case "notInBestBlock":
+			return "broadcasted";
 		case "finalized":
 			return event.ok ? "finalized" : "failed";
 		case "error":

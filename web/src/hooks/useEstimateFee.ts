@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
+import { getFakeTxCreator } from "polkadot-api/tx-creator";
 import type { AnyTransaction } from "../types/transactions";
 import type { TxOptionsWithChargeAssetTxPayment } from "../utils/getTxOptions";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
@@ -25,7 +26,7 @@ export const useEstimateFee = ({
 		queryFn: () => {
 			if (!from || !call) return null;
 
-			return call.getEstimatedFees(from, options);
+			return call.getEstimatedFees(getFakeTxCreator(from), options);
 		},
 		retry: 1,
 		refetchInterval: false,

@@ -32,7 +32,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.7",
 		"knip": "^6.32.0",
-		"polkadot-api": "2.2.2",
+		"polkadot-api": "3.1.0",
 		"simple-git-hooks": "^2.13.1"
 	},
 	"dependencies": {

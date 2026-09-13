@@ -24,9 +24,10 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 
 		for (const event of followUp.txEvents) {
 			switch (event.type) {
-				case "signed":
+				case "created":
 				case "broadcasted":
-				case "txBestBlocksState":
+				case "inBestBlock":
+				case "notInBestBlock":
 				case "finalized":
 					return urlJoin(baseUrl, path, event.txHash);
 				default:
@@ -59,9 +60,9 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 		}
 
 		const best = followUp.txEvents.find(
-			(event) => event.type === "txBestBlocksState",
+			(event) => event.type === "inBestBlock",
 		);
-		if (best?.type === "txBestBlocksState" && best.found) {
+		if (best?.type === "inBestBlock") {
 			return best.ok
 				? ["Waiting for finalization", true, "success"]
 				: ["Waiting for finalization", true, "error"];
@@ -73,8 +74,8 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 		if (broadcasted?.type === "broadcasted")
 			return ["Transaction submitted...", false, "loading"];
 
-		const signed = followUp.txEvents.find((event) => event.type === "signed");
-		if (signed?.type === "signed")
+		const created = followUp.txEvents.find((event) => event.type === "created");
+		if (created?.type === "created")
 			return ["Submitting transaction...", false, "loading"];
 
 		// Use walletName from the account if available (from kheopskit)
@@ -86,11 +87,8 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 	const [errorMessage, isPendingFinalization, isFinalized] = useMemo<
 		[string | null, boolean, boolean]
 	>(() => {
-		const allEvents: TxEvents = followUp.txEvents.flatMap(
-			(e) =>
-				(e.type === "finalized" && e.events) ||
-				(e.type === "txBestBlocksState" && e.found && e.events) ||
-				[],
+		const allEvents: TxEvents = followUp.txEvents.flatMap((e) =>
+			e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
 		);
 
 		const errorMsg = error
@@ -99,7 +97,7 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 		const txFailedErrorMessage = followUp.txEvents.some(
 			(e) =>
 				(e.type === "finalized" && !e.ok) ||
-				(e.type === "txBestBlocksState" && e.found && !e.ok),
+				(e.type === "inBestBlock" && !e.ok),
 		)
 			? getErrorMessageFromTxEvents(allEvents) // TODO cleanup, since papi 1.13 no need to lookup for extrinsic failed, we have event.dispatchError
 			: null;
@@ -115,11 +113,8 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 	const effectiveFee = useMemo(() => {
 		if (result !== "success") return null;
 
-		const allEvents: TxEvents = followUp.txEvents.flatMap(
-			(e) =>
-				(e.type === "finalized" && e.events) ||
-				(e.type === "txBestBlocksState" && e.found && e.events) ||
-				[],
+		const allEvents: TxEvents = followUp.txEvents.flatMap((e) =>
+			e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
 		);
 
 		const actualFee = allEvents.find(
