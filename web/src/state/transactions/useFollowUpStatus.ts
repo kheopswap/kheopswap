@@ -20,7 +20,7 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 				case "broadcasted":
 				case "txBestBlocksState":
 				case "finalized":
-					return urlJoin(chain.blockExplorerUrl, "tx", event.txHash);
+					return urlJoin(chain.blockExplorerUrl, "extrinsic", event.txHash);
 				default:
 					break;
 			}
