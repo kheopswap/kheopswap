@@ -131,11 +131,10 @@ const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 		}
 	}
 
-	const allEvents: TxEvents = tx.txEvents.flatMap(
-		(event) =>
-			(event.type === "finalized" && event.events) ||
-			(event.type === "txBestBlocksState" && event.found && event.events) ||
-			[],
+	const allEvents: TxEvents = tx.txEvents.flatMap((event) =>
+		event.type === "finalized" || event.type === "inBestBlock"
+			? event.events
+			: [],
 	);
 
 	if (allEvents.length === 0) return null;

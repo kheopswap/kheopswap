@@ -337,9 +337,8 @@ export const createEthereumTxObservable = ({
 			};
 
 			subscriber.next({
-				type: "txBestBlocksState",
+				type: "inBestBlock",
 				txHash,
-				found: true,
 				...blockEvents,
 				block,
 			} as TxEvent);

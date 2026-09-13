@@ -201,7 +201,7 @@ export const useTransactionSubmit = ({
 				});
 			} else {
 				if (!feeEstimate || !options) return;
-				txEvents$ = call.signSubmitAndWatch(account.polkadotSigner, options);
+				txEvents$ = call.createSubmitAndWatch(account.txCreator, options);
 			}
 
 			// Fire-and-forget: subscription self-terminates on finalized/error.
