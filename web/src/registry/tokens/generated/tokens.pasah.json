@@ -6281,6 +6281,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001037",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001037,
+		"symbol": "wUSDT",
+		"decimals": 6,
+		"name": "wUSDT",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
