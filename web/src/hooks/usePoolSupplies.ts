@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { TokenIdsPair } from "../registry/tokens/types";
 import { getPoolSupplies$ } from "../services/poolSupplies/service";
+import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
 
 type UsePoolSuppliesProps = {
 	pairs: TokenIdsPair[] | undefined;
@@ -37,9 +37,9 @@ export const usePoolSupplies = ({
 	);
 
 	const defaultValue = useMemo(
-		() => ({ isLoading: !pairs?.length, data: [] }),
+		() => ({ isLoading: !!pairs?.length, data: [] }),
 		[pairs],
 	);
 
-	return useSyncObservable(poolSupplies$, defaultValue);
+	return useSyncObservableWithDefault(poolSupplies$, defaultValue);
 };

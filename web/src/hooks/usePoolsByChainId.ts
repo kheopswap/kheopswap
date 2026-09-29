@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import { getPoolsByChain$ } from "../services/pools/service";
 import type { Pool } from "../services/pools/types";
+import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
 
 type UsePoolsProps = {
 	chainId: ChainId | null | undefined;
@@ -29,9 +29,9 @@ export const usePoolsByChainId = ({
 	);
 
 	const defaultValue = useMemo(
-		() => ({ isLoading: !chainId, data: [] }),
+		() => ({ isLoading: !!chainId, data: [] }),
 		[chainId],
 	);
 
-	return useSyncObservable(pools$, defaultValue);
+	return useSyncObservableWithDefault(pools$, defaultValue);
 };
