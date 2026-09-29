@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import { getBalances$ } from "../services/balances/service";
 import type { BalanceDef } from "../services/balances/types";
+import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
 
 type UseBalancesProps = {
 	balanceDefs: BalanceDef[] | undefined;
@@ -53,5 +53,5 @@ export const useBalances = ({
 		[balanceDefs],
 	);
 
-	return useSyncObservable(balances$, defaultBalances);
+	return useSyncObservableWithDefault(balances$, defaultBalances);
 };

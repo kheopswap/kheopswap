@@ -1,11 +1,11 @@
 import { values } from "lodash-es";
 import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import type { Token } from "../registry/tokens/types";
 import { getTokensByChains$ } from "../services/tokens/service";
 import type { ChainTokensState } from "../services/tokens/state";
+import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];
@@ -40,9 +40,9 @@ export const useTokensByChainIds = ({
 	);
 
 	const defaultValue = useMemo(
-		() => ({ isLoading: !chainIds.length, data: {} }),
+		() => ({ isLoading: !!chainIds.length, data: {} }),
 		[chainIds],
 	);
 
-	return useSyncObservable(tokens$, defaultValue);
+	return useSyncObservableWithDefault(tokens$, defaultValue);
 };
