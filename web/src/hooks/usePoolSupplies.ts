@@ -1,8 +1,7 @@
-import { useMemo } from "react";
 import { map } from "rxjs";
 import type { TokenIdsPair } from "../registry/tokens/types";
 import { getPoolSupplies$ } from "../services/poolSupplies/service";
-import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UsePoolSuppliesProps = {
 	pairs: TokenIdsPair[] | undefined;
@@ -18,28 +17,27 @@ type UsePoolSuppliesResult = {
 	data: PoolSupplyState[];
 };
 
-export const usePoolSupplies = ({
-	pairs,
-}: UsePoolSuppliesProps): UsePoolSuppliesResult => {
-	const poolSupplies$ = useMemo(
-		() =>
-			getPoolSupplies$(pairs ?? []).pipe(
-				map((poolSupplies) => ({
+const usePoolSuppliesByPairs = bindSerialized(
+	({ pairs }: { pairs: TokenIdsPair[] }) =>
+		getPoolSupplies$(pairs).pipe(
+			map(
+				(poolSupplies): UsePoolSuppliesResult => ({
 					data: poolSupplies.map((ps) => ({
 						pair: ps.pair,
 						supply: ps.supply,
 						isLoading: ps.status !== "loaded",
 					})),
 					isLoading: poolSupplies.some((b) => b.status !== "loaded"),
-				})),
+				}),
 			),
-		[pairs],
-	);
+		),
+	({ pairs }): UsePoolSuppliesResult => ({
+		isLoading: !!pairs.length,
+		data: [],
+	}),
+);
 
-	const defaultValue = useMemo(
-		() => ({ isLoading: !!pairs?.length, data: [] }),
-		[pairs],
-	);
-
-	return useSyncObservableWithDefault(poolSupplies$, defaultValue);
-};
+export const usePoolSupplies = ({
+	pairs,
+}: UsePoolSuppliesProps): UsePoolSuppliesResult =>
+	usePoolSuppliesByPairs({ pairs: pairs ?? [] });

@@ -1,12 +1,9 @@
-import { useMemo } from "react";
-
-import { useSyncObservable } from "react-rx";
+import { bind } from "@react-rxjs/core";
 import { getTokenPrices$ } from "../state/prices";
 
-const DEFAULT_VALUE = { data: [], isLoading: true };
+const [useAllTokenPrices] = bind(() => getTokenPrices$(), {
+	data: [],
+	isLoading: true,
+});
 
-export const useTokenPrices = () => {
-	const tokenPrices$ = useMemo(() => getTokenPrices$(), []);
-
-	return useSyncObservable(tokenPrices$, DEFAULT_VALUE);
-};
+export const useTokenPrices = () => useAllTokenPrices();

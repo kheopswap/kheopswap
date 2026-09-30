@@ -122,9 +122,6 @@ importers:
       react-router:
         specifier: ^8.3.1
         version: 8.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react-rx:
-        specifier: ^7.0.0
-        version: 7.0.0(react@19.3.0)(rxjs@7.8.2)
       react-toastify:
         specifier: ^11.1.0
         version: 11.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -3989,13 +3986,6 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
-
-  react-rx@7.0.0:
-    resolution: {integrity: sha512-FJgX1VXGzbeQsH68XvaL8giJDdY5e4CVMTFLvfYtPm7XxLj9aIH4Iqgw8S7PKR7BCT03IjFYWR5zkbE/MCn2iA==}
-    engines: {node: '>=22.12'}
-    peerDependencies:
-      react: ^19.2
-      rxjs: ^7.2
 
   react-toastify@11.1.0:
     resolution: {integrity: sha512-e9h23x3phN0wbFeB6yovmWp7lobzV4CaCH0LO8nVP6H7Y+3GbcLpIzMm9dJhcp1RXbpyfvjgpfXqO80QAmn7sg==}
@@ -9068,11 +9058,6 @@ snapshots:
       react: 19.3.0
     optionalDependencies:
       react-dom: 19.3.0(react@19.3.0)
-
-  react-rx@7.0.0(react@19.3.0)(rxjs@7.8.2):
-    dependencies:
-      react: 19.3.0
-      rxjs: 7.8.2
 
   react-toastify@11.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:

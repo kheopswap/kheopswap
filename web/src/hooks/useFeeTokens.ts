@@ -1,6 +1,4 @@
 import { isEqual, values } from "lodash-es";
-import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import {
 	distinctUntilChanged,
 	map,
@@ -12,6 +10,7 @@ import {
 import type { ChainId } from "../registry/chains/types";
 import type { Token } from "../registry/tokens/types";
 import { getTokensByChain$ } from "../services/tokens/service";
+import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 
 type UseFeeTokensProps = {
@@ -24,25 +23,19 @@ type UseFeeTokensResult = {
 	data: Token[] | undefined;
 };
 
-const DEFAULT_VALUES = {
-	isLoading: true,
-	data: undefined,
-};
+const useFeeTokensByChainAndAddress = bindSerialized(
+	(chainId: ChainId | null, address: string | null) =>
+		getFeeTokens$(chainId, address).pipe(
+			map((tokens): UseFeeTokensResult => ({ isLoading: false, data: tokens })),
+		),
+	(): UseFeeTokensResult => ({ isLoading: true, data: undefined }),
+);
 
 export const useFeeTokens = ({
 	chainId,
 	address,
-}: UseFeeTokensProps): UseFeeTokensResult => {
-	const feeTokens$ = useMemo(
-		() =>
-			getFeeTokens$(chainId, address).pipe(
-				map((tokens) => ({ isLoading: false, data: tokens })),
-			),
-		[chainId, address],
-	);
-
-	return useSyncObservable(feeTokens$, DEFAULT_VALUES);
-};
+}: UseFeeTokensProps): UseFeeTokensResult =>
+	useFeeTokensByChainAndAddress(chainId ?? null, address);
 
 const getFeeTokens$ = (
 	chainId: ChainId | null | undefined,

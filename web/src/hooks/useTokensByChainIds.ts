@@ -1,11 +1,10 @@
 import { values } from "lodash-es";
-import { useMemo } from "react";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import type { Token } from "../registry/tokens/types";
 import { getTokensByChains$ } from "../services/tokens/service";
 import type { ChainTokensState } from "../services/tokens/state";
-import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UseTokensByChainIdsProps = {
 	chainIds: ChainId[];
@@ -16,33 +15,30 @@ type UseTokensByChainIdsResult = {
 	data: Record<string, Token>;
 };
 
+const useTokensByChains = bindSerialized(
+	({ chainIds }: UseTokensByChainIdsProps) =>
+		getTokensByChains$(chainIds).pipe(
+			map((tokensByChains): UseTokensByChainIdsResult => {
+				const states = values(tokensByChains).filter(
+					(v: unknown): v is ChainTokensState => !!v,
+				);
+				return {
+					isLoading: states.some(
+						(statusAndTokens) => statusAndTokens.status !== "loaded",
+					),
+					data: states
+						.map((chainTokens) => chainTokens.tokens)
+						.reduce((acc, tokens) => Object.assign(acc, tokens), {}),
+				};
+			}),
+		),
+	({ chainIds }): UseTokensByChainIdsResult => ({
+		isLoading: !!chainIds.length,
+		data: {},
+	}),
+);
+
 export const useTokensByChainIds = ({
 	chainIds,
-}: UseTokensByChainIdsProps): UseTokensByChainIdsResult => {
-	const tokens$ = useMemo(
-		() =>
-			getTokensByChains$(chainIds).pipe(
-				map((tokensByChains) => {
-					const states = values(tokensByChains).filter(
-						(v: unknown): v is ChainTokensState => !!v,
-					);
-					return {
-						isLoading: states.some(
-							(statusAndTokens) => statusAndTokens.status !== "loaded",
-						),
-						data: states
-							.map((chainTokens) => chainTokens.tokens)
-							.reduce((acc, tokens) => Object.assign(acc, tokens), {}),
-					};
-				}),
-			),
-		[chainIds],
-	);
-
-	const defaultValue = useMemo(
-		() => ({ isLoading: !!chainIds.length, data: {} }),
-		[chainIds],
-	);
-
-	return useSyncObservableWithDefault(tokens$, defaultValue);
-};
+}: UseTokensByChainIdsProps): UseTokensByChainIdsResult =>
+	useTokensByChains({ chainIds });
