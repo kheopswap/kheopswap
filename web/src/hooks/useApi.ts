@@ -1,8 +1,7 @@
-import { useMemo } from "react";
+import { bind } from "@react-rxjs/core";
 import { catchError, map, of } from "rxjs";
 import { type Api, getApi$ } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
-import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
 
 type UseApiProps<Id extends ChainId> = { chainId: Id | null | undefined };
 
@@ -12,37 +11,34 @@ type UseApiResult<Id extends ChainId> = {
 	error: unknown;
 };
 
+const [useApiByChainId] = bind(
+	(chainId: ChainId | null) =>
+		chainId
+			? getApi$(chainId).pipe(
+					map(
+						(api): UseApiResult<ChainId> => ({
+							data: api,
+							isLoading: false,
+							error: null,
+						}),
+					),
+					catchError((error) =>
+						of<UseApiResult<ChainId>>({ data: null, isLoading: false, error }),
+					),
+				)
+			: of<UseApiResult<ChainId>>({
+					data: null,
+					isLoading: false,
+					error: null,
+				}),
+	(chainId): UseApiResult<ChainId> => ({
+		data: null,
+		isLoading: !!chainId,
+		error: null,
+	}),
+);
+
 export const useApi = <Id extends ChainId>({
 	chainId,
-}: UseApiProps<Id>): UseApiResult<Id> => {
-	const api$ = useMemo(
-		() =>
-			chainId
-				? getApi$<Id>(chainId).pipe(
-						map(
-							(api): UseApiResult<Id> => ({
-								data: api,
-								isLoading: false,
-								error: null,
-							}),
-						),
-						catchError((error) =>
-							of<UseApiResult<Id>>({ data: null, isLoading: false, error }),
-						),
-					)
-				: of<UseApiResult<Id>>({ data: null, isLoading: false, error: null }),
-		[chainId],
-	);
-
-	const defaultValue = useMemo(
-		() =>
-			({
-				data: null,
-				isLoading: !!chainId,
-				error: null,
-			}) as UseApiResult<Id>,
-		[chainId],
-	);
-
-	return useSyncObservableWithDefault(api$, defaultValue);
-};
+}: UseApiProps<Id>): UseApiResult<Id> =>
+	useApiByChainId(chainId ?? null) as UseApiResult<Id>;

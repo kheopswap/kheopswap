@@ -1,8 +1,7 @@
-import { useMemo } from "react";
 import { map } from "rxjs";
 import type { TokenId, TokenInfo } from "../registry/tokens/types";
 import { getTokenInfos$ } from "../services/tokenInfos/service";
-import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UseTokenInfosProps = {
 	tokenIds: TokenId[] | undefined;
@@ -18,33 +17,25 @@ type UseTokenInfosResult = {
 	isLoading: boolean;
 };
 
-export const useTokenInfos = ({
-	tokenIds = [],
-}: UseTokenInfosProps): UseTokenInfosResult => {
-	const tokenInfos$ = useMemo(
-		() =>
-			getTokenInfos$(tokenIds).pipe(
-				map((tokenInfos) => ({
+const useTokenInfosByIds = bindSerialized(
+	({ tokenIds }: { tokenIds: TokenId[] }) =>
+		getTokenInfos$(tokenIds).pipe(
+			map(
+				(tokenInfos): UseTokenInfosResult => ({
 					data: tokenInfos.map(({ tokenInfo, status }) => ({
 						tokenInfo,
 						isLoading: status !== "loaded",
 					})),
 					isLoading: tokenInfos.some((b) => b.status !== "loaded"),
-				})),
+				}),
 			),
-		[tokenIds],
-	);
+		),
+	({ tokenIds }): UseTokenInfosResult => ({
+		data: tokenIds.map(() => ({ tokenInfo: undefined, isLoading: true })),
+		isLoading: !!tokenIds.length,
+	}),
+);
 
-	const defaultResult = useMemo(
-		() => ({
-			data: tokenIds.map(() => ({
-				tokenInfo: undefined,
-				isLoading: !!tokenIds.length,
-			})),
-			isLoading: !!tokenIds.length,
-		}),
-		[tokenIds],
-	);
-
-	return useSyncObservableWithDefault(tokenInfos$, defaultResult);
-};
+export const useTokenInfos = ({
+	tokenIds = [],
+}: UseTokenInfosProps): UseTokenInfosResult => useTokenInfosByIds({ tokenIds });

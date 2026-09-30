@@ -1,6 +1,5 @@
+import { bind } from "@react-rxjs/core";
 import { isEqual, values } from "lodash-es";
-import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import {
 	distinctUntilChanged,
 	map,
@@ -24,25 +23,19 @@ type UseFeeTokensResult = {
 	data: Token[] | undefined;
 };
 
-const DEFAULT_VALUES = {
-	isLoading: true,
-	data: undefined,
-};
+const [useFeeTokensByChainAndAddress] = bind(
+	(chainId: ChainId | null, address: string | null) =>
+		getFeeTokens$(chainId, address).pipe(
+			map((tokens): UseFeeTokensResult => ({ isLoading: false, data: tokens })),
+		),
+	{ isLoading: true, data: undefined } as UseFeeTokensResult,
+);
 
 export const useFeeTokens = ({
 	chainId,
 	address,
-}: UseFeeTokensProps): UseFeeTokensResult => {
-	const feeTokens$ = useMemo(
-		() =>
-			getFeeTokens$(chainId, address).pipe(
-				map((tokens) => ({ isLoading: false, data: tokens })),
-			),
-		[chainId, address],
-	);
-
-	return useSyncObservable(feeTokens$, DEFAULT_VALUES);
-};
+}: UseFeeTokensProps): UseFeeTokensResult =>
+	useFeeTokensByChainAndAddress(chainId ?? null, address);
 
 const getFeeTokens$ = (
 	chainId: ChainId | null | undefined,

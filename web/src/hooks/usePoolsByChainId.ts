@@ -1,9 +1,8 @@
-import { useMemo } from "react";
+import { bind } from "@react-rxjs/core";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import { getPoolsByChain$ } from "../services/pools/service";
 import type { Pool } from "../services/pools/types";
-import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
 
 type UsePoolsProps = {
 	chainId: ChainId | null | undefined;
@@ -14,24 +13,18 @@ type UsePoolsResult = {
 	data: Pool[];
 };
 
-export const usePoolsByChainId = ({
-	chainId,
-}: UsePoolsProps): UsePoolsResult => {
-	const pools$ = useMemo(
-		() =>
-			getPoolsByChain$(chainId ?? null).pipe(
-				map((statusAndPools) => ({
+const [usePoolsByChain] = bind(
+	(chainId: ChainId | null) =>
+		getPoolsByChain$(chainId).pipe(
+			map(
+				(statusAndPools): UsePoolsResult => ({
 					isLoading: statusAndPools.status !== "loaded",
 					data: statusAndPools.pools,
-				})),
+				}),
 			),
-		[chainId],
-	);
+		),
+	(chainId): UsePoolsResult => ({ isLoading: !!chainId, data: [] }),
+);
 
-	const defaultValue = useMemo(
-		() => ({ isLoading: !!chainId, data: [] }),
-		[chainId],
-	);
-
-	return useSyncObservableWithDefault(pools$, defaultValue);
-};
+export const usePoolsByChainId = ({ chainId }: UsePoolsProps): UsePoolsResult =>
+	usePoolsByChain(chainId ?? null);

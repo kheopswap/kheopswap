@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import {
 	combineLatest,
 	map,
@@ -14,6 +12,7 @@ import type { Token, TokenId } from "../registry/tokens/types";
 import { getBalance$ } from "../services/balances/service";
 import { getStablePlancks$ } from "../state/prices";
 import type { AccountBalanceWithStable } from "../types/balances";
+import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 
 type UseAccountBalancesWithStablesProps = {
@@ -47,21 +46,28 @@ const getBalanceWithStable$ = (
 	);
 };
 
-const DEFAULT_VALUE = { data: [], isLoading: true };
+type UseBalancesWithStablesResult = {
+	data: AccountBalanceWithStable[];
+	isLoading: boolean;
+};
 
-export const useBalancesWithStables = ({
-	tokens,
-	accounts,
-}: UseAccountBalancesWithStablesProps) => {
-	const obs = useMemo(() => {
-		if (!tokens?.length || !accounts?.length) return of(DEFAULT_VALUE);
+const DEFAULT_VALUE: UseBalancesWithStablesResult = {
+	data: [],
+	isLoading: true,
+};
 
-		const observables = (tokens ?? []).flatMap((token) =>
-			(accounts ?? []).map((acc) => {
-				const address = typeof acc === "string" ? acc : acc.address;
-				const tokenId = typeof token === "string" ? token : token.id;
-				return getBalanceWithStable$(tokenId, address);
-			}),
+const useBalancesWithStablesByIds = bindSerialized(
+	({
+		tokenIds,
+		addresses,
+	}: {
+		tokenIds: TokenId[];
+		addresses: string[];
+	}): Observable<UseBalancesWithStablesResult> => {
+		if (!tokenIds.length || !addresses.length) return of(DEFAULT_VALUE);
+
+		const observables = tokenIds.flatMap((tokenId) =>
+			addresses.map((address) => getBalanceWithStable$(tokenId, address)),
 		);
 
 		return combineLatest(observables).pipe(
@@ -74,7 +80,19 @@ export const useBalancesWithStables = ({
 				),
 			})),
 		);
-	}, [accounts, tokens]);
+	},
+	() => DEFAULT_VALUE,
+);
 
-	return useSyncObservable(obs, DEFAULT_VALUE);
-};
+export const useBalancesWithStables = ({
+	tokens,
+	accounts,
+}: UseAccountBalancesWithStablesProps) =>
+	useBalancesWithStablesByIds({
+		tokenIds: (tokens ?? []).map((token) =>
+			typeof token === "string" ? token : token.id,
+		),
+		addresses: (accounts ?? []).map((acc) =>
+			typeof acc === "string" ? acc : acc.address,
+		),
+	});

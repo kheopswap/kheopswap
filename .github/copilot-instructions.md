@@ -40,26 +40,24 @@ export const getBalance$ = (def: BalanceDef) =>
 export const [SwapProvider, useSwap] = provideContext(useSwapProvider);
 ```
 
-**Reactive Convention — `bind()` vs `useObservable()`**
+**Reactive Convention — `bind()` (`@react-rxjs/core`)**
 
-Two reactive bridges coexist with clear, distinct roles:
+`bind()` is the only React bridge for observables:
 
-- **`bind()` (`@react-rxjs/core`)** — Use for **global/singleton derived state** where the observable is static and shared across the entire app. Returns a `[useHook, observable$]` tuple that auto-subscribes via the root `<Subscribe>` boundary. Used in `state/`, `hooks/useSetting`, `hooks/useLoadingStatusSummary`, and layout components.
+- **Singleton derived state** — bind the observable directly. Used in `state/`, `hooks/useSetting`, `hooks/useLoadingStatusSummary`, and layout components.
 
   ```typescript
-  // Good: static derived observable, used globally
   export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...));
   ```
 
-- **`useObservable()` (`react-rx`)** — Use for **parameterized/dynamic subscriptions** where the observable is constructed per-call from hook arguments (e.g., token IDs, chain IDs). This is the dominant pattern in `hooks/`.
+- **Parameterized subscriptions** — bind a factory at module level, with a default value (possibly derived from the args) so the hook never suspends. `bind` caches by argument identity: pass primitives (`x ?? null`), and use `bindSerialized` (`utils/bindSerialized`) when the args are arrays or objects.
 
   ```typescript
-  // Good: observable depends on parameters passed to the hook
-  import { useObservable } from "react-rx";
-  const token = useObservable(token$(tokenId), defaultValue);
+  const [usePoolsByChain] = bind(
+    (chainId: ChainId | null) => getPoolsByChain$(chainId).pipe(...),
+    (chainId) => ({ isLoading: !!chainId, data: [] }),
+  );
   ```
-
-**Rule of thumb:** If the observable takes parameters → `useObservable()`. If it's a singleton derived stream → `bind()`.
 
 **Chain Types** - All supported chains are Asset Hubs (pah, kah, wah, pasah):
 

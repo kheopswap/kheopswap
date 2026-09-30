@@ -1,9 +1,8 @@
-import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
 import { map, type Observable, switchMap } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
 import { getAssetConvertMulti$ } from "../state/convert";
 import { stableToken$ } from "../state/relay";
+import { bindSerialized } from "../utils/bindSerialized";
 import { getAssetHubMirrorTokenId } from "../utils/getAssetHubMirrorTokenId";
 
 type UseStablePlancksProps = {
@@ -37,12 +36,14 @@ const getStablePlancksMulti$ = (
 	);
 };
 
-const DEFAULT_VALUE = { isLoading: true, data: [] };
+const useStablePlancksByInputs = bindSerialized(
+	({ inputs }: UseStablePlancksProps) => getStablePlancksMulti$(inputs),
+	(): UseStablePlancksResult => ({ isLoading: true, data: [] }),
+);
 
 export const useStablePlancksMulti = ({
 	inputs,
-}: UseStablePlancksProps): UseStablePlancksResult => {
-	const obs = useMemo(() => getStablePlancksMulti$(inputs), [inputs]);
-
-	return useSyncObservable(obs, DEFAULT_VALUE);
-};
+}: UseStablePlancksProps): UseStablePlancksResult =>
+	useStablePlancksByInputs({
+		inputs: inputs.map(({ tokenId, plancks }) => ({ tokenId, plancks })),
+	});
