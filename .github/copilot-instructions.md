@@ -40,9 +40,9 @@ export const getBalance$ = (def: BalanceDef) =>
 export const [SwapProvider, useSwap] = provideContext(useSwapProvider);
 ```
 
-**Reactive Convention — `bind()` (`@react-rxjs/core`)**
+**Reactive Convention — `@react-rxjs/core`**
 
-`bind()` is the only React bridge for observables:
+Observables reach React through `@react-rxjs/core` only:
 
 - **Singleton derived state** — bind the observable directly. Used in `state/`, `hooks/useSetting`, `hooks/useLoadingStatusSummary`, and layout components.
 
@@ -50,10 +50,10 @@ export const [SwapProvider, useSwap] = provideContext(useSwapProvider);
   export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...));
   ```
 
-- **Parameterized subscriptions** — bind a factory at module level, with a default value (possibly derived from the args) so the hook never suspends. `bind` caches by argument identity: pass primitives (`x ?? null`), and use `bindSerialized` (`utils/bindSerialized`) when the args are arrays or objects.
+- **Parameterized subscriptions** — use `bindSerialized` (`utils/bindSerialized`) at module level, with a default value factory (possibly derived from the args) so the hook never suspends. It caches by serialized args, so arrays and objects are safe, and evicts entries that end up with no subscribers. Avoid `bind` factories for open-ended args: their cache never evicts entries created by renders that don't commit.
 
   ```typescript
-  const [usePoolsByChain] = bind(
+  const usePoolsByChain = bindSerialized(
     (chainId: ChainId | null) => getPoolsByChain$(chainId).pipe(...),
     (chainId) => ({ isLoading: !!chainId, data: [] }),
   );

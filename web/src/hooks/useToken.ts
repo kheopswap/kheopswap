@@ -1,7 +1,7 @@
-import { bind } from "@react-rxjs/core";
 import { map, of } from "rxjs";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { getTokenById$ } from "../services/tokens/service";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UseTokenProps = {
 	tokenId: TokenId | null | undefined;
@@ -12,7 +12,7 @@ type UseTokenResult = {
 	isLoading: boolean;
 };
 
-const [useTokenById] = bind(
+const useTokenById = bindSerialized(
 	(tokenId: TokenId | null) =>
 		tokenId
 			? getTokenById$(tokenId).pipe(

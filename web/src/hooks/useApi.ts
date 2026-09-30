@@ -1,7 +1,7 @@
-import { bind } from "@react-rxjs/core";
 import { catchError, map, of } from "rxjs";
 import { type Api, getApi$ } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UseApiProps<Id extends ChainId> = { chainId: Id | null | undefined };
 
@@ -11,7 +11,7 @@ type UseApiResult<Id extends ChainId> = {
 	error: unknown;
 };
 
-const [useApiByChainId] = bind(
+const useApiByChainId = bindSerialized(
 	(chainId: ChainId | null) =>
 		chainId
 			? getApi$(chainId).pipe(

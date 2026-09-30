@@ -1,8 +1,8 @@
-import { bind } from "@react-rxjs/core";
 import type { SS58String } from "polkadot-api";
 import { catchError, map, type Observable, of } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import { getResolvedSubstrateAddress$ } from "../services/addressResolution/service";
+import { bindSerialized } from "../utils/bindSerialized";
 import { isEthereumAddress } from "../utils/ethereumAddress";
 
 type UseResolvedSubstrateAddressProps = {
@@ -40,7 +40,7 @@ const getResolvedAddress$ = (
 	);
 };
 
-const [useResolvedAddress] = bind(
+const useResolvedAddress = bindSerialized(
 	getResolvedAddress$,
 	(address, chainId): UseResolvedSubstrateAddressResult => ({
 		resolvedAddress: null,

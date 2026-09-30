@@ -1,8 +1,8 @@
-import { bind } from "@react-rxjs/core";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import { getPoolsByChain$ } from "../services/pools/service";
 import type { Pool } from "../services/pools/types";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UsePoolsProps = {
 	chainId: ChainId | null | undefined;
@@ -13,7 +13,7 @@ type UsePoolsResult = {
 	data: Pool[];
 };
 
-const [usePoolsByChain] = bind(
+const usePoolsByChain = bindSerialized(
 	(chainId: ChainId | null) =>
 		getPoolsByChain$(chainId).pipe(
 			map(

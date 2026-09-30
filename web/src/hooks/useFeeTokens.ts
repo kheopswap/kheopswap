@@ -1,4 +1,3 @@
-import { bind } from "@react-rxjs/core";
 import { isEqual, values } from "lodash-es";
 import {
 	distinctUntilChanged,
@@ -11,6 +10,7 @@ import {
 import type { ChainId } from "../registry/chains/types";
 import type { Token } from "../registry/tokens/types";
 import { getTokensByChain$ } from "../services/tokens/service";
+import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 
 type UseFeeTokensProps = {
@@ -23,12 +23,12 @@ type UseFeeTokensResult = {
 	data: Token[] | undefined;
 };
 
-const [useFeeTokensByChainAndAddress] = bind(
+const useFeeTokensByChainAndAddress = bindSerialized(
 	(chainId: ChainId | null, address: string | null) =>
 		getFeeTokens$(chainId, address).pipe(
 			map((tokens): UseFeeTokensResult => ({ isLoading: false, data: tokens })),
 		),
-	{ isLoading: true, data: undefined } as UseFeeTokensResult,
+	(): UseFeeTokensResult => ({ isLoading: true, data: undefined }),
 );
 
 export const useFeeTokens = ({

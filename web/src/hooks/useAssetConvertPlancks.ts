@@ -1,4 +1,3 @@
-import { bind } from "@react-rxjs/core";
 import {
 	combineLatest,
 	map,
@@ -10,6 +9,7 @@ import {
 import type { Token, TokenId } from "../registry/tokens/types";
 import { getTokenById$ } from "../services/tokens/service";
 import { getAssetConvert$ } from "../state/convert";
+import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 import { isBigInt } from "../utils/isBigInt";
 import { plancksToTokens } from "../utils/plancks";
@@ -35,19 +35,19 @@ type UseAssetConvertPriceResult = AssetConvertTokens & {
 	isLoading: boolean;
 };
 
-const [useAssetConvertPlancksByArgs] = bind(
+const useAssetConvertPlancksByArgs = bindSerialized(
 	(
 		tokenIdIn: TokenId | null,
 		tokenIdOut: TokenId | null,
 		plancks: bigint | null,
 	): Observable<UseAssetConvertPlancksResult> =>
 		getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks),
-	{
+	(): UseAssetConvertPlancksResult => ({
 		plancksOut: undefined,
 		isLoading: true,
 		tokenIn: undefined,
 		tokenOut: undefined,
-	} as UseAssetConvertPlancksResult,
+	}),
 );
 
 export const useAssetConvertPlancks = ({
@@ -61,19 +61,19 @@ export const useAssetConvertPlancks = ({
 		plancks ?? null,
 	);
 
-const [useAssetConvertPriceByArgs] = bind(
+const useAssetConvertPriceByArgs = bindSerialized(
 	(
 		tokenIdIn: TokenId | null,
 		tokenIdOut: TokenId | null,
 		plancks: bigint | null,
 	): Observable<UseAssetConvertPriceResult> =>
 		getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
-	{
+	(): UseAssetConvertPriceResult => ({
 		price: undefined,
 		isLoading: true,
 		tokenIn: undefined,
 		tokenOut: undefined,
-	} as UseAssetConvertPriceResult,
+	}),
 );
 
 export const useAssetConvertPrice = ({

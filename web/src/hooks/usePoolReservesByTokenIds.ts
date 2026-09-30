@@ -1,7 +1,7 @@
-import { bind } from "@react-rxjs/core";
 import { map } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
 import { getPoolReserves$ } from "../services/pools/reserves";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UsePoolReservesByTokenIdsProps = {
 	tokenId1: TokenId | null | undefined;
@@ -13,7 +13,7 @@ type UsePoolReservesByTokenIdsResult = {
 	isLoading: boolean;
 };
 
-const [usePoolReserves] = bind(
+const usePoolReserves = bindSerialized(
 	(tokenId1: TokenId | null, tokenId2: TokenId | null) =>
 		getPoolReserves$(tokenId1, tokenId2).pipe(
 			map(
@@ -23,7 +23,7 @@ const [usePoolReserves] = bind(
 				}),
 			),
 		),
-	{ data: undefined, isLoading: true } as UsePoolReservesByTokenIdsResult,
+	(): UsePoolReservesByTokenIdsResult => ({ data: undefined, isLoading: true }),
 );
 
 export const usePoolReservesByTokenIds = ({
