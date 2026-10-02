@@ -15,6 +15,8 @@ pnpm install
 pnpm dev
 ```
 
+A daily workflow runs `pnpm papi update` and opens a PR when a supported chain has a runtime upgrade. It needs a `RUNTIME_UPGRADE_TOKEN` secret, a fine-grained PAT with contents and pull requests write access, because a PR opened with `GITHUB_TOKEN` does not trigger CI.
+
 ## Coding agents
 
 Project instructions for coding agents live in [`AGENTS.md`](AGENTS.md).

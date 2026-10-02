@@ -1,0 +1,71 @@
+name: Runtime Upgrade
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: runtime-upgrade
+  cancel-in-progress: false
+
+env:
+  BRANCH: runtime-upgrade
+  # PRs opened with GITHUB_TOKEN don't trigger the pull_request CI, so this needs a PAT
+  GH_TOKEN: ${{ secrets.RUNTIME_UPGRADE_TOKEN }}
+
+jobs:
+  runtime-upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.RUNTIME_UPGRADE_TOKEN }}
+
+      # an open PR may already carry manual fixes, a new upgrade must not overwrite them
+      - name: Skip if a PR is already open
+        id: open-pr
+        run: |
+          count=$(gh pr list --head "$BRANCH" --state open --json number --jq length)
+          [ "$count" = "0" ] || echo "exists=true" >> "$GITHUB_OUTPUT"
+
+      - name: Install pnpm
+        if: steps.open-pr.outputs.exists != 'true'
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js
+        if: steps.open-pr.outputs.exists != 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: ".node-version"
+          cache: "pnpm"
+
+      # descriptors aren't needed to fetch metadata, so skip the postinstall codegen
+      - name: Install dependencies
+        if: steps.open-pr.outputs.exists != 'true'
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Update metadata
+        if: steps.open-pr.outputs.exists != 'true'
+        run: pnpm papi update --skip-codegen
+
+      - name: List upgraded chains
+        if: steps.open-pr.outputs.exists != 'true'
+        id: chains
+        run: |
+          chains=$(git diff --name-only -- .papi/scale | xargs -r -n1 basename -s .scale | paste -sd, - | sed 's/,/, /g')
+          echo "list=$chains" >> "$GITHUB_OUTPUT"
+
+      - name: Open PR
+        if: steps.chains.outputs.list != ''
+        env:
+          CHAINS: ${{ steps.chains.outputs.list }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git add .papi/polkadot-api.json .papi/scale
+          git commit -m "⬆️ update descriptors"
+          git push --force origin "$BRANCH"
+          gh pr create --head "$BRANCH" --title "⬆️ runtime upgrade: $CHAINS" --body "Runtime upgraded on $CHAINS. Metadata refreshed with \`pnpm papi update\`."
