@@ -30,3 +30,6 @@ zombienet-linux-x64
 zombienet.log
 zombienet/bin/*
 !zombienet/bin/README.md
+# verify skill run state and proof artifacts
+.claude/skills/verify/.run/
+.claude/skills/verify/artifacts/
