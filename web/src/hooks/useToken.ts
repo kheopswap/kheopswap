@@ -1,9 +1,7 @@
-import { useMemo } from "react";
 import { map, of } from "rxjs";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { getTokenById$ } from "../services/tokens/service";
-import { getCachedObservable$ } from "../utils/getCachedObservable";
-import { useSyncObservableWithDefault } from "./useSyncObservableWithDefault";
+import { bindSerialized } from "../utils/bindSerialized";
 
 type UseTokenProps = {
 	tokenId: TokenId | null | undefined;
@@ -14,26 +12,20 @@ type UseTokenResult = {
 	isLoading: boolean;
 };
 
-export const useToken = ({ tokenId }: UseTokenProps): UseTokenResult => {
-	const token$ = useMemo(
-		() =>
-			getCachedObservable$("getToken$", tokenId ?? "null", () =>
-				tokenId
-					? getTokenById$(tokenId).pipe(
-							map(({ token, status }) => ({
-								data: token ?? null,
-								isLoading: status !== "loaded",
-							})),
-						)
-					: of({ data: null, isLoading: false }),
-			),
-		[tokenId],
-	);
+const useTokenById = bindSerialized(
+	(tokenId: TokenId | null) =>
+		tokenId
+			? getTokenById$(tokenId).pipe(
+					map(
+						({ token, status }): UseTokenResult => ({
+							data: token ?? null,
+							isLoading: status !== "loaded",
+						}),
+					),
+				)
+			: of<UseTokenResult>({ data: null, isLoading: false }),
+	(tokenId): UseTokenResult => ({ data: null, isLoading: !!tokenId }),
+);
 
-	const defaultValue = useMemo(
-		() => ({ data: null, isLoading: !!tokenId }),
-		[tokenId],
-	);
-
-	return useSyncObservableWithDefault(token$, defaultValue);
-};
+export const useToken = ({ tokenId }: UseTokenProps): UseTokenResult =>
+	useTokenById(tokenId ?? null);

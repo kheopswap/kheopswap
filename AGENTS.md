@@ -28,10 +28,10 @@ Update this file and `README.md` when your change makes them wrong.
 
 Services expose observables suffixed with `$`. Wrap shared streams in `getCachedObservable$` so subscribers share one source.
 
-Observables reach React in two ways:
+Observables reach React through `@react-rxjs/core` only:
 
-- Singleton derived streams use `bind()` from `@react-rxjs/core`: `export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...))`.
-- Streams built from hook arguments (token ids, chain ids) use `useObservable(stream$, defaultValue)` from `react-rx`.
+- Singleton derived streams use `bind()`: `export const [useAssetHubChains, assetHubChains$] = bind(relayId$.pipe(...))`.
+- Streams built from hook arguments (token ids, chain ids) use `bindSerialized(getObservable, getDefaultValue)` from `web/src/utils/bindSerialized.ts`, declared at module level. It caches by serialized args and evicts unused entries, and the default value keeps the hook from suspending. Avoid `bind()` factories for open-ended args: their cache never evicts.
 
 Async values are `{ isLoading, data }`. Render both states.
 

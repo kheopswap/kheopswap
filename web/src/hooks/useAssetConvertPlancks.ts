@@ -1,9 +1,15 @@
-import { useMemo } from "react";
-import { useSyncObservable } from "react-rx";
-import { combineLatest, map, of, shareReplay, switchMap } from "rxjs";
-import type { TokenId } from "../registry/tokens/types";
+import {
+	combineLatest,
+	map,
+	type Observable,
+	of,
+	shareReplay,
+	switchMap,
+} from "rxjs";
+import type { Token, TokenId } from "../registry/tokens/types";
 import { getTokenById$ } from "../services/tokens/service";
 import { getAssetConvert$ } from "../state/convert";
+import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 import { isBigInt } from "../utils/isBigInt";
 import { plancksToTokens } from "../utils/plancks";
@@ -14,45 +20,72 @@ type UseAssetConvertPlancks = {
 	plancks: bigint | null | undefined;
 };
 
-const DEFAULT_VALUE_PLANCKS = {
-	plancksOut: undefined,
-	isLoading: true,
-	tokenIn: undefined,
-	tokenOut: undefined,
+type AssetConvertTokens = {
+	tokenIn: Token | null | undefined;
+	tokenOut: Token | null | undefined;
 };
+
+type UseAssetConvertPlancksResult = AssetConvertTokens & {
+	plancksOut: bigint | null | undefined;
+	isLoading: boolean;
+};
+
+type UseAssetConvertPriceResult = AssetConvertTokens & {
+	price: string | undefined;
+	isLoading: boolean;
+};
+
+const useAssetConvertPlancksByArgs = bindSerialized(
+	(
+		tokenIdIn: TokenId | null,
+		tokenIdOut: TokenId | null,
+		plancks: bigint | null,
+	): Observable<UseAssetConvertPlancksResult> =>
+		getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks),
+	(): UseAssetConvertPlancksResult => ({
+		plancksOut: undefined,
+		isLoading: true,
+		tokenIn: undefined,
+		tokenOut: undefined,
+	}),
+);
 
 export const useAssetConvertPlancks = ({
 	tokenIdIn,
 	tokenIdOut,
 	plancks,
-}: UseAssetConvertPlancks) => {
-	const obs = useMemo(
-		() => getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks),
-		[tokenIdIn, tokenIdOut, plancks],
+}: UseAssetConvertPlancks) =>
+	useAssetConvertPlancksByArgs(
+		tokenIdIn ?? null,
+		tokenIdOut ?? null,
+		plancks ?? null,
 	);
 
-	return useSyncObservable(obs, DEFAULT_VALUE_PLANCKS);
-};
-
-const DEFAULT_VALUE_PRICE = {
-	price: undefined,
-	isLoading: true,
-	tokenIn: undefined,
-	tokenOut: undefined,
-};
+const useAssetConvertPriceByArgs = bindSerialized(
+	(
+		tokenIdIn: TokenId | null,
+		tokenIdOut: TokenId | null,
+		plancks: bigint | null,
+	): Observable<UseAssetConvertPriceResult> =>
+		getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
+	(): UseAssetConvertPriceResult => ({
+		price: undefined,
+		isLoading: true,
+		tokenIn: undefined,
+		tokenOut: undefined,
+	}),
+);
 
 export const useAssetConvertPrice = ({
 	tokenIdIn,
 	tokenIdOut,
 	plancks,
-}: UseAssetConvertPlancks) => {
-	const obs = useMemo(
-		() => getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
-		[tokenIdIn, tokenIdOut, plancks],
+}: UseAssetConvertPlancks) =>
+	useAssetConvertPriceByArgs(
+		tokenIdIn ?? null,
+		tokenIdOut ?? null,
+		plancks ?? null,
 	);
-
-	return useSyncObservable(obs, DEFAULT_VALUE_PRICE);
-};
 
 const NO_TOKEN_RESULT = { token: null, status: "loaded" };
 
