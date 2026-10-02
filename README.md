@@ -15,6 +15,26 @@ pnpm install
 pnpm dev
 ```
 
+## Coding agents
+
+Project instructions for coding agents live in [`AGENTS.md`](AGENTS.md).
+
+Maintainers work with [pstack](https://github.com/michael-denyer/pstack-claude). In Claude Code:
+
+```text
+/plugin marketplace add michael-denyer/pstack-claude
+/plugin install pstack@pstack-claude
+```
+
+In Codex:
+
+```bash
+codex plugin marketplace add michael-denyer/pstack-claude
+codex plugin add pstack@pstack-claude
+```
+
+Other harnesses can follow pstack's [shared skills installation](https://github.com/michael-denyer/pstack-claude/blob/main/docs/reference.md#shared-skills-installation).
+
 ## Token registry maintenance
 
 Token snapshots are maintained by `pnpm fetch-tokens` (locally) and by the scheduled CI workflow.
