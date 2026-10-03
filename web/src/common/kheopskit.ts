@@ -9,15 +9,16 @@ import { ethereum } from "@kheopskit/core/ethereum";
 import { polkadot } from "@kheopskit/core/polkadot";
 import { createKheopskit } from "@kheopskit/react";
 import { defineChain } from "@reown/appkit/networks";
+import { getChainById } from "../registry/chains/chains";
+import type { ChainId } from "../registry/chains/types";
 import { WALLET_CONNECT_PROJECT_ID } from "./constants";
 
 type SubstrateNetworkInput = {
 	id: string;
+	chainId: ChainId;
 	name: string;
 	symbol: string;
 	decimals: number;
-	http: string[];
-	webSocket: string[];
 };
 
 type EthereumNetworkInput = {
@@ -30,13 +31,15 @@ type EthereumNetworkInput = {
 
 const defineSubstrateNetwork = ({
 	id,
+	chainId,
 	name,
 	symbol,
 	decimals,
-	http,
-	webSocket,
-}: SubstrateNetworkInput) =>
-	defineChain({
+}: SubstrateNetworkInput) => {
+	const webSocket = getChainById(chainId).wsUrl;
+	const http = webSocket.map((url) => url.replace(/^wss:/, "https:"));
+
+	return defineChain({
 		id,
 		name,
 		nativeCurrency: { name, symbol, decimals },
@@ -49,6 +52,7 @@ const defineSubstrateNetwork = ({
 		chainNamespace: "polkadot",
 		caipNetworkId: `polkadot:${id}`,
 	});
+};
 
 const defineEthereumNetwork = ({
 	id,
@@ -72,38 +76,34 @@ const defineEthereumNetwork = ({
 
 const polkadotAssetHub = defineSubstrateNetwork({
 	id: "68d56f15f85d3136970ec16946040bc1",
+	chainId: "pah",
 	name: "Polkadot Asset Hub",
 	symbol: "DOT",
 	decimals: 10,
-	http: ["https://polkadot-asset-hub-rpc.polkadot.io"],
-	webSocket: ["wss://polkadot-asset-hub-rpc.polkadot.io"],
 });
 
 const kusamaAssetHub = defineSubstrateNetwork({
 	id: "48239ef607d7928874027a43a6768920",
+	chainId: "kah",
 	name: "Kusama Asset Hub",
 	symbol: "KSM",
 	decimals: 12,
-	http: ["https://kusama-asset-hub-rpc.polkadot.io"],
-	webSocket: ["wss://kusama-asset-hub-rpc.polkadot.io"],
 });
 
 const westendAssetHub = defineSubstrateNetwork({
 	id: "67f9723393ef76214df0118c34bbbd3d",
+	chainId: "wah",
 	name: "Westend Asset Hub",
 	symbol: "WND",
 	decimals: 12,
-	http: ["https://westend-asset-hub-rpc.polkadot.io"],
-	webSocket: ["wss://westend-asset-hub-rpc.polkadot.io"],
 });
 
 const paseoAssetHub = defineSubstrateNetwork({
 	id: "d6eec26135305a8ad257a20d00335728",
+	chainId: "pasah",
 	name: "Paseo Asset Hub",
 	symbol: "PAS",
 	decimals: 10,
-	http: ["https://sys.turboflakes.io/asset-hub-paseo"],
-	webSocket: ["wss://sys.turboflakes.io/asset-hub-paseo"],
 });
 
 const polkadotAssetHubEvm = defineEthereumNetwork({

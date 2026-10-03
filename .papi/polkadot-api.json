@@ -3,13 +3,13 @@
   "descriptorPath": ".papi/descriptors",
   "entries": {
     "pah": {
-      "wsUrl": "wss://rpc-asset-hub-polkadot.luckyfriday.io",
+      "wsUrl": "wss://dot-rpc.stakeworld.io/assethub",
       "metadata": ".papi/scale/pah.scale",
       "genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
       "codeHash": "0xd8c8c132cd1f51504af2cd45c8dd7c5565dff0a4e9d7fde72daa8975c58ef961"
     },
     "kah": {
-      "wsUrl": "wss://kusama-asset-hub-rpc.polkadot.io",
+      "wsUrl": "wss://rpc-asset-hub-kusama.luckyfriday.io",
       "metadata": ".papi/scale/kah.scale",
       "genesis": "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a",
       "codeHash": "0x7619228ef8715fd44c26d1e3b69cc3d32bb621932dc66832eeedfb1e4ea09fcd"
