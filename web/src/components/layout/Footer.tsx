@@ -15,20 +15,20 @@ const LoadingStatus = () => {
 
 export const Footer = () => {
 	return (
-		<div className="flex w-full items-center justify-between gap-6 bg-black/20 px-4 py-3 text-xs text-neutral-300 sm:px-6">
+		<div className="flex w-full flex-col items-center gap-3 border-t border-line px-6 py-5 text-center font-mono text-xs text-muted sm:flex-row sm:justify-between sm:gap-6 sm:text-left">
 			<div>
 				<ErrorBoundary fallback={null}>
 					<ChainBlockNumbers />
 				</ErrorBoundary>
 			</div>
-			<div className="hidden flex-col items-center gap-1 text-center text-xs text-neutral-500 sm:flex">
+			<div className="flex flex-col items-center gap-1 text-center">
 				<div>
 					Powered by{" "}
 					<a
 						href="https://papi.how"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="hover:text-neutral-300"
+						className="hover:text-text"
 					>
 						polkadot-api
 					</a>{" "}
@@ -37,7 +37,7 @@ export const Footer = () => {
 						href="https://github.com/kheopskit/kheopskit"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="hover:text-neutral-300"
+						className="hover:text-text"
 					>
 						kheopskit
 					</a>
@@ -49,28 +49,28 @@ export const Footer = () => {
 					href="https://x.com/kheopswap"
 					target="_blank"
 					rel="noopener noreferrer"
-					className="text-neutral-400 hover:text-neutral-300"
+					className="hover:text-text"
 					title="Follow us on X.com"
 				>
-					<XDotComIcon className="inline-block size-6 fill-transparent opacity-80 hover:opacity-100" />
+					<XDotComIcon className="inline-block size-5" />
 				</a>
 				<a
 					href="https://discord.gg/JCVsDuwbzt"
 					target="_blank"
 					rel="noopener noreferrer"
-					className="text-neutral-400"
+					className="hover:text-text"
 					title="Join us on Discord"
 				>
-					<DiscordIcon className="inline-block size-6 fill-neutral-400 opacity-50 hover:opacity-70" />
+					<DiscordIcon className="inline-block size-5" />
 				</a>
 				<a
 					href="https://github.com/kheopswap/kheopswap"
 					target="_blank"
 					rel="noopener noreferrer"
-					className="text-neutral-400"
+					className="hover:text-text"
 					title="Kheopswap GitHub repository"
 				>
-					<GitHubIcon className="inline-block size-6 fill-neutral-400 opacity-50 hover:opacity-70" />
+					<GitHubIcon className="inline-block size-5" />
 				</a>
 			</div>
 		</div>

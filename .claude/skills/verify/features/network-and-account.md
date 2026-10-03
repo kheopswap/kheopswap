@@ -4,15 +4,15 @@ The header lets a user switch between the four Asset Hubs and manage wallet conn
 
 ## Sub-features
 
-- `network-switch`: `Chain` opens `Select network`, with `Polkadot Asset Hub`, `Kusama Asset Hub`, `Westend Asset Hub`, and `Paseo Asset Hub`. Picking one rewrites the route's relay segment.
+- `network-switch`: the header's network button (`Network: <name>`, showing the chain logo and a short name such as `Paseo`) opens `Select network`, with `Polkadot Asset Hub`, `Kusama Asset Hub`, `Westend Asset Hub`, and `Paseo Asset Hub`. Picking one rewrites the route's relay segment.
 - `light-clients`: the `Connect via light clients` switch in `Select network`. It is disabled locally, where the drawer reads `Light clients are temporarily disabled.`
-- `wallet-connect`: `Connect wallet` opens the wallet drawer, with `Installed wallets` and `External wallets`.
+- `wallet-connect`: the header's wallet button opens the wallet drawer. It reads `Connect` (accessible name `Connect wallet`) with no accounts, and shows the wallet icons and `<n> accounts` (accessible name `Wallet: <n> connected`) once connected. The drawer has with `Installed wallets` and `External wallets`.
 - `account-select`: a form's `Account`, `From`, or `To` field opens `Select account`, with `Connected Accounts` and their balances.
 - `chain-status`: the footer shows `Best: <n>`, `Finalized: <n>`, and `<x>/<y> active subscriptions`.
 
 ## How to get to it (user POV)
 
-- Use the `Chain` and `Connect wallet` buttons in the header, on every page.
+- Use the `Network` and wallet buttons in the header, on every page. The header also has a `Switch to light mode` / `Switch to dark mode` button.
 - Use the account field on the Swap, Transfer, and pool pages.
 - Change the relay segment of the URL: `#/polkadot/...`, `#/kusama/...`, `#/westend/...`, or `#/paseo/...`.
 
@@ -25,7 +25,7 @@ Preconditions:
 Steps:
 
 - **Switch network.** Run:
-  - `agent-browser find role button click --name "Chain"`
+  - `agent-browser find role button click --name "Network"`
   - `agent-browser wait --text "Select network"`
   - `agent-browser find role button click --name "Paseo Asset Hub"`
   - `agent-browser wait --url "**/paseo/**"`
@@ -41,3 +41,4 @@ Steps:
 - `http://localhost:5173/` always redirects to `#/polkadot/swap`, which is mainnet. Open `#/paseo/...` explicitly.
 - The dev Chrome profile is already connected. Don't disconnect wallets: reconnecting needs the popup, and possibly the user to unlock Talisman.
 - `talisman.mjs` exit 3 means Talisman is locked. Stop and ask the user.
+- The header wallet button's accessible name deliberately avoids the word "account", so `--name "Account"` still reaches the form's account field. Open the header drawer with `--name "wallet"`, which matches both of its states.

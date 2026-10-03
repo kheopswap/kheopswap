@@ -6,13 +6,11 @@ import { Transfer } from "../features/transfer/Transfer";
 
 export const TransferPage = () => (
 	<Layout>
-		<div className="p-2">
-			<PageContent>
-				<ErrorBoundary>
-					<Transfer />
-				</ErrorBoundary>
-			</PageContent>
-		</div>
+		<PageContent>
+			<ErrorBoundary>
+				<Transfer />
+			</ErrorBoundary>
+		</PageContent>
 		<TabTitle title="Transfer" />
 	</Layout>
 );

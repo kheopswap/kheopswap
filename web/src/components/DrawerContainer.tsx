@@ -21,29 +21,31 @@ export const DrawerContainer: FC<{
 	return (
 		<div
 			className={cn(
-				"flex h-full w-96 max-w-full flex-col bg-neutral-900",
+				"flex h-full w-[min(420px,100vw)] flex-col border-l border-line bg-drawer",
 				className,
 			)}
 		>
 			<div
 				className={cn(
-					"flex h-10 shrink-0 items-center justify-between bg-black px-3 font-bold",
+					"flex h-16 shrink-0 items-center justify-between gap-2 border-b border-line pr-3 pl-5",
 					headerClassName,
 				)}
 			>
-				<Dialog.Title className="text-base font-bold">{title}</Dialog.Title>
+				<Dialog.Title className="text-[17px] font-semibold">
+					{title}
+				</Dialog.Title>
 				{onClose && (
 					<Dialog.Close
 						aria-label="Close"
-						className="rounded-xs outline-white ring-white focus:outline-hidden focus-visible:ring-1"
+						className="grid size-9 place-items-center rounded-chip text-muted hover:bg-hover hover:text-text"
 					>
-						<CloseIcon className="size-5 fill-white" />
+						<CloseIcon className="size-4.5 fill-current" />
 					</Dialog.Close>
 				)}
 			</div>
 			<div
 				className={cn(
-					"flex grow flex-col gap-4 overflow-y-auto overflow-x-hidden p-3",
+					"flex grow flex-col gap-5 overflow-y-auto overflow-x-hidden px-5 pt-4 pb-6",
 					contentClassName,
 				)}
 			>

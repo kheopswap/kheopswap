@@ -1,4 +1,5 @@
 import { Switch } from "@base-ui/react/switch";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -136,6 +137,7 @@ export const RelaySelect = () => {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 	const { open, close, isOpen } = useOpenClose();
+	const networkName = assetHub.name.replace(/ Asset Hub$/, "");
 
 	const getRelayPath = useCallback(
 		(newRelayId: RelayId) => {
@@ -160,13 +162,15 @@ export const RelaySelect = () => {
 
 	return (
 		<>
-			<button type="button" onClick={open}>
-				<img
-					loading="lazy"
-					src={assetHub.logo}
-					alt="Chain"
-					className="size-6"
-				/>
+			<button
+				type="button"
+				onClick={open}
+				aria-label={`Network: ${networkName}`}
+				className={Styles.headerButton}
+			>
+				<img src={assetHub.logo} alt="" className="size-4.5 rounded-full" />
+				{networkName}
+				<ChevronDownIcon className="size-3.5 opacity-60" />
 			</button>
 			<Drawer anchor="right" isOpen={isOpen} onDismiss={close}>
 				<DrawerContainer title="Select network" onClose={close}>
