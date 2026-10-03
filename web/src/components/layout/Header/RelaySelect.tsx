@@ -169,7 +169,7 @@ export const RelaySelect = () => {
 				className={Styles.headerButton}
 			>
 				<img src={assetHub.logo} alt="" className="size-4.5 rounded-full" />
-				{networkName}
+				<span className="max-[379px]:hidden">{networkName}</span>
 				<ChevronDownIcon className="size-3.5 opacity-60" />
 			</button>
 			<Drawer anchor="right" isOpen={isOpen} onDismiss={close}>

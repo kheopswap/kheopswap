@@ -21,8 +21,7 @@ export const LiquidityPoolsHeaderRow: FC<{
 	return (
 		<div
 			className={cn(
-				"mb-1 grid  gap-2 pl-4 pr-3 text-xs  sm:gap-4",
-				"grid-cols-[1fr_120px] sm:grid-cols-[1fr_120px_120px]",
+				"grid grid-cols-[1fr_auto] gap-x-4 px-1 pb-2.5 text-xs sm:grid-cols-[1fr_180px_180px]",
 				!rows.length && !isLoading && "invisible",
 			)}
 		>

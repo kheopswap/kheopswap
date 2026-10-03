@@ -10,10 +10,10 @@ const RatioButton: FC<{
 	<button
 		type="button"
 		className={cn(
-			"h-8 rounded-xs px-2",
+			"h-8 rounded-chip px-2.5 font-mono text-xs font-semibold",
 			selected
-				? "bg-primary-500"
-				: "bg-primary-700 enabled:hover:bg-primary-650",
+				? "bg-primary text-primary-ink"
+				: "bg-hover text-text enabled:hover:text-accent",
 		)}
 		onClick={onClick}
 		disabled={disabled}
@@ -39,12 +39,14 @@ export const RemoveLiquiditySlider: FC<{
 	return (
 		<div
 			className={cn(
-				"flex w-full flex-col gap-5 rounded-xs border border-neutral-500 bg-neutral-900 p-3 py-4",
+				"flex w-full flex-col gap-5 rounded-control bg-surface-2 p-3.5",
 				disabled && "opacity-50",
 			)}
 		>
 			<div className="flex w-full flex-wrap gap-2">
-				<div className="grow text-2xl text-white">{step}%</div>
+				<div className="grow font-mono text-[28px] leading-tight font-medium text-text">
+					{step}%
+				</div>
 				<div className="flex gap-2 text-sm">
 					<RatioButton
 						selected={ratio === 0.25}
