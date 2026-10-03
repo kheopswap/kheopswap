@@ -1,7 +1,8 @@
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
-import "@fontsource-variable/lexend-deca";
+import "@fontsource-variable/dm-sans";
+import "@fontsource-variable/jetbrains-mono";
 
 import { Subscribe } from "@react-rxjs/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
