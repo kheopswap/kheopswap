@@ -6292,6 +6292,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001038",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001038,
+		"symbol": "tWUD",
+		"decimals": 10,
+		"name": "Gavun Wud Test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",

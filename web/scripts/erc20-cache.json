@@ -5,6 +5,12 @@
 		"symbol": "CGT2.0",
 		"decimals": 18
 	},
+	"0x132647ad71625128f77c777b6d06c7d1d5fa62ca": {
+		"fetchedAt": "2026-10-03T20:15:50.573Z",
+		"tokenName": "Relay Check",
+		"symbol": "RCHK",
+		"decimals": 10
+	},
 	"0x163f8c2467924be0ae7b5347228cabf260318753": {
 		"fetchedAt": "2026-06-13T08:43:50.162Z",
 		"tokenName": "Worldcoin",
