@@ -37,35 +37,34 @@ const TokenButton = memo<{
 			onClick={handleClick}
 			className={cn(
 				Styles.button,
-				"flex h-16 w-full items-center gap-3 overflow-hidden rounded-md p-2 pl-4 pr-3",
-				"text-left text-neutral-400 hover:text-neutral-200",
-				selected && "ring-1 ring-neutral-500",
+				"flex h-16 w-full items-center gap-3 overflow-hidden px-3.5 text-left",
+				selected && "ring-1 ring-muted",
 			)}
 		>
-			<TokenLogo className="size-10" token={token} />
-			<div className="flex h-full grow flex-col items-start justify-center gap-0.5 overflow-hidden text-neutral-400">
+			<TokenLogo className="size-8 shrink-0" token={token} />
+			<div className="flex h-full grow flex-col items-start justify-center gap-0.5 overflow-hidden text-muted">
 				<div className="flex w-full items-center gap-2 overflow-hidden">
-					<div className="font-bold text-neutral-50">{token.symbol}</div>
+					<div className="font-semibold text-text">{token.symbol}</div>
 					<div className="inline-block truncate">{token.name ?? ""}</div>
 				</div>
-				<div className="w-full truncate text-xs font-light">{description}</div>
+				<div className="w-full truncate text-xs">{description}</div>
 			</div>
 			{balances ? (
 				balances.isInitializing ? (
 					<div className="flex h-full flex-col items-end justify-center gap-0.5">
 						<Shimmer className="h-5 overflow-hidden">0.0001 TKN</Shimmer>
-						<Shimmer className="h-4 overflow-hidden text-sm">0.00 USDC</Shimmer>
+						<Shimmer className="h-4 overflow-hidden text-xs">0.00 USDC</Shimmer>
 					</div>
 				) : (
 					<div className="flex h-full flex-col items-end justify-center">
-						<div className="text-neutral-50">
+						<div className="font-semibold text-text">
 							<Tokens
 								token={token}
 								plancks={balances.tokenPlancks ?? 0n}
 								pulse={balances.isLoadingTokenPlancks}
 							/>
 						</div>
-						<div className="text-sm">
+						<div className="text-xs text-muted">
 							<Tokens
 								token={stableToken}
 								plancks={balances.stablePlancks ?? 0n}
@@ -92,18 +91,18 @@ const TokenButtonShimmer: FC<{ className?: string }> = ({ className }) => {
 			pulse
 			className={cn(
 				Styles.button,
-				"flex h-16 w-full select-none items-center gap-4 overflow-hidden rounded-md bg-neutral-800 p-2  pl-4 pr-3 text-neutral-400",
+				"flex h-16 w-full select-none items-center gap-3 overflow-hidden px-3.5",
 				className,
 			)}
 		>
-			<div className="size-10 rounded-full bg-neutral-700" />
-			<div className="flex grow select-none flex-col items-start gap-0.5 text-neutral-400">
+			<div className="size-8 rounded-full bg-hover" />
+			<div className="flex grow select-none flex-col items-start gap-0.5">
 				<div className="flex grow items-center gap-2 overflow-hidden ">
-					<div className="inline-block truncate rounded-md bg-neutral-700 text-neutral-700">
+					<div className="inline-block truncate rounded-chip bg-hover text-transparent">
 						Token Name
 					</div>
 				</div>
-				<div className="truncate rounded-md bg-neutral-700 text-xs font-light text-neutral-700">
+				<div className="truncate rounded-chip bg-hover text-xs text-transparent">
 					Chain name and asset id
 				</div>
 			</div>
@@ -168,8 +167,12 @@ const TokenSelectDrawerContent: FC<{
 	}, [sortedTokens, search]);
 
 	return (
-		<div className="flex flex-col gap-2">
-			<SearchInput className="mb-2" onChange={setSearch} placeholder="Search" />
+		<div className="flex flex-col gap-1.5">
+			<SearchInput
+				className="mb-2.5"
+				onChange={setSearch}
+				placeholder="Search"
+			/>
 			{items.map((t) => (
 				<TokenButton
 					key={t.id}

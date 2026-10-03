@@ -65,14 +65,11 @@ const HEX_ALLOWED: Record<string, string> = {
 };
 
 const NOT_YET_MIGRATED = new Set([
-	"./components/AccountSelectDrawer.tsx",
 	"./components/ChainInitNotification.tsx",
 	"./components/ErrorBoundary.tsx",
 	"./components/FollowUpModal.tsx",
-	"./components/layout/Header/RelaySelect.tsx",
 	"./components/Modal.tsx",
 	"./components/Toasts.tsx",
-	"./components/TokenSelectDrawer.tsx",
 	"./features/liquidity/create-pool/CreatePoolFollowUpContent.tsx",
 	"./features/swap/SwapFollowUpContent.tsx",
 	"./main.tsx",
