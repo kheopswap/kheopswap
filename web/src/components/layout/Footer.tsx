@@ -22,7 +22,26 @@ export const Footer = () => {
 				</ErrorBoundary>
 			</div>
 			<div className="hidden flex-col items-center gap-1 text-center text-xs text-neutral-500 sm:flex">
-				<div className="">Powered by polkadot-api and kheopskit</div>
+				<div>
+					Powered by{" "}
+					<a
+						href="https://papi.how"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="hover:text-neutral-300"
+					>
+						polkadot-api
+					</a>{" "}
+					and{" "}
+					<a
+						href="https://github.com/kheopskit/kheopskit"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="hover:text-neutral-300"
+					>
+						kheopskit
+					</a>
+				</div>
 				<LoadingStatus />
 			</div>
 			<div className="flex items-center gap-4">
