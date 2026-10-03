@@ -42,3 +42,4 @@ Steps:
 - The dev Chrome profile is already connected. Don't disconnect wallets: reconnecting needs the popup, and possibly the user to unlock Talisman.
 - `talisman.mjs` exit 3 means Talisman is locked. Stop and ask the user.
 - The header wallet button's accessible name deliberately avoids the word "account", so `--name "Account"` still reaches the form's account field. Open the header drawer with `--name "wallet"`, which matches both of its states.
+- On Paseo the header network button is named `Network: Paseo`, so a short case-insensitive name such as `--name "PAS"` hits it before any form control. Use `--exact` or a longer name like `USDC USDC Asset Hub - 1337`.
