@@ -75,8 +75,8 @@ const polkadotAssetHub = defineSubstrateNetwork({
 	name: "Polkadot Asset Hub",
 	symbol: "DOT",
 	decimals: 10,
-	http: ["https://polkadot-asset-hub-rpc.polkadot.io"],
-	webSocket: ["wss://polkadot-asset-hub-rpc.polkadot.io"],
+	http: ["https://dot-rpc.stakeworld.io/assethub"],
+	webSocket: ["wss://dot-rpc.stakeworld.io/assethub"],
 });
 
 const kusamaAssetHub = defineSubstrateNetwork({
@@ -84,8 +84,8 @@ const kusamaAssetHub = defineSubstrateNetwork({
 	name: "Kusama Asset Hub",
 	symbol: "KSM",
 	decimals: 12,
-	http: ["https://kusama-asset-hub-rpc.polkadot.io"],
-	webSocket: ["wss://kusama-asset-hub-rpc.polkadot.io"],
+	http: ["https://rpc-asset-hub-kusama.luckyfriday.io"],
+	webSocket: ["wss://rpc-asset-hub-kusama.luckyfriday.io"],
 });
 
 const westendAssetHub = defineSubstrateNetwork({

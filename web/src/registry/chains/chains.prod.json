@@ -3,12 +3,10 @@
 		"id": "pah",
 		"name": "Polkadot Asset Hub",
 		"wsUrl": [
-			"wss://rpc-asset-hub-polkadot.luckyfriday.io",
-			"wss://polkadot-asset-hub-rpc.polkadot.io",
 			"wss://dot-rpc.stakeworld.io/assethub",
 			"wss://asset-hub-polkadot-rpc.n.dwellir.com",
-			"wss://sys.turboflakes.io/asset-hub-polkadot",
-			"wss://asset-hub-polkadot.rpc.amforc.com"
+			"wss://asset-hub-polkadot.gatotech.network",
+			"wss://rpc-asset-hub-polkadot.stakeworld.io"
 		],
 		"evmChainId": 420420419,
 		"evmRpcUrl": ["https://eth-rpc.polkadot.io"],
@@ -26,9 +24,7 @@
 			"wss://rpc-asset-hub-kusama.luckyfriday.io",
 			"wss://kusama-asset-hub-rpc.polkadot.io",
 			"wss://ksm-rpc.stakeworld.io/assethub",
-			"wss://asset-hub-kusama-rpc.n.dwellir.com",
-			"wss://sys.turboflakes.io/asset-hub-kusama",
-			"wss://asset-hub-kusama.rpc.amforc.com"
+			"wss://asset-hub-kusama-rpc.n.dwellir.com"
 		],
 		"evmChainId": 420420418,
 		"evmRpcUrl": ["https://kusama-asset-hub-eth-rpc.polkadot.io"],
@@ -46,8 +42,7 @@
 		"name": "Westend Asset Hub",
 		"wsUrl": [
 			"wss://westend-asset-hub-rpc.polkadot.io",
-			"wss://asset-hub-westend-rpc.n.dwellir.com",
-			"wss://sys.turboflakes.io/asset-hub-westend"
+			"wss://asset-hub-westend-rpc.n.dwellir.com"
 		],
 		"evmChainId": 420420421,
 		"evmRpcUrl": ["https://westend-asset-hub-eth-rpc.polkadot.io"],
