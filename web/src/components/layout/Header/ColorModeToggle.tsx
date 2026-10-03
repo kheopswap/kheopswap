@@ -30,7 +30,10 @@ export const ColorModeToggle: FC = () => {
 			type="button"
 			onClick={handleClick}
 			aria-label={label}
-			className={cn(Styles.headerButton, "w-9 px-0 text-muted hover:text-text")}
+			className={cn(
+				Styles.headerButton,
+				"w-9 px-0 text-muted hover:text-text sm:px-0",
+			)}
 		>
 			<Icon className="size-4.5" />
 		</button>

@@ -71,7 +71,7 @@ export const TransferForm = () => {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<div className="flex w-full flex-col gap-3">
+			<div className="flex w-full flex-col gap-5">
 				<FormFieldContainer
 					id="from-account"
 					label="From"

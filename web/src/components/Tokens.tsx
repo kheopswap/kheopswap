@@ -53,7 +53,7 @@ const NormalTokens: FC<TokenProps> = ({
 				<Pulse
 					as="span"
 					pulse={pulse}
-					className={cn("whitespace-nowrap", className)}
+					className={cn("whitespace-nowrap font-mono", className)}
 				>
 					{display}
 				</Pulse>
@@ -89,7 +89,7 @@ const TokenPrice: FC<TokenProps> = ({
 				<Pulse
 					as="span"
 					pulse={pulse}
-					className={cn("whitespace-nowrap", className)}
+					className={cn("whitespace-nowrap font-mono", className)}
 				>
 					<Price
 						value={tokens}

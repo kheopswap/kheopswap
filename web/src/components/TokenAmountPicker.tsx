@@ -97,8 +97,8 @@ export const TokenAmountPicker: FC<{
 		<div
 			className={cn(
 				Styles.field,
-				"flex w-full flex-col gap-2 p-3 ",
-				inputProps.readOnly && "focus-within:border-neutral-800",
+				"flex w-full flex-col gap-2.5 p-3.5",
+				inputProps.readOnly && "focus-within:border-transparent",
 			)}
 		>
 			<div className="flex w-full relative">
@@ -112,15 +112,14 @@ export const TokenAmountPicker: FC<{
 					autoCorrect="off"
 					aria-label={inputLabel ?? "Token amount"}
 					className={cn(
-						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left text-2xl font-semibold text-white placeholder:text-white/50 focus:border-none focus:outline-hidden focus:ring-0",
+						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left font-mono text-[28px] font-medium tracking-[-0.02em] text-text placeholder:text-faint focus:border-none focus:outline-hidden focus:ring-0",
 						isComputingValue && "invisible",
 					)}
 				/>
 				<TokenSelectButton
 					className={cn(
 						"shrink-0",
-						disableTokenButton &&
-							"border-neutral-750/50 bg-transparent disabled:opacity-100",
+						disableTokenButton && "disabled:opacity-100",
 					)}
 					tokens={tokens}
 					accounts={accounts}
@@ -130,12 +129,12 @@ export const TokenAmountPicker: FC<{
 					disabled={disableTokenButton}
 				/>
 				{isComputingValue && (
-					<Shimmer className={cn("absolute top-3 left-0 text-2xl")}>
+					<Shimmer className="absolute top-1/2 left-0 -translate-y-1/2 font-mono text-[28px] leading-tight">
 						0.000000000
 					</Shimmer>
 				)}
 			</div>
-			<div className="flex w-full overflow-hidden">
+			<div className="flex w-full items-center overflow-hidden text-xs">
 				<div
 					className={cn(
 						"grow truncate",
@@ -154,23 +153,19 @@ export const TokenAmountPicker: FC<{
 						<StablePrice
 							plancks={plancks}
 							tokenId={tokenId}
-							className="text-neutral-500"
+							className="text-muted"
 						/>
 					)}
 				</div>
 
 				{(isLoadingBalance || isBigInt(balance)) && (
-					<div className="flex shrink-0 items-center text-nowrap text-neutral-500">
+					<div className="flex shrink-0 items-center text-nowrap text-muted">
 						{isBigInt(balance) && token ? (
 							<>
 								{onMaxClick && !!balance && (
 									<button
 										type="button"
-										className={cn(
-											Styles.button,
-											"mr-2 px-1 py-0.5 text-xs",
-											"text-neutral-300",
-										)}
+										className="mr-2 h-6 rounded-chip bg-hover px-2 text-[11px] font-semibold tracking-[0.05em] text-text"
 										onClick={onMaxClick}
 										aria-label="Use maximum balance"
 									>

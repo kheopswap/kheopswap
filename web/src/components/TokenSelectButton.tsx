@@ -27,7 +27,8 @@ const TokenButton: FC<{
 			type="button"
 			className={cn(
 				Styles.button,
-				"flex h-14 w-40 max-w-[40%] items-center gap-3 px-3 py-2 ",
+				"flex h-10 max-w-[45%] items-center gap-2.5 rounded-full border border-surface-border bg-surface py-1.5 pr-3 pl-1.5",
+				!token && "px-3.5 font-semibold",
 				className,
 			)}
 			disabled={disabled}
@@ -38,15 +39,21 @@ const TokenButton: FC<{
 					: "Select token"
 			}
 		>
-			{token && <TokenLogo token={token} className="size-8" />}
+			{token && <TokenLogo token={token} className="size-7" />}
 			<div
 				className={cn(
 					"flex grow flex-col overflow-hidden text-left",
 					!token && "text-center",
 				)}
 			>
-				<div className="truncate">{token?.symbol ?? "Select Token"}</div>
-				<div className="truncate text-xs text-neutral-400">{chainName}</div>
+				<div className="truncate leading-tight font-semibold">
+					{token?.symbol ?? "Select Token"}
+				</div>
+				{!!chainName && (
+					<div className="truncate text-[11px] leading-tight text-muted">
+						{chainName}
+					</div>
+				)}
 			</div>
 		</button>
 	);

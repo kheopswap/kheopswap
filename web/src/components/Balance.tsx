@@ -29,7 +29,13 @@ export const Balance: FC<{
 		);
 
 	return (
-		<Shimmer className={cn(className, (!address || !token) && "invisible")}>
+		<Shimmer
+			className={cn(
+				"font-mono",
+				className,
+				(!address || !token) && "invisible",
+			)}
+		>
 			{`0000 ${token?.symbol ?? "AAA"}`}
 		</Shimmer>
 	);
