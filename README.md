@@ -15,6 +15,8 @@ pnpm install
 pnpm dev
 ```
 
+A daily workflow opens a `Runtime upgrade on <chain>` issue for each chain whose runtime differs from the committed metadata.
+
 ## Coding agents
 
 Project instructions for coding agents live in [`AGENTS.md`](AGENTS.md).

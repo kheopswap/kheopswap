@@ -1,0 +1,59 @@
+name: Runtime Upgrade
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: runtime-upgrade
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  runtime-upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: ".node-version"
+          cache: "pnpm"
+
+      # descriptors aren't needed to fetch metadata, so skip the postinstall codegen
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # an unreachable endpoint makes papi retry forever, so each chain gets its own timeout
+      - name: Update metadata
+        run: |
+          failed=0
+          for chain in $(jq -r '.entries | keys[]' .papi/polkadot-api.json); do
+            timeout 2m node_modules/.bin/papi update "$chain" --skip-codegen || { echo "::error::Could not fetch $chain metadata"; failed=1; }
+          done
+          exit $failed
+
+      - name: Open an issue per upgraded chain
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          open_titles=$(gh issue list --state open --limit 500 --json title --jq '.[].title')
+          for chain in $(git diff --name-only -- .papi/scale | xargs -r -n1 basename -s .scale); do
+            title="Runtime upgrade on $chain"
+            if grep -qxF "$title" <<< "$open_titles"; then
+              echo "already open: $title"
+            else
+              gh issue create --title "$title" --body "The $chain runtime changed since the committed metadata. Run \`pnpm papi update $chain\` and fix what breaks."
+            fi
+          done
