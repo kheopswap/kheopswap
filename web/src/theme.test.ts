@@ -64,37 +64,20 @@ const HEX_ALLOWED: Record<string, string> = {
 		"reproduces the reference Polkadot identicon, whose colours are part of the address fingerprint",
 };
 
-const NOT_YET_MIGRATED = new Set([
-	"./components/ChainInitNotification.tsx",
-	"./components/ErrorBoundary.tsx",
-	"./components/FollowUpModal.tsx",
-	"./components/Modal.tsx",
-	"./components/Toasts.tsx",
-	"./features/liquidity/create-pool/CreatePoolFollowUpContent.tsx",
-	"./features/swap/SwapFollowUpContent.tsx",
-	"./main.tsx",
-	"./routes/error.tsx",
-	"./state/transactions/GlobalFollowUpModal.tsx",
-	"./state/transactions/TransactionToasts.tsx",
-]);
-
 const findViolations = () =>
-	Object.entries(sources)
-		.filter(([file]) => !NOT_YET_MIGRATED.has(file))
-		.flatMap(([file, source]) =>
-			source
-				.split("\n")
-				.flatMap((line, index) =>
-					RULES.filter(
-						(rule) =>
-							!(rule.name === "hex colour literal" && HEX_ALLOWED[file]),
-					).flatMap((rule) =>
-						[...line.matchAll(rule.pattern)].map(
-							([match]) => `${file}:${index + 1} ${match} (${rule.name})`,
-						),
+	Object.entries(sources).flatMap(([file, source]) =>
+		source
+			.split("\n")
+			.flatMap((line, index) =>
+				RULES.filter(
+					(rule) => !(rule.name === "hex colour literal" && HEX_ALLOWED[file]),
+				).flatMap((rule) =>
+					[...line.matchAll(rule.pattern)].map(
+						([match]) => `${file}:${index + 1} ${match} (${rule.name})`,
 					),
 				),
-		);
+			),
+	);
 
 describe("theme", () => {
 	it("scans the app sources", () => {

@@ -27,7 +27,7 @@ export const Modal: FC<Modal> = ({
 			<Dialog.Portal>
 				<Dialog.Backdrop
 					className={cn(
-						"fixed inset-0 z-20 bg-black/80",
+						"fixed inset-0 z-20 bg-scrim",
 						"transition-opacity duration-300 ease-out",
 						"data-open:opacity-100",
 						"data-starting-style:opacity-0",

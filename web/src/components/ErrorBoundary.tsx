@@ -55,16 +55,14 @@ const ErrorFallback = ({
 }) => (
 	<div
 		role="alert"
-		className="flex flex-col items-center gap-3 rounded-sm border border-error/30 bg-error/5 p-6 text-center text-sm text-neutral-400"
+		className="flex flex-col items-center gap-3 rounded-card border border-error/30 bg-error/5 p-6 text-center text-sm text-muted"
 	>
 		<p className="font-semibold text-error">Something went wrong</p>
-		<p className="max-w-sm truncate text-xs text-neutral-500">
-			{error.message}
-		</p>
+		<p className="max-w-sm truncate text-xs text-muted">{error.message}</p>
 		<button
 			type="button"
 			onClick={onReset}
-			className="mt-1 rounded-sm bg-primary-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-400"
+			className="mt-1 rounded-control bg-primary px-3 py-1.5 text-xs font-semibold text-primary-ink hover:brightness-108"
 		>
 			Try Again
 		</button>

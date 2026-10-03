@@ -50,8 +50,8 @@ export const SwapFollowUpContent: FC<{
 	return (
 		<div className={cn(effectiveOutcome ? "block" : "hidden")}>
 			<div className="flex flex-wrap justify-between">
-				<div className="text-neutral-500">Estimated outcome</div>
-				<div className="text-right font-medium text-neutral-500">
+				<div className="text-muted">Estimated outcome</div>
+				<div className="text-right font-medium text-muted">
 					<Tokens
 						plancks={followUpData.swapPlancksOut}
 						token={followUpData.tokenOut}
@@ -59,7 +59,7 @@ export const SwapFollowUpContent: FC<{
 				</div>
 			</div>
 			<div className="flex flex-wrap justify-between">
-				<div className="text-neutral-500">Effective outcome</div>
+				<div className="text-muted">Effective outcome</div>
 				<div className="text-right font-medium">
 					{isBigInt(effectiveOutcome) && (
 						<Tokens
@@ -75,7 +75,7 @@ export const SwapFollowUpContent: FC<{
 				</div>
 			</div>
 			<div className="flex flex-wrap justify-between">
-				<div className="text-neutral-500">Effective slippage</div>
+				<div className="text-muted">Effective slippage</div>
 				{isBigInt(effectiveOutcome) && (
 					<div
 						className={cn(

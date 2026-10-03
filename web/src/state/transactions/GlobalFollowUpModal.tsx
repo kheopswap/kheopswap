@@ -33,7 +33,7 @@ const FollowUpResultIcon: FC<{
 	<div className={cn("relative size-24", className)}>
 		<SpinnerIcon
 			className={cn(
-				"absolute size-24 transition-opacity duration-500",
+				"absolute size-24 text-accent transition-opacity duration-500",
 				result === "loading" ? "opacity-100" : "opacity-0",
 			)}
 		/>
@@ -79,12 +79,12 @@ const FollowUpModalInner: FC<{
 		<div
 			className={cn(
 				"h-dvh max-h-dvh w-dvw max-w-dvw p-3 sm:p-4",
-				"bg-black sm:border-neutral-850",
-				"sm:h-128 sm:w-auto sm:rounded-xl sm:border sm:shadow-sm",
+				"bg-surface sm:border-line",
+				"sm:h-128 sm:w-auto sm:rounded-card sm:border sm:shadow-sm",
 				"flex flex-col gap-4",
 			)}
 		>
-			{title && <div className=" font-semibold text-neutral">{title}</div>}
+			{title && <div className="font-semibold text-muted">{title}</div>}
 			<div className="grow flex flex-col items-center justify-start">
 				<div>
 					<FollowUpResultIcon className="inline-block" result={result} />
@@ -92,8 +92,8 @@ const FollowUpModalInner: FC<{
 				<Pulse
 					pulse={!error && isPendingFinalization}
 					className={cn(
-						"text-xl font-medium text-neutral-300 transition-colors",
-						(!!error || isFinalized) && "text-neutral-100",
+						"text-xl font-medium text-muted transition-colors",
+						(!!error || isFinalized) && "text-text",
 					)}
 				>
 					{message ?? null}
@@ -103,7 +103,7 @@ const FollowUpModalInner: FC<{
 				{!!errorMessage && <div className="text-error">{errorMessage}</div>}
 				{children && <div>{children}</div>}
 				<div className={cn(effectiveFee ? "block" : "hidden")}>
-					<FollowUpRow label="Estimated fee" className="text-neutral-500">
+					<FollowUpRow label="Estimated fee" className="text-muted">
 						<Tokens plancks={followUp.feeEstimate} token={followUp.feeToken} />
 					</FollowUpRow>
 					<FollowUpRow label="Effective fee">
@@ -128,7 +128,10 @@ const FollowUpModalInner: FC<{
 						if (blockExplorerUrl)
 							window.open(blockExplorerUrl, "_blank", "noopener noreferrer");
 					}}
-					className={cn(Styles.button, "h-12 w-full  disabled:opacity-50")}
+					className={cn(
+						Styles.button,
+						"h-12 w-full font-medium disabled:opacity-50",
+					)}
 					disabled={!blockExplorerUrl}
 				>
 					View in block explorer
@@ -136,10 +139,7 @@ const FollowUpModalInner: FC<{
 				<button
 					type="button"
 					onClick={onClose}
-					className={cn(
-						Styles.button,
-						"h-12 w-full border-primary-400 bg-primary enabled:hover:bg-primary-450 disabled:opacity-50",
-					)}
+					className={Styles.primaryButton}
 					disabled={!canAlwaysClose && !canClose}
 				>
 					Close
