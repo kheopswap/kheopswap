@@ -40,22 +40,20 @@ type Parsed<T> =
 const INSUFFICIENT_BALANCE =
 	"Insufficient balance to cover the transfer and its fees";
 
-const getOriginFailureReason = (error: unknown): string => {
-	const failure = error as {
-		type?: string;
-		value?: {
-			type?: string;
-			value?: { type?: string; value?: { error?: { type?: string } } };
-		};
-	};
+type OriginDispatchError = Extract<
+	Extract<OriginDryRun, { success: true }>["value"]["execution_result"],
+	{ success: false }
+>["value"]["error"];
+
+const getOriginFailureReason = (error: OriginDispatchError): string => {
 	if (
-		failure.type !== "Module" ||
-		failure.value?.type !== "PolkadotXcm" ||
-		failure.value.value?.type !== "LocalExecutionIncompleteWithError"
+		error.type !== "Module" ||
+		error.value.type !== "PolkadotXcm" ||
+		error.value.value.type !== "LocalExecutionIncompleteWithError"
 	)
 		return formatTxError(error);
 
-	const xcmError = failure.value.value.value?.error?.type;
+	const xcmError = error.value.value.value.error.type;
 	return xcmError === "FailedToTransactAsset"
 		? INSUFFICIENT_BALANCE
 		: `Asset Hub would reject the transfer: ${xcmError}`;
