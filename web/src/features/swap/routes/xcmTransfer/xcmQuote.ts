@@ -49,13 +49,16 @@ const getOriginFailureReason = (error: unknown): string => {
 		};
 	};
 	if (
-		failure.type === "Module" &&
-		failure.value?.type === "PolkadotXcm" &&
-		failure.value.value?.type === "LocalExecutionIncompleteWithError" &&
-		failure.value.value.value?.error?.type === "FailedToTransactAsset"
+		failure.type !== "Module" ||
+		failure.value?.type !== "PolkadotXcm" ||
+		failure.value.value?.type !== "LocalExecutionIncompleteWithError"
 	)
-		return INSUFFICIENT_BALANCE;
-	return formatTxError(error);
+		return formatTxError(error);
+
+	const xcmError = failure.value.value.value?.error?.type;
+	return xcmError === "FailedToTransactAsset"
+		? INSUFFICIENT_BALANCE
+		: `Asset Hub would reject the transfer: ${xcmError}`;
 };
 
 export const parseOriginDryRun = (
