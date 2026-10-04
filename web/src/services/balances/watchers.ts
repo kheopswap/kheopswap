@@ -108,6 +108,19 @@ const watchBalance = async (balanceId: BalanceId) => {
 				updateBalance(balanceId, balance);
 			});
 		}
+		case "hydration-asset": {
+			const api = await getApi(token.chainId);
+			const account$ = api.query.Tokens.Accounts.watchValue(
+				address,
+				token.assetId,
+				{ at: "best" },
+			);
+
+			return account$.subscribe(({ value: account }) => {
+				const balance = account.free - account.frozen;
+				updateBalance(balanceId, balance);
+			});
+		}
 		default:
 			throw new Error(`Unsupported token type ${tokenId}`);
 	}
