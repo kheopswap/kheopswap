@@ -7,6 +7,7 @@ import {
 	findArrival,
 	getSentMessageId,
 	getXcmArrival$,
+	isXcmArrivalType,
 	type XcmArrival,
 	type XcmArrivalTarget,
 } from "./xcmArrival";
@@ -70,6 +71,17 @@ const getRecord = (
 			? [{ type: "inBestBlock", ok: true, events }]
 			: [{ type: "pending" }],
 	}) as unknown as TransactionRecord;
+
+describe("isXcmArrivalType", () => {
+	it.each([
+		["xcmTransfer", true],
+		["xcmSwap", true],
+		["swap", false],
+		["transfer", false],
+	] as const)("tracks the arrival of %s: %s", (type, expected) => {
+		expect(isXcmArrivalType(type)).toBe(expected);
+	});
+});
 
 describe("findArrival", () => {
 	it("returns the amount deposited to the beneficiary by our message, ignoring the fee receiver", () => {
