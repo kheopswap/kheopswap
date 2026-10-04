@@ -37,6 +37,7 @@ import { cn } from "../../utils/cn";
 import { getAccountName } from "../../utils/getAccountName";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
 import { getTokenTypeLabel } from "../../utils/getTokenTypeLabel";
+import { isApplicableBalance } from "../../utils/isApplicableBalance";
 import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
 import { sortBigInt } from "../../utils/sortBigInt";
@@ -306,15 +307,14 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 	const rows = useMemo(
 		() =>
 			accounts
-				.map((account) => ({
-					account,
-					accountName: getAccountName(account),
-					// biome-ignore lint/style/noNonNullAssertion: legacy
-					balance: balances.find(
+				.flatMap((account) => {
+					const balance = balances.find(
 						(b) => b.tokenId === token.id && b.address === account.address,
-					)!,
-				}))
-				.filter((row) => row.balance)
+					);
+					return balance && isApplicableBalance(balance)
+						? [{ account, accountName: getAccountName(account), balance }]
+						: [];
+				})
 				.sort((a, b) => sortBalances(a.balance, b.balance)),
 		[accounts, balances, token.id],
 	);
