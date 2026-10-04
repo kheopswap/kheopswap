@@ -99,6 +99,8 @@ export type TokenId =
 
 export type TokenIdsPair = [TokenId, TokenId];
 
+export type TokenAmount = { tokenId: TokenId; plancks: bigint };
+
 export type TokenNative = TokenNativeNoId & { id: TokenIdNative };
 export type TokenAsset = TokenAssetNoId & { id: TokenIdAsset };
 export type TokenPoolAsset = TokenPoolAssetNoId & { id: TokenIdPoolAsset };
