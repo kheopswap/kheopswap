@@ -14,7 +14,7 @@ import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { GlobalFollowUpModal } from "./GlobalFollowUpModal";
 import { TransactionsProvider } from "./TransactionsProvider";
-import { TransactionToasts } from "./TransactionToasts";
+import { getToastView, TransactionToasts } from "./TransactionToasts";
 import {
 	addTransaction,
 	dismissTransaction,
@@ -22,7 +22,7 @@ import {
 	transactions$,
 } from "./transactionStore";
 import type { TransactionRecord, TransactionType } from "./types";
-import type { XcmTransferFollowUpData } from "./xcmArrival";
+import type { XcmArrival, XcmTransferFollowUpData } from "./xcmArrival";
 
 const hydration = vi.hoisted(() => ({
 	blocks$: undefined as unknown as Subject<
@@ -205,5 +205,48 @@ describe("closing the follow-up modal", () => {
 
 		expect(screen.queryByRole("dialog")).toBeNull();
 		expect(await isInStore(record.id)).toBe(false);
+	});
+});
+
+describe("getToastView", () => {
+	const transfer = getFinalizedRecord(
+		"xcm-transfer",
+		"xcmTransfer",
+		"Transfer DOT to Hydration",
+	);
+
+	it.each<[XcmArrival | null, ReturnType<typeof getToastView>]>([
+		[null, { outcome: "loading", text: "In transit to Hydration..." }],
+		[
+			{ status: "in-transit", messageId: MESSAGE_ID },
+			{ outcome: "loading", text: "In transit to Hydration..." },
+		],
+		[
+			{ status: "arrived", messageId: MESSAGE_ID, received: 1n },
+			{ outcome: "success", text: "Arrived on Hydration" },
+		],
+		[
+			{ status: "failed-on-destination", messageId: MESSAGE_ID },
+			{ outcome: "error", text: "Failed on Hydration, assets trapped" },
+		],
+		[
+			{ status: "unconfirmed", messageId: MESSAGE_ID },
+			{ outcome: "warning", text: "Arrival on Hydration not confirmed" },
+		],
+	])("shows a finalized transfer with arrival %o as %o", (arrival, view) => {
+		expect(getToastView(transfer, arrival)).toEqual(view);
+	});
+
+	it("shows the origin status before finalization", () => {
+		expect(getToastView({ ...transfer, status: "inBlock" }, null)).toEqual({
+			outcome: "loading",
+			text: "In block, waiting for finalization...",
+		});
+	});
+
+	it("shows other transactions as finalized", () => {
+		expect(
+			getToastView(getFinalizedRecord("swap", "swap", "Swap DOT/USDC"), null),
+		).toEqual({ outcome: "success", text: "Finalized" });
 	});
 });
