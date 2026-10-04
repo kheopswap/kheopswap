@@ -14,6 +14,7 @@ export const whitelist: WhiteListEntry[] = [
 	"tx.Assets.transfer_keep_alive",
 	"tx.Balances.transfer_keep_alive",
 	"tx.ForeignAssets.transfer",
+	"tx.PolkadotXcm.transfer_assets_using_type_and_then",
 	"tx.Utility.batch_all",
 	"query.System.Account",
 	"query.System.BlockHash",
