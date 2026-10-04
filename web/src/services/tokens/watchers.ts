@@ -5,11 +5,16 @@ import {
 	TOKENS_CACHE_DURATION,
 } from "../../common/constants";
 import { getApi } from "../../papi/getApi";
-import { getChainById, isChainAssetHub } from "../../registry/chains/chains";
+import {
+	getChainById,
+	isChainAssetHub,
+	isChainIdHydration,
+} from "../../registry/chains/chains";
 import type {
 	Chain,
 	ChainAssetHub,
 	ChainId,
+	ChainIdHydration,
 } from "../../registry/chains/types";
 import { TOKENS_BLACKLIST } from "../../registry/tokens/blacklist";
 import { buildToken } from "../../registry/tokens/buildToken";
@@ -17,6 +22,7 @@ import {
 	createSufficientMap,
 	mapAssetTokensFromEntries,
 	mapForeignAssetTokensFromEntries,
+	mapHydrationAssetTokensFromEntries,
 	mapPoolAssetTokensFromEntries,
 } from "../../registry/tokens/mappers";
 import {
@@ -195,6 +201,46 @@ const fetchAssetTokens = async (chain: ChainAssetHub, signal: AbortSignal) => {
 	);
 };
 
+const fetchHydrationAssetTokens = async (
+	chainId: ChainIdHydration,
+	signal: AbortSignal,
+) => {
+	const api = await getApi(chainId);
+	if (signal.aborted) return;
+
+	await api.waitReady;
+	if (signal.aborted) return;
+
+	const stop = logger.timer(`fetch hydration assets - ${chainId}`);
+	const [assets, locations] = await Promise.all([
+		api.query.AssetRegistry.Assets.getEntries({ at: "best", signal }),
+		api.query.AssetRegistry.AssetLocations.getEntries({ at: "best", signal }),
+	]);
+	stop();
+
+	const hydrationAssetTokens = mapHydrationAssetTokensFromEntries(
+		chainId,
+		assets,
+		locations,
+	).map((tokenNoId) => {
+		const token = buildToken({
+			...tokenNoId,
+			logo: "./img/tokens/asset.svg",
+		});
+		return Object.assign(
+			token,
+			KNOWN_TOKENS_MAP[token.id],
+			TOKENS_OVERRIDES_MAP[token.id],
+		);
+	});
+
+	updateTokensStore(
+		chainId,
+		"hydration-asset",
+		hydrationAssetTokens.filter((t) => !TOKENS_BLACKLIST.has(t.id)),
+	);
+};
+
 const fetchTokensByChain = async (chain: Chain, signal: AbortSignal) => {
 	if (isChainAssetHub(chain))
 		await Promise.all([
@@ -202,6 +248,8 @@ const fetchTokensByChain = async (chain: Chain, signal: AbortSignal) => {
 			fetchPoolAssetTokens(chain, signal),
 			fetchForeignAssetTokens(chain, signal),
 		]);
+	else if (isChainIdHydration(chain.id))
+		await fetchHydrationAssetTokens(chain.id, signal);
 };
 
 const watchTokensByChain = (chainId: ChainId) => {
