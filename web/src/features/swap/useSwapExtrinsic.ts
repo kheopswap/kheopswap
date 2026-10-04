@@ -1,11 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import { APP_FEE_ADDRESS } from "../../common/constants";
-import { getApi } from "../../papi/getApi";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
-import { getTransferExtrinsic } from "../transfer/getTransferExtrinsic";
 import { getSwapExtrinsic } from "./getSwapTransaction";
+import { withAppCommission } from "./withAppCommission";
 
 type UseSwapExtrinsic = {
 	tokenIdIn: TokenId | null | undefined;
@@ -56,20 +54,7 @@ export const useSwapExtrinsic = ({
 				dest,
 			);
 
-			if (!appCommission) return swapCall;
-
-			const feeCall = await getTransferExtrinsic(
-				assetHub.id,
-				tokenIdIn,
-				appCommission,
-				APP_FEE_ADDRESS,
-			);
-
-			const api = await getApi(assetHub.id);
-
-			return api.tx.Utility.batch_all({
-				calls: [swapCall.decodedCall, feeCall.decodedCall],
-			});
+			return withAppCommission(assetHub.id, swapCall, tokenIdIn, appCommission);
 		},
 		refetchInterval: false,
 		structuralSharing: false,
