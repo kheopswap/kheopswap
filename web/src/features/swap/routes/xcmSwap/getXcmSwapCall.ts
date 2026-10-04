@@ -20,7 +20,7 @@ import { withAppCommission } from "../../withAppCommission";
 import type { XcmSwapRoute } from "../swapRoute";
 import { type AmmHop, getLastHop, type HopPath } from "./ammPath";
 
-export type SwapHop = AmmHop & { minOut: bigint };
+type SwapHop = AmmHop & { minOut: bigint };
 
 export type XcmSwapCallInputs = {
 	route: XcmSwapRoute;

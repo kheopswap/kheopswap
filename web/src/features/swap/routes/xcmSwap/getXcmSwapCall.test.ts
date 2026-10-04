@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
 import type { XcmSwapRoute } from "../swapRoute";
-import { getAmmPath } from "./ammPath";
-import { buildXcmSwapMessage, type SwapHop } from "./getXcmSwapCall";
+import { getAmmPath, mapHopPath } from "./ammPath";
+import { buildXcmSwapMessage } from "./getXcmSwapCall";
 import { dotToUsdt, dotToUsdtTrapped, usdcToUsdt } from "./xcmSwap.fixtures";
 
 const DOT = "native::pah";
@@ -25,13 +25,11 @@ const getRoute = (tokenIdIn: string): XcmSwapRoute => ({
 	path: getAmmPath(tokenIdIn, USDT, DOT),
 });
 
-const withMins = (route: XcmSwapRoute, mins: bigint[]) => {
-	const [first, second] = route.path.map(
-		(hop, i): SwapHop => ({ ...hop, minOut: mins[i] ?? 0n }),
-	);
-	if (!first) throw new Error("empty path");
-	return second ? ([first, second] as const) : ([first] as const);
-};
+const withMins = (route: XcmSwapRoute, mins: bigint[]) =>
+	mapHopPath(route.path, (hop, index) => ({
+		...hop,
+		minOut: mins[index] ?? 0n,
+	}));
 
 describe("buildXcmSwapMessage", () => {
 	it.each([
