@@ -1,3 +1,4 @@
+import { bind } from "@react-rxjs/core";
 import { values } from "lodash-es";
 import {
 	combineLatest,
@@ -34,6 +35,13 @@ const assetHubMirrorTokenIds$ = combineLatest([
 			: new Map<TokenId, TokenId>();
 	}),
 	shareReplay({ bufferSize: 1, refCount: true }),
+);
+
+const NO_MIRROR_TOKEN_IDS: ReadonlyMap<TokenId, TokenId> = new Map();
+
+export const [useAssetHubMirrorTokenIds] = bind(
+	assetHubMirrorTokenIds$,
+	NO_MIRROR_TOKEN_IDS,
 );
 
 export const getAssetHubMirrorTokenId$ = (
