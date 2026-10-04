@@ -79,6 +79,7 @@ export const useSwapFees = ({
 		if (
 			tokenIn &&
 			feeToken &&
+			!isLoadingFeeToken &&
 			balanceIn &&
 			isBigInt(edTokenIn) &&
 			isBigInt(feeEstimate)
@@ -100,6 +101,7 @@ export const useSwapFees = ({
 		balanceIn,
 		feeEstimate,
 		feeToken,
+		isLoadingFeeToken,
 		edTokenIn,
 		tokenIn,
 		deliveryFee,
