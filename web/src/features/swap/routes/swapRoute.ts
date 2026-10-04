@@ -108,6 +108,20 @@ export const resolveSwapRoute = ({
 	return resolveXcmTransferRoute(tokenIdIn, tokenIdOut, mirrors);
 };
 
+export const getFeePayableMirrorTokenIds = (
+	mirrors: MirrorTokenIds,
+	destinationFeeAssetIds: ReadonlySet<number>,
+): MirrorTokenIds =>
+	new Map(
+		[...mirrors].filter(([tokenIdOut]) => {
+			const tokenOut = tryParseTokenId(tokenIdOut);
+			return (
+				tokenOut?.type === "hydration-asset" &&
+				destinationFeeAssetIds.has(tokenOut.assetId)
+			);
+		}),
+	);
+
 const getXcmTransferSourceId = (
 	mirrors: MirrorTokenIds,
 	tokenIdOut: TokenId,

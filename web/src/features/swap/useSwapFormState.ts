@@ -6,7 +6,6 @@ import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAdd
 import { useWalletAccount } from "../../hooks/useWalletAccount";
 import { getTokenId, parseTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
-import { useAssetHubMirrorTokenIds } from "../../state/prices";
 import { useRelayChains } from "../../state/relay";
 import {
 	canFlipSwapTokens,
@@ -14,6 +13,7 @@ import {
 	resolveSwapRoute,
 	type SwapTokensChange,
 } from "./routes/swapRoute";
+import { useXcmTransferMirrorTokenIds } from "./routes/xcmTransferMirrors";
 import type { SwapFormInputs } from "./schema";
 
 export const useSwapFormState = () => {
@@ -50,7 +50,7 @@ export const useSwapFormState = () => {
 			chainId: assetHub.id,
 		});
 
-	const mirrors = useAssetHubMirrorTokenIds();
+	const mirrors = useXcmTransferMirrorTokenIds();
 	const routeContext = useMemo(
 		() => ({
 			assetHubId: assetHub.id,

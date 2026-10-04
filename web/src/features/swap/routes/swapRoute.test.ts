@@ -11,6 +11,7 @@ import type { TokenId } from "../../../registry/tokens/types";
 import { getAssetHubMirrorTokenIds } from "../../../utils/getAssetHubMirrorTokenId";
 import {
 	canFlipSwapTokens,
+	getFeePayableMirrorTokenIds,
 	getMirrorTokenOutId,
 	getNextSwapTokens,
 	getRouteAccess,
@@ -101,6 +102,28 @@ describe("resolveSwapRoute", () => {
 				...ammContext,
 				tokenIdIn: DOT,
 				tokenIdOut: HYDRATION_DOT,
+			}),
+		).toBeNull();
+	});
+});
+
+describe("getFeePayableMirrorTokenIds", () => {
+	it("keeps only mirrors whose Hydration asset pays the destination fee", () => {
+		const HYDRATION_WUD = "hydration-asset::hydration::1000085";
+		expect(mirrors.has(HYDRATION_WUD)).toBe(true);
+
+		const payable = getFeePayableMirrorTokenIds(mirrors, new Set([5, 10, 22]));
+
+		expect([...payable.keys()].sort()).toEqual(
+			[HYDRATION_DOT, HYDRATION_USDT, HYDRATION_USDC].sort(),
+		);
+		expect(payable.get(HYDRATION_USDT)).toBe(USDT);
+		expect(
+			resolveSwapRoute({
+				assetHubId: "pah",
+				mirrors: payable,
+				tokenIdIn: "asset::pah::31337",
+				tokenIdOut: HYDRATION_WUD,
 			}),
 		).toBeNull();
 	});
