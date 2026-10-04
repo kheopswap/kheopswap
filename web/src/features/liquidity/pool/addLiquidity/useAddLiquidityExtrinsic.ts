@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
+import type { ChainIdAssetHub } from "../../../../registry/chains/types";
 import type { TokenId } from "../../../../registry/tokens/types";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import {
@@ -8,6 +9,7 @@ import {
 } from "./getAddLiquidityExtrinsic";
 
 type UseAddLiquidityExtrinsic = {
+	chainId: ChainIdAssetHub;
 	tokenIdNative: TokenId | undefined;
 	tokenIdAsset: TokenId | undefined;
 	amountNative: bigint | undefined;
@@ -21,12 +23,9 @@ type UseAddLiquidityExtrinsic = {
 export const useAddLiquidityExtrinsic = (props: UseAddLiquidityExtrinsic) => {
 	return useQuery({
 		queryKey: ["useAddLiquidityExtrinsic", safeQueryKeyPart(props)],
-		queryFn: async () => {
+		queryFn: () => {
 			if (!isValidGetAddLiquidityExtrinsicProps(props)) return null;
-
-			const addLiquidityCall = await getAddLiquidityExtrinsic(props);
-
-			return addLiquidityCall ?? null;
+			return getAddLiquidityExtrinsic(props);
 		},
 		structuralSharing: false,
 	});
