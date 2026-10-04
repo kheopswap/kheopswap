@@ -2,7 +2,6 @@ import type { XcmVersionedXcm } from "@polkadot-api/descriptors";
 import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
-import type { ChainIdHydration } from "../../../../registry/chains/types";
 import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
 import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
@@ -16,17 +15,22 @@ import type {
 } from "../../../transaction/TransactionProvider";
 import type { XcmRoute } from "../swapRoute";
 
-export type OriginDryRun = DryRun<XcmRoute["origin"]>;
+type XcmOrigin = XcmRoute["origin"];
+type XcmDestination = XcmRoute["destination"];
 
-type DeliveryFees = Awaited<
-	ReturnType<
-		Api<XcmRoute["origin"]>["apis"]["XcmPaymentApi"]["query_delivery_fees"]
-	>
->;
+export type OriginDryRun = DryRun<XcmOrigin>;
 
-export type DestinationDryRun = Awaited<
-	ReturnType<Api<ChainIdHydration>["apis"]["DryRunApi"]["dry_run_xcm"]>
->;
+type DeliveryFees = {
+	[Id in XcmOrigin]: Awaited<
+		ReturnType<Api<Id>["apis"]["XcmPaymentApi"]["query_delivery_fees"]>
+	>;
+}[XcmOrigin];
+
+export type DestinationDryRun = {
+	[Id in XcmDestination]: Awaited<
+		ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_xcm"]>
+	>;
+}[XcmDestination];
 
 export type XcmQuoteFailure =
 	| { kind: "origin-unavailable" }
@@ -86,11 +90,15 @@ const getOriginFailure = (error: OriginDispatchError): XcmQuoteFailure => {
 
 const getSentAmount = (message: XcmVersionedXcm): bigint | null => {
 	if (message.type !== "V5") return null;
-	const deposit = message.value.find(
-		(instruction) => instruction.type === "ReserveAssetDeposited",
+	const loaded = message.value.find(
+		(instruction) =>
+			instruction.type === "ReserveAssetDeposited" ||
+			instruction.type === "WithdrawAsset",
 	);
 	const [asset] =
-		deposit?.type === "ReserveAssetDeposited" ? deposit.value : [];
+		loaded?.type === "ReserveAssetDeposited" || loaded?.type === "WithdrawAsset"
+			? loaded.value
+			: [];
 	return asset?.fun.type === "Fungible" ? asset.fun.value : null;
 };
 
@@ -228,8 +236,20 @@ export const getXcmSubmitGate = ({
 	return { status: "closed", reason: "Nothing to send yet" };
 };
 
-export const getDeliveryFeeTokenId = (origin: XcmRoute["origin"]): TokenId =>
-	getTokenId({ type: "native", chainId: origin });
+const HYDRATION_DOT_ASSET_ID = 5;
+
+export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
+	switch (origin) {
+		case "pah":
+			return getTokenId({ type: "native", chainId: origin });
+		case "hydration":
+			return getTokenId({
+				type: "hydration-asset",
+				chainId: origin,
+				assetId: HYDRATION_DOT_ASSET_ID,
+			});
+	}
+};
 
 export const getXcmFeeParts = (
 	deliveryFee: TokenAmount | undefined,

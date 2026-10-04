@@ -22,6 +22,7 @@ const getToken = (tokenId: string) => {
 };
 
 const followUpData: XcmSwapFollowUpData = {
+	origin: "pah",
 	target: {
 		tokenId: "hydration-asset::hydration::10",
 		beneficiary: usdcToUsdt.sender,

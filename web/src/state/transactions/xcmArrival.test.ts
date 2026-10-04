@@ -6,8 +6,10 @@ import type { XcmDepositTarget } from "../../utils/xcmDeposit";
 import type { TransactionRecord } from "./types";
 import {
 	findArrival,
+	getArrivalBufferBlocks,
 	getSentMessageId,
 	getXcmArrival$,
+	getXcmBlockEvents,
 	isXcmArrivalType,
 	type XcmArrival,
 } from "./xcmArrival";
@@ -187,6 +189,7 @@ describe("getXcmArrival$", () => {
 	const track = (
 		initial: TransactionRecord | undefined,
 		timeoutMs?: number,
+		bufferBlocks = getArrivalBufferBlocks("hydration"),
 	) => {
 		const record$ = new BehaviorSubject<TransactionRecord | undefined>(initial);
 		const blockEvents$ = new Subject<TxEvents>();
@@ -197,6 +200,7 @@ describe("getXcmArrival$", () => {
 			blockEvents$,
 			target,
 			destinationParaId: HYDRATION_PARA_ID,
+			bufferBlocks,
 			timeoutMs,
 		}).subscribe({
 			next: (arrival) => arrivals.push(arrival),
@@ -275,6 +279,19 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(true);
 	});
 
+	it("catches an arrival processed many fast Asset Hub blocks before the message id is known", () => {
+		const { record$, blockEvents$, arrivals } = track(
+			getRecord("pending"),
+			undefined,
+			getArrivalBufferBlocks("pah"),
+		);
+		blockEvents$.next(ourArrival);
+		for (let block = 0; block < 20; block++) blockEvents$.next([]);
+		record$.next(getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]));
+
+		expect(arrivals.at(-1)?.status).toBe("arrived");
+	});
+
 	it("gives up as unconfirmed when nothing arrives before the timeout", () => {
 		vi.useFakeTimers();
 		const { arrivals, isComplete } = track(
@@ -290,5 +307,48 @@ describe("getXcmArrival$", () => {
 			messageId: MESSAGE_ID,
 		});
 		expect(isComplete()).toBe(true);
+	});
+});
+
+describe("arrival on Asset Hub", () => {
+	const ASSET_HUB_BENEFICIARY =
+		"147vNmBXQQYqcj7TTkuEY4eYEAXG58UyVHPiEFBYKAtkVL8w";
+	const ASSET_HUB_FEE_RECEIVER =
+		"13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2";
+	const assetHubTarget: XcmDepositTarget = {
+		tokenId: "native::pah",
+		beneficiary: ASSET_HUB_BENEFICIARY,
+	};
+	const balanceDeposit = (who: string, amount: bigint) => ({
+		type: "Balances",
+		value: { type: "Deposit", value: { who, amount } },
+	});
+	const inPhase = (type: string, event: TxEvents[number]) => ({
+		phase: { type },
+		event,
+	});
+
+	it("counts only the deposit of our message, not the beneficiary's own transaction earlier in the block", () => {
+		const blockEvents = getXcmBlockEvents([
+			inPhase("ApplyExtrinsic", balanceDeposit(ASSET_HUB_BENEFICIARY, 5n)),
+			inPhase(
+				"Finalization",
+				balanceDeposit(ASSET_HUB_BENEFICIARY, 9991650007n),
+			),
+			inPhase("Finalization", balanceDeposit(ASSET_HUB_FEE_RECEIVER, 8349993n)),
+			inPhase("Finalization", processed(MESSAGE_ID)),
+		]);
+
+		expect(
+			findArrival(blockEvents, {
+				messageId: MESSAGE_ID,
+				target: assetHubTarget,
+			}),
+		).toEqual({ success: true, received: 9991650007n });
+	});
+
+	it("keeps about a minute of blocks on each destination", () => {
+		expect(getArrivalBufferBlocks("hydration")).toBe(10);
+		expect(getArrivalBufferBlocks("pah")).toBe(30);
 	});
 });

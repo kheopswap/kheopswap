@@ -1,5 +1,6 @@
 import type { SS58String } from "polkadot-api";
 import type { WalletAccount } from "../../../common/kheopskit";
+import { isChainIdHydration } from "../../../registry/chains/chains";
 import type {
 	ChainId,
 	ChainIdAssetHub,
@@ -23,10 +24,12 @@ export type AmmSwapRoute = {
 	tokenIdOut: TokenId;
 };
 
-export type XcmTransferRoute = {
+type XcmLane =
+	| { origin: "pah"; destination: ChainIdHydration }
+	| { origin: ChainIdHydration; destination: "pah" };
+
+export type XcmTransferRoute = XcmLane & {
 	kind: "xcm-transfer";
-	origin: "pah";
-	destination: ChainIdHydration;
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
 };
@@ -64,10 +67,11 @@ export type SwapTokensChange =
 	| { type: "out"; tokenId: TokenId }
 	| { type: "flip" };
 
-type SwapRouteContext = {
+export type SwapRouteContext = {
 	assetHubId: ChainIdAssetHub;
 	nativeTokenId: TokenId;
 	mirrors: MirrorTokenIds;
+	hydrationFeeAssetIds: ReadonlySet<number>;
 };
 
 const tryParseTokenId = (tokenId: TokenId) => {
@@ -78,57 +82,103 @@ const tryParseTokenId = (tokenId: TokenId) => {
 	}
 };
 
-type XcmDestination = {
-	origin: XcmRoute["origin"];
-	destination: ChainIdHydration;
-	mirrorTokenId: TokenId;
+type InScopeMirror = {
+	hydrationTokenId: TokenId;
+	hydrationChainId: ChainIdHydration;
+	hydrationAssetId: number;
+	assetHubTokenId: TokenId;
 };
 
-const getXcmDestination = (
-	tokenIdOut: TokenId,
+const getInScopeMirror = (
+	hydrationTokenId: TokenId,
 	mirrors: MirrorTokenIds,
-): XcmDestination | null => {
-	const mirrorTokenId = mirrors.get(tokenIdOut);
-	const mirror = mirrorTokenId && tryParseTokenId(mirrorTokenId);
-	const tokenOut = tryParseTokenId(tokenIdOut);
+): InScopeMirror | null => {
+	const assetHubTokenId = mirrors.get(hydrationTokenId);
+	const mirror = assetHubTokenId && tryParseTokenId(assetHubTokenId);
+	const token = tryParseTokenId(hydrationTokenId);
 	if (
-		!mirrorTokenId ||
+		!assetHubTokenId ||
 		!mirror ||
-		tokenOut?.type !== "hydration-asset" ||
+		token?.type !== "hydration-asset" ||
 		mirror.chainId !== "pah" ||
 		(mirror.type !== "native" && mirror.type !== "asset")
 	)
 		return null;
 
 	return {
-		origin: mirror.chainId,
-		destination: tokenOut.chainId,
-		mirrorTokenId,
+		hydrationTokenId,
+		hydrationChainId: token.chainId,
+		hydrationAssetId: token.assetId,
+		assetHubTokenId,
 	};
+};
+
+const getHydrationDestination = (
+	tokenIdOut: TokenId,
+	{ mirrors, hydrationFeeAssetIds }: SwapRouteContext,
+): InScopeMirror | null => {
+	const mirror = getInScopeMirror(tokenIdOut, mirrors);
+	return mirror && hydrationFeeAssetIds.has(mirror.hydrationAssetId)
+		? mirror
+		: null;
+};
+
+const getHydrationSource = (
+	tokenIdIn: TokenId,
+	{ mirrors }: SwapRouteContext,
+): InScopeMirror | null => getInScopeMirror(tokenIdIn, mirrors);
+
+const findHydrationSourceOf = (
+	assetHubTokenId: TokenId,
+	context: SwapRouteContext,
+): InScopeMirror | null => {
+	for (const hydrationTokenId of context.mirrors.keys()) {
+		const source = getHydrationSource(hydrationTokenId, context);
+		if (source?.assetHubTokenId === assetHubTokenId) return source;
+	}
+	return null;
 };
 
 const resolveXcmRoute = (
 	tokenIdIn: TokenId,
 	tokenIdOut: TokenId,
-	{ nativeTokenId, mirrors }: SwapRouteContext,
+	context: SwapRouteContext,
 ): XcmRoute | null => {
-	const xcmDestination = getXcmDestination(tokenIdOut, mirrors);
-	const tokenIn = tryParseTokenId(tokenIdIn);
-	if (!xcmDestination || tokenIn?.chainId !== xcmDestination.origin)
-		return null;
+	const source = getHydrationSource(tokenIdIn, context);
+	if (source)
+		return source.assetHubTokenId === tokenIdOut
+			? {
+					kind: "xcm-transfer",
+					origin: source.hydrationChainId,
+					destination: "pah",
+					tokenIdIn,
+					tokenIdOut,
+				}
+			: null;
 
-	const { mirrorTokenId, ...target } = xcmDestination;
-	if (tokenIdIn === mirrorTokenId)
-		return { kind: "xcm-transfer", ...target, tokenIdIn, tokenIdOut };
+	const destination = getHydrationDestination(tokenIdOut, context);
+	const tokenIn = tryParseTokenId(tokenIdIn);
+	if (!destination || tokenIn?.chainId !== "pah") return null;
+
+	const lane = {
+		origin: "pah",
+		destination: destination.hydrationChainId,
+	} as const;
+	if (tokenIdIn === destination.assetHubTokenId)
+		return { kind: "xcm-transfer", ...lane, tokenIdIn, tokenIdOut };
 
 	if (tokenIn.type === "pool-asset") return null;
 
 	return {
 		kind: "xcm-swap",
-		...target,
+		...lane,
 		tokenIdIn,
 		tokenIdOut,
-		path: getAmmPath(tokenIdIn, mirrorTokenId, nativeTokenId),
+		path: getAmmPath(
+			tokenIdIn,
+			destination.assetHubTokenId,
+			context.nativeTokenId,
+		),
 	};
 };
 
@@ -151,25 +201,14 @@ export const resolveSwapRoute = ({
 	return resolveXcmRoute(tokenIdIn, tokenIdOut, context);
 };
 
-export const getFeePayableMirrorTokenIds = (
-	mirrors: MirrorTokenIds,
-	destinationFeeAssetIds: ReadonlySet<number>,
-): MirrorTokenIds =>
-	new Map(
-		[...mirrors].filter(([tokenIdOut]) => {
-			const tokenOut = tryParseTokenId(tokenIdOut);
-			return (
-				tokenOut?.type === "hydration-asset" &&
-				destinationFeeAssetIds.has(tokenOut.assetId)
-			);
-		}),
-	);
+const isOffAssetHub = (tokenId: TokenId, { assetHubId }: SwapRouteContext) =>
+	!!tokenId && tryParseTokenId(tokenId)?.chainId !== assetHubId;
 
 export const canFlipSwapTokens = (
 	{ tokenIdIn, tokenIdOut }: SwapTokenIds,
 	context: SwapRouteContext,
 ): boolean =>
-	!getXcmDestination(tokenIdOut, context.mirrors) ||
+	!(isOffAssetHub(tokenIdIn, context) || isOffAssetHub(tokenIdOut, context)) ||
 	!!resolveSwapRoute({
 		...context,
 		tokenIdIn: tokenIdOut,
@@ -181,13 +220,16 @@ export const getNextSwapTokens = (
 	change: SwapTokensChange,
 	context: SwapRouteContext,
 ): SwapTokenIds => {
-	const { nativeTokenId, mirrors } = context;
+	const { nativeTokenId } = context;
 
 	switch (change.type) {
 		case "in": {
 			const { tokenId } = change;
 			if (resolveXcmRoute(tokenId, prev.tokenIdOut, context))
 				return { ...prev, tokenIdIn: tokenId };
+			const source = getHydrationSource(tokenId, context);
+			if (source)
+				return { tokenIdIn: tokenId, tokenIdOut: source.assetHubTokenId };
 			if (tokenId !== nativeTokenId)
 				return { tokenIdIn: tokenId, tokenIdOut: nativeTokenId };
 			if (prev.tokenIdOut === nativeTokenId)
@@ -196,15 +238,22 @@ export const getNextSwapTokens = (
 		}
 		case "out": {
 			const { tokenId } = change;
-			const xcmDestination = getXcmDestination(tokenId, mirrors);
-			if (xcmDestination)
+			const destination = getHydrationDestination(tokenId, context);
+			if (destination)
 				return resolveXcmRoute(prev.tokenIdIn, tokenId, context)
 					? { ...prev, tokenIdOut: tokenId }
-					: { tokenIdIn: xcmDestination.mirrorTokenId, tokenIdOut: tokenId };
+					: { tokenIdIn: destination.assetHubTokenId, tokenIdOut: tokenId };
+			if (getHydrationSource(prev.tokenIdIn, context)) {
+				if (resolveXcmRoute(prev.tokenIdIn, tokenId, context))
+					return { ...prev, tokenIdOut: tokenId };
+				const source = findHydrationSourceOf(tokenId, context);
+				if (source)
+					return { tokenIdIn: source.hydrationTokenId, tokenIdOut: tokenId };
+			}
 			if (tokenId !== nativeTokenId)
 				return { tokenIdIn: nativeTokenId, tokenIdOut: tokenId };
 			if (prev.tokenIdIn === nativeTokenId)
-				return getXcmDestination(prev.tokenIdOut, mirrors)
+				return getHydrationDestination(prev.tokenIdOut, context)
 					? { ...prev, tokenIdOut: tokenId }
 					: { tokenIdIn: prev.tokenIdOut, tokenIdOut: tokenId };
 			return { ...prev, tokenIdOut: tokenId };
@@ -219,28 +268,36 @@ export const getNextSwapTokens = (
 export const getSwapTokenLists = ({
 	ammTokens,
 	allTokens,
-	mirrors,
+	context,
 }: {
 	ammTokens: Record<TokenId, Token>;
 	allTokens: Record<TokenId, Token>;
-	mirrors: MirrorTokenIds;
+	context: SwapRouteContext;
 }): {
 	tokensIn: Record<TokenId, Token>;
 	tokensOut: Record<TokenId, Token>;
 } => {
 	const tokensIn = { ...ammTokens };
-	const destinationTokens: Record<TokenId, Token> = {};
+	const tokensOut = { ...ammTokens };
 
-	for (const tokenIdOut of mirrors.keys()) {
-		const tokenIdIn = getXcmDestination(tokenIdOut, mirrors)?.mirrorTokenId;
-		const tokenIn = tokenIdIn && allTokens[tokenIdIn];
-		const tokenOut = allTokens[tokenIdOut];
-		if (!tokenIn || !tokenOut) continue;
-		tokensIn[tokenIn.id] = tokenIn;
-		destinationTokens[tokenOut.id] = tokenOut;
+	for (const [hydrationTokenId, assetHubTokenId] of context.mirrors) {
+		const hydrationToken = allTokens[hydrationTokenId];
+		const assetHubToken = allTokens[assetHubTokenId];
+		if (!hydrationToken || !assetHubToken) continue;
+
+		if (getHydrationDestination(hydrationTokenId, context)) {
+			tokensIn[assetHubTokenId] = assetHubToken;
+			tokensOut[assetHubTokenId] = assetHubToken;
+			tokensOut[hydrationTokenId] = hydrationToken;
+		}
+		if (
+			getHydrationSource(hydrationTokenId, context) &&
+			ammTokens[assetHubTokenId]
+		)
+			tokensIn[hydrationTokenId] = hydrationToken;
 	}
 
-	return { tokensIn, tokensOut: { ...tokensIn, ...destinationTokens } };
+	return { tokensIn, tokensOut };
 };
 
 export type RouteAccess =
@@ -249,11 +306,13 @@ export type RouteAccess =
 
 export const getRouteAccess = (
 	account: Pick<WalletAccount, "platform" | "address">,
+	{ origin }: Pick<XcmRoute, "origin">,
 ): RouteAccess =>
 	account.platform === "ethereum" || isEthereumAddress(account.address)
 		? {
 				allowed: false,
-				reason:
-					"Ethereum accounts cannot send to Hydration yet: the same address is a different account there",
+				reason: isChainIdHydration(origin)
+					? "Ethereum accounts cannot send from Hydration yet: the same address is a different account there"
+					: "Ethereum accounts cannot send to Hydration yet: the same address is a different account there",
 			}
 		: { allowed: true, beneficiary: account.address };
