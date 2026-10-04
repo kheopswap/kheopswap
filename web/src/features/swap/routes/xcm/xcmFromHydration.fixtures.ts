@@ -1700,3 +1700,562 @@ export const usdcToAssetHub: XcmFromHydrationFixture = {
 		},
 	},
 };
+
+export const dotToAssetHubTrapped: XcmFromHydrationFixture = {
+	sender: "12eNcvtqwzXCnAESdtqkBdRoigUqAdEB9BFHNp7vDkF8zvXB",
+	beneficiary: "14Y4nJrx6fogWpLJPu6XkFCEgtJWPkzv3nZtGkBH58nxkGHk",
+	amount: 50000000n,
+	callArgs: {
+		dest: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "X1",
+					value: {
+						type: "Parachain",
+						value: 1000,
+					},
+				},
+			},
+		},
+		assets: {
+			type: "V5",
+			value: [
+				{
+					id: {
+						parents: 1,
+						interior: {
+							type: "Here",
+							value: undefined,
+						},
+					},
+					fun: {
+						type: "Fungible",
+						value: 50000000n,
+					},
+				},
+			],
+		},
+		assets_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		remote_fees_id: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "Here",
+					value: undefined,
+				},
+			},
+		},
+		fees_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		custom_xcm_on_dest: {
+			type: "V5",
+			value: [
+				{
+					type: "DepositAsset",
+					value: {
+						assets: {
+							type: "Wild",
+							value: {
+								type: "AllCounted",
+								value: 1,
+							},
+						},
+						beneficiary: {
+							parents: 0,
+							interior: {
+								type: "X1",
+								value: {
+									type: "AccountId32",
+									value: {
+										network: undefined,
+										id: "0x9c660954f0bae84d52c12a5719a91b5fd6a26500202a5512062af551cc3baa78",
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+		weight_limit: {
+			type: "Unlimited",
+			value: undefined,
+		},
+	},
+	origin: {
+		success: true,
+		value: {
+			execution_result: {
+				success: true,
+				value: {
+					actual_weight: undefined,
+					pays_fee: {
+						type: "Yes",
+						value: undefined,
+					},
+				},
+			},
+			emitted_events: [
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "Sent",
+						value: {
+							origin: {
+								parents: 0,
+								interior: {
+									type: "X1",
+									value: {
+										type: "AccountId32",
+										value: {
+											network: {
+												type: "Polkadot",
+												value: undefined,
+											},
+											id: "0x48bd174e0ba05321362fff413753402dfc888080e5e41effc616cfbaeb68ac5c",
+										},
+									},
+								},
+							},
+							destination: {
+								parents: 1,
+								interior: {
+									type: "X1",
+									value: {
+										type: "Parachain",
+										value: 1000,
+									},
+								},
+							},
+							message: [
+								{
+									type: "WithdrawAsset",
+									value: [
+										{
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 50000000n,
+											},
+										},
+									],
+								},
+								{
+									type: "ClearOrigin",
+									value: undefined,
+								},
+								{
+									type: "BuyExecution",
+									value: {
+										fees: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 50000000n,
+											},
+										},
+										weight_limit: {
+											type: "Unlimited",
+											value: undefined,
+										},
+									},
+								},
+								{
+									type: "DepositAsset",
+									value: {
+										assets: {
+											type: "Wild",
+											value: {
+												type: "AllCounted",
+												value: 1,
+											},
+										},
+										beneficiary: {
+											parents: 0,
+											interior: {
+												type: "X1",
+												value: {
+													type: "AccountId32",
+													value: {
+														network: undefined,
+														id: "0x9c660954f0bae84d52c12a5719a91b5fd6a26500202a5512062af551cc3baa78",
+													},
+												},
+											},
+										},
+									},
+								},
+							],
+							message_id:
+								"0xb2c8c7974439a69f41c86a57b5cec98d2b01dba5b4222c6a5048eaf093533cc5",
+						},
+					},
+				},
+			],
+			forwarded_xcms: [
+				[
+					{
+						type: "V5",
+						value: {
+							parents: 1,
+							interior: {
+								type: "X1",
+								value: {
+									type: "Parachain",
+									value: 1000,
+								},
+							},
+						},
+					},
+					[
+						{
+							type: "V5",
+							value: [
+								{
+									type: "WithdrawAsset",
+									value: [
+										{
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 50000000n,
+											},
+										},
+									],
+								},
+								{
+									type: "ClearOrigin",
+									value: undefined,
+								},
+								{
+									type: "BuyExecution",
+									value: {
+										fees: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 50000000n,
+											},
+										},
+										weight_limit: {
+											type: "Unlimited",
+											value: undefined,
+										},
+									},
+								},
+								{
+									type: "DepositAsset",
+									value: {
+										assets: {
+											type: "Wild",
+											value: {
+												type: "AllCounted",
+												value: 1,
+											},
+										},
+										beneficiary: {
+											parents: 0,
+											interior: {
+												type: "X1",
+												value: {
+													type: "AccountId32",
+													value: {
+														network: undefined,
+														id: "0x9c660954f0bae84d52c12a5719a91b5fd6a26500202a5512062af551cc3baa78",
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									type: "SetTopic",
+									value:
+										"0xb2c8c7974439a69f41c86a57b5cec98d2b01dba5b4222c6a5048eaf093533cc5",
+								},
+							],
+						},
+					],
+				],
+			],
+		},
+	},
+	deliveryFees: {
+		success: true,
+		value: {
+			type: "V5",
+			value: [],
+		},
+	},
+	fee: {
+		hdx: 557619677760n,
+		currency: 0,
+		refHdx: 154096976308000000n,
+		refCurrency: 154096976308000000n,
+	},
+	destination: {
+		success: true,
+		value: {
+			execution_result: {
+				type: "Incomplete",
+				value: {
+					used: {
+						ref_time: 672214000n,
+						proof_size: 11036n,
+					},
+					error: {
+						index: 3,
+						error: {
+							type: "FailedToTransactAsset",
+							value: undefined,
+						},
+					},
+				},
+			},
+			emitted_events: [
+				{
+					type: "Balances",
+					value: {
+						type: "Withdraw",
+						value: {
+							who: "13cKp89Uh2yWgTG28JA1QEvPUMjEPKejqkjHKf9zqLiFKjH6",
+							amount: 50000000n,
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Deposit",
+						value: {
+							who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
+							amount: 8347832n,
+						},
+					},
+				},
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "AssetsTrapped",
+						value: {
+							hash: "0x7e8c0d391f24b3d621ab701e5f420678eb91bbef01575a93fe61968f055ca202",
+							origin: {
+								parents: 1,
+								interior: {
+									type: "X1",
+									value: {
+										type: "Parachain",
+										value: 2034,
+									},
+								},
+							},
+							assets: {
+								type: "V5",
+								value: [
+									{
+										id: {
+											parents: 1,
+											interior: {
+												type: "Here",
+												value: undefined,
+											},
+										},
+										fun: {
+											type: "Fungible",
+											value: 41652168n,
+										},
+									},
+								],
+							},
+						},
+					},
+				},
+			],
+			forwarded_xcms: [],
+		},
+	},
+};
+
+export const pinkToAssetHubInsufficient: XcmFromHydrationFixture = {
+	sender: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+	beneficiary: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+	amount: 1000000000000n,
+	callArgs: {
+		dest: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "X1",
+					value: {
+						type: "Parachain",
+						value: 1000,
+					},
+				},
+			},
+		},
+		assets: {
+			type: "V5",
+			value: [
+				{
+					id: {
+						parents: 1,
+						interior: {
+							type: "X3",
+							value: [
+								{
+									type: "Parachain",
+									value: 1000,
+								},
+								{
+									type: "PalletInstance",
+									value: 50,
+								},
+								{
+									type: "GeneralIndex",
+									value: 23n,
+								},
+							],
+						},
+					},
+					fun: {
+						type: "Fungible",
+						value: 1000000000000n,
+					},
+				},
+			],
+		},
+		assets_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		remote_fees_id: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "X3",
+					value: [
+						{
+							type: "Parachain",
+							value: 1000,
+						},
+						{
+							type: "PalletInstance",
+							value: 50,
+						},
+						{
+							type: "GeneralIndex",
+							value: 23n,
+						},
+					],
+				},
+			},
+		},
+		fees_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		custom_xcm_on_dest: {
+			type: "V5",
+			value: [
+				{
+					type: "DepositAsset",
+					value: {
+						assets: {
+							type: "Wild",
+							value: {
+								type: "AllCounted",
+								value: 1,
+							},
+						},
+						beneficiary: {
+							parents: 0,
+							interior: {
+								type: "X1",
+								value: {
+									type: "AccountId32",
+									value: {
+										network: undefined,
+										id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+		weight_limit: {
+			type: "Unlimited",
+			value: undefined,
+		},
+	},
+	origin: {
+		success: true,
+		value: {
+			execution_result: {
+				success: false,
+				value: {
+					post_info: {
+						actual_weight: undefined,
+						pays_fee: {
+							type: "Yes",
+							value: undefined,
+						},
+					},
+					error: {
+						type: "Module",
+						value: {
+							type: "PolkadotXcm",
+							value: {
+								type: "LocalExecutionIncompleteWithError",
+								value: {
+									index: 0,
+									error: {
+										type: "FailedToTransactAsset",
+										value: undefined,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			emitted_events: [],
+			forwarded_xcms: [],
+		},
+	},
+};

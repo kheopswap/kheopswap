@@ -17,7 +17,7 @@ import {
 	timer,
 } from "rxjs";
 import { getApi$ } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
+import { getChainById, isChainIdHydration } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import type { Token } from "../../registry/tokens/types";
@@ -35,7 +35,6 @@ import type {
 } from "./types";
 
 const ARRIVAL_TIMEOUT_MS = 10 * 60_000;
-const ARRIVAL_BUFFER_BLOCKS = 10;
 
 const XCM_ARRIVAL_TYPES = [
 	"xcmTransfer",
@@ -50,6 +49,7 @@ export const isXcmArrivalType = (
 	XCM_ARRIVAL_TYPES.some((arrivalType) => arrivalType === type);
 
 export type XcmTransferFollowUpData = {
+	origin: ChainId;
 	target: XcmDepositTarget;
 	tokenOut: Token;
 	estimatedReceived: bigint | undefined;
@@ -164,17 +164,29 @@ const toArrival = (
 const isFinalArrival = (arrival: XcmArrival) =>
 	arrival.status !== "awaiting-origin" && arrival.status !== "in-transit";
 
+export const getArrivalBufferBlocks = (destination: ChainId) =>
+	isChainIdHydration(destination) ? 10 : 30;
+
+export const getXcmBlockEvents = (
+	records: { phase: { type: string }; event: TxEvents[number] }[],
+): TxEvents =>
+	records
+		.filter(({ phase }) => phase.type !== "ApplyExtrinsic")
+		.map(({ event }) => event);
+
 export const getXcmArrival$ = ({
 	record$,
 	blockEvents$,
 	target,
 	destinationParaId,
+	bufferBlocks,
 	timeoutMs = ARRIVAL_TIMEOUT_MS,
 }: {
 	record$: Observable<TransactionRecord | undefined>;
 	blockEvents$: Observable<TxEvents>;
 	target: XcmDepositTarget;
 	destinationParaId: number;
+	bufferBlocks: number;
 	timeoutMs?: number;
 }): Observable<XcmArrival> => {
 	const origin$ = record$.pipe(
@@ -186,7 +198,7 @@ export const getXcmArrival$ = ({
 
 	const recentBlocks$ = blockEvents$.pipe(
 		scan(
-			(blocks, events) => [...blocks, events].slice(-ARRIVAL_BUFFER_BLOCKS),
+			(blocks, events) => [...blocks, events].slice(-bufferBlocks),
 			[] as TxEvents[],
 		),
 		startWith([] as TxEvents[]),
@@ -212,7 +224,7 @@ export const getXcmArrival$ = ({
 const getBestBlockEvents$ = (chainId: ChainId) =>
 	getApi$(chainId).pipe(
 		switchMap((api) => api.query.System.Events.watchValue({ at: "best" })),
-		map(({ value }) => value.map(({ event }) => event) as TxEvents),
+		map(({ value }) => getXcmBlockEvents(value)),
 	);
 
 const arrivalsSubject = new BehaviorSubject<Record<TransactionId, XcmArrival>>(
@@ -236,6 +248,7 @@ export const trackXcmArrivals = () =>
 					blockEvents$: getBestBlockEvents$(destination),
 					target,
 					destinationParaId: getChainById(destination).paraId,
+					bufferBlocks: getArrivalBufferBlocks(destination),
 				}).pipe(map((arrival) => [id, arrival] as const));
 			}),
 		)

@@ -12,6 +12,7 @@ import { useSwapPricing } from "./useSwapPricing";
 const USER_ADDRESS = "5UserAddress";
 const DOT = "native::pah";
 const USDC = "asset::pah::1337";
+const HYDRATION_DOT = "hydration-asset::hydration::5";
 
 // mutable per-test fixture, referenced by the hoisted vi.mock factories
 const fixture = vi.hoisted(() => ({
@@ -29,11 +30,13 @@ const fixture = vi.hoisted(() => ({
 	},
 	rawPlancksOut: undefined as bigint | undefined,
 	slippage: 0.01,
+	receivingAddresses: [] as (string | undefined)[],
 }));
 
 const TOKENS: Record<string, { decimals: number; symbol: string }> = {
 	[DOT]: { decimals: 10, symbol: "DOT" },
 	[USDC]: { decimals: 6, symbol: "USDC" },
+	[HYDRATION_DOT]: { decimals: 10, symbol: "DOT" },
 };
 
 vi.mock("../../common/constants", async (importOriginal) => ({
@@ -98,13 +101,16 @@ vi.mock("../../hooks/useExistentialDeposit", () => ({
 }));
 
 vi.mock("../../hooks/useCanAccountReceive", () => ({
-	useCanAccountReceive: ({ address }: { address: string | undefined }) => ({
-		data:
-			address === "5AppFeeAddress"
-				? fixture.appFeeCanReceive
-				: fixture.recipientCanReceive,
-		isLoading: false,
-	}),
+	useCanAccountReceive: ({ address }: { address: string | undefined }) => {
+		fixture.receivingAddresses.push(address);
+		return {
+			data:
+				address === "5AppFeeAddress"
+					? fixture.appFeeCanReceive
+					: fixture.recipientCanReceive,
+			isLoading: false,
+		};
+	},
 }));
 
 vi.mock("../../hooks/useAssetConvertPlancks", () => ({
@@ -135,6 +141,7 @@ beforeEach(() => {
 	fixture.recipientCanReceive = { canReceive: true };
 	fixture.rawPlancksOut = undefined;
 	fixture.slippage = 0.01;
+	fixture.receivingAddresses = [];
 });
 
 describe("useSwapPricing", () => {
@@ -185,6 +192,22 @@ describe("useSwapPricing", () => {
 
 		expect(result.appCommission).toBe(0n);
 		expect(result.swapPlancksIn).toBe(FOUR_DOT);
+	});
+
+	it("sends a Hydration input whole, without watching the fee account on Hydration", () => {
+		fixture.appFeeCanReceive = { canReceive: true };
+		const result = renderHook(() =>
+			useSwapPricing({
+				tokenIdIn: HYDRATION_DOT,
+				tokenIdOut: undefined,
+				amountIn: "4",
+				accountAddress: USER_ADDRESS,
+			}),
+		).result.current;
+
+		expect(result.appCommission).toBe(0n);
+		expect(result.swapPlancksIn).toBe(FOUR_DOT);
+		expect(fixture.receivingAddresses).not.toContain("5AppFeeAddress");
 	});
 
 	it("derives the price impact from the spot conversion", () => {
