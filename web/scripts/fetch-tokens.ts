@@ -396,6 +396,8 @@ function getTokenId(token: TokenNoId): string {
 			return `pool-asset::${token.chainId}::${token.poolAssetId}`;
 		case "foreign-asset":
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}`;
+		case "hydration-asset":
+			return `hydration-asset::${token.chainId}::${token.assetId}`;
 		default:
 			throw new Error(`Unsupported token type: ${String(token.type)}`);
 	}

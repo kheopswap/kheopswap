@@ -1,8 +1,16 @@
 import lzs from "lz-string";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
 import { safeParse, safeStringify } from "../../utils/serialization";
-import { getChainById, isChainIdAssetHub } from "../chains/chains";
-import type { ChainId, ChainIdAssetHub } from "../chains/types";
+import {
+	getChainById,
+	isChainIdAssetHub,
+	isChainIdHydration,
+} from "../chains/chains";
+import type {
+	ChainId,
+	ChainIdAssetHub,
+	ChainIdHydration,
+} from "../chains/types";
 import {
 	getEvmNetworkById,
 	getEvmNetworkName,
@@ -14,11 +22,13 @@ import type {
 	TokenId,
 	TokenIdAsset,
 	TokenIdForeignAsset,
+	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 	TokenType,
 	TokenTypeAsset,
 	TokenTypeForeignAsset,
+	TokenTypeHydrationAsset,
 	TokenTypeNative,
 	TokenTypePoolAsset,
 } from "./types";
@@ -47,6 +57,22 @@ export const isTokenIdAsset = (
 	}
 };
 
+const narrowChainId = <Id extends ChainId>(
+	chainId: ChainId,
+	isChainIdOfKind: (id: unknown) => id is Id,
+	tokenType: TokenType,
+): Id => {
+	if (!isChainIdOfKind(chainId))
+		throw new Error(`Unsupported chain id for ${tokenType}: ${chainId}`);
+	return chainId;
+};
+
+const parseNumericId = (value: string | undefined, label: string) => {
+	const id = Number(value);
+	if (Number.isNaN(id)) throw new Error(`Invalid ${label}`);
+	return id;
+};
+
 export const parseTokenId = (
 	tokenId: TokenId,
 ):
@@ -57,7 +83,8 @@ export const parseTokenId = (
 			type: "foreign-asset";
 			chainId: ChainIdAssetHub;
 			location: XcmV5Multilocation;
-	  } => {
+	  }
+	| { type: "hydration-asset"; chainId: ChainIdHydration; assetId: number } => {
 	try {
 		const parts = tokenId.split("::");
 
@@ -65,23 +92,27 @@ export const parseTokenId = (
 		if (!getChainById(chainId))
 			throw new Error(`Unsupported chain id: ${chainId}`);
 
-		if (parts[0] === "native") return { type: "native", chainId };
-
-		if (!isChainIdAssetHub(chainId))
-			throw new Error(`Unsupported chain id for ${parts[0]}: ${chainId}`);
-
 		switch (parts[0]) {
-			case "asset": {
-				const assetId = Number(parts[2]);
-				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
-				return { type: "asset", chainId, assetId };
-			}
-			case "pool-asset": {
-				const poolAssetId = Number(parts[2]);
-				if (Number.isNaN(poolAssetId)) throw new Error("Invalid poolAssetId");
-				return { type: "pool-asset", chainId, poolAssetId };
-			}
+			case "native":
+				return { type: "native", chainId };
+			case "asset":
+				return {
+					type: "asset",
+					chainId: narrowChainId(chainId, isChainIdAssetHub, "asset"),
+					assetId: parseNumericId(parts[2], "assetId"),
+				};
+			case "pool-asset":
+				return {
+					type: "pool-asset",
+					chainId: narrowChainId(chainId, isChainIdAssetHub, "pool-asset"),
+					poolAssetId: parseNumericId(parts[2], "poolAssetId"),
+				};
 			case "foreign-asset": {
+				const assetHubChainId = narrowChainId(
+					chainId,
+					isChainIdAssetHub,
+					"foreign-asset",
+				);
 				if (parts.length < 3) throw new Error("Invalid foreign-asset token id");
 				const location = safeParse<XcmV5Multilocation>(
 					lzs.decompressFromBase64(parts[2] as string),
@@ -93,8 +124,18 @@ export const parseTokenId = (
 					!location.interior
 				)
 					throw new Error("Invalid multilocation");
-				return { type: "foreign-asset", chainId, location };
+				return { type: "foreign-asset", chainId: assetHubChainId, location };
 			}
+			case "hydration-asset":
+				return {
+					type: "hydration-asset",
+					chainId: narrowChainId(
+						chainId,
+						isChainIdHydration,
+						"hydration-asset",
+					),
+					assetId: parseNumericId(parts[2], "assetId"),
+				};
 			default:
 				throw new Error(`Unsupported token type: ${tokenId}`);
 		}
@@ -111,7 +152,9 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 			? TokenIdPoolAsset
 			: T extends TokenTypeForeignAsset
 				? TokenIdForeignAsset
-				: never;
+				: T extends TokenTypeHydrationAsset
+					? TokenIdHydrationAsset
+					: never;
 
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 	token:
@@ -126,6 +169,11 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 				type: TokenTypeForeignAsset;
 				chainId: ChainIdAssetHub;
 				location: unknown;
+		  }
+		| {
+				type: TokenTypeHydrationAsset;
+				chainId: ChainIdHydration;
+				assetId: number;
 		  },
 ): Result => {
 	switch (token.type) {
@@ -137,6 +185,8 @@ export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 			return `pool-asset::${token.chainId}::${token.poolAssetId}` as Result;
 		case "foreign-asset":
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}` as Result;
+		case "hydration-asset":
+			return `hydration-asset::${token.chainId}::${token.assetId}` as Result;
 	}
 };
 

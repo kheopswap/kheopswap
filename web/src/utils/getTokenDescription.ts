@@ -45,6 +45,8 @@ export const getTokenDescription = (token: Token) => {
 			return chain.name;
 		case "foreign-asset":
 			return `Foreign - ${getForeignTokenOrigin(token)}`;
+		case "hydration-asset":
+			return `Hydration - ${token.assetId}`;
 		default:
 			return token.type;
 	}
