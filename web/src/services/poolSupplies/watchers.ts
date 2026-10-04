@@ -8,7 +8,7 @@ import {
 	Subscription,
 } from "rxjs";
 import { getApi } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import type { LoadingStatus } from "../common";
 import { getPoolsByChain$ } from "../pools/service";
@@ -54,14 +54,14 @@ const watchPoolSupply = async (poolSupplyId: PoolSupplyId) => {
 	const [tokenId1, tokenId2] = parsePoolSupplyId(poolSupplyId);
 	const token1 = parseTokenId(tokenId1);
 
-	const chain = getChainById(token1.chainId);
-	if (!chain) throw new Error(`Chain not found for ${token1.chainId}`);
+	if (!isChainIdAssetHub(token1.chainId))
+		throw new Error(`Pools are not supported on ${token1.chainId}`);
 
-	const api = await getApi(chain.id);
+	const api = await getApi(token1.chainId);
 
 	updatePoolSupplyLoadingStatus(poolSupplyId, "loading");
 
-	const chainPool$ = getPoolsByChain$(chain.id).pipe(
+	const chainPool$ = getPoolsByChain$(token1.chainId).pipe(
 		map((chainPools) =>
 			chainPools.pools.find(
 				(p) =>

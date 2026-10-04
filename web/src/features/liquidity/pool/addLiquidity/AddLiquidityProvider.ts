@@ -10,6 +10,7 @@ const useAddLiquidityProvider = () => {
 	);
 
 	const {
+		assetHub,
 		pool,
 		nativeToken,
 		assetToken,
@@ -27,6 +28,7 @@ const useAddLiquidityProvider = () => {
 	}, [liquidityToAdd, lpSlippage]);
 
 	const { data: call } = useAddLiquidityExtrinsic({
+		chainId: assetHub.id,
 		tokenIdNative: nativeToken?.id,
 		tokenIdAsset: assetToken?.id,
 		amountNative: liquidityToAdd?.[0],

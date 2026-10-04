@@ -1,6 +1,5 @@
 import { XcmV5Junction, XcmV5Junctions } from "@polkadot-api/descriptors";
-import { isChainIdAssetHub } from "../chains/chains";
-import type { ChainId } from "../chains/types";
+import type { ChainIdAssetHub } from "../chains/types";
 import { getTokenId, parseTokenId } from "../tokens/helpers";
 import type { TokenId } from "../tokens/types";
 import type { XcmV5Multilocation } from "../types/xcm";
@@ -39,9 +38,9 @@ export const getXcmV5MultilocationFromTokenId = <
 };
 
 export const getTokenIdFromXcmV5Multilocation = (
-	chainId: ChainId,
+	chainId: ChainIdAssetHub,
 	multilocation: XcmV5Multilocation,
-): TokenId | null => {
+): TokenId => {
 	const { interior } = multilocation;
 	if (interior.type === "Here") return `native::${chainId}`;
 
@@ -57,12 +56,9 @@ export const getTokenIdFromXcmV5Multilocation = (
 					assetId: Number(entry.value),
 				});
 
-	if (isChainIdAssetHub(chainId))
-		return getTokenId({
-			type: "foreign-asset",
-			chainId,
-			location: multilocation,
-		});
-
-	return null;
+	return getTokenId({
+		type: "foreign-asset",
+		chainId,
+		location: multilocation,
+	});
 };
