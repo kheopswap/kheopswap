@@ -139,9 +139,9 @@ const useSwapProvider = () => {
 			getSwapTokenLists({
 				ammTokens: pricing.tokens,
 				allTokens,
-				mirrors: formState.mirrors,
+				context: formState.routeContext,
 			}),
-		[pricing.tokens, allTokens, formState.mirrors],
+		[pricing.tokens, allTokens, formState.routeContext],
 	);
 
 	const details = useMemo<AmmSwapDetails | XcmTransferDetails | XcmSwapDetails>(
