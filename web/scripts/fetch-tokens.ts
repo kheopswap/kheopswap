@@ -21,7 +21,7 @@
  *   node --run fetch-tokens -- --timeout 60000
  *
  * Or directly from the web/ folder:
- *   node --experimental-transform-types scripts/fetch-tokens.ts
+ *   node scripts/fetch-tokens.ts
  */
 
 import { createHash } from "node:crypto";
