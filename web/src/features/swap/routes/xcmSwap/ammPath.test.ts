@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { OriginDryRun } from "../xcm/xcmQuote";
-import { type AmmPath, getAmmPath, quoteAmmPath } from "./ammPath";
+import {
+	type AmmPath,
+	getAmmPath,
+	getPathLiquidity,
+	quoteAmmPath,
+} from "./ammPath";
 import { dotToUsdt, usdcToUsdt } from "./xcmSwap.fixtures";
 
 const DOT = "native::pah";
@@ -66,4 +71,65 @@ describe("quoteAmmPath", () => {
 			expect(quote.minOut).toBe(fixture.mins.at(-1));
 		},
 	);
+});
+
+describe("getPathLiquidity", () => {
+	const loaded = (data: readonly [bigint, bigint] | null) => ({
+		data,
+		isLoading: false,
+	});
+	const NO_SECOND_HOP = loaded(null);
+
+	it("ignores the absent second pool of a one-hop path", () => {
+		expect(
+			getPathLiquidity(
+				getAmmPath(DOT, USDT, DOT),
+				loaded([5n, 7n]),
+				NO_SECOND_HOP,
+			),
+		).toEqual({
+			status: "available",
+			hops: [
+				{ tokenIdIn: DOT, tokenIdOut: USDT, reserveIn: 5n, reserveOut: 7n },
+			],
+		});
+	});
+
+	it("orients each pool along its hop", () => {
+		expect(
+			getPathLiquidity(
+				getAmmPath(USDC, USDT, DOT),
+				loaded([1n, 2n]),
+				loaded([3n, 4n]),
+			),
+		).toMatchObject({
+			status: "available",
+			hops: [
+				{ tokenIdIn: USDC, reserveIn: 1n, reserveOut: 2n },
+				{ tokenIdOut: USDT, reserveIn: 3n, reserveOut: 4n },
+			],
+		});
+	});
+
+	it.each([
+		["a missing second pool", loaded(null), "Liquidity pool not found"],
+		["an empty second pool", loaded([0n, 0n]), "Insufficient liquidity"],
+	])("refuses a two-hop path with %s", (_, secondReserves, reason) => {
+		expect(
+			getPathLiquidity(
+				getAmmPath(USDC, USDT, DOT),
+				loaded([1n, 2n]),
+				secondReserves,
+			),
+		).toEqual({ status: "unavailable", reason });
+	});
+
+	it("waits for every pool of the path", () => {
+		expect(
+			getPathLiquidity(getAmmPath(USDC, USDT, DOT), loaded([1n, 2n]), {
+				data: undefined,
+				isLoading: true,
+			}),
+		).toEqual({ status: "loading" });
+	});
 });
