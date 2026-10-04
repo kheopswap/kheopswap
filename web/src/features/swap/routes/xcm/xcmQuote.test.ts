@@ -9,11 +9,20 @@ import { AccountId } from "polkadot-api";
 import { describe, expect, it } from "vitest";
 import { getChainById } from "../../../../registry/chains/chains";
 import {
+	dotToUsdt,
+	dotToUsdtTrapped,
+	usdcToDotInsufficient,
+	usdcToDotNoDeal,
+	usdcToUsdt,
+} from "../xcmSwap/xcmSwap.fixtures";
+import {
 	composeXcmQuote,
 	type DestinationDryRun,
 	describeXcmQuoteFailure,
 	getXcmCallSpendings,
+	getXcmSubmitGate,
 	type OriginDryRun,
+	parseDeliveryFee,
 	parseDestinationDryRun,
 	parseOriginDryRun,
 } from "./xcmQuote";
@@ -51,21 +60,40 @@ const withForwardedXcms = (
 	return { ...dryRun, value: { ...dryRun.value, forwarded_xcms } };
 };
 
+const getLastSwapAmountOut = (dryRun: OriginDryRun) =>
+	dryRun.success
+		? dryRun.value.emitted_events
+				.flatMap((event) =>
+					event.type === "AssetConversion" &&
+					event.value.type === "SwapCreditExecuted"
+						? [event.value.value.amount_out]
+						: [],
+				)
+				.at(-1)
+		: undefined;
+
 describe("parseOriginDryRun", () => {
 	it.each([
-		["DOT", dotSuccess, 304850000n],
-		["USDT", usdtSuccess, 305450000n],
+		["a DOT transfer", dotSuccess.origin, dotSuccess.amount],
+		["a USDT transfer", usdtSuccess.origin, usdtSuccess.amount],
+		[
+			"a two-hop swap",
+			usdcToUsdt.origin,
+			getLastSwapAmountOut(usdcToUsdt.origin),
+		],
+		[
+			"a one-hop swap",
+			dotToUsdt.origin,
+			getLastSwapAmountOut(dotToUsdt.origin),
+		],
 	])(
-		"reads the %s message forwarded to Hydration and the DOT delivery fee",
-		(_, fixture, deliveryFee) => {
-			const parsed = parseOriginDryRun(fixture.origin, HYDRATION_PARA_ID);
-			if (!fixture.origin.success) throw new Error("fixture origin failed");
-			expect(parsed).toEqual({
+		"reads the message of %s forwarded to Hydration and the amount it sends",
+		(_, origin, sent) => {
+			if (!origin.success) throw new Error("fixture origin failed");
+			expect(sent).toBeDefined();
+			expect(parseOriginDryRun(origin, HYDRATION_PARA_ID)).toEqual({
 				success: true,
-				value: {
-					message: fixture.origin.value.forwarded_xcms[0]?.[1][0],
-					deliveryFee,
-				},
+				value: { message: origin.value.forwarded_xcms[0]?.[1][0], sent },
 			});
 		},
 	);
@@ -104,6 +132,30 @@ describe("parseOriginDryRun", () => {
 			failure: {
 				kind: "origin-failed",
 				reason: "Insufficient balance to cover the transfer and its fees",
+			},
+		});
+	});
+
+	it("explains a swap that lacks the input token", () => {
+		expect(
+			parseOriginDryRun(usdcToDotInsufficient.origin, HYDRATION_PARA_ID),
+		).toEqual({
+			success: false,
+			failure: {
+				kind: "origin-failed",
+				reason: "Insufficient balance to cover the transfer and its fees",
+			},
+		});
+	});
+
+	it("explains a swap whose output falls below its minimum", () => {
+		expect(
+			parseOriginDryRun(usdcToDotNoDeal.origin, HYDRATION_PARA_ID),
+		).toEqual({
+			success: false,
+			failure: {
+				kind: "origin-failed",
+				reason: "The price moved beyond your slippage tolerance",
 			},
 		});
 	});
@@ -231,6 +283,27 @@ describe("parseDestinationDryRun", () => {
 		});
 	});
 
+	it("counts the swap output deposited to the beneficiary", () => {
+		expect(
+			parseDestinationDryRun(requireDestination(usdcToUsdt.destination), {
+				assetId: 10,
+				beneficiary: usdcToUsdt.sender,
+			}),
+		).toEqual({ success: true, value: 98764625n });
+	});
+
+	it("reports trapped assets when the swap output cannot buy execution", () => {
+		expect(
+			parseDestinationDryRun(requireDestination(dotToUsdtTrapped.destination), {
+				assetId: 10,
+				beneficiary: dotToUsdtTrapped.sender,
+			}),
+		).toMatchObject({
+			success: false,
+			failure: { kind: "destination-rejected", assetsTrapped: true },
+		});
+	});
+
 	it("treats a runtime API error as unavailable, never as success", () => {
 		expect(
 			parseDestinationDryRun(
@@ -241,13 +314,78 @@ describe("parseDestinationDryRun", () => {
 	});
 });
 
+describe("parseDeliveryFee", () => {
+	it("reads the DOT Asset Hub charges to deliver the message", () => {
+		if (!usdcToUsdt.deliveryFee) throw new Error("fixture has no delivery fee");
+		expect(parseDeliveryFee(usdcToUsdt.deliveryFee)).toBe(305450000n);
+	});
+
+	it("gives no fee when the runtime API fails", () => {
+		expect(
+			parseDeliveryFee({
+				success: false,
+				value: { type: "Unroutable", value: undefined },
+			}),
+		).toBeNull();
+	});
+
+	it("gives no fee when it is charged in another asset", () => {
+		expect(
+			parseDeliveryFee({
+				success: true,
+				value: {
+					type: "V5",
+					value: [
+						{
+							id: {
+								parents: 0,
+								interior: XcmV5Junctions.X2([
+									XcmV5Junction.PalletInstance(50),
+									XcmV5Junction.GeneralIndex(1984n),
+								]),
+							},
+							fun: { type: "Fungible", value: 1000n },
+						},
+					],
+				},
+			}),
+		).toBeNull();
+	});
+});
+
 describe("composeXcmQuote", () => {
 	it("charges Hydration the difference between sent and received", () => {
-		expect(composeXcmQuote(10_000_000_000n, 304850000n, 9995190152n)).toEqual({
+		expect(composeXcmQuote(10_000_000_000n, 9995190152n)).toEqual({
 			received: 9995190152n,
-			deliveryFee: 304850000n,
 			destinationFee: 4809848n,
 		});
+	});
+});
+
+describe("getXcmSubmitGate", () => {
+	it.each([
+		[
+			"closes on an error, even with a quote",
+			{ errorMessage: "Boom", isLoading: false, isQuoted: true },
+			{ status: "closed", reason: "Boom" },
+		],
+		[
+			"waits while the quote loads",
+			{ errorMessage: null, isLoading: true, isQuoted: false },
+			{ status: "pending" },
+		],
+		[
+			"opens on a quote",
+			{ errorMessage: null, isLoading: false, isQuoted: true },
+			{ status: "open" },
+		],
+		[
+			"stays closed without a quote",
+			{ errorMessage: null, isLoading: false, isQuoted: false },
+			{ status: "closed", reason: "Nothing to send yet" },
+		],
+	] as const)("%s", (_, props, expected) => {
+		expect(getXcmSubmitGate(props)).toEqual(expected);
 	});
 });
 
@@ -275,6 +413,14 @@ describe("describeXcmQuoteFailure", () => {
 			"Hydration would reject the transfer: Barrier",
 		],
 		[{ kind: "nothing-deposited" }, "Hydration would not credit your account"],
+		[
+			{ kind: "delivery-fee-unavailable" },
+			"Could not estimate the Asset Hub delivery fee",
+		],
+		[
+			{ kind: "call-unavailable" },
+			"Could not prepare the transaction on Asset Hub",
+		],
 	] as const)("%o", (failure, expected) => {
 		expect(describeXcmQuoteFailure(failure)).toBe(expected);
 	});

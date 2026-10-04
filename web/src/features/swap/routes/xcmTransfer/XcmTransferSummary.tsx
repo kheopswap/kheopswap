@@ -17,11 +17,11 @@ import { getChainById } from "../../../../registry/chains/chains";
 import { cn } from "../../../../utils/cn";
 import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
 import { useSwap, type XcmTransferDetails } from "../../SwapProvider";
-import type { XcmTransferQuote } from "../xcm/useXcmQuote";
+import type { XcmQuoteState } from "../xcm/useXcmQuote";
 import { describeXcmQuoteFailure } from "../xcm/xcmQuote";
 
 const XcmTransferSimulationValue: FC<{
-	quote: XcmTransferQuote;
+	quote: XcmQuoteState;
 	destinationName: string;
 }> = ({ quote, destinationName }) => {
 	if (quote.isLoading) return <Shimmer className="h-4">Success</Shimmer>;
