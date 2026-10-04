@@ -148,7 +148,7 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: 304850000n,
+			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
 			data: {
 				success: true,
 				quote: { received: 9995190152n, destinationFee: 4809848n },
@@ -189,7 +189,7 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: 305450000n,
+			deliveryFee: { tokenId: "native::pah", plancks: 305450000n },
 			data: {
 				success: true,
 				quote: { received: 98764625n, destinationFee: 574n },
@@ -217,7 +217,9 @@ describe("useXcmQuote", () => {
 		const { result } = renderQuote();
 
 		await waitFor(() => expect(result.current.data).toBeDefined());
-		await waitFor(() => expect(result.current.deliveryFee).toBe(304850000n));
+		await waitFor(() =>
+			expect(result.current.deliveryFee?.plancks).toBe(304850000n),
+		);
 		expect(result.current.data).toEqual({
 			success: false,
 			failure: {
@@ -257,7 +259,7 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toMatchObject({
 			isLoading: false,
-			deliveryFee: 304850000n,
+			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
 			data: { success: false, failure: { kind: "destination-unavailable" } },
 		});
 	});
