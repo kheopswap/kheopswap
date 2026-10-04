@@ -28,7 +28,6 @@ export const whitelist: WhiteListEntry[] = [
 	"query.ForeignAssets.Account",
 	"query.ForeignAssets.Metadata",
 	"query.Balances.TotalIssuance",
-	"query.PolkadotXcm.SafeXcmVersion",
 	"query.Revive.OriginalAccount",
 	"query.System.Events",
 	"const.AssetConversion.LPFee",
