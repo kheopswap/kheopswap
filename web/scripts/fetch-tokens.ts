@@ -1,6 +1,7 @@
 /**
- * Standalone Node.js script to fetch all tokens from Asset Hub chains via RPC
- * and write one JSON file per chain to src/registry/tokens/generated/.
+ * Standalone Node.js script to fetch all tokens from Asset Hub and Hydration
+ * chains via RPC and write one JSON file per chain to
+ * src/registry/tokens/generated/.
  *
  * Each output file is a flat token array with deterministic `id` fields,
  * sorted lexicographically by `id`.
@@ -40,13 +41,22 @@ import { getWsProvider } from "polkadot-api/ws";
 import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
 import YAML from "yaml";
-import { DESCRIPTORS_ASSET_HUB } from "../src/registry/chains/descriptors.ts";
-import type { ChainIdAssetHub } from "../src/registry/chains/types.ts";
+import {
+	DESCRIPTORS_ASSET_HUB,
+	DESCRIPTORS_HYDRATION,
+	type DescriptorsAssetHub,
+	type DescriptorsHydration,
+} from "../src/registry/chains/descriptors.ts";
+import type {
+	ChainIdAssetHub,
+	ChainIdHydration,
+} from "../src/registry/chains/types.ts";
 import { buildToken } from "../src/registry/tokens/buildToken.ts";
 import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
 import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
 import { mapAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapAssetTokensFromEntries.ts";
 import { mapForeignAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapForeignAssetTokensFromEntries.ts";
+import { mapHydrationAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapHydrationAssetTokensFromEntries.ts";
 import { mapPoolAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapPoolAssetTokensFromEntries.ts";
 import type {
 	ForeignAssetEntry,
@@ -65,12 +75,29 @@ type RegistryChain = {
 	wsUrl: string[];
 };
 
-type ChainConfig = {
+type AssetHubChainConfig = {
+	kind: "asset-hub";
 	id: ChainIdAssetHub;
 	name: string;
 	wsUrl: string[];
-	descriptors: (typeof DESCRIPTORS_ASSET_HUB)[ChainIdAssetHub];
+	descriptors: DescriptorsAssetHub[ChainIdAssetHub];
 };
+
+type HydrationChainConfig = {
+	kind: "hydration";
+	id: ChainIdHydration;
+	name: string;
+	wsUrl: string[];
+	descriptors: DescriptorsHydration[ChainIdHydration];
+};
+
+type ChainConfig = AssetHubChainConfig | HydrationChainConfig;
+
+const isAssetHubChainId = (id: string): id is ChainIdAssetHub =>
+	id in DESCRIPTORS_ASSET_HUB;
+
+const isHydrationChainId = (id: string): id is ChainIdHydration =>
+	id in DESCRIPTORS_HYDRATION;
 
 const CHAINS = (
 	JSON.parse(
@@ -79,17 +106,29 @@ const CHAINS = (
 			"utf-8",
 		),
 	) as RegistryChain[]
-)
-	.filter(
-		(chain): chain is RegistryChain & { id: ChainIdAssetHub } =>
-			chain.id in DESCRIPTORS_ASSET_HUB,
-	)
-	.map((chain) => ({
-		id: chain.id,
-		name: chain.name,
-		wsUrl: chain.wsUrl,
-		descriptors: DESCRIPTORS_ASSET_HUB[chain.id],
-	}));
+).flatMap(({ id, name, wsUrl }): ChainConfig[] => {
+	if (isAssetHubChainId(id))
+		return [
+			{
+				kind: "asset-hub",
+				id,
+				name,
+				wsUrl,
+				descriptors: DESCRIPTORS_ASSET_HUB[id],
+			},
+		];
+	if (isHydrationChainId(id))
+		return [
+			{
+				kind: "hydration",
+				id,
+				name,
+				wsUrl,
+				descriptors: DESCRIPTORS_HYDRATION[id],
+			},
+		];
+	return [];
+});
 
 /** Output directory – tokens land next to the registry source files. */
 const OUTPUT_DIR = resolve(
@@ -911,8 +950,8 @@ function enrichFromErc20Cache(tokens: TokenNoId[], cache: Erc20Cache): void {
 // ---------------------------------------------------------------------------
 
 async function fetchAssetTokens(
-	chain: ChainConfig,
-	api: TypedApi<ChainConfig["descriptors"]>,
+	chain: AssetHubChainConfig,
+	api: TypedApi<AssetHubChainConfig["descriptors"]>,
 	signal: AbortSignal,
 ): Promise<TokenNoId[]> {
 	console.log(`  [${chain.id}] Fetching asset metadata + asset info...`);
@@ -933,8 +972,8 @@ async function fetchAssetTokens(
 }
 
 async function fetchPoolAssetTokens(
-	chain: ChainConfig,
-	api: TypedApi<ChainConfig["descriptors"]>,
+	chain: AssetHubChainConfig,
+	api: TypedApi<AssetHubChainConfig["descriptors"]>,
 	signal: AbortSignal,
 ): Promise<TokenNoId[]> {
 	console.log(`  [${chain.id}] Fetching pool assets...`);
@@ -948,8 +987,8 @@ async function fetchPoolAssetTokens(
 }
 
 async function fetchForeignAssetTokens(
-	chain: ChainConfig,
-	api: TypedApi<ChainConfig["descriptors"]>,
+	chain: AssetHubChainConfig,
+	api: TypedApi<AssetHubChainConfig["descriptors"]>,
 	signal: AbortSignal,
 ): Promise<TokenNoId[]> {
 	console.log(`  [${chain.id}] Fetching foreign assets...`);
@@ -988,9 +1027,67 @@ async function fetchForeignAssetTokens(
 	});
 }
 
+async function fetchHydrationAssetTokens(
+	chain: HydrationChainConfig,
+	api: TypedApi<HydrationChainConfig["descriptors"]>,
+	signal: AbortSignal,
+): Promise<TokenNoId[]> {
+	console.log(`  [${chain.id}] Fetching asset registry + asset locations...`);
+
+	const [assets, locations] = await Promise.all([
+		api.query.AssetRegistry.Assets.getEntries({ at: "best", signal }),
+		api.query.AssetRegistry.AssetLocations.getEntries({ at: "best", signal }),
+	]);
+	const tokens = mapHydrationAssetTokensFromEntries(
+		chain.id,
+		assets,
+		locations,
+	);
+	console.log(
+		`  [${chain.id}] Found ${assets.length} registry assets and ${locations.length} locations, kept ${tokens.length} tokens`,
+	);
+
+	return tokens;
+}
+
 // ---------------------------------------------------------------------------
 // Per-chain orchestration
 // ---------------------------------------------------------------------------
+
+type TokenFetcher = [label: string, fetch: () => Promise<TokenNoId[]>];
+
+function getTokenFetchers(
+	client: PolkadotClient,
+	chain: ChainConfig,
+	signal: AbortSignal,
+): TokenFetcher[] {
+	switch (chain.kind) {
+		case "asset-hub": {
+			const api = client.getTypedApi(chain.descriptors);
+			return [
+				["assets", () => fetchAssetTokens(chain, api, signal)],
+				["pool assets", () => fetchPoolAssetTokens(chain, api, signal)],
+				["foreign assets", () => fetchForeignAssetTokens(chain, api, signal)],
+			];
+		}
+		case "hydration": {
+			const api = client.getTypedApi(chain.descriptors);
+			return [
+				[
+					"hydration assets",
+					() => fetchHydrationAssetTokens(chain, api, signal),
+				],
+			];
+		}
+	}
+}
+
+function formatTokenCountsByType(tokens: TokenNoId[]): string {
+	const counts = new Map<string, number>();
+	for (const token of tokens)
+		counts.set(token.type, (counts.get(token.type) ?? 0) + 1);
+	return [...counts].map(([type, count]) => `${count} ${type}`).join(" + ");
+}
 
 async function fetchTokensForChain(
 	chain: ChainConfig,
@@ -1005,7 +1102,6 @@ async function fetchTokensForChain(
 
 	try {
 		client = createClient(getWsProvider(chain.wsUrl));
-		const api = client.getTypedApi(chain.descriptors);
 
 		// Wait for the chain to be reachable
 		console.log(`  [${chain.id}] Waiting for first block...`);
@@ -1029,13 +1125,9 @@ async function fetchTokensForChain(
 		const tokens: TokenNoId[] = [];
 
 		// Fetch each type independently so a failure in one doesn't lose the others
-		for (const [label, fetcher] of [
-			["assets", () => fetchAssetTokens(chain, api, signal)],
-			["pool assets", () => fetchPoolAssetTokens(chain, api, signal)],
-			["foreign assets", () => fetchForeignAssetTokens(chain, api, signal)],
-		] as const) {
+		for (const [label, fetcher] of getTokenFetchers(client, chain, signal)) {
 			try {
-				const result = await (fetcher as () => Promise<TokenNoId[]>)();
+				const result = await fetcher();
 				tokens.push(...result);
 			} catch (err) {
 				const message = err instanceof Error ? err.message : String(err);
@@ -1046,13 +1138,8 @@ async function fetchTokensForChain(
 			}
 		}
 
-		const assetCount = tokens.filter((t) => t.type === "asset").length;
-		const poolCount = tokens.filter((t) => t.type === "pool-asset").length;
-		const foreignCount = tokens.filter(
-			(t) => t.type === "foreign-asset",
-		).length;
 		console.log(
-			`  [${chain.id}] Total: ${tokens.length} tokens (${assetCount} assets + ${poolCount} pool assets + ${foreignCount} foreign assets)`,
+			`  [${chain.id}] Total: ${tokens.length} tokens (${formatTokenCountsByType(tokens)})`,
 		);
 		return tokens;
 	} catch (err) {
@@ -1089,7 +1176,7 @@ function parseArgs() {
 
 Options:
   --chains <chain1,chain2> Comma-separated chain IDs to fetch (default: all)
-                           Available: pah, kah, wah, pasah
+                           Available: ${CHAINS.map((c) => c.id).join(", ")}
   --timeout <ms>           Per-chain timeout in ms (default: 120000)
   --help                   Show this help
 

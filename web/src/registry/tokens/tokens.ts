@@ -5,6 +5,7 @@ import { getValidTokenLogo } from "../../utils/tokenLogo";
 import type { XcmV5Multilocation } from "../types/xcm";
 import { TOKENS_BLACKLIST } from "./blacklist";
 import { buildToken } from "./buildToken";
+import tokensHydration from "./generated/tokens.hydration.json";
 import tokensKah from "./generated/tokens.kah.json";
 import tokensPah from "./generated/tokens.pah.json";
 import tokensPasah from "./generated/tokens.pasah.json";
@@ -33,7 +34,13 @@ const nativeTokens = (YAML.parse(tokensNativeYaml) as TokenNativeNoId[]).map(
 
 // Generated tokens (fetched from chain — already include id and canonical ordering)
 const generatedTokens = (
-	[...tokensPah, ...tokensKah, ...tokensWah, ...tokensPasah] as Token[]
+	[
+		...tokensPah,
+		...tokensKah,
+		...tokensWah,
+		...tokensPasah,
+		...tokensHydration,
+	] as Token[]
 ).map(normalizeTokenLocation);
 
 export const KNOWN_TOKENS_LIST = [...nativeTokens, ...generatedTokens]
