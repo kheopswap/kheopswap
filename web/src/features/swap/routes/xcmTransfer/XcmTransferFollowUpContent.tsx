@@ -9,7 +9,6 @@ import {
 	type XcmArrival,
 	type XcmTransferFollowUpData,
 } from "../../../../state/transactions/xcmArrival";
-import { cn } from "../../../../utils/cn";
 
 const ArrivalStatus: FC<{ arrival: XcmArrival }> = ({ arrival }) => {
 	switch (arrival.status) {
@@ -57,11 +56,7 @@ export const XcmTransferFollowUpContent: FC<{
 					<Tokens
 						plancks={received}
 						token={tokenOut}
-						className={cn(
-							estimatedReceived === undefined || received >= estimatedReceived
-								? "text-success"
-								: "text-warn",
-						)}
+						className="text-success"
 					/>
 				</FollowUpRow>
 			)}
