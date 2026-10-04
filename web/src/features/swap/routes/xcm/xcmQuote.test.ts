@@ -197,10 +197,7 @@ describe("parseOriginDryRun", () => {
 		);
 		expect(parsed).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Asset Hub would reject the transfer: TooExpensive",
-			},
+			failure: { kind: "origin-rejected", xcmError: "TooExpensive" },
 		});
 	});
 
@@ -392,8 +389,18 @@ describe("getXcmSubmitGate", () => {
 });
 
 describe("describeXcmQuoteFailure", () => {
+	const toHydration = { origin: "pah", destination: "hydration" } as const;
+
 	it.each([
+		[
+			{ kind: "origin-unavailable" },
+			"Could not simulate the transfer on Polkadot Asset Hub",
+		],
 		[{ kind: "origin-failed", reason: "Boom" }, "Boom"],
+		[
+			{ kind: "origin-rejected", xcmError: "TooExpensive" },
+			"Polkadot Asset Hub would reject the transfer: TooExpensive",
+		],
 		[
 			{ kind: "message-not-forwarded" },
 			"The transfer would not be sent to Hydration",
@@ -417,14 +424,14 @@ describe("describeXcmQuoteFailure", () => {
 		[{ kind: "nothing-deposited" }, "Hydration would not credit your account"],
 		[
 			{ kind: "delivery-fee-unavailable" },
-			"Could not estimate the Asset Hub delivery fee",
+			"Could not estimate the Polkadot Asset Hub delivery fee",
 		],
 		[
 			{ kind: "call-unavailable" },
-			"Could not prepare the transaction on Asset Hub",
+			"Could not prepare the transaction on Polkadot Asset Hub",
 		],
 	] as const)("%o", (failure, expected) => {
-		expect(describeXcmQuoteFailure(failure)).toBe(expected);
+		expect(describeXcmQuoteFailure(failure, toHydration)).toBe(expected);
 	});
 });
 
