@@ -40,7 +40,7 @@ Feature state lives in a provider hook exposed through `provideContext`: `export
 
 ## Tokens
 
-Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build and parse them with `getTokenId` and `parseTokenId`. Types are `native`, `asset`, `pool-asset` and `foreign-asset`. Only `native` exists on every chain. The other three are Asset Hub only, so their `chainId` is a `ChainIdAssetHub` and `parseTokenId` rejects them on other chains.
+Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build and parse them with `getTokenId` and `parseTokenId`. Types are `native`, `asset`, `pool-asset`, `foreign-asset` and `hydration-asset`. Only `native` exists on every chain. `asset`, `pool-asset` and `foreign-asset` are Asset Hub only, so their `chainId` is a `ChainIdAssetHub`. `hydration-asset` is Hydration only, so its `chainId` is a `ChainIdHydration`. `parseTokenId` rejects each type on chains of the other kind.
 
 The `tokens.<network>.json` snapshots are generated. Before touching token data, read the token registry section of `README.md`.
 
