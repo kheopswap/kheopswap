@@ -124,7 +124,6 @@ const useSwapProvider = () => {
 	const { onMaxClick } = useSwapFees({
 		from: formState.from,
 		accountAddress: formState.account?.address,
-		tokenIdIn: formState.tokenIdIn,
 		tokenIn: pricing.tokenIn,
 		balanceIn: pricing.balanceIn,
 		edTokenIn: pricing.edTokenIn,
