@@ -7,7 +7,7 @@ import type {
 } from "../../../registry/chains/types";
 import { parseTokenId } from "../../../registry/tokens/helpers";
 import type { Token, TokenId } from "../../../registry/tokens/types";
-import type { TransactionType } from "../../../state/transactions/types";
+import type { XcmArrivalType } from "../../../state/transactions/xcmArrival";
 import type { AnyTransaction } from "../../../types/transactions";
 import { isEthereumAddress } from "../../../utils/ethereumAddress";
 import type {
@@ -52,7 +52,7 @@ export type TransactionPlan = {
 	fakeCall: AnyTransaction | null | undefined;
 	callSpendings: CallSpendings;
 	followUpData: object;
-	transactionType: Extract<TransactionType, "swap" | "xcmTransfer">;
+	transactionType: "swap" | XcmArrivalType;
 	title: string;
 	submitGate: SubmitGate;
 };
