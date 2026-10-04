@@ -25,6 +25,12 @@
       "metadata": ".papi/scale/pasah.scale",
       "genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
       "codeHash": "0x3d399dc2daeaaf831fc4fda6ddc1958494fc0f3319ebb8ec0c1e7ca8995eed56"
+    },
+    "hydration": {
+      "wsUrl": "wss://rpc.hydradx.cloud",
+      "metadata": ".papi/scale/hydration.scale",
+      "genesis": "0xafdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d",
+      "codeHash": "0x0b1bc5812823c7f307f7042b2efdea695dfe95f64197599315f3c4f423dc3123"
     }
   }
 }
