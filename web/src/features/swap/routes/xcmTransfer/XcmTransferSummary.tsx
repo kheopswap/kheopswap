@@ -17,8 +17,8 @@ import { getChainById } from "../../../../registry/chains/chains";
 import { cn } from "../../../../utils/cn";
 import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
 import { useSwap, type XcmTransferDetails } from "../../SwapProvider";
-import type { XcmTransferQuote } from "./useXcmTransferQuote";
-import { describeXcmQuoteFailure } from "./xcmQuote";
+import type { XcmTransferQuote } from "../xcm/useXcmQuote";
+import { describeXcmQuoteFailure } from "../xcm/xcmQuote";
 
 const XcmTransferSimulationValue: FC<{
 	quote: XcmTransferQuote;
