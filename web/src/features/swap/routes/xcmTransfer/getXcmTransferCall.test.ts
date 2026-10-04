@@ -1,7 +1,20 @@
 import { AccountId } from "polkadot-api";
 import { describe, expect, it } from "vitest";
+import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
+import type { TokenId } from "../../../../registry/tokens/types";
 import type { XcmTransferRoute } from "../swapRoute";
+import {
+	dotToAssetHub,
+	usdcToAssetHub,
+	usdtToAssetHub,
+} from "../xcm/xcmFromHydration.fixtures";
 import { buildXcmTransferArgs } from "./getXcmTransferCall";
+
+const getToken = (tokenId: TokenId) => {
+	const token = KNOWN_TOKENS_MAP[tokenId];
+	if (!token) throw new Error(`unknown token ${tokenId}`);
+	return token;
+};
 
 const BENEFICIARY = "16xrRcxrBT6NfiukMzxeHGHPuJtHa9ypdgvvPJVw5zV8hwo";
 const BENEFICIARY_PUBLIC_KEY =
@@ -65,6 +78,7 @@ describe("buildXcmTransferArgs", () => {
 		expect(
 			buildXcmTransferArgs({
 				route: getRoute("native::pah", 5),
+				tokenIn: getToken("native::pah"),
 				plancks: 10_000_000_000n,
 				beneficiary: BENEFICIARY,
 			}),
@@ -80,6 +94,7 @@ describe("buildXcmTransferArgs", () => {
 		expect(
 			buildXcmTransferArgs({
 				route: getRoute("asset::pah::1984", 10),
+				tokenIn: getToken("asset::pah::1984"),
 				plancks: 10_000_000n,
 				beneficiary: BENEFICIARY,
 			}),
@@ -104,11 +119,69 @@ describe("buildXcmTransferArgs", () => {
 		const generic = AccountId(42).dec(AccountId().enc(BENEFICIARY));
 		const args = buildXcmTransferArgs({
 			route: getRoute("native::pah", 5),
+			tokenIn: getToken("native::pah"),
 			plancks: 1n,
 			beneficiary: generic,
 		});
 		expect(args.custom_xcm_on_dest).toEqual(
 			getExpectedArgs(null, 1n).custom_xcm_on_dest,
 		);
+	});
+});
+
+describe("buildXcmTransferArgs from Hydration", () => {
+	it.each([
+		["DOT", "hydration-asset::hydration::5", "native::pah", dotToAssetHub],
+		[
+			"USDT",
+			"hydration-asset::hydration::10",
+			"asset::pah::1984",
+			usdtToAssetHub,
+		],
+		[
+			"USDC",
+			"hydration-asset::hydration::22",
+			"asset::pah::1337",
+			usdcToAssetHub,
+		],
+	])(
+		"sends %s back with Asset Hub as the reserve of the asset and its fee",
+		(_, tokenIdIn, tokenIdOut, fixture) => {
+			expect(
+				buildXcmTransferArgs({
+					route: {
+						kind: "xcm-transfer",
+						origin: "hydration",
+						destination: "pah",
+						tokenIdIn,
+						tokenIdOut,
+					},
+					tokenIn: getToken(tokenIdIn),
+					plancks: fixture.amount,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toEqual(fixture.callArgs);
+		},
+	);
+
+	it("refuses a Hydration token without a location rather than guessing one", () => {
+		const hydrationDot = getToken("hydration-asset::hydration::5");
+		if (hydrationDot.type !== "hydration-asset")
+			throw new Error("Hydration DOT is not a Hydration asset");
+		const tokenIn = { ...hydrationDot, location: undefined };
+		expect(() =>
+			buildXcmTransferArgs({
+				route: {
+					kind: "xcm-transfer",
+					origin: "hydration",
+					destination: "pah",
+					tokenIdIn: "hydration-asset::hydration::5",
+					tokenIdOut: "native::pah",
+				},
+				tokenIn,
+				plancks: 1n,
+				beneficiary: BENEFICIARY,
+			}),
+		).toThrow();
 	});
 });
