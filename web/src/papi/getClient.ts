@@ -30,12 +30,12 @@ export const getClient = (
 		getClientCacheId(chainId, options),
 		() => {
 			const chain = getChainById(chainId);
-			return getAssetHubClient(chain, options);
+			return getChainClient(chain, options);
 		},
 	);
 };
 
-const getAssetHubClient = async (chain: Chain, options: ClientOptions) => {
+const getChainClient = async (chain: Chain, options: ClientOptions) => {
 	const { id: chainId, relay: relayId } = chain;
 
 	if (!options.lightClients || !hasChainSpec(chainId) || !hasChainSpec(relayId))
