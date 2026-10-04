@@ -57,19 +57,18 @@ describe("resolveSwapRoute", () => {
 	});
 
 	it.each([
-		[DOT, HYDRATION_DOT, 5],
-		[USDT, HYDRATION_USDT, 10],
-		[USDC, HYDRATION_USDC, 22],
+		[DOT, HYDRATION_DOT],
+		[USDT, HYDRATION_USDT],
+		[USDC, HYDRATION_USDC],
 	])(
 		"resolves %s to its Hydration mirror %s as an XCM transfer",
-		(tokenIdIn, tokenIdOut, destinationAssetId) => {
+		(tokenIdIn, tokenIdOut) => {
 			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
 				kind: "xcm-transfer",
 				origin: "pah",
 				destination: "hydration",
 				tokenIdIn,
 				tokenIdOut,
-				destinationAssetId,
 			});
 		},
 	);
@@ -79,7 +78,6 @@ describe("resolveSwapRoute", () => {
 			"USDC to Hydration USDT through DOT",
 			USDC,
 			HYDRATION_USDT,
-			10,
 			[
 				{ tokenIdIn: USDC, tokenIdOut: DOT },
 				{ tokenIdIn: DOT, tokenIdOut: USDT },
@@ -89,21 +87,18 @@ describe("resolveSwapRoute", () => {
 			"DOT to Hydration USDT",
 			DOT,
 			HYDRATION_USDT,
-			10,
 			[{ tokenIdIn: DOT, tokenIdOut: USDT }],
 		],
 		[
 			"USDT to Hydration DOT",
 			USDT,
 			HYDRATION_DOT,
-			5,
 			[{ tokenIdIn: USDT, tokenIdOut: DOT }],
 		],
 		[
 			"the foreign asset vDOT to Hydration USDC through DOT",
 			VDOT,
 			HYDRATION_USDC,
-			22,
 			[
 				{ tokenIdIn: VDOT, tokenIdOut: DOT },
 				{ tokenIdIn: DOT, tokenIdOut: USDC },
@@ -111,14 +106,13 @@ describe("resolveSwapRoute", () => {
 		],
 	])(
 		"resolves %s as a swap sent to Hydration",
-		(_, tokenIdIn, tokenIdOut, destinationAssetId, path) => {
+		(_, tokenIdIn, tokenIdOut, path) => {
 			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
 				kind: "xcm-swap",
 				origin: "pah",
 				destination: "hydration",
 				tokenIdIn,
 				tokenIdOut,
-				destinationAssetId,
 				path,
 			});
 		},

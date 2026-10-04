@@ -21,7 +21,6 @@ const getRoute = (tokenIdIn: string): XcmSwapRoute => ({
 	destination: "hydration",
 	tokenIdIn,
 	tokenIdOut: HYDRATION_USDT,
-	destinationAssetId: 10,
 	path: getAmmPath(tokenIdIn, USDT, DOT),
 });
 
