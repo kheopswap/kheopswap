@@ -21,6 +21,7 @@ export type TransactionType =
 	| "addLiquidity"
 	| "removeLiquidity"
 	| "createPool"
+	| "xcmTransfer"
 	| "unknown";
 
 export type TransactionRecord = {
