@@ -11,11 +11,14 @@ import { useMemo } from "react";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
+import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
+import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import type { XcmRoute } from "../swapRoute";
 import {
 	composeXcmQuote,
+	getDeliveryFeeTokenId,
 	parseDeliveryFee,
 	parseDestinationDryRun,
 	parseOriginDryRun,
@@ -25,7 +28,7 @@ import {
 export type XcmQuoteState = {
 	isLoading: boolean;
 	data: XcmQuoteResult | undefined;
-	deliveryFee: bigint | undefined;
+	deliveryFee: TokenAmount | undefined;
 };
 
 const useXcmDeliveryFee = (
@@ -161,11 +164,19 @@ export const useXcmQuote = ({
 		deliveryFee.data,
 	]);
 
+	const deliveryFeePlancks = deliveryFee.data ?? estimatedDeliveryFee.data;
+
 	return {
 		isLoading:
 			origin.isLoading ||
 			(!!message && (destination.isLoading || deliveryFee.isLoading)),
 		data,
-		deliveryFee: deliveryFee.data ?? estimatedDeliveryFee.data ?? undefined,
+		deliveryFee:
+			route && isBigInt(deliveryFeePlancks)
+				? {
+						tokenId: getDeliveryFeeTokenId(route.origin),
+						plancks: deliveryFeePlancks,
+					}
+				: undefined,
 	};
 };

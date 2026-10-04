@@ -3,7 +3,8 @@ import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { ChainIdHydration } from "../../../../registry/chains/types";
-import type { TokenId } from "../../../../registry/tokens/types";
+import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
+import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
 import {
 	getXcmDepositMatcher,
@@ -227,31 +228,41 @@ export const getXcmSubmitGate = ({
 	return { status: "closed", reason: "Nothing to send yet" };
 };
 
+export const getDeliveryFeeTokenId = (origin: XcmRoute["origin"]): TokenId =>
+	getTokenId({ type: "native", chainId: origin });
+
+export const getXcmFeeParts = (
+	deliveryFee: TokenAmount | undefined,
+	quote: XcmQuote | undefined,
+	tokenIdOut: TokenId,
+): TokenAmount[] =>
+	[
+		deliveryFee,
+		quote && { tokenId: tokenIdOut, plancks: quote.destinationFee },
+	].filter((part): part is TokenAmount => !!part?.plancks);
+
 export const getXcmCallSpendings = ({
 	tokenIdIn,
-	nativeTokenId,
 	totalIn,
 	deliveryFee,
 }: {
 	tokenIdIn: TokenId;
-	nativeTokenId: TokenId;
 	totalIn: bigint | null | undefined;
-	deliveryFee: bigint | undefined;
+	deliveryFee: TokenAmount | undefined;
 }): CallSpendings => {
-	if (tokenIdIn === nativeTokenId)
-		return totalIn || deliveryFee
+	const spendings: CallSpendings = {};
+	const spend = (tokenId: TokenId, plancks: bigint, allowDeath: boolean) => {
+		if (!plancks) return;
+		const spent = spendings[tokenId];
+		spendings[tokenId] = spent
 			? {
-					[nativeTokenId]: {
-						plancks: (totalIn ?? 0n) + (deliveryFee ?? 0n),
-						allowDeath: false,
-					},
+					plancks: spent.plancks + plancks,
+					allowDeath: spent.allowDeath && allowDeath,
 				}
-			: {};
-
-	return {
-		...(totalIn ? { [tokenIdIn]: { plancks: totalIn, allowDeath: true } } : {}),
-		...(deliveryFee
-			? { [nativeTokenId]: { plancks: deliveryFee, allowDeath: false } }
-			: {}),
+			: { plancks, allowDeath };
 	};
+
+	spend(tokenIdIn, totalIn ?? 0n, parseTokenId(tokenIdIn).type !== "native");
+	if (deliveryFee) spend(deliveryFee.tokenId, deliveryFee.plancks, false);
+	return spendings;
 };

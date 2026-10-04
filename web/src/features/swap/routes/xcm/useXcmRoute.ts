@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import type { WalletAccount } from "../../../../common/kheopskit";
 import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
-import { getTokenId } from "../../../../registry/tokens/helpers";
 import type { Token } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import type { XcmTransferFollowUpData } from "../../../../state/transactions/xcmArrival";
@@ -300,10 +299,6 @@ export const useXcmRoute = ({
 			callSpendings: route
 				? getXcmCallSpendings({
 						tokenIdIn: route.tokenIdIn,
-						nativeTokenId: getTokenId({
-							type: "native",
-							chainId: route.origin,
-						}),
 						totalIn,
 						deliveryFee: quote.deliveryFee,
 					})

@@ -20,6 +20,7 @@ import {
 	type DestinationDryRun,
 	describeXcmQuoteFailure,
 	getXcmCallSpendings,
+	getXcmFeeParts,
 	getXcmSubmitGate,
 	type OriginDryRun,
 	parseDeliveryFee,
@@ -440,9 +441,8 @@ describe("getXcmCallSpendings", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: DOT,
-				nativeTokenId: DOT,
 				totalIn: 10_000_000_000n,
-				deliveryFee: 304850000n,
+				deliveryFee: { tokenId: DOT, plancks: 304850000n },
 			}),
 		).toEqual({ [DOT]: { plancks: 10_304_850_000n, allowDeath: false } });
 	});
@@ -451,9 +451,8 @@ describe("getXcmCallSpendings", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: USDT,
-				nativeTokenId: DOT,
 				totalIn: 10_000_000n,
-				deliveryFee: 305450000n,
+				deliveryFee: { tokenId: DOT, plancks: 305450000n },
 			}),
 		).toEqual({
 			[USDT]: { plancks: 10_000_000n, allowDeath: true },
@@ -470,7 +469,6 @@ describe("getXcmCallSpendings", () => {
 			expect(
 				getXcmCallSpendings({
 					tokenIdIn,
-					nativeTokenId: DOT,
 					totalIn: 10_000_000_000n,
 					deliveryFee: undefined,
 				}),
@@ -482,10 +480,33 @@ describe("getXcmCallSpendings", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: USDT,
-				nativeTokenId: DOT,
 				totalIn: null,
 				deliveryFee: undefined,
 			}),
 		).toEqual({});
+	});
+});
+
+describe("getXcmFeeParts", () => {
+	const deliveryFee = { tokenId: DOT, plancks: 304850000n };
+	const quote = { received: 9995190152n, destinationFee: 4809848n };
+
+	it("adds the destination fee in the output token to the delivery fee", () => {
+		expect(getXcmFeeParts(deliveryFee, quote, HYDRATION_DOT)).toEqual([
+			deliveryFee,
+			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+		]);
+	});
+
+	it("shows the delivery fee alone before a quote", () => {
+		expect(getXcmFeeParts(deliveryFee, undefined, HYDRATION_DOT)).toEqual([
+			deliveryFee,
+		]);
+	});
+
+	it("drops a free delivery", () => {
+		expect(
+			getXcmFeeParts({ tokenId: DOT, plancks: 0n }, quote, HYDRATION_DOT),
+		).toEqual([{ tokenId: HYDRATION_DOT, plancks: 4809848n }]);
 	});
 });
