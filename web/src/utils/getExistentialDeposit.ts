@@ -28,6 +28,15 @@ export const getExistentialDeposit = async (tokenId: TokenId) => {
 			return asset?.min_balance ?? null;
 		}
 
+		case "hydration-asset": {
+			const api = await getApi(token.chainId);
+			const asset = await api.query.AssetRegistry.Assets.getValue(
+				token.assetId,
+				{ at: "best" },
+			);
+			return asset?.existential_deposit ?? null;
+		}
+
 		default:
 			throw new Error(`Unsupported token type: ${tokenId}`);
 	}
