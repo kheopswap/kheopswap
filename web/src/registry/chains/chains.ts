@@ -20,7 +20,7 @@ export const isChainIdAssetHub = (id: unknown): id is ChainIdAssetHub =>
 	typeof id === "string" && !!DESCRIPTORS_ASSET_HUB[id as ChainIdAssetHub];
 
 export const isChainAssetHub = (chain: Chain): chain is ChainAssetHub =>
-	isChainIdAssetHub(chain.id);
+	isChainIdAssetHub(chain.id) && chain.paraId === 1000;
 
 export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 	DESCRIPTORS[id];
