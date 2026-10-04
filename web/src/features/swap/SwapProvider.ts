@@ -3,13 +3,12 @@ import { useAllTokens } from "../../hooks/useAllTokens";
 import { useBalance } from "../../hooks/useBalance";
 import { useToken } from "../../hooks/useToken";
 import { provideContext } from "../../utils/provideContext";
+import { getSwapTokenLists, type TransactionPlan } from "./routes/swapRoute";
 import {
-	getSwapTokenLists,
-	type TransactionPlan,
-	type XcmTransferRoute,
-} from "./routes/swapRoute";
-import type { XcmQuoteState } from "./routes/xcm/useXcmQuote";
-import { useXcmTransfer } from "./routes/xcm/useXcmRoute";
+	useXcmRoute,
+	type XcmSwapDetails,
+	type XcmTransferDetails,
+} from "./routes/xcm/useXcmRoute";
 import { useSwapCall } from "./useSwapCall";
 import { useSwapFees } from "./useSwapFees";
 import { useSwapFormState } from "./useSwapFormState";
@@ -25,12 +24,6 @@ export type AmmSwapDetails = {
 	slippage: number;
 	appCommission: bigint | null | undefined;
 	protocolCommission: bigint | undefined;
-};
-
-export type XcmTransferDetails = {
-	kind: "xcm-transfer";
-	route: XcmTransferRoute;
-	quote: XcmQuoteState;
 };
 
 const getSwapTitle = (
@@ -49,7 +42,7 @@ const useSwapProvider = () => {
 	const formState = useSwapFormState();
 	const { route } = formState;
 	const ammRoute = route?.kind === "amm-swap" ? route : null;
-	const xcmRoute = route?.kind === "xcm-transfer" ? route : null;
+	const xcmRoute = route && route.kind !== "amm-swap" ? route : null;
 	const isTokenIdOutAmm =
 		!!ammRoute || !formState.tokenIdIn || !formState.tokenIdOut;
 
@@ -80,12 +73,15 @@ const useSwapProvider = () => {
 		tokenId: formState.tokenIdOut,
 	});
 
-	const xcm = useXcmTransfer({
+	const xcm = useXcmRoute({
 		route: xcmRoute,
 		account: formState.account,
 		tokenIn: pricing.tokenIn,
 		tokenOut,
 		totalIn: pricing.totalIn,
+		swapPlancksIn: pricing.swapPlancksIn,
+		appCommission: pricing.appCommission,
+		slippage: pricing.slippage,
 		edTokenIn: pricing.edTokenIn,
 	});
 
@@ -149,24 +145,21 @@ const useSwapProvider = () => {
 		[pricing.tokens, allTokens, formState.mirrors],
 	);
 
-	const details = useMemo<AmmSwapDetails | XcmTransferDetails>(
+	const details = useMemo<AmmSwapDetails | XcmTransferDetails | XcmSwapDetails>(
 		() =>
-			xcmRoute
-				? { kind: "xcm-transfer", route: xcmRoute, quote: xcm.quote }
-				: {
-						kind: "amm-swap",
-						reserveIn: pricing.reserveIn,
-						reserveOut: pricing.reserveOut,
-						isPoolNotFound: pricing.isPoolNotFound,
-						priceImpact: pricing.priceImpact,
-						minPlancksOut: pricing.minPlancksOut,
-						slippage: pricing.slippage,
-						appCommission: pricing.appCommission,
-						protocolCommission: pricing.protocolCommission,
-					},
+			xcm.details ?? {
+				kind: "amm-swap",
+				reserveIn: pricing.reserveIn,
+				reserveOut: pricing.reserveOut,
+				isPoolNotFound: pricing.isPoolNotFound,
+				priceImpact: pricing.priceImpact,
+				minPlancksOut: pricing.minPlancksOut,
+				slippage: pricing.slippage,
+				appCommission: pricing.appCommission,
+				protocolCommission: pricing.protocolCommission,
+			},
 		[
-			xcmRoute,
-			xcm.quote,
+			xcm.details,
 			pricing.reserveIn,
 			pricing.reserveOut,
 			pricing.isPoolNotFound,
