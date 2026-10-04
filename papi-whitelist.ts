@@ -36,5 +36,6 @@ export const whitelist: WhiteListEntry[] = [
 	"api.AuraApi.slot_duration",
 	"api.AssetConversionApi.*",
 	"api.DryRunApi.*",
+	"api.XcmPaymentApi.query_delivery_fees",
 	"api.Metadata.metadata_at_version",
 ];
