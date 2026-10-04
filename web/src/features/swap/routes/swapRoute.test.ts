@@ -12,7 +12,6 @@ import { getAssetHubMirrorTokenIds } from "../../../utils/getAssetHubMirrorToken
 import {
 	canFlipSwapTokens,
 	getFeePayableMirrorTokenIds,
-	getMirrorTokenOutId,
 	getNextSwapTokens,
 	getRouteAccess,
 	getSwapTokenLists,
@@ -76,12 +75,63 @@ describe("resolveSwapRoute", () => {
 	);
 
 	it.each([
-		["a foreign asset to its Hydration mirror", VDOT, HYDRATION_VDOT],
 		[
-			"a token to a Hydration token that is not its mirror",
+			"USDC to Hydration USDT through DOT",
+			USDC,
+			HYDRATION_USDT,
+			10,
+			[
+				{ tokenIdIn: USDC, tokenIdOut: DOT },
+				{ tokenIdIn: DOT, tokenIdOut: USDT },
+			],
+		],
+		[
+			"DOT to Hydration USDT",
+			DOT,
+			HYDRATION_USDT,
+			10,
+			[{ tokenIdIn: DOT, tokenIdOut: USDT }],
+		],
+		[
+			"USDT to Hydration DOT",
 			USDT,
 			HYDRATION_DOT,
+			5,
+			[{ tokenIdIn: USDT, tokenIdOut: DOT }],
 		],
+		[
+			"the foreign asset vDOT to Hydration USDC through DOT",
+			VDOT,
+			HYDRATION_USDC,
+			22,
+			[
+				{ tokenIdIn: VDOT, tokenIdOut: DOT },
+				{ tokenIdIn: DOT, tokenIdOut: USDC },
+			],
+		],
+	])(
+		"resolves %s as a swap sent to Hydration",
+		(_, tokenIdIn, tokenIdOut, destinationAssetId, path) => {
+			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
+				kind: "xcm-swap",
+				origin: "pah",
+				destination: "hydration",
+				tokenIdIn,
+				tokenIdOut,
+				destinationAssetId,
+				path,
+			});
+		},
+	);
+
+	it.each([
+		["a foreign asset to its Hydration mirror", VDOT, HYDRATION_VDOT],
+		[
+			"DOT to a Hydration token whose mirror is a foreign asset",
+			DOT,
+			HYDRATION_VDOT,
+		],
+		["a pool asset to a Hydration token", "pool-asset::pah::1", HYDRATION_USDT],
 		["a token to Hydration's native token", DOT, HDX],
 		["a Hydration token to its Asset Hub source", HYDRATION_DOT, DOT],
 		[
@@ -120,26 +170,12 @@ describe("getFeePayableMirrorTokenIds", () => {
 		expect(payable.get(HYDRATION_USDT)).toBe(USDT);
 		expect(
 			resolveSwapRoute({
-				assetHubId: "pah",
+				...context,
 				mirrors: payable,
 				tokenIdIn: "asset::pah::31337",
 				tokenIdOut: HYDRATION_WUD,
 			}),
 		).toBeNull();
-	});
-});
-
-describe("getMirrorTokenOutId", () => {
-	it.each([
-		[DOT, HYDRATION_DOT],
-		[USDT, HYDRATION_USDT],
-		[USDC, HYDRATION_USDC],
-	])("finds the Hydration mirror of %s", (tokenIdIn, expected) => {
-		expect(getMirrorTokenOutId(mirrors, tokenIdIn)).toBe(expected);
-	});
-
-	it("ignores mirrors of foreign assets, which are out of scope", () => {
-		expect(getMirrorTokenOutId(mirrors, VDOT)).toBeNull();
 	});
 });
 
@@ -208,37 +244,61 @@ describe("getNextSwapTokens keeps today's AMM rules", () => {
 	});
 });
 
-describe("getNextSwapTokens on the XCM transfer route", () => {
+describe("getNextSwapTokens on the XCM routes", () => {
 	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
 		[
-			"a Hydration output sets the input to its source",
+			"a Hydration output keeps DOT in for a one-hop swap",
 			[DOT, USDC],
+			{ type: "out", tokenId: HYDRATION_USDT },
+			[DOT, HYDRATION_USDT],
+		],
+		[
+			"a Hydration output keeps an asset in for a two-hop swap",
+			[USDC, DOT],
+			{ type: "out", tokenId: HYDRATION_USDT },
+			[USDC, HYDRATION_USDT],
+		],
+		[
+			"a Hydration output keeps its source in for a transfer",
+			[USDT, DOT],
 			{ type: "out", tokenId: HYDRATION_USDT },
 			[USDT, HYDRATION_USDT],
 		],
 		[
-			"a Hydration DOT output sets DOT in",
-			[USDT, DOT],
-			{ type: "out", tokenId: HYDRATION_DOT },
-			[DOT, HYDRATION_DOT],
+			"a Hydration output with no input sets its source in",
+			["", DOT],
+			{ type: "out", tokenId: HYDRATION_USDT },
+			[USDT, HYDRATION_USDT],
 		],
 		[
-			"an input change follows with its mirror",
+			"the source of the Hydration output in makes a transfer",
+			[USDC, HYDRATION_USDT],
+			{ type: "in", tokenId: USDT },
+			[USDT, HYDRATION_USDT],
+		],
+		[
+			"an asset in keeps Hydration DOT out",
 			[DOT, HYDRATION_DOT],
 			{ type: "in", tokenId: USDC },
-			[USDC, HYDRATION_USDC],
+			[USDC, HYDRATION_DOT],
 		],
 		[
-			"DOT in follows with Hydration DOT",
+			"DOT in keeps the Hydration output",
 			[USDT, HYDRATION_USDT],
 			{ type: "in", tokenId: DOT },
-			[DOT, HYDRATION_DOT],
+			[DOT, HYDRATION_USDT],
 		],
 		[
-			"an input without a mirror falls back to DOT out",
+			"a foreign asset in keeps Hydration DOT out for a one-hop swap",
 			[DOT, HYDRATION_DOT],
 			{ type: "in", tokenId: VDOT },
-			[VDOT, DOT],
+			[VDOT, HYDRATION_DOT],
+		],
+		[
+			"a foreign asset in keeps Hydration USDT out for a two-hop swap",
+			[DOT, HYDRATION_USDT],
+			{ type: "in", tokenId: VDOT },
+			[VDOT, HYDRATION_USDT],
 		],
 		[
 			"DOT out keeps DOT in rather than moving Hydration DOT in",
@@ -254,9 +314,9 @@ describe("getNextSwapTokens on the XCM transfer route", () => {
 		],
 		[
 			"flip does nothing",
-			[USDT, HYDRATION_USDT],
+			[USDC, HYDRATION_USDT],
 			{ type: "flip" },
-			[USDT, HYDRATION_USDT],
+			[USDC, HYDRATION_USDT],
 		],
 	])("%s", (_, prev, change, expected) => {
 		expect(next(prev, change)).toEqual(expected);
@@ -268,6 +328,7 @@ describe("canFlipSwapTokens", () => {
 		[{ tokenIdIn: DOT, tokenIdOut: USDT }, true],
 		[{ tokenIdIn: DOT, tokenIdOut: "" }, true],
 		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_DOT }, false],
+		[{ tokenIdIn: USDC, tokenIdOut: HYDRATION_USDT }, false],
 	])("%o -> %s", (pair, expected) => {
 		expect(canFlipSwapTokens(pair, context)).toBe(expected);
 	});
