@@ -1,7 +1,9 @@
 import {
 	XcmV5Junction,
 	XcmV5Junctions,
+	XcmVersionedAssetId,
 	XcmVersionedLocation,
+	type XcmVersionedXcm,
 } from "@polkadot-api/descriptors";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
@@ -11,35 +13,67 @@ import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
-import type { XcmTransferRoute } from "../swapRoute";
+import type { XcmRoute } from "../swapRoute";
 import {
 	composeXcmQuote,
+	parseDeliveryFee,
 	parseDestinationDryRun,
 	parseOriginDryRun,
 	type XcmQuoteResult,
 } from "./xcmQuote";
 
-export type XcmTransferQuote = {
+export type XcmQuoteState = {
 	isLoading: boolean;
 	data: XcmQuoteResult | undefined;
 	deliveryFee: bigint | undefined;
 };
 
-type UseXcmTransferQuoteProps = {
-	route: XcmTransferRoute | null;
+const useXcmDeliveryFee = (
+	route: XcmRoute | null,
+	message: XcmVersionedXcm | null,
+) =>
+	useQuery({
+		queryKey: [
+			"xcmDeliveryFee",
+			route?.origin,
+			route?.destination,
+			safeQueryKeyPart(message),
+		],
+		enabled: !!route && !!message,
+		queryFn: async () => {
+			if (!route || !message) return null;
+			const api = await getApi(route.origin);
+			const deliveryFees = await api.apis.XcmPaymentApi.query_delivery_fees(
+				XcmVersionedLocation.V5({
+					parents: 1,
+					interior: XcmV5Junctions.X1(
+						XcmV5Junction.Parachain(getChainById(route.destination).paraId),
+					),
+				}),
+				message,
+				XcmVersionedAssetId.V5({ parents: 1, interior: XcmV5Junctions.Here() }),
+				{ at: "best" },
+			);
+			return parseDeliveryFee(deliveryFees);
+		},
+		retry: 1,
+		refetchInterval: false,
+		structuralSharing: false,
+	});
+
+type UseXcmQuoteProps = {
+	route: XcmRoute | null;
 	beneficiary: SS58String | null;
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
-	plancks: bigint | null | undefined;
 };
 
-export const useXcmTransferQuote = ({
+export const useXcmQuote = ({
 	route,
 	beneficiary,
 	call,
 	fakeCall,
-	plancks,
-}: UseXcmTransferQuoteProps): XcmTransferQuote => {
+}: UseXcmQuoteProps): XcmQuoteState => {
 	const destinationParaId = route && getChainById(route.destination).paraId;
 
 	const origin = useDryRun({ chainId: route?.origin, from: beneficiary, call });
@@ -57,17 +91,20 @@ export const useXcmTransferQuote = ({
 		[origin.data, destinationParaId],
 	);
 
-	const estimatedDeliveryFee = useMemo(() => {
-		if (!originEstimate.data || !destinationParaId) return undefined;
+	const estimateMessage = useMemo(() => {
+		if (!originEstimate.data || !destinationParaId) return null;
 		const leg = parseOriginDryRun(originEstimate.data, destinationParaId);
-		return leg.success ? leg.value.deliveryFee : undefined;
+		return leg.success ? leg.value.message : null;
 	}, [originEstimate.data, destinationParaId]);
 
 	const message = originLeg?.success ? originLeg.value.message : null;
 
+	const deliveryFee = useXcmDeliveryFee(route, message);
+	const estimatedDeliveryFee = useXcmDeliveryFee(route, estimateMessage);
+
 	const destination = useQuery({
 		queryKey: [
-			"xcmTransferDestinationDryRun",
+			"xcmDestinationDryRun",
 			route?.origin,
 			route?.destination,
 			route?.destinationAssetId,
@@ -112,24 +149,29 @@ export const useXcmTransferQuote = ({
 			return { success: false, failure: originLeg.failure };
 		if (destination.error)
 			return { success: false, failure: { kind: "destination-unavailable" } };
-		if (!destination.data || !plancks) return undefined;
-		if (!destination.data.success)
+		if (destination.data && !destination.data.success)
 			return { success: false, failure: destination.data.failure };
+		if (deliveryFee.error || deliveryFee.data === null)
+			return { success: false, failure: { kind: "delivery-fee-unavailable" } };
+		if (!destination.data || deliveryFee.data === undefined) return undefined;
 		return {
 			success: true,
-			quote: composeXcmQuote(
-				plancks,
-				originLeg.value.deliveryFee,
-				destination.data.value,
-			),
+			quote: composeXcmQuote(originLeg.value.sent, destination.data.value),
 		};
-	}, [origin.error, originLeg, destination.error, destination.data, plancks]);
+	}, [
+		origin.error,
+		originLeg,
+		destination.error,
+		destination.data,
+		deliveryFee.error,
+		deliveryFee.data,
+	]);
 
 	return {
-		isLoading: origin.isLoading || (!!message && destination.isLoading),
+		isLoading:
+			origin.isLoading ||
+			(!!message && (destination.isLoading || deliveryFee.isLoading)),
 		data,
-		deliveryFee: originLeg?.success
-			? originLeg.value.deliveryFee
-			: estimatedDeliveryFee,
+		deliveryFee: deliveryFee.data ?? estimatedDeliveryFee.data ?? undefined,
 	};
 };
