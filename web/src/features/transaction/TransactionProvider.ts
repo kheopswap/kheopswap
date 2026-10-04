@@ -129,7 +129,6 @@ const useTransactionProvider = ({
 			);
 		}
 
-		// dry_run_call never charges the transaction fee, which Hydration takes in the account's currency
 		const isDryRunConclusive =
 			isChainIdAssetHub(chainId) && !fees.options?.asset;
 		if (isDryRunConclusive && fees.dryRun?.success)

@@ -103,11 +103,6 @@ export const splitAppCommission = (
 	return { plancksIn, appFee };
 };
 
-/**
- * Compute the maximum amount of tokenIn a user can spend, keeping in tokenIn
- * twice the fee when tokenIn pays it, the existential deposit when tokenIn is
- * native or pays the fee, and the delivery fee when it is charged in tokenIn.
- */
 export const getMaxSwapAmount = ({
 	balance,
 	tokenIn,
