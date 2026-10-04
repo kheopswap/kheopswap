@@ -13,6 +13,11 @@ export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
 >;
 
+export type SubmitGate =
+	| { status: "open" }
+	| { status: "pending" }
+	| { status: "closed"; reason: string };
+
 type UseTransactionProviderProps = {
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined; // used as backup for calculating fees without all the inputs
@@ -22,11 +27,13 @@ type UseTransactionProviderProps = {
 	followUpData?: object;
 	transactionType?: TransactionType;
 	transactionTitle?: string;
+	submitGate?: SubmitGate;
 	onReset: () => void;
 };
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
 const DEFAULT_FOLLOW_UP_DATA = {};
+const OPEN_SUBMIT_GATE: SubmitGate = { status: "open" };
 
 const useTransactionProvider = ({
 	call,
@@ -38,6 +45,7 @@ const useTransactionProvider = ({
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
 	transactionType = "unknown",
 	transactionTitle = "Transaction",
+	submitGate = OPEN_SUBMIT_GATE,
 }: UseTransactionProviderProps) => {
 	// 1. Ethereum-specific concerns
 	const ethereum = useTransactionEthereum({ signer, chainId });
@@ -91,7 +99,8 @@ const useTransactionProvider = ({
 			balanceCheck.isLoadingExistentialDeposits ||
 			fees.isLoadingFeeEstimate ||
 			balanceCheck.isLoadingFeeTokenBalance ||
-			fees.isLoadingDryRun
+			fees.isLoadingDryRun ||
+			submitGate.status === "pending"
 		);
 	}, [
 		fees.isResolvingSigner,
@@ -100,10 +109,13 @@ const useTransactionProvider = ({
 		fees.isLoadingFeeEstimate,
 		balanceCheck.isLoadingFeeTokenBalance,
 		fees.isLoadingDryRun,
+		submitGate.status,
 	]);
 
 	// Cross-concern: can submit
 	const canSubmit = useMemo(() => {
+		if (submitGate.status !== "open") return false;
+
 		if (ethereum.account?.platform === "ethereum") {
 			return (
 				!!call &&
@@ -143,6 +155,7 @@ const useTransactionProvider = ({
 		ethereum.isSwitchingEthereumNetwork,
 		fees.options,
 		fees.dryRun,
+		submitGate.status,
 	]);
 
 	return {
