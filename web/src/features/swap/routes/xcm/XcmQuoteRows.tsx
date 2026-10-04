@@ -40,7 +40,7 @@ export const XcmSimulationValue: FC<{
 				<div className="max-w-72">
 					{!quote.data.success && (
 						<div className="mb-2 text-error">
-							{describeXcmQuoteFailure(quote.data.failure)}
+							{describeXcmQuoteFailure(quote.data.failure, route)}
 						</div>
 					)}
 					<p>
