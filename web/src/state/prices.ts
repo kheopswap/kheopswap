@@ -1,4 +1,3 @@
-import { bind } from "@react-rxjs/core";
 import { values } from "lodash-es";
 import {
 	combineLatest,
@@ -22,7 +21,7 @@ import { getAssetConvert$ } from "./convert";
 import { assetHub$, relayChains$, stableToken$ } from "./relay";
 import { getAllTokens$ } from "./tokens";
 
-const assetHubMirrorTokenIds$ = combineLatest([
+export const assetHubMirrorTokenIds$ = combineLatest([
 	relayChains$,
 	getAllTokens$(),
 ]).pipe(
@@ -35,13 +34,6 @@ const assetHubMirrorTokenIds$ = combineLatest([
 			: new Map<TokenId, TokenId>();
 	}),
 	shareReplay({ bufferSize: 1, refCount: true }),
-);
-
-const NO_MIRROR_TOKEN_IDS: ReadonlyMap<TokenId, TokenId> = new Map();
-
-export const [useAssetHubMirrorTokenIds] = bind(
-	assetHubMirrorTokenIds$,
-	NO_MIRROR_TOKEN_IDS,
 );
 
 export const getAssetHubMirrorTokenId$ = (
