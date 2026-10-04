@@ -17,8 +17,16 @@ import {
 	openTransactionModal,
 	transactions$,
 } from "./transactionStore";
-import type { TransactionId, TransactionRecord } from "./types";
-import { trackXcmArrivals } from "./xcmArrival";
+import {
+	isTerminalStatus,
+	type TransactionId,
+	type TransactionRecord,
+} from "./types";
+import {
+	getTrackedXcmArrival,
+	isAwaitingXcmArrival,
+	trackXcmArrivals,
+} from "./xcmArrival";
 
 // React-rxjs bindings for reactive updates
 const [useAllTransactions] = bind(transactions$, []);
@@ -39,7 +47,7 @@ type TransactionsContextValue = {
 	minimize: (id: TransactionId) => void;
 	open: (id: TransactionId) => void;
 	dismiss: (id: TransactionId) => void;
-	closeModal: (id: TransactionId) => void; // Close modal, minimize if pending or dismiss if terminal
+	closeModal: (id: TransactionId) => void;
 };
 
 const TransactionsContext = createContext<TransactionsContextValue | null>(
@@ -75,9 +83,10 @@ export const TransactionsProvider: FC<PropsWithChildren> = ({ children }) => {
 			const tx = transactions.find((t) => t.id === id);
 			if (!tx) return;
 
-			// If finalized or failed, dismiss entirely (no toast)
-			// Otherwise, just close modal (toast stays)
-			if (tx.status === "finalized" || tx.status === "failed") {
+			if (
+				isTerminalStatus(tx.status) &&
+				!isAwaitingXcmArrival(tx, getTrackedXcmArrival(id))
+			) {
 				dismissTransaction(id);
 			} else {
 				minimizeTransaction(id);
