@@ -129,7 +129,7 @@ const useSwapProvider = () => {
 		edTokenIn: pricing.edTokenIn,
 		call: xcmRoute ? xcm.plan.call : callData.call,
 		fakeCall: transaction.fakeCall,
-		extraNativeSpending: xcmRoute ? xcm.quote.deliveryFee : undefined,
+		extraNativeSpending: xcmRoute ? xcm.quote.deliveryFee?.plancks : undefined,
 		setFormData: formState.setFormData,
 	});
 
