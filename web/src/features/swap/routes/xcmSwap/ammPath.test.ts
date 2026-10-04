@@ -4,6 +4,7 @@ import {
 	type AmmPath,
 	getAmmPath,
 	getPathLiquidity,
+	mapHopPath,
 	quoteAmmPath,
 } from "./ammPath";
 import { dotToUsdt, usdcToUsdt } from "./xcmSwap.fixtures";
@@ -47,16 +48,12 @@ describe("quoteAmmPath", () => {
 	] as const)(
 		"matches what Asset Hub swapped and the probe's minimums for %s",
 		(_, fixture, path: AmmPath) => {
-			const hops = path.map((hop, i) => {
-				const reserves = fixture.reserves[i];
-				if (!reserves) throw new Error("fixture lacks reserves for a hop");
-				return { ...hop, reserveIn: reserves[0], reserveOut: reserves[1] };
-			});
-			const [first, second] = hops;
-			if (!first) throw new Error("empty path");
-
 			const quote = quoteAmmPath({
-				hops: second ? [first, second] : [first],
+				hops: mapHopPath(path, (hop, index) => {
+					const reserves = fixture.reserves[index];
+					if (!reserves) throw new Error("fixture lacks reserves for a hop");
+					return { ...hop, reserveIn: reserves[0], reserveOut: reserves[1] };
+				}),
 				lpFee: fixture.lpFee,
 				plancksIn: fixture.swapAmount,
 				slippage: Number(fixture.slippageBps) / 10_000,
