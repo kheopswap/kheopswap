@@ -1,27 +1,18 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import { Tokens } from "../../components/Tokens";
 import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
+import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
 import { Slippage } from "./Slippage";
-import { useSwap } from "./SwapProvider";
+import { SummaryRow } from "./SummaryRow";
+import { type AmmSwapDetails, useSwap } from "./SwapProvider";
 
-const SummaryRow: FC<{ label: ReactNode; value: ReactNode }> = ({
-	label,
-	value,
-}) => (
-	<div className="flex w-full items-center gap-2 overflow-hidden">
-		<div className="grow truncate text-neutral-500">{label}</div>
-		<div className="shrink-0 text-right">{value}</div>
-	</div>
-);
-
-export const SwapSummary = () => {
+const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
+	const { tokenIn, tokenOut, transaction } = useSwap();
 	const {
 		minPlancksOut,
-		tokenIn,
-		tokenOut,
 		priceImpact,
 		reserveIn,
 		reserveOut,
@@ -29,8 +20,8 @@ export const SwapSummary = () => {
 		appCommission,
 		protocolCommission,
 		slippage,
-		call,
-	} = useSwap();
+	} = details;
+	const { call } = transaction;
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -111,4 +102,15 @@ export const SwapSummary = () => {
 			)}
 		</div>
 	);
+};
+
+export const SwapSummary = () => {
+	const { details } = useSwap();
+
+	switch (details.kind) {
+		case "amm-swap":
+			return <AmmSwapSummary details={details} />;
+		case "xcm-transfer":
+			return <XcmTransferSummary details={details} />;
+	}
 };
