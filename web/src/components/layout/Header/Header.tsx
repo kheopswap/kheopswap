@@ -35,9 +35,7 @@ const MainNav: FC = () => {
 			<NavItem to={`/${relayId}/portfolio`}>
 				{accounts.length ? "Portfolio" : "Tokens"}
 			</NavItem>
-			<NavItem to={`/${relayId}/pools`}>
-				<span className="hidden min-[440px]:inline">Liquidity&nbsp;</span>Pools
-			</NavItem>
+			<NavItem to={`/${relayId}/pools`}>Liquidity</NavItem>
 		</nav>
 	);
 };
