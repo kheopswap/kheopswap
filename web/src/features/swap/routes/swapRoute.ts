@@ -1,12 +1,19 @@
 import type { SS58String } from "polkadot-api";
 import type { WalletAccount } from "../../../common/kheopskit";
 import type {
+	ChainId,
 	ChainIdAssetHub,
 	ChainIdHydration,
 } from "../../../registry/chains/types";
 import { parseTokenId } from "../../../registry/tokens/helpers";
 import type { Token, TokenId } from "../../../registry/tokens/types";
+import type { TransactionType } from "../../../state/transactions/types";
+import type { AnyTransaction } from "../../../types/transactions";
 import { isEthereumAddress } from "../../../utils/ethereumAddress";
+import type {
+	CallSpendings,
+	SubmitGate,
+} from "../../transaction/TransactionProvider";
 
 export type AmmSwapRoute = {
 	kind: "amm-swap";
@@ -25,6 +32,17 @@ export type XcmTransferRoute = {
 };
 
 export type SwapRoute = AmmSwapRoute | XcmTransferRoute;
+
+export type TransactionPlan = {
+	chainId: ChainId | undefined;
+	call: AnyTransaction | null | undefined;
+	fakeCall: AnyTransaction | null | undefined;
+	callSpendings: CallSpendings;
+	followUpData: object;
+	transactionType: Extract<TransactionType, "swap" | "xcmTransfer">;
+	title: string;
+	submitGate: SubmitGate;
+};
 
 export type MirrorTokenIds = ReadonlyMap<TokenId, TokenId>;
 

@@ -8,7 +8,7 @@ import { SwapSummary } from "./SwapSummary";
 import { SwapTokensEditor } from "./SwapTokensEditor";
 
 export const SwapForm = () => {
-	const { from, onFromChange, tokenIn } = useSwap();
+	const { from, onFromChange, tokenIn, route } = useSwap();
 	const { onSubmit } = useTransaction();
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
@@ -37,7 +37,9 @@ export const SwapForm = () => {
 					<SwapTokensEditor />
 				</FormFieldContainer>
 
-				<TransactionSubmitButton>Swap</TransactionSubmitButton>
+				<TransactionSubmitButton>
+					{route?.kind === "xcm-transfer" ? "Transfer" : "Swap"}
+				</TransactionSubmitButton>
 
 				<SwapSummary />
 			</div>
