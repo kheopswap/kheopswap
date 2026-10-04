@@ -1,13 +1,14 @@
 import { Binary } from "polkadot-api";
+import type { ChainIdAssetHub } from "../../chains/types.ts";
 import type { AssetMetadataEntry } from "./types.ts";
 
 export function mapAssetTokensFromEntries(
-	chainId: string,
+	chainId: ChainIdAssetHub,
 	metadatas: AssetMetadataEntry[],
 	sufficientMap: Map<number, boolean>,
 ): Array<{
 	type: "asset";
-	chainId: string;
+	chainId: ChainIdAssetHub;
 	decimals: number;
 	symbol: string;
 	name: string;

@@ -4,7 +4,7 @@ import type { Address, Client, Hex, PublicClient } from "viem";
 import { createPublicClient, fallback, http } from "viem";
 import { type Api, getApi } from "../../papi/getApi";
 import { getChainById } from "../../registry/chains/chains";
-import type { ChainId } from "../../registry/chains/types";
+import type { ChainIdAssetHub } from "../../registry/chains/types";
 import { getBlockDurationMs } from "../../utils/getBlockDurationMs";
 import { logger } from "../../utils/logger";
 import { sleep } from "../../utils/sleep";
@@ -69,7 +69,7 @@ const isReceiptSuccess = (status: unknown): boolean =>
 
 const createEthereumPublicClient = (
 	rpcUrls: string[],
-	chainId: ChainId,
+	chainId: ChainIdAssetHub,
 ): PublicClient => {
 	const urls = rpcUrls.filter(Boolean);
 	if (!urls.length) {
@@ -117,7 +117,7 @@ const waitForReceipt = async (
 };
 
 const waitForSubstrateBlockHash = async (
-	api: Api<ChainId>,
+	api: Api<ChainIdAssetHub>,
 	blockNumber: number,
 	timeoutMs: number,
 	signal?: AbortSignal,
@@ -151,7 +151,7 @@ const waitForSubstrateBlockHash = async (
 };
 
 const waitForFinalization = async (
-	api: Api<ChainId>,
+	api: Api<ChainIdAssetHub>,
 	blockNumber: number,
 	expectedHash: string,
 	timeoutMs: number,
@@ -197,7 +197,7 @@ const waitForFinalization = async (
 };
 
 const fetchBlockEvents = async (
-	api: Api<ChainId>,
+	api: Api<ChainIdAssetHub>,
 	blockHash: string,
 	extrinsicIndex: number,
 ): Promise<
@@ -250,7 +250,7 @@ export const createEthereumTxObservable = ({
 	callData,
 }: {
 	account: EthereumAccount;
-	chainId: ChainId;
+	chainId: ChainIdAssetHub;
 	callData: Hex;
 }): Observable<TxEvent> =>
 	new Observable((subscriber) => {
@@ -261,7 +261,7 @@ export const createEthereumTxObservable = ({
 			const chain = getChainById(chainId);
 			const blockDurationMs = await getBlockDurationMs(api);
 			const timeouts = getTimeouts(blockDurationMs);
-			const publicRpcUrls = chain?.evmRpcUrl ?? [];
+			const publicRpcUrls = chain.evmRpcUrl;
 			const from = account.address as Address;
 
 			const publicClient = createEthereumPublicClient(

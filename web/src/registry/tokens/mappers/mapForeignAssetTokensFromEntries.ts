@@ -1,5 +1,6 @@
 import { Binary } from "polkadot-api";
 import { safeStringify } from "../../../utils/serialization.ts";
+import type { ChainIdAssetHub } from "../../chains/types.ts";
 import { isEthereumOriginLocation } from "./isEthereumOriginLocation.ts";
 import type {
 	ForeignAssetEntry,
@@ -10,13 +11,13 @@ import type {
 export function mapForeignAssetTokensFromEntries<
 	Location extends ForeignAssetLocation,
 >(
-	chainId: string,
+	chainId: ChainIdAssetHub,
 	assets: ForeignAssetEntry<Location>[],
 	metadatas: ForeignMetadataEntry<Location>[],
 	options?: { keepEthereumWithoutMetadata?: boolean },
 ): Array<{
 	type: "foreign-asset";
-	chainId: string;
+	chainId: ChainIdAssetHub;
 	decimals: number;
 	symbol: string;
 	name: string;
