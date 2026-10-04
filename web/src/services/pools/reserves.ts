@@ -6,6 +6,7 @@ import {
 	shareReplay,
 	switchMap,
 } from "rxjs";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
 import {
 	getChainIdFromTokenId,
 	parseTokenId,
@@ -31,7 +32,7 @@ const getPool$ = (
 		const token1 = parseTokenId(tokenId1);
 		const token2 = parseTokenId(tokenId2);
 
-		if (!token1.chainId || !token2.chainId || token1.chainId !== token2.chainId)
+		if (!isChainIdAssetHub(token1.chainId) || token1.chainId !== token2.chainId)
 			return of({ pool: null, status: "loaded" });
 
 		// scan will be faster if we search for the non native token first

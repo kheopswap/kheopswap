@@ -6,7 +6,10 @@ import {
 } from "../../common/constants";
 import { getApi } from "../../papi/getApi";
 import { getChainById } from "../../registry/chains/chains";
-import type { Chain, ChainId } from "../../registry/chains/types";
+import type {
+	ChainAssetHub,
+	ChainIdAssetHub,
+} from "../../registry/chains/types";
 import type { TokenIdsPair } from "../../registry/tokens/types";
 import { getTokenIdFromXcmV5Multilocation } from "../../registry/utils/xcmMultiLocation";
 import { logger } from "../../utils/logger";
@@ -23,9 +26,12 @@ export const {
 	setLoadingStatus,
 } = pollChainStatus("poolsByChainStatuses", POOLS_CACHE_DURATION);
 
-const WATCHERS = new Map<ChainId, () => void>();
+const WATCHERS = new Map<ChainIdAssetHub, () => void>();
 
-const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
+const fetchAssetConvertionPools = async (
+	chain: ChainAssetHub,
+	signal: AbortSignal,
+) => {
 	const api = await getApi(chain.id);
 	if (signal.aborted) return;
 
@@ -58,8 +64,7 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 
 			return pool;
 		})
-		.filter((p): p is AssetConvertionPoolDef => !!p)
-		.filter((p): p is AssetConvertionPoolDef => p.tokenIds.every((t) => !!t));
+		.filter((p): p is AssetConvertionPoolDef => !!p);
 
 	const currentChainPools = poolsStore$.value[chain.id] ?? [];
 
@@ -70,7 +75,7 @@ const fetchAssetConvertionPools = async (chain: Chain, signal: AbortSignal) => {
 		});
 };
 
-const watchPoolsByChain = (chainId: ChainId) => {
+const watchPoolsByChain = (chainId: ChainIdAssetHub) => {
 	const watchController = new AbortController();
 	let retryTimeout = 3_000;
 

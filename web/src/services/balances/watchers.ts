@@ -1,6 +1,5 @@
 import { BehaviorSubject, type Subscription } from "rxjs";
 import { getApi } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
@@ -51,15 +50,12 @@ const updateBalance = (balanceId: BalanceId, balance: bigint) => {
 const watchBalance = async (balanceId: BalanceId) => {
 	const { tokenId, address } = parseBalanceId(balanceId);
 	const token = parseTokenId(tokenId);
-	const chain = getChainById(token.chainId);
-	if (!chain) throw new Error(`Chain not found for ${token.chainId}`);
-
-	const api = await getApi(chain.id);
 
 	updateBalanceLoadingStatus(balanceId, "loading");
 
 	switch (token.type) {
 		case "native": {
+			const api = await getApi(token.chainId);
 			const account$ = api.query.System.Account.watchValue(address, {
 				at: "best",
 			});
@@ -71,6 +67,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 		}
 		case "asset": {
+			const api = await getApi(token.chainId);
 			const account$ = api.query.Assets.Account.watchValue(
 				token.assetId,
 				address,
@@ -84,6 +81,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 		}
 		case "pool-asset": {
+			const api = await getApi(token.chainId);
 			const account$ = api.query.PoolAssets.Account.watchValue(
 				token.poolAssetId,
 				address,
@@ -97,6 +95,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 		}
 		case "foreign-asset": {
+			const api = await getApi(token.chainId);
 			const account$ = api.query.ForeignAssets.Account.watchValue(
 				token.location,
 				address,

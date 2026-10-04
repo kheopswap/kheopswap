@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 import { getApi } from "../../../papi/getApi";
-import { getChainById } from "../../../registry/chains/chains";
+import type { ChainIdAssetHub } from "../../../registry/chains/types";
 import { parseTokenId } from "../../../registry/tokens/helpers";
 import { POOL_TOKEN2_TOKEN_TYPES } from "../../../registry/tokens/tokens";
 import type { TokenId } from "../../../registry/tokens/types";
@@ -9,6 +9,7 @@ import { getXcmV5MultilocationFromTokenId } from "../../../registry/utils/xcmMul
 import { safeQueryKeyPart } from "../../../utils/safeQueryKeyPart";
 
 type UseCreatePoolExtrinsicProps = {
+	chainId: ChainIdAssetHub;
 	tokenId1: TokenId | null | undefined;
 	tokenId2: TokenId | null | undefined;
 	liquidityToAdd: [bigint, bigint] | null;
@@ -16,6 +17,7 @@ type UseCreatePoolExtrinsicProps = {
 };
 
 export const useCreatePoolExtrinsic = ({
+	chainId,
 	tokenId1,
 	tokenId2,
 	liquidityToAdd,
@@ -24,6 +26,7 @@ export const useCreatePoolExtrinsic = ({
 	return useQuery({
 		queryKey: [
 			"useCreatePoolExtrinsic",
+			chainId,
 			tokenId1,
 			tokenId2,
 			mintTo,
@@ -35,7 +38,13 @@ export const useCreatePoolExtrinsic = ({
 			if (liquidityToAdd)
 				if (!liquidityToAdd[0] || !liquidityToAdd[1] || !mintTo) return null;
 
-			return getCreatePoolExtrinsic(tokenId1, tokenId2, liquidityToAdd, mintTo);
+			return getCreatePoolExtrinsic(
+				chainId,
+				tokenId1,
+				tokenId2,
+				liquidityToAdd,
+				mintTo,
+			);
 		},
 		refetchInterval: false,
 		structuralSharing: false,
@@ -43,6 +52,7 @@ export const useCreatePoolExtrinsic = ({
 };
 
 const getCreatePoolExtrinsic = async (
+	chainId: ChainIdAssetHub,
 	tokenId1: TokenId,
 	tokenId2: TokenId,
 	liquidityToAdd: [bigint, bigint] | null,
@@ -51,14 +61,12 @@ const getCreatePoolExtrinsic = async (
 	const token1 = parseTokenId(tokenId1);
 	const token2 = parseTokenId(tokenId2);
 
-	if (token1.chainId !== token2.chainId)
-		throw new Error("Tokens are not on the same chain");
+	if (token1.chainId !== chainId || token2.chainId !== chainId)
+		throw new Error(`Tokens are not on chain ${chainId}`);
 	if (token1.type !== "native")
 		throw new Error("Token 1 is not a native token");
 	if (!POOL_TOKEN2_TOKEN_TYPES.includes(token2.type))
 		throw new Error("Invalid token type for token 2");
-
-	const chain = getChainById(token1.chainId);
 
 	const asset1 = getXcmV5MultilocationFromTokenId(tokenId1);
 	if (!asset1) throw new Error("Invalid location for token 1");
@@ -66,7 +74,7 @@ const getCreatePoolExtrinsic = async (
 	const asset2 = getXcmV5MultilocationFromTokenId(tokenId2);
 	if (!asset2) throw new Error("Invalid location for token 2");
 
-	const api = await getApi(chain.id);
+	const api = await getApi(chainId);
 
 	const createPool = api.tx.AssetConversion.create_pool({
 		asset1,
