@@ -14,7 +14,7 @@ import {
 	type XcmTransferRoute,
 } from "../swapRoute";
 import { getXcmTransferCall } from "../xcmTransfer/getXcmTransferCall";
-import { useXcmTransferQuote } from "./useXcmQuote";
+import { useXcmQuote } from "./useXcmQuote";
 import { describeXcmQuoteFailure, getXcmCallSpendings } from "./xcmQuote";
 
 const useXcmTransferCall = ({
@@ -76,12 +76,11 @@ export const useXcmTransfer = ({
 		beneficiary,
 	});
 
-	const quote = useXcmTransferQuote({
+	const quote = useXcmQuote({
 		route,
 		beneficiary,
 		call,
 		fakeCall,
-		plancks: totalIn,
 	});
 
 	const received = quote.data?.success ? quote.data.quote.received : undefined;

@@ -8,7 +8,7 @@ import {
 	type TransactionPlan,
 	type XcmTransferRoute,
 } from "./routes/swapRoute";
-import type { XcmTransferQuote } from "./routes/xcm/useXcmQuote";
+import type { XcmQuoteState } from "./routes/xcm/useXcmQuote";
 import { useXcmTransfer } from "./routes/xcm/useXcmRoute";
 import { useSwapCall } from "./useSwapCall";
 import { useSwapFees } from "./useSwapFees";
@@ -30,7 +30,7 @@ export type AmmSwapDetails = {
 export type XcmTransferDetails = {
 	kind: "xcm-transfer";
 	route: XcmTransferRoute;
-	quote: XcmTransferQuote;
+	quote: XcmQuoteState;
 };
 
 const getSwapTitle = (
