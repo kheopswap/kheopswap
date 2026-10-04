@@ -1,11 +1,20 @@
 import { renderHook } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ChainId } from "../../registry/chains/types";
 import {
 	type SubmitGate,
 	TransactionProvider,
 	useTransaction,
 } from "./TransactionProvider";
+
+const balanceCheck = vi.hoisted(() => ({
+	insufficientBalances: {} as Record<string, string>,
+}));
+
+beforeEach(() => {
+	balanceCheck.insufficientBalances = {};
+});
 
 vi.mock("./useTransactionEthereum", () => ({
 	useTransactionEthereum: () => ({
@@ -34,7 +43,7 @@ vi.mock("./useTransactionFees", () => ({
 
 vi.mock("./useTransactionBalanceCheck", () => ({
 	useTransactionBalanceCheck: () => ({
-		insufficientBalances: {},
+		insufficientBalances: balanceCheck.insufficientBalances,
 		isLoadingBalances: false,
 		isLoadingExistentialDeposits: false,
 		isLoadingFeeTokenBalance: false,
@@ -45,13 +54,16 @@ vi.mock("./useTransactionSubmit", () => ({
 	useTransactionSubmit: () => ({ onSubmit: vi.fn() }),
 }));
 
-const renderTransaction = (submitGate?: SubmitGate) => {
+const renderTransaction = (
+	submitGate?: SubmitGate,
+	chainId: ChainId = "pah",
+) => {
 	const wrapper: FC<PropsWithChildren> = ({ children }) => (
 		<TransactionProvider
 			call={{} as never}
 			fakeCall={null}
 			signer="signer"
-			chainId="pah"
+			chainId={chainId}
 			onReset={vi.fn()}
 			submitGate={submitGate}
 		>
@@ -81,5 +93,25 @@ describe("TransactionProvider submit gate", () => {
 		const transaction = renderTransaction({ status: "pending" });
 		expect(transaction.canSubmit).toBe(false);
 		expect(transaction.isLoading).toBe(true);
+	});
+});
+
+describe("TransactionProvider fee shortfall", () => {
+	const feeShortfall = {
+		"hydration-asset::hydration::5": "Insufficient balance to pay for fee",
+	};
+
+	it("keeps submit disabled on Hydration when the fee currency falls short, despite a successful dry run", () => {
+		balanceCheck.insufficientBalances = feeShortfall;
+		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(false);
+	});
+
+	it("enables submit on Hydration once balances cover the fee", () => {
+		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(true);
+	});
+
+	it("keeps trusting a successful dry run on Asset Hub", () => {
+		balanceCheck.insufficientBalances = feeShortfall;
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(true);
 	});
 });
