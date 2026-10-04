@@ -1,5 +1,6 @@
 import { filter, firstValueFrom, map, type Subject, timeout } from "rxjs";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { getBalance$ } from "./service";
 import { balancesState$ } from "./state";
 import {
 	addBalanceSubscription,
@@ -9,11 +10,27 @@ import type { BalanceState } from "./types";
 import { getBalanceId } from "./utils";
 
 type AccountValue = { value: { data: { free: bigint; frozen: bigint } } };
+type TokensAccountValue = {
+	value: { free: bigint; reserved: bigint; frozen: bigint };
+};
 
 const mocks = vi.hoisted(() => ({
 	accountSubjects: new Map<string, unknown>(),
 	watchValueCalls: [] as string[],
+	getApiChainIds: [] as string[],
+	addedBalanceIds: [] as string[],
 }));
+
+vi.mock("./subscriptions", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("./subscriptions")>();
+	return {
+		...actual,
+		addBalanceSubscription: (balanceId: string) => {
+			mocks.addedBalanceIds.push(balanceId);
+			return actual.addBalanceSubscription(balanceId);
+		},
+	};
+});
 
 vi.mock("../../papi/getApi", async () => {
 	const { Subject } = await import("rxjs");
@@ -26,21 +43,30 @@ vi.mock("../../papi/getApi", async () => {
 	};
 
 	return {
-		getApi: async () => ({
-			query: {
-				System: {
-					Account: {
-						watchValue: (address: string) =>
-							getAccountObservable(`native||${address}`),
+		getApi: async (chainId: string) => {
+			mocks.getApiChainIds.push(chainId);
+			return {
+				query: {
+					System: {
+						Account: {
+							watchValue: (address: string) =>
+								getAccountObservable(`native||${address}`),
+						},
+					},
+					Tokens: {
+						Accounts: {
+							watchValue: (address: string, assetId: number) =>
+								getAccountObservable(`hydration-asset||${assetId}||${address}`),
+						},
 					},
 				},
-			},
-		}),
+			};
+		},
 	};
 });
 
-const getSubject = (key: string) =>
-	mocks.accountSubjects.get(key) as Subject<AccountValue>;
+const getSubject = <T = AccountValue>(key: string) =>
+	mocks.accountSubjects.get(key) as Subject<T>;
 
 const waitForBalanceState = (
 	balanceId: string,
@@ -118,4 +144,54 @@ describe("balances service pipeline", () => {
 			mocks.watchValueCalls.filter((key) => key === subjectKey),
 		).toHaveLength(1);
 	});
+
+	it("deducts frozen from free for hydration asset balances", async () => {
+		const address = "5TestAddressCharlie";
+		const balanceId = getBalanceId({
+			address,
+			tokenId: "hydration-asset::hydration::5",
+		});
+		const subjectKey = `hydration-asset||5||${address}`;
+
+		const subId = addBalanceSubscription(balanceId);
+
+		await vi.waitFor(() =>
+			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		);
+
+		getSubject<TokensAccountValue>(subjectKey).next({
+			value: { free: 100n, reserved: 7n, frozen: 10n },
+		});
+
+		const loaded = await waitForBalanceState(
+			balanceId,
+			(s) => s?.status === "loaded",
+		);
+		expect(loaded?.balance).toBe(90n);
+
+		removeBalancesSubscription(subId);
+	});
+});
+
+describe("getBalance$ for an Ethereum account on Hydration", () => {
+	it.each(["native::hydration", "hydration-asset::hydration::5"])(
+		"reports %s as loaded without balance and never watches it",
+		async (tokenId) => {
+			const address = `0x${"ab".repeat(20)}` as const;
+			const getApiCallsBefore = mocks.getApiChainIds.length;
+
+			const state = await firstValueFrom(
+				getBalance$({ address, tokenId }).pipe(timeout(1_000)),
+			);
+			expect(state).toEqual({ status: "loaded", balance: undefined });
+
+			// absence of a watcher can only be observed once the debounced pipeline settles
+			await new Promise((resolve) => setTimeout(resolve, 250));
+
+			expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual([]);
+			expect(
+				mocks.addedBalanceIds.filter((id) => id.includes(address)),
+			).toEqual([]);
+		},
+	);
 });
