@@ -8,8 +8,8 @@ import {
 	type TransactionPlan,
 	type XcmTransferRoute,
 } from "./routes/swapRoute";
-import { useXcmTransfer } from "./routes/xcmTransfer/useXcmTransfer";
-import type { XcmTransferQuote } from "./routes/xcmTransfer/useXcmTransferQuote";
+import type { XcmTransferQuote } from "./routes/xcm/useXcmQuote";
+import { useXcmTransfer } from "./routes/xcm/useXcmRoute";
 import { useSwapCall } from "./useSwapCall";
 import { useSwapFees } from "./useSwapFees";
 import { useSwapFormState } from "./useSwapFormState";

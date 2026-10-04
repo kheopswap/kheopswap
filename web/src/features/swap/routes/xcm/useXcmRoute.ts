@@ -13,8 +13,8 @@ import {
 	type TransactionPlan,
 	type XcmTransferRoute,
 } from "../swapRoute";
-import { getXcmTransferCall } from "./getXcmTransferCall";
-import { useXcmTransferQuote } from "./useXcmTransferQuote";
+import { getXcmTransferCall } from "../xcmTransfer/getXcmTransferCall";
+import { useXcmTransferQuote } from "./useXcmQuote";
 import { describeXcmQuoteFailure, getXcmCallSpendings } from "./xcmQuote";
 
 const useXcmTransferCall = ({
