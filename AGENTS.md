@@ -22,7 +22,8 @@ Update this file and `README.md` when your change makes them wrong.
 - Get an API with `getApi(chainId)` from `web/src/papi/getApi.ts`. It picks light client or RPC and caches the connection.
 - Read and write through the typed surface: `api.query`, `api.tx`, `api.event`, `api.constants`. Keep `api.client` and `getUnsafeApi()` out of app code. When no typed API covers the need, say so in the PR before adding a lower-level workaround.
 - When a runtime call's signature differs between chains, write one explicit case per chain with `switch (api.chainId)`.
-- Every supported chain is an Asset Hub: `pah`, `kah`, `wah`, `pasah`.
+- Chain ids come in two kinds: the Asset Hubs `pah`, `kah`, `wah`, `pasah` (`ChainIdAssetHub`) and Hydration `hydration` (`ChainIdHydration`). `ChainId` is their union.
+- Code that uses Asset Hub pallets (Assets, PoolAssets, ForeignAssets, AssetConversion, Revive) takes `ChainIdAssetHub` or `ChainAssetHub`. Narrow the parameter so `getApi` returns the Asset Hub API, and guard with `isChainIdAssetHub` / `isChainAssetHub` where a value can be any chain.
 
 ## Reactive state
 
@@ -39,7 +40,7 @@ Feature state lives in a provider hook exposed through `provideContext`: `export
 
 ## Tokens
 
-Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build and parse them with `getTokenId` and `parseTokenId`. Types are `native`, `asset`, `pool-asset` and `foreign-asset`.
+Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build and parse them with `getTokenId` and `parseTokenId`. Types are `native`, `asset`, `pool-asset` and `foreign-asset`. Only `native` exists on every chain. The other three are Asset Hub only, so their `chainId` is a `ChainIdAssetHub` and `parseTokenId` rejects them on other chains.
 
 The `tokens.<network>.json` snapshots are generated. Before touching token data, read the token registry section of `README.md`.
 
