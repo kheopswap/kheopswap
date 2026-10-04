@@ -1,6 +1,7 @@
 import type { XcmVersionedXcm } from "@polkadot-api/descriptors";
 import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
+import { getChainById } from "../../../../registry/chains/chains";
 import type { ChainIdHydration } from "../../../../registry/chains/types";
 import type { TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
@@ -27,7 +28,9 @@ export type DestinationDryRun = Awaited<
 >;
 
 export type XcmQuoteFailure =
+	| { kind: "origin-unavailable" }
 	| { kind: "origin-failed"; reason: string }
+	| { kind: "origin-rejected"; xcmError: string }
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
 	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
@@ -58,22 +61,25 @@ type OriginDispatchError = Extract<
 	{ success: false }
 >["value"]["error"];
 
-const getOriginFailureReason = (error: OriginDispatchError): string => {
+const getOriginFailure = (error: OriginDispatchError): XcmQuoteFailure => {
 	if (
 		error.type !== "Module" ||
 		error.value.type !== "PolkadotXcm" ||
 		error.value.value.type !== "LocalExecutionIncompleteWithError"
 	)
-		return formatTxError(error);
+		return { kind: "origin-failed", reason: formatTxError(error) };
 
 	const xcmError = error.value.value.value.error.type;
 	switch (xcmError) {
 		case "FailedToTransactAsset":
-			return INSUFFICIENT_BALANCE;
+			return { kind: "origin-failed", reason: INSUFFICIENT_BALANCE };
 		case "NoDeal":
-			return "The price moved beyond your slippage tolerance";
+			return {
+				kind: "origin-failed",
+				reason: "The price moved beyond your slippage tolerance",
+			};
 		default:
-			return `Asset Hub would reject the transfer: ${xcmError}`;
+			return { kind: "origin-rejected", xcmError };
 	}
 };
 
@@ -101,10 +107,7 @@ export const parseOriginDryRun = (
 	if (!execution_result.success)
 		return {
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: getOriginFailureReason(execution_result.value.error),
-			},
+			failure: getOriginFailure(execution_result.value.error),
 		};
 
 	const message = forwarded_xcms.find(
@@ -179,24 +182,33 @@ export const composeXcmQuote = (sent: bigint, received: bigint): XcmQuote => ({
 	destinationFee: sent - received,
 });
 
-export const describeXcmQuoteFailure = (failure: XcmQuoteFailure): string => {
+export const describeXcmQuoteFailure = (
+	failure: XcmQuoteFailure,
+	route: Pick<XcmRoute, "origin" | "destination">,
+): string => {
+	const origin = getChainById(route.origin).name;
+	const destination = getChainById(route.destination).name;
 	switch (failure.kind) {
+		case "origin-unavailable":
+			return `Could not simulate the transfer on ${origin}`;
 		case "origin-failed":
 			return failure.reason;
+		case "origin-rejected":
+			return `${origin} would reject the transfer: ${failure.xcmError}`;
 		case "message-not-forwarded":
-			return "The transfer would not be sent to Hydration";
+			return `The transfer would not be sent to ${destination}`;
 		case "destination-unavailable":
-			return "Could not simulate the transfer on Hydration";
+			return `Could not simulate the transfer on ${destination}`;
 		case "destination-rejected":
 			return failure.assetsTrapped
-				? "Amount too low for Hydration: the assets would be trapped"
-				: `Hydration would reject the transfer: ${failure.reason}`;
+				? `Amount too low for ${destination}: the assets would be trapped`
+				: `${destination} would reject the transfer: ${failure.reason}`;
 		case "nothing-deposited":
-			return "Hydration would not credit your account";
+			return `${destination} would not credit your account`;
 		case "delivery-fee-unavailable":
-			return "Could not estimate the Asset Hub delivery fee";
+			return `Could not estimate the ${origin} delivery fee`;
 		case "call-unavailable":
-			return "Could not prepare the transaction on Asset Hub";
+			return `Could not prepare the transaction on ${origin}`;
 	}
 };
 
