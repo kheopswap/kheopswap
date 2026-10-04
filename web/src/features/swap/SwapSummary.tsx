@@ -4,6 +4,7 @@ import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
+import { XcmSwapSummary } from "./routes/xcmSwap/XcmSwapSummary";
 import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
 import { Slippage } from "./Slippage";
 import { SummaryRow } from "./SummaryRow";
@@ -112,5 +113,7 @@ export const SwapSummary = () => {
 			return <AmmSwapSummary details={details} />;
 		case "xcm-transfer":
 			return <XcmTransferSummary details={details} />;
+		case "xcm-swap":
+			return <XcmSwapSummary details={details} />;
 	}
 };

@@ -19,7 +19,7 @@ const SwapTabTitle = () => {
 	const { tokenIn, tokenOut, transaction } = useSwap();
 
 	const title = useMemo(() => {
-		if (transaction.transactionType === "xcmTransfer") return transaction.title;
+		if (transaction.transactionType !== "swap") return transaction.title;
 		return tokenIn && tokenOut
 			? `${tokenIn.symbol}/${tokenOut.symbol} Swap`
 			: "Swap";

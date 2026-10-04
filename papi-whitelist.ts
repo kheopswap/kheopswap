@@ -14,6 +14,7 @@ export const whitelist: WhiteListEntry[] = [
 	"tx.Assets.transfer_keep_alive",
 	"tx.Balances.transfer_keep_alive",
 	"tx.ForeignAssets.transfer",
+	"tx.PolkadotXcm.execute",
 	"tx.PolkadotXcm.transfer_assets_using_type_and_then",
 	"tx.Utility.batch_all",
 	"query.System.Account",
@@ -37,5 +38,6 @@ export const whitelist: WhiteListEntry[] = [
 	"api.AssetConversionApi.*",
 	"api.DryRunApi.*",
 	"api.XcmPaymentApi.query_delivery_fees",
+	"api.XcmPaymentApi.query_xcm_weight",
 	"api.Metadata.metadata_at_version",
 ];
