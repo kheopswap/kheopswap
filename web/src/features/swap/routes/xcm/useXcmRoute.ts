@@ -247,14 +247,15 @@ export const useXcmRoute = ({
 		quote.isLoading || callQuery.isLoading || pathQuote.isLoading;
 
 	const outputErrorMessage = useMemo(() => {
+		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
 		if (callQuery.error)
-			return describeXcmQuoteFailure({ kind: "call-unavailable" });
+			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
 		if (quote.data && !quote.data.success)
-			return describeXcmQuoteFailure(quote.data.failure);
+			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
-	}, [access, pathQuote.errorMessage, callQuery.error, quote.data]);
+	}, [access, pathQuote.errorMessage, callQuery.error, quote.data, route]);
 
 	const submitGate = useMemo(
 		() =>

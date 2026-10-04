@@ -137,13 +137,7 @@ export const useXcmQuote = ({
 
 	const data = useMemo((): XcmQuoteResult | undefined => {
 		if (origin.error)
-			return {
-				success: false,
-				failure: {
-					kind: "origin-failed",
-					reason: "Could not simulate the transfer on Asset Hub",
-				},
-			};
+			return { success: false, failure: { kind: "origin-unavailable" } };
 		if (!originLeg) return undefined;
 		if (!originLeg.success)
 			return { success: false, failure: originLeg.failure };
