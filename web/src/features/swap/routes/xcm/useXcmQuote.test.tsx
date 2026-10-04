@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import type { AnyTransaction } from "../../../../types/transactions";
 import type { XcmTransferRoute } from "../swapRoute";
-import { useXcmTransferQuote } from "./useXcmTransferQuote";
+import { useXcmTransferQuote } from "./useXcmQuote";
 import type { DestinationDryRun, OriginDryRun } from "./xcmQuote";
 import {
 	dotOriginFailed,
