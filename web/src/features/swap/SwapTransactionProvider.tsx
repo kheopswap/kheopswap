@@ -1,60 +1,24 @@
-import { type FC, type PropsWithChildren, useMemo } from "react";
-import {
-	type CallSpendings,
-	TransactionProvider,
-} from "../transaction/TransactionProvider";
+import type { FC, PropsWithChildren } from "react";
+import { TransactionProvider } from "../transaction/TransactionProvider";
 import { useSwap } from "./SwapProvider";
-
-const getSwapTitle = (
-	tokenInSymbol: string | undefined,
-	tokenOutSymbol: string | undefined,
-): string => {
-	if (tokenInSymbol && tokenOutSymbol) {
-		return `Swap ${tokenInSymbol}/${tokenOutSymbol}`;
-	}
-	return "Swap";
-};
 
 export const SwapTransactionProvider: FC<PropsWithChildren> = ({
 	children,
 }) => {
-	const {
-		call,
-		fakeCall,
-		formData,
-		tokenIn,
-		tokenOut,
-		totalIn,
-		onReset,
-		followUpData,
-	} = useSwap();
-
-	const title = useMemo(
-		() => getSwapTitle(tokenIn?.symbol, tokenOut?.symbol),
-		[tokenIn?.symbol, tokenOut?.symbol],
-	);
-
-	const callSpendings = useMemo<CallSpendings>(
-		() =>
-			tokenIn && totalIn
-				? {
-						[tokenIn.id]: { plancks: totalIn, allowDeath: true },
-					}
-				: {},
-		[totalIn, tokenIn],
-	);
+	const { transaction, formData, onReset } = useSwap();
 
 	return (
 		<TransactionProvider
-			call={call}
-			fakeCall={fakeCall}
-			callSpendings={callSpendings}
-			chainId={tokenIn?.chainId}
+			call={transaction.call}
+			fakeCall={transaction.fakeCall}
+			callSpendings={transaction.callSpendings}
+			chainId={transaction.chainId}
 			signer={formData.from}
 			onReset={onReset}
-			followUpData={followUpData}
-			transactionType="swap"
-			transactionTitle={title}
+			followUpData={transaction.followUpData}
+			transactionType={transaction.transactionType}
+			transactionTitle={transaction.title}
+			submitGate={transaction.submitGate}
 		>
 			{children}
 		</TransactionProvider>

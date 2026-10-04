@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import {
 	FormSummary,
 	FormSummaryRow,
@@ -8,14 +9,14 @@ import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
+import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
 import { Slippage } from "./Slippage";
-import { useSwap } from "./SwapProvider";
+import { type AmmSwapDetails, useSwap } from "./SwapProvider";
 
-export const SwapSummary = () => {
+const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
+	const { tokenIn, tokenOut, transaction } = useSwap();
 	const {
 		minPlancksOut,
-		tokenIn,
-		tokenOut,
 		priceImpact,
 		reserveIn,
 		reserveOut,
@@ -23,8 +24,8 @@ export const SwapSummary = () => {
 		appCommission,
 		protocolCommission,
 		slippage,
-		call,
-	} = useSwap();
+	} = details;
+	const { call } = transaction;
 
 	return (
 		<FormSummary>
@@ -105,4 +106,15 @@ export const SwapSummary = () => {
 			)}
 		</FormSummary>
 	);
+};
+
+export const SwapSummary = () => {
+	const { details } = useSwap();
+
+	switch (details.kind) {
+		case "amm-swap":
+			return <AmmSwapSummary details={details} />;
+		case "xcm-transfer":
+			return <XcmTransferSummary details={details} />;
+	}
 };
