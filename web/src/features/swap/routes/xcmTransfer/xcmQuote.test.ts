@@ -108,6 +108,48 @@ describe("parseOriginDryRun", () => {
 		});
 	});
 
+	it("names the XCM error of any other incomplete local execution", () => {
+		const parsed = parseOriginDryRun(
+			{
+				success: true,
+				value: {
+					execution_result: {
+						success: false,
+						value: {
+							post_info: {
+								actual_weight: undefined,
+								pays_fee: { type: "Yes", value: undefined },
+							},
+							error: {
+								type: "Module",
+								value: {
+									type: "PolkadotXcm",
+									value: {
+										type: "LocalExecutionIncompleteWithError",
+										value: {
+											index: 2,
+											error: { type: "TooExpensive", value: undefined },
+										},
+									},
+								},
+							},
+						},
+					},
+					emitted_events: [],
+					forwarded_xcms: [],
+				},
+			},
+			HYDRATION_PARA_ID,
+		);
+		expect(parsed).toEqual({
+			success: false,
+			failure: {
+				kind: "origin-failed",
+				reason: "Asset Hub would reject the transfer: TooExpensive",
+			},
+		});
+	});
+
 	it("formats any other origin dispatch error", () => {
 		const parsed = parseOriginDryRun(
 			{
