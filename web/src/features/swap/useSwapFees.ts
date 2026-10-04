@@ -1,12 +1,10 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useMemo } from "react";
-import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
+import { useConvertedFee } from "../../hooks/useConvertedFee";
 import { useEstimateFee } from "../../hooks/useEstimateFee";
 import { useFeeToken } from "../../hooks/useFeeToken";
-import { useNativeToken } from "../../hooks/useNativeToken";
 import { useNonce } from "../../hooks/useNonce";
-import { useTokenChain } from "../../hooks/useTokenChain";
-import type { Token, TokenId } from "../../registry/tokens/types";
+import type { Token } from "../../registry/tokens/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { getMaxSwapAmount } from "../../utils/ammMath";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
@@ -19,7 +17,6 @@ import type { SwapFormInputs } from "./schema";
 type UseSwapFeesProps = {
 	from: string | undefined;
 	accountAddress: string | undefined;
-	tokenIdIn: TokenId | undefined;
 	tokenIn: Token | null | undefined;
 	balanceIn: bigint | null | undefined;
 	edTokenIn: bigint | null | undefined;
@@ -32,7 +29,6 @@ type UseSwapFeesProps = {
 export const useSwapFees = ({
 	from,
 	accountAddress,
-	tokenIdIn,
 	tokenIn,
 	balanceIn,
 	edTokenIn,
@@ -67,14 +63,11 @@ export const useSwapFees = ({
 			options: txOptions,
 		});
 
-	const tokenChain = useTokenChain({ tokenId: tokenIdIn });
-	const nativeToken = useNativeToken({ chain: tokenChain });
-
-	const { isLoading: isLoadingFeeEstimateConvert, plancksOut: feeEstimate } =
-		useAssetConvertPlancks({
-			tokenIdIn: nativeToken?.id,
-			tokenIdOut: feeToken?.id,
-			plancks: feeEstimateNative,
+	const { isLoading: isLoadingFeeEstimateConvert, data: feeEstimate } =
+		useConvertedFee({
+			chainId: tokenIn?.chainId,
+			feeTokenId: feeToken?.id,
+			nativeFee: feeEstimateNative,
 		});
 
 	const isLoadingFeeEstimate =

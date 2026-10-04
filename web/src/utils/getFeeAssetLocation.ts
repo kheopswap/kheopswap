@@ -4,14 +4,13 @@ import type { Token } from "../registry/tokens/types";
 // TODO rename to something similar as the associated signed extension (ChargeAssetTxPayment)
 // and ensure this is called only if the chain has ChargeAssetTxPayment (add property on the chain type ?)
 export const getFeeAssetLocation = (feeToken: Token) => {
-	if (!feeToken.isSufficient)
-		throw new Error(
-			`Token ${feeToken.symbol} (${feeToken.id}) is not sufficient`,
-		);
-
 	// only allow assets, undefined for others, including native token
 	switch (feeToken.type) {
 		case "asset":
+			if (!feeToken.isSufficient)
+				throw new Error(
+					`Token ${feeToken.symbol} (${feeToken.id}) is not sufficient`,
+				);
 			return {
 				parents: 0,
 				interior: XcmV5Junctions.X2([
