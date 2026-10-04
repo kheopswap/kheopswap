@@ -36,7 +36,7 @@
 		"lodash-es": "^4.18.1",
 		"lz-string": "^1.5.0",
 		"mipd": "^0.0.7",
-		"polkadot-api": "3.2.0",
+		"polkadot-api": "3.2.1",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
 		"react-router": "^8.4.0",
@@ -44,7 +44,7 @@
 		"rxjs": "^7.8.2",
 		"tailwind-merge": "^3.7.0",
 		"url-join": "^5.0.0",
-		"viem": "^2.57.0",
+		"viem": "^2.57.2",
 		"webfontloader": "^1.6.28",
 		"yaml": "^2.9.1"
 	},
@@ -67,6 +67,6 @@
 		"vite-plugin-checker": "^0.14.5",
 		"vite-plugin-node-polyfills": "^0.28.0",
 		"vite-plugin-svgr": "^5.2.0",
-		"vitest": "^5.0.2"
+		"vitest": "^5.0.3"
 	}
 }
