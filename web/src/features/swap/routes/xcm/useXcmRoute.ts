@@ -270,11 +270,7 @@ export const useXcmRoute = ({
 		const transferFollowUpData: XcmTransferFollowUpData | null =
 			route && beneficiary && tokenOut
 				? {
-						target: {
-							destination: route.destination,
-							assetId: route.destinationAssetId,
-							beneficiary,
-						},
+						target: { tokenId: route.tokenIdOut, beneficiary },
 						tokenOut,
 						estimatedReceived: received,
 					}

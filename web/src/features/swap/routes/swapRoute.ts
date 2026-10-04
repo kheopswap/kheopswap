@@ -29,7 +29,6 @@ export type XcmTransferRoute = {
 	destination: ChainIdHydration;
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
-	destinationAssetId: number;
 };
 
 export type XcmSwapRoute = {
@@ -38,7 +37,6 @@ export type XcmSwapRoute = {
 	destination: ChainIdHydration;
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
-	destinationAssetId: number;
 	path: AmmPath;
 };
 
@@ -83,7 +81,6 @@ const tryParseTokenId = (tokenId: TokenId) => {
 type XcmDestination = {
 	origin: XcmRoute["origin"];
 	destination: ChainIdHydration;
-	destinationAssetId: number;
 	mirrorTokenId: TokenId;
 };
 
@@ -106,7 +103,6 @@ const getXcmDestination = (
 	return {
 		origin: mirror.chainId,
 		destination: tokenOut.chainId,
-		destinationAssetId: tokenOut.assetId,
 		mirrorTokenId,
 	};
 };

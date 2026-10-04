@@ -23,8 +23,7 @@ const getToken = (tokenId: string) => {
 
 const followUpData: XcmSwapFollowUpData = {
 	target: {
-		destination: "hydration",
-		assetId: 10,
+		tokenId: "hydration-asset::hydration::10",
 		beneficiary: usdcToUsdt.sender,
 	},
 	tokenOut: getToken("hydration-asset::hydration::10"),

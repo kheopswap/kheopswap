@@ -1,10 +1,13 @@
 import type { XcmVersionedXcm } from "@polkadot-api/descriptors";
-import { AccountId, Binary, type SS58String } from "polkadot-api";
 import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import type { ChainIdHydration } from "../../../../registry/chains/types";
 import type { TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
+import {
+	getXcmDepositMatcher,
+	type XcmDepositTarget,
+} from "../../../../utils/xcmDeposit";
 import type {
 	CallSpendings,
 	SubmitGate,
@@ -135,12 +138,9 @@ export const parseDeliveryFee = (deliveryFees: DeliveryFees): bigint | null => {
 	return fee;
 };
 
-const toPublicKey = (address: SS58String) =>
-	Binary.toHex(AccountId().enc(address));
-
 export const parseDestinationDryRun = (
 	dryRun: DestinationDryRun,
-	{ assetId, beneficiary }: { assetId: number; beneficiary: SS58String },
+	target: XcmDepositTarget,
 ): Parsed<bigint> => {
 	if (!dryRun.success)
 		return { success: false, failure: { kind: "destination-unavailable" } };
@@ -163,16 +163,11 @@ export const parseDestinationDryRun = (
 			},
 		};
 
-	const beneficiaryKey = toPublicKey(beneficiary);
-	let received = 0n;
-	for (const event of emitted_events)
-		if (
-			event.type === "Tokens" &&
-			event.value.type === "Deposited" &&
-			event.value.value.currency_id === assetId &&
-			toPublicKey(event.value.value.who) === beneficiaryKey
-		)
-			received += event.value.value.amount;
+	const getDeposit = getXcmDepositMatcher(target);
+	const received = emitted_events.reduce(
+		(sum, event) => sum + getDeposit(event),
+		0n,
+	);
 
 	return received
 		? { success: true, value: received }

@@ -36,6 +36,8 @@ import {
 const HYDRATION_PARA_ID = getChainById("hydration").paraId;
 const DOT = "native::pah";
 const USDT = "asset::pah::1984";
+const HYDRATION_DOT = "hydration-asset::hydration::5";
+const HYDRATION_USDT = "hydration-asset::hydration::10";
 
 const requireDestination = (destination: DestinationDryRun | undefined) => {
 	if (!destination) throw new Error("fixture has no destination dry run");
@@ -234,7 +236,7 @@ describe("parseDestinationDryRun", () => {
 	it("counts only the DOT deposited to the beneficiary, not to the fee receiver", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotSuccess.destination), {
-				assetId: 5,
+				tokenId: HYDRATION_DOT,
 				beneficiary: dotSuccess.beneficiary,
 			}),
 		).toEqual({ success: true, value: 9995190152n });
@@ -243,7 +245,7 @@ describe("parseDestinationDryRun", () => {
 	it("counts only the USDT deposited to the beneficiary", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(usdtSuccess.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: usdtSuccess.beneficiary,
 			}),
 		).toEqual({ success: true, value: 9999427n });
@@ -252,7 +254,7 @@ describe("parseDestinationDryRun", () => {
 	it("matches the beneficiary whatever its address prefix", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotSuccess.destination), {
-				assetId: 5,
+				tokenId: HYDRATION_DOT,
 				beneficiary: AccountId(42).dec(AccountId().enc(dotSuccess.beneficiary)),
 			}),
 		).toEqual({ success: true, value: 9995190152n });
@@ -261,7 +263,7 @@ describe("parseDestinationDryRun", () => {
 	it("fails when no deposit reaches the beneficiary in the expected asset", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotSuccess.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: dotSuccess.beneficiary,
 			}),
 		).toEqual({ success: false, failure: { kind: "nothing-deposited" } });
@@ -270,7 +272,7 @@ describe("parseDestinationDryRun", () => {
 	it("reports trapped assets when Hydration cannot deposit below its existential deposit", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotTrapped.destination), {
-				assetId: 5,
+				tokenId: HYDRATION_DOT,
 				beneficiary: dotTrapped.beneficiary,
 			}),
 		).toEqual({
@@ -286,7 +288,7 @@ describe("parseDestinationDryRun", () => {
 	it("counts the swap output deposited to the beneficiary", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(usdcToUsdt.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: usdcToUsdt.sender,
 			}),
 		).toEqual({ success: true, value: 98764625n });
@@ -295,7 +297,7 @@ describe("parseDestinationDryRun", () => {
 	it("reports trapped assets when the swap output cannot buy execution", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotToUsdtTrapped.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: dotToUsdtTrapped.sender,
 			}),
 		).toMatchObject({
@@ -308,7 +310,7 @@ describe("parseDestinationDryRun", () => {
 		expect(
 			parseDestinationDryRun(
 				{ success: false, value: { type: "Unimplemented", value: undefined } },
-				{ assetId: 5, beneficiary: dotSuccess.beneficiary },
+				{ tokenId: HYDRATION_DOT, beneficiary: dotSuccess.beneficiary },
 			),
 		).toEqual({ success: false, failure: { kind: "destination-unavailable" } });
 	});
