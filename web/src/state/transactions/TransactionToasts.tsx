@@ -1,7 +1,13 @@
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+	CheckIcon,
+	ExclamationTriangleIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { type FC, useCallback, useEffect, useRef } from "react";
 import { type Id as ToastId, toast } from "react-toastify";
 import { SpinnerBasicIcon } from "../../components/icons";
+import { getChainById } from "../../registry/chains/chains";
+import { parseTokenId } from "../../registry/tokens/helpers";
 import { cn } from "../../utils/cn";
 import {
 	formatTxError,
@@ -9,11 +15,17 @@ import {
 	type TxEvents,
 } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransactions } from "./TransactionsProvider";
+import type { TransactionRecord, TransactionStatus } from "./types";
 import {
-	isTerminalStatus,
-	type TransactionRecord,
-	type TransactionStatus,
-} from "./types";
+	isXcmArrivalType,
+	useXcmArrival,
+	type XcmArrival,
+	type XcmTransferFollowUpData,
+} from "./xcmArrival";
+
+type ToastOutcome = "loading" | "success" | "error" | "warning";
+
+type ToastView = { outcome: ToastOutcome; text: string };
 
 const getStatusText = (status: TransactionStatus): string => {
 	switch (status) {
@@ -34,28 +46,64 @@ const getStatusText = (status: TransactionStatus): string => {
 	}
 };
 
-const getToastType = (
-	status: TransactionStatus,
-): "default" | "success" | "error" => {
+const getStatusOutcome = (status: TransactionStatus): ToastOutcome => {
 	switch (status) {
 		case "finalized":
 			return "success";
 		case "failed":
 			return "error";
 		default:
-			return "default";
+			return "loading";
 	}
+};
+
+const getArrivalView = (
+	tx: TransactionRecord,
+	arrival: XcmArrival | null,
+): ToastView => {
+	const { target } = tx.followUpData as XcmTransferFollowUpData;
+	const destination = getChainById(parseTokenId(target.tokenId).chainId).name;
+
+	switch (arrival?.status) {
+		case "arrived":
+			return { outcome: "success", text: `Arrived on ${destination}` };
+		case "failed-on-destination":
+			return {
+				outcome: "error",
+				text: `Failed on ${destination}, assets trapped`,
+			};
+		case "unconfirmed":
+			return {
+				outcome: "warning",
+				text: `Arrival on ${destination} not confirmed`,
+			};
+		default:
+			return { outcome: "loading", text: `In transit to ${destination}...` };
+	}
+};
+
+export const getToastView = (
+	tx: TransactionRecord,
+	arrival: XcmArrival | null,
+): ToastView => {
+	if (tx.status === "finalized" && isXcmArrivalType(tx.type))
+		return getArrivalView(tx, arrival);
+
+	return {
+		outcome: getStatusOutcome(tx.status),
+		text: getTxErrorMessage(tx) ?? getStatusText(tx.status),
+	};
 };
 
 const ToastContent: FC<{
 	tx: TransactionRecord;
+	view: ToastView;
 	onClick: () => void;
-	errorMessage?: string | null;
-}> = ({ tx, onClick, errorMessage }) => {
-	// Show spinner for all non-terminal statuses (including inBlock)
-	const isLoading = !isTerminalStatus(tx.status);
-	const isSuccess = tx.status === "finalized";
-	const isError = tx.status === "failed";
+}> = ({ tx, view, onClick }) => {
+	const isLoading = view.outcome === "loading";
+	const isSuccess = view.outcome === "success";
+	const isError = view.outcome === "error";
+	const isWarning = view.outcome === "warning";
 
 	return (
 		<button
@@ -75,6 +123,11 @@ const ToastContent: FC<{
 						<XMarkIcon className="size-3 stroke-error-500" />
 					</div>
 				)}
+				{isWarning && (
+					<div className="bg-warn/20 rounded-full size-5 flex items-center justify-center">
+						<ExclamationTriangleIcon className="size-3 stroke-warn-500" />
+					</div>
+				)}
 			</div>
 			<div className="flex flex-col min-w-0">
 				<span
@@ -85,9 +138,7 @@ const ToastContent: FC<{
 				>
 					{tx.title}
 				</span>
-				<span className="text-xs text-neutral-500 truncate">
-					{errorMessage ?? getStatusText(tx.status)}
-				</span>
+				<span className="text-xs text-neutral-500 truncate">{view.text}</span>
 			</div>
 		</button>
 	);
@@ -145,6 +196,7 @@ const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 
 const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 	const { open, dismiss } = useTransactions();
+	const arrival = useXcmArrival(tx.id);
 	// Use ref to avoid stale closure in onClose
 	const dismissRef = useRef(dismiss);
 	dismissRef.current = dismiss;
@@ -168,21 +220,17 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 	// Manage toast based on transaction status (not isMinimized)
 	// Toast appears once signed and stays visible regardless of modal state
 	useEffect(() => {
-		const toastType = getToastType(tx.status);
+		const view = getToastView(tx, arrival);
+		const toastType = view.outcome === "loading" ? "default" : view.outcome;
 		const existingToast = activeToasts.get(tx.id);
 		const showToast = shouldShowToast(tx.status);
-		const errorMessage = getTxErrorMessage(tx);
 		const autoClose = tx.status === "failed" ? 5_000 : false;
 
 		if (showToast) {
 			if (existingToast === undefined) {
 				// Create new toast
 				const toastId = toast(
-					<ToastContent
-						tx={tx}
-						onClick={handleClick}
-						errorMessage={errorMessage}
-					/>,
+					<ToastContent tx={tx} view={view} onClick={handleClick} />,
 					{
 						toastId: tx.id,
 						type: toastType,
@@ -197,19 +245,13 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 			} else {
 				// Update existing toast
 				toast.update(existingToast, {
-					render: (
-						<ToastContent
-							tx={tx}
-							onClick={handleClick}
-							errorMessage={errorMessage}
-						/>
-					),
+					render: <ToastContent tx={tx} view={view} onClick={handleClick} />,
 					type: toastType,
 					autoClose,
 				});
 			}
 		}
-	}, [tx, handleClick, handleToastClose]);
+	}, [tx, arrival, handleClick, handleToastClose]);
 
 	// Cleanup when transaction is removed from store
 	useEffect(() => {
