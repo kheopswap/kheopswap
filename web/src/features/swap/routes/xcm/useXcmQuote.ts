@@ -107,7 +107,7 @@ export const useXcmQuote = ({
 			"xcmDestinationDryRun",
 			route?.origin,
 			route?.destination,
-			route?.destinationAssetId,
+			route?.tokenIdOut,
 			beneficiary,
 			safeQueryKeyPart(message),
 		],
@@ -126,7 +126,7 @@ export const useXcmQuote = ({
 				{ at: "best" },
 			);
 			return parseDestinationDryRun(dryRun, {
-				assetId: route.destinationAssetId,
+				tokenId: route.tokenIdOut,
 				beneficiary,
 			});
 		},

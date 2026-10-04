@@ -16,7 +16,6 @@ const getRoute = (
 	destination: "hydration",
 	tokenIdIn,
 	tokenIdOut: `hydration-asset::hydration::${destinationAssetId}`,
-	destinationAssetId,
 });
 
 const getExpectedArgs = (id: unknown, plancks: bigint) => ({

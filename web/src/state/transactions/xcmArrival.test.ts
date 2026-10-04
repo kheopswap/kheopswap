@@ -2,6 +2,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getChainById } from "../../registry/chains/chains";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
+import type { XcmDepositTarget } from "../../utils/xcmDeposit";
 import type { TransactionRecord } from "./types";
 import {
 	findArrival,
@@ -9,7 +10,6 @@ import {
 	getXcmArrival$,
 	isXcmArrivalType,
 	type XcmArrival,
-	type XcmArrivalTarget,
 } from "./xcmArrival";
 
 const HYDRATION_PARA_ID = getChainById("hydration").paraId;
@@ -20,9 +20,8 @@ const OTHER_MESSAGE_ID =
 const BENEFICIARY = "16xrRcxrBT6NfiukMzxeHGHPuJtHa9ypdgvvPJVw5zV8hwo";
 const FEE_RECEIVER = "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB";
 
-const target: XcmArrivalTarget = {
-	destination: "hydration",
-	assetId: 5,
+const target: XcmDepositTarget = {
+	tokenId: "hydration-asset::hydration::5",
 	beneficiary: BENEFICIARY,
 };
 
