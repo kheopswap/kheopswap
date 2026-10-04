@@ -3,6 +3,7 @@ import { FollowUpRow } from "../../../../components/FollowUpModal";
 import { Pulse } from "../../../../components/Pulse";
 import { Tokens } from "../../../../components/Tokens";
 import { getChainById } from "../../../../registry/chains/chains";
+import { parseTokenId } from "../../../../registry/tokens/helpers";
 import type { TransactionRecord } from "../../../../state/transactions/types";
 import {
 	useXcmArrival,
@@ -42,7 +43,7 @@ export const XcmTransferFollowUpContent: FC<{
 	return (
 		<div>
 			<FollowUpRow
-				label={`Arrival on ${getChainById(target.destination).name}`}
+				label={`Arrival on ${getChainById(parseTokenId(target.tokenId).chainId).name}`}
 			>
 				<ArrivalStatus arrival={arrival} />
 			</FollowUpRow>

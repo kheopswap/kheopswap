@@ -43,7 +43,6 @@ const transferRoute: XcmRoute = {
 	destination: "hydration",
 	tokenIdIn: "native::pah",
 	tokenIdOut: "hydration-asset::hydration::5",
-	destinationAssetId: 5,
 };
 
 const swapRoute: XcmRoute = {
@@ -52,7 +51,6 @@ const swapRoute: XcmRoute = {
 	destination: "hydration",
 	tokenIdIn: "asset::pah::1337",
 	tokenIdOut: "hydration-asset::hydration::10",
-	destinationAssetId: 10,
 	path: getAmmPath("asset::pah::1337", "asset::pah::1984", "native::pah"),
 };
 
