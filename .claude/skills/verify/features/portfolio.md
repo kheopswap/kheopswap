@@ -38,7 +38,7 @@ Steps:
 
 ## Gotchas
 
-- Totals add up every connected account, including the `0x5C9E...` Ethereum account. Per-account amounts only appear in `Token Details`.
+- Totals add up every connected account, including Ethereum accounts. Per-account amounts only appear in `Token Details`.
 - `wait --text "Search for more tokens"` never matches, because it is a placeholder.
 - Row names change with balances. Match them on the stable prefix (`<SYMBOL> <SYMBOL> <origin>`).
 - Paseo's stable token is PAS itself, so prices and values are in PAS with no second line.

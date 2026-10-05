@@ -20,16 +20,16 @@ Transfer lets a user send any Asset Hub token from one of their accounts to an o
 Preconditions:
 
 - The app tab is on `#/paseo/transfer`.
-- For the account steps: `Guardians SUB` holds PAS.
+- For the account steps: the signing test account holds PAS. Check the `Account` drawer.
 
 Steps:
 
 - **Recipient (pasted)** (no wallet). Run `agent-browser find role button click --name "To" --exact` and `scripts/wait-drawer.sh open`, then `agent-browser snapshot -i -c`. Under the `Address` heading are a `textbox` and a `button`, both unnamed. The button stays disabled until the text is a valid SS58 or Ethereum address. Run `agent-browser fill @<textbox ref> "<address>"`, click `@<button ref>`, and run `scripts/wait-drawer.sh closed`. `To` shows the full address, and its balance appears next to the label.
 - **Token picker** (no wallet). Click `Selected token: PAS on Paseo AH. Change token`, run `scripts/wait-drawer.sh open`, and check the `Select token` heading. Close it with `press Escape` and `scripts/wait-drawer.sh closed`.
-- **Sender.** Run `agent-browser find role button click --name "From" --exact`, `scripts/wait-drawer.sh open`, `agent-browser find role button click --name "Guardians SUB"`, and `scripts/wait-drawer.sh closed`. The balance next to `From` and next to `MAX` shows the PAS balance. The field may already be filled: forms default to the last chosen account.
+- **Sender.** Run `agent-browser find role button click --name "From" --exact`, `scripts/wait-drawer.sh open`, `agent-browser find role button click --name "<test account name>"`, and `scripts/wait-drawer.sh closed`. The balance next to `From` and next to `MAX` shows the PAS balance. The field may already be filled: forms default to the last chosen account.
 - **Recipient (owned).** Do the same with `--name "To" --exact`. A recipient equal to the sender is accepted (checked 2026-10-05), and a self-transfer costs only the fee.
 - **Amount.** Run `agent-browser find role textbox fill "0.1" --name "Transfer amount"`. Wait for a visible `Simulation` `Success` (see `README.md`) and a non-zero `Transaction fee`.
-- **Submit.** Run `agent-browser find role button click --name "Transfer" --exact`. The dialog `Transfer PAS` opens at once, reading `Approve in Talisman`. Then run `node .claude/skills/verify/scripts/talisman.mjs approve --signer "Guardians"`. The helper exits 0, and the dialog ends at `Transaction succeeded`. Not yet driven end to end.
+- **Submit.** Run `agent-browser find role button click --name "Transfer" --exact`. The dialog `Transfer PAS` opens at once, reading `Approve in Talisman`. Then run `node .claude/skills/verify/scripts/talisman.mjs approve --signer "<test account name>"`. The helper exits 0, and the dialog ends at `Transaction succeeded`. Driven end to end on Polkadot on 2026-10-05: a 0.01 DOT self-transfer, popup text `Approve Request ... Transfer 0.01 DOT ... to <account name>`, then `Transaction succeeded` with `Effective fee 0.0009 DOT`.
 - **Proof.** Save `get text "#main-content"` and a screenshot before the submit, `talisman-approve.txt`, the dialog at `Transaction succeeded`, and the sender balance from the `Account` drawer afterwards.
 
 ## Gotchas
@@ -39,5 +39,6 @@ Steps:
 - `Transaction fee` reads `0 PAS` until a sender is selected and the estimate arrives.
 - A self-transfer leaves the balance unchanged except for the fee. Check that the drop matches the fee, not the amount.
 - Per source, the amount stays filled after a successful submit (not yet seen live).
-- The Paseo `AsPgas` signing break (see `swap.md`) applies here too: on 2026-10-05 the dialog read `Transfer PAS`, `Transaction failed`, `PJS does not support this signed-extension: AsPgas`. Fall back to `#/polkadot/transfer` with ≤ 0.01 DOT, sent to `Guardians SUB` itself.
+- The Paseo `AsPgas` signing break (see `swap.md`) applies here too: on 2026-10-05 the dialog read `Transfer PAS`, `Transaction failed`, `PJS does not support this signed-extension: AsPgas`. Fall back to `#/polkadot/transfer` with ≤ 0.01 DOT, sent to the test account itself.
 - Never send to an address you can't name as a user-owned test account.
+- The `Transaction succeeded` dialog ignores `Escape`. Close it with `agent-browser find role button click --name "Close" --exact`.

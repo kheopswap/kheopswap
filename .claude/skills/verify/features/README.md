@@ -1,12 +1,12 @@
 # Kheopswap verification map
 
-This directory is the maintained source for verifying Kheopswap's user-facing behavior. Read the index, then use the matching feature file as the recipe. Commands assume `AGENT_BROWSER_SESSION=kheopswap-verify` and a sourced `.claude/skills/verify/.run/state.env` (see `../SKILL.md`).
+This directory is the maintained source for verifying Kheopswap's user-facing behavior. Read the index, then use the matching feature file as the recipe. Commands assume a sourced `.claude/skills/verify/.run/state.env`, which exports the run's `AGENT_BROWSER_SESSION` (see `../SKILL.md`).
 
 ## Baseline preconditions
 
-- `launch.sh` succeeded, and `doctor.sh` exits 0. Where the profile has no Talisman (Linux as of 2026-10-05), only the Talisman check fails: drive the steps marked "no wallet", and report the rest as unreachable.
+- `launch.sh` succeeded, and `doctor.sh` exits 0. If launch stops on a missing file in `~/.kheopswap`, pass its message on to the user and stop: every run needs the wallet backup.
 - The network is Paseo (`#/paseo/...`) unless the feature file says otherwise. Fall back to Polkadot only when Paseo is broken, and use tiny amounts.
-- Talisman is unlocked, and `Guardians SUB` is listed under `Connected Accounts` in the `Account` drawer.
+- Talisman is unlocked, and the signing test account is listed under `Connected Accounts` in the `Account` drawer. A fresh container's wallet is connected only to the sites its backup authorized: connect it first (see `network-and-account.md`).
 - No Talisman popup is pending (`node scripts/talisman.mjs list` prints nothing).
 
 ## Driving conventions
@@ -21,7 +21,7 @@ This directory is the maintained source for verifying Kheopswap's user-facing be
   agent-browser wait --fn "[...document.querySelectorAll('#main-content span')].some((s) => s.textContent === 'Success' && !s.closest('[aria-hidden=true]'))"
   ```
 - Choosing a wallet under `Installed wallets` in any account drawer toggles it: clicking a connected wallet disconnects it.
-- Sign only as an account whose name contains `Guardians`, through `talisman.mjs approve --signer "Guardians"`.
+- Sign only as the test account your user-level `CLAUDE.md` designates for signing, through `talisman.mjs approve --signer "<test account name>"`.
 
 ## Proof and skip reporting
 

@@ -22,7 +22,7 @@ Swap lets a user trade the Asset Hub native token for a pooled asset, or back, t
 Preconditions:
 
 - The app tab is on `#/paseo/swap`.
-- For the account steps: `Guardians SUB` holds PAS. Check the `Account` drawer.
+- For the account steps: the signing test account holds PAS. Check the `Account` drawer.
 
 Steps:
 
@@ -34,14 +34,14 @@ Steps:
   The output button's accessible name becomes `Selected token: USDC on Paseo AH. Change token`, and the tab title becomes `PAS/USDC Swap`.
 - **Quote** (no wallet). Run `agent-browser find role textbox fill "1" --name "Amount to swap"`. `Amount to receive` is non-zero: read it with `agent-browser eval "document.querySelector('[aria-label=\"Amount to receive\"]').value"`. `#main-content` lists `Pool reserves` and `Price impact`. On 2026-10-05, 1 PAS quoted 3.969547 USDC at `-0.59%`.
 - **Direction** (no wallet). Click `Swap token direction`: the two `Selected token: ...` buttons swap. Click it again to restore.
-- **Select account.** Run `agent-browser find role button click --name "Account"`, `scripts/wait-drawer.sh open`, `agent-browser find role button click --name "Guardians SUB"`, and `scripts/wait-drawer.sh closed`. The form's `Account` field reads `Guardians SUB`. The field may already be filled: forms default to the last chosen account.
+- **Select account.** Run `agent-browser find role button click --name "Account"`, `scripts/wait-drawer.sh open`, `agent-browser find role button click --name "<test account name>"`, and `scripts/wait-drawer.sh closed`. The form's `Account` field reads the account name. The field may already be filled: forms default to the last chosen account.
 - **Full summary.** Wait for a visible `Simulation` `Success` (see `README.md`), then for a positive fee: `agent-browser wait --fn "/Transaction fee\s*0\.\d*[1-9]\d*\s*PAS/.test(document.querySelector('#main-content').innerText)"`. Save `swap-quote.txt` and `swap-quote.png`.
 - **Slippage.** Click the button named `0.5%`, `scripts/wait-drawer.sh open`, click `1%` with `--exact`, and `scripts/wait-drawer.sh closed`. `Slippage tolerance` reads `1%`, and `Min. received` drops. Set it back to `0.5%` the same way.
 - **Fee token.** Click the button named after the fee (for example `0.0014 PAS`). The `Select fee token` drawer lists PAS and the account's other fee tokens. Close it with `press Escape`.
 - **Max.** Click `Use maximum balance`: `Amount to swap` becomes the balance minus a margin. Fill `1` again.
-- **Submit.** Run `agent-browser find role button click --name "Swap" --exact`. The dialog `Swap PAS/USDC` opens at once, reading `Approve in Talisman`. Then run `node .claude/skills/verify/scripts/talisman.mjs approve --signer "Guardians"`. The helper exits 0. On the 2026-10-03 Polkadot run (0.01 DOT → USDC), the popup text read `Approve Batch Request ... Guardians SUB ... Swap 0.01 DOT for USDC to Guardians SUB ... Transfer < 0.0001 DOT to Kheopswap Treasury`.
+- **Submit.** Run `agent-browser find role button click --name "Swap" --exact`. The dialog `Swap PAS/USDC` opens at once, reading `Approve in Talisman`. Then run `node .claude/skills/verify/scripts/talisman.mjs approve --signer "<test account name>"`. The helper exits 0. On the 2026-10-03 Polkadot run (0.01 DOT → USDC), the popup text read `Approve Batch Request ... <account name> ... Swap 0.01 DOT for USDC to <account name> ... Transfer < 0.0001 DOT to Kheopswap Treasury`.
 - **Follow up.** Run `agent-browser wait --text "Effective outcome"`, then `agent-browser wait --text "Transaction succeeded"`. This can take about 30 s. The dialog shows `Estimated outcome`, `Effective outcome`, `Effective slippage`, `Estimated fee`, `Effective fee`, and `View in block explorer`.
-- **Second view.** Run `agent-browser find role button click --name "Close" --exact`, then reopen the `Account` drawer. The `Guardians SUB` balance has dropped by the amount plus fees. Portfolio → USDC → `Token Details` lists the USDC received by `Guardians SUB`.
+- **Second view.** Run `agent-browser find role button click --name "Close" --exact`, then reopen the `Account` drawer. The test account's balance has dropped by the amount plus fees. Portfolio → USDC → `Token Details` lists the USDC received by the test account.
 - **Proof.** Save:
   - `swap-quote.txt` and `swap-quote.png` before the submit;
   - `talisman-approve.txt`;

@@ -34,14 +34,14 @@ Steps:
   The URL now has the `paseo` segment, and the drawer closes.
 - **Chain liveness** (no wallet). Read the footer twice, a few blocks apart: `agent-browser get text "#root" | grep -E 'Best|Finalized'`. `Best:` and `Finalized:` increase.
 - **Redirects** (no wallet). Open `http://localhost:5173/` and `http://localhost:5173/#/bogus/swap`: both end on `#/polkadot/swap`. Open `#/paseo`: it ends on `#/paseo/swap`.
-- **Wallets.** Run `agent-browser find role button click --name "Connect wallet"` and `scripts/wait-drawer.sh open`. With the Talisman profile, the drawer lists `Talisman(Polkadot)`, `Talisman(Ethereum)`, `WalletConnect`, and `Connected Accounts` with `Guardians SUB 5CcU6DRp...YffCfSAP`. Close it with `press Escape` and `scripts/wait-drawer.sh closed`.
-- **Accounts.** On `#/paseo/swap`, run `agent-browser find role button click --name "Account"` and `scripts/wait-drawer.sh open`. The drawer heading is `Select account`, and buttons such as `Guardians SUB 5CcU6DRp...YffCfSAP <balance>` are listed under `Connected Accounts`. The accessible name starts with `Account identicon for ...`, so match `--name "Guardians SUB"` as a substring.
-- **Connect a wallet.** Only when `Connected Accounts` is empty. Choose `Talisman(Polkadot)`, then run `node .claude/skills/verify/scripts/talisman.mjs connect`. The helper clicks `Connect All` and `Connect <n>`, and the accounts appear in the drawer.
+- **Wallets.** Run `agent-browser find role button click --name "Connect wallet"` and `scripts/wait-drawer.sh open`. The drawer lists `Talisman(Polkadot)`, `Talisman(Ethereum)`, `WalletConnect`, and, once connected, `Connected Accounts` with buttons named `<account name> <short address>`. Close it with `press Escape` and `scripts/wait-drawer.sh closed`.
+- **Accounts.** On `#/paseo/swap`, run `agent-browser find role button click --name "Account"` and `scripts/wait-drawer.sh open`. The drawer heading is `Select account`, and buttons such as `<account name> <short address> <balance>` are listed under `Connected Accounts`. The accessible name starts with `Account identicon for ...`, so match `--name "<test account name>"` as a substring. When one account name is a prefix of another, such as `<name>` and `<name> 2`, add the start of the short address: `--name "<name> 5Abc"`.
+- **Connect a wallet.** Only when `Connected Accounts` is empty. Choose `Talisman(Polkadot)`, then run `node .claude/skills/verify/scripts/talisman.mjs connect`. The helper clicks `Connect All` and `Connect <n>`, and the accounts appear in the drawer. A fresh container needs this once per launch, unless the backup already authorized `localhost:5173`.
 - **Proof.** Save the URL after the switch, the footer text, and the drawer snapshot.
 
 ## Gotchas
 
 - `http://localhost:5173/` always redirects to `#/polkadot/swap`, which is mainnet. Open `#/paseo/...` explicitly.
-- Clicking a wallet that is already connected disconnects it. The dev Chrome profile is already connected: reconnecting needs the popup, and possibly the user to unlock Talisman.
+- Clicking a wallet that is already connected disconnects it. Reconnecting needs the popup again: run `talisman.mjs connect`.
 - Clicking a network while the `Select network` drawer is still sliding in does nothing. Run `wait-drawer.sh open` first.
-- `talisman.mjs` exit 3 means Talisman is locked. Stop and ask the user.
+- `talisman.mjs` unlocks a locked popup with `~/.kheopswap/talisman.password`. Exit 3 means that file is missing or Talisman rejected it. Stop and ask the user.

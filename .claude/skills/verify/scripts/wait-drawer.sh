@@ -3,7 +3,8 @@
 # and a closing drawer's overlay swallows clicks on the page.
 # Usage: wait-drawer.sh open|closed
 set -euo pipefail
-export AGENT_BROWSER_SESSION="${AGENT_BROWSER_SESSION:-kheopswap-verify}"
+# shellcheck disable=SC1091
+source "$(dirname "$0")/../.run/state.env"
 
 case "${1:-}" in
 open)

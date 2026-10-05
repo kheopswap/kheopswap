@@ -34,8 +34,8 @@ Steps:
 - **Slippage** (no wallet). Click the button named `0.5%`, `scripts/wait-drawer.sh open`, click `1%` with `--exact`, and `scripts/wait-drawer.sh closed`. `Slippage tolerance` reads `1%`. Set it back to `0.5%`.
 - **Remove tab** (no wallet). Click `Remove` with `--exact`. The remove controls render, disabled without a position.
 - **Create page** (no wallet). Reach it from Portfolio (see `portfolio.md`). Check the heading and fields, and never submit: creating a pool is permanent and takes a deposit.
-- **Account.** Select `Guardians SUB` in `Account` (`scripts/wait-drawer.sh open` after the click). The drawer shows no balances here. Back on the list, `Positions` appears.
-- **Add (signed).** Not yet driven. Fill `1` in `Native token amount`. `Add Liquidity` becomes enabled only if the account holds enough of the asset. Run `agent-browser find role button click --name "Add Liquidity"`, then `talisman.mjs approve --signer "Guardians"`. The dialog `Add PAS/USDC liquidity` ends at `Transaction succeeded`, and `Your position` is non-zero.
+- **Account.** Select the signing test account in `Account` (`scripts/wait-drawer.sh open` after the click). The drawer shows no balances here. Back on the list, `Positions` appears.
+- **Add (signed).** Not yet driven. Fill `1` in `Native token amount`. `Add Liquidity` becomes enabled only if the account holds enough of the asset. Run `agent-browser find role button click --name "Add Liquidity"`, then `talisman.mjs approve --signer "<test account name>"`. The dialog `Add PAS/USDC liquidity` ends at `Transaction succeeded`, and `Your position` is non-zero.
 - **Remove (signed).** Not yet driven. `Remove` → `MAX` → `Remove Liquidity` → approve. The dialog `Remove PAS/USDC liquidity` ends at `Transaction succeeded`, and `Your position` is back to zero.
 - **Proof.** Save the pool page text before and after, `talisman-approve.txt`, and a screenshot of `Your position`.
 
@@ -45,6 +45,6 @@ Steps:
 - `wait --text "TVL"` is not a load gate: the header and a placeholder row (`TK1/TK2`, `Asset Hub - 420`) render while loading. Wait for a real origin such as `Asset Hub - 1337`.
 - Token buttons on the pool page are disabled, because the pair is fixed by the route.
 - The `Add` and `Remove` mode buttons sit next to `Add Liquidity`. Use exact names.
-- On 2026-10-05, `Guardians SUB` held 0 USDC on Paseo, so adding to PAS/USDC shows `Insufficient balance` and `Simulation Failed`. Get the asset first, or use a pool whose asset the account holds.
+- Check the test account's balance of the pool's asset first. Without enough USDC, adding to PAS/USDC shows `Insufficient balance` and `Simulation Failed`. Get the asset first, or use a pool whose asset the account holds.
 - The Paseo `AsPgas` signing break (see `swap.md`) applies here too. Fall back to Polkadot with ≤ 0.01 DOT.
 - After an add, remove the position again so the test account doesn't accumulate LP tokens across runs.
