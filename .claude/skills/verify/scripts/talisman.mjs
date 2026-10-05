@@ -8,7 +8,7 @@
 //   talisman.mjs reject [--timeout 60]                 reject the pending request
 // Exit codes: 0 done, 1 no popup or button, 2 signer mismatch (nothing clicked), 3 wallet locked.
 
-const CDP = "http://127.0.0.1:9222";
+const CDP = `http://127.0.0.1:${process.env.VERIFY_CDP_PORT ?? 9222}`;
 
 const [command, ...rest] = process.argv.slice(2);
 const option = (name, fallback) => {

@@ -4,17 +4,23 @@ This directory is the maintained source for verifying Kheopswap's user-facing be
 
 ## Baseline preconditions
 
-- `launch.sh` succeeded, and `doctor.sh` exits 0.
+- `launch.sh` succeeded, and `doctor.sh` exits 0. Where the profile has no Talisman (Linux as of 2026-10-05), only the Talisman check fails: drive the steps marked "no wallet", and report the rest as unreachable.
 - The network is Paseo (`#/paseo/...`) unless the feature file says otherwise. Fall back to Polkadot only when Paseo is broken, and use tiny amounts.
 - Talisman is unlocked, and `Guardians SUB` is listed under `Connected Accounts` in the `Account` drawer.
 - No Talisman popup is pending (`node scripts/talisman.mjs list` prints nothing).
 
 ## Driving conventions
 
-- Reach pages by URL (`agent-browser open "http://localhost:5173/#/paseo/<route>"`) or by the `Main navigation` links `Swap`, `Transfer`, `Portfolio`, and `Liquidity Pools`.
+- Reach pages by URL (`agent-browser open "http://localhost:5173/#/paseo/<route>"`) or by the `Main navigation` links `Swap`, `Transfer`, `Portfolio`, and `Liquidity Pools`. With no connected account, `Portfolio` reads `Tokens`.
 - Use `find role ... --name`. Add `--exact` when a longer name contains the short one (`Swap` vs `Swap token direction`, `Close` in dialogs).
 - Wait for text or conditions (`wait --text`, `wait --fn`), never fixed sleeps. Balances and quotes stream in after the page renders.
-- Close drawers with `press Escape`, then wait for the drawer heading to disappear.
+- After a click that opens a drawer, run `scripts/wait-drawer.sh open` before clicking inside it. After `press Escape` or a choice that closes it, run `scripts/wait-drawer.sh closed`.
+- While the dry run loads, `Simulation` renders an `aria-hidden` placeholder holding the word `Success`, and `innerText` includes it. Neither `wait --text "Success"` nor a regex on `innerText` proves the simulation passed. Wait for a visible `Success`:
+
+  ```bash
+  agent-browser wait --fn "[...document.querySelectorAll('#main-content span')].some((s) => s.textContent === 'Success' && !s.closest('[aria-hidden=true]'))"
+  ```
+- Choosing a wallet under `Installed wallets` in any account drawer toggles it: clicking a connected wallet disconnects it.
 - Sign only as an account whose name contains `Guardians`, through `talisman.mjs approve --signer "Guardians"`.
 
 ## Proof and skip reporting
@@ -31,8 +37,8 @@ Each feature file starts with an H1 title and one paragraph on the user-visible 
 
 ## Features
 
-- [Swap](./swap.md) covers the quote, token selection, direction flip, slippage, and a signed swap.
-- [Transfer](./transfer.md) covers sender and recipient selection, the amount, and a signed transfer.
-- [Portfolio](./portfolio.md) covers aggregated balances, token search, sorting, and the token details drawer.
-- [Liquidity pools](./liquidity-pools.md) covers the pool list, search, pool detail, and add/remove liquidity.
-- [Network and account](./network-and-account.md) covers the network switch, wallet connection, and account selection.
+- [Swap](./swap.md) covers the quote, token selection, direction flip, max, slippage, fee token, and a signed swap.
+- [Transfer](./transfer.md) covers sender selection, owned and pasted recipients, the amount and token, and a signed transfer.
+- [Portfolio](./portfolio.md) covers aggregated balances, the wallet-less `Tokens` mode, token search, sorting, and the token details drawer.
+- [Liquidity pools](./liquidity-pools.md) covers the pool list, search, pool detail, slippage, add/remove liquidity, and the create-pool page.
+- [Network and account](./network-and-account.md) covers the network switch, redirects, chain status, wallet connection, and account selection.

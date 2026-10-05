@@ -6,6 +6,7 @@ set -uo pipefail
 
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 STATE="$SKILL_DIR/.run/state.env"
+CDP="${VERIFY_CDP_PORT:-9222}"
 export AGENT_BROWSER_SESSION=kheopswap-verify
 
 if [[ ! -f "$STATE" ]]; then
@@ -15,7 +16,7 @@ fi
 # shellcheck disable=SC1090
 source "$STATE"
 
-curl -sf -o /dev/null "http://127.0.0.1:9222/json/close/$TAB_ID" && echo "closed tab $TAB_ID"
+curl -sf -o /dev/null "http://127.0.0.1:$CDP/json/close/$TAB_ID" && echo "closed tab $TAB_ID"
 
 if [[ -n "$DEV_PGID" ]] && kill -0 "$DEV_PGID" 2>/dev/null; then
 	kill -- -"$DEV_PGID" && echo "stopped dev server process group $DEV_PGID"

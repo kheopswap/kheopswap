@@ -6,9 +6,13 @@ set -uo pipefail
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 ROOT="$(git -C "$SKILL_DIR" rev-parse --show-toplevel)"
 STATE="$SKILL_DIR/.run/state.env"
-CDP=9222
+CDP="${VERIFY_CDP_PORT:-9222}"
 export AGENT_BROWSER_SESSION=kheopswap-verify
 failed=0
+if [[ -f "$STATE" ]]; then
+	# shellcheck disable=SC1090
+	source "$STATE"
+fi
 ok() { echo "OK   $*"; }
 fail() { echo "FAIL $*"; failed=1; }
 
@@ -30,14 +34,14 @@ else
 fi
 
 if browser="$(curl -sf "http://127.0.0.1:$CDP/json/version")"; then
-	ok "dev Chrome on CDP $CDP: $(echo "$browser" | sed -n 's/.*"Browser": "\(.*\)".*/\1/p')"
+	mode=headed
+	[[ "$browser" == *HeadlessChrome* ]] && mode="headless: nobody can unlock Talisman"
+	ok "dev Chrome on CDP $CDP: $(echo "$browser" | sed -n 's/.*"Browser": "\(.*\)".*/\1/p') ($mode)"
 else
 	fail "no Chrome on CDP $CDP (run launch.sh)"
 fi
 
 if [[ -f "$STATE" ]]; then
-	# shellcheck disable=SC1090
-	source "$STATE"
 	ok "run $RUN_ID active, artifacts in $ARTIFACTS"
 	if curl -sf "http://127.0.0.1:$CDP/json" | grep -q "\"id\": \"$TAB_ID\""; then
 		ok "app tab $TAB_ID is open"
@@ -54,7 +58,7 @@ else
 	echo "--   no active run (launch.sh not run, or already cleaned up)"
 fi
 
-popups="$(node "$SKILL_DIR/scripts/talisman.mjs" list 2>/dev/null)"
+popups="$(VERIFY_CDP_PORT=$CDP node "$SKILL_DIR/scripts/talisman.mjs" list 2>/dev/null)"
 if [[ -n "$popups" ]]; then
 	echo "WARN Talisman popups are open; settle them before driving:"
 	echo "$popups" | sed 's/^/     /'
