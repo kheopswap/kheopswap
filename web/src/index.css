@@ -153,19 +153,19 @@ html {
 
 html[data-mode="light"] {
 	color-scheme: light;
-	--color-page: #ffffff;
+	--color-page: #f2f1f6;
 	--color-text: #0a0a0a;
-	--color-muted: #6b6b6b;
+	--color-muted: #626262;
 	--color-faint: #9a9a9a;
-	--color-surface: #ffffff;
-	--color-surface-border: #e6e6e6;
-	--color-surface-2: #f4f4f4;
-	--color-hover: #e9e9e9;
-	--color-line: #e6e6e6;
-	--color-drawer: #ffffff;
+	--color-surface: #faf9fc;
+	--color-surface-border: #dfdce8;
+	--color-surface-2: #e9e7f0;
+	--color-hover: #dfdce8;
+	--color-line: #dfdce8;
+	--color-drawer: #faf9fc;
 	--color-scrim: rgb(0 0 0 / 0.35);
 	--color-row-hover: rgb(0 0 0 / 0.03);
-	--color-accent: #4d7c0f;
+	--color-accent: #48740e;
 	--color-error: #b91c1c;
 	--color-warn: #c2410c;
 	--color-success: #15803d;
