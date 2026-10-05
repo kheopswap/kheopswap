@@ -51,11 +51,12 @@ else
 	fail "app tab $TAB_ID is gone; run cleanup.sh then launch.sh"
 fi
 
-if node "$SKILL_DIR/scripts/talisman.mjs" status --timeout 5 >/dev/null 2>&1; then
-	ok "Talisman is unlocked"
-else
-	fail "Talisman is locked (it auto-locks after 15 min); run: node $SKILL_DIR/scripts/talisman.mjs unlock"
-fi
+lock="$(node "$SKILL_DIR/scripts/talisman.mjs" status --timeout 5 2>&1)"
+case $? in
+0) ok "Talisman is unlocked" ;;
+3) fail "Talisman is locked (it auto-locks after 15 min); run: node $SKILL_DIR/scripts/talisman.mjs unlock" ;;
+*) fail "Talisman lock state unknown: $lock" ;;
+esac
 
 popups="$(node "$SKILL_DIR/scripts/talisman.mjs" list 2>/dev/null)"
 if [[ -n "$popups" ]]; then

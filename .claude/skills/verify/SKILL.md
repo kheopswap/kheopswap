@@ -47,7 +47,7 @@ Known Paseo break, first seen 2026-10-03 and still there on 2026-10-05: every su
 
 ```bash
 .claude/skills/verify/scripts/launch.sh '#/paseo/swap'
-source .claude/skills/verify/.run/state.env   # RUN_ID, ARTIFACTS, CDP, CONTAINER, AGENT_BROWSER_SESSION, TAB_ID
+source .claude/skills/verify/.run/state.env   # RUN_ID, ARTIFACTS, CDP, CONTAINER, AGENT_BROWSER_SESSION, TAB_ID, EXTENSION
 ```
 
 `launch.sh` does the following:
@@ -124,7 +124,7 @@ It exits with one of these codes:
 | 2 | Signer mismatch, nothing clicked | Fix the account selection. |
 | 3 | Talisman is locked, and the password file is missing or wrong | Ask the user to fix `~/.kheopswap/talisman.password`. Never guess the password. |
 
-Other subcommands: `list`, `status`, `unlock`, `text`, `connect`, `reject`. On 2026-10-05, `approve`, `connect`, `list` and `status` ran against the container. `text` and `reject` have not run against a real popup.
+Other subcommands: `list`, `status`, `unlock`, `text`, `connect`, `reject`. On 2026-10-05, `approve`, `connect`, `list`, `status` and `unlock` ran against the container. `text` and `reject` have not run against a real popup.
 
 ## Evidence
 
