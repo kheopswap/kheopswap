@@ -24,7 +24,6 @@ export type Point = { x: number; y: number };
 
 export type Palette = {
 	glow: string;
-	halo: string;
 	core: string;
 	composite: GlobalCompositeOperation;
 };
@@ -93,7 +92,7 @@ export const advanceFly = (
 const brightness = (fly: Fly, time: number) =>
 	0.25 + 0.75 * (0.5 + 0.5 * Math.sin(time * fly.blinkRate + fly.blinkPhase));
 
-export const paintSprite = ({ glow, halo, core }: Palette) => {
+export const paintSprite = ({ glow, core }: Palette) => {
 	const sprite = new OffscreenCanvas(SPRITE_SIZE, SPRITE_SIZE);
 	const context = sprite.getContext("2d");
 	if (!context) return sprite;
@@ -107,11 +106,16 @@ export const paintSprite = ({ glow, halo, core }: Palette) => {
 		center,
 		center,
 	);
-	gradient.addColorStop(0, glow);
-	gradient.addColorStop(0.3, halo);
+	gradient.addColorStop(0, "black");
+	gradient.addColorStop(0.3, "rgb(0 0 0 / 0.33)");
 	gradient.addColorStop(1, "transparent");
 	context.fillStyle = gradient;
 	context.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+
+	context.globalCompositeOperation = "source-in";
+	context.fillStyle = glow;
+	context.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+	context.globalCompositeOperation = "source-over";
 
 	context.fillStyle = core;
 	context.beginPath();

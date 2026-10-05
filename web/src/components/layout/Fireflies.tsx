@@ -9,7 +9,6 @@ const readPalette = (): Palette => {
 		style.getPropertyValue(`--color-firefly-${name}`).trim();
 	return {
 		glow: color("glow"),
-		halo: color("halo"),
 		core: color("core"),
 		composite: getColorMode() === "light" ? "source-over" : "lighter",
 	};

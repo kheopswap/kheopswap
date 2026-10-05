@@ -148,7 +148,6 @@ html {
 	color-scheme: dark;
 	background-color: var(--color-page);
 	--color-firefly-glow: rgb(211 255 51 / 0.3);
-	--color-firefly-halo: rgb(211 255 51 / 0.1);
 	--color-firefly-core: rgb(250 255 235 / 0.8);
 }
 
@@ -170,9 +169,8 @@ html[data-mode="light"] {
 	--color-error: #b91c1c;
 	--color-warn: #c2410c;
 	--color-success: #15803d;
-	--color-firefly-glow: rgb(101 163 13 / 0.5);
-	--color-firefly-halo: rgb(101 163 13 / 0.17);
-	--color-firefly-core: rgb(77 124 15 / 0.95);
+	--color-firefly-glow: rgb(211 255 51 / 0.9);
+	--color-firefly-core: rgb(163 230 53);
 }
 
 /* react-toastify injects its stylesheet at runtime after ours, so overrides are scoped to its container */
