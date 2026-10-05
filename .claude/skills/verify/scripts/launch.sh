@@ -64,9 +64,10 @@ mkdir -p "$ARTIFACTS"
 started=$SECONDS
 elapsed() { echo "$((SECONDS - started))s"; }
 
-echo "building image kheopswap-verify (about 2 min the first time)"
-# Running the id this build printed keeps a parallel build of another checkout's Dockerfile out of this run.
-image="$(docker build -q -t kheopswap-verify "$SKILL_DIR/docker")"
+IMAGE="kheopswap-verify:$SLUG"
+echo "building image $IMAGE (about 2 min the first time)"
+# A tag per checkout: a parallel build in another checkout retags only its own image, never this run's.
+docker build -q -t "$IMAGE" "$SKILL_DIR/docker" >/dev/null
 echo "$(elapsed) image ready"
 
 free_port() {
@@ -101,7 +102,7 @@ for attempt in 1 2 3 4 5; do
 		-v kheopswap-verify-pnpm:/pnpm \
 		-v "$WALLET_DIR:/verify/wallet:ro" \
 		-v "$ARTIFACTS:/verify/logs" \
-		-w "$ROOT" "$image" 2>&1 >/dev/null)" && break
+		-w "$ROOT" "$IMAGE" 2>&1 >/dev/null)" && break
 	docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 	if [[ -n "${VERIFY_CDP_PORT:-}" || "$error" != *"port is already allocated"* || $attempt == 5 ]]; then
 		echo "FAIL docker run: $error" >&2

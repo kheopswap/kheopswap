@@ -53,7 +53,7 @@ source .claude/skills/verify/.run/state.env   # RUN_ID, ARTIFACTS, CDP, CONTAINE
 `launch.sh` does the following:
 
 1. It checks `~/.kheopswap` and refuses to start when a run is already active.
-2. It builds the `kheopswap-verify` image from `docker/` (cached after the first build) and starts this checkout's container. A container left over from a run without state is replaced.
+2. It builds the image `kheopswap-verify:<checkout folder>` from `docker/` (layers are shared and cached after the first build) and starts this checkout's container. A container left over from a run without state is replaced.
 3. It prints the container's progress: `installing` (`pnpm install`), `starting-vite`, `installing-talisman`, `restoring`, `unlocking`, then `ready`. On `failed:<step>`, or if the container stops, it removes the container and points to the logs in `$ARTIFACTS`.
 4. It opens a pinned app tab in the run's `agent-browser` session.
 5. It waits until the footer shows `Finalized:`, which means the chain connection is live.
