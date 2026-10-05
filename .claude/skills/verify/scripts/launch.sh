@@ -69,16 +69,16 @@ echo "building image kheopswap-verify (about 2 min the first time)"
 image="$(docker build -q -t kheopswap-verify "$SKILL_DIR/docker")"
 echo "$(elapsed) image ready"
 
-CDP="${VERIFY_CDP_PORT:-}"
-if [[ -z "$CDP" ]]; then
+free_port() {
 	for port in $(seq 9300 9399); do
 		[[ -n "$(docker ps -aq --filter "publish=$port")" ]] && continue
 		(exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null && continue
-		CDP=$port
-		break
+		echo "$port"
+		return
 	done
-	[[ -n "$CDP" ]] || { echo "FAIL no free port in 9300-9399; set VERIFY_CDP_PORT" >&2; exit 1; }
-fi
+	echo "FAIL no free port in 9300-9399; set VERIFY_CDP_PORT" >&2
+	return 1
+}
 
 abort() {
 	[[ -f "$STATE" ]] && return
@@ -89,16 +89,25 @@ trap abort EXIT
 
 # Docker would create missing mount points as root inside the checkout.
 mkdir -p "$ROOT/node_modules" "$ROOT/web/node_modules"
-docker run -d --init --name "$CONTAINER" --label "$LABEL=$ROOT" --shm-size=2g \
-	-p "127.0.0.1:$CDP:9224" \
-	-e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" -e ROOT="$ROOT" \
-	-v "$ROOT:$ROOT" \
-	-v "$CONTAINER-node_modules:$ROOT/node_modules" \
-	-v "$CONTAINER-web-node_modules:$ROOT/web/node_modules" \
-	-v kheopswap-verify-pnpm:/pnpm \
-	-v "$WALLET_DIR:/verify/wallet:ro" \
-	-v "$ARTIFACTS:/verify/logs" \
-	-w "$ROOT" "$image" >/dev/null
+# Two checkouts launching at once can pick the same free port: the second docker run then fails, so retry.
+for attempt in 1 2 3 4 5; do
+	CDP="${VERIFY_CDP_PORT:-$(free_port)}"
+	error="$(docker run -d --init --name "$CONTAINER" --label "$LABEL=$ROOT" --shm-size=2g \
+		-p "127.0.0.1:$CDP:9224" \
+		-e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" -e ROOT="$ROOT" \
+		-v "$ROOT:$ROOT" \
+		-v "$CONTAINER-node_modules:$ROOT/node_modules" \
+		-v "$CONTAINER-web-node_modules:$ROOT/web/node_modules" \
+		-v kheopswap-verify-pnpm:/pnpm \
+		-v "$WALLET_DIR:/verify/wallet:ro" \
+		-v "$ARTIFACTS:/verify/logs" \
+		-w "$ROOT" "$image" 2>&1 >/dev/null)" && break
+	docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
+	if [[ -n "${VERIFY_CDP_PORT:-}" || "$error" != *"port is already allocated"* || $attempt == 5 ]]; then
+		echo "FAIL docker run: $error" >&2
+		exit 1
+	fi
+done
 echo "$(elapsed) started $CONTAINER, CDP on 127.0.0.1:$CDP"
 
 last=""
