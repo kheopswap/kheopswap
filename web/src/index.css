@@ -148,7 +148,7 @@ html {
 	color-scheme: dark;
 	background-color: var(--color-page);
 	--color-firefly-glow: rgb(211 255 51 / 0.3);
-	--color-firefly-core: rgb(250 255 235 / 0.8);
+	--color-firefly-core: rgb(250 255 235 / 0.95);
 }
 
 html[data-mode="light"] {
@@ -169,7 +169,7 @@ html[data-mode="light"] {
 	--color-error: #b91c1c;
 	--color-warn: #c2410c;
 	--color-success: #15803d;
-	--color-firefly-glow: rgb(211 255 51 / 0.9);
+	--color-firefly-glow: rgb(211 255 51 / 0.4);
 	--color-firefly-core: rgb(163 230 53);
 }
 

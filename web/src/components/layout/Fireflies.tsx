@@ -3,6 +3,8 @@ import { getColorMode } from "../../common/colorMode";
 import type { FirefliesMessage } from "./fireflies.worker";
 import type { Bounds, Palette } from "./fireflySwarm";
 
+const MAX_PIXEL_RATIO = 2;
+
 const readPalette = (): Palette => {
 	const style = getComputedStyle(document.documentElement);
 	const color = (name: string) =>
@@ -14,7 +16,11 @@ const readPalette = (): Palette => {
 	};
 };
 
-const readBounds = (): Bounds => ({ width: innerWidth, height: innerHeight });
+const readBounds = (): Bounds => ({
+	width: innerWidth,
+	height: innerHeight,
+	pixelRatio: Math.min(devicePixelRatio, MAX_PIXEL_RATIO),
+});
 
 export const Fireflies: FC = () => {
 	const containerRef = useRef<HTMLDivElement>(null);

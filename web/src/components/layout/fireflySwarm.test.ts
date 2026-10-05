@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { advanceFly, type Bounds, type Fly } from "./fireflySwarm";
 
-const bounds: Bounds = { width: 1000, height: 1000 };
+const bounds: Bounds = { width: 1000, height: 1000, pixelRatio: 1 };
 
 const flyAt = (x: number, y: number): Fly => ({
 	x,

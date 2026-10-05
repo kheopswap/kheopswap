@@ -4,8 +4,10 @@ const PULL_MIN_DISTANCE = 40;
 const PULL_MAX_DISTANCE = 320;
 const VELOCITY_KEPT_PER_SECOND = 0.985 ** 120;
 const GLOW_RADIUS_PER_SIZE = 7;
-const CORE_RADIUS_PER_SIZE = 0.6;
-const SPRITE_SIZE = 64;
+const CORE_EXTENT = 0.28;
+const GAUSSIAN_SPREAD = 1.4;
+const GAUSSIAN_STOPS = 16;
+const SPRITE_SIZE = 128;
 
 export type Fly = {
 	x: number;
@@ -18,7 +20,7 @@ export type Fly = {
 	blinkRate: number;
 };
 
-export type Bounds = { width: number; height: number };
+export type Bounds = { width: number; height: number; pixelRatio: number };
 
 export type Point = { x: number; y: number };
 
@@ -92,41 +94,37 @@ export const advanceFly = (
 const brightness = (fly: Fly, time: number) =>
 	0.25 + 0.75 * (0.5 + 0.5 * Math.sin(time * fly.blinkRate + fly.blinkPhase));
 
+const paintGaussian = (color: string, extent: number) => {
+	const layer = new OffscreenCanvas(SPRITE_SIZE, SPRITE_SIZE);
+	const context = layer.getContext("2d");
+	if (!context) return layer;
+	const center = SPRITE_SIZE / 2;
+	const falloff = context.createRadialGradient(
+		center,
+		center,
+		0,
+		center,
+		center,
+		center * extent,
+	);
+	for (let stop = 0; stop <= GAUSSIAN_STOPS; stop++) {
+		const t = stop / GAUSSIAN_STOPS;
+		const alpha = Math.exp(-((t * GAUSSIAN_SPREAD) ** 2)) * (1 - t);
+		falloff.addColorStop(t, `rgb(0 0 0 / ${alpha})`);
+	}
+	context.fillStyle = falloff;
+	context.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+	context.globalCompositeOperation = "source-in";
+	context.fillStyle = color;
+	context.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+	return layer;
+};
+
 export const paintSprite = ({ glow, core }: Palette) => {
 	const sprite = new OffscreenCanvas(SPRITE_SIZE, SPRITE_SIZE);
 	const context = sprite.getContext("2d");
-	if (!context) return sprite;
-	const center = SPRITE_SIZE / 2;
-
-	const gradient = context.createRadialGradient(
-		center,
-		center,
-		0,
-		center,
-		center,
-		center,
-	);
-	gradient.addColorStop(0, "black");
-	gradient.addColorStop(0.3, "rgb(0 0 0 / 0.33)");
-	gradient.addColorStop(1, "transparent");
-	context.fillStyle = gradient;
-	context.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
-
-	context.globalCompositeOperation = "source-in";
-	context.fillStyle = glow;
-	context.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
-	context.globalCompositeOperation = "source-over";
-
-	context.fillStyle = core;
-	context.beginPath();
-	context.arc(
-		center,
-		center,
-		(center * CORE_RADIUS_PER_SIZE) / GLOW_RADIUS_PER_SIZE,
-		0,
-		Math.PI * 2,
-	);
-	context.fill();
+	context?.drawImage(paintGaussian(glow, 1), 0, 0);
+	context?.drawImage(paintGaussian(core, CORE_EXTENT), 0, 0);
 	return sprite;
 };
 

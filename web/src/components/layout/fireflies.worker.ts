@@ -35,8 +35,9 @@ let swarm: Swarm | undefined;
 
 const resize = (current: Swarm, bounds: Bounds) => {
 	current.bounds = bounds;
-	current.context.canvas.width = bounds.width;
-	current.context.canvas.height = bounds.height;
+	current.context.canvas.width = bounds.width * bounds.pixelRatio;
+	current.context.canvas.height = bounds.height * bounds.pixelRatio;
+	current.context.scale(bounds.pixelRatio, bounds.pixelRatio);
 };
 
 const render = (now: number) => {
