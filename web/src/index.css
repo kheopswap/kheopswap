@@ -169,8 +169,8 @@ html[data-mode="light"] {
 	--color-error: #b91c1c;
 	--color-warn: #c2410c;
 	--color-success: #15803d;
-	--color-firefly-glow: rgb(211 255 51 / 0.4);
-	--color-firefly-core: rgb(163 230 53);
+	--color-firefly-glow: rgb(64 64 64 / 0.2);
+	--color-firefly-core: rgb(64 64 64);
 }
 
 /* react-toastify injects its stylesheet at runtime after ours, so overrides are scoped to its container */
