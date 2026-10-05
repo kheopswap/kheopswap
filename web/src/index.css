@@ -23,8 +23,6 @@
 	--color-error: #f87171;
 	--color-warn: #f97316;
 	--color-success: #22c55e;
-	--color-firefly-glow: rgb(211 255 51 / 0.3);
-	--color-firefly-core: rgb(250 255 235 / 0.8);
 
 	--radius-card: 12px;
 	--radius-control: 10px;
@@ -114,114 +112,6 @@
 	}
 }
 
-@layer components {
-	.firefly {
-		background:
-			radial-gradient(
-				circle closest-side,
-				var(--color-firefly-core) 8%,
-				transparent 11%
-			),
-			radial-gradient(
-				circle closest-side,
-				var(--color-firefly-glow),
-				20%,
-				transparent
-			);
-		animation:
-			var(--drift) ease-in-out infinite,
-			firefly-blink var(--blink) ease-in-out infinite;
-		transition: transform 3.5s ease-out;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.firefly {
-			animation: none;
-			transition: none;
-		}
-	}
-
-	@keyframes firefly-blink {
-		0%,
-		100% {
-			opacity: 0.25;
-		}
-		50% {
-			opacity: 1;
-		}
-	}
-
-	@keyframes firefly-drift-0 {
-		0%,
-		100% {
-			translate: 0 0;
-		}
-		20% {
-			translate: 42px -28px;
-		}
-		45% {
-			translate: 18px -64px;
-		}
-		70% {
-			translate: -36px -30px;
-		}
-		85% {
-			translate: -22px 12px;
-		}
-	}
-
-	@keyframes firefly-drift-1 {
-		0%,
-		100% {
-			translate: 0 0;
-		}
-		25% {
-			translate: -55px 20px;
-		}
-		50% {
-			translate: -30px 62px;
-		}
-		75% {
-			translate: 38px 34px;
-		}
-	}
-
-	@keyframes firefly-drift-2 {
-		0%,
-		100% {
-			translate: 0 0;
-		}
-		15% {
-			translate: 30px 36px;
-		}
-		40% {
-			translate: 72px 8px;
-		}
-		60% {
-			translate: 46px -40px;
-		}
-		80% {
-			translate: -14px -26px;
-		}
-	}
-
-	@keyframes firefly-drift-3 {
-		0%,
-		100% {
-			translate: 0 0;
-		}
-		30% {
-			translate: -40px -50px;
-		}
-		55% {
-			translate: -78px -12px;
-		}
-		80% {
-			translate: -26px 40px;
-		}
-	}
-}
-
 @layer base {
 	body {
 		@apply font-sans text-sm text-text tabular-nums accent-accent hidden [.wf-active>&]:block;
@@ -257,6 +147,9 @@
 html {
 	color-scheme: dark;
 	background-color: var(--color-page);
+	--color-firefly-glow: rgb(211 255 51 / 0.3);
+	--color-firefly-halo: rgb(211 255 51 / 0.1);
+	--color-firefly-core: rgb(250 255 235 / 0.8);
 }
 
 html[data-mode="light"] {
@@ -278,6 +171,7 @@ html[data-mode="light"] {
 	--color-warn: #c2410c;
 	--color-success: #15803d;
 	--color-firefly-glow: rgb(101 163 13 / 0.5);
+	--color-firefly-halo: rgb(101 163 13 / 0.17);
 	--color-firefly-core: rgb(77 124 15 / 0.95);
 }
 
