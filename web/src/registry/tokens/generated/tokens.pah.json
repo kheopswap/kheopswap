@@ -6215,17 +6215,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pah::50000548",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000548,
-		"symbol": "RCHH",
-		"decimals": 10,
-		"name": "Relay Check Home",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
