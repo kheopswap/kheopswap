@@ -64,15 +64,15 @@ const ToastContent: FC<{
 			className="flex items-center gap-3 w-full text-left cursor-pointer hover:opacity-80 transition-opacity"
 		>
 			<div className="shrink-0">
-				{isLoading && <SpinnerBasicIcon className="size-5 text-neutral-400" />}
+				{isLoading && <SpinnerBasicIcon className="size-5 text-muted" />}
 				{isSuccess && (
 					<div className="bg-success/20 rounded-full size-5 flex items-center justify-center">
-						<CheckIcon className="size-3 stroke-success-500" />
+						<CheckIcon className="size-3 text-success" />
 					</div>
 				)}
 				{isError && (
 					<div className="bg-error/20 rounded-full size-5 flex items-center justify-center">
-						<XMarkIcon className="size-3 stroke-error-500" />
+						<XMarkIcon className="size-3 text-error" />
 					</div>
 				)}
 			</div>
@@ -85,7 +85,7 @@ const ToastContent: FC<{
 				>
 					{tx.title}
 				</span>
-				<span className="text-xs text-neutral-500 truncate">
+				<span className="text-xs text-muted truncate">
 					{errorMessage ?? getStatusText(tx.status)}
 				</span>
 			</div>

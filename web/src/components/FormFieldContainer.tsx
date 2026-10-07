@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from "react";
+import { Styles } from "./styles";
 
 export const FormFieldContainer: FC<{
 	id?: string;
@@ -8,9 +9,11 @@ export const FormFieldContainer: FC<{
 }> = ({ id, label, children, topRight }) => {
 	return (
 		<div>
-			<div className="mb-1 flex w-full justify-between">
-				<label htmlFor={id}>{label}</label>
-				{topRight && <div>{topRight}</div>}
+			<div className="mb-2 flex w-full items-center justify-between px-0.5">
+				<label htmlFor={id} className={Styles.label}>
+					{label}
+				</label>
+				{topRight && <div className="text-xs text-muted">{topRight}</div>}
 			</div>
 			{children}
 		</div>

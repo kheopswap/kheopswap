@@ -24,7 +24,7 @@ const AddLiquidityEditor: FC = () => {
 	} = useLiquidityEditorInputs();
 
 	return (
-		<div className="relative flex flex-col gap-2">
+		<div className="relative flex flex-col gap-1.5">
 			<TokenAmountPicker
 				inputProps={{
 					ref: refInput1,
@@ -81,7 +81,7 @@ export const AddLiquidityForm = () => {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<div className="flex w-full max-w-full flex-col gap-3">
+			<div className="flex w-full max-w-full flex-col gap-5">
 				<FormFieldContainer label="Tokens">
 					<AddLiquidityEditor />
 				</FormFieldContainer>

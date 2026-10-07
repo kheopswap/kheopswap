@@ -1,7 +1,6 @@
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
 import { useWallets } from "../../common/kheopskit";
-import { Styles } from "../../components/styles";
 import { TokenAmountPicker } from "../../components/TokenAmountPicker";
 import { useWalletAccount } from "../../hooks/useWalletAccount";
 import { cn } from "../../utils/cn";
@@ -18,8 +17,7 @@ const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
 		onClick={onClick}
 		aria-label="Swap token direction"
 		className={cn(
-			Styles.button,
-			"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  p-2",
+			"absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-control border-4 border-surface bg-hover text-text hover:text-accent",
 			className,
 		)}
 	>
@@ -78,7 +76,7 @@ export const SwapTokensEditor = () => {
 	);
 
 	return (
-		<div className="relative flex flex-col gap-2">
+		<div className="relative flex flex-col gap-1.5">
 			<TokenAmountPicker
 				inputProps={{
 					value: formData.amountIn,

@@ -74,7 +74,10 @@ export const AddressDisplay: FC<{
 				className={cn("size-[1.4em]", iconClassName)}
 			/>
 			<Tooltip>
-				<TooltipTrigger onClick={handleCopyClick}>
+				<TooltipTrigger
+					onClick={handleCopyClick}
+					className={cn(!accountName && "font-mono")}
+				>
 					{accountName || shortenAddress(address)}
 				</TooltipTrigger>
 				<TooltipContent>{address}</TooltipContent>

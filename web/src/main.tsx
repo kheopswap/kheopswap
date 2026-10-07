@@ -1,7 +1,8 @@
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
-import "@fontsource-variable/lexend-deca";
+import "@fontsource-variable/dm-sans";
+import "@fontsource-variable/jetbrains-mono";
 
 import { Subscribe } from "@react-rxjs/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -31,14 +32,14 @@ const AppErrorFallback = ({
 	error: Error;
 	onReset: () => void;
 }) => (
-	<div className="flex min-h-dvh flex-col items-center justify-center bg-primary-950 text-center">
-		<h1 className="text-4xl font-bold text-neutral-300 sm:text-5xl">Ouch!</h1>
-		<p className="mt-4 text-xl text-neutral-500">Something went wrong</p>
+	<div className="flex min-h-dvh flex-col items-center justify-center bg-page text-center">
+		<h1 className="text-4xl font-bold text-text sm:text-5xl">Ouch!</h1>
+		<p className="mt-4 text-xl text-muted">Something went wrong</p>
 		<p className="mt-4 max-w-md truncate text-sm text-error">{error.message}</p>
 		<button
 			type="button"
 			onClick={onReset}
-			className="mt-8 rounded-sm bg-primary-500 px-4 py-2 font-medium text-white hover:bg-primary-400"
+			className="mt-8 rounded-control bg-primary px-4 py-2 font-semibold text-primary-ink hover:brightness-108"
 		>
 			Try Again
 		</button>

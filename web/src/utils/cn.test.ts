@@ -15,6 +15,11 @@ describe("cn", () => {
 		expect(cn("text-red-500", "text-blue-500")).toBe("text-blue-500");
 	});
 
+	it("resolves conflicts between theme radii", () => {
+		expect(cn("rounded-control", "rounded-full")).toBe("rounded-full");
+		expect(cn("rounded-sm", "rounded-card")).toBe("rounded-card");
+	});
+
 	it("returns empty string for no inputs", () => {
 		expect(cn()).toBe("");
 	});

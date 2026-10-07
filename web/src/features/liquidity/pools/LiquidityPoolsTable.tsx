@@ -1,9 +1,9 @@
-import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { useWallets } from "../../../common/kheopskit";
 import { SearchInput } from "../../../components/SearchInput";
 import { LiquidityPoolsHeaderRow } from "./LiquidityPoolsHeaderRow";
 import { LiquidityPoolsRows } from "./LiquidityPoolsRows";
-import type { LiquidityPoolsSortMode, LiquidityPoolsVisibleCol } from "./types";
+import type { LiquidityPoolsSortMode } from "./types";
 import {
 	type LiquidityPoolRowData,
 	useLiquidityPoolsTable,
@@ -38,9 +38,7 @@ export const LiquidityPoolsTable = () => {
 
 	const { accounts } = useWallets();
 
-	const [visibleCol, setVisibleCol] = useState<LiquidityPoolsVisibleCol>("tvl");
-	const [sortByCol, setSortByCol] =
-		useState<LiquidityPoolsSortMode>(visibleCol);
+	const [sortByCol, setSortByCol] = useState<LiquidityPoolsSortMode>("tvl");
 
 	const sortedRows = useMemo(
 		() =>
@@ -67,11 +65,6 @@ export const LiquidityPoolsTable = () => {
 				);
 	}, [search, sortedRows]);
 
-	const handleSortClick = useCallback((column: LiquidityPoolsSortMode) => {
-		if (column !== "symbol") setVisibleCol(column);
-		setSortByCol(column);
-	}, []);
-
 	return (
 		<div>
 			<SearchInput
@@ -84,13 +77,9 @@ export const LiquidityPoolsTable = () => {
 				isLoading={isLoading}
 				sortByCol={sortByCol}
 				withPositions={!!accounts.length}
-				onColumnHeaderClick={handleSortClick}
+				onColumnHeaderClick={setSortByCol}
 			/>
-			<LiquidityPoolsRows
-				rows={rows}
-				visibleCol={visibleCol}
-				isLoading={isLoading}
-			/>
+			<LiquidityPoolsRows rows={rows} isLoading={isLoading} />
 		</div>
 	);
 };

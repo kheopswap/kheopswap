@@ -8,18 +8,28 @@
       name="description"
       content="Decentralized exchange app for Polkadot"
     />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-    <meta name="msapplication-TileColor" content="#E6007A" />
-    <meta name="theme-color" content="#E6007A" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="theme-color" content="#000000" />
     <style type="text/css">
-      html{
-        background: radial-gradient(circle at 50% 25%, #3c248a, #312070, #271b57, #1e163f, #160f29, #090413) fixed;
-      }
+      html{background:#000}html[data-mode=light]{background:#f2f1f6}
     </style>
+    <script>
+      (() => {
+        let mode = "dark";
+        try {
+          if (localStorage.getItem("kheopswap-color-mode") === "light") mode = "light";
+        } catch {}
+        document.documentElement.dataset.mode = mode;
+        if (mode === "light")
+          document.querySelector('meta[name="theme-color"]').content = "#f2f1f6";
+      })();
+    </script>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -31,8 +41,10 @@
     />
     <meta
       property="og:image"
-      content="https://kheopswap.xyz/android-chrome-512x512.png"
+      content="https://kheopswap.xyz/og-image.png"
     />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -44,7 +56,7 @@
     />
     <meta
       property="twitter:image"
-      content="https://kheopswap.xyz/android-chrome-512x512.png"
+      content="https://kheopswap.xyz/og-image.png"
     />
   </head>
   <body>

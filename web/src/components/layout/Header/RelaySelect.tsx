@@ -1,4 +1,5 @@
 import { Switch } from "@base-ui/react/switch";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -25,12 +26,12 @@ const ChainButton: FC<{
 		onClick={onClick}
 		className={cn(
 			Styles.button,
-			"flex w-full items-center gap-4  overflow-hidden rounded-md p-2 py-3 pl-4 pr-3",
-			selected && "ring-1 ring-neutral-500",
+			"flex w-full items-center gap-3 overflow-hidden px-3.5 py-3",
+			selected && "ring-1 ring-muted",
 		)}
 	>
 		<img loading="lazy" src={logo} alt="" className="size-8 shrink-0" />
-		<div className="grow truncate text-left text-lg">{name}</div>
+		<div className="grow truncate text-left text-base font-medium">{name}</div>
 		<ActionRightIcon className="size-5 shrink-0 fill-current" />
 	</button>
 );
@@ -64,8 +65,8 @@ const DrawerContent: FC<{
 
 	return (
 		<div className="flex flex-col items-start gap-4">
-			<div className="flex w-full flex-col items-start gap-2">
-				<div>Network</div>
+			<div className="flex w-full flex-col items-start gap-1.5">
+				<div className={cn(Styles.label, "mb-0.5")}>Network</div>
 				{assetHubs.map((c) => (
 					<ChainButton
 						key={c.id}
@@ -77,7 +78,7 @@ const DrawerContent: FC<{
 				))}
 			</div>
 			{DISABLE_LIGHT_CLIENTS && (
-				<div className="mt-1 text-sm bg-warn/10 text-warn p-2 rounded w-full border border-warn/20 flex items-center gap-2">
+				<div className="flex w-full items-center gap-2 rounded-control border border-warn/20 bg-warn/10 p-2.5 text-sm text-warn">
 					<ExclamationTriangleIcon className="size-6 inline mr-2" />
 					Light clients are temporarily disabled.
 				</div>
@@ -95,30 +96,30 @@ const DrawerContent: FC<{
 						onCheckedChange={handleSetLightClients}
 						disabled={DISABLE_LIGHT_CLIENTS}
 						className={cn(
-							"relative inline-flex h-6 w-11 items-center rounded-full border bg-transparent transition-colors",
-							"data-checked:bg-neutral-500",
-							"focus-visible:ring-1 focus-visible:ring-neutral-200",
+							"relative inline-flex h-6 w-10 shrink-0 items-center rounded-full bg-hover transition-colors",
+							"data-checked:bg-primary",
+							"focus-visible:ring-1 focus-visible:ring-text",
 							!DISABLE_LIGHT_CLIENTS && "cursor-pointer",
 							DISABLE_LIGHT_CLIENTS && "opacity-50",
 						)}
 					>
 						<Switch.Thumb
 							className={cn(
-								"absolute left-0.5 top-0.5 size-5 rounded-full border border-neutral-300 bg-white transition-transform",
-								"data-checked:translate-x-full data-checked:border-neutral-200",
+								"absolute top-0.75 left-0.75 size-4.5 rounded-full bg-muted transition-transform",
+								"data-checked:translate-x-4 data-checked:bg-page",
 							)}
 						/>
 					</Switch.Root>
 				</div>
 
-				<div className="mt-1 text-sm text-neutral-500">
+				<div className="mt-1 text-[13px] leading-normal text-muted">
 					Light clients are blockchain nodes running in your browser. They
 					provide secure and uncensorable connections to Polkadot networks.
 					<br />
 					Pro-tip: get{" "}
 					<a
 						href="https://substrate.io/developers/substrate-connect/"
-						className="text-neutral-300 underline hover:text-neutral-200"
+						className="text-text underline hover:text-accent"
 						target="_blank"
 						rel="noreferrer"
 					>
@@ -136,6 +137,7 @@ export const RelaySelect = () => {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 	const { open, close, isOpen } = useOpenClose();
+	const networkName = assetHub.name.replace(/ Asset Hub$/, "");
 
 	const getRelayPath = useCallback(
 		(newRelayId: RelayId) => {
@@ -160,13 +162,15 @@ export const RelaySelect = () => {
 
 	return (
 		<>
-			<button type="button" onClick={open}>
-				<img
-					loading="lazy"
-					src={assetHub.logo}
-					alt="Chain"
-					className="size-6"
-				/>
+			<button
+				type="button"
+				onClick={open}
+				aria-label={`Network: ${networkName}`}
+				className={Styles.headerButton}
+			>
+				<img src={assetHub.logo} alt="" className="size-4.5 rounded-full" />
+				<span className="max-[379px]:hidden">{networkName}</span>
+				<ChevronDownIcon className="size-3.5 opacity-60" />
 			</button>
 			<Drawer anchor="right" isOpen={isOpen} onDismiss={close}>
 				<DrawerContainer title="Select network" onClose={close}>

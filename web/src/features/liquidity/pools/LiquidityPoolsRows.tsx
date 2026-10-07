@@ -4,23 +4,21 @@ import { Shimmer } from "../../../components/Shimmer";
 import { VirtualizedList } from "../../../components/VirtualizedList";
 import { cn } from "../../../utils/cn";
 import { LiquidityPoolsRow } from "./LiquidityPoolsRow";
-import type { LiquidityPoolsVisibleCol } from "./types";
 import type { LiquidityPoolRowData } from "./useLiquidityPools";
 
-const ROW_HEIGHT = 72; // 64px row (h-16) + 8px gap (gap-2)
+const ROW_HEIGHT = 68; // h-17
 
 const getItemKey = (pool: LiquidityPoolRowData) => pool.poolAssetId;
 
 export const LiquidityPoolsRows: FC<{
 	rows: LiquidityPoolRowData[];
-	visibleCol: LiquidityPoolsVisibleCol;
 	isLoading: boolean;
-}> = ({ rows, visibleCol, isLoading }) => {
+}> = ({ rows, isLoading }) => {
 	const renderItem = useCallback(
-		(pool: LiquidityPoolRowData) => (
-			<LiquidityPoolsRow pool={pool} visibleCol={visibleCol} />
+		(pool: LiquidityPoolRowData, index: number) => (
+			<LiquidityPoolsRow pool={pool} isFirst={index === 0} />
 		),
-		[visibleCol],
+		[],
 	);
 
 	return (
@@ -32,15 +30,16 @@ export const LiquidityPoolsRows: FC<{
 			footer={
 				<div
 					className={cn(
-						"flex h-16 w-full items-center gap-2 rounded-md border  border-neutral-800 bg-primary-950/50 px-4",
+						"flex h-17 w-full items-center gap-3 px-1",
+						!!rows.length && "border-t border-line",
 						isLoading || !rows.length ? "visible" : "invisible",
 					)}
 				>
 					{isLoading ? (
 						<>
-							<Pulse pulse className="h-10 shrink-0">
-								<Shimmer className="inline-block size-10 rounded-full animate-none" />
-								<Shimmer className="inline-block -ml-3 size-10 rounded-full animate-none" />
+							<Pulse pulse className="flex h-8 shrink-0">
+								<Shimmer className="inline-block size-8 rounded-full animate-none" />
+								<Shimmer className="inline-block -ml-2.5 size-8 rounded-full animate-none" />
 							</Pulse>
 							<div className="flex grow flex-col items-start gap-1 overflow-hidden text-xs">
 								<Shimmer className="">TK1/TK2</Shimmer>
@@ -48,7 +47,7 @@ export const LiquidityPoolsRows: FC<{
 							</div>
 						</>
 					) : (
-						<div className="text-base font-light text-neutral-400">
+						<div className="text-muted">
 							No liquidity pools match your search
 						</div>
 					)}

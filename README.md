@@ -17,6 +17,10 @@ pnpm dev
 
 A daily workflow opens a `Runtime upgrade on <chain>` issue for each chain whose runtime differs from the committed metadata.
 
+## Brand assets
+
+`web/public/logo.svg` is the only hand-edited brand file. After you change it, run `pnpm generate-brand-assets` to regenerate the favicons, app icons, `safari-pinned-tab.svg` and `og-image.png`. The og-image needs Google Chrome. Set `CHROME_PATH` if Chrome is not in `/Applications`.
+
 ## Coding agents
 
 Project instructions for coding agents live in [`AGENTS.md`](AGENTS.md).

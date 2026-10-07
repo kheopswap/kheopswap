@@ -12,10 +12,10 @@ export const ColumnHeaderButton: FC<{
 			type="button"
 			aria-pressed={selected}
 			className={cn(
-				"text-xs text-neutral-500",
+				"text-xs text-muted",
 				className,
 				onClick ? "cursor-pointer" : "cursor-default",
-				selected && "text-neutral-200",
+				selected && "text-text",
 			)}
 			onClick={onClick}
 		>

@@ -35,7 +35,7 @@ export const CreatePoolForm = () => {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<div className="flex w-full flex-col gap-3">
+			<div className="flex w-full flex-col gap-5">
 				<FormFieldContainer id="from-account" label="Account">
 					<AccountSelect
 						id="from-account"
@@ -46,7 +46,7 @@ export const CreatePoolForm = () => {
 					/>
 				</FormFieldContainer>
 				<FormFieldContainer label="Initial liquidity (optional)">
-					<p className="text-xs text-neutral mb-2">
+					<p className="mb-2 px-0.5 text-[13px] leading-normal text-muted">
 						The amounts of each token you provide will determine the price of{" "}
 						{token?.symbol}. Make sure it reflects it's true market value, or
 						others may take advantage of the price difference.
@@ -190,7 +190,7 @@ const AddLiquidityEditor: FC = () => {
 		[sender],
 	);
 	return (
-		<div className="relative flex flex-col gap-2">
+		<div className="relative flex flex-col gap-1.5">
 			<TokenAmountPicker
 				inputProps={{
 					ref: refInput1,

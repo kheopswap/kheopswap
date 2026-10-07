@@ -12,27 +12,26 @@ const icon = (props: IconProps): ReactNode => {
 	switch (props.type) {
 		case "info":
 			return (
-				//<InformationCircleIcon className="size-6 stroke-neutral-50 shrink-0" />
-				<div className="bg-cyan/20 rounded-full size-6 shrink-0 flex items-center justify-center">
-					<InformationCircleIcon className="size-5 stroke-cyan-500  " />
+				<div className="bg-hover rounded-full size-6 shrink-0 flex items-center justify-center">
+					<InformationCircleIcon className="size-5 text-text" />
 				</div>
 			);
 		case "warning":
 			return (
 				<div className="bg-warn/20 rounded-full size-6 shrink-0 flex items-center justify-center">
-					<ExclamationTriangleIcon className="size-4 stroke-warn-500  " />
+					<ExclamationTriangleIcon className="size-4 text-warn" />
 				</div>
 			);
 		case "success":
 			return (
 				<div className="bg-success/20 rounded-full size-6 shrink-0 flex items-center justify-center">
-					<CheckIcon className="size-4 stroke-success-500  " />
+					<CheckIcon className="size-4 text-success" />
 				</div>
 			);
 		case "error":
 			return (
 				<div className="bg-error/20 rounded-full size-6 shrink-0 flex items-center justify-center">
-					<XMarkIcon className="size-4 stroke-error-500  " />
+					<XMarkIcon className="size-4 text-error" />
 				</div>
 			);
 		case "default":
@@ -45,7 +44,7 @@ const icon = (props: IconProps): ReactNode => {
 export const Toasts = () => (
 	<ToastContainer
 		theme="dark"
-		toastClassName="bg-neutral-850 border-neutral-800 border font-sans text-sm"
+		toastClassName="rounded-control border border-line font-sans text-sm"
 		position="bottom-right"
 		icon={icon}
 	/>

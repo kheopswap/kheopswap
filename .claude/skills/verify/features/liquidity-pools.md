@@ -14,7 +14,7 @@ Liquidity Pools lists the native-token pools on the current Asset Hub by TVL, wi
 ## How to get to it (user POV)
 
 - Open `#/<relay>/pools`.
-- Choose `Liquidity Pools` in `Main navigation`.
+- Choose `Liquidity` in `Main navigation`.
 - Click a pool row to open its detail page.
 
 ## Driving it with agent-browser

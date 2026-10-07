@@ -19,7 +19,7 @@ const SlippageButton: FC<{
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"rounded-sm bg-purple p-2 text-center ring-primary-300 hover:bg-primary-400",
+				"rounded-control bg-surface-2 p-2 text-center font-mono ring-accent hover:bg-hover",
 				selected && "ring-1",
 			)}
 		>
@@ -43,7 +43,7 @@ const SlippageDrawerContent: FC<{ onClose: () => void }> = ({ onClose }) => {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<p className="text-sm opacity-50">
+			<p className="text-sm text-muted">
 				Slippage tolerance setting protects you from sudden price changes by
 				reverting your transaction if price changes unfavorably between the
 				moment you submit your transaction, and the moment it&quot;s actually
@@ -74,8 +74,8 @@ export const Slippage: FC<{ value: number }> = ({ value }) => {
 	return (
 		<>
 			<button type="button" onClick={open} className="flex items-center gap-2">
-				<PencilSquareIcon className="size-4" />
-				<span>{strSlippage}</span>
+				<PencilSquareIcon className="size-4 text-muted" />
+				<span className="font-mono">{strSlippage}</span>
 			</button>
 			<Drawer anchor="right" isOpen={isOpen} onDismiss={close}>
 				<DrawerContainer title="Slippage Tolerance" onClose={close}>
