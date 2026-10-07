@@ -1,13 +1,3 @@
-/**
- * Derives every static brand asset in public/ from public/logo.svg.
- *
- * The og-image is rendered by headless Chrome so it can use DM Sans.
- * Set CHROME_PATH when Chrome is not at its default macOS location.
- *
- * Run from the repository root:
- *   pnpm generate-brand-assets
- */
-
 import { spawn } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
