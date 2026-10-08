@@ -6743,6 +6743,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::7873",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 7873,
+		"symbol": "dotUSD",
+		"decimals": 6,
+		"name": "dotUSD",
+		"verified": false,
+		"isSufficient": true
+	},
+	{
 		"id": "asset::pah::789",
 		"type": "asset",
 		"chainId": "pah",
@@ -9487,6 +9498,16 @@
 		"type": "pool-asset",
 		"chainId": "pah",
 		"poolAssetId": 85,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::86",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 86,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
