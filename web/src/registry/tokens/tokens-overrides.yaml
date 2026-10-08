@@ -10,6 +10,8 @@
 - id: asset::pah::23
   logo: ./img/tokens/PINK.png
   verified: true
+- id: asset::pah::7873
+  logo: ./img/tokens/DOTUSD.svg
 - id: asset::kah::1984
   logo: ./img/tokens/USDT.webp
   verified: true
