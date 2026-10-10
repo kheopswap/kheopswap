@@ -24,6 +24,7 @@ Update this file and `README.md` when your change makes them wrong.
 - When a runtime call's signature differs between chains, write one explicit case per chain with `switch (api.chainId)`.
 - Chain ids come in two kinds: the Asset Hubs `pah`, `kah`, `wah`, `pasah` (`ChainIdAssetHub`) and Hydration `hydration` (`ChainIdHydration`). `ChainId` is their union.
 - Code that uses Asset Hub pallets (Assets, PoolAssets, ForeignAssets, AssetConversion, Revive) takes `ChainIdAssetHub` or `ChainAssetHub`. Narrow the parameter so `getApi` returns the Asset Hub API, and guard with `isChainIdAssetHub` / `isChainAssetHub` where a value can be any chain.
+- An Ethereum address maps to different accounts on Asset Hub and Hydration. `getResolvedSubstrateAddress$` resolves it to no address on Hydration, so its balances there load as `undefined`, and `isApplicableBalance` hides them.
 
 ## Reactive state
 

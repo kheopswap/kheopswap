@@ -1,10 +1,11 @@
-import { BehaviorSubject, type Subscription } from "rxjs";
+import { BehaviorSubject, combineLatest, type Subscription } from "rxjs";
 import { getApi } from "../../papi/getApi";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import type {
 	TokenId,
 	TokenIdAsset,
 	TokenIdForeignAsset,
+	TokenIdHydrationAsset,
 	TokenIdNative,
 	TokenIdPoolAsset,
 	TokenInfo,
@@ -131,6 +132,28 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 						minBalance: asset.min_balance,
 						supply: asset?.supply,
 						status: asset.status.type,
+					});
+			});
+		}
+
+		case "hydration-asset": {
+			const api = await getApi(token.chainId);
+			const tokenInfo$ = combineLatest([
+				api.query.AssetRegistry.Assets.watchValue(token.assetId, {
+					at: "best",
+				}),
+				api.query.Tokens.TotalIssuance.watchValue(token.assetId, {
+					at: "best",
+				}),
+			]);
+
+			return tokenInfo$.subscribe(([{ value: asset }, { value: supply }]) => {
+				if (asset)
+					updateTokenInfo({
+						id: tokenId as TokenIdHydrationAsset,
+						type: "hydration-asset",
+						minBalance: asset.existential_deposit,
+						supply,
 					});
 			});
 		}

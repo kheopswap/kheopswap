@@ -24,6 +24,9 @@ import type {
 	Token,
 	TokenAsset,
 	TokenForeignAsset,
+	TokenInfo,
+	TokenInfoAsset,
+	TokenInfoForeignAsset,
 } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import type {
@@ -34,6 +37,7 @@ import { cn } from "../../utils/cn";
 import { getAccountName } from "../../utils/getAccountName";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
 import { getTokenTypeLabel } from "../../utils/getTokenTypeLabel";
+import { isApplicableBalance } from "../../utils/isApplicableBalance";
 import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
 import { sortBigInt } from "../../utils/sortBigInt";
@@ -145,35 +149,41 @@ const LiquidityPoolValue: FC<{ token: TokenAsset | TokenForeignAsset }> = ({
 	);
 };
 
-const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
-	const { data: tokenInfo, isLoading } = useTokenInfo({ tokenId: token.id });
+const TotalSupplyRow: FC<{
+	token: Token;
+	tokenInfo: TokenInfo | undefined;
+	isLoading: boolean;
+}> = ({ token, tokenInfo, isLoading }) => (
+	<TokenDetailsRow label="Total Supply">
+		{tokenInfo ? (
+			<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
+		) : (
+			<Shimmer>000 TKN</Shimmer>
+		)}
+	</TokenDetailsRow>
+);
+
+type TokenInfoAssetsPallet = TokenInfoAsset | TokenInfoForeignAsset;
+
+const isTokenInfoAssetsPallet = (
+	tokenInfo: TokenInfo | undefined,
+): tokenInfo is TokenInfoAssetsPallet =>
+	tokenInfo?.type === "asset" || tokenInfo?.type === "foreign-asset";
+
+const AssetsPalletInfoRows: FC<{
+	token: TokenAsset | TokenForeignAsset;
+	tokenInfo: TokenInfoAssetsPallet | undefined;
+	isLoading: boolean;
+}> = ({ token, tokenInfo, isLoading }) => {
 	const chain = useTokenChain({ tokenId: token.id });
-
-	if (token.type === "pool-asset") return null;
-
-	if (token.type === "native")
-		return (
-			<TokenDetailsRow label="Total Supply">
-				{tokenInfo && "supply" in tokenInfo ? (
-					<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
-				) : (
-					<Shimmer>000 TKN</Shimmer>
-				)}
-			</TokenDetailsRow>
-		);
-
-	if (tokenInfo?.type === "native" || tokenInfo?.type === "pool-asset")
-		return null;
 
 	return (
 		<>
-			<TokenDetailsRow label="Total Supply">
-				{tokenInfo ? (
-					<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
-				) : (
-					<Shimmer>000 TKN</Shimmer>
-				)}
-			</TokenDetailsRow>
+			<TotalSupplyRow
+				token={token}
+				tokenInfo={tokenInfo}
+				isLoading={isLoading}
+			/>
 			<TokenDetailsRow label="Holders">
 				{tokenInfo ? (
 					<Pulse as="span" pulse={isLoading}>
@@ -254,6 +264,33 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 	);
 };
 
+const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
+	const { data: tokenInfo, isLoading } = useTokenInfo({ tokenId: token.id });
+
+	switch (token.type) {
+		case "native":
+		case "hydration-asset":
+			return (
+				<TotalSupplyRow
+					token={token}
+					tokenInfo={tokenInfo}
+					isLoading={isLoading}
+				/>
+			);
+		case "asset":
+		case "foreign-asset":
+			return (
+				<AssetsPalletInfoRows
+					token={token}
+					tokenInfo={isTokenInfoAssetsPallet(tokenInfo) ? tokenInfo : undefined}
+					isLoading={isLoading}
+				/>
+			);
+		case "pool-asset":
+			return null;
+	}
+};
+
 const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
 	if (isBigInt(a.tokenPlancks) && isBigInt(b.tokenPlancks))
 		return sortBigInt(a.tokenPlancks, b.tokenPlancks, true);
@@ -270,15 +307,14 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 	const rows = useMemo(
 		() =>
 			accounts
-				.map((account) => ({
-					account,
-					accountName: getAccountName(account),
-					// biome-ignore lint/style/noNonNullAssertion: legacy
-					balance: balances.find(
+				.flatMap((account) => {
+					const balance = balances.find(
 						(b) => b.tokenId === token.id && b.address === account.address,
-					)!,
-				}))
-				.filter((row) => row.balance)
+					);
+					return balance && isApplicableBalance(balance)
+						? [{ account, accountName: getAccountName(account), balance }]
+						: [];
+				})
 				.sort((a, b) => sortBalances(a.balance, b.balance)),
 		[accounts, balances, token.id],
 	);
@@ -384,7 +420,7 @@ export const TokenDetails: FC<{ row: PortfolioRowData }> = ({ row }) => {
 			<TokenDetailsRow label="Type">
 				{getTokenTypeLabel(token.type)}
 			</TokenDetailsRow>
-			{token.type === "asset" && (
+			{(token.type === "asset" || token.type === "hydration-asset") && (
 				<TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
 			)}
 			{displayProps.map((prop, i) => (
