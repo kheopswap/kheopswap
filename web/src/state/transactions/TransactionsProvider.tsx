@@ -5,6 +5,7 @@ import {
 	type PropsWithChildren,
 	useCallback,
 	useContext,
+	useEffect,
 	useMemo,
 } from "react";
 import { combineLatest, map } from "rxjs";
@@ -17,6 +18,7 @@ import {
 	transactions$,
 } from "./transactionStore";
 import type { TransactionId, TransactionRecord } from "./types";
+import { trackXcmArrivals } from "./xcmArrival";
 
 // React-rxjs bindings for reactive updates
 const [useAllTransactions] = bind(transactions$, []);
@@ -47,6 +49,11 @@ const TransactionsContext = createContext<TransactionsContextValue | null>(
 export const TransactionsProvider: FC<PropsWithChildren> = ({ children }) => {
 	const transactions = useAllTransactions();
 	const openTransaction = useOpenTransaction();
+
+	useEffect(() => {
+		const subscription = trackXcmArrivals();
+		return () => subscription.unsubscribe();
+	}, []);
 
 	const minimize = useCallback((id: TransactionId) => {
 		minimizeTransaction(id);

@@ -25,6 +25,7 @@ type UseSwapFeesProps = {
 	edTokenIn: bigint | null | undefined;
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
+	extraNativeSpending: bigint | undefined;
 	setFormData: Dispatch<SetStateAction<SwapFormInputs>>;
 };
 
@@ -37,6 +38,7 @@ export const useSwapFees = ({
 	edTokenIn,
 	call,
 	fakeCall,
+	extraNativeSpending,
 	setFormData,
 }: UseSwapFeesProps) => {
 	const { feeToken, isLoading: isLoadingFeeToken } = useFeeToken({
@@ -87,6 +89,7 @@ export const useSwapFees = ({
 				feeEstimate,
 				edTokenIn,
 				tokenIn.type === "native",
+				extraNativeSpending,
 			);
 
 			setFormData((prev) => ({
@@ -94,7 +97,14 @@ export const useSwapFees = ({
 				amountIn: plancksToTokens(plancks, tokenIn.decimals),
 			}));
 		}
-	}, [balanceIn, feeEstimate, edTokenIn, tokenIn, setFormData]);
+	}, [
+		balanceIn,
+		feeEstimate,
+		edTokenIn,
+		tokenIn,
+		extraNativeSpending,
+		setFormData,
+	]);
 
 	return {
 		feeToken,

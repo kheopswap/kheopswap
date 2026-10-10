@@ -16,15 +16,14 @@ export const Swap = () => {
 };
 
 const SwapTabTitle = () => {
-	const { tokenIn, tokenOut } = useSwap();
+	const { tokenIn, tokenOut, transaction } = useSwap();
 
-	const title = useMemo(
-		() =>
-			tokenIn && tokenOut
-				? `${tokenIn.symbol}/${tokenOut.symbol} Swap`
-				: "Swap",
-		[tokenIn, tokenOut],
-	);
+	const title = useMemo(() => {
+		if (transaction.transactionType === "xcmTransfer") return transaction.title;
+		return tokenIn && tokenOut
+			? `${tokenIn.symbol}/${tokenOut.symbol} Swap`
+			: "Swap";
+	}, [tokenIn, tokenOut, transaction]);
 
 	return <TabTitle title={title} />;
 };
