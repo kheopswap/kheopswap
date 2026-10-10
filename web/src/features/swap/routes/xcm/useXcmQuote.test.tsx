@@ -4,8 +4,10 @@ import type { FC, PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import type { AnyTransaction } from "../../../../types/transactions";
-import type { XcmTransferRoute } from "../swapRoute";
-import { useXcmTransferQuote } from "./useXcmTransferQuote";
+import type { XcmRoute } from "../swapRoute";
+import { getAmmPath } from "../xcmSwap/ammPath";
+import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
+import { useXcmQuote } from "./useXcmQuote";
 import type { DestinationDryRun, OriginDryRun } from "./xcmQuote";
 import {
 	dotOriginFailed,
@@ -16,8 +18,10 @@ import {
 const chain = vi.hoisted(() => ({
 	originDryRuns: new Map<unknown, unknown>(),
 	destinationDryRun: undefined as unknown,
+	deliveryFees: undefined as unknown,
 	dryRunCall: undefined as unknown as ReturnType<typeof vi.fn>,
 	dryRunXcm: undefined as unknown as ReturnType<typeof vi.fn>,
+	queryDeliveryFees: undefined as unknown as ReturnType<typeof vi.fn>,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
@@ -28,11 +32,12 @@ vi.mock("../../../../papi/getApi", () => ({
 				dry_run_call: chain.dryRunCall,
 				dry_run_xcm: chain.dryRunXcm,
 			},
+			XcmPaymentApi: { query_delivery_fees: chain.queryDeliveryFees },
 		},
 	}),
 }));
 
-const route: XcmTransferRoute = {
+const transferRoute: XcmRoute = {
 	kind: "xcm-transfer",
 	origin: "pah",
 	destination: "hydration",
@@ -40,6 +45,29 @@ const route: XcmTransferRoute = {
 	tokenIdOut: "hydration-asset::hydration::5",
 	destinationAssetId: 5,
 };
+
+const swapRoute: XcmRoute = {
+	kind: "xcm-swap",
+	origin: "pah",
+	destination: "hydration",
+	tokenIdIn: "asset::pah::1337",
+	tokenIdOut: "hydration-asset::hydration::10",
+	destinationAssetId: 10,
+	path: getAmmPath("asset::pah::1337", "asset::pah::1984", "native::pah"),
+};
+
+const dotDeliveryFee = (plancks: bigint) => ({
+	success: true,
+	value: {
+		type: "V5",
+		value: [
+			{
+				id: { parents: 1, interior: { type: "Here", value: undefined } },
+				fun: { type: "Fungible", value: plancks },
+			},
+		],
+	},
+});
 
 const call = { decodedCall: { name: "transfer" } } as unknown as AnyTransaction;
 const fakeCall = {
@@ -50,19 +78,30 @@ const givenDryRuns = ({
 	origin,
 	estimate = dotSuccess.origin,
 	destination,
+	deliveryFees = dotDeliveryFee(304850000n),
 }: {
 	origin: OriginDryRun;
 	estimate?: OriginDryRun;
 	destination?: DestinationDryRun | Error;
+	deliveryFees?: unknown;
 }) => {
 	chain.originDryRuns = new Map<unknown, unknown>([
 		[call.decodedCall, origin],
 		[fakeCall.decodedCall, estimate],
 	]);
 	chain.destinationDryRun = destination;
+	chain.deliveryFees = deliveryFees;
 };
 
-const renderQuote = (extra?: () => unknown) => {
+const renderQuote = ({
+	route = transferRoute,
+	beneficiary = dotSuccess.beneficiary,
+	extra,
+}: {
+	route?: XcmRoute;
+	beneficiary?: string;
+	extra?: () => unknown;
+} = {}) => {
 	const queryClient = new QueryClient({
 		defaultOptions: { queries: { retryDelay: 0 } },
 	});
@@ -72,13 +111,7 @@ const renderQuote = (extra?: () => unknown) => {
 	return renderHook(
 		() => {
 			extra?.();
-			return useXcmTransferQuote({
-				route,
-				beneficiary: dotSuccess.beneficiary,
-				call,
-				fakeCall,
-				plancks: dotSuccess.amount,
-			});
+			return useXcmQuote({ route, beneficiary, call, fakeCall });
 		},
 		{ wrapper },
 	);
@@ -92,9 +125,21 @@ beforeEach(() => {
 		if (chain.destinationDryRun instanceof Error) throw chain.destinationDryRun;
 		return chain.destinationDryRun;
 	});
+	chain.queryDeliveryFees = vi.fn(async () => {
+		if (chain.deliveryFees instanceof Error) throw chain.deliveryFees;
+		return chain.deliveryFees;
+	});
 });
 
-describe("useXcmTransferQuote", () => {
+const HYDRATION_LOCATION = {
+	type: "V5",
+	value: {
+		parents: 1,
+		interior: { type: "X1", value: { type: "Parachain", value: 2034 } },
+	},
+};
+
+describe("useXcmQuote", () => {
 	it("quotes the amount received on Hydration from both dry runs", async () => {
 		givenDryRuns({
 			origin: dotSuccess.origin,
@@ -108,13 +153,16 @@ describe("useXcmTransferQuote", () => {
 			deliveryFee: 304850000n,
 			data: {
 				success: true,
-				quote: {
-					received: 9995190152n,
-					deliveryFee: 304850000n,
-					destinationFee: 4809848n,
-				},
+				quote: { received: 9995190152n, destinationFee: 4809848n },
 			},
 		});
+		expect(chain.queryDeliveryFees).toHaveBeenCalledWith(
+			HYDRATION_LOCATION,
+			dotSuccess.origin.success &&
+				dotSuccess.origin.value.forwarded_xcms[0]?.[1][0],
+			{ type: "V5", value: { parents: 1, interior: { type: "Here" } } },
+			{ at: "best" },
+		);
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(
 			{
 				type: "V5",
@@ -127,6 +175,43 @@ describe("useXcmTransferQuote", () => {
 				dotSuccess.origin.value.forwarded_xcms[0]?.[1][0],
 			{ at: "best" },
 		);
+	});
+
+	it("charges Hydration what the swap sent minus what it received", async () => {
+		givenDryRuns({
+			origin: usdcToUsdt.origin,
+			destination: usdcToUsdt.destination,
+			deliveryFees: usdcToUsdt.deliveryFee,
+		});
+		const { result } = renderQuote({
+			route: swapRoute,
+			beneficiary: usdcToUsdt.sender,
+		});
+
+		await waitFor(() => expect(result.current.data).toBeDefined());
+		expect(result.current).toEqual({
+			isLoading: false,
+			deliveryFee: 305450000n,
+			data: {
+				success: true,
+				quote: { received: 98764625n, destinationFee: 574n },
+			},
+		});
+	});
+
+	it("fails when the delivery fee cannot be read, even if Hydration accepts the message", async () => {
+		givenDryRuns({
+			origin: dotSuccess.origin,
+			destination: dotSuccess.destination,
+			deliveryFees: new Error("rpc down"),
+		});
+		const { result } = renderQuote();
+
+		await waitFor(() => expect(result.current.data).toBeDefined());
+		expect(result.current.data).toEqual({
+			success: false,
+			failure: { kind: "delivery-fee-unavailable" },
+		});
 	});
 
 	it("does not dry run Hydration when Asset Hub rejects the call, and still estimates the delivery fee", async () => {
@@ -184,9 +269,10 @@ describe("useXcmTransferQuote", () => {
 			origin: dotSuccess.origin,
 			destination: dotSuccess.destination,
 		});
-		const { result } = renderQuote(() =>
-			useDryRun({ chainId: "pah", from: dotSuccess.beneficiary, call }),
-		);
+		const { result } = renderQuote({
+			extra: () =>
+				useDryRun({ chainId: "pah", from: dotSuccess.beneficiary, call }),
+		});
 
 		await waitFor(() => expect(result.current.data?.success).toBe(true));
 		const realCallDryRuns = chain.dryRunCall.mock.calls.filter(

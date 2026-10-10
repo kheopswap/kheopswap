@@ -5,10 +5,19 @@ import type { Api } from "../../../../papi/getApi";
 import type { ChainIdHydration } from "../../../../registry/chains/types";
 import type { TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
-import type { CallSpendings } from "../../../transaction/TransactionProvider";
-import type { XcmTransferRoute } from "../swapRoute";
+import type {
+	CallSpendings,
+	SubmitGate,
+} from "../../../transaction/TransactionProvider";
+import type { XcmRoute } from "../swapRoute";
 
-export type OriginDryRun = DryRun<XcmTransferRoute["origin"]>;
+export type OriginDryRun = DryRun<XcmRoute["origin"]>;
+
+type DeliveryFees = Awaited<
+	ReturnType<
+		Api<XcmRoute["origin"]>["apis"]["XcmPaymentApi"]["query_delivery_fees"]
+	>
+>;
 
 export type DestinationDryRun = Awaited<
 	ReturnType<Api<ChainIdHydration>["apis"]["DryRunApi"]["dry_run_xcm"]>
@@ -19,11 +28,12 @@ export type XcmQuoteFailure =
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
 	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
-	| { kind: "nothing-deposited" };
+	| { kind: "nothing-deposited" }
+	| { kind: "delivery-fee-unavailable" }
+	| { kind: "call-unavailable" };
 
 export type XcmQuote = {
 	received: bigint;
-	deliveryFee: bigint;
 	destinationFee: bigint;
 };
 
@@ -31,7 +41,7 @@ export type XcmQuoteResult =
 	| { success: true; quote: XcmQuote }
 	| { success: false; failure: XcmQuoteFailure };
 
-export type OriginLeg = { message: XcmVersionedXcm; deliveryFee: bigint };
+type OriginLeg = { message: XcmVersionedXcm; sent: bigint };
 
 type Parsed<T> =
 	| { success: true; value: T }
@@ -54,9 +64,24 @@ const getOriginFailureReason = (error: OriginDispatchError): string => {
 		return formatTxError(error);
 
 	const xcmError = error.value.value.value.error.type;
-	return xcmError === "FailedToTransactAsset"
-		? INSUFFICIENT_BALANCE
-		: `Asset Hub would reject the transfer: ${xcmError}`;
+	switch (xcmError) {
+		case "FailedToTransactAsset":
+			return INSUFFICIENT_BALANCE;
+		case "NoDeal":
+			return "The price moved beyond your slippage tolerance";
+		default:
+			return `Asset Hub would reject the transfer: ${xcmError}`;
+	}
+};
+
+const getSentAmount = (message: XcmVersionedXcm): bigint | null => {
+	if (message.type !== "V5") return null;
+	const deposit = message.value.find(
+		(instruction) => instruction.type === "ReserveAssetDeposited",
+	);
+	const [asset] =
+		deposit?.type === "ReserveAssetDeposited" ? deposit.value : [];
+	return asset?.fun.type === "Fungible" ? asset.fun.value : null;
 };
 
 export const parseOriginDryRun = (
@@ -69,7 +94,7 @@ export const parseOriginDryRun = (
 			failure: { kind: "origin-failed", reason: formatTxError(dryRun.value) },
 		};
 
-	const { execution_result, emitted_events, forwarded_xcms } = dryRun.value;
+	const { execution_result, forwarded_xcms } = dryRun.value;
 	if (!execution_result.success)
 		return {
 			success: false,
@@ -87,21 +112,27 @@ export const parseOriginDryRun = (
 			location.value.interior.value.type === "Parachain" &&
 			location.value.interior.value.value === destinationParaId,
 	)?.[1][0];
-	if (!message)
+	const sent = message && getSentAmount(message);
+	if (!message || !sent)
 		return { success: false, failure: { kind: "message-not-forwarded" } };
 
-	let deliveryFee = 0n;
-	for (const event of emitted_events)
-		if (event.type === "PolkadotXcm" && event.value.type === "FeesPaid")
-			for (const { id, fun } of event.value.value.fees)
-				if (
-					id.parents === 1 &&
-					id.interior.type === "Here" &&
-					fun.type === "Fungible"
-				)
-					deliveryFee += fun.value;
+	return { success: true, value: { message, sent } };
+};
 
-	return { success: true, value: { message, deliveryFee } };
+export const parseDeliveryFee = (deliveryFees: DeliveryFees): bigint | null => {
+	if (!deliveryFees.success || deliveryFees.value.type !== "V5") return null;
+
+	let fee = 0n;
+	for (const { id, fun } of deliveryFees.value.value) {
+		if (
+			id.parents !== 1 ||
+			id.interior.type !== "Here" ||
+			fun.type !== "Fungible"
+		)
+			return null;
+		fee += fun.value;
+	}
+	return fee;
 };
 
 const toPublicKey = (address: SS58String) =>
@@ -148,11 +179,10 @@ export const parseDestinationDryRun = (
 		: { success: false, failure: { kind: "nothing-deposited" } };
 };
 
-export const composeXcmQuote = (
-	sent: bigint,
-	deliveryFee: bigint,
-	received: bigint,
-): XcmQuote => ({ received, deliveryFee, destinationFee: sent - received });
+export const composeXcmQuote = (sent: bigint, received: bigint): XcmQuote => ({
+	received,
+	destinationFee: sent - received,
+});
 
 export const describeXcmQuoteFailure = (failure: XcmQuoteFailure): string => {
 	switch (failure.kind) {
@@ -168,7 +198,26 @@ export const describeXcmQuoteFailure = (failure: XcmQuoteFailure): string => {
 				: `Hydration would reject the transfer: ${failure.reason}`;
 		case "nothing-deposited":
 			return "Hydration would not credit your account";
+		case "delivery-fee-unavailable":
+			return "Could not estimate the Asset Hub delivery fee";
+		case "call-unavailable":
+			return "Could not prepare the transaction on Asset Hub";
 	}
+};
+
+export const getXcmSubmitGate = ({
+	errorMessage,
+	isLoading,
+	isQuoted,
+}: {
+	errorMessage: string | null;
+	isLoading: boolean;
+	isQuoted: boolean;
+}): SubmitGate => {
+	if (errorMessage) return { status: "closed", reason: errorMessage };
+	if (isLoading) return { status: "pending" };
+	if (isQuoted) return { status: "open" };
+	return { status: "closed", reason: "Nothing to send yet" };
 };
 
 export const getXcmCallSpendings = ({

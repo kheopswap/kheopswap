@@ -13,49 +13,32 @@ type SwapFollowUpData = {
 	tokenOut: Token;
 };
 
-export const SwapFollowUpContent: FC<{
-	transaction: TransactionRecord;
-}> = ({ transaction }) => {
-	const followUpData = transaction.followUpData as SwapFollowUpData;
-	const txEvents = transaction.txEvents;
-
-	const individualEvents = useMemo<TxEvents>(
-		() =>
-			txEvents.flatMap((e) =>
-				e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
-			),
-		[txEvents],
+export const getIncludedTxEvents = (
+	txEvents: TransactionRecord["txEvents"],
+): TxEvents =>
+	txEvents.flatMap((e) =>
+		e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
 	);
 
-	const effectiveOutcome = useMemo(() => {
-		const amountOut = individualEvents.find(
-			(e) => e.type === "AssetConversion" && e.value.type === "SwapExecuted",
-		)?.value.value.amount_out;
-		return amountOut ? BigInt(amountOut) : null;
-	}, [individualEvents]);
-
+export const SwapOutcomeRows: FC<{
+	swapPlancksOut: bigint;
+	effectiveOutcome: bigint | null;
+	token: Token;
+}> = ({ swapPlancksOut, effectiveOutcome, token }) => {
 	const effectiveSlippage = useMemo(() => {
-		if (!isBigInt(effectiveOutcome) || !followUpData?.swapPlancksOut)
-			return null;
+		if (!isBigInt(effectiveOutcome) || !swapPlancksOut) return null;
 		return (
-			Number(
-				(10000n * (followUpData.swapPlancksOut - effectiveOutcome)) /
-					followUpData.swapPlancksOut,
-			) / 100
+			Number((10000n * (swapPlancksOut - effectiveOutcome)) / swapPlancksOut) /
+			100
 		);
-	}, [effectiveOutcome, followUpData?.swapPlancksOut]);
-
-	if (!followUpData?.tokenOut) return null;
+	}, [effectiveOutcome, swapPlancksOut]);
 
 	return (
 		<div className={cn(effectiveOutcome ? "block" : "hidden")}>
 			<div className="flex flex-wrap justify-between">
 				<div className="text-neutral-500">Estimated outcome</div>
 				<div className="text-right font-medium text-neutral-500">
-					<Tokens
-						plancks={followUpData.swapPlancksOut}
-						token={followUpData.tokenOut}
-					/>
+					<Tokens plancks={swapPlancksOut} token={token} />
 				</div>
 			</div>
 			<div className="flex flex-wrap justify-between">
@@ -64,9 +47,9 @@ export const SwapFollowUpContent: FC<{
 					{isBigInt(effectiveOutcome) && (
 						<Tokens
 							plancks={effectiveOutcome}
-							token={followUpData.tokenOut}
+							token={token}
 							className={cn(
-								effectiveOutcome >= followUpData.swapPlancksOut
+								effectiveOutcome >= swapPlancksOut
 									? "text-success"
 									: "text-warn",
 							)}
@@ -80,9 +63,7 @@ export const SwapFollowUpContent: FC<{
 					<div
 						className={cn(
 							"text-right font-medium",
-							effectiveOutcome >= followUpData.swapPlancksOut
-								? "text-success"
-								: "text-warn",
+							effectiveOutcome >= swapPlancksOut ? "text-success" : "text-warn",
 						)}
 					>
 						{typeof effectiveSlippage === "number"
@@ -92,5 +73,29 @@ export const SwapFollowUpContent: FC<{
 				)}
 			</div>
 		</div>
+	);
+};
+
+export const SwapFollowUpContent: FC<{
+	transaction: TransactionRecord;
+}> = ({ transaction }) => {
+	const followUpData = transaction.followUpData as SwapFollowUpData;
+	const txEvents = transaction.txEvents;
+
+	const effectiveOutcome = useMemo(() => {
+		const amountOut = getIncludedTxEvents(txEvents).find(
+			(e) => e.type === "AssetConversion" && e.value.type === "SwapExecuted",
+		)?.value.value.amount_out;
+		return amountOut ? BigInt(amountOut) : null;
+	}, [txEvents]);
+
+	if (!followUpData?.tokenOut) return null;
+
+	return (
+		<SwapOutcomeRows
+			swapPlancksOut={followUpData.swapPlancksOut}
+			effectiveOutcome={effectiveOutcome}
+			token={followUpData.tokenOut}
+		/>
 	);
 };
