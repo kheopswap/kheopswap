@@ -1,10 +1,10 @@
 import type { SS58String } from "polkadot-api";
-import type { ChainId } from "../../registry/chains/types";
+import type { ChainIdAssetHub } from "../../registry/chains/types";
 import type { TokenIdsPair } from "../../registry/tokens/types";
 
 export type AssetConvertionPoolDef = {
 	type: "asset-convertion";
-	chainId: ChainId;
+	chainId: ChainIdAssetHub;
 	poolAssetId: number;
 	tokenIds: TokenIdsPair;
 	owner: SS58String;
@@ -12,7 +12,7 @@ export type AssetConvertionPoolDef = {
 
 export type AssetConvertionPoolDefStorage = {
 	type: "asset-convertion";
-	chainId: ChainId;
+	chainId: ChainIdAssetHub;
 	poolAssetId: number;
 	tokenIds: TokenIdsPair;
 	owner: SS58String;

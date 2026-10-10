@@ -2,9 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 import { APP_FEE_ADDRESS } from "../../common/constants";
 import { getApi } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
-import { getChainIdFromTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
+import { useRelayChains } from "../../state/relay";
 import { getTransferExtrinsic } from "../transfer/getTransferExtrinsic";
 import { getSwapExtrinsic } from "./getSwapTransaction";
 
@@ -25,9 +24,12 @@ export const useSwapExtrinsic = ({
 	dest,
 	appCommission, // TODO should be computed by this hook?
 }: UseSwapExtrinsic) => {
+	const { assetHub } = useRelayChains();
+
 	return useQuery({
 		queryKey: [
 			"useSwapExtrinsic",
+			assetHub.id,
 			tokenIdIn,
 			tokenIdOut,
 			amountIn?.toString(),
@@ -45,31 +47,25 @@ export const useSwapExtrinsic = ({
 			)
 				return null;
 
-			const chainId = getChainIdFromTokenId(tokenIdIn);
-			if (!chainId) return null;
-
-			const chain = getChainById(chainId);
-			if (!chain) return null;
-
 			const swapCall = await getSwapExtrinsic(
+				assetHub.id,
 				tokenIdIn,
 				tokenIdOut,
 				amountIn,
 				amountOutMin,
 				dest,
 			);
-			if (!swapCall) return null;
 
 			if (!appCommission) return swapCall;
 
 			const feeCall = await getTransferExtrinsic(
+				assetHub.id,
 				tokenIdIn,
 				appCommission,
 				APP_FEE_ADDRESS,
 			);
-			if (!feeCall) return swapCall;
 
-			const api = await getApi(chain.id);
+			const api = await getApi(assetHub.id);
 
 			return api.tx.Utility.batch_all({
 				calls: [swapCall.decodedCall, feeCall.decodedCall],

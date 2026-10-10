@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { catchError, type Observable, of, shareReplay } from "rxjs";
 import { toHex } from "viem";
 import type { WalletAccount } from "../../common/kheopskit";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import type { Token } from "../../registry/tokens/types";
 import {
@@ -183,6 +184,12 @@ export const useTransactionSubmit = ({
 			let txEvents$: Observable<TxEvent>;
 
 			if (account.platform === "ethereum") {
+				if (!isChainIdAssetHub(chainId)) {
+					updateTransactionStatus(txId, "failed");
+					notifyError(`Ethereum accounts are not supported on ${chainId}`);
+					return;
+				}
+
 				if (isEthereumNetworkMismatch) {
 					updateTransactionStatus(txId, "failed");
 					notifyError(
@@ -196,7 +203,7 @@ export const useTransactionSubmit = ({
 
 				txEvents$ = createEthereumTxObservable({
 					account,
-					chainId: chainId as ChainId,
+					chainId,
 					callData,
 				});
 			} else {

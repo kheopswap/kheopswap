@@ -70,5 +70,19 @@
 		"logo": "./img/chains/pasah.svg",
 		"stableTokenId": "native::pasah",
 		"blockExplorerUrl": "https://assethub-paseo.subscan.io"
+	},
+	{
+		"id": "hydration",
+		"name": "Hydration",
+		"wsUrl": [
+			"wss://rpc.hydradx.cloud",
+			"wss://hydration-rpc.n.dwellir.com",
+			"wss://rpc.sin.hydration.cloud"
+		],
+		"relay": "polkadot",
+		"paraId": 2034,
+		"logo": "./img/chains/hydration.svg",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://hydration.subscan.io"
 	}
 ]
