@@ -83,7 +83,8 @@ export const PortfolioTable = () => {
 					({ token }) =>
 						token.symbol?.toLowerCase().includes(ls) ||
 						token.name?.toLowerCase().includes(ls) ||
-						(token.type === "asset" && token.assetId.toString() === ls),
+						((token.type === "asset" || token.type === "hydration-asset") &&
+							token.assetId.toString() === ls),
 				);
 	}, [search, sortedRows]);
 

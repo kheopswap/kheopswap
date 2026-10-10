@@ -1,5 +1,5 @@
+import { pickBy } from "lodash-es";
 import { useCallback, useEffect, useMemo } from "react";
-import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
 import { useBalance } from "../../hooks/useBalance";
 import { useCanAccountReceive } from "../../hooks/useCanAccountReceive";
@@ -11,6 +11,7 @@ import { useNonce } from "../../hooks/useNonce";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
 import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
 import { useTokenChain } from "../../hooks/useTokenChain";
+import { useTokensByChainId } from "../../hooks/useTokensByChainId";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import { TRANSFERABLE_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
@@ -41,9 +42,16 @@ const useTransferProvider = () => {
 	const [formData, setFormData] =
 		usePersistedFormDraft<TransferFormInputs>(baseDefaults);
 
-	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
-		types: TRANSFERABLE_TOKEN_TYPES,
-	});
+	const { data: assetHubTokens, isLoading: isLoadingTokens } =
+		useTokensByChainId({ chainId: assetHub.id });
+
+	const tokens = useMemo(
+		() =>
+			pickBy(assetHubTokens, (token) =>
+				TRANSFERABLE_TOKEN_TYPES.includes(token.type),
+			),
+		[assetHubTokens],
+	);
 
 	const sender = useMemo(
 		() => getAddressFromAccountField(formData.from),
@@ -76,13 +84,13 @@ const useTransferProvider = () => {
 
 	// if asset hub changes, use its native token as default
 	useEffect(() => {
-		if (tokenChain?.relay !== assetHub.relay && defaultToken) {
+		if (tokenChain?.id !== assetHub.id && defaultToken) {
 			setFormData((prev) => ({
 				...prev,
 				tokenId: defaultToken.id,
 			}));
 		}
-	}, [defaultToken, assetHub.relay, tokenChain?.relay, setFormData]);
+	}, [defaultToken, assetHub.id, tokenChain?.id, setFormData]);
 
 	const [
 		plancks,

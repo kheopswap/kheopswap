@@ -41,7 +41,7 @@ Other harnesses can follow pstack's [shared skills installation](https://github.
 
 Token snapshots are maintained by `pnpm fetch-tokens` (locally) and by the scheduled CI workflow.
 
-- `web/src/registry/tokens/tokens.[networkId].json` files are **automatically generated**.
+- `web/src/registry/tokens/generated/tokens.[chainId].json` files are **automatically generated**, one per Asset Hub and one for Hydration.
 - These generated files should **never be modified manually**.
 - Manual token edits belong only in `web/src/registry/tokens/tokens-overrides.yaml`.
 
@@ -50,7 +50,7 @@ Token snapshots are maintained by `pnpm fetch-tokens` (locally) and by the sched
 - Every override entry must target a token by exact `id`.
 - The `id` must match an existing generated token id.
 - Typical maintenance flow:
-	1. Find/copy the token `id` from `tokens.[networkId].json`.
+	1. Find/copy the token `id` from `tokens.[chainId].json`.
 	2. Add/update the corresponding entry in `tokens-overrides.yaml`.
 	3. Regenerate snapshots with `pnpm fetch-tokens` when needed.
 
