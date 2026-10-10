@@ -11,11 +11,11 @@ import type { TokenId } from "../../../registry/tokens/types";
 import { getAssetHubMirrorTokenIds } from "../../../utils/getAssetHubMirrorTokenId";
 import {
 	canFlipSwapTokens,
-	getFeePayableMirrorTokenIds,
 	getNextSwapTokens,
 	getRouteAccess,
 	getSwapTokenLists,
 	resolveSwapRoute,
+	type SwapRouteContext,
 	type SwapTokenIds,
 	type SwapTokensChange,
 } from "./swapRoute";
@@ -38,11 +38,22 @@ const HYDRATION_DOT = "hydration-asset::hydration::5";
 const HYDRATION_USDT = "hydration-asset::hydration::10";
 const HYDRATION_USDC = "hydration-asset::hydration::22";
 const HYDRATION_VDOT = "hydration-asset::hydration::15";
+const HYDRATION_WUD = "hydration-asset::hydration::1000085";
 const HDX = "native::hydration";
 const VDOT = mirrors.get(HYDRATION_VDOT) as TokenId;
+const WUD = mirrors.get(HYDRATION_WUD) as TokenId;
 
-const context = { assetHubId: "pah" as const, mirrors, nativeTokenId: DOT };
-const ammContext = { ...context, mirrors: new Map<TokenId, TokenId>() };
+const context: SwapRouteContext = {
+	assetHubId: "pah",
+	mirrors,
+	hydrationFeeAssetIds: new Set([5, 10, 15, 22]),
+	nativeTokenId: DOT,
+};
+const ammContext: SwapRouteContext = {
+	...context,
+	mirrors: new Map(),
+	hydrationFeeAssetIds: new Set(),
+};
 
 describe("resolveSwapRoute", () => {
 	it("resolves a pair of Asset Hub tokens to an AMM swap", () => {
@@ -57,19 +68,18 @@ describe("resolveSwapRoute", () => {
 	});
 
 	it.each([
-		[DOT, HYDRATION_DOT, 5],
-		[USDT, HYDRATION_USDT, 10],
-		[USDC, HYDRATION_USDC, 22],
+		[DOT, HYDRATION_DOT],
+		[USDT, HYDRATION_USDT],
+		[USDC, HYDRATION_USDC],
 	])(
 		"resolves %s to its Hydration mirror %s as an XCM transfer",
-		(tokenIdIn, tokenIdOut, destinationAssetId) => {
+		(tokenIdIn, tokenIdOut) => {
 			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
 				kind: "xcm-transfer",
 				origin: "pah",
 				destination: "hydration",
 				tokenIdIn,
 				tokenIdOut,
-				destinationAssetId,
 			});
 		},
 	);
@@ -79,7 +89,6 @@ describe("resolveSwapRoute", () => {
 			"USDC to Hydration USDT through DOT",
 			USDC,
 			HYDRATION_USDT,
-			10,
 			[
 				{ tokenIdIn: USDC, tokenIdOut: DOT },
 				{ tokenIdIn: DOT, tokenIdOut: USDT },
@@ -89,21 +98,18 @@ describe("resolveSwapRoute", () => {
 			"DOT to Hydration USDT",
 			DOT,
 			HYDRATION_USDT,
-			10,
 			[{ tokenIdIn: DOT, tokenIdOut: USDT }],
 		],
 		[
 			"USDT to Hydration DOT",
 			USDT,
 			HYDRATION_DOT,
-			5,
 			[{ tokenIdIn: USDT, tokenIdOut: DOT }],
 		],
 		[
 			"the foreign asset vDOT to Hydration USDC through DOT",
 			VDOT,
 			HYDRATION_USDC,
-			22,
 			[
 				{ tokenIdIn: VDOT, tokenIdOut: DOT },
 				{ tokenIdIn: DOT, tokenIdOut: USDC },
@@ -111,14 +117,13 @@ describe("resolveSwapRoute", () => {
 		],
 	])(
 		"resolves %s as a swap sent to Hydration",
-		(_, tokenIdIn, tokenIdOut, destinationAssetId, path) => {
+		(_, tokenIdIn, tokenIdOut, path) => {
 			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
 				kind: "xcm-swap",
 				origin: "pah",
 				destination: "hydration",
 				tokenIdIn,
 				tokenIdOut,
-				destinationAssetId,
 				path,
 			});
 		},
@@ -133,7 +138,14 @@ describe("resolveSwapRoute", () => {
 		],
 		["a pool asset to a Hydration token", "pool-asset::pah::1", HYDRATION_USDT],
 		["a token to Hydration's native token", DOT, HDX],
-		["a Hydration token to its Asset Hub source", HYDRATION_DOT, DOT],
+		[
+			"a token to a Hydration token Hydration does not take fees in",
+			WUD,
+			HYDRATION_WUD,
+		],
+		["a Hydration token to another Asset Hub token", HYDRATION_USDT, DOT],
+		["a Hydration token whose mirror is a foreign asset", HYDRATION_VDOT, VDOT],
+		["Hydration's native token", HDX, DOT],
 		[
 			"a Hydration token to another Hydration token",
 			HYDRATION_DOT,
@@ -146,34 +158,30 @@ describe("resolveSwapRoute", () => {
 		expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toBeNull();
 	});
 
+	it.each([
+		[HYDRATION_DOT, DOT],
+		[HYDRATION_USDT, USDT],
+		[HYDRATION_USDC, USDC],
+		[HYDRATION_WUD, WUD],
+	])(
+		"resolves %s back to its Asset Hub source %s as an XCM transfer",
+		(tokenIdIn, tokenIdOut) => {
+			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
+				kind: "xcm-transfer",
+				origin: "hydration",
+				destination: "pah",
+				tokenIdIn,
+				tokenIdOut,
+			});
+		},
+	);
+
 	it("rejects every Hydration pair when the relay has no mirrors", () => {
 		expect(
 			resolveSwapRoute({
 				...ammContext,
 				tokenIdIn: DOT,
 				tokenIdOut: HYDRATION_DOT,
-			}),
-		).toBeNull();
-	});
-});
-
-describe("getFeePayableMirrorTokenIds", () => {
-	it("keeps only mirrors whose Hydration asset pays the destination fee", () => {
-		const HYDRATION_WUD = "hydration-asset::hydration::1000085";
-		expect(mirrors.has(HYDRATION_WUD)).toBe(true);
-
-		const payable = getFeePayableMirrorTokenIds(mirrors, new Set([5, 10, 22]));
-
-		expect([...payable.keys()].sort()).toEqual(
-			[HYDRATION_DOT, HYDRATION_USDT, HYDRATION_USDC].sort(),
-		);
-		expect(payable.get(HYDRATION_USDT)).toBe(USDT);
-		expect(
-			resolveSwapRoute({
-				...context,
-				mirrors: payable,
-				tokenIdIn: "asset::pah::31337",
-				tokenIdOut: HYDRATION_WUD,
 			}),
 		).toBeNull();
 	});
@@ -323,45 +331,159 @@ describe("getNextSwapTokens on the XCM routes", () => {
 	});
 });
 
+describe("getNextSwapTokens from Hydration", () => {
+	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
+		[
+			"a Hydration input sends it back to its Asset Hub source",
+			[DOT, USDC],
+			{ type: "in", tokenId: HYDRATION_USDT },
+			[HYDRATION_USDT, USDT],
+		],
+		[
+			"a Hydration input keeps its own Asset Hub source out",
+			[USDT, DOT],
+			{ type: "in", tokenId: HYDRATION_DOT },
+			[HYDRATION_DOT, DOT],
+		],
+		[
+			"the Hydration output picked as input turns the transfer around",
+			[DOT, HYDRATION_DOT],
+			{ type: "in", tokenId: HYDRATION_DOT },
+			[HYDRATION_DOT, DOT],
+		],
+		[
+			"a Hydration input replaces a swap sent to Hydration",
+			[DOT, HYDRATION_USDT],
+			{ type: "in", tokenId: HYDRATION_USDT },
+			[HYDRATION_USDT, USDT],
+		],
+		[
+			"a Hydration input Hydration does not take fees in still goes back",
+			[HYDRATION_USDT, USDT],
+			{ type: "in", tokenId: HYDRATION_WUD },
+			[HYDRATION_WUD, WUD],
+		],
+		[
+			"an Asset Hub output moves the input to its Hydration mirror",
+			[HYDRATION_USDT, USDT],
+			{ type: "out", tokenId: USDC },
+			[HYDRATION_USDC, USDC],
+		],
+		[
+			"DOT out moves the input to Hydration DOT",
+			[HYDRATION_USDT, USDT],
+			{ type: "out", tokenId: DOT },
+			[HYDRATION_DOT, DOT],
+		],
+		[
+			"an output without a Hydration mirror falls back to an AMM swap",
+			[HYDRATION_USDT, USDT],
+			{ type: "out", tokenId: VDOT },
+			[DOT, VDOT],
+		],
+		[
+			"a Hydration output sends its source to Hydration",
+			[HYDRATION_USDT, USDT],
+			{ type: "out", tokenId: HYDRATION_USDC },
+			[USDC, HYDRATION_USDC],
+		],
+		[
+			"an Asset Hub input falls back to the AMM rules",
+			[HYDRATION_USDT, USDT],
+			{ type: "in", tokenId: DOT },
+			[DOT, USDT],
+		],
+		[
+			"flip sends DOT back to Hydration",
+			[HYDRATION_DOT, DOT],
+			{ type: "flip" },
+			[DOT, HYDRATION_DOT],
+		],
+		[
+			"flip brings DOT back from Hydration",
+			[DOT, HYDRATION_DOT],
+			{ type: "flip" },
+			[HYDRATION_DOT, DOT],
+		],
+		[
+			"flip sends USDT back to Hydration",
+			[HYDRATION_USDT, USDT],
+			{ type: "flip" },
+			[USDT, HYDRATION_USDT],
+		],
+		[
+			"flip does nothing when Hydration would not take the fee",
+			[HYDRATION_WUD, WUD],
+			{ type: "flip" },
+			[HYDRATION_WUD, WUD],
+		],
+	])("%s", (_, prev, change, expected) => {
+		expect(next(prev, change)).toEqual(expected);
+	});
+});
+
 describe("canFlipSwapTokens", () => {
 	it.each<[SwapTokenIds, boolean]>([
 		[{ tokenIdIn: DOT, tokenIdOut: USDT }, true],
 		[{ tokenIdIn: DOT, tokenIdOut: "" }, true],
-		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_DOT }, false],
+		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_DOT }, true],
+		[{ tokenIdIn: HYDRATION_DOT, tokenIdOut: DOT }, true],
+		[{ tokenIdIn: HYDRATION_USDT, tokenIdOut: USDT }, true],
 		[{ tokenIdIn: USDC, tokenIdOut: HYDRATION_USDT }, false],
+		[{ tokenIdIn: HYDRATION_WUD, tokenIdOut: WUD }, false],
+		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_VDOT }, false],
 	])("%o -> %s", (pair, expected) => {
 		expect(canFlipSwapTokens(pair, context)).toBe(expected);
 	});
 });
 
 describe("getSwapTokenLists", () => {
-	const ammTokens = pick(KNOWN_TOKENS_MAP, [DOT, USDT]);
+	const ammTokens = pick(KNOWN_TOKENS_MAP, [DOT, USDT, WUD]);
 	const { tokensIn, tokensOut } = getSwapTokenLists({
 		ammTokens,
 		allTokens: KNOWN_TOKENS_MAP,
-		mirrors,
+		context,
 	});
 
 	it("offers AMM tokens and the sources of in-scope mirrors as input", () => {
 		expect(Object.keys(tokensIn)).toEqual(
-			expect.arrayContaining([DOT, USDT, USDC]),
-		);
-		expect(Object.values(tokensIn).every((t) => t.chainId === "pah")).toBe(
-			true,
+			expect.arrayContaining([DOT, USDT, USDC, WUD]),
 		);
 	});
 
-	it("offers the inputs and the in-scope Hydration mirrors as output", () => {
+	it("offers as input the Hydration tokens Asset Hub can swap to DOT for its fee", () => {
+		expect(Object.keys(tokensIn)).toEqual(
+			expect.arrayContaining([HYDRATION_DOT, HYDRATION_USDT, HYDRATION_WUD]),
+		);
+		expect(tokensIn).not.toHaveProperty(HYDRATION_USDC);
+		expect(tokensIn).not.toHaveProperty(HYDRATION_VDOT);
+		expect(tokensIn).not.toHaveProperty(HDX);
+		expect(
+			Object.values(tokensIn).every(
+				(t) =>
+					t.chainId === "pah" ||
+					resolveSwapRoute({
+						...context,
+						tokenIdIn: t.id,
+						tokenIdOut: mirrors.get(t.id),
+					}),
+			),
+		).toBe(true);
+	});
+
+	it("offers the inputs and the Hydration mirrors that take fees as output", () => {
 		expect(Object.keys(tokensOut)).toEqual(
 			expect.arrayContaining([
 				DOT,
 				USDT,
 				USDC,
+				WUD,
 				HYDRATION_DOT,
 				HYDRATION_USDT,
 				HYDRATION_USDC,
 			]),
 		);
+		expect(tokensOut).not.toHaveProperty(HYDRATION_WUD);
 		expect(tokensOut).not.toHaveProperty(HYDRATION_VDOT);
 		expect(tokensOut).not.toHaveProperty(HDX);
 	});
@@ -371,7 +493,7 @@ describe("getSwapTokenLists", () => {
 			getSwapTokenLists({
 				ammTokens,
 				allTokens: KNOWN_TOKENS_MAP,
-				mirrors: new Map(),
+				context: ammContext,
 			}),
 		).toEqual({ tokensIn: ammTokens, tokensOut: ammTokens });
 	});
@@ -380,9 +502,12 @@ describe("getSwapTokenLists", () => {
 describe("getRouteAccess", () => {
 	const substrate = "16xrRcxrBT6NfiukMzxeHGHPuJtHa9ypdgvvPJVw5zV8hwo";
 
+	const toHydration = { origin: "pah" } as const;
+	const fromHydration = { origin: "hydration" } as const;
+
 	it("lets a substrate account receive on its own address", () => {
 		expect(
-			getRouteAccess({ platform: "polkadot", address: substrate }),
+			getRouteAccess({ platform: "polkadot", address: substrate }, toHydration),
 		).toEqual({
 			allowed: true,
 			beneficiary: substrate,
@@ -401,10 +526,15 @@ describe("getRouteAccess", () => {
 			"0x1234567890123456789012345678901234567890",
 		],
 	] as const)("refuses %s", (_, platform, address) => {
-		expect(getRouteAccess({ platform, address })).toEqual({
+		expect(getRouteAccess({ platform, address }, toHydration)).toEqual({
 			allowed: false,
 			reason:
 				"Ethereum accounts cannot send to Hydration yet: the same address is a different account there",
+		});
+		expect(getRouteAccess({ platform, address }, fromHydration)).toEqual({
+			allowed: false,
+			reason:
+				"Ethereum accounts cannot send from Hydration yet: the same address is a different account there",
 		});
 	});
 });

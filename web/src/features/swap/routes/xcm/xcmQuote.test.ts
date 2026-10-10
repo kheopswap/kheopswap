@@ -7,6 +7,7 @@ import {
 } from "@polkadot-api/descriptors";
 import { AccountId } from "polkadot-api";
 import { describe, expect, it } from "vitest";
+import type { DryRun } from "../../../../hooks/useDryRun";
 import { getChainById } from "../../../../registry/chains/chains";
 import {
 	dotToUsdt,
@@ -16,10 +17,20 @@ import {
 	usdcToUsdt,
 } from "../xcmSwap/xcmSwap.fixtures";
 import {
+	dotToAssetHub,
+	dotToAssetHubDotFeePayer,
+	dotToAssetHubTrapped,
+	pinkToAssetHubInsufficient,
+	usdcToAssetHub,
+	usdtToAssetHub,
+} from "./xcmFromHydration.fixtures";
+import {
 	composeXcmQuote,
 	type DestinationDryRun,
 	describeXcmQuoteFailure,
+	getDeliveryFeeTokenId,
 	getXcmCallSpendings,
+	getXcmFeeParts,
 	getXcmSubmitGate,
 	type OriginDryRun,
 	parseDeliveryFee,
@@ -34,28 +45,33 @@ import {
 } from "./xcmTransfer.fixtures";
 
 const HYDRATION_PARA_ID = getChainById("hydration").paraId;
+const ASSET_HUB_PARA_ID = getChainById("pah").paraId;
 const DOT = "native::pah";
 const USDT = "asset::pah::1984";
+const HYDRATION_DOT = "hydration-asset::hydration::5";
+const HYDRATION_USDT = "hydration-asset::hydration::10";
 
 const requireDestination = (destination: DestinationDryRun | undefined) => {
 	if (!destination) throw new Error("fixture has no destination dry run");
 	return destination;
 };
 
+type AssetHubDryRun = DryRun<"pah">;
+
 type ForwardedXcms = Extract<
-	OriginDryRun,
+	AssetHubDryRun,
 	{ success: true }
 >["value"]["forwarded_xcms"];
 
-const getForwardedXcms = (dryRun: OriginDryRun): ForwardedXcms => {
+const getForwardedXcms = (dryRun: AssetHubDryRun): ForwardedXcms => {
 	if (!dryRun.success) throw new Error("fixture origin dry run failed");
 	return dryRun.value.forwarded_xcms;
 };
 
 const withForwardedXcms = (
-	dryRun: OriginDryRun,
+	dryRun: AssetHubDryRun,
 	forwarded_xcms: ForwardedXcms,
-): OriginDryRun => {
+): AssetHubDryRun => {
 	if (!dryRun.success) throw new Error("fixture origin dry run failed");
 	return { ...dryRun, value: { ...dryRun.value, forwarded_xcms } };
 };
@@ -195,10 +211,7 @@ describe("parseOriginDryRun", () => {
 		);
 		expect(parsed).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Asset Hub would reject the transfer: TooExpensive",
-			},
+			failure: { kind: "origin-rejected", xcmError: "TooExpensive" },
 		});
 	});
 
@@ -234,7 +247,7 @@ describe("parseDestinationDryRun", () => {
 	it("counts only the DOT deposited to the beneficiary, not to the fee receiver", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotSuccess.destination), {
-				assetId: 5,
+				tokenId: HYDRATION_DOT,
 				beneficiary: dotSuccess.beneficiary,
 			}),
 		).toEqual({ success: true, value: 9995190152n });
@@ -243,7 +256,7 @@ describe("parseDestinationDryRun", () => {
 	it("counts only the USDT deposited to the beneficiary", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(usdtSuccess.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: usdtSuccess.beneficiary,
 			}),
 		).toEqual({ success: true, value: 9999427n });
@@ -252,7 +265,7 @@ describe("parseDestinationDryRun", () => {
 	it("matches the beneficiary whatever its address prefix", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotSuccess.destination), {
-				assetId: 5,
+				tokenId: HYDRATION_DOT,
 				beneficiary: AccountId(42).dec(AccountId().enc(dotSuccess.beneficiary)),
 			}),
 		).toEqual({ success: true, value: 9995190152n });
@@ -261,7 +274,7 @@ describe("parseDestinationDryRun", () => {
 	it("fails when no deposit reaches the beneficiary in the expected asset", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotSuccess.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: dotSuccess.beneficiary,
 			}),
 		).toEqual({ success: false, failure: { kind: "nothing-deposited" } });
@@ -270,7 +283,7 @@ describe("parseDestinationDryRun", () => {
 	it("reports trapped assets when Hydration cannot deposit below its existential deposit", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotTrapped.destination), {
-				assetId: 5,
+				tokenId: HYDRATION_DOT,
 				beneficiary: dotTrapped.beneficiary,
 			}),
 		).toEqual({
@@ -286,7 +299,7 @@ describe("parseDestinationDryRun", () => {
 	it("counts the swap output deposited to the beneficiary", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(usdcToUsdt.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: usdcToUsdt.sender,
 			}),
 		).toEqual({ success: true, value: 98764625n });
@@ -295,7 +308,7 @@ describe("parseDestinationDryRun", () => {
 	it("reports trapped assets when the swap output cannot buy execution", () => {
 		expect(
 			parseDestinationDryRun(requireDestination(dotToUsdtTrapped.destination), {
-				assetId: 10,
+				tokenId: HYDRATION_USDT,
 				beneficiary: dotToUsdtTrapped.sender,
 			}),
 		).toMatchObject({
@@ -308,7 +321,7 @@ describe("parseDestinationDryRun", () => {
 		expect(
 			parseDestinationDryRun(
 				{ success: false, value: { type: "Unimplemented", value: undefined } },
-				{ assetId: 5, beneficiary: dotSuccess.beneficiary },
+				{ tokenId: HYDRATION_DOT, beneficiary: dotSuccess.beneficiary },
 			),
 		).toEqual({ success: false, failure: { kind: "destination-unavailable" } });
 	});
@@ -390,8 +403,18 @@ describe("getXcmSubmitGate", () => {
 });
 
 describe("describeXcmQuoteFailure", () => {
+	const toHydration = { origin: "pah", destination: "hydration" } as const;
+
 	it.each([
+		[
+			{ kind: "origin-unavailable" },
+			"Could not simulate the transfer on Polkadot Asset Hub",
+		],
 		[{ kind: "origin-failed", reason: "Boom" }, "Boom"],
+		[
+			{ kind: "origin-rejected", xcmError: "TooExpensive" },
+			"Polkadot Asset Hub would reject the transfer: TooExpensive",
+		],
 		[
 			{ kind: "message-not-forwarded" },
 			"The transfer would not be sent to Hydration",
@@ -415,14 +438,14 @@ describe("describeXcmQuoteFailure", () => {
 		[{ kind: "nothing-deposited" }, "Hydration would not credit your account"],
 		[
 			{ kind: "delivery-fee-unavailable" },
-			"Could not estimate the Asset Hub delivery fee",
+			"Could not estimate the Polkadot Asset Hub delivery fee",
 		],
 		[
 			{ kind: "call-unavailable" },
-			"Could not prepare the transaction on Asset Hub",
+			"Could not prepare the transaction on Polkadot Asset Hub",
 		],
 	] as const)("%o", (failure, expected) => {
-		expect(describeXcmQuoteFailure(failure)).toBe(expected);
+		expect(describeXcmQuoteFailure(failure, toHydration)).toBe(expected);
 	});
 });
 
@@ -431,9 +454,8 @@ describe("getXcmCallSpendings", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: DOT,
-				nativeTokenId: DOT,
 				totalIn: 10_000_000_000n,
-				deliveryFee: 304850000n,
+				deliveryFee: { tokenId: DOT, plancks: 304850000n },
 			}),
 		).toEqual({ [DOT]: { plancks: 10_304_850_000n, allowDeath: false } });
 	});
@@ -442,9 +464,8 @@ describe("getXcmCallSpendings", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: USDT,
-				nativeTokenId: DOT,
 				totalIn: 10_000_000n,
-				deliveryFee: 305450000n,
+				deliveryFee: { tokenId: DOT, plancks: 305450000n },
 			}),
 		).toEqual({
 			[USDT]: { plancks: 10_000_000n, allowDeath: true },
@@ -461,7 +482,6 @@ describe("getXcmCallSpendings", () => {
 			expect(
 				getXcmCallSpendings({
 					tokenIdIn,
-					nativeTokenId: DOT,
 					totalIn: 10_000_000_000n,
 					deliveryFee: undefined,
 				}),
@@ -473,10 +493,152 @@ describe("getXcmCallSpendings", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: USDT,
-				nativeTokenId: DOT,
 				totalIn: null,
 				deliveryFee: undefined,
 			}),
 		).toEqual({});
+	});
+});
+
+describe("getXcmFeeParts", () => {
+	const deliveryFee = { tokenId: DOT, plancks: 304850000n };
+	const quote = { received: 9995190152n, destinationFee: 4809848n };
+
+	it("adds the destination fee in the output token to the delivery fee", () => {
+		expect(getXcmFeeParts(deliveryFee, quote, HYDRATION_DOT)).toEqual([
+			deliveryFee,
+			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+		]);
+	});
+
+	it("shows the delivery fee alone before a quote", () => {
+		expect(getXcmFeeParts(deliveryFee, undefined, HYDRATION_DOT)).toEqual([
+			deliveryFee,
+		]);
+	});
+
+	it("drops a free delivery", () => {
+		expect(
+			getXcmFeeParts({ tokenId: DOT, plancks: 0n }, quote, HYDRATION_DOT),
+		).toEqual([{ tokenId: HYDRATION_DOT, plancks: 4809848n }]);
+	});
+});
+
+describe("Hydration to Asset Hub", () => {
+	const DOT_AH = "native::pah";
+	const fromHydration = { origin: "hydration", destination: "pah" } as const;
+
+	it.each([
+		["DOT", dotToAssetHub],
+		["USDT", usdtToAssetHub],
+		["USDC", usdcToAssetHub],
+	])(
+		"reads the %s withdrawn into the message forwarded to Asset Hub",
+		(_, fixture) => {
+			if (!fixture.origin.success) throw new Error("fixture origin failed");
+			expect(parseOriginDryRun(fixture.origin, ASSET_HUB_PARA_ID)).toEqual({
+				success: true,
+				value: {
+					message: fixture.origin.value.forwarded_xcms[0]?.[1][0],
+					sent: fixture.amount,
+				},
+			});
+		},
+	);
+
+	it("explains a sender lacking the asset", () => {
+		expect(
+			parseOriginDryRun(pinkToAssetHubInsufficient.origin, ASSET_HUB_PARA_ID),
+		).toEqual({
+			success: false,
+			failure: {
+				kind: "origin-failed",
+				reason: "Insufficient balance to cover the transfer and its fees",
+			},
+		});
+	});
+
+	it("reads a free delivery from Hydration as zero, not as unavailable", () => {
+		if (!dotToAssetHub.deliveryFees)
+			throw new Error("fixture has no delivery fee");
+		expect(parseDeliveryFee(dotToAssetHub.deliveryFees)).toBe(0n);
+	});
+
+	it.each([
+		["DOT", dotToAssetHub, DOT_AH, 9991650007n, 8349993n],
+		[
+			"DOT to a new account",
+			dotToAssetHubDotFeePayer,
+			DOT_AH,
+			9991650007n,
+			8349993n,
+		],
+		["USDT", usdtToAssetHub, "asset::pah::1984", 9999003n, 997n],
+		["USDC", usdcToAssetHub, "asset::pah::1337", 9999000n, 1000n],
+	])(
+		"quotes the %s received on Asset Hub and the fee Asset Hub keeps",
+		(_, fixture, tokenId, received, destinationFee) => {
+			const parsed = parseDestinationDryRun(
+				requireDestination(fixture.destination),
+				{ tokenId, beneficiary: fixture.beneficiary },
+			);
+			expect(parsed).toEqual({ success: true, value: received });
+			expect(composeXcmQuote(fixture.amount, received).destinationFee).toBe(
+				destinationFee,
+			);
+		},
+	);
+
+	it("reports trapped assets when the amount cannot endow an empty Asset Hub account", () => {
+		const parsed = parseDestinationDryRun(
+			requireDestination(dotToAssetHubTrapped.destination),
+			{ tokenId: DOT_AH, beneficiary: dotToAssetHubTrapped.beneficiary },
+		);
+		expect(parsed).toEqual({
+			success: false,
+			failure: {
+				kind: "destination-rejected",
+				reason: "FailedToTransactAsset",
+				assetsTrapped: true,
+			},
+		});
+		if (parsed.success) throw new Error("expected a failure");
+		expect(describeXcmQuoteFailure(parsed.failure, fromHydration)).toBe(
+			"Amount too low for Polkadot Asset Hub: the assets would be trapped",
+		);
+	});
+
+	it("names Hydration when it would reject the transfer", () => {
+		expect(
+			describeXcmQuoteFailure(
+				{ kind: "origin-rejected", xcmError: "TooExpensive" },
+				fromHydration,
+			),
+		).toBe("Hydration would reject the transfer: TooExpensive");
+	});
+
+	it("labels the delivery fee in Hydration DOT", () => {
+		expect(getDeliveryFeeTokenId("hydration")).toBe(HYDRATION_DOT);
+		expect(getDeliveryFeeTokenId("pah")).toBe(DOT_AH);
+	});
+
+	it("shows only the Asset Hub fee when Hydration delivers for free", () => {
+		expect(
+			getXcmFeeParts(
+				{ tokenId: HYDRATION_DOT, plancks: 0n },
+				{ received: 9999003n, destinationFee: 997n },
+				USDT,
+			),
+		).toEqual([{ tokenId: USDT, plancks: 997n }]);
+	});
+
+	it("spends the Hydration token sent and nothing else", () => {
+		expect(
+			getXcmCallSpendings({
+				tokenIdIn: HYDRATION_USDT,
+				totalIn: 10_000_000n,
+				deliveryFee: { tokenId: HYDRATION_DOT, plancks: 0n },
+			}),
+		).toEqual({ [HYDRATION_USDT]: { plancks: 10_000_000n, allowDeath: true } });
 	});
 });

@@ -11,11 +11,15 @@ import { useMemo } from "react";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
+import type { ChainId } from "../../../../registry/chains/types";
+import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
+import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import type { XcmRoute } from "../swapRoute";
 import {
 	composeXcmQuote,
+	getDeliveryFeeTokenId,
 	parseDeliveryFee,
 	parseDestinationDryRun,
 	parseOriginDryRun,
@@ -25,7 +29,53 @@ import {
 export type XcmQuoteState = {
 	isLoading: boolean;
 	data: XcmQuoteResult | undefined;
-	deliveryFee: bigint | undefined;
+	deliveryFee: TokenAmount | undefined;
+};
+
+const getParachainLocation = (chainId: ChainId) =>
+	XcmVersionedLocation.V5({
+		parents: 1,
+		interior: XcmV5Junctions.X1(
+			XcmV5Junction.Parachain(getChainById(chainId).paraId),
+		),
+	});
+
+const queryDeliveryFees = async (route: XcmRoute, message: XcmVersionedXcm) => {
+	const destination = getParachainLocation(route.destination);
+	switch (route.origin) {
+		case "pah": {
+			const api = await getApi(route.origin);
+			return api.apis.XcmPaymentApi.query_delivery_fees(
+				destination,
+				message,
+				XcmVersionedAssetId.V5({ parents: 1, interior: XcmV5Junctions.Here() }),
+				{ at: "best" },
+			);
+		}
+		case "hydration": {
+			const api = await getApi(route.origin);
+			return api.apis.XcmPaymentApi.query_delivery_fees(destination, message, {
+				at: "best",
+			});
+		}
+	}
+};
+
+const queryDestinationDryRun = async (
+	route: XcmRoute,
+	message: XcmVersionedXcm,
+) => {
+	const origin = getParachainLocation(route.origin);
+	switch (route.destination) {
+		case "pah": {
+			const api = await getApi(route.destination);
+			return api.apis.DryRunApi.dry_run_xcm(origin, message, { at: "best" });
+		}
+		case "hydration": {
+			const api = await getApi(route.destination);
+			return api.apis.DryRunApi.dry_run_xcm(origin, message, { at: "best" });
+		}
+	}
 };
 
 const useXcmDeliveryFee = (
@@ -40,22 +90,10 @@ const useXcmDeliveryFee = (
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!message,
-		queryFn: async () => {
-			if (!route || !message) return null;
-			const api = await getApi(route.origin);
-			const deliveryFees = await api.apis.XcmPaymentApi.query_delivery_fees(
-				XcmVersionedLocation.V5({
-					parents: 1,
-					interior: XcmV5Junctions.X1(
-						XcmV5Junction.Parachain(getChainById(route.destination).paraId),
-					),
-				}),
-				message,
-				XcmVersionedAssetId.V5({ parents: 1, interior: XcmV5Junctions.Here() }),
-				{ at: "best" },
-			);
-			return parseDeliveryFee(deliveryFees);
-		},
+		queryFn: async () =>
+			route && message
+				? parseDeliveryFee(await queryDeliveryFees(route, message))
+				: null,
 		retry: 1,
 		refetchInterval: false,
 		structuralSharing: false,
@@ -107,29 +145,18 @@ export const useXcmQuote = ({
 			"xcmDestinationDryRun",
 			route?.origin,
 			route?.destination,
-			route?.destinationAssetId,
+			route?.tokenIdOut,
 			beneficiary,
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!beneficiary && !!message,
-		queryFn: async () => {
-			if (!route || !beneficiary || !message) return null;
-			const api = await getApi(route.destination);
-			const dryRun = await api.apis.DryRunApi.dry_run_xcm(
-				XcmVersionedLocation.V5({
-					parents: 1,
-					interior: XcmV5Junctions.X1(
-						XcmV5Junction.Parachain(getChainById(route.origin).paraId),
-					),
-				}),
-				message,
-				{ at: "best" },
-			);
-			return parseDestinationDryRun(dryRun, {
-				assetId: route.destinationAssetId,
-				beneficiary,
-			});
-		},
+		queryFn: async () =>
+			route && beneficiary && message
+				? parseDestinationDryRun(await queryDestinationDryRun(route, message), {
+						tokenId: route.tokenIdOut,
+						beneficiary,
+					})
+				: null,
 		retry: 1,
 		refetchInterval: false,
 		structuralSharing: false,
@@ -137,13 +164,7 @@ export const useXcmQuote = ({
 
 	const data = useMemo((): XcmQuoteResult | undefined => {
 		if (origin.error)
-			return {
-				success: false,
-				failure: {
-					kind: "origin-failed",
-					reason: "Could not simulate the transfer on Asset Hub",
-				},
-			};
+			return { success: false, failure: { kind: "origin-unavailable" } };
 		if (!originLeg) return undefined;
 		if (!originLeg.success)
 			return { success: false, failure: originLeg.failure };
@@ -167,11 +188,19 @@ export const useXcmQuote = ({
 		deliveryFee.data,
 	]);
 
+	const deliveryFeePlancks = deliveryFee.data ?? estimatedDeliveryFee.data;
+
 	return {
 		isLoading:
 			origin.isLoading ||
 			(!!message && (destination.isLoading || deliveryFee.isLoading)),
 		data,
-		deliveryFee: deliveryFee.data ?? estimatedDeliveryFee.data ?? undefined,
+		deliveryFee:
+			route && isBigInt(deliveryFeePlancks)
+				? {
+						tokenId: getDeliveryFeeTokenId(route.origin),
+						plancks: deliveryFeePlancks,
+					}
+				: undefined,
 	};
 };

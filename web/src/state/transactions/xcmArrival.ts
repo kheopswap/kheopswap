@@ -1,10 +1,5 @@
 import { isEqual } from "lodash-es";
-import {
-	AccountId,
-	Binary,
-	type HexString,
-	type SS58String,
-} from "polkadot-api";
+import type { HexString } from "polkadot-api";
 import {
 	BehaviorSubject,
 	combineLatest,
@@ -22,11 +17,16 @@ import {
 	timer,
 } from "rxjs";
 import { getApi$ } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
-import type { ChainIdHydration } from "../../registry/chains/types";
+import { getChainById, isChainIdHydration } from "../../registry/chains/chains";
+import type { ChainId } from "../../registry/chains/types";
+import { parseTokenId } from "../../registry/tokens/helpers";
 import type { Token } from "../../registry/tokens/types";
 import { bindSerialized } from "../../utils/bindSerialized";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
+import {
+	getXcmDepositMatcher,
+	type XcmDepositTarget,
+} from "../../utils/xcmDeposit";
 import { transactions$ } from "./transactionStore";
 import type {
 	TransactionId,
@@ -35,7 +35,6 @@ import type {
 } from "./types";
 
 const ARRIVAL_TIMEOUT_MS = 10 * 60_000;
-const ARRIVAL_BUFFER_BLOCKS = 10;
 
 const XCM_ARRIVAL_TYPES = [
 	"xcmTransfer",
@@ -49,14 +48,9 @@ export const isXcmArrivalType = (
 ): type is XcmArrivalType =>
 	XCM_ARRIVAL_TYPES.some((arrivalType) => arrivalType === type);
 
-export type XcmArrivalTarget = {
-	destination: ChainIdHydration;
-	assetId: number;
-	beneficiary: SS58String;
-};
-
 export type XcmTransferFollowUpData = {
-	target: XcmArrivalTarget;
+	origin: ChainId;
+	target: XcmDepositTarget;
 	tokenOut: Token;
 	estimatedReceived: bigint | undefined;
 };
@@ -75,9 +69,6 @@ type OriginState =
 	| { status: "sent"; messageId: HexString };
 
 const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
-
-const toPublicKey = (address: SS58String) =>
-	Binary.toHex(AccountId().enc(address));
 
 export const getSentMessageId = (
 	txEvents: TransactionRecord["txEvents"],
@@ -103,22 +94,19 @@ export const getSentMessageId = (
 
 export const findArrival = (
 	blockEvents: TxEvents,
-	{ messageId, target }: { messageId: HexString; target: XcmArrivalTarget },
+	{ messageId, target }: { messageId: HexString; target: XcmDepositTarget },
 ): { success: boolean; received: bigint | null } | null => {
-	const beneficiaryKey = toPublicKey(target.beneficiary);
+	const getDeposit = getXcmDepositMatcher(target);
 	let received: bigint | null = null;
 
-	for (const { type, value } of blockEvents) {
-		if (
-			type === "Tokens" &&
-			value.type === "Deposited" &&
-			value.value.currency_id === target.assetId &&
-			toPublicKey(value.value.who) === beneficiaryKey
-		) {
-			received = (received ?? 0n) + value.value.amount;
+	for (const event of blockEvents) {
+		const deposit = getDeposit(event);
+		if (deposit) {
+			received = (received ?? 0n) + deposit;
 			continue;
 		}
 
+		const { type, value } = event;
 		if (
 			type !== "MessageQueue" ||
 			(value.type !== "Processed" && value.type !== "ProcessingFailed")
@@ -150,7 +138,7 @@ const toArrival = (
 	origin: OriginState,
 	recentBlocks: TxEvents[],
 	isExpired: boolean,
-	target: XcmArrivalTarget,
+	target: XcmDepositTarget,
 ): XcmArrival => {
 	switch (origin.status) {
 		case "pending":
@@ -176,17 +164,29 @@ const toArrival = (
 const isFinalArrival = (arrival: XcmArrival) =>
 	arrival.status !== "awaiting-origin" && arrival.status !== "in-transit";
 
+export const getArrivalBufferBlocks = (destination: ChainId) =>
+	isChainIdHydration(destination) ? 10 : 30;
+
+export const getXcmBlockEvents = (
+	records: { phase: { type: string }; event: TxEvents[number] }[],
+): TxEvents =>
+	records
+		.filter(({ phase }) => phase.type !== "ApplyExtrinsic")
+		.map(({ event }) => event);
+
 export const getXcmArrival$ = ({
 	record$,
 	blockEvents$,
 	target,
 	destinationParaId,
+	bufferBlocks,
 	timeoutMs = ARRIVAL_TIMEOUT_MS,
 }: {
 	record$: Observable<TransactionRecord | undefined>;
 	blockEvents$: Observable<TxEvents>;
-	target: XcmArrivalTarget;
+	target: XcmDepositTarget;
 	destinationParaId: number;
+	bufferBlocks: number;
 	timeoutMs?: number;
 }): Observable<XcmArrival> => {
 	const origin$ = record$.pipe(
@@ -198,7 +198,7 @@ export const getXcmArrival$ = ({
 
 	const recentBlocks$ = blockEvents$.pipe(
 		scan(
-			(blocks, events) => [...blocks, events].slice(-ARRIVAL_BUFFER_BLOCKS),
+			(blocks, events) => [...blocks, events].slice(-bufferBlocks),
 			[] as TxEvents[],
 		),
 		startWith([] as TxEvents[]),
@@ -221,10 +221,10 @@ export const getXcmArrival$ = ({
 	);
 };
 
-const getBestBlockEvents$ = (chainId: ChainIdHydration) =>
+const getBestBlockEvents$ = (chainId: ChainId) =>
 	getApi$(chainId).pipe(
 		switchMap((api) => api.query.System.Events.watchValue({ at: "best" })),
-		map(({ value }) => value.map(({ event }) => event) as TxEvents),
+		map(({ value }) => getXcmBlockEvents(value)),
 	);
 
 const arrivalsSubject = new BehaviorSubject<Record<TransactionId, XcmArrival>>(
@@ -240,13 +240,15 @@ export const trackXcmArrivals = () =>
 			distinct(({ id }) => id),
 			mergeMap(({ id, followUpData }) => {
 				const { target } = followUpData as XcmTransferFollowUpData;
+				const destination = parseTokenId(target.tokenId).chainId;
 				return getXcmArrival$({
 					record$: transactions$.pipe(
 						map((transactions) => transactions.find((tx) => tx.id === id)),
 					),
-					blockEvents$: getBestBlockEvents$(target.destination),
+					blockEvents$: getBestBlockEvents$(destination),
 					target,
-					destinationParaId: getChainById(target.destination).paraId,
+					destinationParaId: getChainById(destination).paraId,
+					bufferBlocks: getArrivalBufferBlocks(destination),
 				}).pipe(map((arrival) => [id, arrival] as const));
 			}),
 		)

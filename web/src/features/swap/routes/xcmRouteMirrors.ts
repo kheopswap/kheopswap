@@ -6,7 +6,6 @@ import type { Chain, ChainIdHydration } from "../../../registry/chains/types";
 import type { TokenId } from "../../../registry/tokens/types";
 import { assetHubMirrorTokenIds$ } from "../../../state/prices";
 import { relayChains$ } from "../../../state/relay";
-import { getFeePayableMirrorTokenIds } from "./swapRoute";
 
 const NO_FEE_ASSET_IDS: ReadonlySet<number> = new Set();
 const NO_MIRROR_TOKEN_IDS: ReadonlyMap<TokenId, TokenId> = new Map();
@@ -33,11 +32,12 @@ const hydrationFeeAssetIds$ = relayChains$.pipe(
 	),
 );
 
-export const [useXcmTransferMirrorTokenIds] = bind(
+export const [useXcmRouteMirrors] = bind(
 	combineLatest([assetHubMirrorTokenIds$, hydrationFeeAssetIds$]).pipe(
-		map(([mirrors, feeAssetIds]) =>
-			getFeePayableMirrorTokenIds(mirrors, feeAssetIds),
-		),
+		map(([mirrors, hydrationFeeAssetIds]) => ({
+			mirrors,
+			hydrationFeeAssetIds,
+		})),
 	),
-	NO_MIRROR_TOKEN_IDS,
+	{ mirrors: NO_MIRROR_TOKEN_IDS, hydrationFeeAssetIds: NO_FEE_ASSET_IDS },
 );

@@ -1,30 +1,41 @@
 import type { XcmVersionedXcm } from "@polkadot-api/descriptors";
-import { AccountId, Binary, type SS58String } from "polkadot-api";
 import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
-import type { ChainIdHydration } from "../../../../registry/chains/types";
-import type { TokenId } from "../../../../registry/tokens/types";
+import { getChainById } from "../../../../registry/chains/chains";
+import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
+import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
+import {
+	getXcmDepositMatcher,
+	type XcmDepositTarget,
+} from "../../../../utils/xcmDeposit";
 import type {
 	CallSpendings,
 	SubmitGate,
 } from "../../../transaction/TransactionProvider";
 import type { XcmRoute } from "../swapRoute";
 
-export type OriginDryRun = DryRun<XcmRoute["origin"]>;
+type XcmOrigin = XcmRoute["origin"];
+type XcmDestination = XcmRoute["destination"];
 
-type DeliveryFees = Awaited<
-	ReturnType<
-		Api<XcmRoute["origin"]>["apis"]["XcmPaymentApi"]["query_delivery_fees"]
-	>
->;
+export type OriginDryRun = DryRun<XcmOrigin>;
 
-export type DestinationDryRun = Awaited<
-	ReturnType<Api<ChainIdHydration>["apis"]["DryRunApi"]["dry_run_xcm"]>
->;
+type DeliveryFees = {
+	[Id in XcmOrigin]: Awaited<
+		ReturnType<Api<Id>["apis"]["XcmPaymentApi"]["query_delivery_fees"]>
+	>;
+}[XcmOrigin];
+
+export type DestinationDryRun = {
+	[Id in XcmDestination]: Awaited<
+		ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_xcm"]>
+	>;
+}[XcmDestination];
 
 export type XcmQuoteFailure =
+	| { kind: "origin-unavailable" }
 	| { kind: "origin-failed"; reason: string }
+	| { kind: "origin-rejected"; xcmError: string }
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
 	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
@@ -55,32 +66,39 @@ type OriginDispatchError = Extract<
 	{ success: false }
 >["value"]["error"];
 
-const getOriginFailureReason = (error: OriginDispatchError): string => {
+const getOriginFailure = (error: OriginDispatchError): XcmQuoteFailure => {
 	if (
 		error.type !== "Module" ||
 		error.value.type !== "PolkadotXcm" ||
 		error.value.value.type !== "LocalExecutionIncompleteWithError"
 	)
-		return formatTxError(error);
+		return { kind: "origin-failed", reason: formatTxError(error) };
 
 	const xcmError = error.value.value.value.error.type;
 	switch (xcmError) {
 		case "FailedToTransactAsset":
-			return INSUFFICIENT_BALANCE;
+			return { kind: "origin-failed", reason: INSUFFICIENT_BALANCE };
 		case "NoDeal":
-			return "The price moved beyond your slippage tolerance";
+			return {
+				kind: "origin-failed",
+				reason: "The price moved beyond your slippage tolerance",
+			};
 		default:
-			return `Asset Hub would reject the transfer: ${xcmError}`;
+			return { kind: "origin-rejected", xcmError };
 	}
 };
 
 const getSentAmount = (message: XcmVersionedXcm): bigint | null => {
 	if (message.type !== "V5") return null;
-	const deposit = message.value.find(
-		(instruction) => instruction.type === "ReserveAssetDeposited",
+	const loaded = message.value.find(
+		(instruction) =>
+			instruction.type === "ReserveAssetDeposited" ||
+			instruction.type === "WithdrawAsset",
 	);
 	const [asset] =
-		deposit?.type === "ReserveAssetDeposited" ? deposit.value : [];
+		loaded?.type === "ReserveAssetDeposited" || loaded?.type === "WithdrawAsset"
+			? loaded.value
+			: [];
 	return asset?.fun.type === "Fungible" ? asset.fun.value : null;
 };
 
@@ -98,10 +116,7 @@ export const parseOriginDryRun = (
 	if (!execution_result.success)
 		return {
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: getOriginFailureReason(execution_result.value.error),
-			},
+			failure: getOriginFailure(execution_result.value.error),
 		};
 
 	const message = forwarded_xcms.find(
@@ -135,12 +150,9 @@ export const parseDeliveryFee = (deliveryFees: DeliveryFees): bigint | null => {
 	return fee;
 };
 
-const toPublicKey = (address: SS58String) =>
-	Binary.toHex(AccountId().enc(address));
-
 export const parseDestinationDryRun = (
 	dryRun: DestinationDryRun,
-	{ assetId, beneficiary }: { assetId: number; beneficiary: SS58String },
+	target: XcmDepositTarget,
 ): Parsed<bigint> => {
 	if (!dryRun.success)
 		return { success: false, failure: { kind: "destination-unavailable" } };
@@ -163,16 +175,11 @@ export const parseDestinationDryRun = (
 			},
 		};
 
-	const beneficiaryKey = toPublicKey(beneficiary);
-	let received = 0n;
-	for (const event of emitted_events)
-		if (
-			event.type === "Tokens" &&
-			event.value.type === "Deposited" &&
-			event.value.value.currency_id === assetId &&
-			toPublicKey(event.value.value.who) === beneficiaryKey
-		)
-			received += event.value.value.amount;
+	const getDeposit = getXcmDepositMatcher(target);
+	const received = emitted_events.reduce(
+		(sum, event) => sum + getDeposit(event),
+		0n,
+	);
 
 	return received
 		? { success: true, value: received }
@@ -184,24 +191,33 @@ export const composeXcmQuote = (sent: bigint, received: bigint): XcmQuote => ({
 	destinationFee: sent - received,
 });
 
-export const describeXcmQuoteFailure = (failure: XcmQuoteFailure): string => {
+export const describeXcmQuoteFailure = (
+	failure: XcmQuoteFailure,
+	route: Pick<XcmRoute, "origin" | "destination">,
+): string => {
+	const origin = getChainById(route.origin).name;
+	const destination = getChainById(route.destination).name;
 	switch (failure.kind) {
+		case "origin-unavailable":
+			return `Could not simulate the transfer on ${origin}`;
 		case "origin-failed":
 			return failure.reason;
+		case "origin-rejected":
+			return `${origin} would reject the transfer: ${failure.xcmError}`;
 		case "message-not-forwarded":
-			return "The transfer would not be sent to Hydration";
+			return `The transfer would not be sent to ${destination}`;
 		case "destination-unavailable":
-			return "Could not simulate the transfer on Hydration";
+			return `Could not simulate the transfer on ${destination}`;
 		case "destination-rejected":
 			return failure.assetsTrapped
-				? "Amount too low for Hydration: the assets would be trapped"
-				: `Hydration would reject the transfer: ${failure.reason}`;
+				? `Amount too low for ${destination}: the assets would be trapped`
+				: `${destination} would reject the transfer: ${failure.reason}`;
 		case "nothing-deposited":
-			return "Hydration would not credit your account";
+			return `${destination} would not credit your account`;
 		case "delivery-fee-unavailable":
-			return "Could not estimate the Asset Hub delivery fee";
+			return `Could not estimate the ${origin} delivery fee`;
 		case "call-unavailable":
-			return "Could not prepare the transaction on Asset Hub";
+			return `Could not prepare the transaction on ${origin}`;
 	}
 };
 
@@ -220,31 +236,53 @@ export const getXcmSubmitGate = ({
 	return { status: "closed", reason: "Nothing to send yet" };
 };
 
+const HYDRATION_DOT_ASSET_ID = 5;
+
+export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
+	switch (origin) {
+		case "pah":
+			return getTokenId({ type: "native", chainId: origin });
+		case "hydration":
+			return getTokenId({
+				type: "hydration-asset",
+				chainId: origin,
+				assetId: HYDRATION_DOT_ASSET_ID,
+			});
+	}
+};
+
+export const getXcmFeeParts = (
+	deliveryFee: TokenAmount | undefined,
+	quote: XcmQuote | undefined,
+	tokenIdOut: TokenId,
+): TokenAmount[] =>
+	[
+		deliveryFee,
+		quote && { tokenId: tokenIdOut, plancks: quote.destinationFee },
+	].filter((part): part is TokenAmount => !!part?.plancks);
+
 export const getXcmCallSpendings = ({
 	tokenIdIn,
-	nativeTokenId,
 	totalIn,
 	deliveryFee,
 }: {
 	tokenIdIn: TokenId;
-	nativeTokenId: TokenId;
 	totalIn: bigint | null | undefined;
-	deliveryFee: bigint | undefined;
+	deliveryFee: TokenAmount | undefined;
 }): CallSpendings => {
-	if (tokenIdIn === nativeTokenId)
-		return totalIn || deliveryFee
+	const spendings: CallSpendings = {};
+	const spend = (tokenId: TokenId, plancks: bigint, allowDeath: boolean) => {
+		if (!plancks) return;
+		const spent = spendings[tokenId];
+		spendings[tokenId] = spent
 			? {
-					[nativeTokenId]: {
-						plancks: (totalIn ?? 0n) + (deliveryFee ?? 0n),
-						allowDeath: false,
-					},
+					plancks: spent.plancks + plancks,
+					allowDeath: spent.allowDeath && allowDeath,
 				}
-			: {};
-
-	return {
-		...(totalIn ? { [tokenIdIn]: { plancks: totalIn, allowDeath: true } } : {}),
-		...(deliveryFee
-			? { [nativeTokenId]: { plancks: deliveryFee, allowDeath: false } }
-			: {}),
+			: { plancks, allowDeath };
 	};
+
+	spend(tokenIdIn, totalIn ?? 0n, parseTokenId(tokenIdIn).type !== "native");
+	if (deliveryFee) spend(deliveryFee.tokenId, deliveryFee.plancks, false);
+	return spendings;
 };

@@ -11,6 +11,8 @@ import { usePoolsByChainId } from "../../hooks/usePoolsByChainId";
 import { useSetting } from "../../hooks/useSetting";
 import { useToken } from "../../hooks/useToken";
 import { useTokensByChainId } from "../../hooks/useTokensByChainId";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
+import { getChainIdFromTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import {
@@ -41,6 +43,10 @@ const useSwapInputs = ({
 	amountIn: string;
 }) => {
 	const { data: tokenIn } = useToken({ tokenId: tokenIdIn });
+	const appFeeAddress =
+		tokenIdIn && isChainIdAssetHub(getChainIdFromTokenId(tokenIdIn))
+			? APP_FEE_ADDRESS
+			: undefined;
 
 	const [plancksIn, feeIn, totalIn, isValidAmountIn] = useMemo(() => {
 		if (!amountIn || !tokenIn) return [null, null, null, true];
@@ -48,7 +54,7 @@ const useSwapInputs = ({
 			const totalIn = tokensToPlancks(amountIn, tokenIn.decimals);
 
 			const appCommissionPercent =
-				APP_FEE_ADDRESS && APP_FEE_PERCENT ? APP_FEE_PERCENT : 0;
+				appFeeAddress && APP_FEE_PERCENT ? APP_FEE_PERCENT : 0;
 			const { plancksIn, appFee: fee } = splitAppCommission(
 				totalIn,
 				appCommissionPercent,
@@ -58,10 +64,10 @@ const useSwapInputs = ({
 		} catch (_err) {
 			return [null, null, null, false];
 		}
-	}, [amountIn, tokenIn]);
+	}, [amountIn, tokenIn, appFeeAddress]);
 
 	const { data: checkCanAccountReceive } = useCanAccountReceive({
-		address: APP_FEE_ADDRESS,
+		address: appFeeAddress,
 		tokenId: tokenIdIn,
 		plancks: feeIn,
 	});

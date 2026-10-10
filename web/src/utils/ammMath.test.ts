@@ -215,44 +215,110 @@ describe("splitAppCommission", () => {
 });
 
 describe("getMaxSwapAmount", () => {
-	it("deducts 2*fee + ED for native tokens", () => {
-		const balance = 10_000_000_000n;
-		const fee = 100_000_000n;
-		const ed = 1_000_000_000n;
-		const max = getMaxSwapAmount(balance, fee, ed, true);
-		expect(max).toBe(balance - 2n * fee - ed);
+	const DOT = { id: "native::pah", type: "native" } as const;
+	const USDT = { id: "asset::pah::1984", type: "asset" } as const;
+	const HYDRATION_DOT = {
+		id: "hydration-asset::hydration::5",
+		type: "hydration-asset",
+	} as const;
+	const HDX = "native::hydration";
+	const balance = 10_000_000_000n;
+	const ed = 1_000_000_000n;
+
+	it("keeps twice the fee and the ED of a native token that pays the fee", () => {
+		const fee = { tokenId: DOT.id, plancks: 100_000_000n };
+		expect(
+			getMaxSwapAmount({
+				balance,
+				tokenIn: DOT,
+				existentialDeposit: ed,
+				fee,
+				deliveryFee: undefined,
+			}),
+		).toBe(balance - 2n * fee.plancks - ed);
 	});
 
-	it("also deducts an extra native spending once for native tokens", () => {
-		const balance = 10_000_000_000n;
-		const fee = 100_000_000n;
-		const ed = 1_000_000_000n;
-		const deliveryFee = 304_850_000n;
-		expect(getMaxSwapAmount(balance, fee, ed, true, deliveryFee)).toBe(
-			balance - 2n * fee - ed - deliveryFee,
-		);
-		expect(getMaxSwapAmount(balance, fee, ed, false, deliveryFee)).toBe(
-			balance,
-		);
+	it("also keeps a delivery fee charged in the token sent", () => {
+		const fee = { tokenId: DOT.id, plancks: 100_000_000n };
+		const deliveryFee = { tokenId: DOT.id, plancks: 304_850_000n };
+		expect(
+			getMaxSwapAmount({
+				balance,
+				tokenIn: DOT,
+				existentialDeposit: ed,
+				fee,
+				deliveryFee,
+			}),
+		).toBe(balance - 2n * fee.plancks - ed - deliveryFee.plancks);
+		expect(
+			getMaxSwapAmount({
+				balance,
+				tokenIn: USDT,
+				existentialDeposit: ed,
+				fee,
+				deliveryFee,
+			}),
+		).toBe(balance);
 	});
 
-	it("returns full balance for non-native tokens", () => {
-		const balance = 10_000_000_000n;
-		expect(getMaxSwapAmount(balance, 100_000n, 1_000n, false)).toBe(balance);
+	it("keeps twice the fee and the ED on Hydration when the token sent is the account's fee currency", () => {
+		const fee = { tokenId: HYDRATION_DOT.id, plancks: 35_052_000n };
+		expect(
+			getMaxSwapAmount({
+				balance,
+				tokenIn: HYDRATION_DOT,
+				existentialDeposit: ed,
+				fee,
+				deliveryFee: { tokenId: HYDRATION_DOT.id, plancks: 0n },
+			}),
+		).toBe(balance - 2n * fee.plancks - ed);
 	});
 
-	it("returns full balance when reserves exceed balance for native", () => {
-		const balance = 100n;
-		const fee = 1000n;
-		const ed = 500n;
-		// 2*1000 + 500 = 2500 > 100 → return balance
-		expect(getMaxSwapAmount(balance, fee, ed, true)).toBe(balance);
+	it("sends the whole balance on Hydration when HDX pays the fee", () => {
+		expect(
+			getMaxSwapAmount({
+				balance,
+				tokenIn: HYDRATION_DOT,
+				existentialDeposit: ed,
+				fee: { tokenId: HDX, plancks: 560_953_011_092n },
+				deliveryFee: undefined,
+			}),
+		).toBe(balance);
 	});
 
-	it("returns zero when balance exactly equals reserves", () => {
-		const fee = 500n;
-		const ed = 1000n;
-		const balance = 2n * fee + ed; // 2000
-		expect(getMaxSwapAmount(balance, fee, ed, true)).toBe(0n);
+	it("keeps only the ED of a native token when another token pays the fee", () => {
+		expect(
+			getMaxSwapAmount({
+				balance,
+				tokenIn: DOT,
+				existentialDeposit: ed,
+				fee: { tokenId: USDT.id, plancks: 100_000n },
+				deliveryFee: undefined,
+			}),
+		).toBe(balance - ed);
+	});
+
+	it("returns the full balance when the reserve exceeds it", () => {
+		expect(
+			getMaxSwapAmount({
+				balance: 100n,
+				tokenIn: DOT,
+				existentialDeposit: 500n,
+				fee: { tokenId: DOT.id, plancks: 1000n },
+				deliveryFee: undefined,
+			}),
+		).toBe(100n);
+	});
+
+	it("returns zero when the balance exactly equals the reserve", () => {
+		expect(
+			getMaxSwapAmount({
+				balance: 2000n,
+				tokenIn: DOT,
+				existentialDeposit: 1000n,
+				fee: { tokenId: DOT.id, plancks: 500n },
+				deliveryFee: undefined,
+			}),
+		).toBe(0n);
 	});
 });

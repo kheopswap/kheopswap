@@ -1,5 +1,6 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import type { FC } from "react";
+import { compact, keyBy } from "lodash-es";
+import { type FC, Fragment } from "react";
 import { Shimmer } from "../../../../components/Shimmer";
 import { Tokens } from "../../../../components/Tokens";
 import {
@@ -7,14 +8,14 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "../../../../components/tooltip/Tooltip";
-import { useNativeToken } from "../../../../hooks/useNativeToken";
+import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
 import { cn } from "../../../../utils/cn";
 import { SummaryRow } from "../../SummaryRow";
 import { useSwap } from "../../SwapProvider";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
-import { describeXcmQuoteFailure } from "./xcmQuote";
+import { describeXcmQuoteFailure, getXcmFeeParts } from "./xcmQuote";
 
 export const XcmSimulationValue: FC<{
 	quote: XcmQuoteState;
@@ -40,7 +41,7 @@ export const XcmSimulationValue: FC<{
 				<div className="max-w-72">
 					{!quote.data.success && (
 						<div className="mb-2 text-error">
-							{describeXcmQuoteFailure(quote.data.failure)}
+							{describeXcmQuoteFailure(quote.data.failure, route)}
 						</div>
 					)}
 					<p>
@@ -60,8 +61,19 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
 	route,
 }) => {
 	const { tokenOut } = useSwap();
-	const nativeToken = useNativeToken({ chain: getChainById(route.origin) });
-	const xcmQuote = quote.data?.success ? quote.data.quote : null;
+	const { data: deliveryFeeToken } = useToken({
+		tokenId: quote.deliveryFee?.tokenId,
+	});
+	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
+	const feeTokens = keyBy(compact([deliveryFeeToken, tokenOut]), "id");
+	const fees = getXcmFeeParts(
+		quote.deliveryFee,
+		xcmQuote,
+		route.tokenIdOut,
+	).flatMap(({ tokenId, plancks }) => {
+		const token = feeTokens[tokenId];
+		return token ? [{ token, plancks }] : [];
+	});
 
 	return (
 		<>
@@ -83,15 +95,14 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
 			<SummaryRow
 				label="XCM fee"
 				value={
-					quote.deliveryFee !== undefined && (
+					!!fees.length && (
 						<div className="flex flex-wrap justify-end">
-							<Tokens plancks={quote.deliveryFee} token={nativeToken} />
-							{xcmQuote && tokenOut && (
-								<>
-									<span className="mx-1">+</span>
-									<Tokens plancks={xcmQuote.destinationFee} token={tokenOut} />
-								</>
-							)}
+							{fees.map(({ token, plancks }, index) => (
+								<Fragment key={token.id}>
+									{index > 0 && <span className="mx-1">+</span>}
+									<Tokens plancks={plancks} token={token} />
+								</Fragment>
+							))}
 						</div>
 					)
 				}

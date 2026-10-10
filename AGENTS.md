@@ -21,9 +21,10 @@ Update this file and `README.md` when your change makes them wrong.
 
 - Get an API with `getApi(chainId)` from `web/src/papi/getApi.ts`. It picks light client or RPC and caches the connection.
 - Read and write through the typed surface: `api.query`, `api.tx`, `api.event`, `api.constants`. Keep `api.client` and `getUnsafeApi()` out of app code. When no typed API covers the need, say so in the PR before adding a lower-level workaround.
-- When a runtime call's signature differs between chains, write one explicit case per chain with `switch (api.chainId)`.
+- When a runtime call's signature differs between chains, switch on the chain id literal and call `getApi` inside each case, as in `case "hydration": { const api = await getApi("hydration"); ... }`. `switch (api.chainId)` does not narrow `Api<ChainId>`.
 - Chain ids come in two kinds: the Asset Hubs `pah`, `kah`, `wah`, `pasah` (`ChainIdAssetHub`) and Hydration `hydration` (`ChainIdHydration`). `ChainId` is their union.
 - Code that uses Asset Hub pallets (Assets, PoolAssets, ForeignAssets, AssetConversion, Revive) takes `ChainIdAssetHub` or `ChainAssetHub`. Narrow the parameter so `getApi` returns the Asset Hub API, and guard with `isChainIdAssetHub` / `isChainAssetHub` where a value can be any chain.
+- Hydration has no `ChargeAssetTxPayment`. It charges the transaction fee in the account's currency, `MultiTransactionPayment.AccountCurrencyMap` or HDX, so on Hydration the fee token list holds that one token and `useConvertedFee` prices the fee with `XcmPaymentApi.query_weight_to_asset_fee`. `dry_run_call` never charges the fee, so `TransactionProvider` trusts a successful dry run only on Asset Hub and checks balances on Hydration.
 - An Ethereum address maps to different accounts on Asset Hub and Hydration. `getResolvedSubstrateAddress$` resolves it to no address on Hydration, so its balances there load as `undefined`, and `isApplicableBalance` hides them.
 
 ## Reactive state

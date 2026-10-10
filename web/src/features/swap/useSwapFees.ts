@@ -1,12 +1,10 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useMemo } from "react";
-import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
+import { useConvertedFee } from "../../hooks/useConvertedFee";
 import { useEstimateFee } from "../../hooks/useEstimateFee";
 import { useFeeToken } from "../../hooks/useFeeToken";
-import { useNativeToken } from "../../hooks/useNativeToken";
 import { useNonce } from "../../hooks/useNonce";
-import { useTokenChain } from "../../hooks/useTokenChain";
-import type { Token, TokenId } from "../../registry/tokens/types";
+import type { Token, TokenAmount } from "../../registry/tokens/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { getMaxSwapAmount } from "../../utils/ammMath";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
@@ -19,26 +17,24 @@ import type { SwapFormInputs } from "./schema";
 type UseSwapFeesProps = {
 	from: string | undefined;
 	accountAddress: string | undefined;
-	tokenIdIn: TokenId | undefined;
 	tokenIn: Token | null | undefined;
 	balanceIn: bigint | null | undefined;
 	edTokenIn: bigint | null | undefined;
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
-	extraNativeSpending: bigint | undefined;
+	deliveryFee: TokenAmount | undefined;
 	setFormData: Dispatch<SetStateAction<SwapFormInputs>>;
 };
 
 export const useSwapFees = ({
 	from,
 	accountAddress,
-	tokenIdIn,
 	tokenIn,
 	balanceIn,
 	edTokenIn,
 	call,
 	fakeCall,
-	extraNativeSpending,
+	deliveryFee,
 	setFormData,
 }: UseSwapFeesProps) => {
 	const { feeToken, isLoading: isLoadingFeeToken } = useFeeToken({
@@ -67,14 +63,11 @@ export const useSwapFees = ({
 			options: txOptions,
 		});
 
-	const tokenChain = useTokenChain({ tokenId: tokenIdIn });
-	const nativeToken = useNativeToken({ chain: tokenChain });
-
-	const { isLoading: isLoadingFeeEstimateConvert, plancksOut: feeEstimate } =
-		useAssetConvertPlancks({
-			tokenIdIn: nativeToken?.id,
-			tokenIdOut: feeToken?.id,
-			plancks: feeEstimateNative,
+	const { isLoading: isLoadingFeeEstimateConvert, data: feeEstimate } =
+		useConvertedFee({
+			chainId: tokenIn?.chainId,
+			feeTokenId: feeToken?.id,
+			nativeFee: feeEstimateNative,
 		});
 
 	const isLoadingFeeEstimate =
@@ -83,14 +76,21 @@ export const useSwapFees = ({
 		isLoadingFeeEstimateConvert;
 
 	const onMaxClick = useCallback(() => {
-		if (tokenIn && balanceIn && isBigInt(edTokenIn) && isBigInt(feeEstimate)) {
-			const plancks = getMaxSwapAmount(
-				balanceIn,
-				feeEstimate,
-				edTokenIn,
-				tokenIn.type === "native",
-				extraNativeSpending,
-			);
+		if (
+			tokenIn &&
+			feeToken &&
+			!isLoadingFeeToken &&
+			balanceIn &&
+			isBigInt(edTokenIn) &&
+			isBigInt(feeEstimate)
+		) {
+			const plancks = getMaxSwapAmount({
+				balance: balanceIn,
+				tokenIn,
+				existentialDeposit: edTokenIn,
+				fee: { tokenId: feeToken.id, plancks: feeEstimate },
+				deliveryFee,
+			});
 
 			setFormData((prev) => ({
 				...prev,
@@ -100,9 +100,11 @@ export const useSwapFees = ({
 	}, [
 		balanceIn,
 		feeEstimate,
+		feeToken,
+		isLoadingFeeToken,
 		edTokenIn,
 		tokenIn,
-		extraNativeSpending,
+		deliveryFee,
 		setFormData,
 	]);
 

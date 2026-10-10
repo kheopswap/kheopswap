@@ -5,6 +5,8 @@
  * https://github.com/paritytech/substrate/blob/e076bdad1fefb5a0e2461acf7e2cab1192f3c9f3/frame/asset-conversion/src/lib.rs#L1108
  */
 
+import type { Token, TokenAmount } from "../registry/tokens/types";
+
 /**
  * Resolve the denominator (accuracy) for the AssetConversion `LPFee` constant.
  *
@@ -101,28 +103,23 @@ export const splitAppCommission = (
 	return { plancksIn, appFee };
 };
 
-/**
- * Compute the maximum amount a user can swap, reserving funds for fees and ED.
- *
- * For native tokens, deducts `2 × fee + existentialDeposit + extraNativeSpending`
- * from the balance to keep the account alive. For non-native tokens, returns the
- * full balance.
- *
- * @param balance  Available balance in plancks.
- * @param feeEstimate  Estimated transaction fee.
- * @param existentialDeposit  Chain existential deposit for the token.
- * @param isNative  Whether the token is the chain's native token.
- * @param extraNativeSpending  Native plancks the call spends besides the amount, such as an XCM delivery fee.
- * @returns Maximum swappable plancks.
- */
-export const getMaxSwapAmount = (
-	balance: bigint,
-	feeEstimate: bigint,
-	existentialDeposit: bigint,
-	isNative: boolean,
-	extraNativeSpending = 0n,
-): bigint => {
-	if (!isNative) return balance;
-	const reserved = 2n * feeEstimate + existentialDeposit + extraNativeSpending;
+export const getMaxSwapAmount = ({
+	balance,
+	tokenIn,
+	existentialDeposit,
+	fee,
+	deliveryFee,
+}: {
+	balance: bigint;
+	tokenIn: Pick<Token, "id" | "type">;
+	existentialDeposit: bigint;
+	fee: TokenAmount;
+	deliveryFee: TokenAmount | undefined;
+}): bigint => {
+	const paysFee = fee.tokenId === tokenIn.id;
+	const reserved =
+		(paysFee ? 2n * fee.plancks : 0n) +
+		(paysFee || tokenIn.type === "native" ? existentialDeposit : 0n) +
+		(deliveryFee?.tokenId === tokenIn.id ? deliveryFee.plancks : 0n);
 	return reserved <= balance ? balance - reserved : balance;
 };
