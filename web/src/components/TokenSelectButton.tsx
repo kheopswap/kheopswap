@@ -27,7 +27,7 @@ const TokenButton: FC<{
 			type="button"
 			className={cn(
 				Styles.button,
-				"flex h-10 max-w-[45%] items-center gap-2.5 rounded-full border border-surface-border bg-surface py-1.5 pr-3 pl-1.5",
+				"flex h-10 max-w-[45%] items-center gap-2.5 rounded-chip border border-surface-border bg-surface py-1.5 pr-3 pl-1.5",
 				!token && "px-3.5 font-semibold",
 				className,
 			)}
