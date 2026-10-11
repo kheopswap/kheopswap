@@ -1,9 +1,7 @@
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { uniqBy } from "lodash-es";
 import { useMemo } from "react";
 import { useWallets } from "../common/kheopskit";
 import { useOpenClose } from "../hooks/useOpenClose";
-import { cn } from "../utils/cn";
 import { AccountSelectDrawer } from "./AccountSelectDrawer";
 import { Styles } from "./styles";
 import { WalletIcon } from "./WalletIcon";
@@ -54,12 +52,6 @@ export const ConnectButton = () => {
 				) : (
 					"Connect"
 				)}
-				<ChevronDownIcon
-					className={cn(
-						"size-3.5 opacity-60",
-						!!accounts.length && "max-sm:hidden",
-					)}
-				/>
 			</button>
 			<AccountSelectDrawer
 				title={"Connect"}

@@ -1,5 +1,4 @@
 import { Switch } from "@base-ui/react/switch";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -170,7 +169,6 @@ export const RelaySelect = () => {
 			>
 				<img src={assetHub.logo} alt="" className="size-4.5 rounded-full" />
 				<span className="max-[379px]:hidden">{networkName}</span>
-				<ChevronDownIcon className="size-3.5 opacity-60" />
 			</button>
 			<Drawer anchor="right" isOpen={isOpen} onDismiss={close}>
 				<DrawerContainer title="Select network" onClose={close}>
