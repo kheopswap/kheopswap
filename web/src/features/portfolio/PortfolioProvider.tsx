@@ -1,5 +1,5 @@
 import { values } from "lodash-es";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetHubTVL } from "../../hooks/useAssetHubTVL";
@@ -24,8 +24,13 @@ export const usePortfolioProvider = () => {
 
 	const { data: tvl } = useAssetHubTVL();
 
-	const { data: balances, isLoading: isLoadingBalances } =
+	const { data: liveBalances, isLoading: isLoadingBalances } =
 		useBalancesWithStables({ tokens, accounts });
+
+	const lastBalances = useRef(liveBalances);
+	if (liveBalances.length || !accounts.length)
+		lastBalances.current = liveBalances;
+	const balances = lastBalances.current;
 
 	const { data: prices, isLoading: isLoadingPrices } = useTokenPrices();
 
