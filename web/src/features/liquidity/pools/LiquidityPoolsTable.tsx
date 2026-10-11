@@ -1,13 +1,10 @@
-import { useDeferredValue, useMemo, useState } from "react";
+import { type FC, useDeferredValue, useMemo, useState } from "react";
 import { useWallets } from "../../../common/kheopskit";
 import { SearchInput } from "../../../components/SearchInput";
 import { LiquidityPoolsHeaderRow } from "./LiquidityPoolsHeaderRow";
 import { LiquidityPoolsRows } from "./LiquidityPoolsRows";
 import type { LiquidityPoolsSortMode } from "./types";
-import {
-	type LiquidityPoolRowData,
-	useLiquidityPoolsTable,
-} from "./useLiquidityPools";
+import type { LiquidityPoolRowData } from "./useLiquidityPools";
 
 const sortByColumn =
 	(mode: LiquidityPoolsSortMode) =>
@@ -33,9 +30,10 @@ const sortByColumn =
 		return 0;
 	};
 
-export const LiquidityPoolsTable = () => {
-	const { data: pools, isLoading } = useLiquidityPoolsTable();
-
+export const LiquidityPoolsTable: FC<{
+	pools: LiquidityPoolRowData[];
+	isLoading: boolean;
+}> = ({ pools, isLoading }) => {
 	const { accounts } = useWallets();
 
 	const [sortByCol, setSortByCol] = useState<LiquidityPoolsSortMode>("tvl");

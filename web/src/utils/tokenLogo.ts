@@ -1,3 +1,5 @@
+export const FALLBACK_LOGO_SRC = "/img/tokens/unknown.svg";
+
 export const getValidTokenLogo = (
 	logo: string | null | undefined,
 ): string | undefined => {
