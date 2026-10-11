@@ -17,9 +17,9 @@
 	--color-drawer: #0a0a0a;
 	--color-scrim: rgb(0 0 0 / 0.7);
 	--color-row-hover: rgb(255 255 255 / 0.03);
-	--color-primary: #d3ff33;
+	--color-primary: #19ac4f;
 	--color-primary-ink: #000000;
-	--color-accent: #d3ff33;
+	--color-accent: #19ac4f;
 	--color-error: #f87171;
 	--color-warn: #f97316;
 	--color-success: #22c55e;
@@ -148,11 +148,11 @@ html {
 	color-scheme: dark;
 	background: radial-gradient(
 			circle at 50% 25%,
-			#2a330f,
-			#20270c,
-			#171c09,
-			#0f1206,
-			#070803,
+			#262626,
+			#1d1d1d,
+			#151515,
+			#0e0e0e,
+			#070707,
 			#000000
 		)
 		fixed;
@@ -172,17 +172,17 @@ html[data-mode="light"] {
 	--color-drawer: #faf9fc;
 	--color-scrim: rgb(0 0 0 / 0.35);
 	--color-row-hover: rgb(0 0 0 / 0.03);
-	--color-accent: #48740e;
+	--color-accent: #127a38;
 	--color-error: #b91c1c;
 	--color-warn: #c2410c;
 	--color-success: #15803d;
 	background: radial-gradient(
 			circle at 50% 25%,
-			#f3fbd2,
-			#f2f8dd,
-			#f2f5e6,
-			#f2f3ed,
-			#f2f2f2,
+			#ffffff,
+			#fbfbfc,
+			#f8f8fa,
+			#f5f5f8,
+			#f3f3f7,
 			#f2f1f6
 		)
 		fixed;
