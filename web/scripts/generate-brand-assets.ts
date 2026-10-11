@@ -20,8 +20,8 @@ if (!logoMatch?.[1] || !logoMatch[2])
 const [, viewBox, markBody] = logoMatch;
 
 const LOGO_ACCENT = "var(--logo-accent,#a78bfa)";
-const DARK = { body: "#fff", accent: "#a78bfa" };
-const LIGHT = { body: "#000", accent: "#6d28d9" };
+const DARK = { body: "#fff", accent: "#3fd8ff" };
+const LIGHT = { body: "#000", accent: "#0a66ff" };
 
 const paintMark = ({ body, accent }: { body: string; accent: string }) =>
 	markBody.replaceAll("currentColor", body).replaceAll(LOGO_ACCENT, accent);
