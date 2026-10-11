@@ -12,7 +12,7 @@ export const Styles = {
 	),
 
 	headerButton: cn(
-		"flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-control border border-surface-border bg-surface px-2.5 text-[13px] font-medium hover:bg-hover sm:gap-2 sm:px-3 sm:text-sm",
+		"flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-control border border-grid/20 bg-control px-2.5 text-[13px] font-medium hover:bg-hover sm:gap-2 sm:px-3 sm:text-sm",
 	),
 
 	primaryButton: cn(

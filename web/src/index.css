@@ -247,6 +247,19 @@ html[data-mode="light"] {
 	--color-hub-dot: #3a7fd1;
 }
 
+@utility nav-trail {
+	background: linear-gradient(
+		90deg,
+		transparent,
+		--alpha(var(--color-grid) / 60%) 35%,
+		var(--color-accent) 80%,
+		var(--color-trail-end)
+	);
+	box-shadow:
+		0 0 6px --alpha(var(--color-grid) / 50%),
+		0 0 14px --alpha(var(--color-grid) / 35%);
+}
+
 /* react-toastify injects its stylesheet at runtime after ours, so overrides are scoped to its container */
 .Toastify {
 	--toastify-font-family: var(--font-sans);

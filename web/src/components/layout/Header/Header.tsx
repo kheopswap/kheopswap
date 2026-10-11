@@ -12,9 +12,9 @@ const NavItem: FC<{ to: string; children: ReactNode }> = ({ to, children }) => (
 		to={to}
 		className={({ isActive }) =>
 			cn(
-				"relative flex h-11 shrink-0 items-center whitespace-nowrap px-3 font-medium text-muted hover:text-text sm:h-16 sm:px-3.5",
+				"relative flex h-11 shrink-0 items-center whitespace-nowrap px-2 font-display text-[10px] uppercase tracking-[0.1em] text-muted hover:text-text sm:h-16 sm:px-3.5 sm:text-[11px] sm:tracking-[0.14em]",
 				isActive &&
-					"text-accent after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-accent hover:text-accent sm:after:inset-x-3.5 sm:after:-bottom-px",
+					"text-accent text-shadow-nav after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full after:nav-trail hover:text-accent sm:after:inset-x-3.5 sm:after:-bottom-px",
 			)
 		}
 	>
@@ -42,9 +42,9 @@ const MainNav: FC = () => {
 };
 
 export const Header: FC = () => (
-	<header className="sticky top-0 z-10 border-b border-line bg-page">
+	<header className="sticky top-0 z-10 border-b border-line bg-chrome backdrop-blur-md">
 		<div className="mx-auto flex max-w-[1100px] flex-wrap items-center gap-x-2 gap-y-2.5 px-3 pt-2.5 sm:gap-x-7 sm:h-16 sm:flex-nowrap sm:px-6 sm:pt-0">
-			<div className="flex items-center gap-1.5 text-base font-bold text-text sm:gap-2.5 sm:text-xl">
+			<div className="flex items-center gap-1.5 font-display text-[13px] uppercase tracking-[0.14em] text-text text-shadow-brand sm:gap-2.5">
 				<span
 					aria-hidden
 					className="size-6 [--logo-accent:var(--color-primary)] *:size-full sm:size-7"
