@@ -17,6 +17,10 @@ pnpm dev
 
 A daily workflow opens a `Runtime upgrade on <chain>` issue for each chain whose runtime differs from the committed metadata.
 
+## Brand assets
+
+`web/public/logo.svg` is the only hand-edited brand file. Paint its body with `currentColor` and its accent with exactly `var(--logo-accent,#a78bfa)`: the header inlines the file and sets the accent to the theme's primary colour, and the generator swaps both for fixed colours. After you change it, run `pnpm generate-brand-assets` to regenerate the favicons, app icons and `safari-pinned-tab.svg`.
+
 ## Coding agents
 
 Project instructions for coding agents live in [`AGENTS.md`](AGENTS.md).

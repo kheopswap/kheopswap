@@ -1,6 +1,5 @@
 import { keyBy, values } from "lodash-es";
 import { useMemo } from "react";
-import { getBalancesByTokenSummary } from "../../hooks/useBalancesByTokenSummary";
 import { logger } from "../../utils/logger";
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
@@ -8,12 +7,7 @@ import type { PortfolioRowData } from "./types";
 export const usePortfolioRows = () => {
 	const stop = logger.cumulativeTimer("usePortfolioRows");
 
-	const { balances, tokens, tvl, prices } = usePortfolio();
-
-	const balancesByTokenId = useMemo(
-		() => getBalancesByTokenSummary(balances),
-		[balances],
-	);
+	const { balancesByTokenId, tokens, tvl, prices } = usePortfolio();
 
 	const portfolioRows = useMemo(() => {
 		const tvlByTokenId = keyBy(tvl, "tokenId");

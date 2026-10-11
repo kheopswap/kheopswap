@@ -34,15 +34,17 @@ export const ChainBlockNumbers = () => {
 	const finalized = useFinalizedBlockNumber();
 
 	return (
-		<div className=" text-neutral-500 flex flex-col gap-1 text-xs">
-			<div>Best: {best ?? <Placeholder />}</div>
-			<div>Finalized: {finalized ?? <Placeholder />}</div>
+		<div className="grid grid-cols-[auto_auto] gap-x-2 gap-y-1 text-left">
+			<div>Best:</div>
+			<div>{best ?? <Placeholder />}</div>
+			<div>Finalized:</div>
+			<div>{finalized ?? <Placeholder />}</div>
 		</div>
 	);
 };
 
 const Placeholder = () => (
-	<span className="text-neutral-800 bg-neutral-800 animate-pulse rounded-xs">
+	<span className="animate-pulse rounded-xs bg-hover text-transparent">
 		00000000
 	</span>
 );

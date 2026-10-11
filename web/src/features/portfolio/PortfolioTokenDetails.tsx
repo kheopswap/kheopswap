@@ -45,7 +45,7 @@ const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
 	children,
 }) => (
 	<div className="flex w-full justify-between gap-4 overflow-hidden items-center h-7">
-		<div className="text-neutral-400">{label}</div>
+		<div className="text-muted">{label}</div>
 		<div className="overflow-hidden">{children}</div>
 	</div>
 );
@@ -67,7 +67,7 @@ const TokenDetailsRowValue: FC<
 	if (isInitializing) return null;
 
 	return (
-		<div className="flex gap-2 whitespace-nowrap text-neutral-50">
+		<div className="flex gap-2 whitespace-nowrap text-text">
 			<Tokens
 				token={token}
 				plancks={tokenPlancks ?? 0n}
@@ -75,7 +75,7 @@ const TokenDetailsRowValue: FC<
 			/>
 			<span
 				className={cn(
-					"text-neutral-500",
+					"text-muted",
 					!isBigInt(stablePlancks) && "hidden",
 					token.id === stableToken.id && "hidden",
 				)}
@@ -138,7 +138,7 @@ const LiquidityPoolValue: FC<{ token: TokenAsset | TokenForeignAsset }> = ({
 		<button
 			type="button"
 			onClick={handleClick}
-			className={cn(Styles.button, "px-2")}
+			className={cn(Styles.button, "h-8 px-3 text-[13px] font-medium")}
 		>
 			{pool ? `Pool ${pool.poolAssetId}` : "Create Pool"}{" "}
 		</button>
@@ -176,7 +176,7 @@ const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
 			</TokenDetailsRow>
 			<TokenDetailsRow label="Holders">
 				{tokenInfo ? (
-					<Pulse as="span" pulse={isLoading}>
+					<Pulse as="span" pulse={isLoading} className="font-mono">
 						{tokenInfo.accounts}
 					</Pulse>
 				) : (
@@ -291,7 +291,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 						<div
 							key={account.id}
 							className={cn(
-								"flex h-12 items-center gap-4 rounded-sm bg-neutral-850 px-2",
+								"flex min-h-12 items-center gap-4 rounded-control bg-surface-2 px-3.5 py-2",
 								!balance.tokenPlancks && "opacity-50",
 							)}
 						>
@@ -319,7 +319,7 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 								{stableToken.id !== token.id &&
 									(isBigInt(balance.stablePlancks) ||
 										balance.isLoadingStablePlancks) && (
-										<div className="text-sm text-neutral-500">
+										<div className="text-xs text-muted">
 											{isBigInt(balance.stablePlancks) ? (
 												<Tokens
 													token={stableToken}
@@ -341,11 +341,11 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 					))}
 				</div>
 			) : (
-				<div className="my-4 rounded-lg bg-neutral-850 p-4 text-neutral-500">
+				<div className="my-4 rounded-control bg-surface-2 p-4 text-muted">
 					<button
 						type="button"
 						onClick={open}
-						className={cn("text-neutral-300 hover:text-neutral-100")}
+						className="font-medium text-text hover:text-accent"
 					>
 						Connect your accounts
 					</button>{" "}
@@ -385,7 +385,9 @@ export const TokenDetails: FC<{ row: PortfolioRowData }> = ({ row }) => {
 				{getTokenTypeLabel(token.type)}
 			</TokenDetailsRow>
 			{token.type === "asset" && (
-				<TokenDetailsRow label="Asset Id">{token.assetId}</TokenDetailsRow>
+				<TokenDetailsRow label="Asset Id">
+					<span className="font-mono">{token.assetId}</span>
+				</TokenDetailsRow>
 			)}
 			{displayProps.map((prop, i) => (
 				// biome-ignore lint/suspicious/noArrayIndexKey: legacy

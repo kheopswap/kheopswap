@@ -19,6 +19,7 @@
 		"papi": "papi",
 		"papi:build": "papi --whitelist papi-whitelist.ts",
 		"fetch-tokens": "cd web && node --experimental-transform-types --env-file-if-exists=.env.local scripts/fetch-tokens.ts",
+		"generate-brand-assets": "cd web && node --experimental-transform-types scripts/generate-brand-assets.ts",
 		"postinstall": "papi",
 		"prepare": "simple-git-hooks"
 	},

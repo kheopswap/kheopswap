@@ -53,7 +53,7 @@ export const LiquidityPoolBalances: FC<{
 	}, [reserve1, reserve2, display, pool]);
 
 	return (
-		<Pulse className="flex flex-col items-end text-white" pulse={isLoading}>
+		<Pulse className="flex flex-col items-end" pulse={isLoading}>
 			{valuationPlancks && stableToken ? (
 				<div>
 					<Tokens plancks={valuationPlancks} token={stableToken} />

@@ -64,7 +64,7 @@ export const Price = forwardRef<HTMLSpanElement, PriceProps>(
 		}, [value, digits, decimals]);
 
 		return (
-			<span ref={ref} className={cn("whitespace-nowrap", className)}>
+			<span ref={ref} className={cn("whitespace-nowrap font-mono", className)}>
 				{parts.map((props, i) => (
 					// biome-ignore lint/suspicious/noArrayIndexKey: legacy
 					<PricePart key={`${value}-${i}`} {...props} />

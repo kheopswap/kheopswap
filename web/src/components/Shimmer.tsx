@@ -13,7 +13,7 @@ export const Shimmer: FC<{ children?: ReactNode; className?: string }> = ({
 			className={cn(
 				"select-none rounded-sm",
 				className,
-				"bg-neutral-800 text-neutral-800",
+				"bg-hover text-transparent",
 			)}
 		>
 			{children}

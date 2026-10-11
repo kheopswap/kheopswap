@@ -5,11 +5,9 @@ import { LiquidityPools } from "../features/liquidity/pools/LiquidityPools";
 
 export const LiquidityPoolsPage = () => (
 	<Layout>
-		<div className="p-2">
-			<ErrorBoundary>
-				<LiquidityPools />
-			</ErrorBoundary>
-		</div>
+		<ErrorBoundary>
+			<LiquidityPools />
+		</ErrorBoundary>
 		<TabTitle title="Liquidity Pools" />
 	</Layout>
 );

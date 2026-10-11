@@ -49,7 +49,7 @@ export const Drawer: FC<DrawerProps> = ({
 			<Dialog.Portal>
 				<Dialog.Backdrop
 					className={cn(
-						"fixed inset-0 z-30 bg-black/50",
+						"fixed inset-0 z-30 bg-scrim",
 						"transition-opacity duration-300 ease-linear",
 						"data-open:opacity-100",
 						"data-starting-style:opacity-0",
@@ -60,7 +60,7 @@ export const Drawer: FC<DrawerProps> = ({
 				<Dialog.Popup
 					aria-label={ariaLabel}
 					className={cn(
-						"fixed z-40 shadow-2xl outline-hidden",
+						"fixed z-40 outline-hidden",
 						"transition-transform duration-300 ease-in-out",
 						anchorPositionClass[anchor],
 						anchorAnimationClass[anchor],

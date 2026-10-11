@@ -26,15 +26,13 @@ export const ErrorBoundaryPage = () => {
 
 	return (
 		<div className="mt-20 text-center">
-			<h1 className="text-4xl font-bold text-neutral-300 sm:text-5xl">Ouch!</h1>
-			<p className="mt-4 text-xl text-neutral-500">
-				Something terrible happened
-			</p>
+			<h1 className="text-4xl font-bold text-text sm:text-5xl">Ouch!</h1>
+			<p className="mt-4 text-xl text-muted">Something terrible happened</p>
 			<div className="mt-8 text-error">{message}</div>
 			<div className="flex justify-center gap-4">
 				<button
 					type="button"
-					className="mt-8 rounded-sm bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+					className="mt-8 rounded-control bg-primary p-2 px-3 font-semibold text-primary-ink enabled:hover:brightness-108 disabled:opacity-70"
 					onClick={goHome(false)}
 				>
 					Home
@@ -42,7 +40,7 @@ export const ErrorBoundaryPage = () => {
 				{DEV && (
 					<button
 						type="button"
-						className="mt-8 rounded-sm bg-primary-500 p-2 px-3 enabled:hover:bg-primary-400 disabled:opacity-70"
+						className="mt-8 rounded-control bg-primary p-2 px-3 font-semibold text-primary-ink enabled:hover:brightness-108 disabled:opacity-70"
 						onClick={goHome(true)}
 					>
 						Reset

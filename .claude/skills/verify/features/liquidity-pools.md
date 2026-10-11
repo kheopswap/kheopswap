@@ -15,7 +15,7 @@ Liquidity Pools lists every native-token pool on the current Asset Hub by TVL, w
 ## How to get to it (user POV)
 
 - Open `#/<relay>/pools`.
-- Choose `Liquidity Pools` in `Main navigation`. It reads `Pools` below 440 px wide.
+- Choose `Liquidity` in `Main navigation`.
 - Click a pool row to open its detail page.
 - Create a pool from Portfolio → token → `Token Details` → `Liquidity Pool` → `Create Pool`. The route is not linked from the pool list.
 

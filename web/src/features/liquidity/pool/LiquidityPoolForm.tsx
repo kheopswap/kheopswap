@@ -3,6 +3,7 @@ import { AccountSelect } from "../../../components/AccountSelect";
 import { FormFieldContainer } from "../../../components/FormFieldContainer";
 import { Pulse } from "../../../components/Pulse";
 import { Shimmer } from "../../../components/Shimmer";
+import { Styles } from "../../../components/styles";
 import { TokenLogo } from "../../../components/TokenLogo";
 import { Tokens } from "../../../components/Tokens";
 import { useStablePlancks } from "../../../hooks/useStablePrice";
@@ -20,7 +21,7 @@ const PoolReserves: FC = () => {
 	return (
 		<Pulse
 			pulse={isLoadingReserves}
-			className={cn("flex flex-col items-start text-white ")}
+			className="flex flex-col items-start gap-1 font-semibold"
 		>
 			<div className="flex items-center gap-1">
 				{!!nativeToken && (
@@ -78,7 +79,7 @@ const PoolPosition: FC = () => {
 	return (
 		<Pulse
 			pulse={isLoadingPosition || isLoadingToken}
-			className="flex flex-col items-start"
+			className="flex flex-col items-start gap-1 font-semibold"
 		>
 			<div className="flex items-center gap-1">
 				{!!nativeToken && (
@@ -163,7 +164,7 @@ const PoolPositionValue: FC = () => {
 					pulse={isLoadingPosition}
 				/>
 			</div>
-			<div className="shrink-0 grow text-right">{sharesRatio}</div>
+			<div className="shrink-0 grow text-right font-mono">{sharesRatio}</div>
 		</div>
 	);
 };
@@ -177,7 +178,7 @@ export const LiquidityPoolForm = () => {
 	if (!assetToken) return isLoadingToken ? null : <div>Pool not found</div>; // TODO
 
 	return (
-		<div className="flex flex-col gap-4 ">
+		<div className="flex flex-col gap-5">
 			<FormFieldContainer id="from-account" label="Account">
 				<AccountSelect
 					id="from-account"
@@ -186,32 +187,42 @@ export const LiquidityPoolForm = () => {
 					onChange={setDefaultAccountId}
 				/>
 			</FormFieldContainer>
-			<div className="grid gap-4 text-white sm:grid-cols-2">
-				<div className="rounded-sm bg-primary-900/50 px-3 py-2">
-					<div className="text-neutral-300">Pool liquidity</div>
+			<div className="grid gap-3 sm:grid-cols-2">
+				<div className="rounded-control bg-surface-2 px-4 py-3.5">
+					<div className={cn(Styles.label, "mb-2")}>Pool liquidity</div>
 					<PoolReserves />
-					<div className="mt-2 text-neutral-300">Est. Value</div>
-					<PoolValue />
+					<div className={cn(Styles.label, "mt-3 mb-2")}>Est. Value</div>
+					<div className="font-semibold">
+						<PoolValue />
+					</div>
 				</div>
-				<div className="rounded-sm bg-primary-900/50 px-3 py-2">
-					<div className="text-neutral-300">Your position</div>
+				<div className="rounded-control bg-surface-2 px-4 py-3.5">
+					<div className={cn(Styles.label, "mb-2")}>Your position</div>
 					<PoolPosition />
-					<div className="mt-2 text-neutral-300">Est. Value</div>
-					<PoolPositionValue />
+					<div className={cn(Styles.label, "mt-3 mb-2")}>Est. Value</div>
+					<div className="font-semibold">
+						<PoolPositionValue />
+					</div>
 				</div>
 			</div>
-			<div className="my-4 grid h-12 grid-cols-2 rounded-sm border border-primary-500 p-1">
+			<div className="grid h-11 grid-cols-2 rounded-control bg-surface-2 p-1">
 				<button
 					type="button"
 					onClick={() => setAction("add")}
-					className={cn("rounded-sm", action === "add" && "bg-primary-550")}
+					className={cn(
+						"rounded-chip font-medium text-muted",
+						action === "add" && "bg-hover text-text",
+					)}
 				>
 					Add
 				</button>
 				<button
 					type="button"
 					onClick={() => setAction("remove")}
-					className={cn("rounded-sm", action === "remove" && "bg-primary-550")}
+					className={cn(
+						"rounded-chip font-medium text-muted",
+						action === "remove" && "bg-hover text-text",
+					)}
 				>
 					Remove
 				</button>

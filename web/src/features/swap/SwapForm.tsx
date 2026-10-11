@@ -22,7 +22,7 @@ export const SwapForm = () => {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<div className="flex w-full flex-col gap-3">
+			<div className="flex w-full flex-col gap-5">
 				<FormFieldContainer id="from-account" label="Account">
 					<AccountSelect
 						id="from-account"

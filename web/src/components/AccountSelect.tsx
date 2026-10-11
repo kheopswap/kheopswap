@@ -106,11 +106,8 @@ const AccountSelectButton: FC<{
 			className={cn(
 				Styles.button,
 				Styles.field,
-				"enabled:hover:bg-neutral-900/50",
-				"flex w-full justify-between gap-4 overflow-hidden p-2  pl-3",
-				account || displayAddress
-					? "text-neutral-300 hover:text-neutral-200"
-					: " text-neutral-500 hover:text-neutral-400",
+				"flex min-h-11.5 w-full items-center justify-between gap-2.5 overflow-hidden px-3 font-medium",
+				account || displayAddress ? "text-text" : "font-normal text-muted",
 				className,
 			)}
 		>
@@ -123,7 +120,7 @@ const AccountSelectButton: FC<{
 			) : (
 				<div>Select Account</div>
 			)}
-			<ActionRightIcon className="inline-block size-6 shrink-0  fill-current" />
+			<ActionRightIcon className="inline-block size-5 shrink-0 fill-current text-muted" />
 		</button>
 	);
 };

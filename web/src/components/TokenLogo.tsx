@@ -3,9 +3,7 @@ import { useToken } from "../hooks/useToken";
 import { getChainById } from "../registry/chains/chains";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { cn } from "../utils/cn";
-import { getValidTokenLogo } from "../utils/tokenLogo";
-
-const FALLBACK_LOGO_SRC = "/img/tokens/unknown.svg";
+import { FALLBACK_LOGO_SRC, getValidTokenLogo } from "../utils/tokenLogo";
 
 const TokenLogoDisplay: FC<{ token: Token | null; className?: string }> = ({
 	token,

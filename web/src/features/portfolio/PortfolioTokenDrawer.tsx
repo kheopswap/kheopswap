@@ -10,11 +10,11 @@ const Header: FC<{
 	token: Token;
 }> = ({ token }) => {
 	return (
-		<div className="flex flex-col items-center gap-3 bg-neutral-950 p-4">
-			<TokenLogo className="size-20" token={token} />
-			<div className="flex max-w-full items-center gap-2 overflow-hidden text-xl">
-				<div className="text-neutral-50">{token.symbol}</div>
-				<div className="grow truncate text-neutral-400">{token.name}</div>
+		<div className="flex flex-col items-center gap-3 px-5 pt-5 pb-4">
+			<TokenLogo className="size-16" token={token} />
+			<div className="flex max-w-full items-center gap-2 overflow-hidden text-lg">
+				<div className="font-semibold text-text">{token.symbol}</div>
+				<div className="grow truncate text-muted">{token.name}</div>
 			</div>
 		</div>
 	);
@@ -27,7 +27,7 @@ const DrawerContent: FC<{
 		<div>
 			<Header token={tokenRow.token} />
 
-			<div className="h-4 border-t border-neutral-800 p-3">
+			<div className="border-t border-line px-5 pt-4 pb-6">
 				<TokenDetails row={tokenRow} />
 			</div>
 		</div>

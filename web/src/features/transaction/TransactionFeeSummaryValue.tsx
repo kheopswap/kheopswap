@@ -62,7 +62,7 @@ export const TransactionFeeSummaryValue: FC = () => {
 						onClick={open}
 						className="flex items-center gap-2"
 					>
-						<PencilSquareIcon className="size-4" />
+						<PencilSquareIcon className="size-4 text-muted" />
 						<span>
 							<Tokens
 								plancks={feeEstimate}
@@ -79,7 +79,7 @@ export const TransactionFeeSummaryValue: FC = () => {
 					/>
 				)
 			) : errorFeeEstimate ? (
-				<span className="text-warn-400">Failed to estimate</span>
+				<span className="text-warn">Failed to estimate</span>
 			) : isLoadingFeeEstimate ? (
 				<Shimmer>0.0000 AAA</Shimmer>
 			) : null}

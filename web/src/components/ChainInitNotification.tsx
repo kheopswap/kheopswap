@@ -39,7 +39,7 @@ export const ChainInitNotification = () => {
 								? "Synchronizing light clients"
 								: "Connecting"}
 						</div>
-						<div className="text-neutral-500">
+						<div className="text-muted">
 							{effectiveLightClient
 								? "It may take some time"
 								: "This shouldn't be long"}

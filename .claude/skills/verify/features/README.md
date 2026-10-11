@@ -11,7 +11,7 @@ This directory is the maintained source for verifying Kheopswap's user-facing be
 
 ## Driving conventions
 
-- Reach pages by URL (`agent-browser open "http://localhost:5173/#/paseo/<route>"`) or by the `Main navigation` links `Swap`, `Transfer`, `Portfolio`, and `Liquidity Pools`. With no connected account, `Portfolio` reads `Tokens`.
+- Reach pages by URL (`agent-browser open "http://localhost:5173/#/paseo/<route>"`) or by the `Main navigation` links `Swap`, `Transfer`, `Portfolio`, and `Liquidity`. With no connected account, `Portfolio` reads `Tokens`.
 - Use `find role ... --name`. Add `--exact` when a longer name contains the short one (`Swap` vs `Swap token direction`, `Close` in dialogs).
 - Wait for text or conditions (`wait --text`, `wait --fn`), never fixed sleeps. Balances and quotes stream in after the page renders.
 - After a click that opens a drawer, run `scripts/wait-drawer.sh open` before clicking inside it. After `press Escape` or a choice that closes it, run `scripts/wait-drawer.sh closed`.

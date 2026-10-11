@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
-import { MagicButton } from "../../components/MagicButton";
+import { Styles } from "../../components/styles";
 import { useTransaction } from "./TransactionProvider";
 
 type TransactionSubmitButtonProps = PropsWithChildren<{
@@ -19,19 +19,24 @@ export const TransactionSubmitButton: FC<TransactionSubmitButtonProps> = ({
 
 	if (isEthereumNetworkMismatch) {
 		return (
-			<MagicButton
+			<button
 				type="button"
+				className={Styles.primaryButton}
 				disabled={isSwitchingEthereumNetwork}
 				onClick={onSwitchEthereumNetwork}
 			>
 				Switch network
-			</MagicButton>
+			</button>
 		);
 	}
 
 	return (
-		<MagicButton type="submit" disabled={disabled || !canSubmit}>
+		<button
+			type="submit"
+			className={Styles.primaryButton}
+			disabled={disabled || !canSubmit}
+		>
 			{children}
-		</MagicButton>
+		</button>
 	);
 };

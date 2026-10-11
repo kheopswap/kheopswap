@@ -1,5 +1,4 @@
 import { type FC, memo, useCallback, useMemo } from "react";
-import { Styles } from "../../components/styles";
 import { TokenLogo } from "../../components/TokenLogo";
 import { useNativeToken } from "../../hooks/useNativeToken";
 import type { TokenId } from "../../registry/tokens/types";
@@ -8,9 +7,12 @@ import { cn } from "../../utils/cn";
 import { getTokenDescription } from "../../utils/getTokenDescription";
 import { TokenBalancesSummary } from "./PortfolioDataCell";
 import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
+import type { PortfolioHolding } from "./usePortfolioAllocation";
 
 type PortfolioRowProps = PortfolioRowData & {
 	visibleCol: PortfolioVisibleCol;
+	isFirst: boolean;
+	holding: PortfolioHolding | undefined;
 	onSelect: (tokenId: TokenId) => void;
 };
 
@@ -19,6 +21,8 @@ export const PortfolioRow: FC<PortfolioRowProps> = memo(function PortfolioRow({
 	balance,
 	price,
 	visibleCol,
+	isFirst,
+	holding,
 	onSelect,
 }) {
 	const { assetHub, stableToken } = useRelayChains();
@@ -33,17 +37,16 @@ export const PortfolioRow: FC<PortfolioRowProps> = memo(function PortfolioRow({
 		<button
 			type="button"
 			className={cn(
-				Styles.button,
-				"grid  h-16 items-center gap-2 rounded-md bg-primary-950/50 px-2 pl-3 pr-3 text-left enabled:hover:bg-primary-900/50 sm:gap-4",
-				"grid-cols-[1fr_120px] sm:grid-cols-[1fr_120px_120px]",
+				"relative grid h-17 grid-cols-[1fr_auto] items-center gap-x-4 px-5 text-left hover:bg-row-hover sm:px-6 sm:grid-cols-[1fr_180px_180px]",
+				!isFirst && "border-t border-line",
 			)}
 			onClick={handleClick}
 		>
-			<div className="flex items-center gap-2 overflow-hidden sm:gap-3 h-full pl-1">
-				<TokenLogo className="inline-block size-10" token={token} />
+			<div className="flex h-full min-w-0 items-center gap-3">
+				<TokenLogo className="inline-block size-8 shrink-0" token={token} />
 				<div className="flex grow flex-col items-start overflow-hidden">
-					<div className="w-full truncate">{token.symbol}</div>
-					<div className="w-full truncate text-sm text-neutral-500">
+					<div className="w-full truncate font-semibold">{token.symbol}</div>
+					<div className="w-full truncate text-xs text-muted">
 						{description}
 					</div>
 				</div>
@@ -69,6 +72,18 @@ export const PortfolioRow: FC<PortfolioRowProps> = memo(function PortfolioRow({
 					/>
 				)}
 			</div>
+
+			{!!holding && (
+				<span
+					aria-hidden
+					className="absolute -bottom-px left-0 h-0.5"
+					style={{
+						width: `${holding.share * 100}%`,
+						backgroundColor: holding.color,
+						boxShadow: `0 0 12px ${holding.color}`,
+					}}
+				/>
+			)}
 		</button>
 	);
 });

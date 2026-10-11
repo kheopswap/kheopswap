@@ -34,22 +34,21 @@ export const CreateLiquidityPoolPage = () => {
 
 	return (
 		<Layout>
-			<div className="p-2">
-				<PageTitle>
-					<NavLink
-						to={relayId ? `/${relayId}/pools` : "/"}
-						className="hover:text-neutral-50"
-					>
-						Liquidity Pools
-					</NavLink>{" "}
-					<ChevronRightIcon className="inline size-[0.8em]" /> Create {poolName}
-				</PageTitle>
-				<PageContent>
-					<ErrorBoundary>
-						<CreatePool tokenId={tokenId} />
-					</ErrorBoundary>
-				</PageContent>
-			</div>
+			<PageTitle>
+				<NavLink
+					to={relayId ? `/${relayId}/pools` : "/"}
+					className="font-normal text-muted hover:text-text"
+				>
+					Liquidity Pools
+				</NavLink>{" "}
+				<ChevronRightIcon className="inline size-[0.8em] text-muted" /> Create{" "}
+				{poolName}
+			</PageTitle>
+			<PageContent>
+				<ErrorBoundary>
+					<CreatePool tokenId={tokenId} />
+				</ErrorBoundary>
+			</PageContent>
 			<TabTitle title={`Create Pool ${poolName}`} />
 		</Layout>
 	);

@@ -1,4 +1,8 @@
-import type { FC, ReactNode } from "react";
+import {
+	FormSummary,
+	FormSummaryRow,
+	FormSummarySection,
+} from "../../components/FormSummary";
 import { Tokens } from "../../components/Tokens";
 import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
@@ -6,16 +10,6 @@ import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummary
 import { PriceImpact } from "./PriceImpact";
 import { Slippage } from "./Slippage";
 import { useSwap } from "./SwapProvider";
-
-const SummaryRow: FC<{ label: ReactNode; value: ReactNode }> = ({
-	label,
-	value,
-}) => (
-	<div className="flex w-full items-center gap-2 overflow-hidden">
-		<div className="grow truncate text-neutral-500">{label}</div>
-		<div className="shrink-0 text-right">{value}</div>
-	</div>
-);
 
 export const SwapSummary = () => {
 	const {
@@ -33,13 +27,13 @@ export const SwapSummary = () => {
 	} = useSwap();
 
 	return (
-		<div className="flex flex-col gap-2">
-			<div>
-				<SummaryRow
+		<FormSummary>
+			<FormSummarySection>
+				<FormSummaryRow
 					label="Pool reserves"
 					value={
 						isPoolNotFound ? (
-							<div className="text-error-500">Pool not found</div>
+							<div className="text-error">Pool not found</div>
 						) : reserveIn && reserveOut && tokenIn && tokenOut ? (
 							<div className="flex flex-wrap justify-end">
 								<Tokens plancks={reserveIn} token={tokenIn} />
@@ -49,25 +43,25 @@ export const SwapSummary = () => {
 						) : tokenIn &&
 							tokenOut &&
 							(reserveIn === 0n || reserveOut === 0n) ? (
-							<div className="text-error-500">No liquidity</div>
+							<div className="text-error">No liquidity</div>
 						) : null
 					}
 				/>
-				<SummaryRow
+				<FormSummaryRow
 					label="Price impact"
 					value={
 						priceImpact !== undefined && <PriceImpact value={priceImpact} />
 					}
 				/>
-			</div>
+			</FormSummarySection>
 			{!!call && (
 				<>
-					<div>
-						<SummaryRow
+					<FormSummarySection>
+						<FormSummaryRow
 							label="Slippage tolerance"
 							value={<Slippage value={slippage} />}
 						/>
-						<SummaryRow
+						<FormSummaryRow
 							label="Min. received"
 							value={
 								isBigInt(minPlancksOut) &&
@@ -76,17 +70,17 @@ export const SwapSummary = () => {
 								)
 							}
 						/>
-					</div>
-					<div>
-						<SummaryRow
+					</FormSummarySection>
+					<FormSummarySection>
+						<FormSummaryRow
 							label="Simulation"
 							value={<TransactionDryRunSummaryValue />}
 						/>
-						<SummaryRow
+						<FormSummaryRow
 							label="Transaction fee"
 							value={<TransactionFeeSummaryValue />}
 						/>
-						<SummaryRow
+						<FormSummaryRow
 							label="Service fee"
 							value={
 								!!tokenIn &&
@@ -96,7 +90,7 @@ export const SwapSummary = () => {
 								)
 							}
 						/>
-						<SummaryRow
+						<FormSummaryRow
 							label="Protocol fee"
 							value={
 								!!tokenIn &&
@@ -106,9 +100,9 @@ export const SwapSummary = () => {
 								)
 							}
 						/>
-					</div>
+					</FormSummarySection>
 				</>
 			)}
-		</div>
+		</FormSummary>
 	);
 };

@@ -49,7 +49,7 @@ const sortByColumn =
 	};
 
 export const PortfolioTable = () => {
-	const { accounts, balances, isLoading } = usePortfolio();
+	const { accounts, balances, holdingsByTokenId, isLoading } = usePortfolio();
 	const allRows = usePortfolioRows();
 
 	const [selectedTokenId, setSelectedTokenId] = useState<TokenId | null>(null);
@@ -97,7 +97,7 @@ export const PortfolioTable = () => {
 	return (
 		<div>
 			<SearchInput
-				className="mb-4 "
+				className="mx-4 mb-4 sm:mx-5"
 				placeholder="Search for more tokens"
 				onChange={setRawSearch}
 			/>
@@ -112,6 +112,7 @@ export const PortfolioTable = () => {
 			<PortfolioRows
 				rows={rows}
 				visibleCol={visibleCol}
+				holdingsByTokenId={holdingsByTokenId}
 				isLoading={isLoading}
 				onTokenSelect={setSelectedTokenId}
 			/>

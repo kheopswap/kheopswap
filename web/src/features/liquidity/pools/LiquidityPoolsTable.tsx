@@ -1,13 +1,10 @@
-import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import { type FC, useDeferredValue, useMemo, useState } from "react";
 import { useWallets } from "../../../common/kheopskit";
 import { SearchInput } from "../../../components/SearchInput";
 import { LiquidityPoolsHeaderRow } from "./LiquidityPoolsHeaderRow";
 import { LiquidityPoolsRows } from "./LiquidityPoolsRows";
-import type { LiquidityPoolsSortMode, LiquidityPoolsVisibleCol } from "./types";
-import {
-	type LiquidityPoolRowData,
-	useLiquidityPoolsTable,
-} from "./useLiquidityPools";
+import type { LiquidityPoolsSortMode } from "./types";
+import type { LiquidityPoolRowData } from "./useLiquidityPools";
 
 const sortByColumn =
 	(mode: LiquidityPoolsSortMode) =>
@@ -33,14 +30,13 @@ const sortByColumn =
 		return 0;
 	};
 
-export const LiquidityPoolsTable = () => {
-	const { data: pools, isLoading } = useLiquidityPoolsTable();
-
+export const LiquidityPoolsTable: FC<{
+	pools: LiquidityPoolRowData[];
+	isLoading: boolean;
+}> = ({ pools, isLoading }) => {
 	const { accounts } = useWallets();
 
-	const [visibleCol, setVisibleCol] = useState<LiquidityPoolsVisibleCol>("tvl");
-	const [sortByCol, setSortByCol] =
-		useState<LiquidityPoolsSortMode>(visibleCol);
+	const [sortByCol, setSortByCol] = useState<LiquidityPoolsSortMode>("tvl");
 
 	const sortedRows = useMemo(
 		() =>
@@ -67,15 +63,10 @@ export const LiquidityPoolsTable = () => {
 				);
 	}, [search, sortedRows]);
 
-	const handleSortClick = useCallback((column: LiquidityPoolsSortMode) => {
-		if (column !== "symbol") setVisibleCol(column);
-		setSortByCol(column);
-	}, []);
-
 	return (
 		<div>
 			<SearchInput
-				className="mb-4 "
+				className="mx-4 mb-4 sm:mx-5"
 				placeholder="Search"
 				onChange={setRawSearch}
 			/>
@@ -84,13 +75,9 @@ export const LiquidityPoolsTable = () => {
 				isLoading={isLoading}
 				sortByCol={sortByCol}
 				withPositions={!!accounts.length}
-				onColumnHeaderClick={handleSortClick}
+				onColumnHeaderClick={setSortByCol}
 			/>
-			<LiquidityPoolsRows
-				rows={rows}
-				visibleCol={visibleCol}
-				isLoading={isLoading}
-			/>
+			<LiquidityPoolsRows rows={rows} isLoading={isLoading} />
 		</div>
 	);
 };

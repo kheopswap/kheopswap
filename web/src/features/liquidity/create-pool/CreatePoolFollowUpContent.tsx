@@ -38,8 +38,10 @@ export const CreatePoolFollowUpContent: FC<{
 	return (
 		<div className={cn(isNumber(poolId) ? "block" : "hidden")}>
 			<div className="flex flex-wrap justify-between">
-				<div className="text-neutral-500">Pool ID</div>
-				<div className="text-right font-medium text-neutral-500">{poolId}</div>
+				<div className="text-muted">Pool ID</div>
+				<div className="text-right font-mono font-medium text-muted">
+					{poolId}
+				</div>
 			</div>
 		</div>
 	);

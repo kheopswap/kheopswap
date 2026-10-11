@@ -35,14 +35,14 @@ export const TokenBalancesSummary: FC<
 					<Shimmer className="h-5 overflow-hidden">0.0001 TKN</Shimmer>
 				</div>
 				<div>
-					<Shimmer className="h-4 overflow-hidden text-sm">0.00 USDC</Shimmer>
+					<Shimmer className="h-4 overflow-hidden text-xs">0.00 USDC</Shimmer>
 				</div>
 			</div>
 		);
 
 	return (
 		<div className="flex size-full flex-col items-end justify-center overflow-hidden">
-			<div className="truncate">
+			<div className="truncate font-semibold">
 				<Tokens
 					token={token}
 					plancks={tokenPlancks ?? 0n}
@@ -50,7 +50,7 @@ export const TokenBalancesSummary: FC<
 					isPrice={isPrice}
 				/>
 			</div>
-			<div className="truncate text-sm text-neutral-500">
+			<div className="truncate text-xs text-muted">
 				<Tokens
 					token={stableToken}
 					plancks={stablePlancks ?? 0n}

@@ -43,6 +43,12 @@ Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build an
 
 The `tokens.<network>.json` snapshots are generated. Before touching token data, read the token registry section of `README.md`.
 
+Token logos live in `web/public/img/tokens`. Their dominant colors are computed at build time by `web/plugins/tokenColors.ts` and imported from `virtual:token-colors`. Restart `pnpm dev` after adding a logo.
+
+## Brand assets
+
+The icons and favicons in `web/public` are generated from `web/public/logo.svg`. Edit `logo.svg`, then run `pnpm generate-brand-assets`.
+
 ## Naming
 
 Name Ethereum-style addresses and helpers `ethereum` (`isEthereumAddress`, `ethereumAddress`). Asset Hub accepts Ethereum addresses but is not an EVM runtime, so `evm` appears only where a third-party API imposes it.

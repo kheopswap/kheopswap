@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from "react";
 
 export const PageTitle: FC<{ children: ReactNode }> = ({ children }) => (
-	<h2 className="mb-2 text-lg font-bold text-primary-50 sm:px-4 sm:text-xl">
+	<h2 className="mx-auto mb-3.5 max-w-[480px] px-1 text-sm font-semibold text-text">
 		{children}
 	</h2>
 );

@@ -37,12 +37,13 @@ export const useLiquidityPoolsTable = () => {
 
 	const isLoading = isLoadingTokens || isLoadingPools;
 
-	const { data: poolsWithValuation } = usePoolsWithValuation({
-		pools,
-		tokens: allTokens,
-		nativeToken,
-		stableToken,
-	});
+	const { data: poolsWithValuation, isLoading: isLoadingValuations } =
+		usePoolsWithValuation({
+			pools,
+			tokens: allTokens,
+			nativeToken,
+			stableToken,
+		});
 
 	const { accounts } = useWallets();
 	const addresses = useMemo(
@@ -65,5 +66,5 @@ export const useLiquidityPoolsTable = () => {
 			.filter((rp): rp is LiquidityPoolRowData => !!rp.token1 && !!rp.token2);
 	}, [allTokens, poolsWithPositions]);
 
-	return { data: poolsRows, isLoading };
+	return { data: poolsRows, isLoading, isLoadingValuations };
 };

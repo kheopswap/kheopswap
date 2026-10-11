@@ -5,12 +5,10 @@ import { Swap } from "../features/swap/Swap";
 
 export const SwapPage = () => (
 	<Layout>
-		<div className="p-2">
-			<PageContent>
-				<ErrorBoundary>
-					<Swap />
-				</ErrorBoundary>
-			</PageContent>
-		</div>
+		<PageContent>
+			<ErrorBoundary>
+				<Swap />
+			</ErrorBoundary>
+		</PageContent>
 	</Layout>
 );

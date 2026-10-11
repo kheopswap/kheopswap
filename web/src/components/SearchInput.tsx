@@ -42,19 +42,18 @@ export const SearchInput: FC<{
 		<div
 			className={cn(
 				Styles.field,
-				"flex items-center gap-2 px-3 py-2 focus-within:border-neutral-300",
-				!!search && "border-neutral-400",
+				"flex h-11.5 items-center gap-2.5 px-3.5",
 				className,
 			)}
 		>
-			<MagnifyingGlassIcon className="size-5 stroke-neutral-500" />
+			<MagnifyingGlassIcon className="size-4 shrink-0 text-muted" />
 			<input
 				ref={refInput}
 				type="text"
 				placeholder={placeholder}
 				aria-label={placeholder ?? "Search"}
 				className={
-					"grow bg-transparent outline-hidden placeholder:text-neutral-600"
+					"min-w-0 grow bg-transparent outline-hidden placeholder:text-muted"
 				}
 				onChange={(e) => setSearch(e.target.value)}
 			/>
@@ -64,7 +63,7 @@ export const SearchInput: FC<{
 				onClick={handleResetClick}
 				aria-label="Clear search"
 			>
-				<XMarkIcon className="size-5 stroke-white" />
+				<XMarkIcon className="size-4.5 text-muted hover:text-text" />
 			</button>
 		</div>
 	);

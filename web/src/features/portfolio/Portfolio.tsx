@@ -1,11 +1,16 @@
 import { useMemo } from "react";
+import { PageContent } from "../../components/layout/PageContent";
 import { TabTitle } from "../../components/TabTitle";
+import { PortfolioAllocation } from "./PortfolioAllocation";
 import { PortfolioProvider, usePortfolio } from "./PortfolioProvider";
 import { PortfolioTable } from "./PortfolioTable";
 
 export const Portfolio = () => (
 	<PortfolioProvider>
-		<PortfolioTable />
+		<PortfolioAllocation />
+		<PageContent variant="table">
+			<PortfolioTable />
+		</PageContent>
 		<PortfolioTabTitle />
 	</PortfolioProvider>
 );

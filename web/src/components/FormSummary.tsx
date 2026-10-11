@@ -4,7 +4,7 @@ import { cn } from "../utils/cn";
 export const FormSummary: FC<PropsWithChildren & { className?: string }> = ({
 	children,
 	className,
-}) => <div className={cn("flex flex-col gap-2", className)}>{children}</div>;
+}) => <div className={cn("flex flex-col px-0.5", className)}>{children}</div>;
 
 export const FormSummarySection: FC<
 	PropsWithChildren & { className?: string }
@@ -16,9 +16,12 @@ export const FormSummaryRow: FC<{
 	className?: string;
 }> = ({ label, value, className }) => (
 	<div
-		className={cn("flex w-full items-center gap-2 overflow-hidden", className)}
+		className={cn(
+			"flex w-full items-center gap-4 overflow-hidden py-1.25",
+			className,
+		)}
 	>
-		<div className="grow truncate text-neutral-500">{label}</div>
+		<div className="grow truncate text-muted">{label}</div>
 		<div className="shrink-0 text-right">{value}</div>
 	</div>
 );

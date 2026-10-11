@@ -38,19 +38,16 @@ const WalletButton: FC<{
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"flex w-full items-center justify-between gap-3 rounded-md border p-2 px-4 text-left",
-				wallet.isConnected
-					? "border-green-700 hover:bg-green-500/10"
-					: "hover:bg-white/10",
+				"flex w-full items-center justify-between gap-3 rounded-control bg-surface-2 px-3.5 py-3 text-left hover:bg-hover",
 			)}
 		>
 			<div className="size-8 shrink-0">
 				<WalletIcon walletId={wallet.id} className="size-8" />
 			</div>
-			<div className="grow text-left">
+			<div className="grow text-left font-semibold">
 				{wallet.name}
 				{platformLabel && (
-					<span className="ml-1 text-xs text-neutral-500">
+					<span className="ml-1 text-xs font-normal text-muted">
 						({platformLabel})
 					</span>
 				)}
@@ -58,7 +55,7 @@ const WalletButton: FC<{
 			<div
 				className={cn(
 					"size-2 rounded-full",
-					wallet.isConnected ? "bg-success-500" : "bg-error-500",
+					wallet.isConnected ? "bg-success" : "bg-error",
 				)}
 			/>
 		</button>
@@ -87,14 +84,14 @@ const AccountButton = memo<{
 			disabled={disabled}
 			className={cn(
 				Styles.button,
-				"flex w-full items-center gap-4   overflow-hidden p-2 pl-4  pr-3 ",
-				selected && "ring-1 ring-neutral-500",
+				"flex min-h-14 w-full items-center gap-3 overflow-hidden px-3.5 py-2.5",
+				selected && "ring-1 ring-muted",
 				"disabled:border-transparent disabled:opacity-100",
 			)}
 		>
 			<AccountIcon account={account} className="size-8 shrink-0" />
 			<div className="flex grow flex-col items-start justify-center overflow-hidden">
-				<div className="flex w-full items-center gap-2 overflow-hidden text-neutral-300">
+				<div className="flex w-full items-center gap-2 overflow-hidden font-medium text-text">
 					<div className="truncate">
 						{accountName ?? shortenAddress(account.address)}
 					</div>
@@ -102,7 +99,7 @@ const AccountButton = memo<{
 						<WalletIcon walletId={account.walletId} className="size-4" />
 					</div>
 				</div>
-				<div className="truncate text-xs text-neutral-500">
+				<div className="truncate font-mono text-xs text-muted">
 					{shortenAddress(account.address)}
 				</div>
 			</div>
@@ -110,18 +107,18 @@ const AccountButton = memo<{
 				balance.isInitializing ? (
 					<div className="flex h-full flex-col items-end justify-center gap-0.5">
 						<Shimmer className="h-5 overflow-hidden">0.0001 TKN</Shimmer>
-						<Shimmer className="h-4 overflow-hidden text-sm">0.00 USDC</Shimmer>
+						<Shimmer className="h-4 overflow-hidden text-xs">0.00 USDC</Shimmer>
 					</div>
 				) : (
 					<div className="flex h-full flex-col items-end justify-center">
-						<div className="text-neutral-50">
+						<div className="font-semibold text-text">
 							<Tokens
 								token={token}
 								plancks={balance.tokenPlancks ?? 0n}
 								pulse={balance.isLoadingTokenPlancks}
 							/>
 						</div>
-						<div className="text-sm text-neutral-500">
+						<div className="text-xs text-muted">
 							<Tokens
 								token={stableToken}
 								plancks={balance.stablePlancks ?? 0n}
@@ -158,10 +155,9 @@ const AddressInput: FC<{
 	return (
 		<div
 			className={cn(
-				"flex h-10.5 w-full items-center rounded-xs border border-neutral-500 bg-neutral-900 outline-1 focus-within:outline-solid",
-				localAddress && !isValid
-					? "border-error-500 outline-error-500"
-					: "border-neutral-500 outline-neutral-500",
+				Styles.field,
+				"flex h-11.5 w-full items-center overflow-hidden",
+				localAddress && !isValid && "border-error focus-within:border-error",
 			)}
 		>
 			<input
@@ -169,24 +165,19 @@ const AddressInput: FC<{
 				defaultValue={localAddress}
 				onChange={(e) => setLocalAddress(e.target.value)}
 				autoComplete="off"
-				className="grow bg-transparent px-2 outline-hidden"
+				className="min-w-0 grow bg-transparent px-3.5 font-mono text-[13px] outline-hidden"
 			/>
 			<div
 				className={cn(
-					"h-full bg-neutral-600 p-1",
-
-					localAddress
-						? isValid
-							? "hover:bg-neutral-500"
-							: "bg-error-500 opacity-50"
-						: "bg-neutral-800",
+					"h-full border-l border-line",
+					isValid ? "text-text hover:bg-hover" : "text-faint",
 				)}
 			>
 				<button
 					type="button"
 					onClick={handleClick}
 					disabled={!isValid}
-					className="h-full px-2"
+					className="h-full px-3"
 				>
 					<ActionRightIcon className="size-5 shrink-0 fill-current" />
 				</button>
@@ -223,15 +214,15 @@ const AccountSelectDrawerContent: FC<{
 		>
 			{!ownedOnly && onChange && (
 				<div>
-					<h4 className="mb-1">Address</h4>
+					<h4 className={cn(Styles.label, "mb-2")}>Address</h4>
 					<AddressInput address={address} onChange={onChange} />
 				</div>
 			)}
 			<div>
 				{!!injectedWallets.length && (
 					<>
-						<h4 className="mb-1">Installed wallets</h4>
-						<ul className="flex flex-col gap-2">
+						<h4 className={cn(Styles.label, "mb-2")}>Installed wallets</h4>
+						<ul className="flex flex-col gap-1.5">
 							{injectedWallets.map((wallet) => (
 								<li key={wallet.id}>
 									<WalletButton
@@ -244,13 +235,13 @@ const AccountSelectDrawerContent: FC<{
 					</>
 				)}
 				{!injectedWallets.length && (
-					<div className="mb-1">No wallets found</div>
+					<div className="text-muted">No wallets found</div>
 				)}
 			</div>
 			{!!walletConnectWallets.length && (
 				<div>
-					<h4>External wallets</h4>
-					<ul className="mt-2 flex flex-col gap-2">
+					<h4 className={cn(Styles.label, "mb-2")}>External wallets</h4>
+					<ul className="flex flex-col gap-1.5">
 						{walletConnectWallets.map((wallet) => (
 							<li key={wallet.id}>
 								<WalletButton
@@ -264,8 +255,8 @@ const AccountSelectDrawerContent: FC<{
 			)}
 			{!!accounts.length && (
 				<div>
-					<h4 className="mb-1">Connected Accounts</h4>
-					<div className="flex flex-col gap-2">
+					<h4 className={cn(Styles.label, "mb-2")}>Connected Accounts</h4>
+					<div className="flex flex-col gap-1.5">
 						{sortedAccounts.map((account) => (
 							<AccountButton
 								key={account.id}

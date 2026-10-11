@@ -24,7 +24,9 @@ export const StablePrice: FC<{
 
 	if (hide || isLoading)
 		return (
-			<Shimmer className={cn("inline-block", className, hide && "invisible")}>
+			<Shimmer
+				className={cn("inline-block font-mono", className, hide && "invisible")}
+			>
 				{`0000 ${stableToken?.symbol ?? "USDC"}`}
 			</Shimmer>
 		);
@@ -32,7 +34,7 @@ export const StablePrice: FC<{
 	return (
 		<Tooltip>
 			<TooltipTrigger render={<span />}>
-				<span className={cn("whitespace-nowrap", className)}>
+				<span className={cn("whitespace-nowrap font-mono", className)}>
 					{prefix}
 					{formatDecimals(price, 2)} {stableToken?.symbol}
 				</span>

@@ -27,7 +27,7 @@ export const TransactionDryRunSummaryValue = () => {
 	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 
 	if (errorDryRun || (dryRun && !dryRun.success))
-		return <span className="text-neutral-500">Unavailable</span>;
+		return <span className="text-muted">Unavailable</span>;
 
 	if (!dryRun) return null;
 
