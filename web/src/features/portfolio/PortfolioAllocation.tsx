@@ -1,5 +1,6 @@
 import { uniqBy } from "lodash-es";
 import { type FC, useMemo } from "react";
+import { useCountUp } from "../../hooks/useCountUp";
 import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import { formatDecimals } from "../../utils/formatDecimals";
@@ -41,16 +42,20 @@ export const PortfolioAllocation = () => {
 		[accounts],
 	);
 
+	const displayedTotal = useCountUp(
+		Number(plancksToTokens(allocation.total, stableToken.decimals)),
+	);
+
 	if (!accountsCount || !allocation.total) return null;
 
-	const { total, slices, other } = allocation;
+	const { slices, other } = allocation;
 
 	return (
 		<section className="mx-1 mt-3 mb-9">
 			<div className="mb-3 text-[12.5px] text-muted">Total portfolio</div>
 			<div className="flex items-baseline gap-3.5">
 				<span className="font-light font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]">
-					{formatDecimals(plancksToTokens(total, stableToken.decimals), 4)}
+					{formatDecimals(displayedTotal, 4)}
 				</span>
 				<span className="font-medium font-mono text-lg text-muted sm:text-[22px]">
 					{stableToken.symbol}
