@@ -28,7 +28,7 @@ export const PortfolioHeaderRow: FC<{
 	return (
 		<div
 			className={cn(
-				"grid grid-cols-[1fr_auto] gap-x-4 px-1 pb-2.5 text-xs sm:grid-cols-[1fr_180px_180px]",
+				"grid grid-cols-[1fr_auto] gap-x-4 px-5 pb-2.5 sm:px-6 text-xs sm:grid-cols-[1fr_180px_180px]",
 				!rows.length && !isLoading && "invisible",
 			)}
 		>

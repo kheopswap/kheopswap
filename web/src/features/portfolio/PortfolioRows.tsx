@@ -45,7 +45,7 @@ export const PortfolioRows: FC<{
 			footer={
 				<div
 					className={cn(
-						"flex h-17 w-full items-center gap-3 px-1",
+						"flex h-17 w-full items-center gap-3 px-5 sm:px-6",
 						!!rows.length && "border-t border-line",
 						isLoading || !rows.length ? "visible" : "invisible",
 					)}

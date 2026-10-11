@@ -68,7 +68,7 @@ export const LiquidityPoolsTable = () => {
 	return (
 		<div>
 			<SearchInput
-				className="mb-4 "
+				className="mx-4 mb-4 sm:mx-5"
 				placeholder="Search"
 				onChange={setRawSearch}
 			/>

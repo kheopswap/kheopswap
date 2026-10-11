@@ -24,11 +24,11 @@ export const LiquidityPoolsRow: FC<LiquidityPoolsRowProps> = ({
 		<Link
 			to={pool.poolAssetId.toString()}
 			className={cn(
-				"grid h-17 grid-cols-[1fr_auto] content-center items-center gap-x-4 px-1 text-left hover:bg-row-hover sm:grid-cols-[1fr_180px_180px]",
+				"grid h-17 grid-cols-[1fr_auto] content-center items-center gap-x-4 px-5 text-left hover:bg-row-hover sm:px-6 sm:grid-cols-[1fr_180px_180px]",
 				!isFirst && "border-t border-line",
 			)}
 		>
-			<div className="row-span-2 flex items-center gap-3 overflow-hidden sm:row-span-1">
+			<div className="row-span-2 flex min-w-0 items-center gap-3 sm:row-span-1">
 				<div className="flex shrink-0">
 					<TokenLogo className="inline-block size-8" token={pool.token1} />
 					<TokenLogo
