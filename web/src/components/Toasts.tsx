@@ -44,7 +44,7 @@ const icon = (props: IconProps): ReactNode => {
 export const Toasts = () => (
 	<ToastContainer
 		theme="dark"
-		toastClassName="rounded-control border border-line font-sans text-sm"
+		toastClassName="rounded-control border border-grid/35 font-sans text-sm"
 		position="bottom-right"
 		icon={icon}
 	/>

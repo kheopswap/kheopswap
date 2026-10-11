@@ -264,10 +264,9 @@ html[data-mode="light"] {
 		0 0 14px --alpha(var(--color-glow) / 70%);
 }
 
-/* react-toastify injects its stylesheet at runtime after ours, so overrides are scoped to its container */
 .Toastify {
 	--toastify-font-family: var(--font-sans);
-	--toastify-color-dark: var(--color-surface);
+	--toastify-color-dark: var(--color-drawer);
 	--toastify-text-color-dark: var(--color-text);
 	--toastify-color-progress-dark: var(--color-accent);
 	--toastify-color-info: var(--color-text);

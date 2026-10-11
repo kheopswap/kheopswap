@@ -58,7 +58,7 @@ export const TooltipContent: FC<{
 			<BaseTooltip.Positioner side={side} sideOffset={5} align={align}>
 				<BaseTooltip.Popup
 					className={cn(
-						"z-50 rounded-chip border border-line bg-surface px-3 py-2 text-xs text-text shadow-sm",
+						"z-50 rounded-chip border border-grid/35 bg-drawer px-3 py-2 text-xs text-text shadow-sm",
 						className,
 					)}
 				>
