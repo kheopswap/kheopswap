@@ -26,9 +26,9 @@ const LOGO_RANKS = 16;
 const SKELETON_SPOKES = getHubSpokes(
 	Array.from({ length: 14 }, (_, rank) => ({
 		poolAssetId: rank,
-		valuation: BigInt(Math.round(10 ** (6 - rank * 0.3))),
+		valuation: BigInt((14 - rank) ** 3),
 	})),
-	{ stableDecimals: 0, rMin: R_MIN, rMax: R_MAX },
+	{ rMin: R_MIN, rMax: R_MAX },
 );
 const SKELETON_SWEEP_MS = 2000;
 
@@ -86,6 +86,14 @@ const HubSpokeLink: FC<{
 			aria-label={`${pool.token1.symbol}/${pool.token2.symbol} pool, ${tvl} ${stableSymbol}`}
 			className="group outline-none"
 		>
+			<title>{`${pool.token2.symbol} ${tvl} ${stableSymbol}`}</title>
+			<line
+				x1={start.x}
+				y1={start.y}
+				x2={tip.x}
+				y2={tip.y}
+				className="stroke-transparent stroke-[8]"
+			/>
 			<line
 				x1={start.x}
 				y1={start.y}
@@ -218,11 +226,10 @@ export const LiquidityPoolsHub: FC<{
 	const spokes = useMemo(
 		() =>
 			getHubSpokes(pools, {
-				stableDecimals: stableToken.decimals,
 				rMin: R_MIN,
 				rMax: R_MAX,
 			}),
-		[pools, stableToken.decimals],
+		[pools],
 	);
 
 	const poolsById = useMemo(() => keyBy(pools, "poolAssetId"), [pools]);
@@ -241,7 +248,7 @@ export const LiquidityPoolsHub: FC<{
 	const formatTvl = (plancks: bigint | null) =>
 		formatDecimals(plancksToTokens(plancks ?? 0n, stableToken.decimals), 4);
 
-	const summary = `${pools.length} pools, every one paired with ${nativeToken.symbol}. Swaps route through ${nativeToken.symbol}, so this is the whole market.`;
+	const summary = `${pools.length} pools, every one paired with ${nativeToken.symbol}.`;
 
 	return (
 		<section className="mb-7 grid items-center gap-6 px-1 md:grid-cols-[300px_1fr]">
@@ -264,15 +271,12 @@ export const LiquidityPoolsHub: FC<{
 				) : (
 					<Shimmer className="mt-3.5 max-w-[32ch] text-sm">{summary}</Shimmer>
 				)}
-				<p className="mt-3.5 text-[12.5px] text-faint">
-					Longer spokes hold more liquidity.
-				</p>
 			</div>
 			<svg
+				aria-label={`Pools around ${nativeToken.symbol}`}
 				viewBox={`0 0 ${SIZE} ${SIZE}`}
 				className="mx-auto w-full max-w-[420px] overflow-visible md:max-w-[600px]"
 			>
-				<title>Pools around {nativeToken.symbol}</title>
 				<defs>
 					<radialGradient id={glowId}>
 						<stop

@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getHubSpokes } from "./getHubSpokes";
 
-const STABLE_DECIMALS = 6;
-const options = { stableDecimals: STABLE_DECIMALS, rMin: 90, rMax: 290 };
+const options = { rMin: 90, rMax: 290 };
 
 const stable = (tokens: number) => BigInt(tokens) * 10n ** 6n;
 
@@ -54,25 +53,21 @@ describe("getHubSpokes", () => {
 		expect(spokes[spokes.length - 1]?.radius).toBe(options.rMin);
 	});
 
-	it("puts every pool under the floor at the inner radius", () => {
-		const spokes = getHubSpokes(
-			poolsWithTvl([1_000_000, 99, 5, null]),
-			options,
-		);
-		const belowFloor = spokes.filter((s) => s.poolAssetId !== 0);
-		expect(belowFloor.map((s) => s.radius)).toEqual([
-			options.rMin,
+	it("puts empty and unvalued pools at the inner radius", () => {
+		const spokes = getHubSpokes(poolsWithTvl([1_000_000, 0, null]), options);
+		expect(spokes.slice(1).map((s) => s.radius)).toEqual([
 			options.rMin,
 			options.rMin,
 		]);
 	});
 
-	it("maps radius on a log scale", () => {
-		const spokes = getHubSpokes(
-			poolsWithTvl([1_000_000, 10_000, 100]),
-			options,
-		);
-		expect(spokes[1]?.radius).toBeCloseTo((options.rMin + options.rMax) / 2);
+	it("maps radius linearly to the share of the deepest pool", () => {
+		const spokes = getHubSpokes(poolsWithTvl([264, 132, 55, 2, 0]), options);
+		const at = (share: number) =>
+			options.rMin + share * (options.rMax - options.rMin);
+		expect(spokes[1]?.radius).toBeCloseTo(at(0.5));
+		expect(spokes[2]?.radius).toBeCloseTo(at(55 / 264));
+		expect(spokes[3]?.radius).toBeCloseTo(at(2 / 264));
 	});
 
 	it("scales radii to the deepest pool, whatever the stable unit", () => {
@@ -83,11 +78,9 @@ describe("getHubSpokes", () => {
 			expect(radius).toBeCloseTo(scaled[i] as number);
 	});
 
-	it("keeps a pool at a fifth of the deepest well beyond empty pools", () => {
-		const spokes = getHubSpokes(poolsWithTvl([264, 203, 56, 0]), options);
-		const midpoint = (options.rMin + options.rMax) / 2;
-		expect(spokes[2]?.radius).toBeGreaterThan(midpoint);
-		expect(spokes[3]?.radius).toBe(options.rMin);
+	it("puts every pool at the outer radius when none has value", () => {
+		const spokes = getHubSpokes(poolsWithTvl([0, null]), options);
+		expect(spokes.map((s) => s.radius)).toEqual([290, 290]);
 	});
 
 	it("puts pools of equal depth at the outer radius", () => {
