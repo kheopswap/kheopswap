@@ -1,5 +1,6 @@
 import type { FC, ReactNode } from "react";
 import { NavLink, useParams } from "react-router";
+import logoSvg from "../../../../public/logo.svg?raw";
 import { useWallets } from "../../../common/kheopskit";
 import { cn } from "../../../utils/cn";
 import { ConnectButton } from "../../ConnectButton";
@@ -46,7 +47,9 @@ export const Header: FC = () => (
 			<div className="flex items-center gap-1.5 text-base font-bold text-text sm:gap-2.5 sm:text-xl">
 				<span
 					aria-hidden
-					className="size-6 bg-current mask-[url(/logo.svg)] mask-contain mask-center mask-no-repeat sm:size-7"
+					className="size-6 [--logo-accent:var(--color-primary)] *:size-full sm:size-7"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: our own static logo, inlined so its accent follows the colour mode
+					dangerouslySetInnerHTML={{ __html: logoSvg }}
 				/>
 				Kheopswap
 			</div>

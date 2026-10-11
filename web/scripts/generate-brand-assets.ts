@@ -19,7 +19,12 @@ if (!logoMatch?.[1] || !logoMatch[2])
 	throw new Error("logo.svg must be a single <svg> root with a viewBox");
 const [, viewBox, markBody] = logoMatch;
 
-const paintMark = (color: string) => markBody.replaceAll("currentColor", color);
+const LOGO_ACCENT = "var(--logo-accent,#a78bfa)";
+const DARK = { body: "#fff", accent: "#a78bfa" };
+const LIGHT = { body: "#000", accent: "#6d28d9" };
+
+const paintMark = ({ body, accent }: { body: string; accent: string }) =>
+	markBody.replaceAll("currentColor", body).replaceAll(LOGO_ACCENT, accent);
 
 type Tile = {
 	file: string;
@@ -43,7 +48,7 @@ const TILES: Tile[] = [
 const tileSvg = ({ size, markRatio, cornerRatio }: Tile) => {
 	const markSize = size * markRatio;
 	const offset = (size - markSize) / 2;
-	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><rect width="${size}" height="${size}" rx="${size * cornerRatio}" fill="#000"/><svg x="${offset}" y="${offset}" width="${markSize}" height="${markSize}" viewBox="${viewBox}">${paintMark("#fff")}</svg></svg>`;
+	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><rect width="${size}" height="${size}" rx="${size * cornerRatio}" fill="#000"/><svg x="${offset}" y="${offset}" width="${markSize}" height="${markSize}" viewBox="${viewBox}">${paintMark(DARK)}</svg></svg>`;
 };
 
 const renderTile = (tile: Tile) =>
@@ -93,7 +98,7 @@ p { margin-top: 28px; font-size: 40px; font-weight: 400; color: #8a8a8a; letter-
 </style>
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="${viewBox}">${paintMark("#f5f5f5")}</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="${viewBox}">${paintMark({ ...DARK, body: "#f5f5f5" })}</svg>
 <div>
 <h1>Kheopswap</h1>
 <p>Decentralized exchange app for Polkadot</p>
@@ -153,10 +158,13 @@ write(
 	"favicon.svg",
 	`${logo.replace(
 		/^(<svg[^>]*>)/,
-		"$1<style>svg{color:#000}@media (prefers-color-scheme:dark){svg{color:#fff}}</style>",
+		`$1<style>svg{color:${LIGHT.body};--logo-accent:${LIGHT.accent}}@media (prefers-color-scheme:dark){svg{color:${DARK.body};--logo-accent:${DARK.accent}}}</style>`,
 	)}\n`,
 );
-write("safari-pinned-tab.svg", `${logo.replaceAll("currentColor", "#000")}\n`);
+write(
+	"safari-pinned-tab.svg",
+	`${logo.replace(markBody, paintMark({ body: "#000", accent: "#000" }))}\n`,
+);
 
 const renderedTiles = await Promise.all(
 	TILES.map(async (tile) => ({ ...tile, data: await renderTile(tile) })),
