@@ -240,11 +240,10 @@ export const LiquidityPoolsHub: FC<{
 		[pools],
 	);
 
-	const isReady =
-		!isLoading &&
-		(!isLoadingValuations || pools.every((pool) => pool.valuation !== null));
+	const hasTvl = pools.length >= MIN_POOLS && totalTvl > 0n;
+	const isLoaded = !isLoading && !isLoadingValuations;
 
-	if (isReady && (pools.length < MIN_POOLS || !totalTvl)) return null;
+	if (isLoaded && !hasTvl) return null;
 
 	const formatTvl = (plancks: bigint | null) =>
 		formatDecimals(plancksToTokens(plancks ?? 0n, stableToken.decimals), 4);
@@ -256,7 +255,7 @@ export const LiquidityPoolsHub: FC<{
 			<div>
 				<div className="mb-3 text-[12.5px] text-muted">Total value locked</div>
 				<div className="font-light font-mono text-5xl leading-none tracking-[-0.07em] sm:text-[64px]">
-					{isReady ? (
+					{hasTvl ? (
 						<>
 							<CountUpDecimals
 								value={Number(plancksToTokens(totalTvl, stableToken.decimals))}
@@ -269,7 +268,7 @@ export const LiquidityPoolsHub: FC<{
 						<Shimmer className="inline-block">0.0000</Shimmer>
 					)}
 				</div>
-				{isReady ? (
+				{pools.length ? (
 					<p className="mt-3.5 max-w-[32ch] text-sm text-muted">{summary}</p>
 				) : (
 					<Shimmer className="mt-3.5 max-w-[32ch] text-sm">{summary}</Shimmer>
@@ -304,13 +303,13 @@ export const LiquidityPoolsHub: FC<{
 					/>
 				))}
 				<circle cx={CENTER} cy={CENTER} r={120} fill={`url(#${glowId})`} />
-				{!isReady &&
+				{!hasTvl &&
 					SKELETON_SPOKES.map((spoke) => (
 						<SkeletonSpoke key={spoke.poolAssetId} spoke={spoke} />
 					))}
 				{spokes.map((spoke) => {
 					const pool = poolsById[spoke.poolAssetId];
-					if (!isReady || !pool) return null;
+					if (!hasTvl || !pool) return null;
 					return (
 						<HubSpokeLink
 							key={spoke.poolAssetId}
