@@ -26,7 +26,7 @@ minimumReleaseAgeExclude:
 
 # moved from package.json "pnpm" field (pnpm 11 no longer reads it, see https://pnpm.io/settings)
 overrides:
-  axios: "^1.17.0"
+  axios: "^1.20.0"
   # GHSA-x5fp-wj9c-mxmx (array-limit bypass via bracket-key comma parsing) and GHSA-4mjr-xmp4-gh2g
   # (DoS via attacker-controlled isBuffer), plus the earlier qs DoS. All patched >=6.16.0.
   # Dev-only copy via vite-plugin-node-polyfills.
@@ -40,8 +40,8 @@ overrides:
   "ws@>=8.0.0 <8.21.0": "^8.21.0"
   # GHSA-4cwx-7wf7-3272: undici cross-user cache disclosure + parse-time crash (high), plus
   # four moderates (response desync, CRLF via blob type, two Cache-Control parsing issues).
-  # All patched >=7.29.0. Dev-only copy via jsdom > vitest.
-  undici: "^7.29.0"
+  # All patched >=7.29.1. Dev-only copy via jsdom > vitest.
+  undici: "^7.29.1"
   # GHSA-5p4m-2wfm-xmqj (quadratic CPU consumption in !!omap resolution) and GHSA-2883-xcg3-v3hh
   # (maxTotalMergeKeys does not limit CPU use), both high, patched >=4.3.2. Dev-only copy
   # via vite-plugin-svgr > @svgr/core > cosmiconfig.

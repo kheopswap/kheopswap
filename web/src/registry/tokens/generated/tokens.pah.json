@@ -6215,17 +6215,6 @@
 		"isSufficient": false
 	},
 	{
-		"id": "asset::pah::50000548",
-		"type": "asset",
-		"chainId": "pah",
-		"assetId": 50000548,
-		"symbol": "RCHH",
-		"decimals": 10,
-		"name": "Relay Check Home",
-		"verified": false,
-		"isSufficient": false
-	},
-	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
@@ -6752,6 +6741,17 @@
 		"name": "COCA",
 		"verified": false,
 		"isSufficient": false
+	},
+	{
+		"id": "asset::pah::7873",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 7873,
+		"symbol": "dotUSD",
+		"decimals": 6,
+		"name": "dotUSD",
+		"verified": false,
+		"isSufficient": true
 	},
 	{
 		"id": "asset::pah::789",
@@ -9498,6 +9498,16 @@
 		"type": "pool-asset",
 		"chainId": "pah",
 		"poolAssetId": 85,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pah::86",
+		"type": "pool-asset",
+		"chainId": "pah",
+		"poolAssetId": 86,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",

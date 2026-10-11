@@ -157,6 +157,7 @@ const platforms = [polkadot(), ethereum()] as const;
 
 export const { KheopskitProvider, useWallets } = createKheopskit({
 	platforms,
+	appName: "Kheopswap",
 	autoReconnect: true,
 	walletConnect: WALLET_CONNECT_PROJECT_ID
 		? {

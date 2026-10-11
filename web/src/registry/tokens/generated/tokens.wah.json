@@ -5874,6 +5874,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000351",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000351,
+		"symbol": "USDP",
+		"decimals": 6,
+		"name": "USDP PoC",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
@@ -7107,6 +7118,16 @@
 		"type": "pool-asset",
 		"chainId": "wah",
 		"poolAssetId": 110,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::wah::111",
+		"type": "pool-asset",
+		"chainId": "wah",
+		"poolAssetId": 111,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",

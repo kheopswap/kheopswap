@@ -13,7 +13,7 @@ pnpm test
 pnpm knip       # unused files, exports, dependencies
 ```
 
-Check UI changes in a browser on `http://localhost:5173` (`pnpm dev`), the only origin this app is tested from. If Vite moves to another port because 5173 is taken, free 5173. The `verify` skill (`.claude/skills/verify/`) scripts this: it launches the app, drives it with the Talisman wallet on Paseo, and records proof.
+Check UI changes in a browser on `http://localhost:5173` (`pnpm dev`), the only origin this app is tested from. If Vite moves to another port because 5173 is taken, free 5173. The `verify` skill (`.claude/skills/verify/`) scripts this: it runs the app and a Chromium with Talisman in a Docker container per checkout, drives it on Paseo, and records proof.
 
 Update this file and `README.md` when your change makes them wrong.
 
