@@ -1,17 +1,8 @@
-import { spawn } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import sharp from "sharp";
 
 const PUBLIC_DIR = resolve(import.meta.dirname, "../public");
-const DM_SANS_PATH = resolve(
-	import.meta.dirname,
-	"../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2",
-);
-const CHROME_PATH =
-	process.env.CHROME_PATH ??
-	"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const logo = readFileSync(join(PUBLIC_DIR, "logo.svg"), "utf8").trim();
 const logoMatch = logo.match(/^<svg[^>]*viewBox="([^"]+)"[^>]*>(.*)<\/svg>$/s);
@@ -77,83 +68,6 @@ const toIco = (pngs: { size: number; data: Buffer }[]) => {
 	return Buffer.concat([header, ...entries, ...pngs.map(({ data }) => data)]);
 };
 
-const OG_WIDTH = 1200;
-const OG_HEIGHT = 630;
-
-const ogImageHtml = () => {
-	const font = readFileSync(DM_SANS_PATH).toString("base64");
-	return `<!doctype html>
-<html>
-<head>
-<style>
-@font-face { font-family: "DM Sans"; font-weight: 100 1000; src: url(data:font/woff2;base64,${font}) format("woff2"); }
-* { margin: 0; box-sizing: border-box; }
-body {
-	width: ${OG_WIDTH}px; height: ${OG_HEIGHT}px; padding: 88px 96px;
-	display: flex; flex-direction: column; justify-content: space-between;
-	background: #000; color: #f5f5f5; font-family: "DM Sans";
-}
-h1 { font-size: 136px; font-weight: 700; line-height: 1; letter-spacing: -0.045em; }
-p { margin-top: 28px; font-size: 40px; font-weight: 400; color: #8a8a8a; letter-spacing: -0.01em; }
-</style>
-</head>
-<body>
-<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="${viewBox}">${paintMark({ ...DARK, body: "#f5f5f5" })}</svg>
-<div>
-<h1>Kheopswap</h1>
-<p>Decentralized exchange app for Polkadot</p>
-</div>
-</body>
-</html>`;
-};
-
-// Headless Chrome on macOS keeps running after --screenshot, so stop it once the file is written.
-const screenshotWithChrome = (url: string, outPath: string, workDir: string) =>
-	new Promise<void>((resolvePromise, reject) => {
-		const chrome = spawn(CHROME_PATH, [
-			"--headless=new",
-			"--hide-scrollbars",
-			"--force-device-scale-factor=1",
-			`--user-data-dir=${join(workDir, "profile")}`,
-			`--window-size=${OG_WIDTH},${OG_HEIGHT}`,
-			`--screenshot=${outPath}`,
-			url,
-		]);
-		const timeout = setTimeout(() => {
-			chrome.kill();
-			reject(new Error("Chrome did not write the screenshot within 30s"));
-		}, 30_000);
-		chrome.on("error", reject);
-		chrome.stderr.on("data", (chunk: Buffer) => {
-			if (!chunk.toString().includes("bytes written to file")) return;
-			clearTimeout(timeout);
-			chrome.kill();
-			resolvePromise();
-		});
-	});
-
-const renderOgImage = async () => {
-	const workDir = mkdtempSync(join(tmpdir(), "kheopswap-og-"));
-	try {
-		const htmlPath = join(workDir, "og.html");
-		const screenshotPath = join(workDir, "og.png");
-		writeFileSync(htmlPath, ogImageHtml());
-		await screenshotWithChrome(`file://${htmlPath}`, screenshotPath, workDir);
-		const screenshot = sharp(screenshotPath);
-		const { width, height } = await screenshot.metadata();
-		if (width !== OG_WIDTH || height !== OG_HEIGHT)
-			throw new Error(`Chrome screenshot is ${width}x${height}`);
-		return await screenshot.png({ compressionLevel: 9 }).toBuffer();
-	} finally {
-		rmSync(workDir, {
-			recursive: true,
-			force: true,
-			maxRetries: 10,
-			retryDelay: 200,
-		});
-	}
-};
-
 const write = (file: string, data: string | Buffer) => {
 	writeFileSync(join(PUBLIC_DIR, file), data);
 	console.log(`wrote public/${file}`);
@@ -180,4 +94,3 @@ write(
 	"favicon.ico",
 	toIco(renderedTiles.filter(({ file }) => file.startsWith("favicon-"))),
 );
-write("og-image.png", await renderOgImage());

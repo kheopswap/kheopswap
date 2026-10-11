@@ -47,7 +47,7 @@ Token logos live in `web/public/img/tokens`. Their dominant colors are computed 
 
 ## Brand assets
 
-The icons, favicons and `og-image.png` in `web/public` are generated from `web/public/logo.svg`. Edit `logo.svg`, then run `pnpm generate-brand-assets`.
+The icons and favicons in `web/public` are generated from `web/public/logo.svg`. Edit `logo.svg`, then run `pnpm generate-brand-assets`.
 
 ## Naming
 
