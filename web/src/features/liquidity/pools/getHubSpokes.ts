@@ -14,6 +14,7 @@ type HubSpokesOptions = {
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const SHARE_PRECISION = 1_000_000n;
+const LOG_SCALE = 1000;
 
 const byValuationDesc = (a: HubPool, b: HubPool) => {
 	const va = a.valuation ?? 0n;
@@ -27,6 +28,9 @@ const getShare = (valuation: bigint | null, max: bigint) =>
 			Number(SHARE_PRECISION)
 		: 1;
 
+const getExtension = (share: number) =>
+	Math.log10(1 + LOG_SCALE * share) / Math.log10(1 + LOG_SCALE);
+
 export const getHubSpokes = (
 	pools: HubPool[],
 	{ rMin, rMax }: HubSpokesOptions,
@@ -37,6 +41,6 @@ export const getHubSpokes = (
 		poolAssetId,
 		rank,
 		angle: -Math.PI / 2 + ((rank * GOLDEN_ANGLE) % (2 * Math.PI)),
-		radius: rMin + getShare(valuation, max) * (rMax - rMin),
+		radius: rMin + getExtension(getShare(valuation, max)) * (rMax - rMin),
 	}));
 };

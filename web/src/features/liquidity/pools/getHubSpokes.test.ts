@@ -3,7 +3,7 @@ import { getHubSpokes } from "./getHubSpokes";
 
 const options = { rMin: 90, rMax: 290 };
 
-const stable = (tokens: number) => BigInt(tokens) * 10n ** 6n;
+const stable = (tokens: number) => BigInt(Math.round(tokens * 1e6));
 
 const poolsWithTvl = (tvls: (number | null)[]) =>
 	tvls.map((tvl, poolAssetId) => ({
@@ -61,13 +61,36 @@ describe("getHubSpokes", () => {
 		]);
 	});
 
-	it("maps radius linearly to the share of the deepest pool", () => {
-		const spokes = getHubSpokes(poolsWithTvl([264, 132, 55, 2, 0]), options);
-		const at = (share: number) =>
-			options.rMin + share * (options.rMax - options.rMin);
-		expect(spokes[1]?.radius).toBeCloseTo(at(0.5));
-		expect(spokes[2]?.radius).toBeCloseTo(at(55 / 264));
-		expect(spokes[3]?.radius).toBeCloseTo(at(2 / 264));
+	it("keeps every pool holding liquidity beyond empty pools", () => {
+		const [, tiny, empty] = getHubSpokes(
+			poolsWithTvl([5_936_000, 1_484, 0]),
+			options,
+		).map((s) => s.radius);
+		expect(tiny).toBeGreaterThan(empty as number);
+	});
+
+	describe("on real pools", () => {
+		const extension = (radius: number | undefined) =>
+			((radius ?? 0) - options.rMin) / (options.rMax - options.rMin);
+
+		it("sets Kusama's BNC far from empty pools, and USDt well below BNC", () => {
+			const [, , bnc, usdt, empty] = getHubSpokes(
+				poolsWithTvl([263.9, 203.1, 55.9, 2.252, 0]),
+				options,
+			).map((s) => extension(s.radius));
+			expect(bnc).toBeGreaterThan(0.6);
+			expect(usdt).toBeLessThan((bnc as number) / 2);
+			expect(empty).toBe(0);
+		});
+
+		it("sets Polkadot's USDC far from empty pools", () => {
+			const [, , usdc, , , empty] = getHubSpokes(
+				poolsWithTvl([5_936_000, 2_277_000, 200_500, 5_331, 1_484, 0]),
+				options,
+			).map((s) => extension(s.radius));
+			expect(usdc).toBeGreaterThan(0.4);
+			expect(empty).toBe(0);
+		});
 	});
 
 	it("scales radii to the deepest pool, whatever the stable unit", () => {
