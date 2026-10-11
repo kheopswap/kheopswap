@@ -5,33 +5,60 @@
 	--color-transparent: transparent;
 	--color-current: currentColor;
 
-	--color-page: #000000;
-	--color-text: #f5f5f5;
-	--color-muted: #8a8a8a;
-	--color-faint: #5c5c5c;
-	--color-surface: #141414;
-	--color-surface-border: transparent;
-	--color-surface-2: #1c1c1c;
-	--color-hover: #242424;
-	--color-line: #1f1f1f;
-	--color-drawer: #0a0a0a;
-	--color-scrim: rgb(0 0 0 / 0.7);
-	--color-row-hover: rgb(255 255 255 / 0.03);
-	--color-primary: #a78bfa;
-	--color-primary-ink: #000000;
-	--color-accent: #a78bfa;
-	--color-error: #f87171;
-	--color-warn: #f97316;
-	--color-success: #22c55e;
+	--color-page: #03060d;
+	--color-text: #e6f6ff;
+	--color-muted: #7fa6c4;
+	--color-faint: #4a6d8e;
+	--color-surface: rgb(10 19 34 / 0.62);
+	--color-surface-border: color-mix(
+		in oklab,
+		var(--color-grid) 45%,
+		transparent
+	);
+	--color-surface-2: #0d1a2e;
+	--color-hover: #132743;
+	--color-line: #16304d;
+	--color-drawer: #060d19;
+	--color-scrim: rgb(1 3 8 / 0.78);
+	--color-row-hover: color-mix(in oklab, var(--color-grid) 5%, transparent);
+	--color-primary: #3fd8ff;
+	--color-primary-ink: #02111f;
+	--color-accent: #3fd8ff;
+	--color-error: #ff4d6d;
+	--color-warn: #ffb547;
+	--color-success: #3cf2b4;
+	--color-grid: #3fd8ff;
+	--color-horizon: rgb(26 90 160 / 0.12);
+	--color-chrome: rgb(3 6 13 / 0.82);
+	--color-control: rgb(10 19 34 / 0.7);
+	--color-token-button: #08121f;
+	--color-hero: #eafaff;
+	--color-trail-end: #e6fbff;
+	--color-hub-dot: #5fbfe6;
 
-	--radius-card: 12px;
-	--radius-control: 10px;
-	--radius-chip: 6px;
+	--radius-card: 4px;
+	--radius-control: 3px;
+	--radius-chip: 3px;
+
+	--shadow-card:
+		0 0 22px color-mix(in oklab, var(--color-grid) 8%, transparent),
+		inset 0 0 22px color-mix(in oklab, var(--color-grid) 5%, transparent);
+	--shadow-submit:
+		0 0 18px color-mix(in oklab, var(--color-grid) 45%, transparent),
+		0 0 2px rgb(230 251 255 / 0.9), inset 0 1px 0 rgb(255 255 255 / 0.45);
+	--text-shadow-hero:
+		0 0 26px color-mix(in oklab, var(--color-grid) 60%, transparent),
+		0 0 2px color-mix(in oklab, var(--color-grid) 60%, transparent);
+	--text-shadow-brand: 0 0 12px
+		color-mix(in oklab, var(--color-grid) 35%, transparent);
+	--text-shadow-nav: 0 0 10px
+		color-mix(in oklab, var(--color-grid) 50%, transparent);
 
 	--font-sans:
 		"DM Sans Variable", ui-sans-serif, system-ui, sans-serif,
 		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 	--font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+	--font-display: "Michroma", ui-sans-serif, system-ui, sans-serif;
 
 	--animate-fade-in: fade-in 0.2s ease-out;
 	--animate-fade-out: fade-out 0.2s ease-out;
@@ -146,48 +173,78 @@
 
 html {
 	color-scheme: dark;
-	background: radial-gradient(
-			circle at 50% 25%,
-			#262626,
-			#1d1d1d,
-			#151515,
-			#0e0e0e,
-			#070707,
-			#000000
-		)
-		fixed;
+	background:
+		radial-gradient(
+			30% 4% at 50% 52%,
+			color-mix(in oklab, var(--color-grid) 12%, transparent),
+			transparent
+		),
+		radial-gradient(70% 30% at 50% 52%, var(--color-horizon), transparent),
+		var(--color-page);
+	background-attachment: fixed;
+}
+
+html::before {
+	content: "";
+	position: fixed;
+	z-index: -1;
+	top: 52vh;
+	left: -50vw;
+	width: 200vw;
+	height: 60vh;
+	pointer-events: none;
+	--floor-line: color-mix(in oklab, var(--color-grid) 24%, transparent);
+	background-image:
+		repeating-linear-gradient(
+			90deg,
+			var(--floor-line) 0 1px,
+			transparent 1px 72px
+		),
+		repeating-linear-gradient(
+			180deg,
+			var(--floor-line) 0 1px,
+			transparent 1px 72px
+		);
+	background-position: center top;
+	transform-origin: 50% 0;
+	transform: perspective(600px) rotateX(60deg);
+	mask-image:
+		linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.35) 12%, #000 45%),
+		linear-gradient(to right, transparent 20%, #000 40% 60%, transparent 80%);
+	mask-composite: intersect;
 }
 
 html[data-mode="light"] {
 	color-scheme: light;
-	--color-page: #f2f1f6;
-	--color-text: #0a0a0a;
-	--color-muted: #626262;
-	--color-faint: #9a9a9a;
-	--color-surface: #faf9fc;
-	--color-surface-border: #dfdce8;
-	--color-surface-2: #e9e7f0;
-	--color-hover: #dfdce8;
-	--color-line: #dfdce8;
-	--color-drawer: #faf9fc;
-	--color-scrim: rgb(0 0 0 / 0.35);
-	--color-row-hover: rgb(0 0 0 / 0.03);
-	--color-primary: #6d28d9;
+	--color-page: #eef3f9;
+	--color-text: #0a1a2e;
+	--color-muted: #4b6a8a;
+	--color-faint: #8ea6bf;
+	--color-surface: rgb(255 255 255 / 0.72);
+	--color-surface-border: color-mix(
+		in oklab,
+		var(--color-grid) 38%,
+		transparent
+	);
+	--color-surface-2: #e4ecf6;
+	--color-hover: #d6e2f0;
+	--color-line: #c9d8ea;
+	--color-drawer: #f7fafd;
+	--color-scrim: rgb(10 26 46 / 0.35);
+	--color-primary: #0a66ff;
 	--color-primary-ink: #ffffff;
-	--color-accent: #6d28d9;
-	--color-error: #b91c1c;
-	--color-warn: #c2410c;
-	--color-success: #15803d;
-	background: radial-gradient(
-			circle at 50% 25%,
-			#ffffff,
-			#fbfbfc,
-			#f8f8fa,
-			#f5f5f8,
-			#f3f3f7,
-			#f2f1f6
-		)
-		fixed;
+	--color-accent: #0b5fd6;
+	--color-error: #c81e3f;
+	--color-warn: #b45f00;
+	--color-success: #0f7a52;
+	--color-grid: #0b5fd6;
+	--color-horizon: rgb(120 170 230 / 0.12);
+	--color-chrome: rgb(238 243 249 / 0.86);
+	--color-control: rgb(255 255 255 / 0.8);
+	--color-token-button: #ffffff;
+	--color-hero: #0a1a2e;
+	--color-trail-end: #0a66ff;
+	--color-hub-dot: #3a7fd1;
 }
 
 /* react-toastify injects its stylesheet at runtime after ours, so overrides are scoped to its container */
