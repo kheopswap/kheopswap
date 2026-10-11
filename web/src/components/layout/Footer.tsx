@@ -1,17 +1,15 @@
-import { useDeferredValue } from "react";
-import { useLoadingStatusSummary } from "../../hooks/useLoadingStatusSummary";
+import { lazy, Suspense } from "react";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { DiscordIcon, GitHubIcon, XDotComIcon } from "../icons";
 import { ChainBlockNumbers } from "./ChainBlockNumbers";
 
-const LoadingStatus = () => {
-	const { loaded, total } = useDeferredValue(useLoadingStatusSummary());
-	return (
-		<div>
-			{loaded}/{total} active subscriptions
-		</div>
-	);
-};
+const LoadingStatus = import.meta.env.DEV
+	? lazy(() =>
+			import("./LoadingStatus").then(({ LoadingStatus }) => ({
+				default: LoadingStatus,
+			})),
+		)
+	: null;
 
 export const Footer = () => {
 	return (
@@ -42,7 +40,11 @@ export const Footer = () => {
 						kheopskit
 					</a>
 				</div>
-				<LoadingStatus />
+				{LoadingStatus && (
+					<Suspense fallback={null}>
+						<LoadingStatus />
+					</Suspense>
+				)}
 			</div>
 			<div className="flex items-center gap-4">
 				<a
