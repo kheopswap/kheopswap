@@ -13,7 +13,7 @@ import {
 const ArrivalStatus: FC<{ arrival: XcmArrival }> = ({ arrival }) => {
 	switch (arrival.status) {
 		case "awaiting-origin":
-			return <span className="text-neutral-500">Waiting for Asset Hub</span>;
+			return <span className="text-muted">Waiting for Asset Hub</span>;
 		case "in-transit":
 			return <Pulse pulse>In transit</Pulse>;
 		case "arrived":
@@ -47,7 +47,7 @@ export const XcmTransferFollowUpContent: FC<{
 				<ArrivalStatus arrival={arrival} />
 			</FollowUpRow>
 			{estimatedReceived !== undefined && (
-				<FollowUpRow label="Estimated received" className="text-neutral-500">
+				<FollowUpRow label="Estimated received" className="text-muted">
 					<Tokens plancks={estimatedReceived} token={tokenOut} />
 				</FollowUpRow>
 			)}
