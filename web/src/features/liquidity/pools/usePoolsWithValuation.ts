@@ -47,8 +47,6 @@ export const usePoolsWithValuation = ({
 	);
 
 	const poolsWithStablePrices = useMemo(() => {
-		if (!reservesNativeToStable) return [];
-
 		return pools?.map<PoolWithValuation>((pool) => {
 			const poolBalances = allReservesBalances?.filter(
 				(balance) => balance.address === pool.owner,
