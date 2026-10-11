@@ -3,6 +3,7 @@ import "./index.css";
 
 import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/jetbrains-mono";
+import "@fontsource/michroma";
 
 import { Subscribe } from "@react-rxjs/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
