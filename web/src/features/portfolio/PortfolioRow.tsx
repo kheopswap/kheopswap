@@ -7,10 +7,12 @@ import { cn } from "../../utils/cn";
 import { getTokenDescription } from "../../utils/getTokenDescription";
 import { TokenBalancesSummary } from "./PortfolioDataCell";
 import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
+import type { PortfolioHolding } from "./usePortfolioAllocation";
 
 type PortfolioRowProps = PortfolioRowData & {
 	visibleCol: PortfolioVisibleCol;
 	isFirst: boolean;
+	holding: PortfolioHolding | undefined;
 	onSelect: (tokenId: TokenId) => void;
 };
 
@@ -20,6 +22,7 @@ export const PortfolioRow: FC<PortfolioRowProps> = memo(function PortfolioRow({
 	price,
 	visibleCol,
 	isFirst,
+	holding,
 	onSelect,
 }) {
 	const { assetHub, stableToken } = useRelayChains();
@@ -34,7 +37,7 @@ export const PortfolioRow: FC<PortfolioRowProps> = memo(function PortfolioRow({
 		<button
 			type="button"
 			className={cn(
-				"grid h-17 grid-cols-[1fr_auto] items-center gap-x-4 px-5 text-left hover:bg-row-hover sm:px-6 sm:grid-cols-[1fr_180px_180px]",
+				"relative grid h-17 grid-cols-[1fr_auto] items-center gap-x-4 px-5 text-left hover:bg-row-hover sm:px-6 sm:grid-cols-[1fr_180px_180px]",
 				!isFirst && "border-t border-line",
 			)}
 			onClick={handleClick}
@@ -69,6 +72,18 @@ export const PortfolioRow: FC<PortfolioRowProps> = memo(function PortfolioRow({
 					/>
 				)}
 			</div>
+
+			{!!holding && (
+				<span
+					aria-hidden
+					className="absolute -bottom-px left-0 h-0.5"
+					style={{
+						width: `${holding.share * 100}%`,
+						backgroundColor: holding.color,
+						boxShadow: `0 0 12px ${holding.color}`,
+					}}
+				/>
+			)}
 		</button>
 	);
 });

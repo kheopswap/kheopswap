@@ -49,7 +49,7 @@ const sortByColumn =
 	};
 
 export const PortfolioTable = () => {
-	const { accounts, balances, isLoading } = usePortfolio();
+	const { accounts, balances, holdingsByTokenId, isLoading } = usePortfolio();
 	const allRows = usePortfolioRows();
 
 	const [selectedTokenId, setSelectedTokenId] = useState<TokenId | null>(null);
@@ -112,6 +112,7 @@ export const PortfolioTable = () => {
 			<PortfolioRows
 				rows={rows}
 				visibleCol={visibleCol}
+				holdingsByTokenId={holdingsByTokenId}
 				isLoading={isLoading}
 				onTokenSelect={setSelectedTokenId}
 			/>

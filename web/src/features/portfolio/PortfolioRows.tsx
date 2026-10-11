@@ -5,6 +5,7 @@ import type { TokenId } from "../../registry/tokens/types";
 import { cn } from "../../utils/cn";
 import { PortfolioRow } from "./PortfolioRow";
 import type { PortfolioRowData, PortfolioVisibleCol } from "./types";
+import type { PortfolioHolding } from "./usePortfolioAllocation";
 
 const ROW_HEIGHT = 68; // h-17
 
@@ -13,11 +14,13 @@ const getItemKey = (row: PortfolioRowData) => row.token.id;
 export const PortfolioRows: FC<{
 	rows: PortfolioRowData[];
 	visibleCol: PortfolioVisibleCol;
+	holdingsByTokenId: Record<TokenId, PortfolioHolding>;
 	isLoading: boolean;
 	onTokenSelect: (tokenId: TokenId) => void;
 }> = memo(function PortfolioRows({
 	rows,
 	visibleCol,
+	holdingsByTokenId,
 	isLoading,
 	onTokenSelect,
 }) {
@@ -30,10 +33,11 @@ export const PortfolioRows: FC<{
 				balance={row.balance}
 				tvl={row.tvl}
 				price={row.price}
+				holding={holdingsByTokenId[row.token.id]}
 				onSelect={onTokenSelect}
 			/>
 		),
-		[visibleCol, onTokenSelect],
+		[visibleCol, holdingsByTokenId, onTokenSelect],
 	);
 
 	return (

@@ -3,11 +3,13 @@ import { useMemo } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetHubTVL } from "../../hooks/useAssetHubTVL";
+import { getBalancesByTokenSummary } from "../../hooks/useBalancesByTokenSummary";
 import { useBalancesWithStables } from "../../hooks/useBalancesWithStables";
 import { useTokenPrices } from "../../hooks/useTokenPrices";
 import { PORTFOLIO_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import { logger } from "../../utils/logger";
 import { provideContext } from "../../utils/provideContext";
+import { usePortfolioAllocation } from "./usePortfolioAllocation";
 
 export const usePortfolioProvider = () => {
 	const stop = logger.cumulativeTimer("usePortfolioProvicer");
@@ -27,11 +29,24 @@ export const usePortfolioProvider = () => {
 
 	const { data: prices, isLoading: isLoadingPrices } = useTokenPrices();
 
+	const balancesByTokenId = useMemo(
+		() => getBalancesByTokenSummary(balances),
+		[balances],
+	);
+
+	const { allocation, holdingsByTokenId } = usePortfolioAllocation({
+		tokens,
+		balancesByTokenId,
+	});
+
 	stop();
 
 	return {
 		isLoading: isLoadingTokens || isLoadingBalances || isLoadingPrices,
 		balances,
+		balancesByTokenId,
+		allocation,
+		holdingsByTokenId,
 		accounts,
 		tokens,
 		tvl,
