@@ -6303,6 +6303,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001039",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001039,
+		"symbol": "dUSD",
+		"decimals": 6,
+		"name": "dUSD (test)",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
@@ -6689,6 +6700,16 @@
 		"type": "pool-asset",
 		"chainId": "pasah",
 		"poolAssetId": 20,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pasah::21",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 21,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
