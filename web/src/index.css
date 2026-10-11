@@ -14,7 +14,6 @@
 	--color-surface-2: #1c1c1c;
 	--color-hover: #242424;
 	--color-line: #1f1f1f;
-	--color-axis: #5c5c5c;
 	--color-drawer: #0a0a0a;
 	--color-scrim: rgb(0 0 0 / 0.7);
 	--color-row-hover: rgb(255 255 255 / 0.03);
@@ -170,7 +169,6 @@ html[data-mode="light"] {
 	--color-surface-2: #e9e7f0;
 	--color-hover: #dfdce8;
 	--color-line: #dfdce8;
-	--color-axis: #dfdce8;
 	--color-drawer: #faf9fc;
 	--color-scrim: rgb(0 0 0 / 0.35);
 	--color-row-hover: rgb(0 0 0 / 0.03);
