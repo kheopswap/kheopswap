@@ -1,6 +1,7 @@
 import { keyBy } from "lodash-es";
 import { type FC, useId, useMemo } from "react";
 import { Link } from "react-router";
+import { Shimmer } from "../../../components/Shimmer";
 import { useNativeToken } from "../../../hooks/useNativeToken";
 import type { Token } from "../../../registry/tokens/types";
 import { useRelayChains } from "../../../state/relay";
@@ -21,6 +22,15 @@ const HUB_LOGO_SIZE = 68;
 const LABEL_OFFSET = 30;
 const LABELLED_RANKS = 6;
 const LOGO_RANKS = 16;
+
+const SKELETON_SPOKES = getHubSpokes(
+	Array.from({ length: 14 }, (_, rank) => ({
+		poolAssetId: rank,
+		valuation: BigInt(Math.round(10 ** (6 - rank * 0.3))),
+	})),
+	{ stableDecimals: 0, rMin: R_MIN, rMax: R_MAX },
+);
+const SKELETON_SWEEP_MS = 2000;
 
 const getTipSize = (rank: number) =>
 	rank < LABELLED_RANKS ? 28 : rank < LOGO_RANKS ? 18 : 0;
@@ -142,10 +152,64 @@ const HubSpokeLink: FC<{
 	);
 };
 
+const getSweepDelay = (angle: number) => {
+	const turn = (angle + Math.PI / 2) / (2 * Math.PI);
+	return `${Math.round((turn - Math.floor(turn)) * SKELETON_SWEEP_MS)}ms`;
+};
+
+const SkeletonSpoke: FC<{ spoke: HubSpoke }> = ({
+	spoke: { angle, radius, rank },
+}) => {
+	const start = polar(angle, SPOKE_START);
+	const tip = polar(angle, radius);
+	const label = polar(angle, radius + LABEL_OFFSET);
+	const tipSize = getTipSize(rank);
+	const labelAnchor = getLabelAnchor(angle);
+	const labelWidth = 72;
+	const labelX =
+		labelAnchor === "start"
+			? label.x
+			: labelAnchor === "end"
+				? label.x - labelWidth
+				: label.x - labelWidth / 2;
+
+	return (
+		<g
+			className="motion-safe:animate-pulse"
+			style={{ animationDelay: getSweepDelay(angle) }}
+		>
+			<line
+				x1={start.x}
+				y1={start.y}
+				x2={tip.x}
+				y2={tip.y}
+				className="stroke-hover stroke-[1.25]"
+			/>
+			<circle
+				cx={tip.x}
+				cy={tip.y}
+				r={tipSize ? tipSize / 2 + 3 : 2.5}
+				className="fill-hover"
+			/>
+			{rank < LABELLED_RANKS && (
+				<rect
+					x={labelX}
+					y={label.y - 6}
+					width={labelWidth}
+					height={12}
+					rx={3}
+					className="fill-hover"
+				/>
+			)}
+		</g>
+	);
+};
+
 export const LiquidityPoolsHub: FC<{
 	pools: LiquidityPoolRowData[];
 	isLoading: boolean;
-}> = ({ pools, isLoading }) => {
+	isLoadingValuations: boolean;
+}> = ({ pools, isLoading, isLoadingValuations }) => {
 	const { assetHub, stableToken } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
 	const glowId = useId();
@@ -168,24 +232,37 @@ export const LiquidityPoolsHub: FC<{
 		[pools],
 	);
 
-	if (isLoading || pools.length < MIN_POOLS || !totalTvl) return null;
+	const isReady =
+		!isLoading &&
+		(!isLoadingValuations || pools.every((pool) => pool.valuation !== null));
+
+	if (isReady && (pools.length < MIN_POOLS || !totalTvl)) return null;
 
 	const formatTvl = (plancks: bigint | null) =>
 		formatDecimals(plancksToTokens(plancks ?? 0n, stableToken.decimals), 4);
+
+	const summary = `${pools.length} pools, every one paired with ${nativeToken.symbol}. Swaps route through ${nativeToken.symbol}, so this is the whole market.`;
 
 	return (
 		<section className="mb-7 grid items-center gap-6 px-1 md:grid-cols-[300px_1fr]">
 			<div>
 				<div className="font-light font-mono text-5xl leading-none tracking-[-0.07em] sm:text-[64px]">
-					{formatTvl(totalTvl)}
-					<span className="ml-2.5 text-lg tracking-normal text-muted">
-						{stableToken.symbol}
-					</span>
+					{isReady ? (
+						<>
+							{formatTvl(totalTvl)}
+							<span className="ml-2.5 text-lg tracking-normal text-muted">
+								{stableToken.symbol}
+							</span>
+						</>
+					) : (
+						<Shimmer className="inline-block">0.0000</Shimmer>
+					)}
 				</div>
-				<p className="mt-3.5 max-w-[32ch] text-sm text-muted">
-					{pools.length} pools, every one paired with {nativeToken.symbol}.
-					Swaps route through {nativeToken.symbol}, so this is the whole market.
-				</p>
+				{isReady ? (
+					<p className="mt-3.5 max-w-[32ch] text-sm text-muted">{summary}</p>
+				) : (
+					<Shimmer className="mt-3.5 max-w-[32ch] text-sm">{summary}</Shimmer>
+				)}
 				<p className="mt-3.5 text-[12.5px] text-faint">
 					Longer spokes hold more liquidity.
 				</p>
@@ -219,9 +296,13 @@ export const LiquidityPoolsHub: FC<{
 					/>
 				))}
 				<circle cx={CENTER} cy={CENTER} r={120} fill={`url(#${glowId})`} />
+				{!isReady &&
+					SKELETON_SPOKES.map((spoke) => (
+						<SkeletonSpoke key={spoke.poolAssetId} spoke={spoke} />
+					))}
 				{spokes.map((spoke) => {
 					const pool = poolsById[spoke.poolAssetId];
-					if (!pool) return null;
+					if (!isReady || !pool) return null;
 					return (
 						<HubSpokeLink
 							key={spoke.poolAssetId}
