@@ -246,6 +246,7 @@ export const LiquidityPoolsHub: FC<{
 	return (
 		<section className="mb-7 grid items-center gap-6 px-1 md:grid-cols-[300px_1fr]">
 			<div>
+				<div className="mb-3 text-[12.5px] text-muted">Total value locked</div>
 				<div className="font-light font-mono text-5xl leading-none tracking-[-0.07em] sm:text-[64px]">
 					{isReady ? (
 						<>

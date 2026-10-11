@@ -13,7 +13,7 @@ type HubSpokesOptions = {
 	stableDecimals: number;
 	rMin: number;
 	rMax: number;
-	floor?: number;
+	decades?: number;
 };
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
@@ -26,20 +26,24 @@ const byValuationDesc = (a: HubPool, b: HubPool) => {
 
 export const getHubSpokes = (
 	pools: HubPool[],
-	{ stableDecimals, rMin, rMax, floor = 100 }: HubSpokesOptions,
+	{ stableDecimals, rMin, rMax, decades = 4 }: HubSpokesOptions,
 ): HubSpoke[] => {
 	const n = pools.length;
 	if (!n) return [];
 
 	const ranked = pools.concat().sort(byValuationDesc);
-	const magnitudes = ranked.map(({ valuation }) =>
-		Math.log10(
-			Math.max(Number(plancksToTokens(valuation ?? 0n, stableDecimals)), floor),
-		),
+	const rawMagnitudes = ranked.map(({ valuation }) =>
+		Math.log10(Number(plancksToTokens(valuation ?? 0n, stableDecimals))),
 	);
-	const maxMagnitude = Math.max(...magnitudes);
-	const minMagnitude = Math.min(...magnitudes);
-	const magnitudeRange = maxMagnitude - minMagnitude;
+	const maxMagnitude = rawMagnitudes[0] as number;
+	const floorMagnitude = Math.max(
+		Math.min(...rawMagnitudes),
+		maxMagnitude - decades,
+	);
+	const magnitudes = rawMagnitudes.map((m) => Math.max(m, floorMagnitude));
+	const magnitudeRange = Number.isFinite(maxMagnitude)
+		? maxMagnitude - floorMagnitude
+		: 0;
 	return ranked.map(({ poolAssetId }, rank) => {
 		const magnitude = magnitudes[rank] as number;
 		return {
@@ -47,7 +51,7 @@ export const getHubSpokes = (
 			rank,
 			angle: -Math.PI / 2 + ((rank * GOLDEN_ANGLE) % (2 * Math.PI)),
 			radius: magnitudeRange
-				? rMin + ((magnitude - minMagnitude) / magnitudeRange) * (rMax - rMin)
+				? rMin + ((magnitude - floorMagnitude) / magnitudeRange) * (rMax - rMin)
 				: rMax,
 		};
 	});

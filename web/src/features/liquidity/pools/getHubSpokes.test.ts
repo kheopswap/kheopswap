@@ -75,6 +75,21 @@ describe("getHubSpokes", () => {
 		expect(spokes[1]?.radius).toBeCloseTo((options.rMin + options.rMax) / 2);
 	});
 
+	it("scales radii to the deepest pool, whatever the stable unit", () => {
+		const radii = (tvls: number[]) =>
+			getHubSpokes(poolsWithTvl(tvls), options).map((s) => s.radius);
+		const scaled = radii([264_000, 56_000, 2_000, 0]);
+		for (const [i, radius] of radii([264, 56, 2, 0]).entries())
+			expect(radius).toBeCloseTo(scaled[i] as number);
+	});
+
+	it("keeps a pool at a fifth of the deepest well beyond empty pools", () => {
+		const spokes = getHubSpokes(poolsWithTvl([264, 203, 56, 0]), options);
+		const midpoint = (options.rMin + options.rMax) / 2;
+		expect(spokes[2]?.radius).toBeGreaterThan(midpoint);
+		expect(spokes[3]?.radius).toBe(options.rMin);
+	});
+
 	it("puts pools of equal depth at the outer radius", () => {
 		const spokes = getHubSpokes(poolsWithTvl([500, 500, 500]), options);
 		expect(spokes.map((s) => s.radius)).toEqual([290, 290, 290]);
