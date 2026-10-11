@@ -17,9 +17,9 @@
 	--color-drawer: #0a0a0a;
 	--color-scrim: rgb(0 0 0 / 0.7);
 	--color-row-hover: rgb(255 255 255 / 0.03);
-	--color-primary: #19ac4f;
+	--color-primary: #a78bfa;
 	--color-primary-ink: #000000;
-	--color-accent: #19ac4f;
+	--color-accent: #a78bfa;
 	--color-error: #f87171;
 	--color-warn: #f97316;
 	--color-success: #22c55e;
@@ -172,7 +172,9 @@ html[data-mode="light"] {
 	--color-drawer: #faf9fc;
 	--color-scrim: rgb(0 0 0 / 0.35);
 	--color-row-hover: rgb(0 0 0 / 0.03);
-	--color-accent: #127a38;
+	--color-primary: #6d28d9;
+	--color-primary-ink: #ffffff;
+	--color-accent: #6d28d9;
 	--color-error: #b91c1c;
 	--color-warn: #c2410c;
 	--color-success: #15803d;
