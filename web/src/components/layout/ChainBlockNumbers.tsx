@@ -34,9 +34,11 @@ export const ChainBlockNumbers = () => {
 	const finalized = useFinalizedBlockNumber();
 
 	return (
-		<div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
-			<div>Best: {best ?? <Placeholder />}</div>
-			<div>Finalized: {finalized ?? <Placeholder />}</div>
+		<div className="grid grid-cols-[auto_auto] gap-x-2 gap-y-1 text-left">
+			<div>Best:</div>
+			<div>{best ?? <Placeholder />}</div>
+			<div>Finalized:</div>
+			<div>{finalized ?? <Placeholder />}</div>
 		</div>
 	);
 };

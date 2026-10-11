@@ -8,7 +8,7 @@ The header lets a user switch between the four Asset Hubs and manage wallet conn
 - `light-clients`: the `Connect via light clients` switch in `Select network`. `VITE_DISABLE_LIGHT_CLIENTS=true` in the committed `web/.env` disables it, and the drawer reads `Light clients are temporarily disabled.` The switch has no accessible name: it shows as `switch [checked=false, disabled]` in a snapshot.
 - `wallet-connect`: the header's wallet button opens the wallet drawer. It reads `Connect` (accessible name `Connect wallet`) with no accounts, and shows the wallet icons and `<n> accounts` (accessible name `Wallet: <n> connected`) once connected. The drawer has `Installed wallets` and `External wallets`.
 - `account-select`: a form's `Account`, `From`, or `To` field opens `Select account`, with `Connected Accounts` and their balances.
-- `chain-status`: the footer shows `Best: <n>`, `Finalized: <n>`, and, in dev builds only, `<x>/<y> active subscriptions`.
+- `chain-status`: the footer shows `Best: <n>` with `Finalized: <n>` below it, and, in dev builds only, `<x>/<y> active subscriptions`.
 - `redirects`: `/` and an unknown relay go to `#/polkadot/swap`. `#/<relay>` and unknown pages go to `#/<relay>/swap`.
 
 ## How to get to it (user POV)
@@ -32,7 +32,7 @@ Steps:
   - `agent-browser wait --url "**/paseo/**"`
 
   The URL now has the `paseo` segment, and the drawer closes.
-- **Chain liveness** (no wallet). Read the footer twice, a few blocks apart: `agent-browser get text "#root" | grep -E 'Best|Finalized'`. `Best:` and `Finalized:` increase.
+- **Chain liveness** (no wallet). Read the footer twice, a few blocks apart: `agent-browser get text "#root" | grep -E -A1 'Best|Finalized'`. Each label prints on its own line, with its block number on the next. Both numbers increase.
 - **Redirects** (no wallet). Open `http://localhost:5173/` and `http://localhost:5173/#/bogus/swap`: both end on `#/polkadot/swap`. Open `#/paseo`: it ends on `#/paseo/swap`.
 - **Wallets.** Run `agent-browser find role button click --name "Connect wallet"` and `scripts/wait-drawer.sh open`. The drawer lists `Talisman(Polkadot)`, `Talisman(Ethereum)`, `WalletConnect`, and, once connected, `Connected Accounts` with buttons named `<account name> <short address>`. Close it with `press Escape` and `scripts/wait-drawer.sh closed`.
 - **Accounts.** On `#/paseo/swap`, run `agent-browser find role button click --name "Account"` and `scripts/wait-drawer.sh open`. The drawer heading is `Select account`, and buttons such as `<account name> <short address> <balance>` are listed under `Connected Accounts`. The accessible name starts with `Account identicon for ...`, so match `--name "<test account name>"` as a substring. When one account name is a prefix of another, such as `<name>` and `<name> 2`, add the start of the short address: `--name "<name> 5Abc"`.
