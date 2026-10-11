@@ -1,5 +1,10 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import type { FC } from "react";
+import {
+	FormSummary,
+	FormSummaryRow,
+	FormSummarySection,
+} from "../../../../components/FormSummary";
 import { Shimmer } from "../../../../components/Shimmer";
 import { Tokens } from "../../../../components/Tokens";
 import {
@@ -12,11 +17,6 @@ import { isBigInt } from "../../../../utils/isBigInt";
 import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "../../PriceImpact";
 import { Slippage } from "../../Slippage";
-import {
-	FormSummary,
-	FormSummaryRow,
-	FormSummarySection,
-} from "../../../../components/FormSummary";
 import { useSwap } from "../../SwapProvider";
 import type { XcmSwapDetails } from "../xcm/useXcmRoute";
 import { XcmQuoteRows, XcmSimulationValue } from "../xcm/XcmQuoteRows";
