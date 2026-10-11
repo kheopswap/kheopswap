@@ -21,7 +21,7 @@ export const DrawerContainer: FC<{
 	return (
 		<div
 			className={cn(
-				"flex h-full w-[min(420px,100vw)] flex-col border-l border-line bg-drawer",
+				"flex h-full w-[min(420px,100vw)] flex-col border-l border-grid/35 bg-drawer",
 				className,
 			)}
 		>

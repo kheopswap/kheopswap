@@ -14,7 +14,7 @@ export const PageContent: FC<{
 }> = ({ variant = "form", children }) => (
 	<div
 		className={cn(
-			"rounded-card border border-surface-border bg-surface",
+			"rounded-card border border-surface-border bg-surface shadow-card backdrop-blur-md",
 			variantClassName[variant],
 		)}
 	>

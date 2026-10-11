@@ -13,7 +13,7 @@ const LoadingStatus = import.meta.env.DEV
 
 export const Footer = () => {
 	return (
-		<div className="flex w-full flex-col items-center gap-3 border-t border-line px-6 py-5 text-center font-mono text-xs text-muted sm:flex-row sm:justify-between sm:gap-6 sm:text-left">
+		<div className="flex w-full flex-col items-center gap-3 border-t border-line bg-chrome px-6 py-5 backdrop-blur-sm text-center font-mono text-xs text-muted sm:flex-row sm:justify-between sm:gap-6 sm:text-left">
 			<div>
 				<ErrorBoundary fallback={null}>
 					<ChainBlockNumbers />

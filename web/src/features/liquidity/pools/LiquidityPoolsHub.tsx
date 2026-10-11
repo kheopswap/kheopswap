@@ -104,8 +104,8 @@ const HubSpokeLink: FC<{
 				className={cn(
 					"group-hover:stroke-text group-focus-visible:stroke-text",
 					isLabelled
-						? "stroke-[1.25] stroke-primary/90"
-						: "stroke-1 stroke-muted/35",
+						? "stroke-[1.25] stroke-primary/90 drop-shadow-spoke"
+						: "stroke-1 stroke-grid/25",
 				)}
 			/>
 			{tipSize ? (
@@ -116,7 +116,7 @@ const HubSpokeLink: FC<{
 						r={tipSize / 2 + 3}
 						className={cn(
 							"fill-page",
-							hasPosition ? "stroke-[1.5] stroke-text" : "stroke-line",
+							hasPosition ? "stroke-[1.5] stroke-text" : "stroke-grid/30",
 						)}
 					/>
 					<SvgTokenLogo
@@ -141,7 +141,7 @@ const HubSpokeLink: FC<{
 						cx={tip.x}
 						cy={tip.y}
 						r={2.5}
-						className="fill-muted group-hover:fill-text"
+						className="fill-hub-dot group-hover:fill-text"
 					/>
 				</>
 			)}
@@ -275,10 +275,15 @@ export const LiquidityPoolsHub: FC<{
 		<section className="mb-7 grid items-center gap-6 px-1 md:grid-cols-[300px_1fr]">
 			<div>
 				<div className="mb-3 text-[12.5px] text-muted">Total value locked</div>
-				<div className="font-light font-mono text-5xl leading-none tracking-[-0.07em] sm:text-[64px]">
+				<div className="font-extralight font-mono text-5xl leading-none tracking-[-0.07em] sm:text-[64px]">
 					{hasTvl ? (
 						<>
-							<span className={cn(!isLoaded && "animate-pulse")}>
+							<span
+								className={cn(
+									"text-hero text-shadow-hero",
+									!isLoaded && "animate-pulse",
+								)}
+							>
 								<CountUpDecimals
 									value={Number(
 										plancksToTokens(totalTvl, stableToken.decimals),
@@ -324,7 +329,7 @@ export const LiquidityPoolsHub: FC<{
 						cy={CENTER}
 						r={r}
 						strokeDasharray="2 5"
-						className="fill-none stroke-line"
+						className="fill-none stroke-grid/40"
 					/>
 				))}
 				<circle cx={CENTER} cy={CENTER} r={120} fill={`url(#${glowId})`} />

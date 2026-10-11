@@ -17,7 +17,7 @@ const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
 		onClick={onClick}
 		aria-label="Swap token direction"
 		className={cn(
-			"absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-control border-4 border-surface bg-hover text-text hover:text-accent",
+			"absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-control border-4 border-page bg-surface-2 text-accent ring-1 ring-grid/35",
 			className,
 		)}
 	>

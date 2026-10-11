@@ -79,7 +79,7 @@ const FollowUpModalInner: FC<{
 		<div
 			className={cn(
 				"h-dvh max-h-dvh w-dvw max-w-dvw p-3 sm:p-4",
-				"bg-surface sm:border-line",
+				"bg-surface backdrop-blur-md sm:border-grid/35",
 				"sm:h-128 sm:w-auto sm:rounded-card sm:border sm:shadow-sm",
 				"flex flex-col gap-4",
 			)}

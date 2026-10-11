@@ -1,10 +1,12 @@
 import { cn } from "../utils/cn";
 
 export const Styles = {
-	label: cn("text-[13px] font-medium text-muted"),
+	label: cn(
+		"font-display text-[10.5px] uppercase tracking-[0.16em] text-muted",
+	),
 
 	field: cn(
-		"rounded-control border border-transparent bg-surface-2 focus-within:border-faint",
+		"rounded-control border border-line bg-surface-2 focus-within:border-faint",
 	),
 
 	button: cn(
@@ -16,6 +18,6 @@ export const Styles = {
 	),
 
 	primaryButton: cn(
-		"flex h-12 w-full items-center justify-center rounded-control bg-primary text-base font-semibold text-primary-ink transition-[filter] enabled:hover:brightness-108 disabled:bg-hover disabled:text-muted",
+		"flex h-12 w-full items-center justify-center rounded-control bg-primary text-base font-bold uppercase tracking-[0.16em] text-primary-ink shadow-submit transition-[filter] enabled:hover:brightness-108 disabled:bg-hover disabled:text-muted disabled:shadow-none",
 	),
 };

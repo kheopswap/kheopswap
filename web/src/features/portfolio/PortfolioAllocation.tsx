@@ -11,7 +11,7 @@ import { TEXT_COLOR } from "./getAllocation";
 import { usePortfolio } from "./PortfolioProvider";
 
 const AMOUNT_CLASS_NAME =
-	"font-light font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]";
+	"font-extralight font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]";
 
 const formatShare = (share: number) => `${Math.round(share * 100)}%`;
 
@@ -63,7 +63,13 @@ export const PortfolioAllocation = () => {
 			<div className="mb-3 text-[12.5px] text-muted">Total portfolio</div>
 			<div className="flex items-baseline gap-3.5">
 				{hasTotal ? (
-					<span className={cn(AMOUNT_CLASS_NAME, isLoading && "animate-pulse")}>
+					<span
+						className={cn(
+							AMOUNT_CLASS_NAME,
+							"text-hero text-shadow-hero",
+							isLoading && "animate-pulse",
+						)}
+					>
 						<CountUpDecimals
 							value={Number(
 								plancksToTokens(allocation.total, stableToken.decimals),

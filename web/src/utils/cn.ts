@@ -7,6 +7,7 @@ const twMerge = extendTailwindMerge({
 			radius: ["card", "control", "chip"],
 			shadow: ["card", "submit"],
 			"text-shadow": ["hero", "brand", "nav"],
+			"drop-shadow": ["spoke"],
 		},
 	},
 });

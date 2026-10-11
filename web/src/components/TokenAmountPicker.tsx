@@ -165,7 +165,7 @@ export const TokenAmountPicker: FC<{
 								{onMaxClick && !!balance && (
 									<button
 										type="button"
-										className="mr-2 h-6 rounded-chip bg-hover px-2 text-[11px] font-semibold tracking-[0.05em] text-text"
+										className="mr-2 h-6 rounded-chip bg-hover px-2 text-[11px] font-semibold tracking-[0.05em] text-accent"
 										onClick={onMaxClick}
 										aria-label="Use maximum balance"
 									>

@@ -35,6 +35,8 @@
 	--color-hero: #eafaff;
 	--color-trail-end: #e6fbff;
 	--color-hub-dot: #5fbfe6;
+	--color-glow: color-mix(in oklab, var(--color-grid) 50%, transparent);
+	--color-hero-glow: color-mix(in oklab, var(--color-grid) 60%, transparent);
 
 	--radius-card: 4px;
 	--radius-control: 3px;
@@ -46,13 +48,13 @@
 	--shadow-submit:
 		0 0 18px color-mix(in oklab, var(--color-grid) 45%, transparent),
 		0 0 2px rgb(230 251 255 / 0.9), inset 0 1px 0 rgb(255 255 255 / 0.45);
+	--drop-shadow-spoke: 0 0 3px
+		color-mix(in oklab, var(--color-grid) 70%, transparent);
 	--text-shadow-hero:
-		0 0 26px color-mix(in oklab, var(--color-grid) 60%, transparent),
-		0 0 2px color-mix(in oklab, var(--color-grid) 60%, transparent);
+		0 0 26px var(--color-hero-glow), 0 0 2px var(--color-hero-glow);
 	--text-shadow-brand: 0 0 12px
-		color-mix(in oklab, var(--color-grid) 35%, transparent);
-	--text-shadow-nav: 0 0 10px
-		color-mix(in oklab, var(--color-grid) 50%, transparent);
+		color-mix(in oklab, var(--color-glow) 70%, transparent);
+	--text-shadow-nav: 0 0 10px var(--color-glow);
 
 	--font-sans:
 		"DM Sans Variable", ui-sans-serif, system-ui, sans-serif,
@@ -245,6 +247,8 @@ html[data-mode="light"] {
 	--color-hero: #0a1a2e;
 	--color-trail-end: #0a66ff;
 	--color-hub-dot: #3a7fd1;
+	--color-glow: color-mix(in oklab, var(--color-grid) 30%, transparent);
+	--color-hero-glow: color-mix(in oklab, var(--color-grid) 22%, transparent);
 }
 
 @utility nav-trail {
@@ -256,8 +260,8 @@ html[data-mode="light"] {
 		var(--color-trail-end)
 	);
 	box-shadow:
-		0 0 6px --alpha(var(--color-grid) / 50%),
-		0 0 14px --alpha(var(--color-grid) / 35%);
+		0 0 6px var(--color-glow),
+		0 0 14px --alpha(var(--color-glow) / 70%);
 }
 
 /* react-toastify injects its stylesheet at runtime after ours, so overrides are scoped to its container */
