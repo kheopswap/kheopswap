@@ -1,5 +1,5 @@
 import { keyBy } from "lodash-es";
-import { type FC, useId, useMemo } from "react";
+import { type FC, useId, useMemo, useRef } from "react";
 import { Link } from "react-router";
 import { CountUpDecimals } from "../../../components/CountUpDecimals";
 import { Shimmer } from "../../../components/Shimmer";
@@ -224,11 +224,26 @@ export const LiquidityPoolsHub: FC<{
 	pools: LiquidityPoolRowData[];
 	isLoading: boolean;
 	isLoadingValuations: boolean;
-}> = ({ pools, isLoading, isLoadingValuations }) => {
+}> = ({ pools: livePools, isLoading, isLoadingValuations }) => {
 	const { assetHub, stableToken } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
 	const glowId = useId();
 	const roundClipId = useId();
+
+	const lastValuations = useRef(new Map<string, bigint>());
+	const pools = useMemo(
+		() =>
+			livePools.map((pool) => {
+				const key = `${pool.chainId}:${pool.poolAssetId}`;
+				if (pool.valuation !== null) {
+					lastValuations.current.set(key, pool.valuation);
+					return pool;
+				}
+				const valuation = lastValuations.current.get(key);
+				return valuation === undefined ? pool : { ...pool, valuation };
+			}),
+		[livePools],
+	);
 
 	const spokes = useMemo(
 		() =>
