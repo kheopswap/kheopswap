@@ -33,6 +33,7 @@
 		"@tanstack/react-virtual": "^3.14.13",
 		"@w3f/polkadot-icons": "^1.0.0",
 		"clsx": "^2.1.1",
+		"countup.js": "^2.10.1",
 		"idb-keyval": "^6.3.0",
 		"lodash-es": "^4.18.1",
 		"lz-string": "^1.5.0",

@@ -101,6 +101,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      countup.js:
+        specifier: ^2.10.1
+        version: 2.10.1
       idb-keyval:
         specifier: ^6.3.0
         version: 6.3.0
@@ -2794,6 +2797,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  countup.js@2.10.1:
+    resolution: {integrity: sha512-UHW/BsPDgVZfN919D4iu2HPv+jJxZUuaR3EhT0ScFZaD446GiQtkMTgOnOyJXdA2AewdlyUk9UvERlTHTbVpcw==}
 
   create-ecdh@4.0.4:
     resolution: {integrity: sha512-mf+TCx8wWc9VpuxfP2ht0iSISLZnt0JgWlrOKZiNqyUZWnjIaCIVNQArMHnCZKfEYRg6IM7A+NeJoN8gf/Ws0A==}
@@ -7630,6 +7636,8 @@ snapshots:
       path-type: 4.0.0
     optionalDependencies:
       typescript: 7.0.2
+
+  countup.js@2.10.1: {}
 
   create-ecdh@4.0.4:
     dependencies:

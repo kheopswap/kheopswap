@@ -1,8 +1,8 @@
 import { keyBy } from "lodash-es";
 import { type FC, useId, useMemo } from "react";
 import { Link } from "react-router";
+import { CountUpDecimals } from "../../../components/CountUpDecimals";
 import { Shimmer } from "../../../components/Shimmer";
-import { useCountUp } from "../../../hooks/useCountUp";
 import { useNativeToken } from "../../../hooks/useNativeToken";
 import type { Token } from "../../../registry/tokens/types";
 import { useRelayChains } from "../../../state/relay";
@@ -244,10 +244,6 @@ export const LiquidityPoolsHub: FC<{
 		!isLoading &&
 		(!isLoadingValuations || pools.every((pool) => pool.valuation !== null));
 
-	const displayedTvl = useCountUp(
-		isReady ? Number(plancksToTokens(totalTvl, stableToken.decimals)) : 0,
-	);
-
 	if (isReady && (pools.length < MIN_POOLS || !totalTvl)) return null;
 
 	const formatTvl = (plancks: bigint | null) =>
@@ -262,7 +258,9 @@ export const LiquidityPoolsHub: FC<{
 				<div className="font-light font-mono text-5xl leading-none tracking-[-0.07em] sm:text-[64px]">
 					{isReady ? (
 						<>
-							{formatDecimals(displayedTvl, 4)}
+							<CountUpDecimals
+								value={Number(plancksToTokens(totalTvl, stableToken.decimals))}
+							/>
 							<span className="ml-2.5 text-lg tracking-normal text-muted">
 								{stableToken.symbol}
 							</span>
