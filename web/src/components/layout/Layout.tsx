@@ -1,6 +1,5 @@
 import type { FC, ReactNode } from "react";
 
-import { Fireflies } from "./Fireflies";
 import { Footer } from "./Footer";
 import { Header } from "./Header/Header";
 
@@ -13,7 +12,6 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
 			>
 				Skip to main content
 			</a>
-			<Fireflies />
 			<Header />
 			<main
 				id="main-content"
