@@ -1,8 +1,7 @@
 import { useMemo } from "react";
-import { useTokenColors } from "../../hooks/useTokenColors";
 import type { Token, TokenId } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
-import { getValidTokenLogo } from "../../utils/tokenLogo";
+import { getTokenLogoColor } from "../../utils/tokenLogo";
 import {
 	getAllocation,
 	getAllocationColors,
@@ -33,14 +32,10 @@ export const usePortfolioAllocation = ({
 
 	const allocation = useMemo(() => getAllocation(holdings), [holdings]);
 
-	const logoUrls = useMemo(
-		() => holdings.map(({ token }) => getValidTokenLogo(token.logo)),
-		[holdings],
-	);
-	const dominantColors = useTokenColors(logoUrls);
-
 	const holdingsByTokenId = useMemo(() => {
-		const colors = getAllocationColors(dominantColors);
+		const colors = getAllocationColors(
+			holdings.map(({ token }) => getTokenLogoColor(token.logo)),
+		);
 		return Object.fromEntries(
 			holdings.map(({ token, stablePlancks }, index) => [
 				token.id,
@@ -50,7 +45,7 @@ export const usePortfolioAllocation = ({
 				},
 			]),
 		) as Record<TokenId, PortfolioHolding>;
-	}, [holdings, dominantColors, allocation.total]);
+	}, [holdings, allocation.total]);
 
 	return { allocation, holdingsByTokenId };
 };

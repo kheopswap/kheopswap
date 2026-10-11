@@ -1,3 +1,5 @@
+import tokenColors from "virtual:token-colors";
+
 export const FALLBACK_LOGO_SRC = "/img/tokens/unknown.svg";
 
 export const getValidTokenLogo = (
@@ -19,3 +21,9 @@ export const getValidTokenLogo = (
 
 	return undefined;
 };
+
+const getLogoPath = (logo: string) =>
+	logo.replace(/\?.*$/, "").replace(/^\.?\//, "");
+
+export const getTokenLogoColor = (logo: string | undefined) =>
+	logo ? (tokenColors[getLogoPath(logo)] ?? null) : null;

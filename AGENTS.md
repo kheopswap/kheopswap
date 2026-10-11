@@ -43,6 +43,8 @@ Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build an
 
 The `tokens.<network>.json` snapshots are generated. Before touching token data, read the token registry section of `README.md`.
 
+Token logos live in `web/public/img/tokens`. Their dominant colors are computed at build time by `web/plugins/tokenColors.ts` and imported from `virtual:token-colors`. Restart `pnpm dev` after adding a logo.
+
 ## Brand assets
 
 The icons, favicons and `og-image.png` in `web/public` are generated from `web/public/logo.svg`. Edit `logo.svg`, then run `pnpm generate-brand-assets`.
