@@ -1,5 +1,6 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import type { FC } from "react";
+import { FormSummaryRow } from "../../../../components/FormSummary";
 import { Shimmer } from "../../../../components/Shimmer";
 import { Tokens } from "../../../../components/Tokens";
 import {
@@ -10,9 +11,6 @@ import {
 import { useNativeToken } from "../../../../hooks/useNativeToken";
 import { getChainById } from "../../../../registry/chains/chains";
 import { cn } from "../../../../utils/cn";
-import {
-	FormSummaryRow,
-} from "../../../../components/FormSummary";
 import { useSwap } from "../../SwapProvider";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
