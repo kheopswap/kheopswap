@@ -145,7 +145,12 @@ const renderOgImage = async () => {
 			throw new Error(`Chrome screenshot is ${width}x${height}`);
 		return await screenshot.png({ compressionLevel: 9 }).toBuffer();
 	} finally {
-		rmSync(workDir, { recursive: true, force: true });
+		rmSync(workDir, {
+			recursive: true,
+			force: true,
+			maxRetries: 10,
+			retryDelay: 200,
+		});
 	}
 };
 
