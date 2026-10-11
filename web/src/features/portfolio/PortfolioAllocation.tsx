@@ -3,6 +3,7 @@ import { type FC, useMemo } from "react";
 import { CountUpDecimals } from "../../components/CountUpDecimals";
 import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
+import { cn } from "../../utils/cn";
 import { plancksToTokens } from "../../utils/plancks";
 import { FALLBACK_LOGO_SRC, getValidTokenLogo } from "../../utils/tokenLogo";
 import { TEXT_COLOR } from "./getAllocation";
@@ -10,11 +11,12 @@ import { usePortfolio } from "./PortfolioProvider";
 
 const formatShare = (share: number) => `${Math.round(share * 100)}%`;
 
-const LegendItem: FC<{ token?: Token; label: string; share: number }> = ({
-	token,
-	label,
-	share,
-}) => (
+const LegendItem: FC<{
+	token?: Token;
+	label: string;
+	share: number;
+	isLoading: boolean;
+}> = ({ token, label, share, isLoading }) => (
 	<li className="flex items-center gap-1.75 text-muted">
 		{token ? (
 			<img
@@ -26,14 +28,19 @@ const LegendItem: FC<{ token?: Token; label: string; share: number }> = ({
 			<span className="size-4 rounded-full bg-faint" />
 		)}
 		{label}
-		<span className="font-medium font-mono text-text">
+		<span
+			className={cn(
+				"font-medium font-mono text-text",
+				isLoading && "animate-pulse",
+			)}
+		>
 			{formatShare(share)}
 		</span>
 	</li>
 );
 
 export const PortfolioAllocation = () => {
-	const { accounts, allocation, holdingsByTokenId } = usePortfolio();
+	const { accounts, allocation, holdingsByTokenId, isLoading } = usePortfolio();
 	const { stableToken } = useRelayChains();
 
 	const accountsCount = useMemo(
@@ -49,7 +56,12 @@ export const PortfolioAllocation = () => {
 		<section className="mx-1 mt-3 mb-9">
 			<div className="mb-3 text-[12.5px] text-muted">Total portfolio</div>
 			<div className="flex items-baseline gap-3.5">
-				<span className="font-light font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]">
+				<span
+					className={cn(
+						"font-light font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]",
+						isLoading && "animate-pulse",
+					)}
+				>
 					<CountUpDecimals
 						value={Number(
 							plancksToTokens(allocation.total, stableToken.decimals),
@@ -93,9 +105,12 @@ export const PortfolioAllocation = () => {
 						token={token}
 						label={token.symbol}
 						share={share}
+						isLoading={isLoading}
 					/>
 				))}
-				{other && <LegendItem label="Other" share={other.share} />}
+				{other && (
+					<LegendItem label="Other" share={other.share} isLoading={isLoading} />
+				)}
 			</ul>
 		</section>
 	);

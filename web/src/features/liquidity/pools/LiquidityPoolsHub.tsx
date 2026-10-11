@@ -70,9 +70,10 @@ const HubSpokeLink: FC<{
 	spoke: HubSpoke;
 	pool: LiquidityPoolRowData;
 	tvl: string;
+	isLoadingTvl: boolean;
 	stableSymbol: string;
 	roundClipPath: string;
-}> = ({ spoke, pool, tvl, stableSymbol, roundClipPath }) => {
+}> = ({ spoke, pool, tvl, isLoadingTvl, stableSymbol, roundClipPath }) => {
 	const { angle, radius, rank } = spoke;
 	const start = polar(angle, SPOKE_START);
 	const tip = polar(angle, radius);
@@ -152,7 +153,12 @@ const HubSpokeLink: FC<{
 					className="fill-text font-sans text-[12.5px] font-semibold"
 				>
 					{pool.token2.symbol}{" "}
-					<tspan className="fill-muted font-mono text-[11.5px] font-medium">
+					<tspan
+						className={cn(
+							"fill-muted font-mono text-[11.5px] font-medium",
+							isLoadingTvl && "animate-pulse",
+						)}
+					>
 						{tvl}
 					</tspan>
 				</text>
@@ -257,9 +263,13 @@ export const LiquidityPoolsHub: FC<{
 				<div className="font-light font-mono text-5xl leading-none tracking-[-0.07em] sm:text-[64px]">
 					{hasTvl ? (
 						<>
-							<CountUpDecimals
-								value={Number(plancksToTokens(totalTvl, stableToken.decimals))}
-							/>
+							<span className={cn(!isLoaded && "animate-pulse")}>
+								<CountUpDecimals
+									value={Number(
+										plancksToTokens(totalTvl, stableToken.decimals),
+									)}
+								/>
+							</span>
 							<span className="ml-2.5 text-lg tracking-normal text-muted">
 								{stableToken.symbol}
 							</span>
@@ -316,6 +326,7 @@ export const LiquidityPoolsHub: FC<{
 							spoke={spoke}
 							pool={pool}
 							tvl={formatTvl(pool.valuation)}
+							isLoadingTvl={!isLoaded}
 							stableSymbol={stableToken.symbol}
 							roundClipPath={`url(#${roundClipId})`}
 						/>
