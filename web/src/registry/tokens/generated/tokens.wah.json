@@ -5885,6 +5885,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000352",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000352,
+		"symbol": "tUSDT",
+		"decimals": 6,
+		"name": "Test USDT",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",

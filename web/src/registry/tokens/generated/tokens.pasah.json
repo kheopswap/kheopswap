@@ -6314,6 +6314,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001040",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001040,
+		"symbol": "tUSD",
+		"decimals": 6,
+		"name": "Test USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
