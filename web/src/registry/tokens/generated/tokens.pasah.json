@@ -6325,6 +6325,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001041",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001041,
+		"symbol": "BBT",
+		"decimals": 10,
+		"name": "Birdbrain (test)",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
@@ -6721,6 +6732,26 @@
 		"type": "pool-asset",
 		"chainId": "pasah",
 		"poolAssetId": 21,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pasah::22",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 22,
+		"symbol": "",
+		"decimals": 0,
+		"name": "",
+		"isSufficient": false
+	},
+	{
+		"id": "pool-asset::pasah::23",
+		"type": "pool-asset",
+		"chainId": "pasah",
+		"poolAssetId": 23,
 		"symbol": "",
 		"decimals": 0,
 		"name": "",
