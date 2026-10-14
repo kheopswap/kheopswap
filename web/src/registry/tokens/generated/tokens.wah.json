@@ -5896,6 +5896,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::wah::50000353",
+		"type": "asset",
+		"chainId": "wah",
+		"assetId": 50000353,
+		"symbol": "dotUSD",
+		"decimals": 6,
+		"name": "dotUSD test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::wah::501",
 		"type": "asset",
 		"chainId": "wah",
