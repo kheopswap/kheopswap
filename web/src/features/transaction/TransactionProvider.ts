@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import type { TokenId } from "../../registry/tokens/types";
 import type { TransactionType } from "../../state/transactions/types";
@@ -128,8 +129,9 @@ const useTransactionProvider = ({
 			);
 		}
 
-		// if available and there is no specific fee asset, dryRun is the truth
-		if (!fees.options?.asset && fees.dryRun?.success)
+		const isDryRunConclusive =
+			isChainIdAssetHub(chainId) && !fees.options?.asset;
+		if (isDryRunConclusive && fees.dryRun?.success)
 			return fees.dryRun.value.execution_result.success;
 
 		// TODO add a flag to allow parent form to force another isLoading state
@@ -156,6 +158,7 @@ const useTransactionProvider = ({
 		fees.options,
 		fees.dryRun,
 		submitGate.status,
+		chainId,
 	]);
 
 	return {
