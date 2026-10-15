@@ -35,6 +35,7 @@
 		"parachainsInfoUrl": "https://parachains.info/details/moonriver"
 	},
 	{
+		"chainId": "hydration",
 		"relay": "polkadot",
 		"paraId": 2034,
 		"name": "Hydration",

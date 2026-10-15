@@ -41,6 +41,7 @@ import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
 import YAML from "yaml";
 import { DESCRIPTORS_ASSET_HUB } from "../src/registry/chains/descriptors.ts";
+import type { ChainIdAssetHub } from "../src/registry/chains/types.ts";
 import { buildToken } from "../src/registry/tokens/buildToken.ts";
 import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
 import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
@@ -58,9 +59,6 @@ import { sleep } from "../src/utils/sleep.ts";
 // Chain & descriptor config
 // ---------------------------------------------------------------------------
 
-/** Matches the app's ChainId — derived from the shared descriptors object. */
-type ChainId = keyof typeof DESCRIPTORS_ASSET_HUB;
-
 type RegistryChain = {
 	id: string;
 	name: string;
@@ -68,10 +66,10 @@ type RegistryChain = {
 };
 
 type ChainConfig = {
-	id: ChainId;
+	id: ChainIdAssetHub;
 	name: string;
 	wsUrl: string[];
-	descriptors: (typeof DESCRIPTORS_ASSET_HUB)[ChainId];
+	descriptors: (typeof DESCRIPTORS_ASSET_HUB)[ChainIdAssetHub];
 };
 
 const CHAINS = (
@@ -83,7 +81,7 @@ const CHAINS = (
 	) as RegistryChain[]
 )
 	.filter(
-		(chain): chain is RegistryChain & { id: ChainId } =>
+		(chain): chain is RegistryChain & { id: ChainIdAssetHub } =>
 			chain.id in DESCRIPTORS_ASSET_HUB,
 	)
 	.map((chain) => ({

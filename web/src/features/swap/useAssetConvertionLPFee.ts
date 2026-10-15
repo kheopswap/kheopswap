@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { getApi } from "../../papi/getApi";
-import type { Chain } from "../../registry/chains/types";
+import type { ChainAssetHub } from "../../registry/chains/types";
 import { logger } from "../../utils/logger";
 
-type UseAssetConvertionLPFeeProps = { chain: Chain };
+type UseAssetConvertionLPFeeProps = { chain: ChainAssetHub };
 
 export const useAssetConvertionLPFee = ({
 	chain,
