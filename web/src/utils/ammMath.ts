@@ -104,13 +104,15 @@ export const splitAppCommission = (
 /**
  * Compute the maximum amount a user can swap, reserving funds for fees and ED.
  *
- * For native tokens, deducts `2 × fee + existentialDeposit` from the balance
- * to keep the account alive. For non-native tokens, returns the full balance.
+ * For native tokens, deducts `2 × fee + existentialDeposit + extraNativeSpending`
+ * from the balance to keep the account alive. For non-native tokens, returns the
+ * full balance.
  *
  * @param balance  Available balance in plancks.
  * @param feeEstimate  Estimated transaction fee.
  * @param existentialDeposit  Chain existential deposit for the token.
  * @param isNative  Whether the token is the chain's native token.
+ * @param extraNativeSpending  Native plancks the call spends besides the amount, such as an XCM delivery fee.
  * @returns Maximum swappable plancks.
  */
 export const getMaxSwapAmount = (
@@ -118,8 +120,9 @@ export const getMaxSwapAmount = (
 	feeEstimate: bigint,
 	existentialDeposit: bigint,
 	isNative: boolean,
+	extraNativeSpending = 0n,
 ): bigint => {
 	if (!isNative) return balance;
-	const reserved = 2n * feeEstimate + existentialDeposit;
+	const reserved = 2n * feeEstimate + existentialDeposit + extraNativeSpending;
 	return reserved <= balance ? balance - reserved : balance;
 };

@@ -21,7 +21,7 @@ import { getAssetConvert$ } from "./convert";
 import { assetHub$, relayChains$, stableToken$ } from "./relay";
 import { getAllTokens$ } from "./tokens";
 
-const assetHubMirrorTokenIds$ = combineLatest([
+export const assetHubMirrorTokenIds$ = combineLatest([
 	relayChains$,
 	getAllTokens$(),
 ]).pipe(
