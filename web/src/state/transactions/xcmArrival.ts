@@ -28,10 +28,26 @@ import type { Token } from "../../registry/tokens/types";
 import { bindSerialized } from "../../utils/bindSerialized";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { transactions$ } from "./transactionStore";
-import type { TransactionId, TransactionRecord } from "./types";
+import type {
+	TransactionId,
+	TransactionRecord,
+	TransactionType,
+} from "./types";
 
 const ARRIVAL_TIMEOUT_MS = 10 * 60_000;
 const ARRIVAL_BUFFER_BLOCKS = 10;
+
+const XCM_ARRIVAL_TYPES = [
+	"xcmTransfer",
+	"xcmSwap",
+] as const satisfies readonly TransactionType[];
+
+export type XcmArrivalType = (typeof XCM_ARRIVAL_TYPES)[number];
+
+export const isXcmArrivalType = (
+	type: TransactionType,
+): type is XcmArrivalType =>
+	XCM_ARRIVAL_TYPES.some((arrivalType) => arrivalType === type);
 
 export type XcmArrivalTarget = {
 	destination: ChainIdHydration;
@@ -219,7 +235,7 @@ export const trackXcmArrivals = () =>
 	transactions$
 		.pipe(
 			mergeMap((transactions) =>
-				transactions.filter(({ type }) => type === "xcmTransfer"),
+				transactions.filter(({ type }) => isXcmArrivalType(type)),
 			),
 			distinct(({ id }) => id),
 			mergeMap(({ id, followUpData }) => {
