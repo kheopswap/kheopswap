@@ -18,7 +18,7 @@
       "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
       "metadata": ".papi/scale/wah.scale",
       "genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
-      "codeHash": "0xba166a7157e55185f7b83ebca30a818b1c7579c396724ee42c377ea26b61b8a3"
+      "codeHash": "0x57ccdb66df672638e8978d5eecce601930a6e498f6c0360a738a53cac2c2e9d9"
     },
     "pasah": {
       "wsUrl": "wss://sys.turboflakes.io/asset-hub-paseo",

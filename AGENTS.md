@@ -24,6 +24,12 @@ Update this file and `README.md` when your change makes them wrong.
 - When a runtime call's signature differs between chains, write one explicit case per chain with `switch (api.chainId)`.
 - Every supported chain is an Asset Hub: `pah`, `kah`, `wah`, `pasah`.
 
+## Runtime upgrades
+
+Chains upgrade their runtime often, and a daily workflow opens a `Runtime upgrade on <chain>` issue for each one. To handle it, run `pnpm papi update <chain>`. It fetches the new metadata into `.papi/scale/<chain>.scale`, records the new `codeHash` in `.papi/polkadot-api.json` and regenerates the descriptors. Commit every changed file under `.papi/`.
+
+Most upgrades need nothing else. If `pnpm typecheck` still passes, the typed API the app uses did not change.
+
 ## Reactive state
 
 Services expose observables suffixed with `$`. Wrap shared streams in `getCachedObservable$` so subscribers share one source.
