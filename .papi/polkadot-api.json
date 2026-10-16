@@ -24,7 +24,7 @@
       "wsUrl": "wss://sys.turboflakes.io/asset-hub-paseo",
       "metadata": ".papi/scale/pasah.scale",
       "genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
-      "codeHash": "0xbac5599cad3e4183718a388ea0c4e3125daef988bba1f832dcdc0655b3a67026"
+      "codeHash": "0xd85bfdb17cf421d6a75c9db9ba16cd713a840e42a02ca69becff7e3570b8debb"
     }
   }
 }
