@@ -7,20 +7,25 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       # .node-version, not package.json: `engines` is a range (>=24), so setup-node resolves it
       # against whatever the runner image happens to cache — CI could silently jump a major.
       - name: Use Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: ".node-version"
           cache: "pnpm"
@@ -29,7 +34,7 @@ jobs:
       # most of the install step. It validates restored descriptors against the codeHash in
       # polkadot-api.json and regenerates them on mismatch, so an approximate restore is safe.
       - name: Restore papi descriptors
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .papi/descriptors
           key: papi-${{ runner.os }}-${{ hashFiles('.papi/polkadot-api.json', '.papi/scale/**', 'pnpm-lock.yaml') }}
