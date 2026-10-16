@@ -41,7 +41,7 @@ Parallel runs share the wallet's accounts. Two sends from one account on one net
 - **Polkadot (`#/polkadot/...`) is the fallback when Paseo is broken.** Paseo breaks from time to time: RPC down, or a runtime upgrade the app can't sign for yet. Use mainnet only for that, with tiny amounts (≤ 0.01 DOT), and say in the report that mainnet was used and why.
 - Kusama and Westend: read-only checks only.
 
-Known Paseo break (#147), first seen 2026-10-03 and still there on 2026-10-16: every submit fails before Talisman opens. The follow-up dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity`. Before the 2026-10-16 runtime upgrade it named `AsPgas`. polkadot-api's `pjs-signer` rejects signed extensions it does not know. Until that is fixed, prove signing flows on Polkadot and report the Paseo failure as a finding.
+Known Paseo break (#147), first seen 2026-10-03 and still there on 2026-10-16: every submit fails before Talisman opens. The follow-up dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity`. Before the runtime upgrade handled in #148, it named `AsPgas`. polkadot-api's `pjs-signer` rejects signed extensions it does not know. Until that is fixed, prove signing flows on Polkadot and report the Paseo failure as a finding.
 
 ## Launch
 
