@@ -39,6 +39,6 @@ Steps:
 - `Transaction fee` reads `0 PAS` until a sender is selected and the estimate arrives.
 - A self-transfer leaves the balance unchanged except for the fee. Check that the drop matches the fee, not the amount.
 - Per source, the amount stays filled after a successful submit (not yet seen live).
-- The Paseo `AsPgas` signing break (see `swap.md`) applies here too: on 2026-10-05 the dialog read `Transfer PAS`, `Transaction failed`, `PJS does not support this signed-extension: AsPgas`. Fall back to `#/polkadot/transfer` with ≤ 0.01 DOT, sent to the test account itself.
+- The Paseo signing break (#147, see `swap.md`) applies here too: on 2026-10-05 the dialog read `Transfer PAS`, `Transaction failed`, `PJS does not support this signed-extension: AsPgas`. Fall back to `#/polkadot/transfer` with ≤ 0.01 DOT, sent to the test account itself.
 - Never send to an address you can't name as a user-owned test account.
 - The `Transaction succeeded` dialog ignores `Escape`. Close it with `agent-browser find role button click --name "Close" --exact`.

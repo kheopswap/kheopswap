@@ -54,7 +54,7 @@ Steps:
 - `--name "USD Coin"` also matches `Fake USD Coin X` when that token has a pool. Use `USDC USDC USD Coin`.
 - Without a selected account, the summary stops after `Price impact`, and neither `MAX` nor the slippage button exists.
 - The swap batches a service-fee transfer to `Kheopswap Treasury`, which is expected in the Talisman request.
-- On Paseo, from 2026-10-03 to at least 2026-10-05, the submit fails before any popup. The dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsPgas`, and `talisman.mjs` exits 1. Record the dialog text, then prove `swap-submit` on `#/polkadot/swap` with 0.01 DOT → USDC.
+- On Paseo, from 2026-10-03 to at least 2026-10-16 (#147), the submit fails before any popup. The dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity` (`AsPgas` before the runtime upgrade handled in #148), and `talisman.mjs` exits 1. Record the dialog text, then prove `swap-submit` on `#/polkadot/swap` with 0.01 DOT → USDC.
 - A failed-transaction toast closes after 5 s. Capture the dialog, which stays open until `Close`.
 - `Waiting for finalization` with a check mark is not the end state. Wait for `Transaction succeeded` or `Transaction failed`.
 - Tiny swaps show about -0.6% `Price impact`. That is the 0.3% service fee (`VITE_APP_FEE_PERCENT`) plus the 0.3% pool fee: the impact compares the spot value of the gross amount with the pool output of the net amount.

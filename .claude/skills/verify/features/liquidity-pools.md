@@ -46,5 +46,5 @@ Steps:
 - Token buttons on the pool page are disabled, because the pair is fixed by the route.
 - The `Add` and `Remove` mode buttons sit next to `Add Liquidity`. Use exact names.
 - Check the test account's balance of the pool's asset first. Without enough USDC, adding to PAS/USDC shows `Insufficient balance` and `Simulation Failed`. Get the asset first, or use a pool whose asset the account holds.
-- The Paseo `AsPgas` signing break (see `swap.md`) applies here too. Fall back to Polkadot with ≤ 0.01 DOT.
+- The Paseo signing break (#147, see `swap.md`) applies here too. Fall back to Polkadot with ≤ 0.01 DOT.
 - After an add, remove the position again so the test account doesn't accumulate LP tokens across runs.
