@@ -13,7 +13,7 @@ if [[ "$(id -u)" == 0 ]]; then
 	exec setpriv --reuid "$HOST_UID" --regid "$HOST_GID" --clear-groups "$0" "$@"
 fi
 
-export HOME=/verify/home XDG_CACHE_HOME=/pnpm/cache XDG_DATA_HOME=/pnpm/data
+export HOME=/verify/home XDG_CACHE_HOME=/pnpm/cache XDG_DATA_HOME=/pnpm/data PNPM_CONFIG_STORE_DIR=/pnpm/store
 export CI=1 SKIP_INSTALL_SIMPLE_GIT_HOOKS=1
 STORE_URL="https://clients2.google.com/service/update2/crx?response=redirect&prodversion=152.0&acceptformat=crx2,crx3&x=id%3Dfijngjgcjhjmmpcmkeiomlglpeiijkld%26uc"
 logs=/verify/logs
@@ -35,7 +35,7 @@ wait_for() {
 }
 
 status installing
-pnpm install --frozen-lockfile --store-dir /pnpm/store >"$logs/install.log" 2>&1
+pnpm install --frozen-lockfile >"$logs/install.log" 2>&1
 
 status starting-vite
 pnpm dev --strictPort >"$logs/dev-server.log" 2>&1 &
