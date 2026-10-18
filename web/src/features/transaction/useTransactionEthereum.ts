@@ -74,7 +74,7 @@ export const useTransactionEthereum = ({
 	const walletConnectAppKit = useMemo(() => {
 		if (!account) return null;
 		const wallet = wallets.find((w) => w.id === account.walletId);
-		return wallet && isWalletConnectWallet(wallet)
+		return wallet && isWalletConnectWallet(wallet) && !wallet.isPlaceholder
 			? (wallet.appKit as unknown as AppKit)
 			: null;
 	}, [wallets, account]);
@@ -86,7 +86,12 @@ export const useTransactionEthereum = ({
 	}, [connectedEvmChainId, isEthereumAccount, targetEvmChainId]);
 
 	const onSwitchEthereumNetwork = useCallback(async () => {
-		if (!isEthereumAccount || !targetEvmChainId) return;
+		if (
+			account?.platform !== "ethereum" ||
+			account.isPlaceholder ||
+			!targetEvmChainId
+		)
+			return;
 
 		try {
 			setIsSwitchingEthereumNetwork(true);
@@ -156,7 +161,6 @@ export const useTransactionEthereum = ({
 		chain?.evmBlockExplorers,
 		chain?.evmRpcUrl,
 		chain?.name,
-		isEthereumAccount,
 		nativeToken?.symbol,
 		targetEvmChainId,
 	]);

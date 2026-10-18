@@ -104,10 +104,11 @@ const useTransactionProvider = ({
 
 	// Cross-concern: can submit
 	const canSubmit = useMemo(() => {
-		if (ethereum.account?.platform === "ethereum") {
+		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
+
+		if (ethereum.account.platform === "ethereum") {
 			return (
 				!!call &&
-				!!ethereum.account &&
 				!isLoading &&
 				!error &&
 				!ethereum.isEthereumNetworkMismatch &&
@@ -123,7 +124,6 @@ const useTransactionProvider = ({
 		// TODO add a flag to allow parent form to force another isLoading state
 		return (
 			!!call &&
-			!!ethereum.account &&
 			!!fees.feeEstimate &&
 			!!fees.feeToken &&
 			!!fees.options &&

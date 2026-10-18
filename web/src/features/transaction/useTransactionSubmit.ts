@@ -158,7 +158,7 @@ export const useTransactionSubmit = ({
 		try {
 			logger.log("submit", { call });
 
-			if (!call || !account) return;
+			if (!call || !account || account.isPlaceholder) return;
 
 			const txFeeToken = feeToken ?? nativeToken;
 			if (!txFeeToken) return;
