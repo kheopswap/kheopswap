@@ -20,6 +20,12 @@ import { Tokens } from "./Tokens";
 import { useAccountDrawerContent } from "./useAccountDrawerContent";
 import { WalletIcon } from "./WalletIcon";
 
+const WALLET_STATUS_DOT: Record<Wallet["status"], string> = {
+	connected: "bg-success",
+	connecting: "animate-pulse bg-warn",
+	disconnected: "bg-error",
+};
+
 const getPlatformLabel = (platform: string) =>
 	platform === "ethereum" ? "Ethereum" : "Polkadot";
 
@@ -53,10 +59,7 @@ const WalletButton: FC<{
 				)}
 			</div>
 			<div
-				className={cn(
-					"size-2 rounded-full",
-					wallet.isConnected ? "bg-success" : "bg-error",
-				)}
+				className={cn("size-2 rounded-full", WALLET_STATUS_DOT[wallet.status])}
 			/>
 		</button>
 	);

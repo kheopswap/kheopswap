@@ -1,18 +1,13 @@
 import GenericWalletIcon from "@w3f/polkadot-icons/keyline/Wallet";
-import { type FC, useMemo } from "react";
-import { useWallets } from "../common/kheopskit";
+import type { FC } from "react";
+import { useWallet } from "../common/kheopskit";
 import { cn } from "../utils/cn";
 
 export const WalletIcon: FC<{
-	walletId: string | null | undefined;
+	walletId: string;
 	className?: string;
 }> = ({ walletId, className }) => {
-	const { wallets } = useWallets();
-
-	const icon = useMemo(
-		() => wallets.find((w) => w.id === walletId)?.icon,
-		[wallets, walletId],
-	);
+	const icon = useWallet(walletId)?.icon;
 
 	if (icon) {
 		return (

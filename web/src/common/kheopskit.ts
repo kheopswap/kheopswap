@@ -7,6 +7,7 @@ import {
 } from "@kheopskit/core";
 import { ethereum } from "@kheopskit/core/ethereum";
 import { polkadot } from "@kheopskit/core/polkadot";
+import { walletConnect } from "@kheopskit/core/walletconnect";
 import { createKheopskit } from "@kheopskit/react";
 import { defineChain } from "@reown/appkit/networks";
 import { getChainById } from "../registry/chains/chains";
@@ -155,12 +156,12 @@ export const getEvmAppKitNetwork = (evmChainId: number) =>
 
 const platforms = [polkadot(), ethereum()] as const;
 
-export const { KheopskitProvider, useWallets } = createKheopskit({
+export const { KheopskitProvider, useWallets, useWallet } = createKheopskit({
 	platforms,
 	appName: "Kheopswap",
 	autoReconnect: true,
 	walletConnect: WALLET_CONNECT_PROJECT_ID
-		? {
+		? walletConnect({
 				projectId: WALLET_CONNECT_PROJECT_ID,
 				metadata: {
 					name: "Kheopswap",
@@ -178,7 +179,7 @@ export const { KheopskitProvider, useWallets } = createKheopskit({
 					westendAssetHubEvm,
 					paseoAssetHubEvm,
 				],
-			}
+			})
 		: undefined,
 	debug: false,
 });
