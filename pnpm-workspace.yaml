@@ -66,4 +66,4 @@ overrides:
   # claims a >=6.6.2 patch, but npm's latest is still 6.6.1 — no installable fix yet. Revisit.
 
 patchedDependencies:
-  '@kheopskit/core': patches/@kheopskit__core.patch
+  '@kheopskit/core@6.0.0-rc.5': patches/@kheopskit__core.patch

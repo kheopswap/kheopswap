@@ -16,7 +16,7 @@ overrides:
   postcss: ^8.5.23
 
 patchedDependencies:
-  '@kheopskit/core': 4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f
+  '@kheopskit/core@6.0.0-rc.5': 4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f
 
 importers:
 
