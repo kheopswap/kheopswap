@@ -1,0 +1,42 @@
+diff --git a/dist/polkadot.js b/dist/polkadot.js
+index 7019894be9c9c6f0af1c7073542fe20529096faf..7ca1871518df100bea00b0944a028c787a3b018d 100644
+--- a/dist/polkadot.js
++++ b/dist/polkadot.js
+@@ -109,6 +109,7 @@ const getInjectedWalletAccounts$ = (wallet) => {
+ 	return new rxjs.Observable((subscriber) => {
+ 		const signPayload = injected.signer.signPayload.bind(injected.signer);
+ 		const signRaw = injected.signer.signRaw.bind(injected.signer);
++		const createTransaction = injected.signer.createTransaction?.bind(injected.signer);
+ 		const { field, factory } = getPjsSignerField();
+ 		const toAccount = (account) => {
+ 			const { address } = account;
+@@ -120,7 +121,7 @@ const getInjectedWalletAccounts$ = (wallet) => {
+ 				platform: "polkadot",
+ 				walletName: wallet.name,
+ 				walletId: wallet.id,
+-				[field]: factory(address, signPayload, signRaw, toSignerType(type)),
++				[field]: createTransaction && polkadot_api_pjs_signer.getAccountTxCreator ? polkadot_api_pjs_signer.getAccountTxCreator(address, createTransaction, signRaw, toSignerType(type)) : factory(address, signPayload, signRaw, toSignerType(type)),
+ 				signRaw: async (data, options) => (await signRaw({
+ 					address,
+ 					...encodeRawData(data, options?.type)
+diff --git a/dist/polkadot.mjs b/dist/polkadot.mjs
+index 47935bf9ed0c38be1590a53c40ca486ef68f2b02..bb833abbe35ed500e50ceb8a9aaa059e2c1c4eac 100644
+--- a/dist/polkadot.mjs
++++ b/dist/polkadot.mjs
+@@ -86,6 +86,7 @@ const getInjectedWalletAccounts$ = (wallet) => {
+ 	return new Observable((subscriber) => {
+ 		const signPayload = injected.signer.signPayload.bind(injected.signer);
+ 		const signRaw = injected.signer.signRaw.bind(injected.signer);
++		const createTransaction = injected.signer.createTransaction?.bind(injected.signer);
+ 		const { field, factory } = getPjsSignerField();
+ 		const toAccount = (account) => {
+ 			const { address } = account;
+@@ -97,7 +98,7 @@ const getInjectedWalletAccounts$ = (wallet) => {
+ 				platform: "polkadot",
+ 				walletName: wallet.name,
+ 				walletId: wallet.id,
+-				[field]: factory(address, signPayload, signRaw, toSignerType(type)),
++				[field]: createTransaction && pjs.getAccountTxCreator ? pjs.getAccountTxCreator(address, createTransaction, signRaw, toSignerType(type)) : factory(address, signPayload, signRaw, toSignerType(type)),
+ 				signRaw: async (data, options) => (await signRaw({
+ 					address,
+ 					...encodeRawData(data, options?.type)
