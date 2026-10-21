@@ -15,9 +15,6 @@ overrides:
   deepmerge-ts: ^8.0.0
   postcss: ^8.5.23
 
-patchedDependencies:
-  '@kheopskit/core@6.0.0-rc.5': 4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f
-
 importers:
 
   .:
@@ -57,11 +54,11 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(react@19.3.0)
       '@kheopskit/core':
-        specifier: 6.0.0-rc.5
-        version: 6.0.0-rc.5(patch_hash=4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f)(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))
+        specifier: 6.0.0-rc.6
+        version: 6.0.0-rc.6(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))
       '@kheopskit/react':
-        specifier: 6.0.0-rc.5
-        version: 6.0.0-rc.5(@kheopskit/core@6.0.0-rc.5(patch_hash=4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f)(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(rxjs@7.8.2)
+        specifier: 6.0.0-rc.6
+        version: 6.0.0-rc.6(@kheopskit/core@6.0.0-rc.6(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(rxjs@7.8.2)
       '@maskito/core':
         specifier: ^5.6.0
         version: 5.6.0
@@ -837,8 +834,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kheopskit/core@6.0.0-rc.5':
-    resolution: {integrity: sha512-/FdwOzd3WMCnMP2FirAUDxIOVj0kg4E6JGu8xvlta69/tF4KhOJoOaqq1MtBuo/P0EGilcfosvcrOl8qPlul5Q==}
+  '@kheopskit/core@6.0.0-rc.6':
+    resolution: {integrity: sha512-ULpZfwVSDMO8qYz413mhVDFoaw30sK962O0sdtpwSZa8/PYPcHJrMPKEifVTU34TQiFZmI4h5yxXF6SFqgRivw==}
     peerDependencies:
       '@reown/appkit': '>=1.7.0'
       '@solana/kit': '>=6.0.0'
@@ -864,10 +861,10 @@ packages:
       viem:
         optional: true
 
-  '@kheopskit/react@6.0.0-rc.5':
-    resolution: {integrity: sha512-JLMo6Ia+tsGWMr6IFMJT2N8SbZP+9O+i6smNr4gE0mDd0naELskuA+PiN8CtLhn/p3oNJPl609oCHTWtHmN2oQ==}
+  '@kheopskit/react@6.0.0-rc.6':
+    resolution: {integrity: sha512-zaXYrrdTXe/7oxh31OYQxX97Q05FtioPexJC0hgMDQxqCCBQvC5TvraxREJmrl09hP2bBl9jjxH6pRHQr1q5AQ==}
     peerDependencies:
-      '@kheopskit/core': ^6.0.0-rc.5
+      '@kheopskit/core': ^6.0.0-rc.6
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
       rxjs: '>=7.0.0'
@@ -5290,7 +5287,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@kheopskit/core@6.0.0-rc.5(patch_hash=4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f)(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))':
+  '@kheopskit/core@6.0.0-rc.6(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))':
     dependencies:
       '@noble/hashes': 2.4.0
       '@scure/base': 2.4.0
@@ -5304,9 +5301,9 @@ snapshots:
       polkadot-api: 3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)
       viem: 2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
 
-  '@kheopskit/react@6.0.0-rc.5(@kheopskit/core@6.0.0-rc.5(patch_hash=4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f)(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(rxjs@7.8.2)':
+  '@kheopskit/react@6.0.0-rc.6(@kheopskit/core@6.0.0-rc.6(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(rxjs@7.8.2)':
     dependencies:
-      '@kheopskit/core': 6.0.0-rc.5(patch_hash=4437f6ad1909363ec62e745a4915490ed4e112c71da3990723fc030bd110459f)(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))
+      '@kheopskit/core': 6.0.0-rc.6(@reown/appkit@1.8.24(@types/react@19.3.0)(bufferutil@4.1.0)(debug@4.4.3)(react@19.3.0)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.2.3-canary.e652ae2(bufferutil@4.1.0)(esbuild@0.27.3)(rxjs@7.8.2)(utf-8-validate@5.0.10))(rxjs@7.8.2)(viem@2.57.2(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       rxjs: 7.8.2

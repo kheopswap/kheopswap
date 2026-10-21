@@ -64,6 +64,3 @@ overrides:
   # force >=0.28.1 we'd have to add a synthetic root devDependency; not worth it for this.
   # NOTE: elliptic (low, dev-only crypto-browserify polyfill) advisory GHSA-848j-6mx2-7j84
   # claims a >=6.6.2 patch, but npm's latest is still 6.6.1 — no installable fix yet. Revisit.
-
-patchedDependencies:
-  '@kheopskit/core@6.0.0-rc.5': patches/@kheopskit__core.patch
