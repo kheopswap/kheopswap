@@ -6996,6 +6996,110 @@
 		"isSufficient": false
 	},
 	{
+		"id": "foreign-asset::wah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABoCMI2AbhADYCuNq5VPIAOLsiAIw4BhInCTwknFKw7cyIStVoBRBAAsCMTgFtmINlx6gAxjoh4A+jgAmtUTgDmeBKgY+ArL58mAF8QkKA==",
+		"type": "foreign-asset",
+		"chainId": "wah",
+		"symbol": "Ether",
+		"decimals": 18,
+		"name": "Ether",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "GlobalConsensus",
+					"value": {
+						"type": "Ethereum",
+						"value": {
+							"chain_id": "bigint:11155111"
+						}
+					}
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"id": "foreign-asset::wah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyADwAzSoBOKoB2ADZagA50JwAWeoTM/3qAZkynH3L6mAkxHyaxdF70Nqd68baw0IBdcKA==",
+		"type": "foreign-asset",
+		"chainId": "wah",
+		"symbol": "WETH",
+		"decimals": 18,
+		"name": "Wrapped Ether",
+		"location": {
+			"parents": 2,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "GlobalConsensus",
+						"value": {
+							"type": "Ethereum",
+							"value": {
+								"chain_id": "bigint:11155111"
+							}
+						}
+					},
+					{
+						"type": "AccountKey20",
+						"value": {
+							"key": "0xfff9976782d46cc05630d1f6ebab18b2324d6b14"
+						}
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": true
+	},
+	{
+		"id": "foreign-asset::wah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABoBMI2AbhADYCuNqA2uVR4gACtAgBjABYQ8zEGy48GABgDMAFgC+mAdVoBxeAQ4BJOABMYADzkLutAEY4A5ngSoGnkJoC6mzUA=",
+		"type": "foreign-asset",
+		"chainId": "wah",
+		"symbol": "HOLLAR",
+		"decimals": 18,
+		"name": "HOLLAR",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X2",
+				"value": [
+					{
+						"type": "Parachain",
+						"value": 2034
+					},
+					{
+						"type": "GeneralIndex",
+						"value": "bigint:222"
+					}
+				]
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "foreign-asset::wah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24BmeQDYAHAF8NQA",
+		"type": "foreign-asset",
+		"chainId": "wah",
+		"symbol": "WMYTH",
+		"decimals": 18,
+		"name": "wMythical Token",
+		"location": {
+			"parents": 1,
+			"interior": {
+				"type": "X1",
+				"value": {
+					"type": "Parachain",
+					"value": 3368
+				}
+			}
+		},
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "pool-asset::wah::0",
 		"type": "pool-asset",
 		"chainId": "wah",
