@@ -23,6 +23,11 @@ minimumReleaseAgeExclude:
   # willing to sit 3 days behind on papi releases.
   - "polkadot-api"
   - "@polkadot-api/*"
+  # @polkadot-api/cli 0.22.5 (polkadot-api 3.3.0) requires rollup ^4.64.12, published 2026-10-20.
+  # rollup pins its platform binaries to its own version, so `rollup@4.64.12` bounds `@rollup/*`.
+  # Both age past the cutoff on 2026-10-23, after which these entries can be removed.
+  - "rollup@4.64.12"
+  - "@rollup/*"
 
 # moved from package.json "pnpm" field (pnpm 11 no longer reads it, see https://pnpm.io/settings)
 overrides:
