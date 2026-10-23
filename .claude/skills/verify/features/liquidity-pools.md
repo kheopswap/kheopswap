@@ -4,7 +4,7 @@ Liquidity Pools lists every native-token pool on the current Asset Hub by TVL, w
 
 ## Sub-features
 
-- `pools-hub`: above the table, `Total value locked`, `<n> pools, every one paired with PAS.`, and an SVG with one link per pool, named `PAS/<TOKEN> pool, <TVL>`. These links come before the table rows in a snapshot. The hub renders nothing with fewer than 3 pools or a zero total.
+- `pools-hub`: above the table, `Total value locked`, `<n> pools, every one paired with <NATIVE>.`, and an SVG with one link per pool, named `<NATIVE>/<TOKEN> pool, <TVL>`. These links come before the table rows in a snapshot. The hub renders nothing with fewer than 3 pools or a zero total.
 - `pools-list`: pool links named `<NATIVE> <TOKEN> <NATIVE>/<TOKEN> <origin> [<position value>] <TVL>`, where origin is `Asset Hub - <id>` or `Foreign - <origin>`. The `TVL` sort button is there unless a search leaves no rows. The `Positions` sort button needs a connected account. The active one has `aria-pressed="true"`.
 - `pools-search`: the `Search` box matches the token's symbol, name, or exact asset id. No match shows `No liquidity pools match your search`. `Clear search` empties it.
 - `pool-detail`: `#/<relay>/pools/<poolAssetId>` (tab title `PAS/USDC LP`) has the heading `Liquidity Pools › PAS/USDC`, the `ACCOUNT` field, `POOL LIQUIDITY` with both reserves and `EST. VALUE`, and `YOUR POSITION` with reserves, `EST. VALUE`, and the share (`N/A` without a position). An unknown id redirects to `#/<relay>/pools`.
