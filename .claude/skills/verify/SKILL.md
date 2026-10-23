@@ -7,7 +7,7 @@ description: Drive the Kheopswap web app (React DEX for Polkadot Asset Hubs) the
 
 The surface is the web app at `http://localhost:5173` (Vite dev server, hash routes such as `#/paseo/swap`). It is the only origin this app is tested from. Each checkout gets a Docker container that runs `pnpm dev` on the checkout and a Chromium with Talisman. The driver is `agent-browser` on the host, attached over the container's CDP port. Talisman popups are invisible to `agent-browser`, so `scripts/talisman.mjs` drives them over raw CDP.
 
-The host needs Docker, Node, `agent-browser` and `curl`. Nothing else is installed on the host: Chromium, Talisman and the Linux `node_modules` live in the container.
+The host needs Docker, Node, `agent-browser` and `curl`. Nothing else is installed on the host: Chromium, Talisman and the Linux `node_modules` live in the container. `launch.sh` runs each tool with `--version` before it starts anything. The repo pins Node in `.node-version`, so under a version manager such as mise, an `agent-browser` installed globally for another Node version does not run in the checkout. Install it as its own tool instead, for example `mise use -g npm:agent-browser`.
 
 All scripts live in `scripts/` next to this file, and the image in `docker/`. Run them from anywhere in the checkout. Feature recipes live in [`features/`](features/README.md). Read the matching feature file before driving.
 
@@ -41,7 +41,7 @@ Parallel runs share the wallet's accounts. Two sends from one account on one net
 - **Polkadot (`#/polkadot/...`) is the fallback when Paseo is broken.** Paseo breaks from time to time: RPC down, or a runtime upgrade the app can't sign for yet. Use mainnet only for that, with tiny amounts (≤ 0.01 DOT), and say in the report that mainnet was used and why.
 - Kusama and Westend: read-only checks only.
 
-Known Paseo break (#147), first seen 2026-10-03 and still there on 2026-10-16: every submit fails before Talisman opens. The follow-up dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity`. Before the runtime upgrade handled in #148, it named `AsPgas`. polkadot-api's `pjs-signer` rejects signed extensions it does not know. Until that is fixed, prove signing flows on Polkadot and report the Paseo failure as a finding.
+Known Paseo break, first seen 2026-10-03 and still there on 2026-10-24 with Talisman 3.11.0: every submit fails before Talisman opens. The follow-up dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity`. Before the runtime upgrade handled in #148, it named `AsPgas`. polkadot-api's `pjs-signer` rejects signed extensions it does not know. Since #154 it lets the wallet build the transaction when the wallet supports `createTransaction`, which Talisman does not ship yet (TalismanSociety/talisman#2670). Until it does, prove signing flows on Polkadot and report the Paseo failure as a finding.
 
 ## Launch
 
@@ -82,12 +82,14 @@ It also warns about open Talisman popups. Run it first, and again whenever anyth
 Use `agent-browser` commands against the pinned tab. Prefer roles and accessible names:
 
 ```bash
-agent-browser find role button click --name "Swap" --exact      # --exact: "Swap token direction" also matches
+agent-browser find role button click --name "SWAP" --exact      # --exact: "Swap token direction" also matches
 agent-browser find role textbox fill "1" --name "Amount to swap"
 agent-browser wait --text "Transaction succeeded"                # never fixed sleeps for app state
 agent-browser get text "#main-content"                           # whole form + summary as text
 agent-browser snapshot -i -c                                     # refs for unnamed elements
 ```
+
+The theme uppercases buttons, field labels and section headings with CSS, and Chromium's accessible names and `innerText` follow it. A plain `--name` is a case-insensitive substring, but `--exact` and `wait --text` compare against what the snapshot or `get text` prints: `SWAP`, `ACCOUNT`, `FROM`, `TO`, `CLOSE` in the follow-up dialog, `CONNECTED ACCOUNTS`, `POOL LIQUIDITY`. Copy names from a fresh snapshot.
 
 Navigate by URL: `agent-browser open "http://localhost:5173/#/paseo/portfolio"`. The URL is the container's own `localhost`. Drawers (account, token, network, slippage, token details) open as dialogs with a heading such as `Select account`. They slide in and out for 300 ms. A click inside a drawer that is still opening is lost, and a closing drawer's overlay swallows clicks. After you open or close a drawer, run:
 
@@ -120,11 +122,11 @@ It exits with one of these codes:
 | Code | Meaning | What to do |
 |---|---|---|
 | 0 | Approved | Continue. |
-| 1 | No popup appeared | Read the app's toasts: the app usually failed before signing. |
+| 1 | No popup appeared | The app usually failed before signing. Its follow-up dialog reads `Transaction failed`, but it closes with its toast about 5 s after the failure, so capture it right after the submit click rather than after the helper's 60 s wait. |
 | 2 | Signer mismatch, nothing clicked | Fix the account selection. |
 | 3 | Talisman is locked, and the password file is missing or wrong | Ask the user to fix `~/.kheopswap/talisman.password`. Never guess the password. |
 
-Other subcommands: `list`, `status`, `unlock`, `text`, `connect`, `reject`. On 2026-10-05, `approve`, `connect`, `list`, `status` and `unlock` ran against the container. `text` and `reject` have not run against a real popup.
+Other subcommands: `list`, `status`, `unlock`, `text`, `connect`, `reject`. On 2026-10-24, `approve`, `connect`, `list`, `status` and `unlock` ran against the container. `text` and `reject` have not run against a real popup. `connect` exits 1 when no popup opens, which is normal when Talisman already authorized the site.
 
 ## Evidence
 

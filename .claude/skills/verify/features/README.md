@@ -12,7 +12,7 @@ This directory is the maintained source for verifying Kheopswap's user-facing be
 ## Driving conventions
 
 - Reach pages by URL (`agent-browser open "http://localhost:5173/#/paseo/<route>"`) or by the `Main navigation` links `Swap`, `Transfer`, `Portfolio`, and `Liquidity`. With no connected account, `Portfolio` reads `Tokens`.
-- Use `find role ... --name`. Add `--exact` when a longer name contains the short one (`Swap` vs `Swap token direction`, `Close` in dialogs).
+- Use `find role ... --name`. Add `--exact` when a longer name contains the short one (`SWAP` vs `Swap token direction`, `CLOSE` in the follow-up dialog). `--exact` and `wait --text` match the uppercased text the theme renders (see `../SKILL.md`), so copy names from a fresh snapshot.
 - Wait for text or conditions (`wait --text`, `wait --fn`), never fixed sleeps. Balances and quotes stream in after the page renders.
 - After a click that opens a drawer, run `scripts/wait-drawer.sh open` before clicking inside it. After `press Escape` or a choice that closes it, run `scripts/wait-drawer.sh closed`.
 - While the dry run loads, `Simulation` renders an `aria-hidden` placeholder holding the word `Success`, and `innerText` includes it. Neither `wait --text "Success"` nor a regex on `innerText` proves the simulation passed. Wait for a visible `Success`:
@@ -21,6 +21,7 @@ This directory is the maintained source for verifying Kheopswap's user-facing be
   agent-browser wait --fn "[...document.querySelectorAll('#main-content span')].some((s) => s.textContent === 'Success' && !s.closest('[aria-hidden=true]'))"
   ```
 - Choosing a wallet under `Installed wallets` in any account drawer toggles it: clicking a connected wallet disconnects it.
+- Drawers can stack: `Connect your accounts` in `Token Details` opens `Connect` on top of it, and each `press Escape` closes one. Check `agent-browser get count "[role=dialog]"` before clicking the page again.
 - Sign only as the test account your user-level `CLAUDE.md` designates for signing, through `talisman.mjs approve --signer "<test account name>"`.
 
 ## Proof and skip reporting
