@@ -5,7 +5,13 @@ type XcmTransferType = "LocalReserve" | "DestinationReserve" | "Teleport";
 type XcmLaneSpec = { transferType: XcmTransferType };
 
 const XCM_LANES = {
-	pah: { hydration: { transferType: "LocalReserve" } },
+	pah: {
+		hydration: { transferType: "LocalReserve" },
+		ppeople: { transferType: "Teleport" },
+	},
+	kah: { kpeople: { transferType: "Teleport" } },
+	wah: { wpeople: { transferType: "Teleport" } },
+	pasah: { paspeople: { transferType: "Teleport" } },
 	hydration: { pah: { transferType: "DestinationReserve" } },
 } as const satisfies {
 	readonly [Origin in ChainId]?: {
