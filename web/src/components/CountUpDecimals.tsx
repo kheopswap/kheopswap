@@ -3,7 +3,7 @@ import { memo, useEffect, useRef } from "react";
 import { formatStableValue } from "../utils/formatDecimals";
 
 const OPTIONS: CountUpOptions = {
-	decimalPlaces: 4,
+	decimalPlaces: 10,
 	duration: 1,
 	smartEasingThreshold: Number.POSITIVE_INFINITY,
 	formattingFn: formatStableValue,
