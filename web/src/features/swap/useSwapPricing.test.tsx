@@ -135,9 +135,8 @@ const RESERVE_DOT = 7_842_000_000_000n; // 784.2 DOT (10 decimals)
 const RESERVE_USDC = 663_200_000n; // 663.2 USDC (6 decimals)
 const FOUR_DOT = 40_000_000_000n;
 
-// a USDT pool deep enough that USDC to USDT through DOT trades near 1:1
-const RESERVE_DOT_USDT = 10_000_000_000_000n; // 1000 DOT
-const RESERVE_USDT = 850_000_000n; // 850 USDT
+const RESERVE_DOT_USDT = 10_000_000_000_000n;
+const RESERVE_USDT = 850_000_000n;
 const TEN_USDC = 10_000_000n;
 
 const getAmmRoute = (
