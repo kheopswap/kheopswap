@@ -9,6 +9,7 @@ import type { TokenId } from "../../registry/tokens/types";
 import { cn } from "../../utils/cn";
 import { isBigInt } from "../../utils/isBigInt";
 import { useTransaction } from "./TransactionProvider";
+import { INSUFFICIENT_FEE_BALANCE } from "./useTransactionBalanceCheck";
 
 export const TransactionFeeSummaryValue: FC = () => {
 	const { isOpen, open, close } = useOpenClose();
@@ -25,10 +26,8 @@ export const TransactionFeeSummaryValue: FC = () => {
 		insufficientBalances,
 	} = useTransaction();
 
-	const hasInsufficientBalance = useMemo(
-		() => !!insufficientBalances[feeToken?.id ?? ""],
-		[feeToken?.id, insufficientBalances],
-	);
+	const hasInsufficientBalance =
+		insufficientBalances[feeToken?.id ?? ""] === INSUFFICIENT_FEE_BALANCE;
 
 	const handleTokenChange = useCallback(
 		(tokenId: TokenId) => {

@@ -8,6 +8,11 @@ import type { BalanceDef } from "../../services/balances/types";
 import type { AnyTransaction } from "../../types/transactions";
 import type { CallSpendings } from "./TransactionProvider";
 
+export const INSUFFICIENT_BALANCE = "Insufficient balance";
+export const INSUFFICIENT_FEE_BALANCE = "Insufficient balance to pay for fee";
+export const INSUFFICIENT_BALANCE_TO_KEEP_ALIVE =
+	"Insufficient balance to keep account alive";
+
 export const getInsufficientBalances = ({
 	callSpendings,
 	balances,
@@ -29,11 +34,11 @@ export const getInsufficientBalances = ({
 		const spendings = callSpendings[tokenId]?.plancks ?? 0n;
 		const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
 
-		if (balance < spendings) result[tokenId] = "Insufficient balance";
+		if (balance < spendings) result[tokenId] = INSUFFICIENT_BALANCE;
 		else if (balance < spendings + feePlancks)
-			result[tokenId] = "Insufficient balance to pay for fee";
+			result[tokenId] = INSUFFICIENT_FEE_BALANCE;
 		else if (!allowDeath && balance < spendings + feePlancks + ed)
-			result[tokenId] = "Insufficient balance to keep account alive";
+			result[tokenId] = INSUFFICIENT_BALANCE_TO_KEEP_ALIVE;
 	}
 
 	return result;
