@@ -128,6 +128,28 @@ describe("createEthereumTxObservable", () => {
 		]);
 	});
 
+	it("re-reads the inclusion when the receipt moved to another index of the finalized block", async () => {
+		chain.eventsByHash[BEST_HASH] = [
+			inExtrinsic(1, "Balances", { type: "Transfer", value: { amount: 1n } }),
+			successAt(1),
+			inExtrinsic(2, "Balances", { type: "Transfer", value: { amount: 5n } }),
+			successAt(2),
+		];
+		chain.receipts = [
+			{ blockHash: BEST_HASH, transactionIndex: 2 },
+			{ blockHash: BEST_HASH, transactionIndex: 1 },
+		];
+
+		const events = await track();
+
+		const finalized = events.at(-1) as Extract<TxEvent, { type: "finalized" }>;
+		expect(finalized.block).toEqual({ hash: BEST_HASH, number: 7, index: 1 });
+		expect(finalized.events.map(({ value }) => value)).toEqual([
+			{ type: "Transfer", value: { amount: 1n } },
+			{ type: "ExtrinsicSuccess", value: {} },
+		]);
+	});
+
 	it("reports the canonical receipt's outcome when the finalized block's events cannot be read", async () => {
 		chain.finalizedHash = FINALIZED_HASH;
 		chain.eventsByHash[FINALIZED_HASH] = new Error("rpc down");

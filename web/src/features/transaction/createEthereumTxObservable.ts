@@ -304,15 +304,34 @@ export const createEthereumTxObservable = ({
 			);
 			if (signal.aborted) return;
 
-			if (isSameHex(finalizedHash, bestBlock.hash)) {
+			// the receipt and the best hash were read separately, so a reorg between the
+			// two reads can pair the receipt's index with another block's extrinsic
+			const isStillAtBestInclusion = async () => {
+				if (!isSameHex(finalizedHash, bestBlock.hash)) return false;
+				const receiptNow = await waitForReceipt(
+					publicClient,
+					txHash,
+					timeouts.receiptMs,
+					signal,
+				);
+				return (
+					Number(receiptNow.blockNumber) === bestBlock.number &&
+					receiptNow.transactionIndex === bestBlock.index
+				);
+			};
+
+			if (await isStillAtBestInclusion()) {
 				subscriber.next(bestEvents);
 			} else {
-				logger.warn("[eth-tx] Finalized block differs from the best block", {
-					chainId: api.chainId,
-					txHash,
-					bestHash: bestBlock.hash,
-					finalizedHash,
-				});
+				logger.warn(
+					"[eth-tx] Finalized inclusion differs from the best block",
+					{
+						chainId: api.chainId,
+						txHash,
+						bestHash: bestBlock.hash,
+						finalizedHash,
+					},
+				);
 				const {
 					isReceiptSuccess: isCanonicalReceiptSuccess,
 					...finalizedBlock
