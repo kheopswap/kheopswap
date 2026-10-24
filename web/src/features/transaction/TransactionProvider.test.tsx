@@ -33,6 +33,7 @@ const ethereum = vi.hoisted(() => ({
 
 const fees = vi.hoisted(() => ({
 	options: { asset: undefined } as { asset: object | undefined },
+	isCallFeeEstimated: true,
 }));
 
 const dryRun = vi.hoisted(() => ({
@@ -59,6 +60,7 @@ beforeEach(() => {
 	ethereum.isEthereumNetworkMismatch = false;
 	ethereum.platform = "polkadot";
 	fees.options = { asset: undefined };
+	fees.isCallFeeEstimated = true;
 	dryRun.data = successfulDryRun;
 	dryRun.isLoading = false;
 	dryRun.isFetching = false;
@@ -96,6 +98,7 @@ vi.mock("./useTransactionFees", async () => {
 			isLoadingFeeEstimate: false,
 			isLoadingDryRun: false,
 			feeEstimate: 1n,
+			isCallFeeEstimated: fees.isCallFeeEstimated,
 			feeToken: KNOWN_TOKENS_MAP["native::pah"],
 			feeTokens: [],
 			options: fees.options,
@@ -208,6 +211,11 @@ describe("TransactionProvider submit gate", () => {
 			renderTransaction({ status: "closed", reason: "assets trapped" })
 				.canSubmit,
 		).toBe(false);
+	});
+
+	it("keeps submit disabled while only the fake call's fee is known", () => {
+		fees.isCallFeeEstimated = false;
+		expect(renderTransaction({ status: "open" }).canSubmit).toBe(false);
 	});
 
 	it("reports loading and keeps submit disabled while the gate is pending", () => {

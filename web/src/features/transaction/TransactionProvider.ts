@@ -154,12 +154,12 @@ const useTransactionProvider = ({
 				!ethereum.isSwitchingEthereumNetwork
 			);
 
-		return !!fees.feeEstimate && !!fees.feeToken && !!fees.options;
+		return fees.isCallFeeEstimated && !!fees.feeToken && !!fees.options;
 	}, [
 		ethereum.account,
 		call,
 		error,
-		fees.feeEstimate,
+		fees.isCallFeeEstimated,
 		fees.feeToken,
 		hasInsufficientBalance,
 		hasTransactionAwaitingInclusion,

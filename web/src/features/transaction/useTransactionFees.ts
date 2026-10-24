@@ -68,15 +68,27 @@ export const useTransactionFees = ({
 		};
 	}, [feeToken, nonce]);
 
-	const {
-		data: feeEstimateNative,
-		isLoading: isLoadingFeeEstimateNative,
-		error: errorFeeEstimate,
-	} = useEstimateFee({
+	const callFee = useEstimateFee({
 		from: signerSubstrateAddress,
-		call: call ?? fakeCall,
+		call,
 		options,
 	});
+	const fakeCallFee = useEstimateFee({
+		from: signerSubstrateAddress,
+		call: fakeCall,
+		options,
+	});
+
+	const activeFee = call ? callFee : fakeCallFee;
+	const errorFeeEstimate = activeFee.error;
+	const feeEstimateNative = errorFeeEstimate
+		? null
+		: (activeFee.data ?? fakeCallFee.data);
+	const isLoadingFeeEstimateNative =
+		!errorFeeEstimate &&
+		!isBigInt(feeEstimateNative) &&
+		(activeFee.isLoading || fakeCallFee.isLoading);
+	const isCallFeeEstimated = !!call && isBigInt(callFee.data);
 
 	const { isLoading: isLoadingFeeEstimateConvert, data: convertedFee } =
 		useConvertedFee({
@@ -86,17 +98,10 @@ export const useTransactionFees = ({
 		});
 	const feeEstimate = isBigInt(feeEstimateNative) ? convertedFee : null;
 
-	const isLoadingFeeEstimate = useMemo(
-		() =>
-			isLoadingFeeTokens ||
-			isLoadingFeeEstimateNative ||
-			isLoadingFeeEstimateConvert,
-		[
-			isLoadingFeeEstimateConvert,
-			isLoadingFeeEstimateNative,
-			isLoadingFeeTokens,
-		],
-	);
+	const isLoadingFeeEstimate =
+		isLoadingFeeTokens ||
+		isLoadingFeeEstimateNative ||
+		isLoadingFeeEstimateConvert;
 
 	const onFeeTokenChange = useCallback(
 		(feeTokenId: TokenId) => {
@@ -116,6 +121,7 @@ export const useTransactionFees = ({
 		feeEstimate,
 		errorFeeEstimate,
 		isLoadingFeeEstimate,
+		isCallFeeEstimated,
 		options,
 	};
 };
