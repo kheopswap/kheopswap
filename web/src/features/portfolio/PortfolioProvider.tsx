@@ -4,7 +4,7 @@ import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetHubTVL } from "../../hooks/useAssetHubTVL";
-import { getBalancesByTokenSummary } from "../../hooks/useBalancesByTokenSummary";
+import { useBalancesByTokenSummaryOf } from "../../hooks/useBalancesByTokenSummary";
 import { useBalancesWithStables } from "../../hooks/useBalancesWithStables";
 import { usePoolsByChainId } from "../../hooks/usePoolsByChainId";
 import { useTokenPrices } from "../../hooks/useTokenPrices";
@@ -79,10 +79,7 @@ export const usePortfolioProvider = () => {
 
 	const { data: prices, isLoading: isLoadingPrices } = useTokenPrices();
 
-	const balancesByTokenId = useMemo(
-		() => getBalancesByTokenSummary(balances),
-		[balances],
-	);
+	const balancesByTokenId = useBalancesByTokenSummaryOf(balances);
 
 	const { allocation, holdingsByTokenId, lowLiquidityCount } =
 		usePortfolioAllocation({ tokens, balancesByTokenId });
