@@ -2,8 +2,10 @@ import YAML from "yaml";
 import { logger } from "../../utils/logger";
 import { safeParse, safeStringify } from "../../utils/serialization";
 import { getValidTokenLogo } from "../../utils/tokenLogo";
+import type { XcmV5Multilocation } from "../types/xcm";
 import { TOKENS_BLACKLIST } from "./blacklist";
 import { buildToken } from "./buildToken";
+import tokensHydration from "./generated/tokens.hydration.json";
 import tokensKah from "./generated/tokens.kah.json";
 import tokensPah from "./generated/tokens.pah.json";
 import tokensPasah from "./generated/tokens.pasah.json";
@@ -17,9 +19,12 @@ const normalizeTokenLogo = <T extends { logo?: string }>(token: T): T => ({
 	logo: getValidTokenLogo(token.logo),
 });
 
-const normalizeForeignTokenLocation = (token: Token): Token => {
-	if (token.type !== "foreign-asset") return token;
-	return { ...token, location: safeParse(safeStringify(token.location)) };
+const normalizeTokenLocation = (token: Token): Token => {
+	if (!("location" in token) || !token.location) return token;
+	return {
+		...token,
+		location: safeParse<XcmV5Multilocation>(safeStringify(token.location)),
+	};
 };
 
 // Native tokens (manually curated YAML — no id field)
@@ -29,8 +34,14 @@ const nativeTokens = (YAML.parse(tokensNativeYaml) as TokenNativeNoId[]).map(
 
 // Generated tokens (fetched from chain — already include id and canonical ordering)
 const generatedTokens = (
-	[...tokensPah, ...tokensKah, ...tokensWah, ...tokensPasah] as Token[]
-).map(normalizeForeignTokenLocation);
+	[
+		...tokensPah,
+		...tokensKah,
+		...tokensWah,
+		...tokensPasah,
+		...tokensHydration,
+	] as Token[]
+).map(normalizeTokenLocation);
 
 export const KNOWN_TOKENS_LIST = [...nativeTokens, ...generatedTokens]
 	.map(normalizeTokenLogo)
@@ -61,6 +72,7 @@ export const PORTFOLIO_TOKEN_TYPES: TokenType[] = [
 	"native",
 	"asset",
 	"foreign-asset",
+	"hydration-asset",
 ];
 
 export const TRANSFERABLE_TOKEN_TYPES: TokenType[] = [
