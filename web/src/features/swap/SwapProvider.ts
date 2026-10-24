@@ -10,10 +10,12 @@ import {
 	type TransactionPlan,
 } from "./routes/swapRoute";
 import { useXcmRoute, type XcmRouteDetails } from "./routes/xcm/useXcmRoute";
+import { getRiskSubmitGate } from "./swapRisk";
 import { useSwapCall } from "./useSwapCall";
 import { useSwapFees } from "./useSwapFees";
 import { useSwapFormState } from "./useSwapFormState";
 import { useSwapPricing } from "./useSwapPricing";
+import { useSwapRisk } from "./useSwapRisk";
 
 export type AmmSwapDetails = {
 	kind: "amm-swap";
@@ -82,6 +84,8 @@ const useSwapProvider = () => {
 		appCommission: pricing.appCommission,
 		slippage: pricing.slippage,
 		edTokenIn: pricing.edTokenIn,
+		hasInsufficientBalance: pricing.hasInsufficientBalance,
+		balanceOut,
 	});
 
 	const ammTransaction = useMemo<TransactionPlan>(
@@ -118,31 +122,6 @@ const useSwapProvider = () => {
 		],
 	);
 
-	const transaction = xcmRoute ? xcm.plan : ammTransaction;
-
-	const { onMaxClick } = useSwapFees({
-		from: formState.from,
-		accountAddress: formState.account?.address,
-		tokenIn: pricing.tokenIn,
-		balanceIn: pricing.balanceIn,
-		edTokenIn: pricing.edTokenIn,
-		call: xcmRoute ? xcm.plan.call : callData.call,
-		fakeCall: transaction.fakeCall,
-		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
-		setFormData: formState.setFormData,
-	});
-
-	const { data: allTokens, isLoading: isLoadingAllTokens } = useAllTokens({});
-	const { tokensIn, tokensOut } = useMemo(
-		() =>
-			getSwapTokenLists({
-				ammTokens: pricing.tokens,
-				allTokens,
-				context: formState.routeContext,
-			}),
-		[pricing.tokens, allTokens, formState.routeContext],
-	);
-
 	const details = useMemo<AmmSwapDetails | XcmRouteDetails>(
 		() =>
 			xcm.details ?? {
@@ -167,6 +146,48 @@ const useSwapProvider = () => {
 		],
 	);
 
+	const swapPlancksOut = xcmRoute ? xcm.swapPlancksOut : pricing.swapPlancksOut;
+	const risk = useSwapRisk({
+		route,
+		totalIn: pricing.totalIn,
+		plancksOut: swapPlancksOut,
+		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
+		priceImpact:
+			details.kind === "xcm-transfer" ? undefined : details.priceImpact,
+	});
+
+	const routePlan = xcmRoute ? xcm.plan : ammTransaction;
+	const transaction = useMemo(
+		() => ({
+			...routePlan,
+			submitGate: getRiskSubmitGate(routePlan.submitGate, risk),
+		}),
+		[routePlan, risk],
+	);
+
+	const { onMaxClick } = useSwapFees({
+		from: formState.from,
+		accountAddress: formState.account?.address,
+		tokenIn: pricing.tokenIn,
+		balanceIn: pricing.balanceIn,
+		edTokenIn: pricing.edTokenIn,
+		call: xcmRoute ? xcm.plan.call : callData.call,
+		fakeCall: transaction.fakeCall,
+		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
+		setFormData: formState.setFormData,
+	});
+
+	const { data: allTokens, isLoading: isLoadingAllTokens } = useAllTokens({});
+	const { tokensIn, tokensOut } = useMemo(
+		() =>
+			getSwapTokenLists({
+				ammTokens: pricing.tokens,
+				allTokens,
+				context: formState.routeContext,
+			}),
+		[pricing.tokens, allTokens, formState.routeContext],
+	);
+
 	const outputErrorMessage = isTokenIdOutAmm
 		? pricing.outputErrorMessage
 		: xcmRoute
@@ -185,10 +206,11 @@ const useSwapProvider = () => {
 		tokenOut,
 		totalIn: pricing.totalIn,
 		balanceIn: pricing.balanceIn,
+		hasInsufficientBalance: pricing.hasInsufficientBalance,
 		balanceOut,
 		isLoadingBalanceIn: pricing.isLoadingBalanceIn,
 		isLoadingBalanceOut,
-		swapPlancksOut: xcmRoute ? xcm.swapPlancksOut : pricing.swapPlancksOut,
+		swapPlancksOut,
 		amountOut: xcmRoute ? xcm.amountOut : pricing.amountOut,
 		isLoadingAmountOut: xcmRoute
 			? xcm.isLoadingAmountOut
@@ -196,6 +218,9 @@ const useSwapProvider = () => {
 		outputErrorMessage,
 		details,
 		transaction,
+		risk: risk.risk,
+		isRiskAcknowledged: risk.isAcknowledged,
+		onRiskAcknowledgeChange: risk.onAcknowledgeChange,
 
 		onFromChange: formState.onFromChange,
 		onTokenInChange: formState.onTokenInChange,

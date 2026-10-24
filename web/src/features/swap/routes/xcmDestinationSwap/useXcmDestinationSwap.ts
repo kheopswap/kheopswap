@@ -23,6 +23,7 @@ import {
 	describeXcmQuoteFailure,
 	type Parsed,
 	parseOriginDryRun,
+	type XcmQuoteFailure,
 } from "../xcm/xcmQuote";
 import {
 	type DestinationSwapFee,
@@ -125,6 +126,7 @@ const useDestinationNativeFee = ({
 
 export type XcmDestinationSwapState = {
 	fee: TokenAmount | undefined;
+	feeFailure: XcmQuoteFailure | null;
 	pathQuote: AmmPathQuoteState;
 	errorMessage: string | null;
 	isLoading: boolean;
@@ -181,7 +183,6 @@ export const useXcmDestinationSwap = ({
 	const pathQuote = useAmmPathQuote({
 		path: route?.path ?? null,
 		plancksIn: swapPlancksIn,
-		totalIn: swapPlancksIn,
 		slippage,
 		firstPoolSwap,
 	});
@@ -212,6 +213,7 @@ export const useXcmDestinationSwap = ({
 
 	return {
 		fee: feeAmount,
+		feeFailure: fee && !fee.success ? fee.failure : null,
 		pathQuote,
 		errorMessage,
 		isLoading:

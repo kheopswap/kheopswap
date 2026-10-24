@@ -9,13 +9,12 @@ import {
 	switchMap,
 } from "rxjs";
 import { parseTokenId } from "../../registry/tokens/helpers";
+import type { TokenId } from "../../registry/tokens/types";
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import { getResolvedSubstrateAddress$ } from "../addressResolution/service";
 import { balancesState$ } from "./state";
-import {
-	addBalanceSubscription,
-	removeBalancesSubscription,
-} from "./subscriptions";
+import { balancesStore$ } from "./store";
+import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceDef, BalanceState } from "./types";
 import { getBalanceId } from "./utils";
 
@@ -41,7 +40,7 @@ export const getBalance$ = (def: BalanceDef) => {
 				});
 
 				return new Observable<BalanceState>((subscriber) => {
-					const subId = addBalanceSubscription(resolvedBalanceId);
+					const removeSubscription = addBalanceSubscription(resolvedBalanceId);
 
 					const sub = balancesState$
 						.pipe(
@@ -55,7 +54,7 @@ export const getBalance$ = (def: BalanceDef) => {
 
 					return () => {
 						sub.unsubscribe();
-						removeBalancesSubscription(subId);
+						removeSubscription();
 					};
 				});
 			}),
@@ -74,3 +73,17 @@ export const getBalances$ = (defs: BalanceDef[]) => {
 			),
 	);
 };
+
+export const heldTokenIds$: Observable<TokenId[]> = balancesStore$.pipe(
+	map((store) =>
+		[
+			...new Set(
+				Object.values(store)
+					.filter(({ balance }) => balance > 0n)
+					.map(({ tokenId }) => tokenId),
+			),
+		].sort(),
+	),
+	distinctUntilChanged<TokenId[]>(isEqual),
+	shareReplay({ bufferSize: 1, refCount: true }),
+);

@@ -9,7 +9,12 @@ import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
-import { ProtocolFeeValue, RouteValue } from "./routes/AmmPathValues";
+import { RateValue } from "./RateValue";
+import {
+	getPathSteps,
+	ProtocolFeeValue,
+	RouteValue,
+} from "./routes/AmmPathValues";
 import type { PathLiquidity } from "./routes/ammPath";
 import { XcmSwapSummary } from "./routes/xcmSwap/XcmSwapSummary";
 import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
@@ -58,10 +63,11 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 	return (
 		<FormSummary>
 			<FormSummarySection>
+				<FormSummaryRow label="Rate" value={<RateValue />} />
 				{route && route.path.length > 1 ? (
 					<FormSummaryRow
 						label="Route"
-						value={<RouteValue path={route.path} />}
+						value={<RouteValue steps={getPathSteps(route.path)} />}
 					/>
 				) : (
 					<FormSummaryRow

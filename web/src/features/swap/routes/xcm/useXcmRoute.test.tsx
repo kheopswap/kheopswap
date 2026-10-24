@@ -12,6 +12,7 @@ import {
 	type XcmDestinationSwapFixture,
 } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { useXcmRoute } from "./useXcmRoute";
+import { pinkToAssetHubInsufficient } from "./xcmFromHydration.fixtures";
 
 const chain = vi.hoisted(() => ({
 	fixture: undefined as unknown as XcmDestinationSwapFixture,
@@ -21,6 +22,7 @@ const chain = vi.hoisted(() => ({
 	firstPoolInflow: 0n,
 	balanceIn: 1n,
 	isUnfunded: false,
+	hasInsufficientBalance: false,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
@@ -99,10 +101,6 @@ vi.mock("../../useAssetConvertionLPFee", () => ({
 	}),
 }));
 
-vi.mock("../../../../hooks/useAssetConvertPlancks", () => ({
-	useAssetConvertPlancks: () => ({ plancksOut: undefined }),
-}));
-
 vi.mock("../../../../hooks/useToken", () => ({
 	useToken: () => ({ data: null, isLoading: false }),
 }));
@@ -120,6 +118,10 @@ const getToken = (tokenId: string) => {
 const renderDestinationSwap = (
 	fixture: XcmDestinationSwapFixture,
 	totalIn = fixture.amount,
+	account: WalletAccount | null = {
+		platform: "polkadot",
+		address: fixture.beneficiary,
+	} as WalletAccount,
 ) => {
 	chain.fixture = fixture;
 	const route: XcmDestinationSwapRoute = {
@@ -144,10 +146,7 @@ const renderDestinationSwap = (
 		() =>
 			useXcmRoute({
 				route,
-				account: {
-					platform: "polkadot",
-					address: fixture.beneficiary,
-				} as WalletAccount,
+				account,
 				tokenIn: getToken(fixture.tokenIdIn),
 				tokenOut: getToken(fixture.tokenIdOut),
 				totalIn,
@@ -155,6 +154,8 @@ const renderDestinationSwap = (
 				appCommission: null,
 				slippage: fixture.slippage,
 				edTokenIn: 10_000n,
+				hasInsufficientBalance: chain.hasInsufficientBalance,
+				balanceOut: 0n,
 			}),
 		{ wrapper },
 	);
@@ -165,6 +166,7 @@ beforeEach(() => {
 	chain.firstPoolInflow = 0n;
 	chain.balanceIn = 1n;
 	chain.isUnfunded = false;
+	chain.hasInsufficientBalance = false;
 	chain.dryRunCall = vi.fn(async () =>
 		chain.isUnfunded
 			? { success: false, value: { type: "InsufficientBalance" } }
@@ -228,6 +230,19 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		});
 	});
 
+	it("asks for an account before quoting", async () => {
+		const { result } = renderDestinationSwap(
+			usdtToPink,
+			usdtToPink.amount,
+			null,
+		);
+
+		expect(result.current.outputErrorMessage).toBe(
+			"Connect a Polkadot account to quote cross-chain routes",
+		);
+		expect(result.current.plan.submitGate.status).toBe("closed");
+	});
+
 	it("refuses an amount the Asset Hub fee would eat", async () => {
 		const { result } = renderDestinationSwap(
 			usdtToPink,
@@ -282,6 +297,90 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		);
 		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(feeQueries);
 	});
+
+	it("keeps the last quote on screen while a moved pool refreshes it", async () => {
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+		const shownOut = result.current.swapPlancksOut;
+		expect(shownOut).toBe(usdtToPink.hops[1]?.amountOut);
+
+		const pendingDryRuns: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					pendingDryRuns.push(() => resolve(chain.fixture.originDryRun));
+				}),
+		);
+		const [firstPool] = usdtToPink.hops;
+		if (!firstPool) throw new Error("expected a first hop");
+		chain.firstPoolInflow = firstPool.reserveIn / 1000n;
+		rerender();
+
+		await waitFor(() => expect(pendingDryRuns).toHaveLength(1));
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+		expect(result.current.swapPlancksOut).toBe(shownOut);
+		expect(result.current.isLoadingAmountOut).toBe(false);
+		expect(result.current.details).toMatchObject({
+			quote: { isLoading: false, data: { success: true } },
+		});
+
+		for (const finish of pendingDryRuns) finish();
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+	});
+
+	it.each([
+		[true, null, usdtToPink.hops[1]?.amountOut],
+		[
+			false,
+			"Hydration could not withdraw the amount and its fees from your account",
+			undefined,
+		],
+	])(
+		"with an amount above the balance (%s), leaves the shortfall to the input field and keeps the swap estimate",
+		async (hasInsufficientBalance, outputErrorMessage, swapPlancksOut) => {
+			chain.hasInsufficientBalance = hasInsufficientBalance;
+			chain.dryRunCall.mockImplementation(
+				async (
+					_origin: unknown,
+					call: {
+						args: { assets: { value: { fun: { value: bigint } }[] } };
+					},
+				) =>
+					call.args.assets.value[0]?.fun.value === usdtToPink.amount
+						? pinkToAssetHubInsufficient.origin
+						: chain.fixture.originDryRun,
+			);
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() =>
+				expect(result.current.quote.data).toMatchObject({ success: false }),
+			);
+			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
+			expect(result.current.swapPlancksOut).toBe(swapPlancksOut);
+		},
+	);
+
+	it.each([
+		[true, null],
+		[false, "InsufficientBalance"],
+	])(
+		"with an unfunded input (%s), leaves the shortfall to the input field even when the fee estimate cannot be sent",
+		async (hasInsufficientBalance, outputErrorMessage) => {
+			chain.isUnfunded = true;
+			chain.hasInsufficientBalance = hasInsufficientBalance;
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() =>
+				expect(result.current.isLoadingAmountOut).toBe(false),
+			);
+			expect(chain.dryRunCall).toHaveBeenCalled();
+			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
+		},
+	);
 
 	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {
 		chain.dryRunCall.mockRejectedValue(new Error("RPC unavailable"));

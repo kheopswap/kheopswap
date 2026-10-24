@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
 import { useConvertedFee } from "../../hooks/useConvertedFee";
-import { useDryRun } from "../../hooks/useDryRun";
 import { useEstimateFee } from "../../hooks/useEstimateFee";
 import { useFeeToken } from "../../hooks/useFeeToken";
 import { useNonce } from "../../hooks/useNonce";
@@ -10,6 +9,7 @@ import type { Token, TokenId } from "../../registry/tokens/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
 import { getTxOptions } from "../../utils/getTxOptions";
+import { isBigInt } from "../../utils/isBigInt";
 import { isNumber } from "../../utils/isNumber";
 
 type UseTransactionFeesProps = {
@@ -76,12 +76,13 @@ export const useTransactionFees = ({
 		options,
 	});
 
-	const { isLoading: isLoadingFeeEstimateConvert, data: feeEstimate } =
+	const { isLoading: isLoadingFeeEstimateConvert, data: convertedFee } =
 		useConvertedFee({
 			chainId,
 			feeTokenId: feeToken?.id,
 			nativeFee: feeEstimateNative,
 		});
+	const feeEstimate = isBigInt(feeEstimateNative) ? convertedFee : null;
 
 	const isLoadingFeeEstimate = useMemo(
 		() =>
@@ -94,16 +95,6 @@ export const useTransactionFees = ({
 			isLoadingFeeTokens,
 		],
 	);
-
-	const {
-		data: dryRun,
-		isLoading: isLoadingDryRun,
-		error: errorDryRun,
-	} = useDryRun({
-		chainId,
-		from: signerSubstrateAddress,
-		call,
-	});
 
 	const onFeeTokenChange = useCallback(
 		(feeTokenId: TokenId) => {
@@ -124,8 +115,5 @@ export const useTransactionFees = ({
 		errorFeeEstimate,
 		isLoadingFeeEstimate,
 		options,
-		dryRun,
-		isLoadingDryRun,
-		errorDryRun,
 	};
 };

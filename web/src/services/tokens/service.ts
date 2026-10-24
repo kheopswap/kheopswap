@@ -4,6 +4,7 @@ import {
 	distinctUntilChanged,
 	map,
 	Observable,
+	of,
 	shareReplay,
 } from "rxjs";
 import type { ChainId } from "../../registry/chains/types";
@@ -14,7 +15,6 @@ import {
 	type ChainTokensState,
 	type TokenState,
 	tokensByChainState$,
-	tokensByIdState$,
 } from "./state";
 import {
 	addTokensByChainSubscription,
@@ -45,7 +45,7 @@ export const getTokensByChain$ = (chainId: ChainId) => {
 				sub.unsubscribe();
 				removeTokensByChainSubscription(subId);
 			};
-		}).pipe(shareReplay(1)),
+		}).pipe(shareReplay({ bufferSize: 1, refCount: true })),
 	);
 };
 
@@ -60,34 +60,23 @@ export const getTokensByChains$ = (
 		),
 	);
 
-const DEFAULT_VALUE_BY_TOKEN: TokenState = {
-	status: "stale",
-	token: undefined,
-};
+const MISSING_TOKEN: TokenState = { status: "loaded", token: undefined };
 
-export const getTokenById$ = (tokenId: TokenId) => {
-	return getCachedObservable$("getTokenById$", tokenId, () =>
-		new Observable<TokenState>((subscriber) => {
-			const chainId = getChainIdFromTokenId(tokenId);
-			const subId = addTokensByChainSubscription([chainId]);
-
-			const sub = tokensByIdState$
-				.pipe(
-					map(
-						(statusAndTokens) =>
-							statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
-					),
-					distinctUntilChanged<TokenState>(isEqual),
-				)
-				.subscribe(subscriber);
-
-			return () => {
-				sub.unsubscribe();
-				removeTokensByChainSubscription(subId);
-			};
-		}).pipe(shareReplay(1)),
-	);
-};
+export const getTokenById$ = (tokenId: TokenId) =>
+	getCachedObservable$("getTokenById$", tokenId, () => {
+		const chainId = getChainIdFromTokenId(tokenId);
+		if (!chainId) return of(MISSING_TOKEN);
+		return getTokensByChain$(chainId).pipe(
+			map(
+				({ status, tokens }): TokenState => ({
+					status,
+					token: tokens[tokenId],
+				}),
+			),
+			distinctUntilChanged<TokenState>(isEqual),
+			shareReplay({ bufferSize: 1, refCount: true }),
+		);
+	});
 
 /** @knipignore */
 export const getTokensById$ = (

@@ -1,5 +1,49 @@
-import { describe, expect, it } from "vitest";
-import { getInsufficientBalances } from "./useTransactionBalanceCheck";
+import { renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import {
+	getInsufficientBalances,
+	useTransactionBalanceCheck,
+} from "./useTransactionBalanceCheck";
+
+vi.mock("../../hooks/useBalances", () => ({
+	useBalances: () => ({
+		data: [
+			{
+				address: "5Signer",
+				tokenId: "native::pah",
+				balance: 0n,
+				isLoading: true,
+			},
+		],
+		isLoading: true,
+	}),
+}));
+vi.mock("../../hooks/useBalance", () => ({
+	useBalance: () => ({ data: undefined, isLoading: true }),
+}));
+vi.mock("../../hooks/useExistentialDeposits", () => ({
+	useExistentialDeposits: () => ({
+		data: { "native::pah": 10n },
+		isLoading: false,
+		error: undefined,
+	}),
+}));
+
+describe("useTransactionBalanceCheck", () => {
+	it("does not flag a cached balance that is still refreshing", () => {
+		const { result } = renderHook(() =>
+			useTransactionBalanceCheck({
+				accountAddress: "5Signer",
+				call: {} as never,
+				callSpendings: { "native::pah": { plancks: 100n, allowDeath: true } },
+				feeToken: { id: "native::pah" } as never,
+				feeEstimate: 1n,
+			}),
+		);
+		expect(result.current.insufficientBalances).toEqual({});
+		expect(result.current.balances).toEqual({ "native::pah": undefined });
+	});
+});
 
 const HYDRATION_DOT = "hydration-asset::hydration::5";
 const HDX = "native::hydration";
@@ -56,6 +100,17 @@ describe("getInsufficientBalances", () => {
 				fee,
 			}),
 		).toEqual(expected);
+	});
+
+	it("ignores a balance that is still loading", () => {
+		expect(
+			getInsufficientBalances({
+				callSpendings: { "native::pah": { plancks: 100n, allowDeath: false } },
+				balances: { "native::pah": undefined, "asset::pah::1984": 0n },
+				existentialDeposits: { "native::pah": 10n, "asset::pah::1984": 1n },
+				fee: { tokenId: "asset::pah::1984", plancks: 10n },
+			}),
+		).toEqual({ "asset::pah::1984": "Insufficient balance to pay for fee" });
 	});
 
 	it("keeps the fee payer alive when the call must not reap it", () => {

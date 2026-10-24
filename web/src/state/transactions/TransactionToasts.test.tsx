@@ -6,6 +6,7 @@ import {
 	screen,
 	within,
 } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { ToastContainer } from "react-toastify";
 import { firstValueFrom, type Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -24,23 +25,30 @@ import {
 import type { TransactionRecord, TransactionType } from "./types";
 import type { XcmArrival, XcmTransferFollowUpData } from "./xcmArrival";
 
+type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
+
 const hydration = vi.hoisted(() => ({
-	blocks$: undefined as unknown as Subject<
-		{ phase: { type: string }; event: TxEvents[number] }[]
-	>,
+	best$: undefined as unknown as Subject<BlockRecords>,
+	finalized$: undefined as unknown as Subject<BlockRecords>,
 }));
 
 vi.mock("../../papi/getApi", async () => {
 	const { map, of, Subject } = await import("rxjs");
-	hydration.blocks$ = new Subject();
+	hydration.best$ = new Subject();
+	hydration.finalized$ = new Subject();
 	return {
 		getApi$: () =>
 			of({
 				query: {
 					System: {
 						Events: {
-							watchValue: () =>
-								hydration.blocks$.pipe(map((value) => ({ value }))),
+							watchValue: ({ at }: { at: "best" | "finalized" }) =>
+								hydration[`${at}$`].pipe(
+									map((value, index) => ({
+										block: { number: index, hash: `0x${index}` },
+										value,
+									})),
+								),
 						},
 					},
 				},
@@ -51,6 +59,10 @@ vi.mock("../../papi/getApi", async () => {
 vi.mock("../../components/icons", () => ({
 	SpinnerIcon: () => null,
 	SpinnerBasicIcon: () => null,
+}));
+
+vi.mock("../../components/Pulse", () => ({
+	Pulse: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 
 const MESSAGE_ID =
@@ -177,27 +189,73 @@ describe("closing the follow-up modal", () => {
 
 		expect(screen.queryByRole("dialog")).toBeNull();
 		expect(await isInStore(record.id)).toBe(true);
-		const toast = await screen.findByText("In transit to Hydration...");
+		const toast = await screen.findByText("Sent, awaiting Hydration...");
 
 		fireEvent.click(toast);
+		const modal = await screen.findByRole("dialog");
+		expect(
+			within(modal).getByText("Transfer DOT to Hydration"),
+		).toBeInTheDocument();
+		expect(
+			within(modal).getByText("Sent, awaiting Hydration..."),
+		).toBeInTheDocument();
+
+		const arrivalBlock = arrivalOnHydration.map((event) => ({
+			phase: { type: "Initialization" },
+			event,
+		}));
+		act(() => hydration.best$.next(arrivalBlock));
+		expect(
+			await within(modal).findByText(
+				"Arrived on Hydration, awaiting finalization",
+			),
+		).toBeInTheDocument();
+		closeModal();
+		expect(screen.queryByRole("dialog")).toBeNull();
+		expect(await isInStore(record.id)).toBe(true);
+
+		act(() => hydration.finalized$.next(arrivalBlock));
+		expect(await screen.findByText("Arrived on Hydration")).toBeInTheDocument();
+		fireEvent.click(screen.getByText("Arrived on Hydration"));
 		expect(
 			within(await screen.findByRole("dialog")).getByText(
-				"Transfer DOT to Hydration",
+				"Arrived on Hydration",
 			),
 		).toBeInTheDocument();
 
-		act(() =>
-			hydration.blocks$.next(
-				arrivalOnHydration.map((event) => ({
-					phase: { type: "Initialization" },
-					event,
-				})),
-			),
-		);
-		expect(await screen.findByText("Arrived on Hydration")).toBeInTheDocument();
-
 		closeModal();
 		expect(await isInStore(record.id)).toBe(false);
+	});
+
+	it("headlines the modal with the destination failure of a finalized transfer", async () => {
+		const record = getFinalizedRecord(
+			"xcm-transfer",
+			"xcmTransfer",
+			"Transfer DOT to Hydration",
+		);
+		await openAndClose(record);
+		const failedBlock = [
+			{
+				phase: { type: "Initialization" },
+				event: {
+					type: "MessageQueue",
+					value: {
+						type: "Processed",
+						value: {
+							id: MESSAGE_ID,
+							origin: { type: "Sibling", value: 1000 },
+							success: false,
+						},
+					},
+				},
+			},
+		];
+		act(() => hydration.finalized$.next(failedBlock));
+
+		fireEvent.click(await screen.findByText("Failed on Hydration"));
+		const modal = await screen.findByRole("dialog");
+		expect(within(modal).getByText("Failed on Hydration")).toBeInTheDocument();
+		expect(within(modal).queryByText("Transaction succeeded")).toBeNull();
 	});
 
 	it("dismisses a finalized swap", async () => {
@@ -217,13 +275,30 @@ describe("getToastView", () => {
 	);
 
 	it.each<[XcmArrival | null, ReturnType<typeof getToastView>]>([
-		[null, { outcome: "loading", text: "In transit to Hydration..." }],
+		[null, { outcome: "loading", text: "Sent, awaiting Hydration..." }],
 		[
 			{ status: "in-transit", messageId: MESSAGE_ID },
-			{ outcome: "loading", text: "In transit to Hydration..." },
+			{ outcome: "loading", text: "Sent, awaiting Hydration..." },
 		],
 		[
-			{ status: "arrived", messageId: MESSAGE_ID, received: 1n },
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 1n,
+				finalized: false,
+			},
+			{
+				outcome: "success",
+				text: "Arrived on Hydration, awaiting finalization",
+			},
+		],
+		[
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 1n,
+				finalized: true,
+			},
 			{ outcome: "success", text: "Arrived on Hydration" },
 		],
 		[
@@ -232,6 +307,7 @@ describe("getToastView", () => {
 				messageId: MESSAGE_ID,
 				returned: [],
 				trapped: true,
+				finalized: true,
 			},
 			{ outcome: "error", text: "Failed on Hydration, assets trapped" },
 		],
@@ -241,6 +317,7 @@ describe("getToastView", () => {
 				messageId: MESSAGE_ID,
 				returned: [{ tokenId: DOT_ON_HYDRATION, plancks: 1n }],
 				trapped: false,
+				finalized: true,
 			},
 			{ outcome: "error", text: "Failed on Hydration, funds returned" },
 		],
@@ -250,6 +327,7 @@ describe("getToastView", () => {
 				messageId: MESSAGE_ID,
 				returned: [],
 				trapped: false,
+				finalized: true,
 			},
 			{ outcome: "error", text: "Failed on Hydration" },
 		],

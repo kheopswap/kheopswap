@@ -1,6 +1,10 @@
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+	CheckIcon,
+	ExclamationTriangleIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/solid";
 import type { FC, ReactNode } from "react";
-import { type FollowUpData, FollowUpRow } from "../../components/FollowUpModal";
+import { FollowUpRow } from "../../components/FollowUpModal";
 import { SpinnerIcon } from "../../components/icons";
 import { Modal } from "../../components/Modal";
 import { Pulse } from "../../components/Pulse";
@@ -11,20 +15,11 @@ import { isBigInt } from "../../utils/isBigInt";
 import { useTransactions } from "./TransactionsProvider";
 import type { TransactionRecord, TransactionType } from "./types";
 import { type FollowUpResult, useFollowUpStatus } from "./useFollowUpStatus";
+import { useXcmArrival } from "./xcmArrival";
 
-// Feature-specific follow-up renderers are injected from the composition root
-// (main.tsx) so this state-layer component never imports from features/
 export type FollowUpContentMap = Partial<
 	Record<TransactionType, FC<{ transaction: TransactionRecord }>>
 >;
-
-const convertToFollowUpData = (tx: TransactionRecord): FollowUpData => ({
-	txEvents: tx.txEvents,
-	account: tx.account,
-	feeEstimate: tx.feeEstimate,
-	feeToken: tx.feeToken,
-	...tx.followUpData,
-});
 
 const FollowUpResultIcon: FC<{
 	result: FollowUpResult;
@@ -53,27 +48,33 @@ const FollowUpResultIcon: FC<{
 		>
 			<XMarkIcon className="size-12 text-error" />
 		</div>
+		<div
+			className={cn(
+				"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-warn/20 p-2 transition-opacity duration-500",
+				result === "warning" ? "opacity-100" : "opacity-0",
+			)}
+		>
+			<ExclamationTriangleIcon className="size-12 text-warn" />
+		</div>
 	</div>
 );
 
 const FollowUpModalInner: FC<{
-	followUp: FollowUpData;
+	transaction: TransactionRecord;
 	onClose: () => void;
-	canAlwaysClose?: boolean;
-	title?: string;
 	children?: ReactNode;
-}> = ({ followUp, onClose, canAlwaysClose = false, title, children }) => {
+}> = ({ transaction, onClose, children }) => {
+	const arrival = useXcmArrival(transaction.id);
 	const {
 		blockExplorerUrl,
 		error,
 		message,
-		canClose,
 		result,
 		errorMessage,
-		isPendingFinalization,
-		isFinalized,
+		isFinal,
 		effectiveFee,
-	} = useFollowUpStatus(followUp);
+	} = useFollowUpStatus(transaction, arrival);
+	const { title, feeEstimate, feeToken } = transaction;
 
 	return (
 		<div
@@ -90,13 +91,13 @@ const FollowUpModalInner: FC<{
 					<FollowUpResultIcon className="inline-block" result={result} />
 				</div>
 				<Pulse
-					pulse={!error && isPendingFinalization}
+					pulse={!error && !isFinal && result !== "loading"}
 					className={cn(
 						"text-xl font-medium text-muted transition-colors",
-						(!!error || isFinalized) && "text-text",
+						(!!error || isFinal) && "text-text",
 					)}
 				>
-					{message ?? null}
+					{message}
 				</Pulse>
 			</div>
 			<div className="flex w-96 max-w-full flex-col justify-center gap-4 text-center">
@@ -104,17 +105,15 @@ const FollowUpModalInner: FC<{
 				{children && <div>{children}</div>}
 				<div className={cn(effectiveFee ? "block" : "hidden")}>
 					<FollowUpRow label="Estimated fee" className="text-muted">
-						<Tokens plancks={followUp.feeEstimate} token={followUp.feeToken} />
+						<Tokens plancks={feeEstimate} token={feeToken} />
 					</FollowUpRow>
 					<FollowUpRow label="Effective fee">
 						{isBigInt(effectiveFee) && (
 							<Tokens
 								plancks={effectiveFee}
-								token={followUp.feeToken}
+								token={feeToken}
 								className={cn(
-									effectiveFee <= followUp.feeEstimate
-										? "text-success"
-										: "text-warn",
+									effectiveFee <= feeEstimate ? "text-success" : "text-warn",
 								)}
 							/>
 						)}
@@ -140,7 +139,6 @@ const FollowUpModalInner: FC<{
 					type="button"
 					onClick={onClose}
 					className={Styles.primaryButton}
-					disabled={!canAlwaysClose && !canClose}
 				>
 					Close
 				</button>
@@ -156,21 +154,13 @@ export const GlobalFollowUpModal: FC<{
 
 	if (!openTransaction) return null;
 
-	const followUpData = convertToFollowUpData(openTransaction);
-
-	const handleClose = () => {
-		closeModal(openTransaction.id);
-	};
-
 	const Content = contentMap[openTransaction.type];
 
 	return (
 		<Modal isOpen aria-label={openTransaction.title ?? "Transaction status"}>
 			<FollowUpModalInner
-				followUp={followUpData}
-				onClose={handleClose}
-				canAlwaysClose
-				title={openTransaction.title}
+				transaction={openTransaction}
+				onClose={() => closeModal(openTransaction.id)}
 			>
 				{Content && <Content transaction={openTransaction} />}
 			</FollowUpModalInner>

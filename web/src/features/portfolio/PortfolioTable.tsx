@@ -1,9 +1,10 @@
-import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SearchInput } from "../../components/SearchInput";
 import type { TokenId } from "../../registry/tokens/types";
 import type { BalanceWithStable } from "../../types/balances";
 import { isBigInt } from "../../utils/isBigInt";
 import { sortBigInt } from "../../utils/sortBigInt";
+import { matchesTokenSearch } from "./getWatchedTokens";
 import { PortfolioHeaderRow } from "./PortfolioHeaderRow";
 import { usePortfolio } from "./PortfolioProvider";
 import { PortfolioRows } from "./PortfolioRows";
@@ -49,7 +50,14 @@ const sortByColumn =
 	};
 
 export const PortfolioTable = () => {
-	const { accounts, balances, holdingsByTokenId, isLoading } = usePortfolio();
+	const {
+		accounts,
+		balances,
+		holdingsByTokenId,
+		isLoading,
+		search,
+		setSearch,
+	} = usePortfolio();
 	const allRows = usePortfolioRows();
 
 	const [selectedTokenId, setSelectedTokenId] = useState<TokenId | null>(null);
@@ -69,24 +77,18 @@ export const PortfolioTable = () => {
 		[allRows, sortByCol],
 	);
 
-	const [rawSearch, setRawSearch] = useState("");
-	const search = useDeferredValue(rawSearch);
-
-	const rows = useMemo(() => {
-		const ls = search.toLowerCase().trim();
-		return !ls
-			? sortedRows.filter(
-					({ token, balance, tvl }) =>
-						!!token.verified || !!balance?.tokenPlancks || !!tvl?.tokenPlancks,
-				)
-			: sortedRows.filter(
-					({ token }) =>
-						token.symbol?.toLowerCase().includes(ls) ||
-						token.name?.toLowerCase().includes(ls) ||
-						((token.type === "asset" || token.type === "hydration-asset") &&
-							token.assetId.toString() === ls),
-				);
-	}, [search, sortedRows]);
+	const rows = useMemo(
+		() =>
+			search.trim()
+				? sortedRows.filter(({ token }) => matchesTokenSearch(token, search))
+				: sortedRows.filter(
+						({ token, balance, tvl }) =>
+							!!token.verified ||
+							!!balance?.tokenPlancks ||
+							!!tvl?.tokenPlancks,
+					),
+		[search, sortedRows],
+	);
 
 	const handleSortClick = useCallback((column: PortfolioSortMode) => {
 		if (column !== "symbol") setVisibleCol(column);
@@ -100,7 +102,7 @@ export const PortfolioTable = () => {
 			<SearchInput
 				className="mx-4 mb-4 sm:mx-5"
 				placeholder="Search for more tokens"
-				onChange={setRawSearch}
+				onChange={setSearch}
 			/>
 			<PortfolioHeaderRow
 				rows={rows}

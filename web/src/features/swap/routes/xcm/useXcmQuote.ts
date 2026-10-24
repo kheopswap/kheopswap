@@ -31,6 +31,7 @@ export type XcmQuoteState = {
 	isLoading: boolean;
 	data: XcmQuoteResult | undefined;
 	deliveryFee: TokenAmount | undefined;
+	sent: bigint | undefined;
 };
 
 const getParachainLocation = (chainId: ChainId) =>
@@ -204,6 +205,7 @@ export const useXcmQuote = ({
 			origin.isLoading ||
 			(!!message && (destination.isLoading || deliveryFee.isLoading)),
 		data,
+		sent: originLeg?.success ? originLeg.value.sent : undefined,
 		deliveryFee:
 			route && isBigInt(deliveryFeePlancks)
 				? {

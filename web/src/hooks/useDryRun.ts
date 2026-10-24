@@ -2,6 +2,7 @@ import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { Enum, type SS58String } from "polkadot-api";
 import { type Api, getApi } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
+import type { TokenId } from "../registry/tokens/types";
 import type { AnyTransaction } from "../types/transactions";
 import { logger } from "../utils/logger";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
@@ -12,6 +13,7 @@ type UseDryRunProps<Id extends ChainId = ChainId> = {
 	chainId: Id | null | undefined;
 	from: SS58String | null | undefined;
 	call: AnyTransaction | null | undefined;
+	balances?: Partial<Record<TokenId, bigint | undefined>>;
 };
 
 export type DryRun<Id extends ChainId> = Awaited<
@@ -21,9 +23,15 @@ export type DryRun<Id extends ChainId> = Awaited<
 export function useDryRun<Id extends ChainId>(
 	props: UseDryRunProps<Id>,
 ): UseQueryResult<DryRun<Id> | null>;
-export function useDryRun({ chainId, from, call }: UseDryRunProps) {
+export function useDryRun({ chainId, from, call, balances }: UseDryRunProps) {
 	return useQuery({
-		queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
+		queryKey: [
+			"useDryRun",
+			chainId,
+			from,
+			safeQueryKeyPart(call?.decodedCall),
+			safeQueryKeyPart(balances),
+		],
 		queryFn: async () => {
 			if (!chainId || !from || !call) return null;
 

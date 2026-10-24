@@ -32,6 +32,15 @@ export const usePortfolioAllocation = ({
 
 	const allocation = useMemo(() => getAllocation(holdings), [holdings]);
 
+	const lowLiquidityCount = useMemo(
+		() =>
+			tokens.filter((token) => {
+				const balance = balancesByTokenId[token.id];
+				return !!balance?.isLowLiquidity && !!balance.tokenPlancks;
+			}).length,
+		[tokens, balancesByTokenId],
+	);
+
 	const holdingsByTokenId = useMemo(() => {
 		const colors = getAllocationColors(
 			holdings.map(({ token }) => getTokenLogoColor(token.logo)),
@@ -47,5 +56,5 @@ export const usePortfolioAllocation = ({
 		) as Record<TokenId, PortfolioHolding>;
 	}, [holdings, allocation.total]);
 
-	return { allocation, holdingsByTokenId };
+	return { allocation, holdingsByTokenId, lowLiquidityCount };
 };

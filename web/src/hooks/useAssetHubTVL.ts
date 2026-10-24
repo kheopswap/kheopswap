@@ -1,5 +1,6 @@
 import { groupBy, mapValues, toPairs, values } from "lodash-es";
 import { useMemo } from "react";
+import type { Token, TokenId } from "../registry/tokens/types";
 import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { isBigInt } from "../utils/isBigInt";
@@ -13,6 +14,44 @@ type UseAssetHubTVLResult = {
 	isLoading: boolean;
 	data: BalanceWithStableSummary[];
 };
+
+type LockedToken = {
+	tokenId: TokenId;
+	plancks: bigint;
+	isLoading: boolean;
+	isInitializing: boolean;
+};
+
+type StableValue = {
+	stablePlancks: bigint | null;
+	isLoadingStablePlancks: boolean;
+};
+
+export const getTvlRows = ({
+	tokens,
+	lockedTokens,
+	stableValues,
+	isLoadingInputs,
+}: {
+	tokens: Token[];
+	lockedTokens: LockedToken[];
+	stableValues: StableValue[];
+	isLoadingInputs: boolean;
+}): BalanceWithStableSummary[] =>
+	tokens.map((token) => {
+		const lockedIdx = lockedTokens.findIndex((t) => t.tokenId === token.id);
+		const locked = lockedTokens[lockedIdx];
+		const stable = stableValues[lockedIdx];
+		return {
+			tokenId: token.id,
+			tokenPlancks: locked?.plancks ?? null,
+			isInitializing: locked?.isInitializing ?? isLoadingInputs,
+			isLoadingTokenPlancks: locked?.isLoading ?? isLoadingInputs,
+			stablePlancks: stable?.stablePlancks ?? null,
+			isLoadingStablePlancks: stable?.isLoadingStablePlancks ?? !!locked,
+			isLowLiquidity: false,
+		};
+	});
 
 export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 	const stop = logger.cumulativeTimer("useAssetHubTVL");
@@ -41,7 +80,7 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 		balanceDefs: allPoolsReservesBalanceDefs,
 	});
 
-	const lockedTokens = useMemo(
+	const lockedTokens = useMemo<LockedToken[]>(
 		() =>
 			toPairs(
 				mapValues(groupBy(lockedBalances, "tokenId"), (tokenBalances) =>
@@ -60,42 +99,27 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 		[lockedBalances],
 	);
 
-	const { data: assetConvertPlancks, isLoading: isLoadingAssetConvertPlancks } =
-		useStablePlancksMulti({
-			inputs: lockedTokens,
-		});
+	const { data: stableValues, isLoading: isLoadingStableValues } =
+		useStablePlancksMulti({ inputs: lockedTokens });
+
+	const isLoadingInputs =
+		isLoadingTokens || isLoadingBalances || isLoadingPools;
 
 	const tvl = useMemo(
 		() => ({
-			isLoading:
-				isLoadingTokens ||
-				isLoadingBalances ||
-				isLoadingPools ||
-				isLoadingAssetConvertPlancks,
-			data: values(tokens).map((token) => {
-				const lockedIdx = lockedTokens.findIndex((t) => t.tokenId === token.id);
-				const locked = lockedTokens[lockedIdx];
-				return {
-					tokenId: token.id,
-					tokenPlancks: locked?.plancks ?? null,
-					isInitializing:
-						locked?.isInitializing ??
-						(isLoadingBalances || isLoadingPools || isLoadingTokens),
-					isLoadingTokenPlancks:
-						locked?.isLoading ||
-						(!isBigInt(locked?.plancks) && isLoadingTokens),
-					// biome-ignore lint/style/noNonNullAssertion: legacy
-					...assetConvertPlancks[lockedIdx]!,
-				};
+			isLoading: isLoadingInputs || isLoadingStableValues,
+			data: getTvlRows({
+				tokens: values(tokens),
+				lockedTokens,
+				stableValues,
+				isLoadingInputs,
 			}),
 		}),
 		[
-			assetConvertPlancks,
-			isLoadingAssetConvertPlancks,
-			isLoadingBalances,
-			isLoadingPools,
-			isLoadingTokens,
+			isLoadingInputs,
+			isLoadingStableValues,
 			lockedTokens,
+			stableValues,
 			tokens,
 		],
 	);

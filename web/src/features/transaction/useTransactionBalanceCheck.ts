@@ -8,6 +8,11 @@ import type { BalanceDef } from "../../services/balances/types";
 import type { AnyTransaction } from "../../types/transactions";
 import type { CallSpendings } from "./TransactionProvider";
 
+export const INSUFFICIENT_BALANCE = "Insufficient balance";
+export const INSUFFICIENT_FEE_BALANCE = "Insufficient balance to pay for fee";
+export const INSUFFICIENT_BALANCE_TO_KEEP_ALIVE =
+	"Insufficient balance to keep account alive";
+
 export const getInsufficientBalances = ({
 	callSpendings,
 	balances,
@@ -15,7 +20,7 @@ export const getInsufficientBalances = ({
 	fee,
 }: {
 	callSpendings: CallSpendings;
-	balances: Partial<Record<TokenId, bigint>>;
+	balances: Partial<Record<TokenId, bigint | undefined>>;
 	existentialDeposits: Partial<Record<TokenId, bigint | null>>;
 	fee: TokenAmount;
 }): Record<TokenId, string> => {
@@ -23,17 +28,18 @@ export const getInsufficientBalances = ({
 	const tokenIds = uniq([...Object.keys(callSpendings), fee.tokenId]);
 
 	for (const tokenId of tokenIds) {
-		const balance = balances[tokenId] ?? 0n;
+		const balance = balances[tokenId];
+		if (balance === undefined) continue;
 		const ed = existentialDeposits[tokenId] ?? 0n;
 		const feePlancks = tokenId === fee.tokenId ? fee.plancks : 0n;
 		const spendings = callSpendings[tokenId]?.plancks ?? 0n;
 		const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
 
-		if (balance < spendings) result[tokenId] = "Insufficient balance";
+		if (balance < spendings) result[tokenId] = INSUFFICIENT_BALANCE;
 		else if (balance < spendings + feePlancks)
-			result[tokenId] = "Insufficient balance to pay for fee";
+			result[tokenId] = INSUFFICIENT_FEE_BALANCE;
 		else if (!allowDeath && balance < spendings + feePlancks + ed)
-			result[tokenId] = "Insufficient balance to keep account alive";
+			result[tokenId] = INSUFFICIENT_BALANCE_TO_KEEP_ALIVE;
 	}
 
 	return result;
@@ -88,22 +94,41 @@ export const useTransactionBalanceCheck = ({
 			tokenId: feeToken?.id,
 		});
 
+	const balancesByTokenId = useMemo<
+		Partial<Record<TokenId, bigint | undefined>>
+	>(
+		() =>
+			Object.fromEntries(
+				balances.map(({ tokenId, balance, isLoading }) => [
+					tokenId,
+					isLoading ? undefined : balance,
+				]),
+			),
+		[balances],
+	);
+
 	const insufficientBalances = useMemo(
 		() =>
-			call && existentialDeposits && balances && feeEstimate && feeToken
+			call && existentialDeposits && feeEstimate && feeToken
 				? getInsufficientBalances({
 						callSpendings,
-						balances: Object.fromEntries(
-							balances.map(({ tokenId, balance }) => [tokenId, balance]),
-						),
+						balances: balancesByTokenId,
 						existentialDeposits,
 						fee: { tokenId: feeToken.id, plancks: feeEstimate },
 					})
 				: {},
-		[call, balances, existentialDeposits, feeEstimate, feeToken, callSpendings],
+		[
+			call,
+			balancesByTokenId,
+			existentialDeposits,
+			feeEstimate,
+			feeToken,
+			callSpendings,
+		],
 	);
 
 	return {
+		balances: balancesByTokenId,
 		insufficientBalances,
 		isLoadingBalances,
 		isLoadingExistentialDeposits,

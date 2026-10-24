@@ -47,12 +47,25 @@ const useAddLiquidityProvider = () => {
 		tokenId: assetToken?.id,
 	});
 
+	const { data: fakeCall } = useAddLiquidityExtrinsic({
+		chainId: assetHub.id,
+		tokenIdNative: nativeToken?.id,
+		tokenIdAsset: assetToken?.id,
+		amountNative: nativeExistentialDeposit ?? undefined,
+		amountAsset: assetExistentialDeposit ?? undefined,
+		amountNativeMin: nativeExistentialDeposit ?? undefined,
+		amountAssetMin: assetExistentialDeposit ?? undefined,
+		dest: resolvedSubstrateAddress,
+		createPool: !pool,
+	});
+
 	const onReset = useCallback(() => {
 		setLiquidityToAdd(null);
 	}, []);
 
 	return {
 		call,
+		fakeCall,
 		liquidityToAdd,
 		setLiquidityToAdd,
 		nativeExistentialDeposit,

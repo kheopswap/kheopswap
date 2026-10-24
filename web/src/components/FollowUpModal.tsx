@@ -1,7 +1,5 @@
 import type { TxEvent } from "polkadot-api";
 import type { FC, PropsWithChildren } from "react";
-import type { WalletAccount } from "../common/kheopskit";
-import type { Token } from "../registry/tokens/types";
 import { cn } from "../utils/cn";
 
 export type FollowUpTxEvent =
@@ -9,13 +7,6 @@ export type FollowUpTxEvent =
 	| { type: "pending" }
 	| { type: "error"; error: unknown };
 export type FollowUpTxEvents = FollowUpTxEvent[];
-
-export type FollowUpData<T = unknown> = {
-	txEvents: FollowUpTxEvents;
-	account: WalletAccount;
-	feeEstimate: bigint;
-	feeToken: Token;
-} & T;
 
 export const FollowUpRow: FC<
 	PropsWithChildren & { label: string; className?: string }

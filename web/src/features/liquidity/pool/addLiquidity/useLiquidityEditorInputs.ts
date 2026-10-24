@@ -7,8 +7,10 @@ import {
 	useRef,
 } from "react";
 import type { Token } from "../../../../registry/tokens/types";
+import { isBigInt } from "../../../../utils/isBigInt";
 import { plancksToTokens, tokensToPlancks } from "../../../../utils/plancks";
 import { useTransaction } from "../../../transaction/TransactionProvider";
+import { getMaxLiquidity, getSpendingMargin } from "../../maxLiquidity";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidity } from "./AddLiquidityProvider";
 
@@ -119,52 +121,40 @@ export const useLiquidityEditorInputs = () => {
 			)
 				return;
 
-			if (tokenIdx === "token1") {
-				const fee = feeToken?.id === nativeToken.id ? (feeEstimate ?? 0n) : 0n;
-				const nativeMargin = 2n * fee + (nativeExistentialDeposit ?? 0n);
-				const maxNative =
-					accountBalances[0] < nativeMargin
-						? accountBalances[0]
-						: accountBalances[0] - nativeMargin;
-				const maxAsset = (maxNative * reserves[1]) / reserves[0];
+			const nativeMargin = getSpendingMargin({
+				token: nativeToken,
+				feeToken,
+				feeEstimate,
+				existentialDeposit: nativeExistentialDeposit,
+			});
+			const assetMargin = getSpendingMargin({
+				token: assetToken,
+				feeToken,
+				feeEstimate,
+				existentialDeposit: assetExistentialDeposit,
+			});
+			if (!isBigInt(nativeMargin) || !isBigInt(assetMargin)) return;
 
-				setLiquidityToAdd([maxNative, maxAsset]);
+			const [maxNative, maxAsset] = getMaxLiquidity({
+				balances: accountBalances,
+				reserves,
+				margins: [nativeMargin, assetMargin],
+				side: tokenIdx === "token1" ? 0 : 1,
+			});
 
-				refInput1.current.value = plancksToTokens(
-					maxNative,
-					nativeToken.decimals,
-				);
-				refInput2.current.value = plancksToTokens(
-					maxAsset,
-					assetToken.decimals,
-				);
-			} else {
-				const fee = feeToken?.id === assetToken.id ? (feeEstimate ?? 0n) : 0n;
-				const assetMargin = 2n * fee + (assetExistentialDeposit ?? 0n);
-				const maxAsset =
-					accountBalances[1] < assetMargin
-						? accountBalances[1]
-						: accountBalances[1] - assetMargin;
-				const maxNative = (maxAsset * reserves[0]) / reserves[1];
-
-				setLiquidityToAdd([maxNative, maxAsset]);
-
-				refInput1.current.value = plancksToTokens(
-					maxNative,
-					nativeToken.decimals,
-				);
-				refInput2.current.value = plancksToTokens(
-					maxAsset,
-					assetToken.decimals,
-				);
-			}
+			setLiquidityToAdd([maxNative, maxAsset]);
+			refInput1.current.value = plancksToTokens(
+				maxNative,
+				nativeToken.decimals,
+			);
+			refInput2.current.value = plancksToTokens(maxAsset, assetToken.decimals);
 		},
 		[
 			accountBalances,
 			reserves,
 			nativeToken,
 			assetToken,
-			feeToken?.id,
+			feeToken,
 			feeEstimate,
 			nativeExistentialDeposit,
 			setLiquidityToAdd,

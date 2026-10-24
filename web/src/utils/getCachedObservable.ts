@@ -1,16 +1,38 @@
-import type { Observable } from "rxjs";
+import { Observable } from "rxjs";
 
 const CACHE = new Map<string, Observable<unknown>>();
 
-export const getCachedObservable$ = <T, Obs = Observable<T>>(
+const UNUSED_ENTRY_EVICTION_DELAY = 500;
+
+export const getCachedObservable$ = <T>(
 	namespace: string,
 	key: string,
-	create: () => Obs,
-): Obs => {
+	create: () => Observable<T>,
+): Observable<T> => {
 	const cacheKey = `${namespace}::${key}`;
 
-	if (!CACHE.has(cacheKey))
-		CACHE.set(cacheKey, create() as Observable<unknown>);
+	const cached = CACHE.get(cacheKey);
+	if (cached) return cached as Observable<T>;
 
-	return CACHE.get(cacheKey) as Obs;
+	const source = create();
+	let subscribers = 0;
+	let eviction: ReturnType<typeof setTimeout> | undefined;
+
+	const entry = new Observable<T>((subscriber) => {
+		subscribers++;
+		clearTimeout(eviction);
+		const subscription = source.subscribe(subscriber);
+
+		return () => {
+			subscription.unsubscribe();
+			subscribers--;
+			if (subscribers) return;
+			eviction = setTimeout(() => {
+				if (CACHE.get(cacheKey) === entry) CACHE.delete(cacheKey);
+			}, UNUSED_ENTRY_EVICTION_DELAY);
+		};
+	});
+
+	CACHE.set(cacheKey, entry);
+	return entry;
 };

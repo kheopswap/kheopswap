@@ -1,7 +1,8 @@
-import { groupBy, keys } from "lodash-es";
+import { groupBy, keys, mapValues, values } from "lodash-es";
 import { useMemo } from "react";
 import type { PolkadotAccount } from "../common/kheopskit";
 import type { Token, TokenId } from "../registry/tokens/types";
+import type { HoldingStablePlancks } from "../state/prices";
 import type {
 	AccountBalanceWithStable,
 	BalanceWithStableSummary,
@@ -9,6 +10,7 @@ import type {
 import { isApplicableBalance } from "../utils/isApplicableBalance";
 import { logger } from "../utils/logger";
 import { useBalancesWithStables } from "./useBalancesWithStables";
+import { useHoldingValuations } from "./useHoldingValuations";
 
 type UseBalancesByTokenSummaryProps = {
 	tokens: Token[] | TokenId[] | null | undefined;
@@ -50,6 +52,7 @@ export const getBalancesByTokenSummary = (
 			const isInitializing =
 				tokenPlancks === 0n &&
 				tokenBalances.some((b) => b.tokenPlancks === null);
+			const isLowLiquidity = tokenBalances.some((b) => b.isLowLiquidity);
 
 			acc[tokenId] = {
 				tokenId,
@@ -57,11 +60,47 @@ export const getBalancesByTokenSummary = (
 				isLoadingTokenPlancks,
 				stablePlancks,
 				isLoadingStablePlancks,
+				isLowLiquidity,
 				isInitializing,
 			};
 			return acc;
 		},
 		{} as Record<TokenId, BalanceWithStableSummary>,
+	);
+};
+
+export const valueHoldingsTogether = (
+	summary: Record<TokenId, BalanceWithStableSummary>,
+	valuations: Record<TokenId, HoldingStablePlancks>,
+) =>
+	mapValues(summary, (tokenSummary) => {
+		const valuation = valuations[tokenSummary.tokenId];
+		return valuation
+			? { ...tokenSummary, ...valuation }
+			: { ...tokenSummary, isLoadingStablePlancks: true };
+	});
+
+export const useBalancesByTokenSummaryOf = (
+	balances: AccountBalanceWithStable[],
+) => {
+	const summary = useMemo(
+		() => getBalancesByTokenSummary(balances),
+		[balances],
+	);
+
+	const holdings = useMemo(
+		() =>
+			values(summary).map(({ tokenId, tokenPlancks }) => ({
+				tokenId,
+				plancks: tokenPlancks ?? 0n,
+			})),
+		[summary],
+	);
+	const { data: valuations } = useHoldingValuations(holdings);
+
+	return useMemo(
+		() => valueHoldingsTogether(summary, valuations),
+		[summary, valuations],
 	);
 };
 
@@ -76,7 +115,7 @@ export const useBalancesByTokenSummary = ({
 		accounts,
 	});
 
-	const data = useMemo(() => getBalancesByTokenSummary(balances), [balances]);
+	const data = useBalancesByTokenSummaryOf(balances);
 
 	stop();
 

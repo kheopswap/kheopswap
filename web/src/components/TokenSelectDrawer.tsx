@@ -182,7 +182,15 @@ const TokenSelectDrawerContent: FC<{
 					selected={t.id === tokenId}
 				/>
 			))}
-			{isLoading && <TokenButtonShimmer />}
+			{isLoading ? (
+				<TokenButtonShimmer />
+			) : (
+				!items.length && (
+					<div className="px-3.5 py-4 text-center text-sm text-muted">
+						No tokens match your search
+					</div>
+				)
+			)}
 		</div>
 	);
 };

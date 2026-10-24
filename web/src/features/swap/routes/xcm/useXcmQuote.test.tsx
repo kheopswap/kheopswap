@@ -186,6 +186,7 @@ describe("useXcmQuote", () => {
 		expect(result.current).toEqual({
 			isLoading: false,
 			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
+			sent: expect.any(BigInt),
 			data: {
 				success: true,
 				quote: {
@@ -233,6 +234,7 @@ describe("useXcmQuote", () => {
 		expect(result.current).toEqual({
 			isLoading: false,
 			deliveryFee: { tokenId: "native::pah", plancks: 305450000n },
+			sent: expect.any(BigInt),
 			data: {
 				success: true,
 				quote: {
@@ -271,10 +273,7 @@ describe("useXcmQuote", () => {
 		);
 		expect(result.current.data).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 		expect(chain.dryRunXcm).not.toHaveBeenCalled();
 	});
@@ -293,6 +292,7 @@ describe("useXcmQuote", () => {
 				kind: "destination-rejected",
 				reason: "FailedToTransactAsset",
 				assetsTrapped: true,
+				trappedPlancks: expect.any(BigInt),
 			},
 		});
 	});
@@ -352,6 +352,7 @@ describe("useXcmQuote", () => {
 		expect(result.current).toEqual({
 			isLoading: false,
 			deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+			sent: expect.any(BigInt),
 			data: {
 				success: true,
 				quote: {
@@ -421,6 +422,7 @@ describe("useXcmQuote", () => {
 			expect(result.current).toEqual({
 				isLoading: false,
 				deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+				sent: expect.any(BigInt),
 				data: {
 					success: true,
 					quote: {

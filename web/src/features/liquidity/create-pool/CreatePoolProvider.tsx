@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAllTokens } from "../../../hooks/useAllTokens";
 import { useBalance } from "../../../hooks/useBalance";
 import { useExistentialDeposit } from "../../../hooks/useExistentialDeposit";
-import { useFeeToken } from "../../../hooks/useFeeToken";
 import { useNativeToken } from "../../../hooks/useNativeToken";
 import { usePoolsByChainId } from "../../../hooks/usePoolsByChainId";
 import { useResolvedSubstrateAddress } from "../../../hooks/useResolvedSubstrateAddress";
@@ -21,10 +20,7 @@ import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 const useDefaultValues = (token2Id: TokenId) => {
 	const [defaultAccountId] = useSetting("defaultAccountId");
 
-	// account won't be available on first render
 	const account = useWalletAccount({ id: defaultAccountId });
-
-	// TODO token id from url for deep links
 
 	return useMemo<CreatePoolFormInputs>(
 		() => ({
@@ -43,7 +39,6 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const [formData, setFormData] = useState<CreatePoolFormInputs>(defaultValues);
 	const [, setDefaultAccountId] = useSetting("defaultAccountId");
 
-	// TODO merge in formdata
 	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(
 		null,
 	);
@@ -116,11 +111,6 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		mintTo: resolvedSender,
 	});
 
-	const { feeToken } = useFeeToken({
-		chainId: assetHub.id,
-		accountId: sender,
-	});
-
 	const onReset = useCallback(() => {
 		setFormData(defaultValues);
 	}, [defaultValues]);
@@ -171,7 +161,6 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		setLiquidityToAdd,
 		accountBalances,
 		isLoadingAccountBalances,
-		feeToken,
 	};
 };
 

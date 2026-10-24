@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { AccountBalanceWithStable } from "../types/balances";
-import { getBalancesByTokenSummary } from "./useBalancesByTokenSummary";
+import {
+	getBalancesByTokenSummary,
+	valueHoldingsTogether,
+} from "./useBalancesByTokenSummary";
 
 const tokenId = "native::hydration";
 
@@ -13,6 +16,7 @@ const balance = (
 	isLoadingTokenPlancks: false,
 	stablePlancks: null,
 	isLoadingStablePlancks: false,
+	isLowLiquidity: false,
 	...overrides,
 });
 
@@ -51,5 +55,47 @@ describe("getBalancesByTokenSummary", () => {
 
 	it("omits tokens that no account can hold", () => {
 		expect(getBalancesByTokenSummary([ethereumAccountBalance])).toEqual({});
+	});
+});
+
+describe("valueHoldingsTogether", () => {
+	const summary = getBalancesByTokenSummary([
+		balance({ tokenPlancks: 100n, stablePlancks: 90n }),
+		balance({ address: "5Other", tokenPlancks: 100n, stablePlancks: 90n }),
+	]);
+
+	it("replaces the sum of per-account quotes with the quote for the whole holding", () => {
+		const valued = valueHoldingsTogether(summary, {
+			[tokenId]: {
+				stablePlancks: 150n,
+				isLoadingStablePlancks: false,
+				isLowLiquidity: false,
+			},
+		});
+		expect(valued[tokenId]).toMatchObject({
+			tokenPlancks: 200n,
+			stablePlancks: 150n,
+		});
+	});
+
+	it("flags the whole holding when its pool is too thin", () => {
+		const valued = valueHoldingsTogether(summary, {
+			[tokenId]: {
+				stablePlancks: null,
+				isLoadingStablePlancks: false,
+				isLowLiquidity: true,
+			},
+		});
+		expect(valued[tokenId]).toMatchObject({
+			stablePlancks: null,
+			isLowLiquidity: true,
+		});
+	});
+
+	it("shows the per-account sum as still loading until the whole holding is valued", () => {
+		expect(valueHoldingsTogether(summary, {})[tokenId]).toMatchObject({
+			stablePlancks: 180n,
+			isLoadingStablePlancks: true,
+		});
 	});
 });

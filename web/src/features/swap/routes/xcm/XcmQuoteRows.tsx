@@ -1,5 +1,4 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { compact, keyBy } from "lodash-es";
 import { type FC, Fragment } from "react";
 import { FormSummaryRow } from "../../../../components/FormSummary";
 import { Shimmer } from "../../../../components/Shimmer";
@@ -9,13 +8,16 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "../../../../components/tooltip/Tooltip";
-import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
+import type { TokenAmount } from "../../../../registry/tokens/types";
 import { cn } from "../../../../utils/cn";
+import { isBigInt } from "../../../../utils/isBigInt";
+import { useTransaction } from "../../../transaction/TransactionProvider";
 import { useSwap } from "../../SwapProvider";
+import { TokenAmountValue } from "../AmmPathValues";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
-import { describeXcmQuoteFailure, getXcmFeeParts } from "./xcmQuote";
+import { describeXcmQuoteFailure, getTotalDebited } from "./xcmQuote";
 
 export const XcmSimulationValue: FC<{
 	quote: XcmQuoteState;
@@ -56,24 +58,61 @@ export const XcmSimulationValue: FC<{
 	);
 };
 
-export const XcmQuoteRows: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
+const FeeLabel: FC<{ label: string; explanation: string }> = ({
+	label,
+	explanation,
+}) => (
+	<Tooltip placement="bottom-start">
+		<TooltipTrigger render={<div />}>
+			<div className="flex items-center gap-1">
+				{label}
+				<InformationCircleIcon className="size-4 inline align-text-bottom" />
+			</div>
+		</TooltipTrigger>
+		<TooltipContent>
+			<p className="max-w-72">{explanation}</p>
+		</TooltipContent>
+	</Tooltip>
+);
+
+const TokenAmounts: FC<{ amounts: TokenAmount[] }> = ({ amounts }) => (
+	<div className="flex flex-wrap justify-end">
+		{amounts.map(({ tokenId, plancks }, index) => (
+			<Fragment key={tokenId}>
+				{index > 0 && <span className="mx-1">+</span>}
+				<TokenAmountValue tokenId={tokenId} plancks={plancks} />
+			</Fragment>
+		))}
+	</div>
+);
+
+const TotalDebitedValue: FC<{ deliveryFee: TokenAmount | undefined }> = ({
+	deliveryFee,
+}) => {
+	const { transaction } = useSwap();
+	const { feeEstimate, feeToken, isLoadingFeeEstimate } = useTransaction();
+	const transactionFee =
+		feeToken && isBigInt(feeEstimate)
+			? { tokenId: feeToken.id, plancks: feeEstimate }
+			: undefined;
+	if (!deliveryFee) return null;
+	if (!transactionFee && isLoadingFeeEstimate)
+		return <Shimmer className="h-4">0.0000 AAA</Shimmer>;
+
+	const amounts = getTotalDebited(transaction.callSpendings, transactionFee);
+	return amounts.length ? <TokenAmounts amounts={amounts} /> : null;
+};
+
+export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
+	quote,
+	route,
+}) => {
 	const { tokenOut } = useSwap();
-	const { data: deliveryFeeToken } = useToken({
-		tokenId: quote.deliveryFee?.tokenId,
-	});
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
-	const { data: destinationFeeToken } = useToken({
-		tokenId: xcmQuote?.destinationFee.tokenId,
-	});
-	const feeTokens = keyBy(
-		compact([deliveryFeeToken, destinationFeeToken]),
-		"id",
-	);
-	const fees = getXcmFeeParts(quote.deliveryFee, xcmQuote).flatMap(
-		({ tokenId, plancks }) => {
-			const token = feeTokens[tokenId];
-			return token ? [{ token, plancks }] : [];
-		},
+	const origin = getChainById(route.origin).name;
+	const destination = getChainById(route.destination).name;
+	const feeShimmer = quote.isLoading && (
+		<Shimmer className="h-4">0.0000 AAA</Shimmer>
 	);
 
 	return (
@@ -81,32 +120,42 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
 			<FormSummaryRow
 				label="You receive"
 				value={
-					quote.isLoading ? (
-						<Shimmer className="h-4">0.0000 AAA</Shimmer>
-					) : (
-						xcmQuote &&
-						tokenOut && (
-							<span>
-								~<Tokens plancks={xcmQuote.received} token={tokenOut} />
-							</span>
-						)
-					)
+					feeShimmer ||
+					(xcmQuote && tokenOut && (
+						<span>
+							~<Tokens plancks={xcmQuote.received} token={tokenOut} />
+						</span>
+					))
+				}
+			/>
+			{quote.deliveryFee?.plancks !== 0n && (
+				<FormSummaryRow
+					label={
+						<FeeLabel
+							label="Delivery fee"
+							explanation={`Paid on ${origin} on top of the amount, to deliver it to ${destination}.`}
+						/>
+					}
+					value={
+						quote.deliveryFee && <TokenAmountValue {...quote.deliveryFee} />
+					}
+				/>
+			)}
+			<FormSummaryRow
+				label={
+					<FeeLabel
+						label={`${destination} fee`}
+						explanation={`Taken by ${destination} from the amount when it arrives.`}
+					/>
+				}
+				value={
+					feeShimmer ||
+					(xcmQuote && <TokenAmountValue {...xcmQuote.destinationFee} />)
 				}
 			/>
 			<FormSummaryRow
-				label="XCM fee"
-				value={
-					!!fees.length && (
-						<div className="flex flex-wrap justify-end">
-							{fees.map(({ token, plancks }, index) => (
-								<Fragment key={token.id}>
-									{index > 0 && <span className="mx-1">+</span>}
-									<Tokens plancks={plancks} token={token} />
-								</Fragment>
-							))}
-						</div>
-					)
-				}
+				label="Total debited"
+				value={<TotalDebitedValue deliveryFee={quote.deliveryFee} />}
 			/>
 		</>
 	);

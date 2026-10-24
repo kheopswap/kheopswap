@@ -3,8 +3,13 @@ import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
-import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
+import type {
+	Token,
+	TokenAmount,
+	TokenId,
+} from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
+import { plancksToTokens } from "../../../../utils/plancks";
 import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
@@ -40,10 +45,16 @@ export type DestinationDryRun = {
 export type XcmQuoteFailure =
 	| { kind: "origin-unavailable" }
 	| { kind: "origin-failed"; reason: string }
+	| { kind: "origin-withdraw-failed" }
 	| { kind: "origin-rejected"; xcmError: string }
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
-	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
+	| {
+			kind: "destination-rejected";
+			reason: string;
+			assetsTrapped: boolean;
+			trappedPlancks: bigint | null;
+	  }
 	| { kind: "destination-price-moved" }
 	| { kind: "nothing-deposited" }
 	| { kind: "delivery-fee-unavailable" }
@@ -67,9 +78,6 @@ export type Parsed<T> =
 	| { success: true; value: T }
 	| { success: false; failure: XcmQuoteFailure };
 
-const INSUFFICIENT_BALANCE =
-	"Insufficient balance to cover the transfer and its fees";
-
 type OriginDispatchError = Extract<
 	Extract<OriginDryRun, { success: true }>["value"]["execution_result"],
 	{ success: false }
@@ -86,7 +94,7 @@ const getOriginFailure = (error: OriginDispatchError): XcmQuoteFailure => {
 	const xcmError = error.value.value.value.error.type;
 	switch (xcmError) {
 		case "FailedToTransactAsset":
-			return { kind: "origin-failed", reason: INSUFFICIENT_BALANCE };
+			return { kind: "origin-withdraw-failed" };
 		case "NoDeal":
 			return {
 				kind: "origin-failed",
@@ -162,6 +170,25 @@ export const parseDeliveryFee = (deliveryFees: DeliveryFees): bigint | null => {
 	return fee;
 };
 
+type DestinationEvent = Extract<
+	DestinationDryRun,
+	{ success: true }
+>["value"]["emitted_events"][number];
+
+const getTrappedPlancks = (events: DestinationEvent[]): bigint | null => {
+	for (const event of events)
+		if (
+			event.type === "PolkadotXcm" &&
+			event.value.type === "AssetsTrapped" &&
+			event.value.value.assets.type === "V5"
+		)
+			return event.value.value.assets.value.reduce(
+				(sum, { fun }) => sum + (fun.type === "Fungible" ? fun.value : 0n),
+				0n,
+			);
+	return null;
+};
+
 export const parseDestinationDryRun = (
 	dryRun: DestinationDryRun,
 	target: XcmDepositTarget,
@@ -189,6 +216,7 @@ export const parseDestinationDryRun = (
 						event.type === "PolkadotXcm" &&
 						event.value.type === "AssetsTrapped",
 				),
+				trappedPlancks: getTrappedPlancks(emitted_events),
 			},
 		};
 
@@ -229,6 +257,15 @@ export const composeXcmQuote = (
 	},
 });
 
+const ORIGIN_DISPATCH_FAILURES = new Set<XcmQuoteFailure["kind"]>([
+	"origin-failed",
+	"origin-withdraw-failed",
+	"origin-rejected",
+]);
+
+export const isOriginDispatchFailure = ({ kind }: XcmQuoteFailure) =>
+	ORIGIN_DISPATCH_FAILURES.has(kind);
+
 export const describeXcmQuoteFailure = (
 	failure: XcmQuoteFailure,
 	route: Pick<XcmRoute, "origin" | "destination">,
@@ -240,6 +277,8 @@ export const describeXcmQuoteFailure = (
 			return `Could not simulate the transfer on ${origin}`;
 		case "origin-failed":
 			return failure.reason;
+		case "origin-withdraw-failed":
+			return `${origin} could not withdraw the amount and its fees from your account`;
 		case "origin-rejected":
 			return `${origin} would reject the transfer: ${failure.xcmError}`;
 		case "message-not-forwarded":
@@ -266,6 +305,47 @@ export const describeXcmQuoteFailure = (
 			return `Could not prepare the transaction on ${origin}`;
 	}
 };
+
+export const getNewAccountMinimum = ({
+	sent,
+	trappedPlancks,
+	existentialDeposit,
+	destinationBalance,
+	isSufficient,
+}: {
+	sent: bigint;
+	trappedPlancks: bigint;
+	existentialDeposit: bigint;
+	destinationBalance: bigint;
+	isSufficient: boolean;
+}): bigint | null =>
+	isSufficient &&
+	destinationBalance < existentialDeposit &&
+	trappedPlancks < sent
+		? existentialDeposit + sent - trappedPlancks
+		: null;
+
+const MINIMUM_DISPLAY_DECIMALS = 4;
+
+const formatPlancksUp = (plancks: bigint, decimals: number) => {
+	const step = 10n ** BigInt(Math.max(decimals - MINIMUM_DISPLAY_DECIMALS, 0));
+	return plancksToTokens(((plancks + step - 1n) / step) * step, decimals);
+};
+
+export const describeNewAccountMinimum = ({
+	minimum,
+	existentialDeposit,
+	token,
+	destination,
+}: {
+	minimum: bigint;
+	existentialDeposit: bigint;
+	token: Pick<Token, "symbol" | "decimals">;
+	destination: XcmDestination;
+}): string =>
+	`Send at least ${formatPlancksUp(minimum, token.decimals)} ${token.symbol}: ${
+		getChainById(destination).name
+	} needs ${formatPlancksUp(existentialDeposit, token.decimals)} ${token.symbol} to open your account`;
 
 export const getXcmSubmitGate = ({
 	errorMessage,
@@ -303,13 +383,20 @@ export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 	}
 };
 
-export const getXcmFeeParts = (
-	deliveryFee: TokenAmount | undefined,
-	quote: XcmQuote | undefined,
-): TokenAmount[] =>
-	[deliveryFee, quote?.destinationFee].filter(
-		(part): part is TokenAmount => !!part?.plancks,
-	);
+export const getTotalDebited = (
+	spendings: CallSpendings,
+	transactionFee: TokenAmount | undefined,
+): TokenAmount[] => {
+	const totals = new Map<TokenId, bigint>();
+	const debit = ({ tokenId, plancks }: TokenAmount) =>
+		totals.set(tokenId, (totals.get(tokenId) ?? 0n) + plancks);
+	for (const [tokenId, spent] of Object.entries(spendings))
+		if (spent) debit({ tokenId, plancks: spent.plancks });
+	if (transactionFee) debit(transactionFee);
+	return [...totals]
+		.filter(([, plancks]) => plancks > 0n)
+		.map(([tokenId, plancks]) => ({ tokenId, plancks }));
+};
 
 export const getXcmCallSpendings = ({
 	tokenIdIn,
