@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDecimals } from "./formatDecimals";
+import { formatDecimals, formatStableValue } from "./formatDecimals";
 
 describe("formatDecimals", () => {
 	it("returns empty string for null", () => {
@@ -43,5 +43,26 @@ describe("formatDecimals", () => {
 
 	it("handles number input", () => {
 		expect(formatDecimals(42)).toBe("42");
+	});
+});
+
+describe("formatStableValue", () => {
+	it("keeps two fraction digits instead of two significant digits", () => {
+		expect(formatStableValue("1.034")).toBe("1.03");
+		expect(formatStableValue(10.54)).toBe("10.54");
+		expect(formatStableValue("123.45")).toBe("123.45");
+		expect(formatStableValue("5092.6")).toBe("5,092.60");
+		expect(formatStableValue("0.99")).toBe("0.99");
+	});
+
+	it("compacts only from a million", () => {
+		expect(formatStableValue(999_999.99)).toBe("999,999.99");
+		expect(formatStableValue(1_234_567)).toBe("1.23M");
+	});
+
+	it("floors tiny values and prints zero with its fraction", () => {
+		expect(formatStableValue("0.001")).toBe("< 0.01");
+		expect(formatStableValue(0)).toBe("0.00");
+		expect(formatStableValue(null)).toBe("");
 	});
 });

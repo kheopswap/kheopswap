@@ -1,14 +1,12 @@
 import { CountUp, type CountUpOptions } from "countup.js";
 import { memo, useEffect, useRef } from "react";
-import { formatDecimals } from "../utils/formatDecimals";
-
-const DIGITS = 4;
+import { formatStableValue } from "../utils/formatDecimals";
 
 const OPTIONS: CountUpOptions = {
-	decimalPlaces: DIGITS,
+	decimalPlaces: 2,
 	duration: 1,
 	smartEasingThreshold: Number.POSITIVE_INFINITY,
-	formattingFn: (value) => formatDecimals(value, DIGITS),
+	formattingFn: formatStableValue,
 };
 
 export const CountUpDecimals = memo<{ value: number }>(({ value }) => {

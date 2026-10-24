@@ -2,7 +2,7 @@ import { type FC, type ReactNode, useMemo } from "react";
 import { useStablePrice } from "../hooks/useStablePrice";
 import type { TokenId } from "../registry/tokens/types";
 import { cn } from "../utils/cn";
-import { formatDecimals } from "../utils/formatDecimals";
+import { formatStableValue } from "../utils/formatDecimals";
 import { Shimmer } from "./Shimmer";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
@@ -36,7 +36,7 @@ export const StablePrice: FC<{
 			<TooltipTrigger render={<span />}>
 				<span className={cn("whitespace-nowrap font-mono", className)}>
 					{prefix}
-					{formatDecimals(price, 2)} {stableToken?.symbol}
+					{formatStableValue(price)} {stableToken?.symbol}
 				</span>
 			</TooltipTrigger>
 			{price && (

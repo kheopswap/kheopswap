@@ -15,6 +15,7 @@ import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
 import { ActionRightIcon } from "./icons";
 import { Shimmer } from "./Shimmer";
+import { StableValue } from "./StableValue";
 import { Styles } from "./styles";
 import { Tokens } from "./Tokens";
 import { useAccountDrawerContent } from "./useAccountDrawerContent";
@@ -122,8 +123,8 @@ const AccountButton = memo<{
 							/>
 						</div>
 						<div className="text-xs text-muted">
-							<Tokens
-								token={stableToken}
+							<StableValue
+								stableToken={stableToken}
 								plancks={balance.stablePlancks ?? 0n}
 								pulse={balance.isLoadingStablePlancks}
 							/>

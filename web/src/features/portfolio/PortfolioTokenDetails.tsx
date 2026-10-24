@@ -6,6 +6,7 @@ import { AccountSelectDrawer } from "../../components/AccountSelectDrawer";
 import { AddressDisplay } from "../../components/AddressDisplay";
 import { Pulse } from "../../components/Pulse";
 import { Shimmer } from "../../components/Shimmer";
+import { StableValue } from "../../components/StableValue";
 import { Styles } from "../../components/styles";
 import { Tokens } from "../../components/Tokens";
 import {
@@ -94,12 +95,20 @@ const TokenDetailsRowValue: FC<
 			)}
 			{valuation.status === "priced" && token.id !== stableToken.id && (
 				<span className="text-muted">
-					<Tokens
-						token={stableToken}
-						plancks={valuation.stablePlancks}
-						digits={2}
-						pulse={isLoadingStablePlancks}
-					/>
+					{isPrice ? (
+						<Tokens
+							token={stableToken}
+							plancks={valuation.stablePlancks}
+							pulse={isLoadingStablePlancks}
+							isPrice
+						/>
+					) : (
+						<StableValue
+							stableToken={stableToken}
+							plancks={valuation.stablePlancks}
+							pulse={isLoadingStablePlancks}
+						/>
+					)}
 				</span>
 			)}
 		</div>
@@ -368,17 +377,16 @@ const Balances: FC<{ token: Token }> = ({ token }) => {
 										balance.isLoadingStablePlancks) && (
 										<div className="text-xs text-muted">
 											{isBigInt(balance.stablePlancks) ? (
-												<Tokens
-													token={stableToken}
+												<StableValue
+													stableToken={stableToken}
 													plancks={balance.stablePlancks}
 													pulse={balance.isLoadingStablePlancks}
-													digits={2}
 												/>
 											) : (
 												<Shimmer
 													className={isLoading ? "visible" : "invisible"}
 												>
-													<Tokens token={token} plancks={0n} digits={2} />
+													<StableValue stableToken={stableToken} plancks={0n} />
 												</Shimmer>
 											)}
 										</div>

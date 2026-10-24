@@ -14,6 +14,7 @@ import { ActionRightIcon } from "./icons";
 import { Pulse } from "./Pulse";
 import { SearchInput } from "./SearchInput";
 import { Shimmer } from "./Shimmer";
+import { StableValue } from "./StableValue";
 import { Styles } from "./styles";
 import { TokenLogo } from "./TokenLogo";
 import { Tokens } from "./Tokens";
@@ -65,8 +66,8 @@ const TokenButton = memo<{
 							/>
 						</div>
 						<div className="text-xs text-muted">
-							<Tokens
-								token={stableToken}
+							<StableValue
+								stableToken={stableToken}
 								plancks={balances.stablePlancks ?? 0n}
 								className={cn(
 									!isBigInt(balances.stablePlancks) && "invisible",

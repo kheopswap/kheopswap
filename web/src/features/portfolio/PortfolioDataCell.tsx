@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { Shimmer } from "../../components/Shimmer";
+import { StableValue } from "../../components/StableValue";
 import { Tokens } from "../../components/Tokens";
 import type { Token } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
@@ -21,17 +22,26 @@ const ValueLine: FC<
 	if (valuation.status !== "priced" && showLabel)
 		return <ValuationLabel status={valuation.status} isPrice={isPrice} />;
 
-	return (
+	const className = cn(
+		(valuation.status !== "priced" || token.id === stableToken.id) &&
+			"invisible",
+	);
+	const plancks = valuation.stablePlancks ?? 0n;
+
+	return isPrice ? (
 		<Tokens
 			token={stableToken}
-			plancks={valuation.stablePlancks ?? 0n}
+			plancks={plancks}
 			pulse={isLoadingStablePlancks}
-			digits={2}
-			isPrice={isPrice}
-			className={cn(
-				(valuation.status !== "priced" || token.id === stableToken.id) &&
-					"invisible",
-			)}
+			isPrice
+			className={className}
+		/>
+	) : (
+		<StableValue
+			stableToken={stableToken}
+			plancks={plancks}
+			pulse={isLoadingStablePlancks}
+			className={className}
 		/>
 	);
 };
