@@ -15,7 +15,11 @@ import {
 	parseDestinationDryRun,
 	parseOriginDryRun,
 } from "../xcm/xcmQuote";
-import { getDestinationSwapPlancksIn, getFeeSwap } from "./destinationSwapFee";
+import {
+	getDestinationSwapFee,
+	getDestinationSwapPlancksIn,
+	getFeeSwap,
+} from "./destinationSwapFee";
 import {
 	dotToUsdc,
 	usdtToDot,
@@ -153,6 +157,27 @@ describe("quoting a swap on Asset Hub of what Hydration sends", () => {
 			});
 		},
 	);
+
+	it.each(successes)(
+		"prices the Asset Hub fee of %s in the input from the first pool, as Asset Hub does",
+		(_, fixture) => {
+			expect(
+				getDestinationSwapFee(
+					toPoolHops(fixture)[0],
+					fixture.lpFee,
+					fixture.destinationFee.nativePlancks,
+				),
+			).toEqual(fixture.destinationFee);
+		},
+	);
+
+	it("cannot price a fee the first pool cannot pay", () => {
+		const firstPool = toPoolHops(usdtToDot)[0];
+
+		expect(
+			getDestinationSwapFee(firstPool, usdtToDot.lpFee, firstPool.reserveOut),
+		).toBeNull();
+	});
 
 	it("buys no fee swap when Asset Hub takes its fee in native", () => {
 		expect(

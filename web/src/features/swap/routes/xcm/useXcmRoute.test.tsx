@@ -6,6 +6,7 @@ import type { WalletAccount } from "../../../../common/kheopskit";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
 import { getAmmPath } from "../ammPath";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
+import { getDestinationSwapFee } from "../xcmDestinationSwap/destinationSwapFee";
 import {
 	usdtToPink,
 	type XcmDestinationSwapFixture,
@@ -17,6 +18,7 @@ const chain = vi.hoisted(() => ({
 	dryRunCall: undefined as unknown as ReturnType<typeof vi.fn>,
 	queryXcmWeight: undefined as unknown as ReturnType<typeof vi.fn>,
 	canPriceFee: true,
+	firstPoolInflow: 0n,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
@@ -72,7 +74,13 @@ vi.mock("../../../../hooks/usePoolReservesByTokenIds", () => ({
 				tokenIdIn === tokenId1 && tokenIdOut === tokenId2,
 		);
 		return {
-			data: hop ? [hop.reserveIn, hop.reserveOut] : undefined,
+			data: hop
+				? [
+						hop.reserveIn +
+							(hop === chain.fixture.hops[0] ? chain.firstPoolInflow : 0n),
+						hop.reserveOut,
+					]
+				: undefined,
 			isLoading: false,
 		};
 	},
@@ -148,6 +156,7 @@ const renderDestinationSwap = (
 
 beforeEach(() => {
 	chain.canPriceFee = true;
+	chain.firstPoolInflow = 0n;
 	chain.dryRunCall = vi.fn(async () => chain.fixture.originDryRun);
 	chain.queryXcmWeight = vi.fn(async () => ({
 		success: true,
@@ -243,5 +252,34 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			),
 		);
 		expect(result.current.plan.submitGate.status).toBe("closed");
+	});
+
+	it("reprices the fee in the input when the first pool moves, without asking Asset Hub again", async () => {
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+		const feeQueries = chain.queryXcmWeight.mock.calls.length;
+
+		const [firstPool] = usdtToPink.hops;
+		if (!firstPool) throw new Error("expected a first hop");
+		chain.firstPoolInflow = firstPool.reserveIn;
+		rerender();
+
+		const movedFee = getDestinationSwapFee(
+			{ ...firstPool, reserveIn: firstPool.reserveIn * 2n },
+			usdtToPink.lpFee,
+			usdtToPink.destinationFee.nativePlancks,
+		);
+		expect(movedFee?.plancks).toBeGreaterThan(
+			usdtToPink.destinationFee.plancks,
+		);
+		await waitFor(() =>
+			expect(result.current.quote.data).toMatchObject({
+				success: true,
+				quote: { destinationFee: { plancks: movedFee?.plancks } },
+			}),
+		);
+		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(feeQueries);
 	});
 });
