@@ -48,7 +48,7 @@ export const CreatePoolForm = () => {
 				<FormFieldContainer label="Initial liquidity (optional)">
 					<p className="mb-2 px-0.5 text-[13px] leading-normal text-muted">
 						The amounts of each token you provide will determine the price of{" "}
-						{token?.symbol}. Make sure it reflects it's true market value, or
+						{token?.symbol}. Make sure it reflects its true market value, or
 						others may take advantage of the price difference.
 					</p>
 					<AddLiquidityEditor />

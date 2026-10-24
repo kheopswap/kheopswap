@@ -19,7 +19,12 @@ import { PriceImpact } from "../../PriceImpact";
 import { RateValue } from "../../RateValue";
 import { Slippage } from "../../Slippage";
 import { useSwap } from "../../SwapProvider";
-import { ProtocolFeeValue, RouteValue } from "../AmmPathValues";
+import {
+	getPathSteps,
+	ProtocolFeeValue,
+	type RouteStep,
+	RouteValue,
+} from "../AmmPathValues";
 import type {
 	XcmDestinationSwapDetails,
 	XcmSwapDetails,
@@ -36,6 +41,28 @@ const getMinReceivedExplanation = ({ route }: XcmPathSwapDetails) => {
 			return `The swap reverts on ${origin} if it would output less than the minimum your slippage tolerance allows. ${destination} then takes its fee from what arrives.`;
 		case "xcm-destination-swap":
 			return `${destination} takes its fee from what arrives, then swaps the rest. If a step of the swap would output less than the minimum your slippage tolerance allows, the swap stops there and the token it holds at that point goes to your ${destination} account.`;
+	}
+};
+
+const getRouteSteps = ({ route }: XcmPathSwapDetails): RouteStep[] => {
+	const pathSteps = getPathSteps(route.path);
+	switch (route.kind) {
+		case "xcm-swap":
+			return [
+				...pathSteps,
+				{
+					tokenId: route.tokenIdOut,
+					chainName: getChainById(route.destination).name,
+				},
+			];
+		case "xcm-destination-swap":
+			return [
+				{
+					tokenId: route.tokenIdIn,
+					chainName: getChainById(route.origin).name,
+				},
+				...pathSteps,
+			];
 	}
 };
 
@@ -70,12 +97,10 @@ export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 		<FormSummary>
 			<FormSummarySection>
 				<FormSummaryRow label="Rate" value={<RateValue />} />
-				{route.path.length > 1 && (
-					<FormSummaryRow
-						label="Route"
-						value={<RouteValue path={route.path} />}
-					/>
-				)}
+				<FormSummaryRow
+					label="Route"
+					value={<RouteValue steps={getRouteSteps(details)} />}
+				/>
 				<FormSummaryRow
 					label="Price impact"
 					value={

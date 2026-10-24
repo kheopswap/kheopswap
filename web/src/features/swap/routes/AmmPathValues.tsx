@@ -9,12 +9,20 @@ const TokenSymbol: FC<{ tokenId: TokenId }> = ({ tokenId }) => {
 	return token?.symbol ?? null;
 };
 
-export const RouteValue: FC<{ path: AmmPath }> = ({ path }) => (
+export type RouteStep = { tokenId: TokenId; chainName?: string };
+
+export const getPathSteps = (path: AmmPath): RouteStep[] =>
+	getPathTokenIds(path).map((tokenId) => ({ tokenId }));
+
+export const RouteValue: FC<{ steps: RouteStep[] }> = ({ steps }) => (
 	<div className="flex flex-wrap justify-end gap-1">
-		{getPathTokenIds(path).map((tokenId, index) => (
+		{steps.map(({ tokenId, chainName }, index) => (
 			<Fragment key={tokenId}>
 				{index > 0 && <span className="text-muted">→</span>}
-				<TokenSymbol tokenId={tokenId} />
+				<span>
+					<TokenSymbol tokenId={tokenId} />
+					{chainName && <span className="text-muted"> ({chainName})</span>}
+				</span>
 			</Fragment>
 		))}
 	</div>
