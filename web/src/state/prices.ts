@@ -206,7 +206,7 @@ const getTokenPrice$ = (token: Token) =>
 export const getTokenPrices$ = (types?: TokenType[]) =>
 	getCachedObservable$(
 		"getTokenPrices$",
-		types?.sort().join(",") ?? "all",
+		types ? [...types].sort().join(",") : "all",
 		() =>
 			getAllTokens$(types).pipe(
 				switchMap(({ data: dicTokens, isLoading: isLoadingTokens }) =>
