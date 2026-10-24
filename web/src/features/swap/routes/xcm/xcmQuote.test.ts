@@ -778,12 +778,13 @@ describe("Asset Hub to People", () => {
 	describe("minimum to open a People account", () => {
 		const PEOPLE_ED = 1_000_000_000n;
 		const TRAPPED = 494_565_636n;
-		const minimum = (destinationBalance: bigint) =>
+		const minimum = (destinationBalance: bigint, isSufficient = true) =>
 			getNewAccountMinimum({
 				sent: dotToPeopleTrapped.amount,
 				trappedPlancks: TRAPPED,
 				existentialDeposit: PEOPLE_ED,
 				destinationBalance,
+				isSufficient,
 			});
 
 		it("is the existential deposit plus the fee People kept from what was sent", () => {
@@ -792,6 +793,10 @@ describe("Asset Hub to People", () => {
 
 		it("does not apply to an account that already exists", () => {
 			expect(minimum(PEOPLE_ED)).toBeNull();
+		});
+
+		it("does not apply to a token that cannot open an account on its own", () => {
+			expect(minimum(0n, false)).toBeNull();
 		});
 
 		it("is said rounded up, with the deposit it covers", () => {

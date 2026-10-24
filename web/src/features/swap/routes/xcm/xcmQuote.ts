@@ -311,13 +311,17 @@ export const getNewAccountMinimum = ({
 	trappedPlancks,
 	existentialDeposit,
 	destinationBalance,
+	isSufficient,
 }: {
 	sent: bigint;
 	trappedPlancks: bigint;
 	existentialDeposit: bigint;
 	destinationBalance: bigint;
+	isSufficient: boolean;
 }): bigint | null =>
-	destinationBalance < existentialDeposit && trappedPlancks <= sent
+	isSufficient &&
+	destinationBalance < existentialDeposit &&
+	trappedPlancks <= sent
 		? existentialDeposit + sent - trappedPlancks
 		: null;
 

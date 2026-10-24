@@ -428,6 +428,7 @@ export const useXcmRoute = ({
 			trappedPlancks: failure.trappedPlancks,
 			existentialDeposit: existentialDepositOut,
 			destinationBalance: balanceOut,
+			isSufficient: tokenOut.isSufficient,
 		});
 		return (
 			minimum &&
