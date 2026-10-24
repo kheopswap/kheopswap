@@ -29,6 +29,7 @@ import {
 	getXcmDestinationSwapCall,
 	type XcmDestinationSwapCallInputs,
 } from "../xcmDestinationSwap/getXcmDestinationSwapCall";
+import { useCanReceiveSwapLeftovers } from "../xcmDestinationSwap/useCanReceiveSwapLeftovers";
 import { useDestinationSwapPlancksIn } from "../xcmDestinationSwap/useDestinationSwapPlancksIn";
 import {
 	getXcmSwapCall,
@@ -284,11 +285,11 @@ export const useXcmRoute = ({
 			getUnquotedDestinationSwapInputs(destinationSwapRoute, tokenIn, totalIn),
 		[destinationSwapRoute, tokenIn, totalIn],
 	);
-	const { data: unquotedCall } = useXcmCall(unquotedInputs, beneficiary);
+	const unquotedCall = useXcmCall(unquotedInputs, beneficiary);
 	const destinationSwapIn = useDestinationSwapPlancksIn({
 		route: destinationSwapRoute,
 		beneficiary,
-		unquotedCall,
+		unquotedCall: unquotedCall.data,
 	});
 	const destinationSwapPlancksIn = destinationSwapIn.data?.success
 		? destinationSwapIn.data.value
@@ -299,6 +300,10 @@ export const useXcmRoute = ({
 		plancksIn: swapRoute ? swapPlancksIn : destinationSwapPlancksIn,
 		totalIn: swapRoute ? totalIn : destinationSwapPlancksIn,
 		slippage,
+	});
+	const leftovers = useCanReceiveSwapLeftovers({
+		beneficiary: destinationSwapRoute && beneficiary,
+		pathQuote: destinationSwapRoute ? pathQuote.quote : undefined,
 	});
 
 	const remoteFeeLocation =
@@ -345,23 +350,29 @@ export const useXcmRoute = ({
 		quote.isLoading ||
 		callQuery.isLoading ||
 		pathQuote.isLoading ||
-		destinationSwapIn.isLoading;
+		unquotedCall.isLoading ||
+		destinationSwapIn.isLoading ||
+		leftovers.isLoading;
 
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
+		if (unquotedCall.error || callQuery.error)
+			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
 		if (destinationSwapIn.data && !destinationSwapIn.data.success)
 			return describeXcmQuoteFailure(destinationSwapIn.data.failure, route);
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
-		if (callQuery.error)
-			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
+		if (leftovers.canReceive === false)
+			return describeXcmQuoteFailure({ kind: "leftovers-unreceivable" }, route);
 		if (quote.data && !quote.data.success)
 			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
 	}, [
 		access,
+		unquotedCall.error,
 		destinationSwapIn.data,
 		pathQuote.errorMessage,
+		leftovers.canReceive,
 		callQuery.error,
 		quote.data,
 		route,

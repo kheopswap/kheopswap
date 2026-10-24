@@ -44,6 +44,7 @@ export type XcmQuoteFailure =
 	| { kind: "delivery-fee-unavailable" }
 	| { kind: "destination-fee-unavailable" }
 	| { kind: "below-destination-fee" }
+	| { kind: "leftovers-unreceivable" }
 	| { kind: "call-unavailable" };
 
 export type XcmQuote = {
@@ -264,6 +265,8 @@ export const describeXcmQuoteFailure = (
 			return `Could not estimate the ${destination} fee`;
 		case "below-destination-fee":
 			return `Amount too low to cover the ${destination} fee`;
+		case "leftovers-unreceivable":
+			return `Your ${destination} account could not receive the tokens returned if the swap fails`;
 		case "call-unavailable":
 			return `Could not prepare the transaction on ${origin}`;
 	}
