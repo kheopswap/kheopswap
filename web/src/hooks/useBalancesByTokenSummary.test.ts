@@ -92,9 +92,10 @@ describe("valueHoldingsTogether", () => {
 		});
 	});
 
-	it("keeps the per-account sum until the whole holding is valued", () => {
-		expect(valueHoldingsTogether(summary, {})[tokenId]?.stablePlancks).toBe(
-			180n,
-		);
+	it("shows the per-account sum as still loading until the whole holding is valued", () => {
+		expect(valueHoldingsTogether(summary, {})[tokenId]).toMatchObject({
+			stablePlancks: 180n,
+			isLoadingStablePlancks: true,
+		});
 	});
 });
