@@ -77,7 +77,7 @@ const useTransactionProvider = ({
 
 	const {
 		data: dryRun,
-		isFetching: isLoadingDryRun,
+		isFetching: isFetchingDryRun,
 		error: errorDryRun,
 	} = useDryRun({
 		chainId,
@@ -86,6 +86,7 @@ const useTransactionProvider = ({
 		balances: balanceCheck.balances,
 		enabled: !balanceCheck.isLoadingBalances,
 	});
+	const isLoadingDryRun = isFetchingDryRun || balanceCheck.isLoadingBalances;
 
 	const { onSubmit } = useTransactionSubmit({
 		account: ethereum.account,

@@ -14,6 +14,7 @@ import { TransactionSubmitButton } from "./TransactionSubmitButton";
 
 const balanceCheck = vi.hoisted(() => ({
 	insufficientBalances: {} as Record<string, string>,
+	isLoadingBalances: false,
 }));
 
 const ethereum = vi.hoisted(() => ({
@@ -45,6 +46,7 @@ const failedDryRun = {
 
 beforeEach(() => {
 	balanceCheck.insufficientBalances = {};
+	balanceCheck.isLoadingBalances = false;
 	ethereum.isEthereumNetworkMismatch = false;
 	ethereum.platform = "polkadot";
 	fees.options = { asset: undefined };
@@ -96,7 +98,7 @@ vi.mock("./useTransactionBalanceCheck", async (importOriginal) => ({
 	...(await importOriginal<typeof import("./useTransactionBalanceCheck")>()),
 	useTransactionBalanceCheck: () => ({
 		insufficientBalances: balanceCheck.insufficientBalances,
-		isLoadingBalances: false,
+		isLoadingBalances: balanceCheck.isLoadingBalances,
 		isLoadingExistentialDeposits: false,
 		isLoadingFeeTokenBalance: false,
 	}),
@@ -234,6 +236,13 @@ describe("TransactionProvider dry run", () => {
 		const transaction = renderTransaction(undefined, "pah");
 		expect(transaction.canSubmit).toBe(false);
 		expect(transaction.isLoading).toBe(true);
+	});
+
+	it("shows the dry run as loading while the balances it depends on load", () => {
+		balanceCheck.isLoadingBalances = true;
+		const transaction = renderTransaction(undefined, "pah");
+		expect(transaction.isLoadingDryRun).toBe(true);
+		expect(transaction.canSubmit).toBe(false);
 	});
 
 	it("keeps submit disabled while a cached dry run is refetched for new inputs", () => {
