@@ -154,6 +154,7 @@ const renderDestinationSwap = (
 				slippage: fixture.slippage,
 				edTokenIn: 10_000n,
 				hasInsufficientBalance: chain.hasInsufficientBalance,
+				balanceOut: 0n,
 			}),
 		{ wrapper },
 	);

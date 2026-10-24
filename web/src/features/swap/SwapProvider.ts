@@ -85,6 +85,7 @@ const useSwapProvider = () => {
 		slippage: pricing.slippage,
 		edTokenIn: pricing.edTokenIn,
 		hasInsufficientBalance: pricing.hasInsufficientBalance,
+		balanceOut,
 	});
 
 	const ammTransaction = useMemo<TransactionPlan>(
