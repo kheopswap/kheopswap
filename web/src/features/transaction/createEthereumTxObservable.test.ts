@@ -150,6 +150,22 @@ describe("createEthereumTxObservable", () => {
 		]);
 	});
 
+	it("re-reads the inclusion when the refreshed receipt reports another outcome", async () => {
+		chain.eventsByHash[BEST_HASH] = new Error("rpc down");
+		chain.receipts = [
+			{ blockHash: BEST_HASH, transactionIndex: 2 },
+			{ blockHash: BEST_HASH, transactionIndex: 2, status: "reverted" },
+		];
+
+		const events = await track();
+
+		expect(events.at(-1)).toMatchObject({
+			type: "finalized",
+			ok: false,
+			block: { hash: BEST_HASH, number: 7, index: 2 },
+		});
+	});
+
 	it("reports the canonical receipt's outcome when the finalized block's events cannot be read", async () => {
 		chain.finalizedHash = FINALIZED_HASH;
 		chain.eventsByHash[FINALIZED_HASH] = new Error("rpc down");

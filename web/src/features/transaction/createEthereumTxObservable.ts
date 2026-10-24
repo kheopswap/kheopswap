@@ -316,7 +316,8 @@ export const createEthereumTxObservable = ({
 				);
 				return (
 					Number(receiptNow.blockNumber) === bestBlock.number &&
-					receiptNow.transactionIndex === bestBlock.index
+					receiptNow.transactionIndex === bestBlock.index &&
+					(receiptNow.status === "success") === isReceiptSuccess
 				);
 			};
 
