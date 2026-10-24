@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useStablePlancks } from "../../hooks/useStablePrice";
 import type { TokenAmount, TokenId } from "../../registry/tokens/types";
 import { isBigInt } from "../../utils/isBigInt";
@@ -6,6 +6,7 @@ import type { SwapRoute } from "./routes/swapRoute";
 import {
 	getSwapRisk,
 	getValueLoss,
+	isAcknowledgementStale,
 	isRiskAcknowledged,
 	type RiskAcknowledgement,
 } from "./swapRisk";
@@ -17,18 +18,19 @@ const useSentValue = (
 	totalIn: bigint | null | undefined,
 	deliveryFee: TokenAmount | undefined,
 ) => {
-	const { stablePlancks: amountValue } = useStablePlancks({
-		tokenId: tokenIdIn,
-		plancks: totalIn,
-	});
-	const { stablePlancks: deliveryFeeValue } = useStablePlancks({
+	const amount = useStablePlancks({ tokenId: tokenIdIn, plancks: totalIn });
+	const fee = useStablePlancks({
 		tokenId: deliveryFee?.tokenId,
 		plancks: deliveryFee?.plancks,
 	});
-	const feeValue = deliveryFee ? deliveryFeeValue : NO_DELIVERY_FEE_VALUE;
-	return isBigInt(amountValue) && isBigInt(feeValue)
-		? amountValue + feeValue
-		: undefined;
+	const feeValue = deliveryFee ? fee.stablePlancks : NO_DELIVERY_FEE_VALUE;
+	return {
+		isLoading: amount.isLoading || (!!deliveryFee && fee.isLoading),
+		sentValue:
+			isBigInt(amount.stablePlancks) && isBigInt(feeValue)
+				? amount.stablePlancks + feeValue
+				: undefined,
+	};
 };
 
 export const useSwapRisk = ({
@@ -45,8 +47,8 @@ export const useSwapRisk = ({
 	priceImpact: number | undefined;
 }) => {
 	const swapRoute = route?.kind === "xcm-transfer" ? null : route;
-	const sentValue = useSentValue(swapRoute?.tokenIdIn, totalIn, deliveryFee);
-	const { stablePlancks: receivedValue } = useStablePlancks({
+	const sent = useSentValue(swapRoute?.tokenIdIn, totalIn, deliveryFee);
+	const received = useStablePlancks({
 		tokenId: swapRoute?.tokenIdOut,
 		plancks: plancksOut,
 	});
@@ -55,25 +57,30 @@ export const useSwapRisk = ({
 		() =>
 			getSwapRisk({
 				priceImpact: swapRoute ? priceImpact : undefined,
-				valueLoss: getValueLoss(sentValue, receivedValue),
+				valueLoss: getValueLoss(sent.sentValue, received.stablePlancks),
 			}),
-		[swapRoute, priceImpact, sentValue, receivedValue],
+		[swapRoute, priceImpact, sent.sentValue, received.stablePlancks],
 	);
 
 	const key = `${swapRoute?.tokenIdIn}>${swapRoute?.tokenIdOut}:${totalIn}`;
 	const [acknowledgement, setAcknowledgement] =
 		useState<RiskAcknowledgement | null>(null);
+	useEffect(() => {
+		if (isAcknowledgementStale(acknowledgement, risk, key))
+			setAcknowledgement(null);
+	}, [acknowledgement, risk, key]);
 	const isAcknowledged = isRiskAcknowledged(risk, acknowledgement, key);
 
 	const onAcknowledgeChange = useCallback(
 		(checked: boolean) =>
 			setAcknowledgement(
-				checked && risk.level !== "none"
-					? { key, ratio: risk.worstRatio }
-					: null,
+				checked && risk.level !== "none" ? { key, losses: risk.losses } : null,
 			),
 		[key, risk],
 	);
 
-	return { risk, isAcknowledged, onAcknowledgeChange };
+	const isAssessing =
+		!!swapRoute && isBigInt(totalIn) && (sent.isLoading || received.isLoading);
+
+	return { risk, isAcknowledged, isAssessing, onAcknowledgeChange };
 };

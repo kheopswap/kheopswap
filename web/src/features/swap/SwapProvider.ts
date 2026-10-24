@@ -160,9 +160,9 @@ const useSwapProvider = () => {
 	const transaction = useMemo(
 		() => ({
 			...routePlan,
-			submitGate: getRiskSubmitGate(routePlan.submitGate, risk.isAcknowledged),
+			submitGate: getRiskSubmitGate(routePlan.submitGate, risk),
 		}),
-		[routePlan, risk.isAcknowledged],
+		[routePlan, risk],
 	);
 
 	const { onMaxClick } = useSwapFees({

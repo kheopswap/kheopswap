@@ -6,9 +6,9 @@ type RiskLevel = "warn" | "confirm";
 
 export type SwapRisk =
 	| { level: "none" }
-	| { level: RiskLevel; losses: SwapLoss[]; worstRatio: number };
+	| { level: RiskLevel; losses: SwapLoss[] };
 
-export type RiskAcknowledgement = { key: string; ratio: number };
+export type RiskAcknowledgement = { key: string; losses: SwapLoss[] };
 
 const LOSS_THRESHOLDS: Record<SwapLoss["kind"], Record<RiskLevel, number>> = {
 	"price-impact": { warn: 0.05, confirm: 0.15 },
@@ -45,12 +45,21 @@ export const getSwapRisk = ({
 	const needsConfirmation = losses.some(
 		({ kind, ratio }) => ratio > LOSS_THRESHOLDS[kind].confirm,
 	);
-	return {
-		level: needsConfirmation ? "confirm" : "warn",
-		losses,
-		worstRatio: Math.max(...losses.map(({ ratio }) => ratio)),
-	};
+	return { level: needsConfirmation ? "confirm" : "warn", losses };
 };
+
+const coversRisk = (
+	acknowledgement: RiskAcknowledgement,
+	risk: SwapRisk,
+	key: string,
+): boolean =>
+	acknowledgement.key === key &&
+	(risk.level === "none" ||
+		risk.losses.every(
+			({ kind, ratio }) =>
+				ratio <=
+				(acknowledgement.losses.find((loss) => loss.kind === kind)?.ratio ?? 0),
+		));
 
 export const isRiskAcknowledged = (
 	risk: SwapRisk,
@@ -58,12 +67,24 @@ export const isRiskAcknowledged = (
 	key: string,
 ): boolean =>
 	risk.level !== "confirm" ||
-	(acknowledgement?.key === key && risk.worstRatio <= acknowledgement.ratio);
+	(!!acknowledgement && coversRisk(acknowledgement, risk, key));
+
+export const isAcknowledgementStale = (
+	acknowledgement: RiskAcknowledgement | null,
+	risk: SwapRisk,
+	key: string,
+): boolean => !!acknowledgement && !coversRisk(acknowledgement, risk, key);
 
 export const getRiskSubmitGate = (
 	gate: SubmitGate,
-	isAcknowledged: boolean,
-): SubmitGate =>
-	gate.status === "open" && !isAcknowledged
-		? { status: "closed", reason: "Confirm the loss to swap anyway" }
-		: gate;
+	{
+		isAssessing,
+		isAcknowledged,
+	}: { isAssessing: boolean; isAcknowledged: boolean },
+): SubmitGate => {
+	if (gate.status !== "open") return gate;
+	if (isAssessing) return { status: "pending" };
+	return isAcknowledged
+		? gate
+		: { status: "closed", reason: "Confirm the loss to swap anyway" };
+};
