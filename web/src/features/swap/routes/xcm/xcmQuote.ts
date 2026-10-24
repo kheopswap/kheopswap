@@ -247,6 +247,9 @@ export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 		case "kah":
 		case "wah":
 		case "pasah":
+		case "ppeople":
+		case "kpeople":
+		case "wpeople":
 			return getTokenId({ type: "native", chainId: origin });
 		case "hydration":
 			return getTokenId({

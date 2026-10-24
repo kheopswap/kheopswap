@@ -3,7 +3,7 @@ import { getChains } from "../../../registry/chains/chains";
 import { getXcmTransferType, isXcmLane } from "./xcmLanes";
 
 describe("xcm lanes", () => {
-	it("joins Polkadot Asset Hub and Hydration both ways, and each Asset Hub to its People chain", () => {
+	it("joins Polkadot Asset Hub and Hydration both ways, and each Asset Hub to its People chain, back from all but Paseo People", () => {
 		const chainIds = getChains().map((chain) => chain.id);
 		const pairs = chainIds.flatMap((origin) =>
 			chainIds.map((destination) => ({ origin, destination })),
@@ -15,6 +15,9 @@ describe("xcm lanes", () => {
 			{ origin: "wah", destination: "wpeople" },
 			{ origin: "pasah", destination: "paspeople" },
 			{ origin: "hydration", destination: "pah" },
+			{ origin: "ppeople", destination: "pah" },
+			{ origin: "kpeople", destination: "kah" },
+			{ origin: "wpeople", destination: "wah" },
 		]);
 	});
 
@@ -23,6 +26,9 @@ describe("xcm lanes", () => {
 		{ origin: "kah", destination: "kpeople" },
 		{ origin: "wah", destination: "wpeople" },
 		{ origin: "pasah", destination: "paspeople" },
+		{ origin: "ppeople", destination: "pah" },
+		{ origin: "kpeople", destination: "kah" },
+		{ origin: "wpeople", destination: "wah" },
 	] as const)("teleports from $origin to $destination", (lane) => {
 		expect(getXcmTransferType(lane)).toBe("Teleport");
 	});
