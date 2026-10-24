@@ -10,8 +10,7 @@ import {
 	throttleTime,
 } from "rxjs";
 import { parseUnits } from "viem";
-import { isChainIdHydration } from "../registry/chains/chains";
-import type { Chain, ChainIdHydration } from "../registry/chains/types";
+import { isChainIdAssetHub } from "../registry/chains/chains";
 import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId, TokenType } from "../registry/tokens/types";
 import { getAssetHubMirrorTokenIds } from "../utils/getAssetHubMirrorTokenId";
@@ -25,26 +24,21 @@ export const assetHubMirrorTokenIds$ = combineLatest([
 	relayChains$,
 	getAllTokens$(),
 ]).pipe(
-	map(([{ assetHub, allChains }, { data: tokens }]) => {
-		const hydration = allChains.find(
-			(chain): chain is Chain<ChainIdHydration> => isChainIdHydration(chain.id),
-		);
-		return hydration
-			? getAssetHubMirrorTokenIds(tokens, assetHub, hydration)
-			: new Map<TokenId, TokenId>();
-	}),
+	map(([{ assetHub, allChains }, { data: tokens }]) =>
+		getAssetHubMirrorTokenIds(tokens, assetHub, allChains),
+	),
 	shareReplay({ bufferSize: 1, refCount: true }),
 );
 
 export const getAssetHubMirrorTokenId$ = (
 	tokenId: TokenId,
 ): Observable<TokenId> =>
-	isChainIdHydration(getChainIdFromTokenId(tokenId))
-		? assetHubMirrorTokenIds$.pipe(
+	isChainIdAssetHub(getChainIdFromTokenId(tokenId))
+		? of(tokenId)
+		: assetHubMirrorTokenIds$.pipe(
 				map((mirrorTokenIds) => mirrorTokenIds.get(tokenId) ?? tokenId),
 				distinctUntilChanged(),
-			)
-		: of(tokenId);
+			);
 
 export const getStablePlancks$ = (
 	tokenId: TokenId,
