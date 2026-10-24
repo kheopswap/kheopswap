@@ -1,5 +1,6 @@
 import { createHashRouter, Navigate, useParams } from "react-router";
 
+import { NotFoundPage } from "../components/NotFoundPage";
 import { CreateLiquidityPoolPage } from "./create-pool";
 import { ErrorBoundaryPage } from "./error";
 import { LiquidityPoolPage } from "./pool";
@@ -15,6 +16,18 @@ import { TransferPage } from "./transfer";
 const RedirectToSwap = () => {
 	const { relayId } = useParams();
 	return <Navigate to={`/${relayId}/swap`} replace />;
+};
+
+const PageNotFound = () => {
+	const { relayId } = useParams();
+	return (
+		<NotFoundPage
+			title="Page not found"
+			backTo={{ to: `/${relayId}/swap`, label: "Go to swap" }}
+		>
+			There is no page at this address.
+		</NotFoundPage>
+	);
 };
 
 export const router = createHashRouter([
@@ -53,7 +66,7 @@ export const router = createHashRouter([
 			},
 			{
 				path: "*",
-				element: <RedirectToSwap />,
+				element: <PageNotFound />,
 			},
 		],
 	},

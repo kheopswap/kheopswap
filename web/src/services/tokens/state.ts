@@ -49,36 +49,3 @@ export const tokensByChainState$ = combineLatest([
 	),
 	shareReplay(1),
 );
-
-const combineStateByTokenId = (
-	statusByChain: Record<ChainId, LoadingStatus>,
-	tokens: Record<string, Token>,
-): Record<string, TokenState> => {
-	const stop = logger.cumulativeTimer("tokens.combineStateByTokenId");
-	try {
-		return fromPairs(
-			toPairs(tokens).map(([tokenId, token]) => [
-				tokenId,
-				{
-					status: statusByChain[token.chainId] ?? "stale",
-					token,
-				},
-			]),
-		);
-	} catch (err) {
-		logger.error("Failed to merge tokens state", { err });
-		return {};
-	} finally {
-		stop();
-	}
-};
-
-export const tokensByIdState$ = combineLatest([
-	chainTokensStatuses$,
-	tokensStore$,
-]).pipe(
-	map(([statusByChain, tokens]) =>
-		combineStateByTokenId(statusByChain, tokens),
-	),
-	shareReplay(1),
-);
