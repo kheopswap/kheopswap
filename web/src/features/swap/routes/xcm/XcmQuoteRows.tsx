@@ -95,17 +95,17 @@ const feeShimmer = <Shimmer className="h-4">0.0000 AAA</Shimmer>;
 
 const TotalDebitedValue: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
 	const { totalIn, transaction, isLoadingCall } = useSwap();
-	const { feeEstimate, feeToken, isLoadingFeeEstimate } = useTransaction();
+	const { feeEstimate, feeToken, isCallFeeEstimated, errorFeeEstimate } =
+		useTransaction();
 	if (!totalIn) return null;
 	const transactionFee =
-		transaction.call &&
-		!isLoadingFeeEstimate &&
-		feeToken &&
-		isBigInt(feeEstimate)
+		transaction.call && isCallFeeEstimated && feeToken && isBigInt(feeEstimate)
 			? { tokenId: feeToken.id, plancks: feeEstimate }
 			: undefined;
+	const isEstimatingCallFee =
+		!!transaction.call && !isCallFeeEstimated && !errorFeeEstimate;
 	if (!quote.deliveryFee || !transactionFee)
-		return quote.isLoading || isLoadingCall || isLoadingFeeEstimate
+		return quote.isLoading || isLoadingCall || isEstimatingCallFee
 			? feeShimmer
 			: null;
 

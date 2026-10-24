@@ -14,7 +14,7 @@ const state = vi.hoisted(() => ({
 	call: undefined as object | undefined,
 	isLoadingCall: false,
 	feeEstimate: undefined as bigint | undefined,
-	isLoadingFeeEstimate: false,
+	isCallFeeEstimated: false,
 }));
 
 vi.mock("../../SwapProvider", () => ({
@@ -35,7 +35,7 @@ vi.mock("../../../transaction/TransactionProvider", () => ({
 	useTransaction: () => ({
 		feeToken: KNOWN_TOKENS_MAP["native::pah"],
 		feeEstimate: state.feeEstimate,
-		isLoadingFeeEstimate: state.isLoadingFeeEstimate,
+		isCallFeeEstimated: state.isCallFeeEstimated,
 	}),
 }));
 
@@ -81,7 +81,7 @@ describe("XcmQuoteRows total debited", () => {
 		state.call = {};
 		state.isLoadingCall = false;
 		state.feeEstimate = 20_000_000n;
-		state.isLoadingFeeEstimate = false;
+		state.isCallFeeEstimated = true;
 	});
 
 	it("is empty before an amount is entered", () => {
@@ -109,8 +109,8 @@ describe("XcmQuoteRows total debited", () => {
 		).toBeTruthy();
 	});
 
-	it("shimmers while the fee of the call is estimated", () => {
-		state.isLoadingFeeEstimate = true;
+	it("shimmers while only the fake call's fee is known", () => {
+		state.isCallFeeEstimated = false;
 		renderRows(settledQuote({ tokenId: DOT_ID, plancks: 305_000_000n }));
 
 		expect(

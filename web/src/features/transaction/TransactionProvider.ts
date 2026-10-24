@@ -192,6 +192,7 @@ const useTransactionProvider = ({
 		feeEstimate: fees.feeEstimate,
 		errorFeeEstimate: fees.errorFeeEstimate,
 		isLoadingFeeEstimate: fees.isLoadingFeeEstimate,
+		isCallFeeEstimated: fees.isCallFeeEstimated,
 
 		feeTokenBalance: balanceCheck.feeTokenBalance,
 		isLoadingFeeTokenBalance: balanceCheck.isLoadingFeeTokenBalance,
