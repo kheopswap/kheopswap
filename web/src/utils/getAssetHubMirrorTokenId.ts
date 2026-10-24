@@ -1,9 +1,9 @@
 import type { XcmV5Junction, XcmV5Junctions } from "@polkadot-api/descriptors";
-import type {
-	Chain,
-	ChainAssetHub,
-	ChainIdHydration,
-} from "../registry/chains/types";
+import {
+	isChainIdAssetHub,
+	isChainIdHydration,
+} from "../registry/chains/chains";
+import type { Chain, ChainAssetHub } from "../registry/chains/types";
 import { getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId } from "../registry/tokens/types";
 import type { XcmV5Multilocation } from "../registry/types/xcm";
@@ -34,19 +34,31 @@ const toInterior = (junctions: XcmV5Junction[]): XcmV5Junctions | undefined => {
 	return { type: `X${junctions.length}`, value: junctions } as XcmV5Junctions;
 };
 
-const getHydrationLocation = (token: Token) => {
-	if (token.type === "native") return HDX_LOCAL_LOCATION;
-	if (token.type === "hydration-asset") return token.location;
-	return undefined;
+const RELAY_TOKEN_LOCATION: XcmV5Multilocation = {
+	parents: 1,
+	interior: { type: "Here", value: undefined },
+};
+
+const getLocalLocation = (token: Token): XcmV5Multilocation | undefined => {
+	switch (token.type) {
+		case "native":
+			return isChainIdHydration(token.chainId)
+				? HDX_LOCAL_LOCATION
+				: RELAY_TOKEN_LOCATION;
+		case "hydration-asset":
+			return token.location;
+		default:
+			return undefined;
+	}
 };
 
 const toSiblingLocation = (
 	location: XcmV5Multilocation,
-	hydration: Chain<ChainIdHydration>,
+	paraId: number,
 ): XcmV5Multilocation | undefined => {
 	if (location.parents > 0) return location;
 	const interior = toInterior([
-		{ type: "Parachain", value: hydration.paraId },
+		{ type: "Parachain", value: paraId },
 		...getJunctions(location.interior),
 	]);
 	return interior && { parents: 1, interior };
@@ -82,16 +94,21 @@ const getAssetHubTokenId = (
 export const getAssetHubMirrorTokenIds = (
 	tokens: Record<TokenId, Token>,
 	assetHub: ChainAssetHub,
-	hydration: Chain<ChainIdHydration>,
+	chains: Chain[],
 ): ReadonlyMap<TokenId, TokenId> => {
 	const mirrorTokenIds = new Map<TokenId, TokenId>();
+	const paraIds = new Map(
+		chains
+			.filter((chain) => !isChainIdAssetHub(chain.id))
+			.map((chain) => [chain.id, chain.paraId]),
+	);
 
 	for (const token of Object.values(tokens)) {
-		if (token.chainId !== hydration.id) continue;
+		const paraId = paraIds.get(token.chainId);
+		if (paraId === undefined) continue;
 
-		const localLocation = getHydrationLocation(token);
-		const location =
-			localLocation && toSiblingLocation(localLocation, hydration);
+		const localLocation = getLocalLocation(token);
+		const location = localLocation && toSiblingLocation(localLocation, paraId);
 		if (!location) continue;
 
 		const mirrorTokenId = getAssetHubTokenId(location, assetHub);

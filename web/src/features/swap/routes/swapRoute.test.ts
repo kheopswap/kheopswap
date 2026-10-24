@@ -1,11 +1,6 @@
 import { pick } from "lodash-es";
 import { describe, expect, it } from "vitest";
-import {
-	getChainById,
-	getChains,
-	isChainIdHydration,
-} from "../../../registry/chains/chains";
-import type { Chain, ChainIdHydration } from "../../../registry/chains/types";
+import { getChainById, getChains } from "../../../registry/chains/chains";
 import { KNOWN_TOKENS_MAP } from "../../../registry/tokens/tokens";
 import type { TokenId } from "../../../registry/tokens/types";
 import { getAssetHubMirrorTokenIds } from "../../../utils/getAssetHubMirrorTokenId";
@@ -20,15 +15,14 @@ import {
 	type SwapTokensChange,
 } from "./swapRoute";
 
-const hydration = getChains().find((chain): chain is Chain<ChainIdHydration> =>
-	isChainIdHydration(chain.id),
+const polkadotChains = getChains().filter(
+	(chain) => chain.relay === "polkadot",
 );
-if (!hydration) throw new Error("Hydration chain not found");
 
 const mirrors = getAssetHubMirrorTokenIds(
 	KNOWN_TOKENS_MAP,
 	getChainById("pah"),
-	hydration,
+	polkadotChains,
 );
 
 const DOT = "native::pah";

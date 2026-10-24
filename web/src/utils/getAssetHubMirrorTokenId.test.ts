@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-	getChainById,
-	getChains,
-	isChainIdHydration,
-} from "../registry/chains/chains";
-import type { Chain, ChainIdHydration } from "../registry/chains/types";
+import { getChainById, getChains } from "../registry/chains/chains";
 import { getTokenId } from "../registry/tokens/helpers";
 import { KNOWN_TOKENS_MAP } from "../registry/tokens/tokens";
 import type {
@@ -16,10 +11,9 @@ import type { XcmV5Multilocation } from "../registry/types/xcm";
 import { getAssetHubMirrorTokenIds } from "./getAssetHubMirrorTokenId";
 
 const assetHub = getChainById("pah");
-const hydration = getChains().find((chain): chain is Chain<ChainIdHydration> =>
-	isChainIdHydration(chain.id),
+const polkadotChains = getChains().filter(
+	(chain) => chain.relay === "polkadot",
 );
-if (!hydration) throw new Error("Hydration chain not found");
 
 const getPahForeignAssetId = (symbol: string) => {
 	const token = Object.values(KNOWN_TOKENS_MAP).find(
@@ -33,7 +27,7 @@ const getPahForeignAssetId = (symbol: string) => {
 const mirrorTokenIds = getAssetHubMirrorTokenIds(
 	KNOWN_TOKENS_MAP,
 	assetHub,
-	hydration,
+	polkadotChains,
 );
 
 describe("getAssetHubMirrorTokenIds", () => {
@@ -89,7 +83,7 @@ describe("getAssetHubMirrorTokenIds", () => {
 			interior: {
 				type: "X3",
 				value: [
-					{ type: "Parachain", value: hydration.paraId },
+					{ type: "Parachain", value: getChainById("hydration").paraId },
 					{ type: "PalletInstance", value: 99 },
 					{ type: "GeneralIndex", value: 7n },
 				],
@@ -133,7 +127,7 @@ describe("getAssetHubMirrorTokenIds", () => {
 			getAssetHubMirrorTokenIds(
 				{ [foreignAsset.id]: foreignAsset, [token.id]: token },
 				assetHub,
-				hydration,
+				polkadotChains,
 			).get(token.id);
 
 		it("re-anchors to the hydration parachain", () => {
