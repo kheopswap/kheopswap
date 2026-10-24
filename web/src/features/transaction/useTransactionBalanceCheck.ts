@@ -28,7 +28,8 @@ export const getInsufficientBalances = ({
 	const tokenIds = uniq([...Object.keys(callSpendings), fee.tokenId]);
 
 	for (const tokenId of tokenIds) {
-		const balance = balances[tokenId] ?? 0n;
+		const balance = balances[tokenId];
+		if (balance === undefined) continue;
 		const ed = existentialDeposits[tokenId] ?? 0n;
 		const feePlancks = tokenId === fee.tokenId ? fee.plancks : 0n;
 		const spendings = callSpendings[tokenId]?.plancks ?? 0n;
