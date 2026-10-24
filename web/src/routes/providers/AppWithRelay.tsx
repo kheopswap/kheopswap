@@ -14,6 +14,7 @@ const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
 		<NotFoundPage
 			title="Network not found"
 			backTo={{ to: "/polkadot/swap", label: "Go to Polkadot" }}
+			minimalHeader
 		>
 			{relayId} is not a supported network.
 		</NotFoundPage>

@@ -41,7 +41,7 @@ const MainNav: FC = () => {
 	);
 };
 
-export const Header: FC = () => (
+export const Header: FC<{ minimal?: boolean }> = ({ minimal }) => (
 	<header className="sticky top-0 z-10 border-b border-line bg-chrome backdrop-blur-md">
 		<div className="mx-auto flex max-w-[1100px] flex-wrap items-center gap-x-2 gap-y-2.5 px-3 pt-2.5 sm:gap-x-7 sm:h-16 sm:flex-nowrap sm:px-6 sm:pt-0">
 			<div className="flex items-center gap-1.5 font-display text-[13px] uppercase tracking-[0.14em] text-text text-shadow-brand sm:gap-2.5">
@@ -53,11 +53,11 @@ export const Header: FC = () => (
 				/>
 				Kheopswap
 			</div>
-			<MainNav />
+			{!minimal && <MainNav />}
 			<div className="ml-auto flex items-center gap-1.5 sm:gap-2">
 				<ColorModeToggle />
-				<RelaySelect />
-				<ConnectButton />
+				{!minimal && <RelaySelect />}
+				{!minimal && <ConnectButton />}
 			</div>
 		</div>
 	</header>

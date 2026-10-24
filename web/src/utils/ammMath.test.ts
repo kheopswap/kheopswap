@@ -257,6 +257,18 @@ describe("getMaxSwapAmount", () => {
 		).toBe(balance);
 	});
 
+	it("offers nothing when the reserve exceeds the balance", () => {
+		expect(
+			getMaxSwapAmount({
+				balance: ed,
+				tokenIn: DOT,
+				existentialDeposit: ed,
+				fee: { tokenId: DOT.id, plancks: 100_000_000n },
+				deliveryFee: undefined,
+			}),
+		).toBe(0n);
+	});
+
 	it("keeps only the ED of a native token when another token pays the fee", () => {
 		expect(
 			getMaxSwapAmount({
@@ -267,18 +279,6 @@ describe("getMaxSwapAmount", () => {
 				deliveryFee: undefined,
 			}),
 		).toBe(balance - ed);
-	});
-
-	it("returns the full balance when the reserve exceeds it", () => {
-		expect(
-			getMaxSwapAmount({
-				balance: 100n,
-				tokenIn: DOT,
-				existentialDeposit: 500n,
-				fee: { tokenId: DOT.id, plancks: 1000n },
-				deliveryFee: undefined,
-			}),
-		).toBe(100n);
 	});
 
 	it("returns zero when the balance exactly equals the reserve", () => {

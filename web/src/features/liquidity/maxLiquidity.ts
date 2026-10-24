@@ -19,7 +19,7 @@ export const getSpendingMargin = ({
 };
 
 export const getSpendableBalance = (balance: bigint, margin: bigint) =>
-	balance < margin ? balance : balance - margin;
+	balance < margin ? 0n : balance - margin;
 
 export const getMaxLiquidity = ({
 	balances,

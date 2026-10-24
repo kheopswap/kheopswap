@@ -11,6 +11,8 @@ type NotFoundProps = {
 	backTo: { to: string; label: string };
 };
 
+type NotFoundPageProps = NotFoundProps & { minimalHeader?: boolean };
+
 export const NotFound: FC<NotFoundProps> = ({ title, children, backTo }) => (
 	<PageContent>
 		<div className="flex flex-col items-center gap-4 py-6 text-center">
@@ -23,8 +25,11 @@ export const NotFound: FC<NotFoundProps> = ({ title, children, backTo }) => (
 	</PageContent>
 );
 
-export const NotFoundPage: FC<NotFoundProps> = (props) => (
-	<Layout>
+export const NotFoundPage: FC<NotFoundPageProps> = ({
+	minimalHeader,
+	...props
+}) => (
+	<Layout minimalHeader={minimalHeader}>
 		<NotFound {...props} />
 		<TabTitle title={props.title} />
 	</Layout>

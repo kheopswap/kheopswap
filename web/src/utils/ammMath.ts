@@ -79,5 +79,5 @@ export const getMaxSwapAmount = ({
 		(paysFee ? 2n * fee.plancks : 0n) +
 		(paysFee || tokenIn.type === "native" ? existentialDeposit : 0n) +
 		(deliveryFee?.tokenId === tokenIn.id ? deliveryFee.plancks : 0n);
-	return reserved <= balance ? balance - reserved : balance;
+	return reserved <= balance ? balance - reserved : 0n;
 };

@@ -3,7 +3,10 @@ import type { FC, ReactNode } from "react";
 import { Footer } from "./Footer";
 import { Header } from "./Header/Header";
 
-export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
+export const Layout: FC<{ children?: ReactNode; minimalHeader?: boolean }> = ({
+	children,
+	minimalHeader,
+}) => {
 	return (
 		<div className="flex min-h-dvh flex-col">
 			<a
@@ -12,7 +15,7 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
 			>
 				Skip to main content
 			</a>
-			<Header />
+			<Header minimal={minimalHeader} />
 			<main
 				id="main-content"
 				tabIndex={-1}

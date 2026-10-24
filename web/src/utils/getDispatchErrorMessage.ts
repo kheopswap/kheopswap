@@ -10,7 +10,7 @@ const ERRORS_TRANSACTIONAL = {
 };
 
 const ERRORS_TOKEN = {
-	FundsUnavailable: "Not enough funds are available",
+	FundsUnavailable: "Insufficient balance",
 	OnlyProvider:
 		"This would empty the account while other assets still depend on it",
 	BelowMinimum:
@@ -20,8 +20,7 @@ const ERRORS_TOKEN = {
 	Frozen: "These funds are frozen",
 	Unsupported: "This token does not support the operation",
 	CannotCreateHold: "The account cannot hold this amount",
-	NotExpendable:
-		"This would leave the account below its minimum balance, which is not allowed for this call",
+	NotExpendable: "Insufficient balance to keep account alive",
 	Blocked: "The recipient account cannot receive this token",
 };
 
