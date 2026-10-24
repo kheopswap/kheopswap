@@ -131,16 +131,17 @@ const useTransactionProvider = ({
 		isLoadingDryRun ||
 		submitGate.status === "pending";
 
+	const { insufficientBalances } = balanceCheck;
+	const hasInsufficientBalance = Object.keys(insufficientBalances).length > 0;
+
 	// dry_run_call never charges the transaction fee, which Hydration takes in the account's currency
 	const isDryRunConclusive =
 		isChainIdAssetHub(chainId) &&
 		!fees.options?.asset &&
-		dryRun?.success === true;
+		dryRun?.success === true &&
+		!(fees.feeToken && insufficientBalances[fees.feeToken.id]);
 	const isRejectedByDryRun =
 		dryRun?.success === true && !dryRun.value.execution_result.success;
-
-	const { insufficientBalances } = balanceCheck;
-	const hasInsufficientBalance = Object.keys(insufficientBalances).length > 0;
 
 	const canSubmit = useMemo(() => {
 		if (submitGate.status !== "open") return false;
@@ -172,6 +173,7 @@ const useTransactionProvider = ({
 	]);
 
 	return {
+		call,
 		chainId,
 		account: ethereum.account,
 		isEthereumNetworkMismatch: ethereum.isEthereumNetworkMismatch,

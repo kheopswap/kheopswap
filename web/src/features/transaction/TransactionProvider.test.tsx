@@ -11,7 +11,10 @@ import type {
 	TransactionRecord,
 	TransactionStatus,
 } from "../../state/transactions/types";
-import { TransactionDryRunSummaryValue } from "./TransactionDryRunValue";
+import {
+	getSimulationVerdict,
+	TransactionDryRunSummaryValue,
+} from "./TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "./TransactionFeeSummaryValue";
 import {
 	getTokenSpending,
@@ -121,10 +124,14 @@ vi.mock("./useTransactionSubmit", () => ({
 }));
 
 const getWrapper =
-	(submitGate?: SubmitGate, chainId: ChainId = "pah"): FC<PropsWithChildren> =>
+	(
+		submitGate?: SubmitGate,
+		chainId: ChainId = "pah",
+		call: object | null = {},
+	): FC<PropsWithChildren> =>
 	({ children }) => (
 		<TransactionProvider
-			call={{} as never}
+			call={call as never}
 			fakeCall={null}
 			signer="signer"
 			chainId={chainId}
@@ -381,8 +388,8 @@ describe("getTokenSpending", () => {
 });
 
 describe("TransactionDryRunSummaryValue", () => {
-	const renderDryRun = (chainId: ChainId = "pah") => {
-		const Wrapper = getWrapper(undefined, chainId);
+	const renderDryRun = (chainId: ChainId = "pah", call: object | null = {}) => {
+		const Wrapper = getWrapper(undefined, chainId, call);
 		render(
 			<Wrapper>
 				<TransactionDryRunSummaryValue />
@@ -390,9 +397,31 @@ describe("TransactionDryRunSummaryValue", () => {
 		);
 	};
 
-	it("reads Success when the dry run also covers the fee", () => {
+	it("reads Success when the Asset Hub dry run succeeds with a native fee the account can pay", () => {
 		renderDryRun();
 		expect(screen.getByText("Success")).toBeInTheDocument();
+	});
+
+	it("reads Succeeds before fees, muted, when the native fee check fails despite a successful dry run", () => {
+		balanceCheck.insufficientBalances = {
+			"native::pah": "Insufficient balance to keep account alive",
+		};
+		renderDryRun();
+		expect(screen.queryByText("Success")).toBeNull();
+		expect(screen.getByText("Succeeds before fees").parentElement).toHaveClass(
+			"text-muted",
+		);
+	});
+
+	it("reads Failed when the dry run rejects the call", () => {
+		dryRun.data = failedDryRun;
+		renderDryRun();
+		expect(screen.getByText("Failed").parentElement).toHaveClass("text-warn");
+	});
+
+	it("shows a muted placeholder when there is no call to simulate", () => {
+		renderDryRun("pah", null);
+		expect(screen.getByText("Nothing to simulate")).toHaveClass("text-muted");
 	});
 
 	it("reads Succeeds before fees, muted, when the fee is paid in an asset", () => {
@@ -407,5 +436,42 @@ describe("TransactionDryRunSummaryValue", () => {
 	it("reads Succeeds before fees on Hydration, which charges the fee in the account's currency", () => {
 		renderDryRun("hydration");
 		expect(screen.getByText("Succeeds before fees")).toBeInTheDocument();
+	});
+});
+
+describe("getSimulationVerdict on a failed dry run", () => {
+	const failed = failedDryRun as never;
+
+	it("explains a failure with the shortfall the amount field already reports", () => {
+		expect(
+			getSimulationVerdict({
+				dryRun: failed,
+				isDryRunConclusive: false,
+				dryRunErrorMessage: "Insufficient balance to keep account alive",
+				insufficientBalances: { "native::pah": "Insufficient balance" },
+			}).detail,
+		).toBe("Insufficient balance");
+	});
+
+	it("explains a failure with the chain's reason when the balances suffice", () => {
+		expect(
+			getSimulationVerdict({
+				dryRun: failed,
+				isDryRunConclusive: false,
+				dryRunErrorMessage: "Insufficient balance to keep account alive",
+				insufficientBalances: {},
+			}).detail,
+		).toBe("Insufficient balance to keep account alive");
+	});
+
+	it("falls back to the raw dispatch error without a resolved message", () => {
+		expect(
+			getSimulationVerdict({
+				dryRun: failed,
+				isDryRunConclusive: false,
+				dryRunErrorMessage: null,
+				insufficientBalances: {},
+			}).detail,
+		).toBe("Token");
 	});
 });

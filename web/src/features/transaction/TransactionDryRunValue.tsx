@@ -1,29 +1,82 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { useMemo } from "react";
 import { Shimmer } from "../../components/Shimmer";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "../../components/tooltip/Tooltip";
+import type { DryRun } from "../../hooks/useDryRun";
 import { useDryRunError } from "../../hooks/useDryRunError";
+import type { ChainId } from "../../registry/chains/types";
 import { cn } from "../../utils/cn";
 import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransaction } from "./TransactionProvider";
 
+export type SimulationVerdict = {
+	label: "Success" | "Succeeds before fees" | "Failed";
+	tone: "success" | "muted" | "warn";
+	detail: string | null;
+	note: string;
+};
+
+const DRY_RUN_CAVEAT =
+	"Dry runs aren't always reliable as they are unaware of details that are only provided in signatures, such as which asset to use to pay for fees.";
+const FEE_NOT_CHARGED =
+	"The simulation runs the call without charging its fee, so it cannot tell whether the fee can be paid. The amount field and the fee row flag a fee shortfall.";
+
+export const getSimulationVerdict = ({
+	dryRun,
+	isDryRunConclusive,
+	dryRunErrorMessage,
+	insufficientBalances,
+}: {
+	dryRun: Extract<DryRun<ChainId>, { success: true }>;
+	isDryRunConclusive: boolean;
+	dryRunErrorMessage: string | null | undefined;
+	insufficientBalances: Record<string, string>;
+}): SimulationVerdict => {
+	const { execution_result } = dryRun.value;
+	if (execution_result.success)
+		return isDryRunConclusive
+			? {
+					label: "Success",
+					tone: "success",
+					detail: null,
+					note: DRY_RUN_CAVEAT,
+				}
+			: {
+					label: "Succeeds before fees",
+					tone: "muted",
+					detail: null,
+					note: FEE_NOT_CHARGED,
+				};
+
+	const [inputShortfall] = Object.values(insufficientBalances);
+	return {
+		label: "Failed",
+		tone: "warn",
+		detail:
+			inputShortfall ??
+			dryRunErrorMessage ??
+			formatTxError(execution_result.value.error),
+		note: DRY_RUN_CAVEAT,
+	};
+};
+
 export const TransactionDryRunSummaryValue = () => {
-	const { chainId, dryRun, errorDryRun, isLoadingDryRun, isDryRunConclusive } =
-		useTransaction();
+	const {
+		call,
+		chainId,
+		dryRun,
+		errorDryRun,
+		isLoadingDryRun,
+		isDryRunConclusive,
+		insufficientBalances,
+	} = useTransaction();
 
-	const { data: errorMessage } = useDryRunError({ chainId, dryRun });
+	const { data: dryRunErrorMessage } = useDryRunError({ chainId, dryRun });
 
-	const formattedError = useMemo(() => {
-		if (errorMessage) return errorMessage;
-
-		if (!dryRun?.success || dryRun.value.execution_result.success) return null;
-
-		return formatTxError(dryRun.value.execution_result.value.error);
-	}, [dryRun, errorMessage]);
+	if (!call) return <span className="text-muted">Nothing to simulate</span>;
 
 	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 
@@ -32,7 +85,12 @@ export const TransactionDryRunSummaryValue = () => {
 
 	if (!dryRun) return null;
 
-	const isSuccess = dryRun.value.execution_result.success;
+	const verdict = getSimulationVerdict({
+		dryRun,
+		isDryRunConclusive,
+		dryRunErrorMessage,
+		insufficientBalances,
+	});
 
 	return (
 		<Tooltip placement="bottom-end">
@@ -40,30 +98,20 @@ export const TransactionDryRunSummaryValue = () => {
 				<div
 					className={cn(
 						"flex gap-1 items-center",
-						!isSuccess && "text-warn",
-						isSuccess && !isDryRunConclusive && "text-muted",
+						verdict.tone === "warn" && "text-warn",
+						verdict.tone === "muted" && "text-muted",
 					)}
 				>
-					<span>
-						{!isSuccess
-							? "Failed"
-							: isDryRunConclusive
-								? "Success"
-								: "Succeeds before fees"}
-					</span>
+					<span>{verdict.label}</span>
 					<InformationCircleIcon className="size-5 inline align-text-bottom" />
 				</div>
 			</TooltipTrigger>
 			<TooltipContent>
 				<div className="max-w-72">
-					{formattedError && (
-						<div className="mb-2 text-error">{formattedError}</div>
+					{verdict.detail && (
+						<div className="mb-2 text-error">{verdict.detail}</div>
 					)}
-					<p>
-						{isSuccess && !isDryRunConclusive
-							? "The simulation runs the call without charging its fee, so it cannot tell whether the fee can be paid. The balance check below the fee covers that."
-							: "Dry runs aren't always reliable as they are unaware of details that are only provided in signatures, such as which asset to use to pay for fees."}
-					</p>
+					<p>{verdict.note}</p>
 				</div>
 			</TooltipContent>
 		</Tooltip>
