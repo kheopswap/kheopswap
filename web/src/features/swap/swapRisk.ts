@@ -1,3 +1,4 @@
+import type { Token, TokenAmount } from "../../registry/tokens/types";
 import type { SubmitGate } from "../transaction/TransactionProvider";
 
 export type SwapLoss = {
@@ -130,6 +131,41 @@ export const isAcknowledgementStale = (
 
 export const isTransferRisk = (risk: SwapRisk) =>
 	risk.level !== "none" && risk.headline.kind === "fees";
+
+export const getTransferFees = ({
+	tokenIn,
+	tokenOut,
+	totalIn,
+	received,
+	deliveryFee,
+}: {
+	tokenIn: Pick<Token, "id" | "decimals"> | null | undefined;
+	tokenOut: Pick<Token, "decimals"> | null | undefined;
+	totalIn: bigint | null | undefined;
+	received: bigint | null | undefined;
+	deliveryFee: TokenAmount | undefined;
+}): TokenAmount[] | undefined => {
+	if (
+		!tokenIn ||
+		!tokenOut ||
+		!totalIn ||
+		received === null ||
+		received === undefined ||
+		received > totalIn ||
+		tokenIn.decimals !== tokenOut.decimals
+	)
+		return undefined;
+	const isPaidInTokenIn = deliveryFee?.tokenId === tokenIn.id;
+	const fees: TokenAmount[] = [
+		{
+			tokenId: tokenIn.id,
+			plancks:
+				totalIn - received + (isPaidInTokenIn ? deliveryFee.plancks : 0n),
+		},
+		...(deliveryFee && !isPaidInTokenIn ? [deliveryFee] : []),
+	];
+	return fees.filter(({ plancks }) => plancks > 0n);
+};
 
 export const getRiskSubmitGate = (
 	gate: SubmitGate,

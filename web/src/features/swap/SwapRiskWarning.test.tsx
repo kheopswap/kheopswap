@@ -12,6 +12,8 @@ const swap = vi.hoisted(() => ({
 	destination: "hydration",
 	deliveryFee: undefined as Amount | undefined,
 	destinationFee: undefined as Amount | undefined,
+	totalIn: undefined as bigint | undefined,
+	received: undefined as bigint | undefined,
 }));
 
 vi.mock("./SwapProvider", () => ({
@@ -19,6 +21,11 @@ vi.mock("./SwapProvider", () => ({
 		risk: swap.risk,
 		isRiskAcknowledged: false,
 		onRiskAcknowledgeChange: () => {},
+		tokenIn: KNOWN_TOKENS_MAP["native::pah"],
+		tokenOut: KNOWN_TOKENS_MAP["native::pah"],
+		totalIn: swap.totalIn,
+		swapPlancksOut: swap.received,
+		deliveryFee: swap.deliveryFee,
 		details: {
 			kind: swap.kind,
 			route: { destination: swap.destination },
@@ -38,8 +45,10 @@ vi.mock("../../hooks/useToken", () => ({
 afterEach(cleanup);
 
 describe("SwapRiskWarning", () => {
-	it("says how much of a transfer the fees take, naming the delivery fee that makes most of it", () => {
+	it("says what a transfer pays in fees and what it delivers, naming the delivery fee that makes most of it", () => {
 		swap.deliveryFee = { tokenId: "native::pah", plancks: 305_000_000n };
+		swap.totalIn = 1_000_000_000n;
+		swap.received = 995_000_000n;
 		swap.risk = {
 			level: "confirm",
 			losses: [{ kind: "fees", ratio: 0.2375 }],
@@ -49,7 +58,7 @@ describe("SwapRiskWarning", () => {
 		render(<SwapRiskWarning />);
 
 		expect(screen.getByRole("alert").textContent).toContain(
-			"Fees take 23.75% of what you send, mostly the 0.0305 DOT delivery fee.",
+			"You pay 0.031 DOT in fees to deliver 0.0995 DOT, mostly the 0.0305 DOT delivery fee.",
 		);
 		expect(
 			screen.getByLabelText("I accept these fees and want to transfer anyway"),

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	getRiskSubmitGate,
 	getSwapRisk,
+	getTransferFees,
 	getValueLoss,
 	isRiskAcknowledged,
 	type ValueLoss,
@@ -270,5 +271,69 @@ describe("getRiskSubmitGate", () => {
 				{ risk: SEVERE_SWAP, isAssessing: true, isAcknowledged: true },
 			),
 		).toEqual({ status: "pending" });
+	});
+});
+
+describe("getTransferFees", () => {
+	const DOT = { id: "native::pah", decimals: 10 } as const;
+	const HYDRATION_DOT = {
+		id: "hydration-asset::hydration::5",
+		decimals: 10,
+	} as const;
+	const USDC = { id: "asset::pah::1337", decimals: 6 } as const;
+	const HYDRATION_USDC = {
+		id: "hydration-asset::hydration::22",
+		decimals: 6,
+	} as const;
+
+	it("adds a delivery fee paid in the sent token to what does not arrive", () => {
+		expect(
+			getTransferFees({
+				tokenIn: DOT,
+				tokenOut: HYDRATION_DOT,
+				totalIn: 1_000_000_000n,
+				received: 995_000_000n,
+				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
+			}),
+		).toEqual([{ tokenId: DOT.id, plancks: 310_000_000n }]);
+	});
+
+	it("lists a delivery fee paid in another token on its own", () => {
+		expect(
+			getTransferFees({
+				tokenIn: USDC,
+				tokenOut: HYDRATION_USDC,
+				totalIn: 1_000_000n,
+				received: 980_000n,
+				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
+			}),
+		).toEqual([
+			{ tokenId: USDC.id, plancks: 20_000n },
+			{ tokenId: DOT.id, plancks: 305_000_000n },
+		]);
+	});
+
+	it("leaves out a fee that is zero", () => {
+		expect(
+			getTransferFees({
+				tokenIn: HYDRATION_DOT,
+				tokenOut: DOT,
+				totalIn: 100_000_000n,
+				received: 83_000_000n,
+				deliveryFee: { tokenId: HYDRATION_DOT.id, plancks: 0n },
+			}),
+		).toEqual([{ tokenId: HYDRATION_DOT.id, plancks: 17_000_000n }]);
+	});
+
+	it("is unknown when the tokens do not share decimals", () => {
+		expect(
+			getTransferFees({
+				tokenIn: DOT,
+				tokenOut: USDC,
+				totalIn: 1_000_000_000n,
+				received: 995_000n,
+				deliveryFee: undefined,
+			}),
+		).toBeUndefined();
 	});
 });

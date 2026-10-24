@@ -1,11 +1,16 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import type { FC } from "react";
+import { type FC, Fragment } from "react";
 import { getChainById } from "../../registry/chains/chains";
 import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
 import { TokenAmountValue } from "./routes/AmmPathValues";
 import { useSwap } from "./SwapProvider";
-import { isTransferRisk, type LossCause, type SwapLoss } from "./swapRisk";
+import {
+	getTransferFees,
+	isTransferRisk,
+	type LossCause,
+	type SwapLoss,
+} from "./swapRisk";
 
 const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	const { details } = useSwap();
@@ -32,6 +37,41 @@ const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	}
 };
 
+const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
+	ratio,
+	cause,
+}) => {
+	const { tokenIn, tokenOut, totalIn, swapPlancksOut, deliveryFee } = useSwap();
+	const fees = getTransferFees({
+		tokenIn,
+		tokenOut,
+		totalIn,
+		received: swapPlancksOut,
+		deliveryFee,
+	});
+	if (!fees?.length || !tokenOut || !swapPlancksOut)
+		return (
+			<>
+				Fees take {formatPercent(ratio)} of what you send
+				<LossCauseText cause={cause} />.
+			</>
+		);
+	return (
+		<>
+			You pay{" "}
+			{fees.map((fee, index) => (
+				<Fragment key={fee.tokenId}>
+					{index > 0 && " + "}
+					<TokenAmountValue {...fee} />
+				</Fragment>
+			))}{" "}
+			in fees to deliver{" "}
+			<TokenAmountValue tokenId={tokenOut.id} plancks={swapPlancksOut} />
+			<LossCauseText cause={cause} />.
+		</>
+	);
+};
+
 const LossText: FC<{ loss: SwapLoss; cause: LossCause | null }> = ({
 	loss: { kind, ratio },
 	cause,
@@ -47,12 +87,7 @@ const LossText: FC<{ loss: SwapLoss; cause: LossCause | null }> = ({
 				</>
 			);
 		case "fees":
-			return (
-				<>
-					Fees take {formatPercent(ratio)} of what you send
-					<LossCauseText cause={cause} />.
-				</>
-			);
+			return <TransferFeesText ratio={ratio} cause={cause} />;
 	}
 };
 
