@@ -4,6 +4,7 @@ import {
 	distinctUntilChanged,
 	map,
 	Observable,
+	of,
 	shareReplay,
 } from "rxjs";
 import type { ChainId } from "../../registry/chains/types";
@@ -59,9 +60,13 @@ export const getTokensByChains$ = (
 		),
 	);
 
+const MISSING_TOKEN: TokenState = { status: "loaded", token: undefined };
+
 export const getTokenById$ = (tokenId: TokenId) =>
-	getCachedObservable$("getTokenById$", tokenId, () =>
-		getTokensByChain$(getChainIdFromTokenId(tokenId)).pipe(
+	getCachedObservable$("getTokenById$", tokenId, () => {
+		const chainId = getChainIdFromTokenId(tokenId);
+		if (!chainId) return of(MISSING_TOKEN);
+		return getTokensByChain$(chainId).pipe(
 			map(
 				({ status, tokens }): TokenState => ({
 					status,
@@ -70,8 +75,8 @@ export const getTokenById$ = (tokenId: TokenId) =>
 			),
 			distinctUntilChanged<TokenState>(isEqual),
 			shareReplay(1),
-		),
-	);
+		);
+	});
 
 /** @knipignore */
 export const getTokensById$ = (

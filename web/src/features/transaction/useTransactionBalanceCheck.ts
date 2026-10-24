@@ -99,7 +99,10 @@ export const useTransactionBalanceCheck = ({
 	>(
 		() =>
 			Object.fromEntries(
-				balances.map(({ tokenId, balance }) => [tokenId, balance]),
+				balances.map(({ tokenId, balance, isLoading }) => [
+					tokenId,
+					isLoading ? undefined : balance,
+				]),
 			),
 		[balances],
 	);

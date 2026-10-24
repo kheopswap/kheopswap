@@ -1,10 +1,4 @@
-import {
-	BehaviorSubject,
-	firstValueFrom,
-	map,
-	Subject,
-	throwError,
-} from "rxjs";
+import { BehaviorSubject, firstValueFrom, Subject, throwError } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FollowUpTxEvent } from "../../components/FollowUpModal";
 import { dotFromPeople } from "../../features/swap/routes/xcm/xcmFromPeople.fixtures";
@@ -37,11 +31,19 @@ import {
 	type XcmArrival,
 } from "./xcmArrival";
 
+type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
+type BlockUpdate = {
+	block: { number: number; hash: string };
+	value: BlockRecords;
+};
+
 const chains = vi.hoisted(() => ({
 	streams: {} as Record<
 		string,
 		(at: "best" | "finalized") => import("rxjs").Observable<unknown>
 	>,
+	pastBlocks: {} as Record<number, BlockRecords>,
+	pastReads: [] as { number: number; tipHash: string }[],
 }));
 
 vi.mock("../../papi/getApi", async () => {
@@ -54,6 +56,14 @@ vi.mock("../../papi/getApi", async () => {
 						Events: {
 							watchValue: ({ at }: { at: "best" | "finalized" }) =>
 								chains.streams[chainId]?.(at),
+							getValue: async ({ at }: { at: string }) =>
+								chains.pastBlocks[Number(at.replace("0xhash", ""))],
+						},
+						BlockHash: {
+							getValue: async (number: number, { at }: { at: string }) => {
+								chains.pastReads.push({ number, tipHash: at });
+								return `0xhash${number}`;
+							},
 						},
 					},
 				},
@@ -488,6 +498,59 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(true);
 	});
 
+	it("keeps waiting when a failed best-block inclusion may still be retracted", () => {
+		const { record$, finalizedBlockEvents$, arrivals, isComplete } = track(
+			getRecord("pending"),
+		);
+		record$.next(
+			getRecord(
+				"failed",
+				[],
+				[
+					{
+						type: "inBestBlock",
+						ok: false,
+						events: [],
+					} as unknown as FollowUpTxEvent,
+				],
+			),
+		);
+		expect(arrivals).toEqual([{ status: "awaiting-origin" }]);
+		expect(isComplete()).toBe(false);
+
+		record$.next(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
+		finalizedBlockEvents$.next(ourArrival);
+		expect(arrivals.at(-1)).toMatchObject({
+			status: "arrived",
+			finalized: true,
+		});
+	});
+
+	it("stops when the origin transaction fails in a finalized block", () => {
+		const { record$, arrivals, isComplete } = track(getRecord("pending"));
+		record$.next(
+			getRecord(
+				"failed",
+				[],
+				[
+					{
+						type: "inBestBlock",
+						ok: false,
+						events: [],
+					} as unknown as FollowUpTxEvent,
+					{
+						type: "finalized",
+						ok: false,
+						events: [],
+					} as unknown as FollowUpTxEvent,
+				],
+			),
+		);
+
+		expect(arrivals.at(-1)).toEqual({ status: "origin-failed" });
+		expect(isComplete()).toBe(true);
+	});
+
 	it("stops when the origin transaction fails", () => {
 		const { record$, arrivals, isComplete } = track(getRecord("pending"));
 		record$.next(getRecord("failed"));
@@ -560,29 +623,61 @@ describe("trackXcmArrivals", () => {
 			},
 		}) as unknown as TransactionRecord;
 
-	const inPhase = (events: TxEvents) =>
+	const inPhase = (events: TxEvents): BlockRecords =>
 		events.map((event) => ({ phase: { type: "Finalization" }, event }));
+
+	const atBlock = (number: number, events: TxEvents): BlockUpdate => ({
+		block: { number, hash: `0xtip${number}` },
+		value: inPhase(events),
+	});
 
 	afterEach(async () => {
 		for (const tx of await firstValueFrom(transactions$))
 			dismissTransaction(tx.id);
 		chains.streams = {};
+		chains.pastBlocks = {};
+		chains.pastReads = [];
 		vi.useRealTimers();
+	});
+
+	it("reads back the finalized blocks that watchValue skipped", async () => {
+		const finalized$ = new Subject<BlockUpdate>();
+		chains.streams = {
+			hydration: (at) => (at === "finalized" ? finalized$ : new Subject()),
+		};
+		chains.pastBlocks = { 11: inPhase([]), 12: inPhase(ourArrival) };
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		finalized$.next(atBlock(10, []));
+		finalized$.next(atBlock(13, []));
+		await vi.waitFor(() =>
+			expect(getTrackedXcmArrival("to-hydration")?.status).toBe("arrived"),
+		);
+
+		expect(chains.pastReads).toEqual([
+			{ number: 11, tipHash: "0xtip13" },
+			{ number: 12, tipHash: "0xtip13" },
+		]);
+		expect(getTrackedXcmArrival("to-hydration")).toMatchObject({
+			received: 9995190152n,
+			finalized: true,
+		});
+		subscription.unsubscribe();
 	});
 
 	it("keeps tracking a transfer to Asset Hub while Hydration keeps failing", () => {
 		vi.useFakeTimers();
-		const assetHub$ = new Subject<ReturnType<typeof inPhase>>();
+		const assetHub$ = new Subject<BlockUpdate>();
 		chains.streams = {
 			hydration: () => throwError(() => new Error("hydration rpc down")),
-			pah: () => assetHub$.pipe(map((value) => ({ value }))),
+			pah: () => assetHub$,
 		};
 		const subscription = trackXcmArrivals();
 		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
 		addTransaction(getTrackedRecord("to-asset-hub", "native::pah"));
 		vi.advanceTimersByTime(60_000);
 		assetHub$.next(
-			inPhase([
+			atBlock(1, [
 				{
 					type: "Balances",
 					value: { type: "Deposit", value: { who: BENEFICIARY, amount: 7n } },
@@ -607,17 +702,17 @@ describe("trackXcmArrivals", () => {
 	it("retries a destination stream that fails once", () => {
 		vi.useFakeTimers();
 		let attempts = 0;
-		const hydration$ = new Subject<ReturnType<typeof inPhase>>();
+		const hydration$ = new Subject<BlockUpdate>();
 		chains.streams = {
 			hydration: () =>
 				++attempts === 1
 					? throwError(() => new Error("transient"))
-					: hydration$.pipe(map((value) => ({ value }))),
+					: hydration$,
 		};
 		const subscription = trackXcmArrivals();
 		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
 		vi.advanceTimersByTime(10_000);
-		hydration$.next(inPhase(ourArrival));
+		hydration$.next(atBlock(1, ourArrival));
 
 		expect(getTrackedXcmArrival("to-hydration")).toMatchObject({
 			status: "arrived",
