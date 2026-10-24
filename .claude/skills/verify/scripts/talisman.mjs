@@ -124,11 +124,15 @@ const talismanWorker = async () => {
 
 const isUnlocked = async () => {
 	const page = await connect(await talismanWorker());
-	const unlocked = await page.evaluate(
-		`chrome.storage.session.get("password").then((session) => "password" in session)`,
+	const lockState = await waitFor(
+		() =>
+			page.evaluate(
+				`chrome.storage.session.get("password").then((session) => "password" in session ? "unlocked" : "locked")`,
+			),
+		"answer from the Talisman service worker",
 	);
 	page.close();
-	return unlocked;
+	return lockState === "unlocked";
 };
 
 const tryClick = (page, matcher) =>

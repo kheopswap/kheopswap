@@ -40,7 +40,7 @@ EOF
 	exit 1
 fi
 for tool in docker node agent-browser curl; do
-	command -v "$tool" >/dev/null || { echo "FAIL $tool is not installed" >&2; exit 1; }
+	"$tool" --version >/dev/null 2>&1 || { echo "FAIL $tool is not installed or does not run here: $tool --version fails" >&2; exit 1; }
 done
 docker info >/dev/null 2>&1 || { echo "FAIL the Docker daemon is not reachable" >&2; exit 1; }
 
