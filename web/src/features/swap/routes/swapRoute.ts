@@ -148,11 +148,16 @@ const getXcmSource = (
 
 const findXcmSourceOf = (
 	assetHubTokenId: TokenId,
+	origin: XcmLane["origin"],
 	context: SwapRouteContext,
 ): XcmMirror | null => {
 	for (const remoteTokenId of context.mirrors.keys()) {
 		const source = getXcmSource(remoteTokenId, context);
-		if (source?.assetHubTokenId === assetHubTokenId) return source;
+		if (
+			source?.lane.origin === origin &&
+			source.assetHubTokenId === assetHubTokenId
+		)
+			return source;
 	}
 	return null;
 };
@@ -255,10 +260,15 @@ export const getNextSwapTokens = (
 				return resolveXcmRoute(prev.tokenIdIn, tokenId, context)
 					? { ...prev, tokenIdOut: tokenId }
 					: { tokenIdIn: destination.assetHubTokenId, tokenIdOut: tokenId };
-			if (getXcmSource(prev.tokenIdIn, context)) {
+			const prevSource = getXcmSource(prev.tokenIdIn, context);
+			if (prevSource) {
 				if (resolveXcmRoute(prev.tokenIdIn, tokenId, context))
 					return { ...prev, tokenIdOut: tokenId };
-				const source = findXcmSourceOf(tokenId, context);
+				const source = findXcmSourceOf(
+					tokenId,
+					prevSource.lane.origin,
+					context,
+				);
 				if (source)
 					return { tokenIdIn: source.remoteTokenId, tokenIdOut: tokenId };
 			}

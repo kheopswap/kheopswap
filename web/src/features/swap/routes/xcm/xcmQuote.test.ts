@@ -25,6 +25,13 @@ import {
 	usdtToAssetHub,
 } from "./xcmFromHydration.fixtures";
 import {
+	dotFromPeople,
+	dotFromPeopleTrapped,
+	ksmFromPeople,
+	pasFromPeopleRejected,
+	wndFromPeople,
+} from "./xcmFromPeople.fixtures";
+import {
 	composeXcmQuote,
 	type DestinationDryRun,
 	describeXcmQuoteFailure,
@@ -727,5 +734,121 @@ describe("Asset Hub to People", () => {
 	it("labels the delivery fee in the native token of each Asset Hub", () => {
 		expect(getDeliveryFeeTokenId("kah")).toBe("native::kah");
 		expect(getDeliveryFeeTokenId("pasah")).toBe("native::pasah");
+	});
+});
+
+describe("People to Asset Hub", () => {
+	const ASSET_HUB_PARA_ID = 1000;
+
+	it.each([
+		["DOT", dotFromPeople],
+		["KSM", ksmFromPeople],
+		["WND", wndFromPeople],
+	])(
+		"reads the %s teleported in the message forwarded to Asset Hub",
+		(_, fixture) => {
+			if (!fixture.originDryRun.success)
+				throw new Error("fixture origin failed");
+			expect(
+				parseOriginDryRun(fixture.originDryRun, ASSET_HUB_PARA_ID),
+			).toEqual({
+				success: true,
+				value: {
+					message: fixture.originDryRun.value.forwarded_xcms[0]?.[1][0],
+					sent: fixture.amount,
+				},
+			});
+		},
+	);
+
+	it.each([
+		["DOT", dotFromPeople, "native::pah", 9991782414n, 8217586n],
+		["KSM", ksmFromPeople, "native::kah", 99944627863n, 55372137n],
+		["WND", wndFromPeople, "native::wah", 998342742920n, 1657257080n],
+	])(
+		"quotes the %s received on Asset Hub and the fee Asset Hub keeps",
+		(_, fixture, tokenId, received, destinationFee) => {
+			expect(
+				parseDestinationDryRun(fixture.destinationDryRun, {
+					tokenId,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toEqual({ success: true, value: received });
+			expect(composeXcmQuote(fixture.amount, received).destinationFee).toBe(
+				destinationFee,
+			);
+		},
+	);
+
+	it.each([
+		["DOT", dotFromPeople, 304850000n],
+		["KSM", ksmFromPeople, 1032333300n],
+		["WND", wndFromPeople, 30970000000n],
+	])(
+		"reads the %s People charges to deliver to Asset Hub",
+		(_, fixture, fee) => {
+			expect(parseDeliveryFee(fixture.deliveryFees)).toBe(fee);
+		},
+	);
+
+	it("reports trapped assets when the amount cannot endow an empty Asset Hub account", () => {
+		const parsed = parseDestinationDryRun(
+			dotFromPeopleTrapped.destinationDryRun,
+			{
+				tokenId: "native::pah",
+				beneficiary: dotFromPeopleTrapped.beneficiary,
+			},
+		);
+		expect(parsed).toEqual({
+			success: false,
+			failure: {
+				kind: "destination-rejected",
+				reason: "FailedToTransactAsset",
+				assetsTrapped: true,
+			},
+		});
+		if (parsed.success) throw new Error("expected a failure");
+		expect(
+			describeXcmQuoteFailure(parsed.failure, {
+				origin: "ppeople",
+				destination: "pah",
+			}),
+		).toBe(
+			"Amount too low for Polkadot Asset Hub: the assets would be trapped",
+		);
+	});
+
+	it("reports that Paseo Asset Hub cannot weigh a teleport from Paseo People", () => {
+		expect(
+			parseDestinationDryRun(pasFromPeopleRejected.destinationDryRun, {
+				tokenId: "native::pasah",
+				beneficiary: pasFromPeopleRejected.beneficiary,
+			}),
+		).toEqual({
+			success: false,
+			failure: {
+				kind: "destination-rejected",
+				reason: "Overflow",
+				assetsTrapped: false,
+			},
+		});
+	});
+
+	it("charges the delivery fee in the People native token", () => {
+		expect(getDeliveryFeeTokenId("ppeople")).toBe("native::ppeople");
+		expect(getDeliveryFeeTokenId("kpeople")).toBe("native::kpeople");
+		expect(getDeliveryFeeTokenId("wpeople")).toBe("native::wpeople");
+	});
+
+	it("spends the amount and the delivery fee from the People balance, keeping the account alive", () => {
+		expect(
+			getXcmCallSpendings({
+				tokenIdIn: "native::ppeople",
+				totalIn: dotFromPeople.amount,
+				deliveryFee: { tokenId: "native::ppeople", plancks: 304850000n },
+			}),
+		).toEqual({
+			"native::ppeople": { plancks: 10304850000n, allowDeath: false },
+		});
 	});
 });

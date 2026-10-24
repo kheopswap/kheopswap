@@ -46,7 +46,10 @@ const queryDeliveryFees = async (route: XcmRoute, message: XcmVersionedXcm) => {
 		case "pah":
 		case "kah":
 		case "wah":
-		case "pasah": {
+		case "pasah":
+		case "ppeople":
+		case "kpeople":
+		case "wpeople": {
 			const api = await getApi(route.origin);
 			return api.apis.XcmPaymentApi.query_delivery_fees(
 				destination,

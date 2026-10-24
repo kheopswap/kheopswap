@@ -40,6 +40,9 @@ const getOriginAssetLocation = (
 		case "kah":
 		case "wah":
 		case "pasah":
+		case "ppeople":
+		case "kpeople":
+		case "wpeople":
 			return getXcmV5MultilocationFromTokenId(route.tokenIdIn);
 		case "hydration":
 			if (

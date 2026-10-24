@@ -13,6 +13,9 @@ const XCM_LANES = {
 	wah: { wpeople: { transferType: "Teleport" } },
 	pasah: { paspeople: { transferType: "Teleport" } },
 	hydration: { pah: { transferType: "DestinationReserve" } },
+	ppeople: { pah: { transferType: "Teleport" } },
+	kpeople: { kah: { transferType: "Teleport" } },
+	wpeople: { wah: { transferType: "Teleport" } },
 } as const satisfies {
 	readonly [Origin in ChainId]?: {
 		readonly [Destination in Exclude<ChainId, Origin>]?: XcmLaneSpec;
