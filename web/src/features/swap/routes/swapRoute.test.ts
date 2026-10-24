@@ -30,6 +30,7 @@ const mirrors = getRelayMirrors("pah");
 const DOT = "native::pah";
 const USDT = "asset::pah::1984";
 const USDC = "asset::pah::1337";
+const PINK = "asset::pah::23";
 const HYDRATION_DOT = "hydration-asset::hydration::5";
 const HYDRATION_USDT = "hydration-asset::hydration::10";
 const HYDRATION_USDC = "hydration-asset::hydration::22";
@@ -280,13 +281,84 @@ const next = (
 	return [result.tokenIdIn, result.tokenIdOut];
 };
 
-describe("getNextSwapTokens keeps today's AMM rules", () => {
+describe("getNextSwapTokens keeps the side the user changed", () => {
 	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
 		[
-			"input token forces DOT out",
+			"an asset in keeps an asset out, swapping through DOT",
 			[DOT, USDC],
+			{ type: "in", tokenId: PINK },
+			[PINK, USDC],
+		],
+		[
+			"an asset in keeps a Hydration output it swaps to through DOT",
+			[USDC, HYDRATION_DOT],
+			{ type: "out", tokenId: HYDRATION_USDT },
+			[USDC, HYDRATION_USDT],
+		],
+		[
+			"the People output replaces an asset in that cannot reach People with DOT",
+			[USDC, USDT],
+			{ type: "out", tokenId: PEOPLE_DOT },
+			[DOT, PEOPLE_DOT],
+		],
+		[
+			"an Asset Hub output replaces Hydration DOT in with its Hydration mirror",
+			[HYDRATION_DOT, DOT],
+			{ type: "out", tokenId: USDC },
+			[HYDRATION_USDC, USDC],
+		],
+		[
+			"the output picked as input flips the pair",
+			[USDT, USDC],
+			{ type: "in", tokenId: USDC },
+			[USDC, USDT],
+		],
+		[
+			"the input picked as output flips the pair",
+			[USDT, USDC],
+			{ type: "out", tokenId: USDT },
+			[USDC, USDT],
+		],
+		[
+			"an input with no output fills DOT out",
+			[DOT, ""],
 			{ type: "in", tokenId: USDT },
 			[USDT, DOT],
+		],
+		[
+			"an output nothing routes to empties the input",
+			[USDT, DOT],
+			{ type: "out", tokenId: HYDRATION_VDOT },
+			["", HYDRATION_VDOT],
+		],
+	])("%s", (_, prev, change, expected) => {
+		expect(next(prev, change)).toEqual(expected);
+	});
+
+	it("routes USDC on Asset Hub to USDT on Hydration in two hops through DOT", () => {
+		const [tokenIdIn, tokenIdOut] = next([USDC, DOT], {
+			type: "out",
+			tokenId: HYDRATION_USDT,
+		});
+		expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual(
+			expect.objectContaining({
+				kind: "xcm-swap",
+				path: [
+					{ tokenIdIn: USDC, tokenIdOut: DOT },
+					{ tokenIdIn: DOT, tokenIdOut: USDT },
+				],
+			}),
+		);
+	});
+});
+
+describe("getNextSwapTokens on Asset Hub", () => {
+	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
+		[
+			"an asset in keeps the asset out",
+			[DOT, USDC],
+			{ type: "in", tokenId: USDT },
+			[USDT, USDC],
 		],
 		[
 			"DOT in while DOT is out swaps sides",
@@ -301,10 +373,10 @@ describe("getNextSwapTokens keeps today's AMM rules", () => {
 			[DOT, USDC],
 		],
 		[
-			"output token forces DOT in",
+			"an asset out keeps the asset in",
 			[USDT, DOT],
 			{ type: "out", tokenId: USDC },
-			[DOT, USDC],
+			[USDT, USDC],
 		],
 		[
 			"DOT out while DOT is in swaps sides",
@@ -389,16 +461,10 @@ describe("getNextSwapTokens on the XCM routes", () => {
 			[VDOT, HYDRATION_USDT],
 		],
 		[
-			"DOT out keeps DOT in rather than moving Hydration DOT in",
+			"DOT out flips DOT in to bring it back from Hydration",
 			[DOT, HYDRATION_DOT],
 			{ type: "out", tokenId: DOT },
-			[DOT, DOT],
-		],
-		[
-			"an out-of-scope Hydration output keeps today's rule",
-			[USDT, DOT],
-			{ type: "out", tokenId: HYDRATION_VDOT },
-			[DOT, HYDRATION_VDOT],
+			[HYDRATION_DOT, DOT],
 		],
 		[
 			"flip does nothing",
@@ -524,16 +590,16 @@ describe("getNextSwapTokens from Hydration", () => {
 			[HYDRATION_DOT, DOT],
 		],
 		[
-			"an output without a Hydration mirror falls back to an AMM swap",
+			"an output without a Hydration mirror swaps from the input's source",
 			[HYDRATION_USDT, USDT],
 			{ type: "out", tokenId: VDOT },
-			[DOT, VDOT],
+			[USDT, VDOT],
 		],
 		[
-			"a Hydration output sends its source to Hydration",
+			"a Hydration output swaps to it from the input's source",
 			[HYDRATION_USDT, USDT],
 			{ type: "out", tokenId: HYDRATION_USDC },
-			[USDC, HYDRATION_USDC],
+			[USDT, HYDRATION_USDC],
 		],
 		[
 			"an Asset Hub input falls back to the AMM rules",
