@@ -37,9 +37,9 @@ const combineState = (
 };
 
 export const balancesState$ = combineLatest([
-	balanceSubscriptions$, // unique subscriptions
-	balanceStatuses$, // status of each subscription
-	balancesStore$, // stored balances
+	balanceSubscriptions$,
+	balanceStatuses$,
+	balancesStore$,
 ]).pipe(
 	throttleTime(100, undefined, { leading: true, trailing: true }),
 	map(([balanceIds, statuses, balances]) =>
