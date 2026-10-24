@@ -148,6 +148,7 @@ const useTransactionProvider = ({
 		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
 		if (!call || isLoading || error || hasInsufficientBalance) return false;
 		if (isRejectedByDryRun || hasTransactionAwaitingInclusion) return false;
+		if (!fees.isCallFeeEstimated) return false;
 
 		if (ethereum.account.platform === "ethereum")
 			return (
@@ -155,11 +156,12 @@ const useTransactionProvider = ({
 				!ethereum.isSwitchingEthereumNetwork
 			);
 
-		return fees.isCallFeeEstimated && !!fees.feeToken && !!fees.options;
+		return !!fees.feeEstimate && !!fees.feeToken && !!fees.options;
 	}, [
 		ethereum.account,
 		call,
 		error,
+		fees.feeEstimate,
 		fees.isCallFeeEstimated,
 		fees.feeToken,
 		hasInsufficientBalance,

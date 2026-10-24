@@ -37,6 +37,7 @@ const ethereum = vi.hoisted(() => ({
 const fees = vi.hoisted(() => ({
 	options: { asset: undefined } as { asset: object | undefined },
 	isCallFeeEstimated: true,
+	feeEstimate: 1n as bigint | null,
 }));
 
 const dryRun = vi.hoisted(() => ({
@@ -65,6 +66,7 @@ beforeEach(() => {
 	ethereum.platform = "polkadot";
 	fees.options = { asset: undefined };
 	fees.isCallFeeEstimated = true;
+	fees.feeEstimate = 1n;
 	dryRun.data = successfulDryRun;
 	dryRun.isLoading = false;
 	dryRun.isFetching = false;
@@ -104,7 +106,7 @@ vi.mock("./useTransactionFees", async () => {
 			isResolvingSigner: false,
 			isLoadingFeeEstimate: false,
 			isLoadingDryRun: false,
-			feeEstimate: 1n,
+			feeEstimate: fees.feeEstimate,
 			isCallFeeEstimated: fees.isCallFeeEstimated,
 			feeToken: KNOWN_TOKENS_MAP["native::pah"],
 			feeTokens: [],
@@ -226,6 +228,17 @@ describe("TransactionProvider submit gate", () => {
 
 	it("keeps submit disabled while only the fake call's fee is known", () => {
 		fees.isCallFeeEstimated = false;
+		expect(renderTransaction({ status: "open" }).canSubmit).toBe(false);
+	});
+
+	it("keeps submit disabled for an Ethereum account while only the fake call's fee is known", () => {
+		ethereum.platform = "ethereum";
+		fees.isCallFeeEstimated = false;
+		expect(renderTransaction({ status: "open" }).canSubmit).toBe(false);
+	});
+
+	it("keeps submit disabled when the real fee cannot be converted into the fee token", () => {
+		fees.feeEstimate = null;
 		expect(renderTransaction({ status: "open" }).canSubmit).toBe(false);
 	});
 
