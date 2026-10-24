@@ -2,6 +2,7 @@ import { cleanup, render, renderHook, screen } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChainId } from "../../registry/chains/types";
+import { TransactionFeeSummaryValue } from "./TransactionFeeSummaryValue";
 import {
 	type SubmitGate,
 	TransactionProvider,
@@ -34,22 +35,27 @@ vi.mock("./useTransactionEthereum", () => ({
 	}),
 }));
 
-vi.mock("./useTransactionFees", () => ({
-	useTransactionFees: () => ({
-		isResolvingSigner: false,
-		isLoadingFeeEstimate: false,
-		isLoadingDryRun: false,
-		feeEstimate: 1n,
-		feeToken: { id: "native::pah" },
-		options: { asset: undefined },
-		dryRun: {
-			success: true,
-			value: { execution_result: { success: true } },
-		},
-	}),
-}));
+vi.mock("./useTransactionFees", async () => {
+	const { KNOWN_TOKENS_MAP } = await import("../../registry/tokens/tokens");
+	return {
+		useTransactionFees: () => ({
+			isResolvingSigner: false,
+			isLoadingFeeEstimate: false,
+			isLoadingDryRun: false,
+			feeEstimate: 1n,
+			feeToken: KNOWN_TOKENS_MAP["native::pah"],
+			feeTokens: [],
+			options: { asset: undefined },
+			dryRun: {
+				success: true,
+				value: { execution_result: { success: true } },
+			},
+		}),
+	};
+});
 
-vi.mock("./useTransactionBalanceCheck", () => ({
+vi.mock("./useTransactionBalanceCheck", async (importOriginal) => ({
+	...(await importOriginal<typeof import("./useTransactionBalanceCheck")>()),
 	useTransactionBalanceCheck: () => ({
 		insufficientBalances: balanceCheck.insufficientBalances,
 		isLoadingBalances: false,
@@ -91,6 +97,32 @@ const renderSubmitButton = (submitGate?: SubmitGate) => {
 	);
 	return screen.getByRole("button");
 };
+
+describe("TransactionFeeSummaryValue", () => {
+	const renderFee = () => {
+		const Wrapper = getWrapper();
+		render(
+			<Wrapper>
+				<TransactionFeeSummaryValue />
+			</Wrapper>,
+		);
+		return screen.getByText(/DOT/);
+	};
+
+	it("turns red when the fee itself cannot be paid", () => {
+		balanceCheck.insufficientBalances = {
+			"native::pah": "Insufficient balance to pay for fee",
+		};
+		expect(renderFee()).toHaveClass("text-error");
+	});
+
+	it("stays neutral when only the spent amount is short", () => {
+		balanceCheck.insufficientBalances = {
+			"native::pah": "Insufficient balance",
+		};
+		expect(renderFee()).not.toHaveClass("text-error");
+	});
+});
 
 describe("TransactionSubmitButton on an Ethereum network mismatch", () => {
 	beforeEach(() => {
