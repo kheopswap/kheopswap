@@ -118,6 +118,10 @@ const getToken = (tokenId: string) => {
 const renderDestinationSwap = (
 	fixture: XcmDestinationSwapFixture,
 	totalIn = fixture.amount,
+	account: WalletAccount | null = {
+		platform: "polkadot",
+		address: fixture.beneficiary,
+	} as WalletAccount,
 ) => {
 	chain.fixture = fixture;
 	const route: XcmDestinationSwapRoute = {
@@ -142,10 +146,7 @@ const renderDestinationSwap = (
 		() =>
 			useXcmRoute({
 				route,
-				account: {
-					platform: "polkadot",
-					address: fixture.beneficiary,
-				} as WalletAccount,
+				account,
 				tokenIn: getToken(fixture.tokenIdIn),
 				tokenOut: getToken(fixture.tokenIdOut),
 				totalIn,
@@ -227,6 +228,19 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			},
 			returnTokenIds: ["asset::pah::1984", "native::pah", "asset::pah::23"],
 		});
+	});
+
+	it("asks for an account before quoting", async () => {
+		const { result } = renderDestinationSwap(
+			usdtToPink,
+			usdtToPink.amount,
+			null,
+		);
+
+		expect(result.current.outputErrorMessage).toBe(
+			"Connect a Polkadot account to quote cross-chain routes",
+		);
+		expect(result.current.plan.submitGate.status).toBe("closed");
 	});
 
 	it("refuses an amount the Asset Hub fee would eat", async () => {
