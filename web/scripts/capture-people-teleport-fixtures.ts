@@ -27,10 +27,14 @@ import {
 	DESCRIPTORS_PEOPLE,
 } from "../src/registry/chains/descriptors.ts";
 
-const DEFAULT_OUT = resolve(
+const FIXTURES_DIR = resolve(
 	import.meta.dirname,
-	"../src/features/swap/routes/xcm/xcmToPeople.fixtures.ts",
+	"../src/features/swap/routes/xcm",
 );
+const DEFAULT_OUT = {
+	"asset-hub": resolve(FIXTURES_DIR, "xcmToPeople.fixtures.ts"),
+	people: resolve(FIXTURES_DIR, "xcmFromPeople.fixtures.ts"),
+};
 const XCM_VERSION = 5;
 
 const FIXTURE_HEADER = `import type { RelayId } from "../../../../registry/chains/types";
@@ -56,19 +60,28 @@ export type PeopleTeleportFixture = {
 const { values } = parseArgs({
 	options: {
 		relay: { type: "string" },
+		origin: { type: "string", default: "asset-hub" },
 		sender: { type: "string" },
 		beneficiary: { type: "string" },
 		amount: { type: "string" },
 		name: { type: "string" },
-		out: { type: "string", default: DEFAULT_OUT },
+		out: { type: "string" },
 	},
 });
 
-const { relay, sender, amount, name, out } = values;
-if (!relay || !sender || !amount || !name || !/^[A-Za-z_]\w*$/.test(name))
+const { relay, origin, sender, amount, name } = values;
+if (
+	!relay ||
+	(origin !== "asset-hub" && origin !== "people") ||
+	!sender ||
+	!amount ||
+	!name ||
+	!/^[A-Za-z_]\w*$/.test(name)
+)
 	throw new Error(
-		"Usage: --relay <relay> --sender <any funded address> --amount <plancks> --name <export identifier> [--beneficiary <address, empty to capture the below-ED trap>] [--out <path>]",
+		"Usage: --relay <relay> [--origin asset-hub|people] --sender <any funded address> --amount <plancks> --name <export identifier> [--beneficiary <address, empty to capture the below-ED trap>] [--out <path>]",
 	);
+const out = values.out ?? DEFAULT_OUT[origin];
 const beneficiary = values.beneficiary ?? sender;
 
 type ChainEntry = {
@@ -89,6 +102,8 @@ const findChain = (ids: Record<string, unknown>) => {
 
 const assetHub = findChain(DESCRIPTORS_ASSET_HUB);
 const people = findChain(DESCRIPTORS_PEOPLE);
+const [from, to] =
+	origin === "asset-hub" ? [assetHub, people] : [people, assetHub];
 
 const relayToken = { parents: 1, interior: XcmV5Junctions.Here() };
 const siblingLocation = (paraId: number) =>
@@ -98,7 +113,7 @@ const siblingLocation = (paraId: number) =>
 	});
 
 const args = {
-	dest: siblingLocation(people.paraId),
+	dest: siblingLocation(to.paraId),
 	assets: XcmVersionedAssets.V5([
 		{
 			id: relayToken,
@@ -128,10 +143,10 @@ const args = {
 const stringify = (value: unknown) =>
 	JSON.stringify(value, (_, v) => (typeof v === "bigint" ? v.toString() : v));
 
-const assetHubClient = createClient(getWsProvider(assetHub.wsUrl));
-const peopleClient = createClient(getWsProvider(people.wsUrl));
-const assetHubApi = assetHubClient.getUnsafeApi<typeof pah>();
-const peopleApi = peopleClient.getUnsafeApi<typeof ppeople>();
+const fromClient = createClient(getWsProvider(from.wsUrl));
+const toClient = createClient(getWsProvider(to.wsUrl));
+const fromApi = fromClient.getUnsafeApi<typeof pah | typeof ppeople>();
+const toApi = toClient.getUnsafeApi<typeof pah | typeof ppeople>();
 
 type Event = { type: string; value: { type: string } };
 type Location = {
@@ -154,38 +169,34 @@ type DestinationDryRun = DryRunResult<{
 }>;
 
 const call =
-	await assetHubApi.tx.PolkadotXcm.transfer_assets_using_type_and_then(args);
-const originDryRun: OriginDryRun =
-	await assetHubApi.apis.DryRunApi.dry_run_call(
-		Enum("system", Enum("Signed", sender)),
-		call.decodedCall,
-		XCM_VERSION,
-	);
+	await fromApi.tx.PolkadotXcm.transfer_assets_using_type_and_then(args);
+const originDryRun: OriginDryRun = await fromApi.apis.DryRunApi.dry_run_call(
+	Enum("system", Enum("Signed", sender)),
+	call.decodedCall,
+	XCM_VERSION,
+);
 if (!originDryRun.success || !originDryRun.value.execution_result.success)
-	throw new Error(`Asset Hub dry run failed: ${stringify(originDryRun)}`);
+	throw new Error(`${from.id} dry run failed: ${stringify(originDryRun)}`);
 
 const message = originDryRun.value.forwarded_xcms.find(
 	([location]) =>
 		location.type === "V5" &&
 		location.value.interior.type === "X1" &&
 		location.value.interior.value.type === "Parachain" &&
-		location.value.interior.value.value === people.paraId,
+		location.value.interior.value.value === to.paraId,
 )?.[1][0];
-if (!message) throw new Error("Asset Hub forwarded no message to People");
+if (!message) throw new Error(`${from.id} forwarded no message to ${to.id}`);
 
-const deliveryFees = await assetHubApi.apis.XcmPaymentApi.query_delivery_fees(
-	siblingLocation(people.paraId),
+const deliveryFees = await fromApi.apis.XcmPaymentApi.query_delivery_fees(
+	siblingLocation(to.paraId),
 	message,
 	XcmVersionedAssetId.V5(relayToken),
 );
 const destinationDryRun: DestinationDryRun =
-	await peopleApi.apis.DryRunApi.dry_run_xcm(
-		siblingLocation(assetHub.paraId),
-		message,
-	);
+	await toApi.apis.DryRunApi.dry_run_xcm(siblingLocation(from.paraId), message);
 
-assetHubClient.destroy();
-peopleClient.destroy();
+fromClient.destroy();
+toClient.destroy();
 
 const fixture = {
 	relay,
@@ -261,6 +272,7 @@ console.log(
 	stringify({
 		name,
 		relay,
+		origin,
 		execution: destinationDryRun.success
 			? destinationDryRun.value.execution_result.type
 			: destinationDryRun.value,
