@@ -31,6 +31,30 @@
       "metadata": ".papi/scale/hydration.scale",
       "genesis": "0xafdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d",
       "codeHash": "0x0b1bc5812823c7f307f7042b2efdea695dfe95f64197599315f3c4f423dc3123"
+    },
+    "ppeople": {
+      "wsUrl": "wss://polkadot-people-rpc.polkadot.io",
+      "metadata": ".papi/scale/ppeople.scale",
+      "genesis": "0x67fa177a097bfa18f77ea95ab56e9bcdfeb0e5b8a40e46298bb93e16b6fc5008",
+      "codeHash": "0xc0f0bfb48cbeab25d02e268579e178ca5e2226a37e38916f14a82e61261a44e8"
+    },
+    "kpeople": {
+      "wsUrl": "wss://kusama-people-rpc.polkadot.io",
+      "metadata": ".papi/scale/kpeople.scale",
+      "genesis": "0xc1af4cb4eb3918e5db15086c0cc5ec17fb334f728b7c65dd44bfe1e174ff8b3f",
+      "codeHash": "0xac5b975f38c2a4205c815f5582d3630c73500ff9002eceff2c0fa57374fe7165"
+    },
+    "wpeople": {
+      "wsUrl": "wss://westend-people-rpc.polkadot.io",
+      "metadata": ".papi/scale/wpeople.scale",
+      "genesis": "0x1eb6fb0ba5187434de017a70cb84d4f47142df1d571d0ef9e7e1407f2b80b93c",
+      "codeHash": "0x9e49b3f0f832779f3dacb10ee65d9a6347e5bb26eebdbe8907fdedecf6654643"
+    },
+    "paspeople": {
+      "wsUrl": "wss://sys.turboflakes.io/people-paseo",
+      "metadata": ".papi/scale/paspeople.scale",
+      "genesis": "0xe6c30d6e148f250b887105237bcaa5cb9f16dd203bf7b5b9d4f1da7387cb86ec",
+      "codeHash": "0x35364c0ac81591deb3c5fd02813a077464cd362d3a0ca22d5f79c8cc8773387d"
     }
   }
 }
