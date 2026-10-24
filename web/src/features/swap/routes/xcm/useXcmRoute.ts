@@ -148,7 +148,7 @@ const getXcmCallInputs = (
 	}
 };
 
-// Sized like the AMM fake call, so the fee estimate covers the commission batch.
+// Carries a commission so the fee estimate covers the batch with the service fee transfer.
 const getFakeXcmCallInputs = (
 	route: XcmRoute,
 	tokenIn: Token | null | undefined,

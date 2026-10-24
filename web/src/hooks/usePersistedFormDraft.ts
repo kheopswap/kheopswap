@@ -17,17 +17,6 @@ const readHistoryDraft = <T>(): Partial<T> => {
 	}
 };
 
-/**
- * Manages form state with browser history-entry persistence and default-account synchronization.
- *
- * - Reads a persisted draft from the current history entry on mount (survives page refresh).
- * - Merges `location.state` from React Router into the initial values (for cross-page navigation).
- * - Syncs the `from` field bidirectionally with the `defaultAccountId` setting.
- * - Writes form data to the current history entry via `history.replaceState` on every change.
- *
- * Because state is tied to the navigation entry, each tab has independent state
- * and a fresh navigation always starts with a clean form.
- */
 export const usePersistedFormDraft = <T extends { from: string }>(
 	baseDefaults: T,
 ): [T, Dispatch<SetStateAction<T>>] => {
@@ -50,18 +39,15 @@ export const usePersistedFormDraft = <T extends { from: string }>(
 
 	const [formData, setFormData] = useState<T>(defaults);
 
-	// Account won't be available on first render — sync once available
 	useEffect(() => {
 		if (!formData.from && defaults.from)
 			setFormData((prev) => ({ ...prev, from: defaults.from }));
 	}, [defaults.from, formData.from]);
 
-	// Persist account selection back to global setting
 	useEffect(() => {
 		if (formData.from) setDefaultAccountId(formData.from);
 	}, [formData.from, setDefaultAccountId]);
 
-	// Persist form data to the current history entry
 	useEffect(() => {
 		if (typeof window === "undefined") return;
 		window.history.replaceState(

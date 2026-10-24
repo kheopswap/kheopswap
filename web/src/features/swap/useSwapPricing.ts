@@ -25,10 +25,6 @@ type UseSwapPricingProps = {
 	accountAddress: string | undefined;
 };
 
-/**
- * Computes app commission from the input amount.
- * Separates the app fee from the total so the swap extrinsic operates on net plancks.
- */
 const useSwapInputs = ({
 	tokenIdIn,
 	amountIn,
