@@ -58,8 +58,7 @@ const useSwapProvider = () => {
 	});
 
 	const callData = useSwapCall({
-		tokenIdIn: formState.tokenIdIn,
-		tokenIdOut: ammRoute?.tokenIdOut,
+		path: ammRoute?.path,
 		swapPlancksIn: pricing.swapPlancksIn,
 		minPlancksOut: pricing.minPlancksOut,
 		dest: formState.resolvedSubstrateAddress,

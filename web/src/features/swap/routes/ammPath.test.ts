@@ -3,6 +3,7 @@ import {
 	type AmmPath,
 	getAmmPath,
 	getPathLiquidity,
+	getPathTokenIds,
 	mapHopPath,
 	quoteAmmPath,
 } from "./ammPath";
@@ -38,6 +39,15 @@ describe("getAmmPath", () => {
 			{ tokenIdIn: USDC, tokenIdOut: DOT },
 			{ tokenIdIn: DOT, tokenIdOut: USDT },
 		]);
+	});
+});
+
+describe("getPathTokenIds", () => {
+	it.each([
+		["one hop", getAmmPath(DOT, USDT, DOT), [DOT, USDT]],
+		["two hops through native", getAmmPath(USDC, USDT, DOT), [USDC, DOT, USDT]],
+	])("lists every token of %s in order", (_, path, tokenIds) => {
+		expect(getPathTokenIds(path)).toEqual(tokenIds);
 	});
 });
 
