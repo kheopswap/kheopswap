@@ -364,6 +364,24 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		},
 	);
 
+	it.each([
+		[true, null],
+		[false, "InsufficientBalance"],
+	])(
+		"with an unfunded input (%s), leaves the shortfall to the input field even when the fee estimate cannot be sent",
+		async (hasInsufficientBalance, outputErrorMessage) => {
+			chain.isUnfunded = true;
+			chain.hasInsufficientBalance = hasInsufficientBalance;
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() =>
+				expect(result.current.isLoadingAmountOut).toBe(false),
+			);
+			expect(chain.dryRunCall).toHaveBeenCalled();
+			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
+		},
+	);
+
 	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {
 		chain.dryRunCall.mockRejectedValue(new Error("RPC unavailable"));
 		const { result } = renderDestinationSwap(usdtToPink);

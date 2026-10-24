@@ -42,6 +42,7 @@ export const SwapTokensEditor = () => {
 
 		balanceIn,
 		balanceOut,
+		hasInsufficientBalance,
 		isLoadingBalanceIn,
 		isLoadingBalanceOut,
 		isLoadingAmountOut,
@@ -58,8 +59,17 @@ export const SwapTokensEditor = () => {
 
 	const inputErrorMessage = useMemo(() => {
 		if (formData.amountIn && !isBigInt(totalIn)) return "Invalid amount";
-		return insufficientBalances[tokenIn?.id ?? ""];
-	}, [formData.amountIn, insufficientBalances, totalIn, tokenIn?.id]);
+		return (
+			insufficientBalances[tokenIn?.id ?? ""] ??
+			(hasInsufficientBalance ? "Insufficient balance" : undefined)
+		);
+	}, [
+		formData.amountIn,
+		insufficientBalances,
+		totalIn,
+		tokenIn?.id,
+		hasInsufficientBalance,
+	]);
 
 	const { accounts: allAccounts } = useWallets();
 	const account = useWalletAccount({ id: formData.from });
