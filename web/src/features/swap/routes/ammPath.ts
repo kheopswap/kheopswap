@@ -15,6 +15,7 @@ export type QuotedHop = AmmHop & {
 	amountIn: bigint;
 	amountOut: bigint;
 	minOut: bigint;
+	protocolCommission: bigint;
 };
 
 export type AmmPathQuote = {
@@ -59,13 +60,19 @@ export const quoteAmmPath = ({
 		{ tokenIdIn, tokenIdOut, reserveIn, reserveOut }: PoolHop,
 		amountIn: bigint,
 	): QuotedHop => {
-		const { amountOut } = getAmmOutput(amountIn, reserveIn, reserveOut, lpFee);
+		const { amountOut, protocolCommission } = getAmmOutput(
+			amountIn,
+			reserveIn,
+			reserveOut,
+			lpFee,
+		);
 		return {
 			tokenIdIn,
 			tokenIdOut,
 			amountIn,
 			amountOut,
 			minOut: getMinAmountOut(amountOut, slippage),
+			protocolCommission,
 		};
 	};
 
@@ -82,9 +89,10 @@ type HopReserves = {
 	isLoading: boolean;
 };
 
-type PathLiquidity =
+export type PathLiquidity =
 	| { status: "loading" }
-	| { status: "unavailable"; reason: string }
+	| { status: "no-pool" }
+	| { status: "no-liquidity" }
 	| { status: "available"; hops: HopPath<PoolHop> };
 
 const toPoolHop = (hop: AmmHop, { data }: HopReserves): PoolHop | null =>
@@ -100,13 +108,11 @@ export const getPathLiquidity = (
 	const reserves =
 		path.length === 1 ? [firstReserves] : [firstReserves, secondReserves];
 	if (reserves.some(({ isLoading }) => isLoading)) return { status: "loading" };
-	if (reserves.some(({ data }) => !data))
-		return { status: "unavailable", reason: "Liquidity pool not found" };
+	if (reserves.some(({ data }) => !data)) return { status: "no-pool" };
 
 	const first = toPoolHop(path[0], firstReserves);
 	const second = path[1] && toPoolHop(path[1], secondReserves);
-	if (!first || second === null)
-		return { status: "unavailable", reason: "Insufficient liquidity" };
+	if (!first || second === null) return { status: "no-liquidity" };
 
 	return { status: "available", hops: second ? [first, second] : [first] };
 };

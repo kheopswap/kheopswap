@@ -27,6 +27,7 @@ export type AmmSwapRoute = {
 	chainId: ChainIdAssetHub;
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
+	path: AmmPath;
 };
 
 export type XcmTransferRoute = XcmLane & {
@@ -213,7 +214,13 @@ export const resolveSwapRoute = ({
 	const tokenIn = tryParseTokenId(tokenIdIn);
 	const tokenOut = tryParseTokenId(tokenIdOut);
 	if (tokenIn?.chainId === assetHubId && tokenOut?.chainId === assetHubId)
-		return { kind: "amm-swap", chainId: assetHubId, tokenIdIn, tokenIdOut };
+		return {
+			kind: "amm-swap",
+			chainId: assetHubId,
+			tokenIdIn,
+			tokenIdOut,
+			path: getAmmPath(tokenIdIn, tokenIdOut, context.nativeTokenId),
+		};
 
 	return resolveXcmRoute(tokenIdIn, tokenIdOut, context);
 };
