@@ -292,7 +292,7 @@ export const readBalances = async (balanceIds: BalanceId[]) => {
 	applyUpdates(
 		updates
 			.flat()
-			.filter(([balanceId, balance]) => balance > 0n || balanceId in store),
+			.filter(([balanceId, { balance }]) => balance > 0n || balanceId in store),
 	);
 };
 
