@@ -1,22 +1,24 @@
-import { filter, firstValueFrom, map, type Subject, timeout } from "rxjs";
+import {
+	type BehaviorSubject,
+	filter,
+	firstValueFrom,
+	map,
+	timeout,
+} from "rxjs";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { getBalance$ } from "./service";
 import { balancesState$ } from "./state";
-import {
-	addBalanceSubscription,
-	removeBalancesSubscription,
-} from "./subscriptions";
+import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceState } from "./types";
 import { getBalanceId } from "./utils";
 
-type AccountValue = { value: { data: { free: bigint; frozen: bigint } } };
-type TokensAccountValue = {
-	value: { free: bigint; reserved: bigint; frozen: bigint };
-};
+type GetValuesCall = { chainId: string; pallet: string; keys: unknown[][] };
 
 const mocks = vi.hoisted(() => ({
-	accountSubjects: new Map<string, unknown>(),
-	watchValueCalls: [] as string[],
+	bestBlocks: new Map<string, unknown>(),
+	nativeAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
+	hydrationAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
+	getValuesCalls: [] as GetValuesCall[],
 	getApiChainIds: [] as string[],
 	addedBalanceIds: [] as string[],
 }));
@@ -33,13 +35,12 @@ vi.mock("./subscriptions", async (importOriginal) => {
 });
 
 vi.mock("../../papi/getApi", async () => {
-	const { Subject } = await import("rxjs");
+	const { BehaviorSubject } = await import("rxjs");
 
-	const getAccountObservable = (key: string) => {
-		mocks.watchValueCalls.push(key);
-		if (!mocks.accountSubjects.has(key))
-			mocks.accountSubjects.set(key, new Subject());
-		return mocks.accountSubjects.get(key);
+	const getBestBlock$ = (chainId: string) => {
+		if (!mocks.bestBlocks.has(chainId))
+			mocks.bestBlocks.set(chainId, new BehaviorSubject({ value: 1 }));
+		return mocks.bestBlocks.get(chainId);
 	};
 
 	return {
@@ -48,15 +49,31 @@ vi.mock("../../papi/getApi", async () => {
 			return {
 				query: {
 					System: {
+						Number: { watchValue: () => getBestBlock$(chainId) },
 						Account: {
-							watchValue: (address: string) =>
-								getAccountObservable(`native||${address}`),
+							getValues: async (keys: [string][]) => {
+								mocks.getValuesCalls.push({ chainId, pallet: "System", keys });
+								return keys.map(([address]) => ({
+									data: mocks.nativeAccounts.get(address) ?? {
+										free: 0n,
+										frozen: 0n,
+									},
+								}));
+							},
 						},
 					},
 					Tokens: {
 						Accounts: {
-							watchValue: (address: string, assetId: number) =>
-								getAccountObservable(`hydration-asset||${assetId}||${address}`),
+							getValues: async (keys: [string, number][]) => {
+								mocks.getValuesCalls.push({ chainId, pallet: "Tokens", keys });
+								return keys.map(
+									([address, assetId]) =>
+										mocks.hydrationAccounts.get(`${assetId}||${address}`) ?? {
+											free: 0n,
+											frozen: 0n,
+										},
+								);
+							},
 						},
 					},
 				},
@@ -65,8 +82,15 @@ vi.mock("../../papi/getApi", async () => {
 	};
 });
 
-const getSubject = <T = AccountValue>(key: string) =>
-	mocks.accountSubjects.get(key) as Subject<T>;
+const tickBestBlock = (chainId: string, block: number) =>
+	(mocks.bestBlocks.get(chainId) as BehaviorSubject<{ value: number }>).next({
+		value: block,
+	});
+
+const nativeCalls = (chainId: string) =>
+	mocks.getValuesCalls.filter(
+		(call) => call.chainId === chainId && call.pallet === "System",
+	);
 
 const waitForBalanceState = (
 	balanceId: string,
@@ -80,8 +104,9 @@ const waitForBalanceState = (
 		),
 	);
 
+const settle = () => new Promise((resolve) => setTimeout(resolve, 250));
+
 beforeAll(() => {
-	// jsdom may not provide crypto.randomUUID, which subscriptions rely on
 	if (!globalThis.crypto?.randomUUID) {
 		Object.defineProperty(globalThis.crypto ?? {}, "randomUUID", {
 			value: () =>
@@ -91,103 +116,101 @@ beforeAll(() => {
 });
 
 describe("balances service pipeline", () => {
-	it("watches, stores, and derives balance state through the full pipeline", async () => {
-		const address = "5TestAddressAlice";
-		const balanceId = getBalanceId({ address, tokenId: "native::pah" });
-		const subjectKey = `native||${address}`;
-
-		const subId = addBalanceSubscription(balanceId);
-
-		// the watcher opens asynchronously (subscription list debounce + getApi)
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+	it("reads every watched balance of a chain in one storage query per block", async () => {
+		const addresses = [
+			"5TestAddressAlice",
+			"5TestAddressBob",
+			"5TestAddressCarol",
+		];
+		mocks.nativeAccounts.set("5TestAddressAlice", { free: 100n, frozen: 10n });
+		mocks.nativeAccounts.set("5TestAddressBob", { free: 50n, frozen: 0n });
+		const balanceIds = addresses.map((address) =>
+			getBalanceId({ address, tokenId: "native::pah" }),
 		);
+		const callsBefore = nativeCalls("pah").length;
 
-		// chain emits an account value -> free - frozen lands in the state
-		getSubject(subjectKey).next({
-			value: { data: { free: 100n, frozen: 10n } },
-		});
+		const unsubscribes = balanceIds.map(addBalanceSubscription);
 
+		const [alice, bob, carol] = await Promise.all(
+			balanceIds.map((balanceId) =>
+				waitForBalanceState(balanceId, (s) => s?.status === "loaded"),
+			),
+		);
+		expect(alice?.balance).toBe(90n);
+		expect(bob?.balance).toBe(50n);
+		expect(carol?.balance).toBe(0n);
+
+		const firstBlockCalls = nativeCalls("pah").slice(callsBefore);
+		expect(firstBlockCalls).toHaveLength(1);
+		expect(firstBlockCalls[0]?.keys).toHaveLength(3);
+
+		mocks.nativeAccounts.set("5TestAddressBob", { free: 75n, frozen: 5n });
+		tickBestBlock("pah", 2);
+
+		const bobAfter = await waitForBalanceState(
+			balanceIds[1] as string,
+			(s) => s?.balance === 70n,
+		);
+		expect(bobAfter?.status).toBe("loaded");
+		expect(nativeCalls("pah").slice(callsBefore)).toHaveLength(2);
+
+		for (const unsubscribe of unsubscribes) unsubscribe();
+	});
+
+	it("stops reading a balance once nobody watches it but keeps it cached as stale", async () => {
+		const address = "5TestAddressDave";
+		mocks.nativeAccounts.set(address, { free: 100n, frozen: 10n });
+		const balanceId = getBalanceId({ address, tokenId: "native::kah" });
+
+		const unsubscribe = addBalanceSubscription(balanceId);
 		const loaded = await waitForBalanceState(
 			balanceId,
 			(s) => s?.status === "loaded",
 		);
 		expect(loaded?.balance).toBe(90n);
 
-		// removing the subscription stops the watcher...
-		removeBalancesSubscription(subId);
-		await vi.waitFor(() => expect(getSubject(subjectKey).observed).toBe(false));
-
-		// ...but keeps the cached balance, downgraded to "stale"
+		unsubscribe();
 		const stale = await waitForBalanceState(
 			balanceId,
 			(s) => s?.status === "stale",
 		);
 		expect(stale?.balance).toBe(90n);
-	});
 
-	it("opens a single watcher for duplicate subscriptions", async () => {
-		const address = "5TestAddressBob";
-		const balanceId = getBalanceId({ address, tokenId: "native::pah" });
-		const subjectKey = `native||${address}`;
-
-		addBalanceSubscription(balanceId);
-		addBalanceSubscription(balanceId);
-
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
-		);
-		// give the debounced subscription list time to settle
-		await new Promise((resolve) => setTimeout(resolve, 250));
-
-		expect(
-			mocks.watchValueCalls.filter((key) => key === subjectKey),
-		).toHaveLength(1);
+		const callsBefore = nativeCalls("kah").length;
+		tickBestBlock("kah", 2);
+		await settle();
+		expect(nativeCalls("kah").slice(callsBefore)).toHaveLength(0);
 	});
 
 	it("watches System.Account on the people chain for its native token", async () => {
-		const address = "5TestAddressDave";
+		const address = "5TestAddressEve";
+		mocks.nativeAccounts.set(address, { free: 100n, frozen: 10n });
 		const balanceId = getBalanceId({ address, tokenId: "native::ppeople" });
-		const subjectKey = `native||${address}`;
 		const getApiCallsBefore = mocks.getApiChainIds.length;
 
-		const subId = addBalanceSubscription(balanceId);
-
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
-		);
-		expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual(["ppeople"]);
-
-		getSubject(subjectKey).next({
-			value: { data: { free: 100n, frozen: 10n } },
-		});
+		const unsubscribe = addBalanceSubscription(balanceId);
 
 		const loaded = await waitForBalanceState(
 			balanceId,
 			(s) => s?.status === "loaded",
 		);
 		expect(loaded?.balance).toBe(90n);
+		expect(new Set(mocks.getApiChainIds.slice(getApiCallsBefore))).toEqual(
+			new Set(["ppeople"]),
+		);
 
-		removeBalancesSubscription(subId);
+		unsubscribe();
 	});
 
 	it("deducts frozen from free for hydration asset balances", async () => {
 		const address = "5TestAddressCharlie";
+		mocks.hydrationAccounts.set(`5||${address}`, { free: 100n, frozen: 10n });
 		const balanceId = getBalanceId({
 			address,
 			tokenId: "hydration-asset::hydration::5",
 		});
-		const subjectKey = `hydration-asset||5||${address}`;
 
-		const subId = addBalanceSubscription(balanceId);
-
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
-		);
-
-		getSubject<TokensAccountValue>(subjectKey).next({
-			value: { free: 100n, reserved: 7n, frozen: 10n },
-		});
+		const unsubscribe = addBalanceSubscription(balanceId);
 
 		const loaded = await waitForBalanceState(
 			balanceId,
@@ -195,7 +218,7 @@ describe("balances service pipeline", () => {
 		);
 		expect(loaded?.balance).toBe(90n);
 
-		removeBalancesSubscription(subId);
+		unsubscribe();
 	});
 });
 
@@ -215,8 +238,7 @@ describe("getBalance$ for an Ethereum account outside Asset Hub", () => {
 			);
 			expect(state).toEqual({ status: "loaded", balance: undefined });
 
-			// absence of a watcher can only be observed once the debounced pipeline settles
-			await new Promise((resolve) => setTimeout(resolve, 250));
+			await settle();
 
 			expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual([]);
 			expect(

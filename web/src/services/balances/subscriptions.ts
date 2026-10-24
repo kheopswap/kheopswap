@@ -1,34 +1,29 @@
-import { isEqual, uniq, values } from "lodash-es";
-import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
+import { isEqual } from "lodash-es";
+import { distinctUntilChanged, map, Subject, startWith } from "rxjs";
 import { firstThenDebounceTime } from "../../utils/firstThenDebounceTime";
 import type { BalanceId } from "./types";
 
-// represent the list of balances that must be watched
-const allBalanceSubscriptions$ = new BehaviorSubject<
-	// key = subscription id
-	// value = BalanceId
-	Record<string, string>
->({});
+const subscribersByBalanceId = new Map<BalanceId, number>();
+const changed$ = new Subject<void>();
 
-// Unique active subscriptions (1 per token+address)
-export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
+export const balanceSubscriptions$ = changed$.pipe(
+	startWith(undefined),
 	firstThenDebounceTime(100),
-	map((subs) => uniq(values(subs)).sort() as BalanceId[]),
+	map(() => [...subscribersByBalanceId.keys()].sort()),
 	distinctUntilChanged<BalanceId[]>(isEqual),
 );
 
-export const addBalanceSubscription = (balanceId: string) => {
-	const subscriptionId = crypto.randomUUID();
+export const addBalanceSubscription = (balanceId: BalanceId) => {
+	subscribersByBalanceId.set(
+		balanceId,
+		(subscribersByBalanceId.get(balanceId) ?? 0) + 1,
+	);
+	changed$.next();
 
-	allBalanceSubscriptions$.next({
-		...allBalanceSubscriptions$.value,
-		[subscriptionId]: balanceId,
-	});
-
-	return subscriptionId;
-};
-
-export const removeBalancesSubscription = (id: string) => {
-	const { [id]: _, ...rest } = allBalanceSubscriptions$.value;
-	allBalanceSubscriptions$.next(rest);
+	return () => {
+		const remaining = (subscribersByBalanceId.get(balanceId) ?? 1) - 1;
+		if (remaining) subscribersByBalanceId.set(balanceId, remaining);
+		else subscribersByBalanceId.delete(balanceId);
+		changed$.next();
+	};
 };
