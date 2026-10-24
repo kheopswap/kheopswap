@@ -1,16 +1,32 @@
 import {
 	combineLatest,
+	from,
 	map,
 	type Observable,
 	of,
 	shareReplay,
 	throttleTime,
 } from "rxjs";
+import { getApi } from "../papi/getApi";
+import type { ChainIdAssetHub } from "../registry/chains/types";
 import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import type { TokenId } from "../registry/tokens/types";
 import { getPoolReserves$ } from "../services/pools/reserves";
 import { getAssetConvertPlancks } from "../utils/getAssetConvertPlancks";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
+
+type Reserves = [bigint, bigint];
+
+export type AssetConvertReserves = {
+	nativeTokenId: TokenId;
+	reservesNativeToTokenIn: Reserves;
+	reservesNativeToTokenOut: Reserves;
+};
+
+type AssetConvertReservesState = {
+	reserves: AssetConvertReserves | null;
+	isLoading: boolean;
+};
 
 type AssetConvertInput = {
 	tokenIdIn: TokenId;
@@ -28,80 +44,91 @@ type AssetConvertMultiResult = {
 	isLoading: boolean;
 };
 
-export const getAssetConvert$ = ({
-	tokenIdIn,
-	tokenIdOut,
-	plancksIn,
-}: AssetConvertInput): Observable<AssetConvertResult> =>
+const NO_RESERVES: AssetConvertReservesState = {
+	reserves: null,
+	isLoading: false,
+};
+
+const getReservesFromNative$ = (nativeTokenId: TokenId, tokenId: TokenId) =>
+	tokenId === nativeTokenId
+		? of({ reserves: [1n, 1n] as Reserves, isLoading: false })
+		: getPoolReserves$(nativeTokenId, tokenId);
+
+export const getAssetConvertReserves$ = (
+	tokenIdIn: TokenId,
+	tokenIdOut: TokenId,
+): Observable<AssetConvertReservesState> =>
 	getCachedObservable$(
-		"getAssetConvert$",
-		[tokenIdIn, tokenIdOut, plancksIn].join(","),
+		"getAssetConvertReserves$",
+		`${tokenIdIn},${tokenIdOut}`,
 		() => {
-			const returnValue = (plancksOut: bigint | null, isLoading: boolean) => ({
-				tokenIdIn,
-				tokenIdOut,
-				plancksIn,
-				plancksOut,
-				isLoading,
-			});
+			const chainIdIn = getChainIdFromTokenId(tokenIdIn);
+			const chainIdOut = getChainIdFromTokenId(tokenIdOut);
+			if (!chainIdIn || !chainIdOut || chainIdIn !== chainIdOut)
+				return of(NO_RESERVES);
 
-			if (!tokenIdIn || !tokenIdOut) return of(returnValue(null, false));
-
-			const chainId1 = getChainIdFromTokenId(tokenIdIn);
-			const chainId2 = getChainIdFromTokenId(tokenIdOut);
-
-			if (!chainId1 || !chainId2 || chainId1 !== chainId2)
-				return of(returnValue(null, false));
-
-			const nativeTokenId = getTokenId({ type: "native", chainId: chainId1 });
-
-			const getReserves$ = (tid1: TokenId, tid2: TokenId) => {
-				if (tid1 === tid2)
-					return of({
-						reserves: [1n, 1n] as [bigint, bigint],
-						isLoading: false,
-					});
-				return getPoolReserves$(tid1, tid2);
-			};
+			const nativeTokenId = getTokenId({ type: "native", chainId: chainIdIn });
 
 			return combineLatest([
-				getReserves$(nativeTokenId, tokenIdIn),
-				getReserves$(nativeTokenId, tokenIdOut),
+				getReservesFromNative$(nativeTokenId, tokenIdIn),
+				getReservesFromNative$(nativeTokenId, tokenIdOut),
 			]).pipe(
-				map(
-					([
-						{ reserves: reserveNativeToTokenIn, isLoading: isLoadingPool1 },
-						{ reserves: reserveNativeToTokenOut, isLoading: isLoadingPool2 },
-					]) => {
-						if (!reserveNativeToTokenIn || !reserveNativeToTokenOut)
-							return returnValue(null, isLoadingPool1 || isLoadingPool2);
-
-						const plancksOut =
-							getAssetConvertPlancks(
-								plancksIn,
-								tokenIdIn,
-								nativeTokenId,
-								tokenIdOut,
-								reserveNativeToTokenIn,
-								reserveNativeToTokenOut,
-							) ?? null;
-
-						return returnValue(plancksOut, isLoadingPool1 || isLoadingPool2);
-					},
-				),
+				map(([reservesIn, reservesOut]) => ({
+					reserves:
+						reservesIn.reserves && reservesOut.reserves
+							? {
+									nativeTokenId,
+									reservesNativeToTokenIn: reservesIn.reserves,
+									reservesNativeToTokenOut: reservesOut.reserves,
+								}
+							: null,
+					isLoading: reservesIn.isLoading || reservesOut.isLoading,
+				})),
 				shareReplay({ bufferSize: 1, refCount: true }),
 			);
 		},
 	);
 
+export const getAssetConvert$ = ({
+	tokenIdIn,
+	tokenIdOut,
+	plancksIn,
+}: AssetConvertInput): Observable<AssetConvertResult> =>
+	getAssetConvertReserves$(tokenIdIn, tokenIdOut).pipe(
+		map(({ reserves, isLoading }) => ({
+			tokenIdIn,
+			tokenIdOut,
+			plancksIn,
+			isLoading,
+			plancksOut: reserves
+				? (getAssetConvertPlancks(
+						plancksIn,
+						tokenIdIn,
+						reserves.nativeTokenId,
+						tokenIdOut,
+						reserves.reservesNativeToTokenIn,
+						reserves.reservesNativeToTokenOut,
+					) ?? null)
+				: null,
+		})),
+	);
+
 export const getAssetConvertMulti$ = (
 	inputs: AssetConvertInput[],
-): Observable<AssetConvertMultiResult> => {
-	return combineLatest(inputs.map((input) => getAssetConvert$(input))).pipe(
+): Observable<AssetConvertMultiResult> =>
+	combineLatest(inputs.map(getAssetConvert$)).pipe(
 		throttleTime(200, undefined, { leading: true, trailing: true }),
 		map((data) => ({
 			data,
 			isLoading: data.some(({ isLoading }) => isLoading),
 		})),
 	);
-};
+
+export const getAssetConversionLpFee$ = (
+	chainId: ChainIdAssetHub,
+): Observable<number> =>
+	getCachedObservable$("getAssetConversionLpFee$", chainId, () =>
+		from(
+			getApi(chainId).then((api) => api.constants.AssetConversion.LPFee()),
+		).pipe(shareReplay({ bufferSize: 1, refCount: true })),
+	);
