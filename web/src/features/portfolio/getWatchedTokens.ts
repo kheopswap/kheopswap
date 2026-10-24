@@ -1,4 +1,5 @@
 import type { Token, TokenId } from "../../registry/tokens/types";
+import type { PortfolioRowData } from "./types";
 
 export const matchesTokenSearch = (token: Token, search: string) => {
 	const ls = search.toLowerCase().trim();
@@ -10,6 +11,14 @@ export const matchesTokenSearch = (token: Token, search: string) => {
 			token.assetId.toString() === ls)
 	);
 };
+
+const isListedToken = (token: Token, poolTokenIds: ReadonlySet<TokenId>) =>
+	token.type === "native" || !!token.verified || poolTokenIds.has(token.id);
+
+export const isListedRow = (
+	{ token, balance }: PortfolioRowData,
+	poolTokenIds: ReadonlySet<TokenId>,
+) => isListedToken(token, poolTokenIds) || !!balance?.tokenPlancks;
 
 export const getWatchedTokens = ({
 	tokens,
@@ -24,9 +33,7 @@ export const getWatchedTokens = ({
 }) =>
 	tokens.filter(
 		(token) =>
-			token.type === "native" ||
-			token.verified ||
-			poolTokenIds.has(token.id) ||
+			isListedToken(token, poolTokenIds) ||
 			heldTokenIds.has(token.id) ||
 			matchesTokenSearch(token, search),
 	);

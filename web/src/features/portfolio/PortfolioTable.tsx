@@ -4,7 +4,7 @@ import type { TokenId } from "../../registry/tokens/types";
 import type { BalanceWithStable } from "../../types/balances";
 import { isBigInt } from "../../utils/isBigInt";
 import { sortBigInt } from "../../utils/sortBigInt";
-import { matchesTokenSearch } from "./getWatchedTokens";
+import { isListedRow, matchesTokenSearch } from "./getWatchedTokens";
 import { PortfolioHeaderRow } from "./PortfolioHeaderRow";
 import { usePortfolio } from "./PortfolioProvider";
 import { PortfolioRows } from "./PortfolioRows";
@@ -56,6 +56,7 @@ export const PortfolioTable = () => {
 		holdingsByTokenId,
 		isLoading,
 		isLoadingTokens,
+		poolTokenIds,
 		search,
 		setSearch,
 	} = usePortfolio();
@@ -84,13 +85,8 @@ export const PortfolioTable = () => {
 		() =>
 			isSearching
 				? sortedRows.filter(({ token }) => matchesTokenSearch(token, search))
-				: sortedRows.filter(
-						({ token, balance, tvl }) =>
-							!!token.verified ||
-							!!balance?.tokenPlancks ||
-							!!tvl?.tokenPlancks,
-					),
-		[isSearching, search, sortedRows],
+				: sortedRows.filter((row) => isListedRow(row, poolTokenIds)),
+		[isSearching, search, sortedRows, poolTokenIds],
 	);
 
 	const isLoadingRows = isSearching ? isLoadingTokens : isLoading;

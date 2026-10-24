@@ -49,15 +49,20 @@ export const usePortfolioProvider = () => {
 	const { data: pools } = usePoolsByChainId({ chainId: assetHub.id });
 	const heldTokenIds = useHeldTokenIds();
 
+	const poolTokenIds = useMemo(
+		() => new Set(pools.flatMap((pool) => pool.tokenIds)),
+		[pools],
+	);
+
 	const watchedTokens = useMemo(
 		() =>
 			getWatchedTokens({
 				tokens,
-				poolTokenIds: new Set(pools.flatMap((pool) => pool.tokenIds)),
+				poolTokenIds,
 				heldTokenIds: new Set(heldTokenIds),
 				search,
 			}),
-		[tokens, pools, heldTokenIds, search],
+		[tokens, poolTokenIds, heldTokenIds, search],
 	);
 
 	const discoveryKey = useMemo(
@@ -133,6 +138,7 @@ export const usePortfolioProvider = () => {
 		unpricedCount,
 		accounts,
 		tokens,
+		poolTokenIds,
 		tvl,
 		prices,
 		search,

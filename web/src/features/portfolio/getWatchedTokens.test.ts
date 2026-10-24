@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { Token } from "../../registry/tokens/types";
-import { getWatchedTokens, matchesTokenSearch } from "./getWatchedTokens";
+import type { BalanceWithStableSummary } from "../../types/balances";
+import {
+	getWatchedTokens,
+	isListedRow,
+	matchesTokenSearch,
+} from "./getWatchedTokens";
 
 const asset = (
 	assetId: number,
@@ -62,6 +67,42 @@ describe("getWatchedTokens", () => {
 			search: "obs",
 		});
 		expect(watched.map((t) => t.symbol)).toEqual(["DOT", "USDC", "OBS"]);
+	});
+});
+
+const summary = (token: Token, tokenPlancks: bigint) =>
+	({
+		tokenId: token.id,
+		tokenPlancks,
+		isLoadingTokenPlancks: false,
+		isLoadingStablePlancks: false,
+		isInitializing: false,
+		status: "unpriced",
+		stablePlancks: null,
+	}) satisfies BalanceWithStableSummary;
+
+describe("isListedRow", () => {
+	const poolTokenIds = new Set([pooled.id]);
+	const row = (
+		token: Token,
+		{ balance = null as bigint | null, tvl = null as bigint | null } = {},
+	) => ({
+		token,
+		balance: balance === null ? null : summary(token, balance),
+		tvl: tvl === null ? null : summary(token, tvl),
+		price: null,
+	});
+
+	it("lists native, verified and pooled tokens before any balance or reserve loads", () => {
+		expect(isListedRow(row(native), poolTokenIds)).toBe(true);
+		expect(isListedRow(row(usdc), poolTokenIds)).toBe(true);
+		expect(isListedRow(row(pooled), poolTokenIds)).toBe(true);
+	});
+
+	it("lists an unverified token outside pools only while it is held", () => {
+		expect(isListedRow(row(held, { balance: 5n }), poolTokenIds)).toBe(true);
+		expect(isListedRow(row(held, { balance: 0n }), poolTokenIds)).toBe(false);
+		expect(isListedRow(row(obscure, { tvl: 5n }), poolTokenIds)).toBe(false);
 	});
 });
 
