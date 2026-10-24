@@ -34,6 +34,8 @@ export type EthereumAccount = {
 
 type BlockInclusion = { hash: string; number: number; index: number };
 
+type FinalizedInclusion = BlockInclusion & { isReceiptSuccess: boolean };
+
 type ExtrinsicEvents = Extract<TxEvent, { type: "finalized" }>;
 
 const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
@@ -137,7 +139,7 @@ const waitForFinalizedInclusion = async (
 	txHash: Hex,
 	timeoutMs: number,
 	signal: AbortSignal,
-): Promise<BlockInclusion> => {
+): Promise<FinalizedInclusion> => {
 	const deadline = Date.now() + timeoutMs;
 
 	while (Date.now() < deadline) {
@@ -152,7 +154,12 @@ const waitForFinalizedInclusion = async (
 		const number = Number(receipt.blockNumber);
 		const finalizedHash = await getBlockHash(api, number, "finalized", signal);
 		if (finalizedHash && isSameHex(finalizedHash, receipt.blockHash))
-			return { hash: finalizedHash, number, index: receipt.transactionIndex };
+			return {
+				hash: finalizedHash,
+				number,
+				index: receipt.transactionIndex,
+				isReceiptSuccess: receipt.status === "success",
+			};
 
 		await sleep(FINALIZATION_POLL_INTERVAL_MS);
 	}
@@ -306,7 +313,10 @@ export const createEthereumTxObservable = ({
 					bestHash: bestBlock.hash,
 					finalizedHash,
 				});
-				const finalizedBlock = await waitForFinalizedInclusion(
+				const {
+					isReceiptSuccess: isCanonicalReceiptSuccess,
+					...finalizedBlock
+				} = await waitForFinalizedInclusion(
 					api,
 					publicClient,
 					txHash,
@@ -317,7 +327,7 @@ export const createEthereumTxObservable = ({
 					api,
 					finalizedBlock,
 					txHash,
-					isReceiptSuccess,
+					isCanonicalReceiptSuccess,
 				);
 				if (signal.aborted) return;
 				subscriber.next(finalizedEvents);

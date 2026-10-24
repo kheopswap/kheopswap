@@ -10,8 +10,12 @@ const TX_HASH = "0xtx";
 
 const chain = vi.hoisted(() => ({
 	finalizedHash: "0xbest" as string,
-	receipts: [] as { blockHash: string; transactionIndex: number }[],
-	eventsByHash: {} as Record<string, unknown[]>,
+	receipts: [] as {
+		blockHash: string;
+		transactionIndex: number;
+		status?: "success" | "reverted";
+	}[],
+	eventsByHash: {} as Record<string, unknown[] | Error>,
 }));
 
 const inExtrinsic = (index: number, type: string, value: unknown) => ({
@@ -30,7 +34,11 @@ vi.mock("../../papi/getApi", () => ({
 						at === "best" ? "0xbest" : chain.finalizedHash,
 				},
 				Events: {
-					getValue: async ({ at }: { at: string }) => chain.eventsByHash[at],
+					getValue: async ({ at }: { at: string }) => {
+						const events = chain.eventsByHash[at];
+						if (events instanceof Error) throw events;
+						return events;
+					},
 				},
 			},
 		},
@@ -49,7 +57,7 @@ vi.mock("viem", async (importOriginal) => ({
 		getTransactionReceipt: async () => {
 			const receipt =
 				chain.receipts.length > 1 ? chain.receipts.shift() : chain.receipts[0];
-			return { ...receipt, blockNumber: 7n, status: "success" };
+			return { status: "success", ...receipt, blockNumber: 7n };
 		},
 	}),
 }));
@@ -118,6 +126,24 @@ describe("createEthereumTxObservable", () => {
 			{ type: "Transfer", value: { amount: 1n } },
 			{ type: "ExtrinsicSuccess", value: {} },
 		]);
+	});
+
+	it("reports the canonical receipt's outcome when the finalized block's events cannot be read", async () => {
+		chain.finalizedHash = FINALIZED_HASH;
+		chain.eventsByHash[FINALIZED_HASH] = new Error("rpc down");
+		chain.receipts = [
+			{ blockHash: BEST_HASH, transactionIndex: 2 },
+			{ blockHash: BEST_HASH, transactionIndex: 2 },
+			{ blockHash: FINALIZED_HASH, transactionIndex: 1, status: "reverted" },
+		];
+
+		const events = await track();
+
+		expect(events.at(-1)).toMatchObject({
+			type: "finalized",
+			ok: false,
+			block: { hash: FINALIZED_HASH, index: 1 },
+		});
 	});
 
 	it("reads the finalized events from the finalized block when it differs from the best block", async () => {
