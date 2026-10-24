@@ -9,7 +9,7 @@ import { relayChains$ } from "./relay";
 export const getAllTokens$ = (types?: TokenType[]) => {
 	return getCachedObservable$(
 		"getAllTokens$",
-		types?.sort().join(",") ?? "all",
+		types ? [...types].sort().join(",") : "all",
 		() =>
 			relayChains$.pipe(
 				switchMap(({ allChains }) =>

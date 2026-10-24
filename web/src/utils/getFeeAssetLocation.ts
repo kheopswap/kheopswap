@@ -1,10 +1,7 @@
 import { XcmV5Junction, XcmV5Junctions } from "@polkadot-api/descriptors";
 import type { Token } from "../registry/tokens/types";
 
-// TODO rename to something similar as the associated signed extension (ChargeAssetTxPayment)
-// and ensure this is called only if the chain has ChargeAssetTxPayment (add property on the chain type ?)
 export const getFeeAssetLocation = (feeToken: Token) => {
-	// only allow assets, undefined for others, including native token
 	switch (feeToken.type) {
 		case "asset":
 			if (!feeToken.isSufficient)
