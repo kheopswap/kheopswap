@@ -6,8 +6,10 @@ import {
 	timeout,
 } from "rxjs";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { getBalance$ } from "./service";
+import { discoverBalances } from "./discovery";
+import { getBalance$, heldTokenIds$ } from "./service";
 import { balancesState$ } from "./state";
+import { balancesStore$ } from "./store";
 import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceState } from "./types";
 import { getBalanceId } from "./utils";
@@ -318,6 +320,50 @@ describe("balances service pipeline", () => {
 		expect(loaded?.balance).toBe(90n);
 
 		unsubscribe();
+	});
+});
+
+describe("discoverBalances", () => {
+	it("stores a token received by an unwatched account without subscribing to it", async () => {
+		const address = "5TestAddressIvan";
+		mocks.assetAccounts.set(`1984||${address}`, { balance: 5n });
+		const receivedId = getBalanceId({ address, tokenId: "asset::pah::1984" });
+		const emptyId = getBalanceId({ address, tokenId: "asset::pah::1337" });
+
+		await discoverBalances([
+			{ address, tokenId: "asset::pah::1984" },
+			{ address, tokenId: "asset::pah::1337" },
+		]);
+
+		expect(balancesStore$.value[receivedId]?.balance).toBe(5n);
+		expect(balancesStore$.value[emptyId]).toBeUndefined();
+		expect(await firstValueFrom(heldTokenIds$)).toContain("asset::pah::1984");
+		expect(mocks.addedBalanceIds).not.toContain(receivedId);
+	});
+
+	it("finishes when a pallet read fails and keeps what the other pallets returned", async () => {
+		const address = "5TestAddressJudy";
+		mocks.nativeAccounts.set(address, { free: 3n, frozen: 0n });
+		mocks.failingPallets.add("Assets");
+		const nativeId = getBalanceId({ address, tokenId: "native::pah" });
+
+		await expect(
+			discoverBalances([
+				{ address, tokenId: "native::pah" },
+				{ address, tokenId: "asset::pah::1984" },
+			]),
+		).resolves.toBeUndefined();
+
+		expect(balancesStore$.value[nativeId]?.balance).toBe(3n);
+		mocks.failingPallets.delete("Assets");
+	});
+
+	it("skips chains an Ethereum account cannot hold balances on", async () => {
+		const getApiCallsBefore = mocks.getApiChainIds.length;
+		await discoverBalances([
+			{ address: `0x${"cd".repeat(20)}`, tokenId: "native::hydration" },
+		]);
+		expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual([]);
 	});
 });
 

@@ -1,6 +1,6 @@
 import { bind } from "@react-rxjs/core";
-import { uniq, values } from "lodash-es";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { values } from "lodash-es";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetHubTVL } from "../../hooks/useAssetHubTVL";
@@ -10,7 +10,15 @@ import { usePoolsByChainId } from "../../hooks/usePoolsByChainId";
 import { useTokenPrices } from "../../hooks/useTokenPrices";
 import { PORTFOLIO_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
+import {
+	DISCOVERY_INTERVAL,
+	discoverBalances,
+	getLastDiscovery,
+	getNextDiscoveryDelay,
+	recordDiscovery,
+} from "../../services/balances/discovery";
 import { heldTokenIds$ } from "../../services/balances/service";
+import type { BalanceDef } from "../../services/balances/types";
 import { useRelayChains } from "../../state/relay";
 import { uniqByPublicKey } from "../../utils/accountPublicKey";
 import { logger } from "../../utils/logger";
@@ -19,8 +27,6 @@ import { getWatchedTokens } from "./getWatchedTokens";
 import { usePortfolioAllocation } from "./usePortfolioAllocation";
 
 const [useHeldTokenIds] = bind(heldTokenIds$, [] as TokenId[]);
-
-const DISCOVERED_ACCOUNTS = new Set<string>();
 
 export const usePortfolioProvider = () => {
 	const stop = logger.cumulativeTimer("usePortfolioProvider");
@@ -43,55 +49,64 @@ export const usePortfolioProvider = () => {
 	const { data: pools } = usePoolsByChainId({ chainId: assetHub.id });
 	const heldTokenIds = useHeldTokenIds();
 
+	const watchedTokens = useMemo(
+		() =>
+			getWatchedTokens({
+				tokens,
+				poolTokenIds: new Set(pools.flatMap((pool) => pool.tokenIds)),
+				heldTokenIds: new Set(heldTokenIds),
+				search,
+			}),
+		[tokens, pools, heldTokenIds, search],
+	);
+
 	const discoveryKey = useMemo(
 		() =>
 			accounts.length
-				? [
-						assetHub.id,
-						...uniq(accounts.map((account) => account.address)).sort(),
-					].join(",")
+				? [assetHub.id, ...accounts.map((a) => a.address).sort()].join(",")
 				: "",
 		[assetHub.id, accounts],
 	);
-	const [, rerender] = useReducer((n: number) => n + 1, 0);
-	const isDiscovering =
-		!!discoveryKey && !DISCOVERED_ACCOUNTS.has(discoveryKey);
+	const unwatchedDefs = useRef<BalanceDef[]>([]);
+	unwatchedDefs.current = useMemo(() => {
+		const watched = new Set(watchedTokens.map((token) => token.id));
+		return tokens
+			.filter((token) => !watched.has(token.id))
+			.flatMap((token) =>
+				accounts.map((account) => ({
+					address: account.address,
+					tokenId: token.id,
+				})),
+			);
+	}, [tokens, watchedTokens, accounts]);
 
-	const watchedTokens = useMemo(
-		() =>
-			isDiscovering
-				? tokens
-				: getWatchedTokens({
-						tokens,
-						poolTokenIds: new Set(pools.flatMap((pool) => pool.tokenIds)),
-						heldTokenIds: new Set(heldTokenIds),
-						search,
-					}),
-		[isDiscovering, tokens, pools, heldTokenIds, search],
-	);
+	useEffect(() => {
+		if (!discoveryKey || isLoadingTokens) return;
+		let cancelled = false;
+		let timeout: ReturnType<typeof setTimeout>;
+		const run = async () => {
+			try {
+				await discoverBalances(unwatchedDefs.current);
+				recordDiscovery(discoveryKey);
+			} catch (err) {
+				logger.error("Token discovery failed", { err });
+			}
+			if (!cancelled) timeout = setTimeout(run, DISCOVERY_INTERVAL);
+		};
+		timeout = setTimeout(
+			run,
+			getNextDiscoveryDelay(getLastDiscovery(discoveryKey)),
+		);
+		return () => {
+			cancelled = true;
+			clearTimeout(timeout);
+		};
+	}, [discoveryKey, isLoadingTokens]);
 
 	const { data: tvl } = useAssetHubTVL();
 
 	const { data: liveBalances, isLoading: isLoadingBalances } =
 		useBalancesWithStables({ tokens: watchedTokens, accounts });
-
-	useEffect(() => {
-		if (
-			!isDiscovering ||
-			isLoadingTokens ||
-			isLoadingBalances ||
-			!liveBalances.length
-		)
-			return;
-		DISCOVERED_ACCOUNTS.add(discoveryKey);
-		rerender();
-	}, [
-		isDiscovering,
-		isLoadingTokens,
-		isLoadingBalances,
-		liveBalances.length,
-		discoveryKey,
-	]);
 
 	const lastBalances = useRef(liveBalances);
 	if (liveBalances.length || !accounts.length)

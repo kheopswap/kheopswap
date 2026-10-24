@@ -284,6 +284,18 @@ const watchChainBalances = (
 	};
 };
 
+export const readBalances = async (balanceIds: BalanceId[]) => {
+	const updates = await Promise.all(
+		[...groupEntriesByChain(balanceIds).values()].map(readChainBalances),
+	);
+	const store = balancesStore$.value;
+	applyUpdates(
+		updates
+			.flat()
+			.filter(([balanceId, balance]) => balance > 0n || balanceId in store),
+	);
+};
+
 const CHAIN_WATCHERS = new Map<ChainId, ChainWatcher>();
 
 const sameEntries = (a: BalanceEntry[], b: BalanceEntry[]) =>
