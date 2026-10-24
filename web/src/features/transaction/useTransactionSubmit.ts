@@ -20,7 +20,7 @@ import { logger } from "../../utils/logger";
 import { notifyError } from "../../utils/notifyError";
 import { createEthereumTxObservable } from "./createEthereumTxObservable";
 
-const TX_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+const TX_TIMEOUT_MS = 10 * 60 * 1000;
 
 const isUserRejectedTxError = (error: unknown): boolean => {
 	if (typeof error !== "object" || error === null) return false;
@@ -53,16 +53,7 @@ const isUserRejectedTxError = (error: unknown): boolean => {
 	return false;
 };
 
-/**
- * Subscribes to a transaction Observable and feeds events to the transaction store.
- * Used by both Polkadot and Ethereum transaction flows.
- *
- * The subscription self-terminates when a "finalized" or "error" event is received.
- * A safety timeout (10 minutes) ensures the subscription is cleaned up if neither
- * event arrives (e.g. due to a dropped connection).
- *
- * It is intentionally not tied to component lifecycle so transactions survive navigation.
- */
+// Not tied to the component lifecycle so transactions survive navigation.
 const subscribeTxEvents = (
 	txId: string,
 	txEvents$: Observable<TxEvent>,
@@ -164,8 +155,32 @@ export const useTransactionSubmit = ({
 			const txFeeToken = feeToken ?? nativeToken;
 			if (!txFeeToken) return;
 
-			const txId = crypto.randomUUID();
+			const getTxEvents$ = async (): Promise<Observable<TxEvent> | null> => {
+				if (account.platform !== "ethereum") {
+					if (!feeEstimate || !options) return null;
+					return call.createSubmitAndWatch(account.txCreator, options);
+				}
+				if (!isChainIdAssetHub(chainId)) {
+					notifyError(`Ethereum accounts are not supported on ${chainId}`);
+					return null;
+				}
+				if (isEthereumNetworkMismatch) {
+					notifyError(
+						`Wrong network selected. Expected chain ID ${targetEvmChainId}.`,
+					);
+					return null;
+				}
+				return createEthereumTxObservable({
+					account,
+					chainId,
+					callData: toHex(await call.getEncodedData()),
+				});
+			};
 
+			const txEvents$ = await getTxEvents$();
+			if (!txEvents$) return;
+
+			const txId = crypto.randomUUID();
 			addTransaction({
 				id: txId,
 				createdAt: Date.now(),
@@ -178,40 +193,7 @@ export const useTransactionSubmit = ({
 				title: transactionTitle,
 				followUpData,
 			});
-
 			openTransactionModal(txId);
-
-			let txEvents$: Observable<TxEvent>;
-
-			if (account.platform === "ethereum") {
-				if (!isChainIdAssetHub(chainId)) {
-					updateTransactionStatus(txId, "failed");
-					notifyError(`Ethereum accounts are not supported on ${chainId}`);
-					return;
-				}
-
-				if (isEthereumNetworkMismatch) {
-					updateTransactionStatus(txId, "failed");
-					notifyError(
-						`Wrong network selected. Expected chain ID ${targetEvmChainId}.`,
-					);
-					return;
-				}
-
-				const encodedCallData = await call.getEncodedData();
-				const callData = toHex(encodedCallData);
-
-				txEvents$ = createEthereumTxObservable({
-					account,
-					chainId,
-					callData,
-				});
-			} else {
-				if (!feeEstimate || !options) return;
-				txEvents$ = call.createSubmitAndWatch(account.txCreator, options);
-			}
-
-			// Fire-and-forget: subscription self-terminates on finalized/error.
 			subscribeTxEvents(txId, txEvents$);
 		} catch (err) {
 			notifyError(err);

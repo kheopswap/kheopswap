@@ -20,9 +20,6 @@ vi.mock("../../hooks/useConvertedFee", () => ({
 		isLoading: false,
 	}),
 }));
-vi.mock("../../hooks/useDryRun", () => ({
-	useDryRun: () => ({ data: null, isLoading: false, error: null }),
-}));
 vi.mock("../../hooks/useFeeToken", () => ({
 	useFeeToken: () => ({
 		feeToken: { id: "native::pah" },
