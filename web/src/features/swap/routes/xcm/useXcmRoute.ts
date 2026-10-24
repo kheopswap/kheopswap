@@ -445,6 +445,8 @@ export const useXcmRoute = ({
 
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
+		if (!account)
+			return "Connect a Polkadot account to quote cross-chain routes";
 		if (access && !access.allowed) return access.reason;
 		if (callQuery.error)
 			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
@@ -458,6 +460,7 @@ export const useXcmRoute = ({
 	}, [
 		isBalanceShortfall,
 		newAccountMinimumMessage,
+		account,
 		access,
 		callQuery.error,
 		destinationSwap.errorMessage,
