@@ -221,6 +221,27 @@ describe("TransactionProvider dry run", () => {
 		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
 	});
 
+	it("lets a successful Asset Hub dry run waive the keep-alive heuristic, which cannot see frozen funds", () => {
+		balanceCheck.insufficientBalances = {
+			"native::pah": "Insufficient balance to keep account alive",
+		};
+		const transaction = renderTransaction(undefined, "pah");
+		expect(transaction.canSubmit).toBe(true);
+		expect(transaction.insufficientBalances).toEqual({});
+	});
+
+	it("keeps the keep-alive shortfall when the dry run is not conclusive", () => {
+		balanceCheck.insufficientBalances = {
+			"hydration-asset::hydration::5":
+				"Insufficient balance to keep account alive",
+		};
+		const transaction = renderTransaction(undefined, "hydration");
+		expect(transaction.canSubmit).toBe(false);
+		expect(transaction.insufficientBalances).toEqual(
+			balanceCheck.insufficientBalances,
+		);
+	});
+
 	it("ignores a failed dry run on Hydration, where fees are not simulated", () => {
 		dryRun.data = failedDryRun;
 		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(true);

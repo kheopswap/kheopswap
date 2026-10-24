@@ -665,6 +665,58 @@ describe("trackXcmArrivals", () => {
 		subscription.unsubscribe();
 	});
 
+	it("does not read back anything when the best chain switches to a sibling or shorter branch", async () => {
+		const best$ = new Subject<BlockUpdate>();
+		chains.streams = {
+			hydration: (at) => (at === "best" ? best$ : new Subject()),
+		};
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		best$.next(atBlock(100, []));
+		best$.next(atBlock(100, []));
+		best$.next(atBlock(99, []));
+		best$.next(atBlock(100, ourArrival));
+		await vi.waitFor(() =>
+			expect(getTrackedXcmArrival("to-hydration")?.status).toBe("arrived"),
+		);
+
+		expect(chains.pastReads).toEqual([]);
+		subscription.unsubscribe();
+	});
+
+	it("reads back the blocks missed while the destination stream was down", async () => {
+		vi.useFakeTimers();
+		const first$ = new Subject<BlockUpdate>();
+		const second$ = new Subject<BlockUpdate>();
+		let attempts = 0;
+		chains.streams = {
+			hydration: (at) =>
+				at === "finalized"
+					? ++attempts === 1
+						? first$
+						: second$
+					: new Subject(),
+		};
+		chains.pastBlocks = { 11: inPhase([]), 12: inPhase(ourArrival) };
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		first$.next(atBlock(10, []));
+		first$.error(new Error("rpc down"));
+		await vi.advanceTimersByTimeAsync(10_000);
+		second$.next(atBlock(13, []));
+		await vi.advanceTimersByTimeAsync(0);
+
+		expect(chains.pastReads).toEqual([
+			{ number: 11, tipHash: "0xtip13" },
+			{ number: 12, tipHash: "0xtip13" },
+		]);
+		expect(getTrackedXcmArrival("to-hydration")).toMatchObject({
+			status: "arrived",
+			finalized: true,
+		});
+		subscription.unsubscribe();
+	});
+
 	it("keeps tracking a transfer to Asset Hub while Hydration keeps failing", () => {
 		vi.useFakeTimers();
 		const assetHub$ = new Subject<BlockUpdate>();
