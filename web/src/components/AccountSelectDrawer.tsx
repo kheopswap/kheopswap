@@ -123,11 +123,13 @@ const AccountButton = memo<{
 							/>
 						</div>
 						<div className="text-xs text-muted">
-							<StableValue
-								stableToken={stableToken}
-								plancks={balance.stablePlancks ?? 0n}
-								pulse={balance.isLoadingStablePlancks}
-							/>
+							{balance.stablePlancks !== null && (
+								<StableValue
+									stableToken={stableToken}
+									plancks={balance.stablePlancks}
+									pulse={balance.isLoadingStablePlancks}
+								/>
+							)}
 						</div>
 					</div>
 				)
