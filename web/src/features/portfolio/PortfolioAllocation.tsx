@@ -6,10 +6,12 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "../../components/tooltip/Tooltip";
+import { getChainById } from "../../registry/chains/chains";
 import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import { cn } from "../../utils/cn";
 import { plancksToTokens } from "../../utils/plancks";
+import { shortenChainName } from "../../utils/shortenChainName";
 import { FALLBACK_LOGO_SRC, getValidTokenLogo } from "../../utils/tokenLogo";
 import { TEXT_COLOR } from "./getAllocation";
 import { usePortfolio } from "./PortfolioProvider";
@@ -18,6 +20,17 @@ const AMOUNT_CLASS_NAME =
 	"font-extralight font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]";
 
 const formatShare = (share: number) => `${Math.round(share * 100)}%`;
+
+export const getLegendLabels = (tokens: Token[]) => {
+	const symbolCounts = new Map<string, number>();
+	for (const { symbol } of tokens)
+		symbolCounts.set(symbol, (symbolCounts.get(symbol) ?? 0) + 1);
+	return tokens.map(({ symbol, chainId }) =>
+		(symbolCounts.get(symbol) ?? 0) > 1
+			? `${symbol} (${shortenChainName(getChainById(chainId).name)})`
+			: symbol,
+	);
+};
 
 const Explained: FC<{ children: string; explanation: string }> = ({
 	children,
@@ -108,6 +121,7 @@ export const PortfolioAllocation = () => {
 	if (!accountsCount || (!isLoading && !hasTotal)) return null;
 
 	const { slices, other } = allocation;
+	const legendLabels = getLegendLabels(slices.map(({ token }) => token));
 
 	return (
 		<section className="mx-1 mt-3 mb-9">
@@ -167,11 +181,11 @@ export const PortfolioAllocation = () => {
 						)}
 					</div>
 					<ul className="mt-3.5 flex flex-wrap gap-x-5.5 gap-y-2 text-[13px]">
-						{slices.map(({ token, share }) => (
+						{slices.map(({ token, share }, index) => (
 							<LegendItem
 								key={token.id}
 								token={token}
-								label={token.symbol}
+								label={legendLabels[index] ?? token.symbol}
 								share={share}
 								isLoading={isLoading}
 							/>

@@ -35,6 +35,7 @@ import type {
 	BalanceWithStableSummary,
 } from "../../types/balances";
 import { cn } from "../../utils/cn";
+import { formatDecimals } from "../../utils/formatDecimals";
 import { getAccountName } from "../../utils/getAccountName";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
 import { isLowLiquidity } from "../../utils/getHoldingValuation";
@@ -206,8 +207,13 @@ const AssetsPalletInfoRows: FC<{
 			/>
 			<TokenDetailsRow label="Holders">
 				{tokenInfo ? (
-					<Pulse as="span" pulse={isLoading} className="font-mono">
-						{tokenInfo.accounts}
+					<Pulse
+						as="span"
+						pulse={isLoading}
+						className="font-mono"
+						title={tokenInfo.accounts.toString()}
+					>
+						{formatDecimals(tokenInfo.accounts)}
 					</Pulse>
 				) : (
 					<Shimmer>00000</Shimmer>
