@@ -44,17 +44,21 @@ wait_for http://localhost:5173/ 120
 
 status installing-talisman
 mkdir -p /verify/talisman
-if curl -sfL --max-time 120 -o /verify/talisman.crx "$STORE_URL" && { unzip -qo /verify/talisman.crx -d /verify/talisman || (($? <= 1)); }; then
-	source="Chrome Web Store"
-elif [[ -f /verify/wallet/talisman.zip ]]; then
-	rm -rf /verify/talisman/*
+if [[ -f /verify/wallet/talisman.zip ]]; then
 	unzip -qo /verify/wallet/talisman.zip -d /verify/talisman
 	source="~/.kheopswap/talisman.zip"
+elif curl -sfL --max-time 120 -o /verify/talisman.crx "$STORE_URL" && { unzip -qo /verify/talisman.crx -d /verify/talisman || (($? <= 1)); }; then
+	source="Chrome Web Store"
 else
-	echo "Chrome Web Store download failed and ~/.kheopswap/talisman.zip does not exist" >&2
+	echo "~/.kheopswap/talisman.zip does not exist and the Chrome Web Store download failed" >&2
 	false
 fi
-extension="$(dirname "$(find /verify/talisman -maxdepth 2 -name manifest.json | head -1)")"
+manifest="$(find /verify/talisman -maxdepth 2 -name manifest.json | head -1)"
+if [[ -z "$manifest" ]]; then
+	echo "No manifest.json in the Talisman build from $source" >&2
+	false
+fi
+extension="$(dirname "$manifest")"
 echo "Talisman $(node -p "require('$extension/manifest.json').version") from $source" | tee "$logs/talisman-source.txt"
 
 # Without Developer mode, the chrome.runtime.reload() that ends a restore unloads a --load-extension extension.

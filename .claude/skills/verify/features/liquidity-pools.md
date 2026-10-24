@@ -47,5 +47,5 @@ Steps:
 - Token buttons on the pool page are disabled, because the pair is fixed by the route.
 - The `Add` and `Remove` mode buttons sit next to `ADD LIQUIDITY`. Use exact names.
 - Check the test account's balance of the pool's asset first. Without enough USDC, adding to PAS/USDC shows `Insufficient balance`, and `Simulation` reads `Failed`. Get the asset first, or use a pool whose asset the account holds.
-- The Paseo signing break (see `../SKILL.md`) applies here too. Fall back to Polkadot with ≤ 0.01 DOT.
+- Signing on Paseo needs the Talisman build from `~/.kheopswap/talisman.zip` (see `../SKILL.md`). Without it, fall back to Polkadot with ≤ 0.01 DOT.
 - After an add, remove the position again so the test account doesn't accumulate LP tokens across runs.
