@@ -17,6 +17,7 @@ import {
 import { useTransactions } from "./TransactionsProvider";
 import type { TransactionRecord, TransactionStatus } from "./types";
 import {
+	describeFailedArrival,
 	isXcmArrivalType,
 	useXcmArrival,
 	type XcmArrival,
@@ -70,7 +71,9 @@ const getArrivalView = (
 		case "failed-on-destination":
 			return {
 				outcome: "error",
-				text: `Failed on ${destination}, assets trapped`,
+				text: [`Failed on ${destination}`, describeFailedArrival(arrival)]
+					.filter(Boolean)
+					.join(", "),
 			};
 		case "unconfirmed":
 			return {

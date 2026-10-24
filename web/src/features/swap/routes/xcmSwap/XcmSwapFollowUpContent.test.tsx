@@ -27,6 +27,7 @@ const followUpData: XcmSwapFollowUpData = {
 		tokenId: "hydration-asset::hydration::10",
 		beneficiary: usdcToUsdt.sender,
 	},
+	returnTokenIds: ["hydration-asset::hydration::10"],
 	tokenOut: getToken("hydration-asset::hydration::10"),
 	estimatedReceived: 98_764_625n,
 	swap: {

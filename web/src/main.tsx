@@ -16,7 +16,6 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SuspenseMonitor } from "./components/SuspenseMonitor";
 import { Toasts } from "./components/Toasts";
 import { CreatePoolFollowUpContent } from "./features/liquidity/create-pool/CreatePoolFollowUpContent";
-import { XcmDestinationSwapFollowUpContent } from "./features/swap/routes/xcmDestinationSwap/XcmDestinationSwapFollowUpContent";
 import { XcmSwapFollowUpContent } from "./features/swap/routes/xcmSwap/XcmSwapFollowUpContent";
 import { XcmTransferFollowUpContent } from "./features/swap/routes/xcmTransfer/XcmTransferFollowUpContent";
 import { SwapFollowUpContent } from "./features/swap/SwapFollowUpContent";
@@ -59,7 +58,7 @@ const followUpContentMap: FollowUpContentMap = {
 	createPool: CreatePoolFollowUpContent,
 	xcmTransfer: XcmTransferFollowUpContent,
 	xcmSwap: XcmSwapFollowUpContent,
-	xcmDestinationSwap: XcmDestinationSwapFollowUpContent,
+	xcmDestinationSwap: XcmTransferFollowUpContent,
 };
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

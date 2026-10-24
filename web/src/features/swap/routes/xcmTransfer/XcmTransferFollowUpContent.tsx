@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { type FC, Fragment } from "react";
 import { FollowUpRow } from "../../../../components/FollowUpModal";
 import { Pulse } from "../../../../components/Pulse";
 import { Tokens } from "../../../../components/Tokens";
@@ -7,16 +7,17 @@ import type { ChainId } from "../../../../registry/chains/types";
 import { parseTokenId } from "../../../../registry/tokens/helpers";
 import type { TransactionRecord } from "../../../../state/transactions/types";
 import {
+	describeFailedArrival,
 	useXcmArrival,
 	type XcmArrival,
 	type XcmTransferFollowUpData,
 } from "../../../../state/transactions/xcmArrival";
+import { TokenAmountValue } from "../AmmPathValues";
 
 const ArrivalStatus: FC<{
 	arrival: XcmArrival;
 	origin: ChainId;
-	failedLabel: string;
-}> = ({ arrival, origin, failedLabel }) => {
+}> = ({ arrival, origin }) => {
 	switch (arrival.status) {
 		case "awaiting-origin":
 			return (
@@ -29,7 +30,13 @@ const ArrivalStatus: FC<{
 		case "arrived":
 			return <span className="text-success">Arrived</span>;
 		case "failed-on-destination":
-			return <span className="text-error">{failedLabel}</span>;
+			return (
+				<span className="text-error">
+					{["Failed", describeFailedArrival(arrival)]
+						.filter(Boolean)
+						.join(", ")}
+				</span>
+			);
 		case "unconfirmed":
 			return <span className="text-warn">Not confirmed</span>;
 		case "origin-failed":
@@ -39,8 +46,7 @@ const ArrivalStatus: FC<{
 
 export const XcmTransferFollowUpContent: FC<{
 	transaction: TransactionRecord;
-	failedLabel?: string;
-}> = ({ transaction, failedLabel = "Failed, assets trapped" }) => {
+}> = ({ transaction }) => {
 	const { origin, target, tokenOut, estimatedReceived } =
 		transaction.followUpData as Partial<XcmTransferFollowUpData>;
 	const arrival = useXcmArrival(transaction.id);
@@ -55,17 +61,15 @@ export const XcmTransferFollowUpContent: FC<{
 		return null;
 
 	const received = arrival.status === "arrived" ? arrival.received : null;
+	const returned =
+		arrival.status === "failed-on-destination" ? arrival.returned : [];
 
 	return (
 		<div>
 			<FollowUpRow
 				label={`Arrival on ${getChainById(parseTokenId(target.tokenId).chainId).name}`}
 			>
-				<ArrivalStatus
-					arrival={arrival}
-					origin={origin}
-					failedLabel={failedLabel}
-				/>
+				<ArrivalStatus arrival={arrival} origin={origin} />
 			</FollowUpRow>
 			{estimatedReceived !== undefined && (
 				<FollowUpRow label="Estimated received" className="text-muted">
@@ -79,6 +83,18 @@ export const XcmTransferFollowUpContent: FC<{
 						token={tokenOut}
 						className="text-success"
 					/>
+				</FollowUpRow>
+			)}
+			{!!returned.length && (
+				<FollowUpRow label="Returned">
+					<div className="flex flex-wrap justify-end">
+						{returned.map((amount, index) => (
+							<Fragment key={amount.tokenId}>
+								{index > 0 && <span className="mx-1">+</span>}
+								<TokenAmountValue {...amount} />
+							</Fragment>
+						))}
+					</div>
 				</FollowUpRow>
 			)}
 		</div>
