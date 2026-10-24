@@ -22,7 +22,7 @@ export type XcmDestinationSwapFixture = {
 	slippage: number;
 	lpFee: number;
 	destinationWeight: { ref_time: bigint; proof_size: bigint };
-	destinationFee: bigint;
+	destinationFee: { plancks: bigint; nativePlancks: bigint };
 	hops: QuotedPoolHop[];
 	args: Parameters<
 		Api<"hydration">["tx"]["PolkadotXcm"]["transfer_assets_using_type_and_then"]
@@ -41,19 +41,22 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 	slippage: 0.005,
 	lpFee: 3000,
 	destinationWeight: {
-		ref_time: 1103478000n,
-		proof_size: 18984n,
+		ref_time: 1337353000n,
+		proof_size: 22659n,
 	},
-	destinationFee: 1531n,
+	destinationFee: {
+		plancks: 1784n,
+		nativePlancks: 17144120n,
+	},
 	hops: [
 		{
 			tokenIdIn: "asset::pah::1984",
 			tokenIdOut: "native::pah",
-			reserveIn: 1058817440785n,
-			reserveOut: 9967038622626529n,
-			amountIn: 9998469n,
-			amountOut: 93836030727n,
-			minOut: 93366850573n,
+			reserveIn: 1046165526485n,
+			reserveOut: 10088227084341921n,
+			amountIn: 9998216n,
+			amountOut: 96123146443n,
+			minOut: 95642530710n,
 		},
 	],
 	args: {
@@ -139,13 +142,75 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 					type: "SetAppendix",
 					value: [
 						{
+							type: "RefundSurplus",
+							value: undefined,
+						},
+						{
 							type: "DepositAsset",
 							value: {
 								assets: {
 									type: "Wild",
 									value: {
-										type: "AllCounted",
-										value: 1,
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
 									},
 								},
 								beneficiary: {
@@ -207,7 +272,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 								},
 								fun: {
 									type: "Fungible",
-									value: 93366850573n,
+									value: 95642530710n,
 								},
 							},
 						],
@@ -412,13 +477,75 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -480,7 +607,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 93366850573n,
+													value: 95642530710n,
 												},
 											},
 										],
@@ -526,7 +653,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 								},
 							],
 							message_id:
-								"0xbc0da83b1a966e7ec957ab59b7d57cfd442f4ab94b9ea4f7365a858b3e3d2b55",
+								"0x1801a32520b6d905b56e371c8f0f349ec4e920364e673a23ae0cdc28c2556ea6",
 						},
 					},
 				},
@@ -683,13 +810,75 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -751,7 +940,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 93366850573n,
+													value: 95642530710n,
 												},
 											},
 										],
@@ -798,7 +987,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 								{
 									type: "SetTopic",
 									value:
-										"0xbc0da83b1a966e7ec957ab59b7d57cfd442f4ab94b9ea4f7365a858b3e3d2b55",
+										"0x1801a32520b6d905b56e371c8f0f349ec4e920364e673a23ae0cdc28c2556ea6",
 								},
 							],
 						},
@@ -821,8 +1010,8 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 				type: "Complete",
 				value: {
 					used: {
-						ref_time: 1103478000n,
-						proof_size: 18984n,
+						ref_time: 1337353000n,
+						proof_size: 22659n,
 					},
 				},
 			},
@@ -844,7 +1033,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 						type: "Withdraw",
 						value: {
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 14363563n,
+							amount: 17144120n,
 						},
 					},
 				},
@@ -855,7 +1044,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1984,
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 1531n,
+							amount: 1784n,
 						},
 					},
 				},
@@ -864,8 +1053,8 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 1531n,
-							amount_out: 14363563n,
+							amount_in: 1784n,
+							amount_out: 17144120n,
 							path: [
 								[
 									{
@@ -884,7 +1073,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									1531n,
+									1784n,
 								],
 								[
 									{
@@ -894,7 +1083,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									14363563n,
+									17144120n,
 								],
 							],
 						},
@@ -906,7 +1095,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 						type: "Withdraw",
 						value: {
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 93836030456n,
+							amount: 96123146443n,
 						},
 					},
 				},
@@ -917,7 +1106,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1984,
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 9998469n,
+							amount: 9998216n,
 						},
 					},
 				},
@@ -926,8 +1115,8 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 9998469n,
-							amount_out: 93836030456n,
+							amount_in: 9998216n,
+							amount_out: 96123146443n,
 							path: [
 								[
 									{
@@ -946,7 +1135,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									9998469n,
+									9998216n,
 								],
 								[
 									{
@@ -956,7 +1145,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									93836030456n,
+									96123146443n,
 								],
 							],
 						},
@@ -968,7 +1157,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 						type: "Deposit",
 						value: {
 							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
-							amount: 93836030456n,
+							amount: 96123146443n,
 						},
 					},
 				},
@@ -978,7 +1167,7 @@ export const usdtToDot: XcmDestinationSwapFixture = {
 						type: "Deposit",
 						value: {
 							who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
-							amount: 14363563n,
+							amount: 17144120n,
 						},
 					},
 				},
@@ -997,28 +1186,31 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 	slippage: 0.005,
 	lpFee: 3000,
 	destinationWeight: {
-		ref_time: 1301098000n,
-		proof_size: 23257n,
+		ref_time: 1767514000n,
+		proof_size: 30607n,
 	},
-	destinationFee: 1875n,
+	destinationFee: {
+		plancks: 2409n,
+		nativePlancks: 23157689n,
+	},
 	hops: [
 		{
 			tokenIdIn: "asset::pah::1984",
 			tokenIdOut: "native::pah",
-			reserveIn: 1058817440785n,
-			reserveOut: 9967038622626529n,
-			amountIn: 9998125n,
-			amountOut: 93832802303n,
-			minOut: 93363638291n,
+			reserveIn: 1046165526485n,
+			reserveOut: 10088227084341921n,
+			amountIn: 9997591n,
+			amountOut: 96117137617n,
+			minOut: 95636551928n,
 		},
 		{
 			tokenIdIn: "native::pah",
 			tokenIdOut: "asset::pah::23",
 			reserveIn: 8415590132n,
 			reserveOut: 542456565100733n,
-			amountIn: 93832802303n,
-			amountOut: 497686229004757n,
-			minOut: 495197797859733n,
+			amountIn: 96117137617n,
+			amountOut: 498664350338186n,
+			minOut: 496171028586495n,
 		},
 	],
 	args: {
@@ -1104,13 +1296,121 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 					type: "SetAppendix",
 					value: [
 						{
+							type: "RefundSurplus",
+							value: undefined,
+						},
+						{
 							type: "DepositAsset",
 							value: {
 								assets: {
 									type: "Wild",
 									value: {
-										type: "AllCounted",
-										value: 1,
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 23n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
 									},
 								},
 								beneficiary: {
@@ -1172,7 +1472,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 								},
 								fun: {
 									type: "Fungible",
-									value: 93363638291n,
+									value: 95636551928n,
 								},
 							},
 						],
@@ -1221,7 +1521,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 								},
 								fun: {
 									type: "Fungible",
-									value: 495197797859733n,
+									value: 496171028586495n,
 								},
 							},
 						],
@@ -1435,13 +1735,121 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -1503,7 +1911,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 93363638291n,
+													value: 95636551928n,
 												},
 											},
 										],
@@ -1552,7 +1960,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 495197797859733n,
+													value: 496171028586495n,
 												},
 											},
 										],
@@ -1607,7 +2015,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 								},
 							],
 							message_id:
-								"0x8c98ffd52723527cff896d1070bcfa3c14a40667a40cef4a83661e5a65fe3645",
+								"0xd8cf1a2152b39b8550f487cf9650e59c8c67475d6fc31f1490a280fce15f5cbe",
 						},
 					},
 				},
@@ -1764,13 +2172,121 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -1832,7 +2348,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 93363638291n,
+													value: 95636551928n,
 												},
 											},
 										],
@@ -1881,7 +2397,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 495197797859733n,
+													value: 496171028586495n,
 												},
 											},
 										],
@@ -1937,7 +2453,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 								{
 									type: "SetTopic",
 									value:
-										"0x8c98ffd52723527cff896d1070bcfa3c14a40667a40cef4a83661e5a65fe3645",
+										"0xd8cf1a2152b39b8550f487cf9650e59c8c67475d6fc31f1490a280fce15f5cbe",
 								},
 							],
 						},
@@ -1960,8 +2476,8 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 				type: "Complete",
 				value: {
 					used: {
-						ref_time: 1301098000n,
-						proof_size: 23257n,
+						ref_time: 1767514000n,
+						proof_size: 30607n,
 					},
 				},
 			},
@@ -1983,7 +2499,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						type: "Withdraw",
 						value: {
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 17596575n,
+							amount: 23157689n,
 						},
 					},
 				},
@@ -1994,7 +2510,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1984,
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 1875n,
+							amount: 2409n,
 						},
 					},
 				},
@@ -2003,8 +2519,8 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 1875n,
-							amount_out: 17596575n,
+							amount_in: 2409n,
+							amount_out: 23157689n,
 							path: [
 								[
 									{
@@ -2023,7 +2539,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									1875n,
+									2409n,
 								],
 								[
 									{
@@ -2033,7 +2549,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									17596575n,
+									23157689n,
 								],
 							],
 						},
@@ -2045,7 +2561,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						type: "Withdraw",
 						value: {
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 93832801972n,
+							amount: 96117137617n,
 						},
 					},
 				},
@@ -2056,7 +2572,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1984,
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 9998125n,
+							amount: 9997591n,
 						},
 					},
 				},
@@ -2065,8 +2581,8 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 9998125n,
-							amount_out: 93832801972n,
+							amount_in: 9997591n,
+							amount_out: 96117137617n,
 							path: [
 								[
 									{
@@ -2085,7 +2601,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									9998125n,
+									9997591n,
 								],
 								[
 									{
@@ -2095,7 +2611,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									93832801972n,
+									96117137617n,
 								],
 							],
 						},
@@ -2108,7 +2624,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 23,
 							who: "15sv1V4LvqS4e6FdPzCzoao3SLmVPnzLrMwbm1X6PVGsVCpa",
-							amount: 497686228859862n,
+							amount: 498664350338186n,
 						},
 					},
 				},
@@ -2118,7 +2634,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						type: "Deposit",
 						value: {
 							who: "15sv1V4LvqS4e6FdPzCzoao3SLmVPnzLrMwbm1X6PVGsVCpa",
-							amount: 93832801972n,
+							amount: 96117137617n,
 						},
 					},
 				},
@@ -2127,8 +2643,8 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 93832801972n,
-							amount_out: 497686228859862n,
+							amount_in: 96117137617n,
+							amount_out: 498664350338186n,
 							path: [
 								[
 									{
@@ -2138,7 +2654,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									93832801972n,
+									96117137617n,
 								],
 								[
 									{
@@ -2157,7 +2673,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									497686228859862n,
+									498664350338186n,
 								],
 							],
 						},
@@ -2170,7 +2686,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 23,
 							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
-							amount: 497686228859862n,
+							amount: 498664350338186n,
 						},
 					},
 				},
@@ -2180,7 +2696,7 @@ export const usdtToPink: XcmDestinationSwapFixture = {
 						type: "Deposit",
 						value: {
 							who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
-							amount: 17596575n,
+							amount: 23157689n,
 						},
 					},
 				},
@@ -2199,19 +2715,22 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 	slippage: 0.005,
 	lpFee: 3000,
 	destinationWeight: {
-		ref_time: 1103478000n,
-		proof_size: 18984n,
+		ref_time: 1337353000n,
+		proof_size: 22659n,
 	},
-	destinationFee: 14363563n,
+	destinationFee: {
+		plancks: 17144120n,
+		nativePlancks: 17144120n,
+	},
 	hops: [
 		{
 			tokenIdIn: "native::pah",
 			tokenIdOut: "asset::pah::1337",
-			reserveIn: 877327054307216n,
-			reserveOut: 93178385314n,
-			amountIn: 9985636437n,
-			amountOut: 1057352n,
-			minOut: 1052065n,
+			reserveIn: 888395022991321n,
+			reserveOut: 92023362208n,
+			amountIn: 9982855880n,
+			amountOut: 1030948n,
+			minOut: 1025793n,
 		},
 	],
 	args: {
@@ -2271,13 +2790,75 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 					type: "SetAppendix",
 					value: [
 						{
+							type: "RefundSurplus",
+							value: undefined,
+						},
+						{
 							type: "DepositAsset",
 							value: {
 								assets: {
 									type: "Wild",
 									value: {
-										type: "AllCounted",
-										value: 1,
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1337n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
 									},
 								},
 								beneficiary: {
@@ -2339,7 +2920,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 								},
 								fun: {
 									type: "Fungible",
-									value: 1052065n,
+									value: 1025793n,
 								},
 							},
 						],
@@ -2535,13 +3116,75 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1337n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -2603,7 +3246,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 1052065n,
+													value: 1025793n,
 												},
 											},
 										],
@@ -2658,7 +3301,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 								},
 							],
 							message_id:
-								"0xd84448c2f32edff702552e1f5097352df8e4f0412f8b7bce7ce6f81b5bd13572",
+								"0xc60029f32e2037ea20ba1a54d6fe0bd243211cf799d25ec5da6537d20c329427",
 						},
 					},
 				},
@@ -2771,13 +3414,75 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1337n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -2839,7 +3544,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 1052065n,
+													value: 1025793n,
 												},
 											},
 										],
@@ -2895,7 +3600,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 								{
 									type: "SetTopic",
 									value:
-										"0xd84448c2f32edff702552e1f5097352df8e4f0412f8b7bce7ce6f81b5bd13572",
+										"0xc60029f32e2037ea20ba1a54d6fe0bd243211cf799d25ec5da6537d20c329427",
 								},
 							],
 						},
@@ -2918,8 +3623,8 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 				type: "Complete",
 				value: {
 					used: {
-						ref_time: 1103478000n,
-						proof_size: 18984n,
+						ref_time: 1337353000n,
+						proof_size: 22659n,
 					},
 				},
 			},
@@ -2941,7 +3646,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1337,
 							who: "163CRvzDQ8JHZfmufa86zA7BfDY7NToUSqmWbpDq5kwDYSmH",
-							amount: 1057352n,
+							amount: 1030948n,
 						},
 					},
 				},
@@ -2951,7 +3656,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 						type: "Deposit",
 						value: {
 							who: "163CRvzDQ8JHZfmufa86zA7BfDY7NToUSqmWbpDq5kwDYSmH",
-							amount: 9985636437n,
+							amount: 9982855880n,
 						},
 					},
 				},
@@ -2960,8 +3665,8 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 9985636437n,
-							amount_out: 1057352n,
+							amount_in: 9982855880n,
+							amount_out: 1030948n,
 							path: [
 								[
 									{
@@ -2971,7 +3676,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									9985636437n,
+									9982855880n,
 								],
 								[
 									{
@@ -2990,7 +3695,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									1057352n,
+									1030948n,
 								],
 							],
 						},
@@ -3003,7 +3708,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1337,
 							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
-							amount: 1057352n,
+							amount: 1030948n,
 						},
 					},
 				},
@@ -3013,7 +3718,7 @@ export const dotToUsdc: XcmDestinationSwapFixture = {
 						type: "Deposit",
 						value: {
 							who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
-							amount: 14363563n,
+							amount: 17144120n,
 						},
 					},
 				},
@@ -3032,28 +3737,31 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 	slippage: 0.005,
 	lpFee: 3000,
 	destinationWeight: {
-		ref_time: 1301098000n,
-		proof_size: 23257n,
+		ref_time: 1767514000n,
+		proof_size: 30607n,
 	},
-	destinationFee: 1875n,
+	destinationFee: {
+		plancks: 2409n,
+		nativePlancks: 23157689n,
+	},
 	hops: [
 		{
 			tokenIdIn: "asset::pah::1984",
 			tokenIdOut: "native::pah",
-			reserveIn: 1058817440785n,
-			reserveOut: 9967038622626529n,
-			amountIn: 9998125n,
-			amountOut: 93832802303n,
-			minOut: 93363638291n,
+			reserveIn: 1046165526485n,
+			reserveOut: 10088227084341921n,
+			amountIn: 9997591n,
+			amountOut: 96117137617n,
+			minOut: 95636551928n,
 		},
 		{
 			tokenIdIn: "native::pah",
 			tokenIdOut: "asset::pah::23",
 			reserveIn: 8415590132n,
 			reserveOut: 542456565100733n,
-			amountIn: 93832802303n,
-			amountOut: 497686229004757n,
-			minOut: 495197797859733n,
+			amountIn: 96117137617n,
+			amountOut: 498664350338186n,
+			minOut: 496171028586495n,
 		},
 	],
 	args: {
@@ -3139,13 +3847,121 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 					type: "SetAppendix",
 					value: [
 						{
+							type: "RefundSurplus",
+							value: undefined,
+						},
+						{
 							type: "DepositAsset",
 							value: {
 								assets: {
 									type: "Wild",
 									value: {
-										type: "AllCounted",
-										value: 1,
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 23n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
 									},
 								},
 								beneficiary: {
@@ -3207,7 +4023,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 								},
 								fun: {
 									type: "Fungible",
-									value: 93363638291n,
+									value: 95636551928n,
 								},
 							},
 						],
@@ -3256,7 +4072,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 								},
 								fun: {
 									type: "Fungible",
-									value: 990395595719466n,
+									value: 992342057172990n,
 								},
 							},
 						],
@@ -3470,13 +4286,121 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -3538,7 +4462,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 93363638291n,
+													value: 95636551928n,
 												},
 											},
 										],
@@ -3587,7 +4511,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 990395595719466n,
+													value: 992342057172990n,
 												},
 											},
 										],
@@ -3642,7 +4566,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 								},
 							],
 							message_id:
-								"0xc386ae6e33ba987982573d2c13bf6bed3ad3af29b5b9d57ce5aa79aa69098d24",
+								"0xa241f9acc31597dd50bc377f13b0a2bfcf5a95f5abcdeec88babf4672f55487d",
 						},
 					},
 				},
@@ -3799,13 +4723,121 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 									type: "SetAppendix",
 									value: [
 										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
 											type: "DepositAsset",
 											value: {
 												assets: {
 													type: "Wild",
 													value: {
-														type: "AllCounted",
-														value: 1,
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
 													},
 												},
 												beneficiary: {
@@ -3867,7 +4899,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 93363638291n,
+													value: 95636551928n,
 												},
 											},
 										],
@@ -3916,7 +4948,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 												},
 												fun: {
 													type: "Fungible",
-													value: 990395595719466n,
+													value: 992342057172990n,
 												},
 											},
 										],
@@ -3972,7 +5004,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 								{
 									type: "SetTopic",
 									value:
-										"0xc386ae6e33ba987982573d2c13bf6bed3ad3af29b5b9d57ce5aa79aa69098d24",
+										"0xa241f9acc31597dd50bc377f13b0a2bfcf5a95f5abcdeec88babf4672f55487d",
 								},
 							],
 						},
@@ -3995,8 +5027,8 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 				type: "Incomplete",
 				value: {
 					used: {
-						ref_time: 1068012000n,
-						proof_size: 19582n,
+						ref_time: 1534428000n,
+						proof_size: 26932n,
 					},
 					error: {
 						index: 5,
@@ -4025,7 +5057,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 						type: "Withdraw",
 						value: {
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 17596575n,
+							amount: 23157689n,
 						},
 					},
 				},
@@ -4036,7 +5068,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1984,
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 1875n,
+							amount: 2409n,
 						},
 					},
 				},
@@ -4045,8 +5077,8 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 1875n,
-							amount_out: 17596575n,
+							amount_in: 2409n,
+							amount_out: 23157689n,
 							path: [
 								[
 									{
@@ -4065,7 +5097,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									1875n,
+									2409n,
 								],
 								[
 									{
@@ -4075,7 +5107,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									17596575n,
+									23157689n,
 								],
 							],
 						},
@@ -4087,7 +5119,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 						type: "Withdraw",
 						value: {
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 93832801972n,
+							amount: 96117137617n,
 						},
 					},
 				},
@@ -4098,7 +5130,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1984,
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 9998125n,
+							amount: 9997591n,
 						},
 					},
 				},
@@ -4107,8 +5139,8 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 9998125n,
-							amount_out: 93832801972n,
+							amount_in: 9997591n,
+							amount_out: 96117137617n,
 							path: [
 								[
 									{
@@ -4127,7 +5159,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									9998125n,
+									9997591n,
 								],
 								[
 									{
@@ -4137,7 +5169,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 											value: undefined,
 										},
 									},
-									93832801972n,
+									96117137617n,
 								],
 							],
 						},
@@ -4163,17 +5195,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 								value: undefined,
 							},
 							message_id:
-								"0xc386ae6e33ba987982573d2c13bf6bed3ad3af29b5b9d57ce5aa79aa69098d24",
-						},
-					},
-				},
-				{
-					type: "Balances",
-					value: {
-						type: "Deposit",
-						value: {
-							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
-							amount: 93832801972n,
+								"0xa241f9acc31597dd50bc377f13b0a2bfcf5a95f5abcdeec88babf4672f55487d",
 						},
 					},
 				},
@@ -4184,7 +5206,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 						value: {
 							asset_id: 1984,
 							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
-							amount: 294n,
+							amount: 287n,
 						},
 					},
 				},
@@ -4204,7 +5226,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 						type: "SwapCreditExecuted",
 						value: {
 							amount_in: 2780557n,
-							amount_out: 294n,
+							amount_out: 287n,
 							path: [
 								[
 									{
@@ -4233,7 +5255,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 											],
 										},
 									},
-									294n,
+									287n,
 								],
 							],
 						},
@@ -4244,8 +5266,3141 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 					value: {
 						type: "Deposit",
 						value: {
+							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+							amount: 96117137617n,
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Deposited",
+						value: {
+							asset_id: 1984,
+							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+							amount: 287n,
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Deposit",
+						value: {
 							who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
-							amount: 14816018n,
+							amount: 20377132n,
+						},
+					},
+				},
+			],
+			forwarded_xcms: [],
+		},
+	},
+};
+
+export const usdtToPinkExact: XcmDestinationSwapFixture = {
+	sender: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+	beneficiary: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+	tokenIdIn: "hydration-asset::hydration::10",
+	tokenIdOut: "asset::pah::23",
+	amount: 10000000n,
+	slippage: 0,
+	lpFee: 3000,
+	destinationWeight: {
+		ref_time: 1767514000n,
+		proof_size: 30607n,
+	},
+	destinationFee: {
+		plancks: 2409n,
+		nativePlancks: 23157689n,
+	},
+	hops: [
+		{
+			tokenIdIn: "asset::pah::1984",
+			tokenIdOut: "native::pah",
+			reserveIn: 1046165526485n,
+			reserveOut: 10088227084341921n,
+			amountIn: 9997591n,
+			amountOut: 96117137617n,
+			minOut: 96117137617n,
+		},
+		{
+			tokenIdIn: "native::pah",
+			tokenIdOut: "asset::pah::23",
+			reserveIn: 8415590132n,
+			reserveOut: 542456565100733n,
+			amountIn: 96117137617n,
+			amountOut: 498664350338186n,
+			minOut: 498664350338186n,
+		},
+	],
+	args: {
+		dest: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "X1",
+					value: {
+						type: "Parachain",
+						value: 1000,
+					},
+				},
+			},
+		},
+		assets: {
+			type: "V5",
+			value: [
+				{
+					id: {
+						parents: 1,
+						interior: {
+							type: "X3",
+							value: [
+								{
+									type: "Parachain",
+									value: 1000,
+								},
+								{
+									type: "PalletInstance",
+									value: 50,
+								},
+								{
+									type: "GeneralIndex",
+									value: 1984n,
+								},
+							],
+						},
+					},
+					fun: {
+						type: "Fungible",
+						value: 10000000n,
+					},
+				},
+			],
+		},
+		assets_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		remote_fees_id: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "X3",
+					value: [
+						{
+							type: "Parachain",
+							value: 1000,
+						},
+						{
+							type: "PalletInstance",
+							value: 50,
+						},
+						{
+							type: "GeneralIndex",
+							value: 1984n,
+						},
+					],
+				},
+			},
+		},
+		fees_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		custom_xcm_on_dest: {
+			type: "V5",
+			value: [
+				{
+					type: "SetAppendix",
+					value: [
+						{
+							type: "RefundSurplus",
+							value: undefined,
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 23n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+											},
+										},
+									},
+								},
+							},
+						},
+					],
+				},
+				{
+					type: "ExchangeAsset",
+					value: {
+						give: {
+							type: "Wild",
+							value: {
+								type: "AllOf",
+								value: {
+									id: {
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 1984n,
+												},
+											],
+										},
+									},
+									fun: {
+										type: "Fungible",
+										value: undefined,
+									},
+								},
+							},
+						},
+						want: [
+							{
+								id: {
+									parents: 1,
+									interior: {
+										type: "Here",
+										value: undefined,
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 96117137617n,
+								},
+							},
+						],
+						maximal: true,
+					},
+				},
+				{
+					type: "ExchangeAsset",
+					value: {
+						give: {
+							type: "Wild",
+							value: {
+								type: "AllOf",
+								value: {
+									id: {
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									fun: {
+										type: "Fungible",
+										value: undefined,
+									},
+								},
+							},
+						},
+						want: [
+							{
+								id: {
+									parents: 0,
+									interior: {
+										type: "X2",
+										value: [
+											{
+												type: "PalletInstance",
+												value: 50,
+											},
+											{
+												type: "GeneralIndex",
+												value: 23n,
+											},
+										],
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 498664350338186n,
+								},
+							},
+						],
+						maximal: true,
+					},
+				},
+				{
+					type: "DepositAsset",
+					value: {
+						assets: {
+							type: "Wild",
+							value: {
+								type: "AllOf",
+								value: {
+									id: {
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 23n,
+												},
+											],
+										},
+									},
+									fun: {
+										type: "Fungible",
+										value: undefined,
+									},
+								},
+							},
+						},
+						beneficiary: {
+							parents: 0,
+							interior: {
+								type: "X1",
+								value: {
+									type: "AccountId32",
+									value: {
+										network: undefined,
+										id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+		weight_limit: {
+			type: "Unlimited",
+			value: undefined,
+		},
+	},
+	originDryRun: {
+		success: true,
+		value: {
+			execution_result: {
+				success: true,
+				value: {
+					actual_weight: undefined,
+					pays_fee: {
+						type: "Yes",
+						value: undefined,
+					},
+				},
+			},
+			emitted_events: [
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "Attempted",
+						value: {
+							outcome: {
+								type: "Complete",
+								value: {
+									used: {
+										ref_time: 200000000n,
+										proof_size: 0n,
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "FeesPaid",
+						value: {
+							paying: {
+								parents: 0,
+								interior: {
+									type: "X1",
+									value: {
+										type: "AccountId32",
+										value: {
+											network: {
+												type: "Polkadot",
+												value: undefined,
+											},
+											id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+										},
+									},
+								},
+							},
+							fees: [],
+						},
+					},
+				},
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "Sent",
+						value: {
+							origin: {
+								parents: 0,
+								interior: {
+									type: "X1",
+									value: {
+										type: "AccountId32",
+										value: {
+											network: {
+												type: "Polkadot",
+												value: undefined,
+											},
+											id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+										},
+									},
+								},
+							},
+							destination: {
+								parents: 1,
+								interior: {
+									type: "X1",
+									value: {
+										type: "Parachain",
+										value: 1000,
+									},
+								},
+							},
+							message: [
+								{
+									type: "WithdrawAsset",
+									value: [
+										{
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+									],
+								},
+								{
+									type: "ClearOrigin",
+									value: undefined,
+								},
+								{
+									type: "BuyExecution",
+									value: {
+										fees: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+										weight_limit: {
+											type: "Unlimited",
+											value: undefined,
+										},
+									},
+								},
+								{
+									type: "SetAppendix",
+									value: [
+										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+									],
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 1984n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 1,
+													interior: {
+														type: "Here",
+														value: undefined,
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 96117137617n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 1,
+														interior: {
+															type: "Here",
+															value: undefined,
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 0,
+													interior: {
+														type: "X2",
+														value: [
+															{
+																type: "PalletInstance",
+																value: 50,
+															},
+															{
+																type: "GeneralIndex",
+																value: 23n,
+															},
+														],
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 498664350338186n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "DepositAsset",
+									value: {
+										assets: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 23n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										beneficiary: {
+											parents: 0,
+											interior: {
+												type: "X1",
+												value: {
+													type: "AccountId32",
+													value: {
+														network: undefined,
+														id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+													},
+												},
+											},
+										},
+									},
+								},
+							],
+							message_id:
+								"0x8d0738b235b85ddbb6b88277f0bb37d84ada9be5bdd7d09fb8d24988a20049a7",
+						},
+					},
+				},
+			],
+			local_xcm: {
+				type: "V5",
+				value: [
+					{
+						type: "WithdrawAsset",
+						value: [
+							{
+								id: {
+									parents: 1,
+									interior: {
+										type: "X3",
+										value: [
+											{
+												type: "Parachain",
+												value: 1000,
+											},
+											{
+												type: "PalletInstance",
+												value: 50,
+											},
+											{
+												type: "GeneralIndex",
+												value: 1984n,
+											},
+										],
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 10000000n,
+								},
+							},
+						],
+					},
+					{
+						type: "BurnAsset",
+						value: [
+							{
+								id: {
+									parents: 1,
+									interior: {
+										type: "X3",
+										value: [
+											{
+												type: "Parachain",
+												value: 1000,
+											},
+											{
+												type: "PalletInstance",
+												value: 50,
+											},
+											{
+												type: "GeneralIndex",
+												value: 1984n,
+											},
+										],
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 10000000n,
+								},
+							},
+						],
+					},
+				],
+			},
+			forwarded_xcms: [
+				[
+					{
+						type: "V5",
+						value: {
+							parents: 1,
+							interior: {
+								type: "X1",
+								value: {
+									type: "Parachain",
+									value: 1000,
+								},
+							},
+						},
+					},
+					[
+						{
+							type: "V5",
+							value: [
+								{
+									type: "WithdrawAsset",
+									value: [
+										{
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+									],
+								},
+								{
+									type: "ClearOrigin",
+									value: undefined,
+								},
+								{
+									type: "BuyExecution",
+									value: {
+										fees: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+										weight_limit: {
+											type: "Unlimited",
+											value: undefined,
+										},
+									},
+								},
+								{
+									type: "SetAppendix",
+									value: [
+										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+															},
+														},
+													},
+												},
+											},
+										},
+									],
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 1984n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 1,
+													interior: {
+														type: "Here",
+														value: undefined,
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 96117137617n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 1,
+														interior: {
+															type: "Here",
+															value: undefined,
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 0,
+													interior: {
+														type: "X2",
+														value: [
+															{
+																type: "PalletInstance",
+																value: 50,
+															},
+															{
+																type: "GeneralIndex",
+																value: 23n,
+															},
+														],
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 498664350338186n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "DepositAsset",
+									value: {
+										assets: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 23n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										beneficiary: {
+											parents: 0,
+											interior: {
+												type: "X1",
+												value: {
+													type: "AccountId32",
+													value: {
+														network: undefined,
+														id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									type: "SetTopic",
+									value:
+										"0x8d0738b235b85ddbb6b88277f0bb37d84ada9be5bdd7d09fb8d24988a20049a7",
+								},
+							],
+						},
+					],
+				],
+			],
+		},
+	},
+	deliveryFees: {
+		success: true,
+		value: {
+			type: "V5",
+			value: [],
+		},
+	},
+	destinationDryRun: {
+		success: true,
+		value: {
+			execution_result: {
+				type: "Complete",
+				value: {
+					used: {
+						ref_time: 1767514000n,
+						proof_size: 30607n,
+					},
+				},
+			},
+			emitted_events: [
+				{
+					type: "Assets",
+					value: {
+						type: "Withdrawn",
+						value: {
+							asset_id: 1984,
+							who: "13cKp89Uh2yWgTG28JA1QEvPUMjEPKejqkjHKf9zqLiFKjH6",
+							amount: 10000000n,
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Withdraw",
+						value: {
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 23157689n,
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Deposited",
+						value: {
+							asset_id: 1984,
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 2409n,
+						},
+					},
+				},
+				{
+					type: "AssetConversion",
+					value: {
+						type: "SwapCreditExecuted",
+						value: {
+							amount_in: 2409n,
+							amount_out: 23157689n,
+							path: [
+								[
+									{
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 1984n,
+												},
+											],
+										},
+									},
+									2409n,
+								],
+								[
+									{
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									23157689n,
+								],
+							],
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Withdraw",
+						value: {
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 96117137617n,
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Deposited",
+						value: {
+							asset_id: 1984,
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 9997591n,
+						},
+					},
+				},
+				{
+					type: "AssetConversion",
+					value: {
+						type: "SwapCreditExecuted",
+						value: {
+							amount_in: 9997591n,
+							amount_out: 96117137617n,
+							path: [
+								[
+									{
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 1984n,
+												},
+											],
+										},
+									},
+									9997591n,
+								],
+								[
+									{
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									96117137617n,
+								],
+							],
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Withdrawn",
+						value: {
+							asset_id: 23,
+							who: "15sv1V4LvqS4e6FdPzCzoao3SLmVPnzLrMwbm1X6PVGsVCpa",
+							amount: 498664350338186n,
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Deposit",
+						value: {
+							who: "15sv1V4LvqS4e6FdPzCzoao3SLmVPnzLrMwbm1X6PVGsVCpa",
+							amount: 96117137617n,
+						},
+					},
+				},
+				{
+					type: "AssetConversion",
+					value: {
+						type: "SwapCreditExecuted",
+						value: {
+							amount_in: 96117137617n,
+							amount_out: 498664350338186n,
+							path: [
+								[
+									{
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									96117137617n,
+								],
+								[
+									{
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 23n,
+												},
+											],
+										},
+									},
+									498664350338186n,
+								],
+							],
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Deposited",
+						value: {
+							asset_id: 23,
+							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+							amount: 498664350338186n,
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Deposit",
+						value: {
+							who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
+							amount: 23157689n,
+						},
+					},
+				},
+			],
+			forwarded_xcms: [],
+		},
+	},
+};
+
+export const usdtToPinkDust: XcmDestinationSwapFixture = {
+	sender: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
+	beneficiary: "163CRvzDQ8JHZfmufa86zA7BfDY7NToUSqmWbpDq5kwDYSmH",
+	tokenIdIn: "hydration-asset::hydration::10",
+	tokenIdOut: "asset::pah::23",
+	amount: 10000000n,
+	slippage: 0.005,
+	lpFee: 3000,
+	destinationWeight: {
+		ref_time: 1767514000n,
+		proof_size: 30607n,
+	},
+	destinationFee: {
+		plancks: 2405n,
+		nativePlancks: 23157689n,
+	},
+	hops: [
+		{
+			tokenIdIn: "asset::pah::1984",
+			tokenIdOut: "native::pah",
+			reserveIn: 1045149427039n,
+			reserveOut: 10098064429251503n,
+			amountIn: 9997595n,
+			amountOut: 96304438754n,
+			minOut: 95822916560n,
+		},
+		{
+			tokenIdIn: "native::pah",
+			tokenIdOut: "asset::pah::23",
+			reserveIn: 8415590132n,
+			reserveOut: 542456565100733n,
+			amountIn: 96304438754n,
+			amountOut: 498742657694928n,
+			minOut: 496248944406453n,
+		},
+	],
+	args: {
+		dest: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "X1",
+					value: {
+						type: "Parachain",
+						value: 1000,
+					},
+				},
+			},
+		},
+		assets: {
+			type: "V5",
+			value: [
+				{
+					id: {
+						parents: 1,
+						interior: {
+							type: "X3",
+							value: [
+								{
+									type: "Parachain",
+									value: 1000,
+								},
+								{
+									type: "PalletInstance",
+									value: 50,
+								},
+								{
+									type: "GeneralIndex",
+									value: 1984n,
+								},
+							],
+						},
+					},
+					fun: {
+						type: "Fungible",
+						value: 10000000n,
+					},
+				},
+			],
+		},
+		assets_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		remote_fees_id: {
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: {
+					type: "X3",
+					value: [
+						{
+							type: "Parachain",
+							value: 1000,
+						},
+						{
+							type: "PalletInstance",
+							value: 50,
+						},
+						{
+							type: "GeneralIndex",
+							value: 1984n,
+						},
+					],
+				},
+			},
+		},
+		fees_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		custom_xcm_on_dest: {
+			type: "V5",
+			value: [
+				{
+					type: "SetAppendix",
+					value: [
+						{
+							type: "RefundSurplus",
+							value: undefined,
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 1,
+												interior: {
+													type: "Here",
+													value: undefined,
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 23n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							type: "DepositAsset",
+							value: {
+								assets: {
+									type: "Wild",
+									value: {
+										type: "AllOf",
+										value: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: undefined,
+											},
+										},
+									},
+								},
+								beneficiary: {
+									parents: 0,
+									interior: {
+										type: "X1",
+										value: {
+											type: "AccountId32",
+											value: {
+												network: undefined,
+												id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+											},
+										},
+									},
+								},
+							},
+						},
+					],
+				},
+				{
+					type: "ExchangeAsset",
+					value: {
+						give: {
+							type: "Wild",
+							value: {
+								type: "AllOf",
+								value: {
+									id: {
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 1984n,
+												},
+											],
+										},
+									},
+									fun: {
+										type: "Fungible",
+										value: undefined,
+									},
+								},
+							},
+						},
+						want: [
+							{
+								id: {
+									parents: 1,
+									interior: {
+										type: "Here",
+										value: undefined,
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 95822916560n,
+								},
+							},
+						],
+						maximal: true,
+					},
+				},
+				{
+					type: "ExchangeAsset",
+					value: {
+						give: {
+							type: "Wild",
+							value: {
+								type: "AllOf",
+								value: {
+									id: {
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									fun: {
+										type: "Fungible",
+										value: undefined,
+									},
+								},
+							},
+						},
+						want: [
+							{
+								id: {
+									parents: 0,
+									interior: {
+										type: "X2",
+										value: [
+											{
+												type: "PalletInstance",
+												value: 50,
+											},
+											{
+												type: "GeneralIndex",
+												value: 23n,
+											},
+										],
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 992497888812906n,
+								},
+							},
+						],
+						maximal: true,
+					},
+				},
+				{
+					type: "DepositAsset",
+					value: {
+						assets: {
+							type: "Wild",
+							value: {
+								type: "AllOf",
+								value: {
+									id: {
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 23n,
+												},
+											],
+										},
+									},
+									fun: {
+										type: "Fungible",
+										value: undefined,
+									},
+								},
+							},
+						},
+						beneficiary: {
+							parents: 0,
+							interior: {
+								type: "X1",
+								value: {
+									type: "AccountId32",
+									value: {
+										network: undefined,
+										id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+		weight_limit: {
+			type: "Unlimited",
+			value: undefined,
+		},
+	},
+	originDryRun: {
+		success: true,
+		value: {
+			execution_result: {
+				success: true,
+				value: {
+					actual_weight: undefined,
+					pays_fee: {
+						type: "Yes",
+						value: undefined,
+					},
+				},
+			},
+			emitted_events: [
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "Attempted",
+						value: {
+							outcome: {
+								type: "Complete",
+								value: {
+									used: {
+										ref_time: 200000000n,
+										proof_size: 0n,
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "FeesPaid",
+						value: {
+							paying: {
+								parents: 0,
+								interior: {
+									type: "X1",
+									value: {
+										type: "AccountId32",
+										value: {
+											network: {
+												type: "Polkadot",
+												value: undefined,
+											},
+											id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+										},
+									},
+								},
+							},
+							fees: [],
+						},
+					},
+				},
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "Sent",
+						value: {
+							origin: {
+								parents: 0,
+								interior: {
+									type: "X1",
+									value: {
+										type: "AccountId32",
+										value: {
+											network: {
+												type: "Polkadot",
+												value: undefined,
+											},
+											id: "0x6d6f646c70792f74727372790000000000000000000000000000000000000000",
+										},
+									},
+								},
+							},
+							destination: {
+								parents: 1,
+								interior: {
+									type: "X1",
+									value: {
+										type: "Parachain",
+										value: 1000,
+									},
+								},
+							},
+							message: [
+								{
+									type: "WithdrawAsset",
+									value: [
+										{
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+									],
+								},
+								{
+									type: "ClearOrigin",
+									value: undefined,
+								},
+								{
+									type: "BuyExecution",
+									value: {
+										fees: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+										weight_limit: {
+											type: "Unlimited",
+											value: undefined,
+										},
+									},
+								},
+								{
+									type: "SetAppendix",
+									value: [
+										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+															},
+														},
+													},
+												},
+											},
+										},
+									],
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 1984n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 1,
+													interior: {
+														type: "Here",
+														value: undefined,
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 95822916560n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 1,
+														interior: {
+															type: "Here",
+															value: undefined,
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 0,
+													interior: {
+														type: "X2",
+														value: [
+															{
+																type: "PalletInstance",
+																value: 50,
+															},
+															{
+																type: "GeneralIndex",
+																value: 23n,
+															},
+														],
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 992497888812906n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "DepositAsset",
+									value: {
+										assets: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 23n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										beneficiary: {
+											parents: 0,
+											interior: {
+												type: "X1",
+												value: {
+													type: "AccountId32",
+													value: {
+														network: undefined,
+														id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+													},
+												},
+											},
+										},
+									},
+								},
+							],
+							message_id:
+								"0xaac20b11491948cc5e598b04dba5bca1868ec914ddb9cba889e688636c6af476",
+						},
+					},
+				},
+			],
+			local_xcm: {
+				type: "V5",
+				value: [
+					{
+						type: "WithdrawAsset",
+						value: [
+							{
+								id: {
+									parents: 1,
+									interior: {
+										type: "X3",
+										value: [
+											{
+												type: "Parachain",
+												value: 1000,
+											},
+											{
+												type: "PalletInstance",
+												value: 50,
+											},
+											{
+												type: "GeneralIndex",
+												value: 1984n,
+											},
+										],
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 10000000n,
+								},
+							},
+						],
+					},
+					{
+						type: "BurnAsset",
+						value: [
+							{
+								id: {
+									parents: 1,
+									interior: {
+										type: "X3",
+										value: [
+											{
+												type: "Parachain",
+												value: 1000,
+											},
+											{
+												type: "PalletInstance",
+												value: 50,
+											},
+											{
+												type: "GeneralIndex",
+												value: 1984n,
+											},
+										],
+									},
+								},
+								fun: {
+									type: "Fungible",
+									value: 10000000n,
+								},
+							},
+						],
+					},
+				],
+			},
+			forwarded_xcms: [
+				[
+					{
+						type: "V5",
+						value: {
+							parents: 1,
+							interior: {
+								type: "X1",
+								value: {
+									type: "Parachain",
+									value: 1000,
+								},
+							},
+						},
+					},
+					[
+						{
+							type: "V5",
+							value: [
+								{
+									type: "WithdrawAsset",
+									value: [
+										{
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+									],
+								},
+								{
+									type: "ClearOrigin",
+									value: undefined,
+								},
+								{
+									type: "BuyExecution",
+									value: {
+										fees: {
+											id: {
+												parents: 0,
+												interior: {
+													type: "X2",
+													value: [
+														{
+															type: "PalletInstance",
+															value: 50,
+														},
+														{
+															type: "GeneralIndex",
+															value: 1984n,
+														},
+													],
+												},
+											},
+											fun: {
+												type: "Fungible",
+												value: 10000000n,
+											},
+										},
+										weight_limit: {
+											type: "Unlimited",
+											value: undefined,
+										},
+									},
+								},
+								{
+									type: "SetAppendix",
+									value: [
+										{
+											type: "RefundSurplus",
+											value: undefined,
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 1,
+																interior: {
+																	type: "Here",
+																	value: undefined,
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 23n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											type: "DepositAsset",
+											value: {
+												assets: {
+													type: "Wild",
+													value: {
+														type: "AllOf",
+														value: {
+															id: {
+																parents: 0,
+																interior: {
+																	type: "X2",
+																	value: [
+																		{
+																			type: "PalletInstance",
+																			value: 50,
+																		},
+																		{
+																			type: "GeneralIndex",
+																			value: 1984n,
+																		},
+																	],
+																},
+															},
+															fun: {
+																type: "Fungible",
+																value: undefined,
+															},
+														},
+													},
+												},
+												beneficiary: {
+													parents: 0,
+													interior: {
+														type: "X1",
+														value: {
+															type: "AccountId32",
+															value: {
+																network: undefined,
+																id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+															},
+														},
+													},
+												},
+											},
+										},
+									],
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 1984n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 1,
+													interior: {
+														type: "Here",
+														value: undefined,
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 95822916560n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "ExchangeAsset",
+									value: {
+										give: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 1,
+														interior: {
+															type: "Here",
+															value: undefined,
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										want: [
+											{
+												id: {
+													parents: 0,
+													interior: {
+														type: "X2",
+														value: [
+															{
+																type: "PalletInstance",
+																value: 50,
+															},
+															{
+																type: "GeneralIndex",
+																value: 23n,
+															},
+														],
+													},
+												},
+												fun: {
+													type: "Fungible",
+													value: 992497888812906n,
+												},
+											},
+										],
+										maximal: true,
+									},
+								},
+								{
+									type: "DepositAsset",
+									value: {
+										assets: {
+											type: "Wild",
+											value: {
+												type: "AllOf",
+												value: {
+													id: {
+														parents: 0,
+														interior: {
+															type: "X2",
+															value: [
+																{
+																	type: "PalletInstance",
+																	value: 50,
+																},
+																{
+																	type: "GeneralIndex",
+																	value: 23n,
+																},
+															],
+														},
+													},
+													fun: {
+														type: "Fungible",
+														value: undefined,
+													},
+												},
+											},
+										},
+										beneficiary: {
+											parents: 0,
+											interior: {
+												type: "X1",
+												value: {
+													type: "AccountId32",
+													value: {
+														network: undefined,
+														id: "0xdeda2264bb968ebcfe21568bc886926528379fd2d863283962cab7e33536b22a",
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									type: "SetTopic",
+									value:
+										"0xaac20b11491948cc5e598b04dba5bca1868ec914ddb9cba889e688636c6af476",
+								},
+							],
+						},
+					],
+				],
+			],
+		},
+	},
+	deliveryFees: {
+		success: true,
+		value: {
+			type: "V5",
+			value: [],
+		},
+	},
+	destinationDryRun: {
+		success: true,
+		value: {
+			execution_result: {
+				type: "Incomplete",
+				value: {
+					used: {
+						ref_time: 1534428000n,
+						proof_size: 26932n,
+					},
+					error: {
+						index: 3,
+						error: {
+							type: "FailedToTransactAsset",
+							value: undefined,
+						},
+					},
+				},
+			},
+			emitted_events: [
+				{
+					type: "Assets",
+					value: {
+						type: "Withdrawn",
+						value: {
+							asset_id: 1984,
+							who: "13cKp89Uh2yWgTG28JA1QEvPUMjEPKejqkjHKf9zqLiFKjH6",
+							amount: 10000000n,
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Withdraw",
+						value: {
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 23157689n,
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Deposited",
+						value: {
+							asset_id: 1984,
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 2405n,
+						},
+					},
+				},
+				{
+					type: "AssetConversion",
+					value: {
+						type: "SwapCreditExecuted",
+						value: {
+							amount_in: 2405n,
+							amount_out: 23157689n,
+							path: [
+								[
+									{
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 1984n,
+												},
+											],
+										},
+									},
+									2405n,
+								],
+								[
+									{
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									23157689n,
+								],
+							],
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Withdraw",
+						value: {
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 96304438754n,
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Deposited",
+						value: {
+							asset_id: 1984,
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 9997595n,
+						},
+					},
+				},
+				{
+					type: "AssetConversion",
+					value: {
+						type: "SwapCreditExecuted",
+						value: {
+							amount_in: 9997595n,
+							amount_out: 96304438754n,
+							path: [
+								[
+									{
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 1984n,
+												},
+											],
+										},
+									},
+									9997595n,
+								],
+								[
+									{
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									96304438754n,
+								],
+							],
+						},
+					},
+				},
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "ProcessXcmError",
+						value: {
+							origin: {
+								parents: 1,
+								interior: {
+									type: "X1",
+									value: {
+										type: "Parachain",
+										value: 2034,
+									},
+								},
+							},
+							error: {
+								type: "NoDeal",
+								value: undefined,
+							},
+							message_id:
+								"0xaac20b11491948cc5e598b04dba5bca1868ec914ddb9cba889e688636c6af476",
+						},
+					},
+				},
+				{
+					type: "Assets",
+					value: {
+						type: "Withdrawn",
+						value: {
+							asset_id: 1984,
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 286n,
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Deposit",
+						value: {
+							who: "12dvmstTqsjrPrPdouMpbsgaaQjPGYFh7gMaiNgZ7Rzaacok",
+							amount: 2780557n,
+						},
+					},
+				},
+				{
+					type: "AssetConversion",
+					value: {
+						type: "SwapCreditExecuted",
+						value: {
+							amount_in: 2780557n,
+							amount_out: 286n,
+							path: [
+								[
+									{
+										parents: 1,
+										interior: {
+											type: "Here",
+											value: undefined,
+										},
+									},
+									2780557n,
+								],
+								[
+									{
+										parents: 0,
+										interior: {
+											type: "X2",
+											value: [
+												{
+													type: "PalletInstance",
+													value: 50,
+												},
+												{
+													type: "GeneralIndex",
+													value: 1984n,
+												},
+											],
+										},
+									},
+									286n,
+								],
+							],
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Deposit",
+						value: {
+							who: "163CRvzDQ8JHZfmufa86zA7BfDY7NToUSqmWbpDq5kwDYSmH",
+							amount: 96304438754n,
+						},
+					},
+				},
+				{
+					type: "PolkadotXcm",
+					value: {
+						type: "ProcessXcmError",
+						value: {
+							origin: {
+								parents: 1,
+								interior: {
+									type: "X1",
+									value: {
+										type: "Parachain",
+										value: 2034,
+									},
+								},
+							},
+							error: {
+								type: "FailedToTransactAsset",
+								value: undefined,
+							},
+							message_id:
+								"0xaac20b11491948cc5e598b04dba5bca1868ec914ddb9cba889e688636c6af476",
+						},
+					},
+				},
+				{
+					type: "Balances",
+					value: {
+						type: "Deposit",
+						value: {
+							who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
+							amount: 20377132n,
 						},
 					},
 				},
@@ -4254,7 +8409,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 					value: {
 						type: "AssetsTrapped",
 						value: {
-							hash: "0xa1f027df0b8b1ff9d8c107966130efd3efb78fd0f801c5b429fc02459a650cea",
+							hash: "0xa9063b821a37812b9ff53a5de7e95e48e84116d4b77d403f01626c05d3aa680b",
 							origin: {
 								parents: 1,
 								interior: {
@@ -4287,7 +8442,7 @@ export const usdtToPinkPriceMoved: XcmDestinationSwapFixture = {
 										},
 										fun: {
 											type: "Fungible",
-											value: 294n,
+											value: 286n,
 										},
 									},
 								],

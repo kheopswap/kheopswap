@@ -13,7 +13,12 @@ import type {
 	CallSpendings,
 	SubmitGate,
 } from "../../../transaction/TransactionProvider";
-import type { XcmRoute } from "../swapRoute";
+import type {
+	XcmDestinationSwapRoute,
+	XcmRoute,
+	XcmSwapRoute,
+	XcmTransferRoute,
+} from "../swapRoute";
 
 type XcmOrigin = XcmRoute["origin"];
 type XcmDestination = XcmRoute["destination"];
@@ -198,41 +203,31 @@ export const parseDestinationDryRun = (
 		: { success: false, failure: { kind: "nothing-deposited" } };
 };
 
-export const composeXcmQuote = (
+export type XcmQuoteSubject =
+	| {
+			route: XcmTransferRoute | XcmSwapRoute;
+			destinationFee?: undefined;
+	  }
+	| { route: XcmDestinationSwapRoute; destinationFee: TokenAmount };
+
+export const getXcmQuoteSubject = (
 	route: XcmRoute,
-	{
-		sent,
-		received,
-		destinationSwapFee,
-	}: { sent: bigint; received: bigint; destinationSwapFee: bigint | undefined },
-): XcmQuote | undefined => {
-	switch (route.kind) {
-		case "xcm-transfer":
-		case "xcm-swap":
-			return {
-				received,
-				destinationFee: { tokenId: route.tokenIdOut, plancks: sent - received },
-			};
-		case "xcm-destination-swap":
-			return destinationSwapFee === undefined
-				? undefined
-				: {
-						received,
-						destinationFee: {
-							tokenId: route.path[0].tokenIdIn,
-							plancks: destinationSwapFee,
-						},
-					};
-	}
+	destinationFee: TokenAmount | undefined,
+): XcmQuoteSubject | null => {
+	if (route.kind !== "xcm-destination-swap") return { route };
+	return destinationFee ? { route, destinationFee } : null;
 };
 
-export const getDestinationSwapPlancksIn = (
-	sent: bigint,
-	destinationFee: bigint,
-): Parsed<bigint> =>
-	sent > destinationFee
-		? { success: true, value: sent - destinationFee }
-		: { success: false, failure: { kind: "below-destination-fee" } };
+export const composeXcmQuote = (
+	{ route, destinationFee }: XcmQuoteSubject,
+	{ sent, received }: { sent: bigint; received: bigint },
+): XcmQuote => ({
+	received,
+	destinationFee: destinationFee ?? {
+		tokenId: route.tokenIdOut,
+		plancks: sent - received,
+	},
+});
 
 export const describeXcmQuoteFailure = (
 	failure: XcmQuoteFailure,

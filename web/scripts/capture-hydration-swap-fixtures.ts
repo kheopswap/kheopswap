@@ -53,7 +53,7 @@ export type XcmDestinationSwapFixture = {
 	slippage: number;
 	lpFee: number;
 	destinationWeight: { ref_time: bigint; proof_size: bigint };
-	destinationFee: bigint;
+	destinationFee: { plancks: bigint; nativePlancks: bigint };
 	hops: QuotedPoolHop[];
 	args: Parameters<
 		Api<"hydration">["tx"]["PolkadotXcm"]["transfer_assets_using_type_and_then"]
@@ -196,7 +196,10 @@ const buildArgs = (minOuts: bigint[]) => ({
 	fees_transfer_type: Enum("DestinationReserve"),
 	custom_xcm_on_dest: XcmVersionedXcm.V5([
 		XcmV5Instruction.SetAppendix([
-			depositToBeneficiary(XcmV5AssetFilter.Wild(XcmV5WildAsset.AllCounted(1))),
+			XcmV5Instruction.RefundSurplus(),
+			...[...path.slice(1), mirror].map((token) =>
+				depositToBeneficiary(allOf(token)),
+			),
 		]),
 		...path.slice(1).map((want, index) =>
 			XcmV5Instruction.ExchangeAsset({
@@ -251,50 +254,95 @@ const dryRunOnHydration = async (args: ReturnType<typeof buildArgs>) => {
 	return { dryRun, message };
 };
 
+const { hash: assetHubBlock } = await assetHubClient.getFinalizedBlock();
+const atAssetHubBlock = { at: assetHubBlock };
+
+const dryRunOnAssetHub = async (message: unknown) => {
+	const dryRun: DestinationDryRun =
+		await assetHubApi.apis.DryRunApi.dry_run_xcm(
+			siblingLocation(hydrationChain.paraId),
+			message as Parameters<typeof assetHubApi.apis.DryRunApi.dry_run_xcm>[1],
+			atAssetHubBlock,
+		);
+	if (!dryRun.success)
+		throw new Error(`Asset Hub dry run failed: ${stringify(dryRun)}`);
+	return dryRun;
+};
+
+type SwapCredit = { amount_in: bigint; amount_out: bigint };
+const getSwapCredits = ({
+	value,
+}: Extract<DestinationDryRun, { success: true }>) =>
+	value.emitted_events.flatMap(({ type, value }) =>
+		type === "AssetConversion" && value.type === "SwapCreditExecuted"
+			? [value.value as SwapCredit]
+			: [],
+	);
+
 const probe = await dryRunOnHydration(buildArgs([]));
 const weight = await assetHubApi.apis.XcmPaymentApi.query_xcm_weight(
 	probe.message,
+	atAssetHubBlock,
 );
 if (!weight.success) throw new Error(`Cannot weigh: ${stringify(weight)}`);
-const fee = await assetHubApi.apis.XcmPaymentApi.query_weight_to_asset_fee(
-	weight.value,
-	XcmVersionedAssetId.V5(mirror.location),
-);
-if (!fee.success) throw new Error(`No fee in ${mirror.tokenId}`);
-const destinationFee = fee.value;
+const getFee = async ({ tokenId, location }: PathToken) => {
+	const fee = await assetHubApi.apis.XcmPaymentApi.query_weight_to_asset_fee(
+		weight.value,
+		XcmVersionedAssetId.V5(location),
+		atAssetHubBlock,
+	);
+	if (!fee.success) throw new Error(`No fee in ${tokenId}`);
+	return fee.value;
+};
+const destinationFee = {
+	plancks: await getFee(mirror),
+	nativePlancks: await getFee(native),
+};
 
-const lpFee = await assetHubApi.constants.AssetConversion.LPFee();
+const probeOnAssetHub = await dryRunOnAssetHub(probe.message);
+if (probeOnAssetHub.value.execution_result.type !== "Complete")
+	throw new Error(`Probe swap failed: ${stringify(probeOnAssetHub)}`);
+const credits = getSwapCredits(probeOnAssetHub);
+const hopCredits = credits.slice(-(path.length - 1));
+if (mirror !== native) {
+	const [feeSwap] = credits;
+	if (
+		credits.length !== path.length ||
+		feeSwap?.amount_in !== destinationFee.plancks ||
+		feeSwap?.amount_out !== destinationFee.nativePlancks
+	)
+		throw new Error(
+			`Asset Hub did not buy its fee as quoted: ${stringify({ credits, destinationFee })}`,
+		);
+}
+
+const lpFee =
+	await assetHubApi.constants.AssetConversion.LPFee(atAssetHubBlock);
 const applySlippage = (plancksOut: bigint) =>
 	(plancksOut * (10000n - BigInt(slippage * 10000))) / 10000n;
 
-const hops = [];
-let amountIn = plancks - destinationFee;
-for (const [index, want] of path.slice(1).entries()) {
-	const give = path[index] as PathToken;
-	const reserves = await assetHubApi.apis.AssetConversionApi.get_reserves(
-		give.location,
-		want.location,
-	);
-	const amountOut =
-		await assetHubApi.apis.AssetConversionApi.quote_price_exact_tokens_for_tokens(
+const hops = await Promise.all(
+	path.slice(1).map(async (want, index) => {
+		const give = path[index] as PathToken;
+		const credit = hopCredits[index];
+		const reserves = await assetHubApi.apis.AssetConversionApi.get_reserves(
 			give.location,
 			want.location,
-			amountIn,
-			true,
+			atAssetHubBlock,
 		);
-	if (!reserves || !amountOut)
-		throw new Error(`No pool for ${give.tokenId} to ${want.tokenId}`);
-	hops.push({
-		tokenIdIn: give.tokenId,
-		tokenIdOut: want.tokenId,
-		reserveIn: reserves[0],
-		reserveOut: reserves[1],
-		amountIn,
-		amountOut,
-		minOut: applySlippage(amountOut),
-	});
-	amountIn = amountOut;
-}
+		if (!reserves || !credit)
+			throw new Error(`No swap through ${give.tokenId} to ${want.tokenId}`);
+		return {
+			tokenIdIn: give.tokenId,
+			tokenIdOut: want.tokenId,
+			reserveIn: reserves[0],
+			reserveOut: reserves[1],
+			amountIn: credit.amount_in,
+			amountOut: credit.amount_out,
+			minOut: applySlippage(credit.amount_out),
+		};
+	}),
+);
 
 const minOuts = hops.map(({ minOut }, index) =>
 	values["price-moved"] && index === hops.length - 1 ? minOut * 2n : minOut,
@@ -305,11 +353,7 @@ const deliveryFees = await hydrationApi.apis.XcmPaymentApi.query_delivery_fees(
 	siblingLocation(assetHub.paraId),
 	message,
 );
-const destinationDryRun: DestinationDryRun =
-	await assetHubApi.apis.DryRunApi.dry_run_xcm(
-		siblingLocation(hydrationChain.paraId),
-		message,
-	);
+const destinationDryRun = await dryRunOnAssetHub(message);
 
 hydrationClient.destroy();
 assetHubClient.destroy();
@@ -350,18 +394,15 @@ console.log(
 		name,
 		destinationFee,
 		hops,
-		execution: destinationDryRun.success
-			? destinationDryRun.value.execution_result
-			: destinationDryRun.value,
-		destinationEvents: destinationDryRun.success
-			? destinationDryRun.value.emitted_events.map((event) =>
-					["AssetConversion", "Assets", "Balances", "PolkadotXcm"].includes(
-						event.type,
-					)
-						? `${event.type}.${event.value.type} ${stringify(event.value.value)}`
-						: `${event.type}.${event.value.type}`,
-				)
-			: [],
+		assetHubBlock,
+		execution: destinationDryRun.value.execution_result,
+		destinationEvents: destinationDryRun.value.emitted_events.map((event) =>
+			["AssetConversion", "Assets", "Balances", "PolkadotXcm"].includes(
+				event.type,
+			)
+				? `${event.type}.${event.value.type} ${stringify(event.value.value)}`
+				: `${event.type}.${event.value.type}`,
+		),
 	}),
 );
 process.exit(0);

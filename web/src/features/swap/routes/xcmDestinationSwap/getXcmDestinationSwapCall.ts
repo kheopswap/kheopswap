@@ -6,7 +6,6 @@ import { getLastHop, type HopPath } from "../ammPath";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import {
 	allOf,
-	anyOneAsset,
 	depositAsset,
 	exchangeAsset,
 	type SwapHop,
@@ -24,8 +23,18 @@ type XcmDestinationSwapCallProps = XcmDestinationSwapCallInputs & {
 	beneficiary: SS58String;
 };
 
-const depositLeftovers = (beneficiary: SS58String) =>
-	XcmV5Instruction.SetAppendix([depositAsset(anyOneAsset, beneficiary)]);
+const getLeftoverTokenIds = (hops: HopPath<SwapHop>) => [
+	...hops.map(({ tokenIdOut }) => tokenIdOut),
+	hops[0].tokenIdIn,
+];
+
+const returnLeftovers = (hops: HopPath<SwapHop>, beneficiary: SS58String) =>
+	XcmV5Instruction.SetAppendix([
+		XcmV5Instruction.RefundSurplus(),
+		...getLeftoverTokenIds(hops).map((tokenId) =>
+			depositAsset(allOf(tokenId), beneficiary),
+		),
+	]);
 
 export const buildXcmDestinationSwapArgs = ({
 	hops,
@@ -35,7 +44,7 @@ export const buildXcmDestinationSwapArgs = ({
 	buildReserveTransferArgs({
 		...props,
 		customXcmOnDest: [
-			depositLeftovers(beneficiary),
+			returnLeftovers(hops, beneficiary),
 			...hops.map(exchangeAsset),
 			depositAsset(allOf(getLastHop(hops).tokenIdOut), beneficiary),
 		],
