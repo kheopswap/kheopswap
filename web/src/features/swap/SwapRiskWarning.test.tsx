@@ -42,7 +42,7 @@ describe("SwapRiskWarning", () => {
 			"Fees take 23.75% of what you send, mostly the 0.0305 DOT delivery fee.",
 		);
 		expect(
-			screen.getByLabelText("I accept this loss and want to swap anyway"),
+			screen.getByLabelText("I accept these fees and want to transfer anyway"),
 		).toBeTruthy();
 	});
 

@@ -185,11 +185,32 @@ describe("isRiskAcknowledged", () => {
 });
 
 describe("getRiskSubmitGate", () => {
+	const SEVERE_SWAP = getSwapRisk({ priceImpact: -0.5, valueLoss: undefined });
+
+	it("asks to accept the fees of a transfer", () => {
+		expect(
+			getRiskSubmitGate(
+				{ status: "open" },
+				{
+					risk: getSwapRisk({
+						priceImpact: undefined,
+						valueLoss: valueLossOf(0.24, "fees", 0.23),
+					}),
+					isAssessing: false,
+					isAcknowledged: false,
+				},
+			),
+		).toEqual({
+			status: "closed",
+			reason: "Accept the fees to transfer anyway",
+		});
+	});
+
 	it("closes an open gate until the loss is acknowledged", () => {
 		expect(
 			getRiskSubmitGate(
 				{ status: "open" },
-				{ isAssessing: false, isAcknowledged: false },
+				{ risk: SEVERE_SWAP, isAssessing: false, isAcknowledged: false },
 			),
 		).toEqual({
 			status: "closed",
@@ -198,7 +219,7 @@ describe("getRiskSubmitGate", () => {
 		expect(
 			getRiskSubmitGate(
 				{ status: "open" },
-				{ isAssessing: false, isAcknowledged: true },
+				{ risk: SEVERE_SWAP, isAssessing: false, isAcknowledged: true },
 			),
 		).toEqual({
 			status: "open",
@@ -210,7 +231,11 @@ describe("getRiskSubmitGate", () => {
 		{ status: "closed", reason: "Insufficient liquidity" } as const,
 	])("keeps the route's own %o gate", (gate) => {
 		expect(
-			getRiskSubmitGate(gate, { isAssessing: true, isAcknowledged: false }),
+			getRiskSubmitGate(gate, {
+				risk: SEVERE_SWAP,
+				isAssessing: true,
+				isAcknowledged: false,
+			}),
 		).toBe(gate);
 	});
 
@@ -218,7 +243,7 @@ describe("getRiskSubmitGate", () => {
 		expect(
 			getRiskSubmitGate(
 				{ status: "open" },
-				{ isAssessing: true, isAcknowledged: true },
+				{ risk: SEVERE_SWAP, isAssessing: true, isAcknowledged: true },
 			),
 		).toEqual({ status: "pending" });
 	});

@@ -121,16 +121,24 @@ export const isAcknowledgementStale = (
 	key: string,
 ): boolean => !!acknowledgement && !coversRisk(acknowledgement, risk, key);
 
+export const isTransferRisk = (risk: SwapRisk) =>
+	risk.level !== "none" && risk.headline.kind === "fees";
+
 export const getRiskSubmitGate = (
 	gate: SubmitGate,
 	{
+		risk,
 		isAssessing,
 		isAcknowledged,
-	}: { isAssessing: boolean; isAcknowledged: boolean },
+	}: { risk: SwapRisk; isAssessing: boolean; isAcknowledged: boolean },
 ): SubmitGate => {
 	if (gate.status !== "open") return gate;
 	if (isAssessing) return { status: "pending" };
-	return isAcknowledged
-		? gate
-		: { status: "closed", reason: "Confirm the loss to swap anyway" };
+	if (isAcknowledged) return gate;
+	return {
+		status: "closed",
+		reason: isTransferRisk(risk)
+			? "Accept the fees to transfer anyway"
+			: "Confirm the loss to swap anyway",
+	};
 };

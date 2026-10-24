@@ -4,7 +4,7 @@ import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
 import { TokenAmountValue } from "./routes/AmmPathValues";
 import { useSwap } from "./SwapProvider";
-import type { LossCause, SwapLoss } from "./swapRisk";
+import { isTransferRisk, type LossCause, type SwapLoss } from "./swapRisk";
 
 const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	const { details } = useSwap();
@@ -78,7 +78,9 @@ export const SwapRiskWarning = () => {
 						checked={isRiskAcknowledged}
 						onChange={(e) => onRiskAcknowledgeChange(e.currentTarget.checked)}
 					/>
-					I accept this loss and want to swap anyway
+					{isTransferRisk(risk)
+						? "I accept these fees and want to transfer anyway"
+						: "I accept this loss and want to swap anyway"}
 				</label>
 			)}
 		</div>
