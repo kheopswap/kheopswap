@@ -209,18 +209,6 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		await waitFor(() =>
 			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
 		);
-		console.log(
-			chain.dryRunCall.mock.calls.map(
-				([o, c]) =>
-					JSON.stringify([o, c], (_, v) =>
-						typeof v === "bigint" ? v.toString() : v,
-					).slice(0, 120) +
-					" " +
-					JSON.stringify(c.args.assets, (_, v) =>
-						typeof v === "bigint" ? v.toString() : v,
-					).slice(-60),
-			),
-		);
 		expect(chain.dryRunCall).toHaveBeenCalledTimes(2);
 		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(1);
 	});
