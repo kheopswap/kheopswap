@@ -1,15 +1,50 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import type { FC } from "react";
 import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
+import { TokenAmountValue } from "./routes/AmmPathValues";
 import { useSwap } from "./SwapProvider";
-import type { SwapLoss } from "./swapRisk";
+import type { LossCause, SwapLoss } from "./swapRisk";
 
-const describeLoss = ({ kind, ratio }: SwapLoss) => {
+const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
+	const { details } = useSwap();
+	const deliveryFee =
+		details.kind === "amm-swap" ? undefined : details.quote.deliveryFee;
+	switch (cause) {
+		case "delivery-fee":
+			return deliveryFee ? (
+				<>
+					, mostly the <TokenAmountValue {...deliveryFee} /> delivery fee
+				</>
+			) : null;
+		case "price-impact":
+			return ", mostly from price impact";
+		case null:
+			return null;
+	}
+};
+
+const LossText: FC<{ loss: SwapLoss; cause: LossCause | null }> = ({
+	loss: { kind, ratio },
+	cause,
+}) => {
 	switch (kind) {
 		case "price-impact":
 			return `Price impact is ${formatPercent(ratio)}: this trade moves the pool price against you.`;
 		case "value-loss":
-			return `You receive ${formatPercent(ratio)} less value than you send.`;
+			return (
+				<>
+					You receive {formatPercent(ratio)} less value than you send
+					<LossCauseText cause={cause} />.
+				</>
+			);
+		case "fees":
+			return (
+				<>
+					Fees take {formatPercent(ratio)} of what you send
+					<LossCauseText cause={cause} />.
+				</>
+			);
 	}
 };
 
@@ -31,11 +66,9 @@ export const SwapRiskWarning = () => {
 		>
 			<div className="flex gap-2">
 				<ExclamationTriangleIcon className="size-5 shrink-0" />
-				<div className="flex flex-col gap-1">
-					{risk.losses.map((loss) => (
-						<p key={loss.kind}>{describeLoss(loss)}</p>
-					))}
-				</div>
+				<p>
+					<LossText loss={risk.headline} cause={risk.cause} />
+				</p>
 			</div>
 			{needsConfirmation && (
 				<label className="flex cursor-pointer items-center gap-2 text-text">

@@ -4,11 +4,13 @@ import type { TokenAmount, TokenId } from "../../registry/tokens/types";
 import { isBigInt } from "../../utils/isBigInt";
 import type { SwapRoute } from "./routes/swapRoute";
 import {
+	getShare,
 	getSwapRisk,
 	getValueLoss,
 	isAcknowledgementStale,
 	isRiskAcknowledged,
 	type RiskAcknowledgement,
+	type ValueLoss,
 } from "./swapRisk";
 
 const NO_DELIVERY_FEE_VALUE = 0n;
@@ -30,6 +32,7 @@ const useSentValue = (
 			isBigInt(amount.stablePlancks) && isBigInt(feeValue)
 				? amount.stablePlancks + feeValue
 				: undefined,
+		feeValue,
 	};
 };
 
@@ -46,23 +49,28 @@ export const useSwapRisk = ({
 	deliveryFee: TokenAmount | undefined;
 	priceImpact: number | undefined;
 }) => {
-	const swapRoute = route?.kind === "xcm-transfer" ? null : route;
-	const sent = useSentValue(swapRoute?.tokenIdIn, totalIn, deliveryFee);
+	const sent = useSentValue(route?.tokenIdIn, totalIn, deliveryFee);
 	const received = useStablePlancks({
-		tokenId: swapRoute?.tokenIdOut,
+		tokenId: route?.tokenIdOut,
 		plancks: plancksOut,
 	});
 
+	const valueLoss = useMemo((): ValueLoss | undefined => {
+		const ratio = getValueLoss(sent.sentValue, received.stablePlancks);
+		if (ratio === undefined) return undefined;
+		return {
+			kind: route?.kind === "xcm-transfer" ? "fees" : "value-loss",
+			ratio,
+			deliveryFeeShare: getShare(sent.feeValue, sent.sentValue) ?? 0,
+		};
+	}, [route?.kind, sent.sentValue, sent.feeValue, received.stablePlancks]);
+
 	const risk = useMemo(
-		() =>
-			getSwapRisk({
-				priceImpact: swapRoute ? priceImpact : undefined,
-				valueLoss: getValueLoss(sent.sentValue, received.stablePlancks),
-			}),
-		[swapRoute, priceImpact, sent.sentValue, received.stablePlancks],
+		() => getSwapRisk({ priceImpact, valueLoss }),
+		[priceImpact, valueLoss],
 	);
 
-	const key = `${swapRoute?.tokenIdIn}>${swapRoute?.tokenIdOut}:${totalIn}`;
+	const key = `${route?.tokenIdIn}>${route?.tokenIdOut}:${totalIn}`;
 	const [acknowledgement, setAcknowledgement] =
 		useState<RiskAcknowledgement | null>(null);
 	useEffect(() => {
@@ -80,7 +88,7 @@ export const useSwapRisk = ({
 	);
 
 	const isAssessing =
-		!!swapRoute && isBigInt(totalIn) && (sent.isLoading || received.isLoading);
+		!!route && isBigInt(totalIn) && (sent.isLoading || received.isLoading);
 
 	return { risk, isAcknowledged, isAssessing, onAcknowledgeChange };
 };

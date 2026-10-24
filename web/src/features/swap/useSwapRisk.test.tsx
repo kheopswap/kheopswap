@@ -97,15 +97,49 @@ describe("useSwapRisk", () => {
 		expect(result.current.isAssessing).toBe(true);
 	});
 
-	it("does not wait for values when the route is a plain transfer", () => {
-		valuation.isLoading = true;
-		const { result } = renderHook(useSwapRisk, {
-			initialProps: {
-				...severeSwap(1_000_000n),
-				route: { ...ROUTE, kind: "xcm-transfer" } as unknown as SwapRoute,
-				priceImpact: undefined,
-			},
+	describe("on a plain cross-chain transfer", () => {
+		const DOT = "native::pah" as TokenId;
+		const HYDRATION_DOT = "hydration-asset::hydration::5" as TokenId;
+		const transfer = (totalIn: bigint, received: bigint): Props => ({
+			route: {
+				kind: "xcm-transfer",
+				origin: "pah",
+				destination: "hydration",
+				tokenIdIn: DOT,
+				tokenIdOut: HYDRATION_DOT,
+			} as SwapRoute,
+			totalIn,
+			plancksOut: received,
+			deliveryFee: { tokenId: DOT, plancks: 305_000_000n },
+			priceImpact: undefined,
 		});
-		expect(result.current.isAssessing).toBe(false);
+
+		it("asks to confirm when fees take more than 15% of what leaves the account", () => {
+			const { result } = renderHook(useSwapRisk, {
+				initialProps: transfer(1_000_000_000n, 995_000_000n),
+			});
+			expect(result.current.risk).toEqual({
+				level: "confirm",
+				losses: [{ kind: "fees", ratio: 0.237547 }],
+				headline: { kind: "fees", ratio: 0.237547 },
+				cause: "delivery-fee",
+			});
+			expect(result.current.isAcknowledged).toBe(false);
+		});
+
+		it("lets a transfer through when fees stay under 3%", () => {
+			const { result } = renderHook(useSwapRisk, {
+				initialProps: transfer(100_000_000_000n, 99_995_000_000n),
+			});
+			expect(result.current.risk).toEqual({ level: "none" });
+		});
+
+		it("waits for the values it compares", () => {
+			valuation.isLoading = true;
+			const { result } = renderHook(useSwapRisk, {
+				initialProps: transfer(1_000_000_000n, 995_000_000n),
+			});
+			expect(result.current.isAssessing).toBe(true);
+		});
 	});
 });

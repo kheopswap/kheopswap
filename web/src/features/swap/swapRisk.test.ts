@@ -4,7 +4,15 @@ import {
 	getSwapRisk,
 	getValueLoss,
 	isRiskAcknowledged,
+	type ValueLoss,
 } from "./swapRisk";
+
+const valueLossOf = (
+	ratio: number | undefined,
+	kind: ValueLoss["kind"] = "value-loss",
+	deliveryFeeShare = 0,
+): ValueLoss | undefined =>
+	ratio === undefined ? undefined : { kind, ratio, deliveryFeeShare };
 
 describe("getValueLoss", () => {
 	it("is the share of the sent value that does not come back", () => {
@@ -28,9 +36,9 @@ describe("getSwapRisk", () => {
 	])(
 		"lets a swap through untouched at impact %s and value loss %s",
 		(priceImpact, valueLoss) => {
-			expect(getSwapRisk({ priceImpact, valueLoss })).toEqual({
-				level: "none",
-			});
+			expect(
+				getSwapRisk({ priceImpact, valueLoss: valueLossOf(valueLoss) }),
+			).toEqual({ level: "none" });
 		},
 	);
 
@@ -38,40 +46,98 @@ describe("getSwapRisk", () => {
 		expect(getSwapRisk({ priceImpact: -0.06, valueLoss: undefined })).toEqual({
 			level: "warn",
 			losses: [{ kind: "price-impact", ratio: 0.06 }],
+			headline: { kind: "price-impact", ratio: 0.06 },
+			cause: null,
 		});
 	});
 
 	it("warns above 3% value loss even when the price impact is small", () => {
-		expect(getSwapRisk({ priceImpact: -0.009, valueLoss: 0.04 })).toMatchObject(
-			{
-				level: "warn",
-				losses: [{ kind: "value-loss" }],
-			},
-		);
+		expect(
+			getSwapRisk({ priceImpact: -0.009, valueLoss: valueLossOf(0.04) }),
+		).toMatchObject({
+			level: "warn",
+			losses: [{ kind: "value-loss" }],
+		});
 	});
 
 	it.each([
 		["price impact", -0.5362, 0.01],
 		["value loss", -0.01, 0.2],
 	])("asks for confirmation above 15% %s", (_, priceImpact, valueLoss) => {
-		expect(getSwapRisk({ priceImpact, valueLoss }).level).toBe("confirm");
+		expect(
+			getSwapRisk({ priceImpact, valueLoss: valueLossOf(valueLoss) }).level,
+		).toBe("confirm");
 	});
 
-	it("reports both losses", () => {
-		expect(getSwapRisk({ priceImpact: -0.2, valueLoss: 0.25 })).toEqual({
+	it("keeps both losses for the acknowledgement and heads with the larger one", () => {
+		expect(
+			getSwapRisk({ priceImpact: -0.2, valueLoss: valueLossOf(0.25) }),
+		).toEqual({
 			level: "confirm",
 			losses: [
 				{ kind: "price-impact", ratio: 0.2 },
 				{ kind: "value-loss", ratio: 0.25 },
 			],
+			headline: { kind: "value-loss", ratio: 0.25 },
+			cause: "price-impact",
 		});
 	});
+
+	it("heads with the price impact when it is the larger loss", () => {
+		expect(
+			getSwapRisk({ priceImpact: -0.5325, valueLoss: valueLossOf(0.5) }),
+		).toMatchObject({
+			headline: { kind: "price-impact", ratio: 0.5325 },
+			cause: null,
+		});
+	});
+
+	it("blames the delivery fee when it is most of the value lost", () => {
+		expect(
+			getSwapRisk({
+				priceImpact: -0.0001,
+				valueLoss: valueLossOf(0.0398, "value-loss", 0.03),
+			}),
+		).toMatchObject({
+			level: "warn",
+			headline: { kind: "value-loss", ratio: 0.0398 },
+			cause: "delivery-fee",
+		});
+	});
+
+	it("names no cause when neither the delivery fee nor the price impact dominates", () => {
+		expect(
+			getSwapRisk({
+				priceImpact: -0.01,
+				valueLoss: valueLossOf(0.1, "value-loss", 0.01),
+			}),
+		).toMatchObject({ cause: null });
+	});
+
+	it.each([
+		[0.03, "none"],
+		[0.04, "warn"],
+		[0.16, "confirm"],
+	])(
+		"applies the value loss tiers to the fees of a transfer (%s)",
+		(ratio, level) => {
+			expect(
+				getSwapRisk({
+					priceImpact: undefined,
+					valueLoss: valueLossOf(ratio, "fees", ratio),
+				}).level,
+			).toBe(level);
+		},
+	);
 });
 
 describe("isRiskAcknowledged", () => {
 	const KEY = "usdc>pink:1000000";
 	const risk = (priceImpact: number, valueLoss?: number) =>
-		getSwapRisk({ priceImpact: -priceImpact, valueLoss });
+		getSwapRisk({
+			priceImpact: -priceImpact,
+			valueLoss: valueLossOf(valueLoss),
+		});
 	const acknowledge = (acknowledged: ReturnType<typeof risk>) => ({
 		key: KEY,
 		losses: acknowledged.level === "none" ? [] : acknowledged.losses,

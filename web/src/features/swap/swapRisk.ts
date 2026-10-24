@@ -1,32 +1,71 @@
 import type { SubmitGate } from "../transaction/TransactionProvider";
 
-export type SwapLoss = { kind: "price-impact" | "value-loss"; ratio: number };
+export type SwapLoss = {
+	kind: "price-impact" | "value-loss" | "fees";
+	ratio: number;
+};
+
+export type ValueLoss = {
+	kind: "value-loss" | "fees";
+	ratio: number;
+	deliveryFeeShare: number;
+};
 
 type RiskLevel = "warn" | "confirm";
 
+export type LossCause = "price-impact" | "delivery-fee";
+
 export type SwapRisk =
 	| { level: "none" }
-	| { level: RiskLevel; losses: SwapLoss[] };
+	| {
+			level: RiskLevel;
+			losses: SwapLoss[];
+			headline: SwapLoss;
+			cause: LossCause | null;
+	  };
 
 export type RiskAcknowledgement = { key: string; losses: SwapLoss[] };
 
+const VALUE_LOSS_THRESHOLDS = { warn: 0.03, confirm: 0.15 };
+
 const LOSS_THRESHOLDS: Record<SwapLoss["kind"], Record<RiskLevel, number>> = {
 	"price-impact": { warn: 0.05, confirm: 0.15 },
-	"value-loss": { warn: 0.03, confirm: 0.15 },
+	"value-loss": VALUE_LOSS_THRESHOLDS,
+	fees: VALUE_LOSS_THRESHOLDS,
 };
 
 const NO_RISK: SwapRisk = { level: "none" };
 
 const RATIO_PRECISION = 1_000_000n;
 
+export const getShare = (
+	part: bigint | null | undefined,
+	whole: bigint | null | undefined,
+): number | undefined => {
+	if (!whole || part === null || part === undefined) return undefined;
+	return Number((part * RATIO_PRECISION) / whole) / Number(RATIO_PRECISION);
+};
+
 export const getValueLoss = (
 	sentValue: bigint | null | undefined,
 	receivedValue: bigint | null | undefined,
-): number | undefined => {
-	if (!sentValue || receivedValue === null || receivedValue === undefined)
-		return undefined;
-	const lost = ((sentValue - receivedValue) * RATIO_PRECISION) / sentValue;
-	return Number(lost) / Number(RATIO_PRECISION);
+): number | undefined =>
+	receivedValue === null || receivedValue === undefined
+		? undefined
+		: getShare(sentValue && sentValue - receivedValue, sentValue);
+
+const isMostOf = (share: number, loss: SwapLoss) => share > loss.ratio / 2;
+
+const getLossCause = (
+	headline: SwapLoss,
+	priceImpactLoss: number,
+	valueLoss: ValueLoss | undefined,
+): LossCause | null => {
+	if (headline.kind === "price-impact" || !valueLoss) return null;
+	if (isMostOf(valueLoss.deliveryFeeShare, headline)) return "delivery-fee";
+	if (headline.kind === "value-loss" && isMostOf(priceImpactLoss, headline))
+		return "price-impact";
+	return null;
 };
 
 export const getSwapRisk = ({
@@ -34,18 +73,25 @@ export const getSwapRisk = ({
 	valueLoss,
 }: {
 	priceImpact: number | undefined;
-	valueLoss: number | undefined;
+	valueLoss: ValueLoss | undefined;
 }): SwapRisk => {
+	const priceImpactLoss = -(priceImpact ?? 0);
 	const losses: SwapLoss[] = [
-		{ kind: "price-impact" as const, ratio: -(priceImpact ?? 0) },
-		{ kind: "value-loss" as const, ratio: valueLoss ?? 0 },
+		{ kind: "price-impact" as const, ratio: priceImpactLoss },
+		...(valueLoss ? [{ kind: valueLoss.kind, ratio: valueLoss.ratio }] : []),
 	].filter(({ kind, ratio }) => ratio > LOSS_THRESHOLDS[kind].warn);
-	if (!losses.length) return NO_RISK;
+	const [headline] = [...losses].sort((a, b) => b.ratio - a.ratio);
+	if (!headline) return NO_RISK;
 
 	const needsConfirmation = losses.some(
 		({ kind, ratio }) => ratio > LOSS_THRESHOLDS[kind].confirm,
 	);
-	return { level: needsConfirmation ? "confirm" : "warn", losses };
+	return {
+		level: needsConfirmation ? "confirm" : "warn",
+		losses,
+		headline,
+		cause: getLossCause(headline, priceImpactLoss, valueLoss),
+	};
 };
 
 const coversRisk = (
