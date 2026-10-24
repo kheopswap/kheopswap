@@ -145,6 +145,32 @@ describe("balances service pipeline", () => {
 		).toHaveLength(1);
 	});
 
+	it("watches System.Account on the people chain for its native token", async () => {
+		const address = "5TestAddressDave";
+		const balanceId = getBalanceId({ address, tokenId: "native::ppeople" });
+		const subjectKey = `native||${address}`;
+		const getApiCallsBefore = mocks.getApiChainIds.length;
+
+		const subId = addBalanceSubscription(balanceId);
+
+		await vi.waitFor(() =>
+			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		);
+		expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual(["ppeople"]);
+
+		getSubject(subjectKey).next({
+			value: { data: { free: 100n, frozen: 10n } },
+		});
+
+		const loaded = await waitForBalanceState(
+			balanceId,
+			(s) => s?.status === "loaded",
+		);
+		expect(loaded?.balance).toBe(90n);
+
+		removeBalancesSubscription(subId);
+	});
+
 	it("deducts frozen from free for hydration asset balances", async () => {
 		const address = "5TestAddressCharlie";
 		const balanceId = getBalanceId({
@@ -173,8 +199,12 @@ describe("balances service pipeline", () => {
 	});
 });
 
-describe("getBalance$ for an Ethereum account on Hydration", () => {
-	it.each(["native::hydration", "hydration-asset::hydration::5"])(
+describe("getBalance$ for an Ethereum account outside Asset Hub", () => {
+	it.each([
+		"native::hydration",
+		"hydration-asset::hydration::5",
+		"native::ppeople",
+	])(
 		"reports %s as loaded without balance and never watches it",
 		async (tokenId) => {
 			const address = `0x${"ab".repeat(20)}` as const;

@@ -34,7 +34,17 @@ describe("parseTokenId", () => {
 	});
 
 	it("parses native token id for all supported chains", () => {
-		for (const chainId of ["pah", "kah", "wah", "pasah", "hydration"]) {
+		for (const chainId of [
+			"pah",
+			"kah",
+			"wah",
+			"pasah",
+			"hydration",
+			"ppeople",
+			"kpeople",
+			"wpeople",
+			"paspeople",
+		]) {
 			const result = parseTokenId(`native::${chainId}` as TokenId);
 			expect(result).toEqual({ type: "native", chainId });
 		}
