@@ -220,6 +220,35 @@ describe("getCachedObservable$", () => {
 		expect(connections).toBe(2);
 	});
 
+	it("connects the source once when an emission re-subscribes the same entry", () => {
+		let connections = 0;
+		const obs = getCachedObservable$(
+			"reentrant-ns",
+			"k",
+			() =>
+				new Observable<number>((subscriber) => {
+					connections++;
+					subscriber.next(1);
+					return () => {
+						connections--;
+					};
+				}),
+		);
+		const values: number[] = [];
+
+		const outer = obs.subscribe((v) => {
+			values.push(v);
+			if (values.length === 1)
+				obs.subscribe((inner) => values.push(inner * 10)).unsubscribe();
+		});
+		expect(connections).toBe(1);
+		expect(values).toEqual([1, 10]);
+
+		outer.unsubscribe();
+		vi.advanceTimersByTime(500);
+		expect(connections).toBe(0);
+	});
+
 	it("keeps an entry nobody has subscribed to yet", () => {
 		const create = vi.fn(() => new Observable<number>());
 		const obs = getCachedObservable$("never-ns", "k", create);

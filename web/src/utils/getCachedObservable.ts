@@ -24,6 +24,7 @@ export const getCachedObservable$ = <T>(
 	const source = create();
 	let replay = new ReplaySubject<T>(1);
 	let connection: Subscription | undefined;
+	let connecting = false;
 	let subscribers = 0;
 	let eviction: ReturnType<typeof setTimeout> | undefined;
 
@@ -41,6 +42,7 @@ export const getCachedObservable$ = <T>(
 	const connect = () => {
 		const subject = replay;
 		let failed = false;
+		connecting = true;
 		const subscription = source.subscribe({
 			next: (value) => subject.next(value),
 			complete: () => subject.complete(),
@@ -51,6 +53,7 @@ export const getCachedObservable$ = <T>(
 				subject.error(err);
 			},
 		});
+		connecting = false;
 		if (!failed) connection = subscription;
 	};
 
@@ -58,7 +61,7 @@ export const getCachedObservable$ = <T>(
 		subscribers++;
 		clearTimeout(eviction);
 		const subscription = replay.subscribe(subscriber);
-		if (!connection) connect();
+		if (!connection && !connecting) connect();
 
 		return () => {
 			subscription.unsubscribe();
