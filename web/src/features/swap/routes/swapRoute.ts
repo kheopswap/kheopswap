@@ -1,6 +1,9 @@
 import type { SS58String } from "polkadot-api";
 import type { WalletAccount } from "../../../common/kheopskit";
-import { isChainIdHydration } from "../../../registry/chains/chains";
+import {
+	getChainById,
+	isChainIdAssetHub,
+} from "../../../registry/chains/chains";
 import type {
 	ChainId,
 	ChainIdAssetHub,
@@ -15,6 +18,7 @@ import type {
 	CallSpendings,
 	SubmitGate,
 } from "../../transaction/TransactionProvider";
+import { isXcmLane, type XcmLane } from "./xcmLanes";
 import { type AmmPath, getAmmPath } from "./xcmSwap/ammPath";
 
 export type AmmSwapRoute = {
@@ -24,20 +28,17 @@ export type AmmSwapRoute = {
 	tokenIdOut: TokenId;
 };
 
-type XcmLane =
-	| { origin: "pah"; destination: ChainIdHydration }
-	| { origin: ChainIdHydration; destination: "pah" };
-
 export type XcmTransferRoute = XcmLane & {
 	kind: "xcm-transfer";
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
 };
 
-export type XcmSwapRoute = {
+export type XcmSwapRoute = Extract<
+	XcmLane,
+	{ destination: ChainIdHydration }
+> & {
 	kind: "xcm-swap";
-	origin: "pah";
-	destination: ChainIdHydration;
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
 	path: AmmPath;
@@ -91,7 +92,7 @@ type InScopeMirror = {
 
 const getInScopeMirror = (
 	hydrationTokenId: TokenId,
-	mirrors: MirrorTokenIds,
+	{ mirrors, assetHubId }: SwapRouteContext,
 ): InScopeMirror | null => {
 	const assetHubTokenId = mirrors.get(hydrationTokenId);
 	const mirror = assetHubTokenId && tryParseTokenId(assetHubTokenId);
@@ -100,7 +101,7 @@ const getInScopeMirror = (
 		!assetHubTokenId ||
 		!mirror ||
 		token?.type !== "hydration-asset" ||
-		mirror.chainId !== "pah" ||
+		mirror.chainId !== assetHubId ||
 		(mirror.type !== "native" && mirror.type !== "asset")
 	)
 		return null;
@@ -115,18 +116,18 @@ const getInScopeMirror = (
 
 const getHydrationDestination = (
 	tokenIdOut: TokenId,
-	{ mirrors, hydrationFeeAssetIds }: SwapRouteContext,
+	context: SwapRouteContext,
 ): InScopeMirror | null => {
-	const mirror = getInScopeMirror(tokenIdOut, mirrors);
-	return mirror && hydrationFeeAssetIds.has(mirror.hydrationAssetId)
+	const mirror = getInScopeMirror(tokenIdOut, context);
+	return mirror && context.hydrationFeeAssetIds.has(mirror.hydrationAssetId)
 		? mirror
 		: null;
 };
 
 const getHydrationSource = (
 	tokenIdIn: TokenId,
-	{ mirrors }: SwapRouteContext,
-): InScopeMirror | null => getInScopeMirror(tokenIdIn, mirrors);
+	context: SwapRouteContext,
+): InScopeMirror | null => getInScopeMirror(tokenIdIn, context);
 
 const findHydrationSourceOf = (
 	assetHubTokenId: TokenId,
@@ -144,26 +145,24 @@ const resolveXcmRoute = (
 	tokenIdOut: TokenId,
 	context: SwapRouteContext,
 ): XcmRoute | null => {
+	const { assetHubId } = context;
 	const source = getHydrationSource(tokenIdIn, context);
-	if (source)
-		return source.assetHubTokenId === tokenIdOut
-			? {
-					kind: "xcm-transfer",
-					origin: source.hydrationChainId,
-					destination: "pah",
-					tokenIdIn,
-					tokenIdOut,
-				}
+	if (source) {
+		const lane = { origin: source.hydrationChainId, destination: assetHubId };
+		return isXcmLane(lane) && source.assetHubTokenId === tokenIdOut
+			? { kind: "xcm-transfer", ...lane, tokenIdIn, tokenIdOut }
 			: null;
+	}
 
 	const destination = getHydrationDestination(tokenIdOut, context);
 	const tokenIn = tryParseTokenId(tokenIdIn);
-	if (!destination || tokenIn?.chainId !== "pah") return null;
+	if (!destination || tokenIn?.chainId !== assetHubId) return null;
 
 	const lane = {
-		origin: "pah",
+		origin: assetHubId,
 		destination: destination.hydrationChainId,
-	} as const;
+	};
+	if (!isXcmLane(lane)) return null;
 	if (tokenIdIn === destination.assetHubTokenId)
 		return { kind: "xcm-transfer", ...lane, tokenIdIn, tokenIdOut };
 
@@ -306,13 +305,15 @@ export type RouteAccess =
 
 export const getRouteAccess = (
 	account: Pick<WalletAccount, "platform" | "address">,
-	{ origin }: Pick<XcmRoute, "origin">,
+	{ origin, destination }: XcmLane,
 ): RouteAccess =>
 	account.platform === "ethereum" || isEthereumAddress(account.address)
 		? {
 				allowed: false,
-				reason: isChainIdHydration(origin)
-					? "Ethereum accounts cannot send from Hydration yet: the same address is a different account there"
-					: "Ethereum accounts cannot send to Hydration yet: the same address is a different account there",
+				reason: `Ethereum accounts cannot send ${
+					isChainIdAssetHub(origin)
+						? `to ${getChainById(destination).name}`
+						: `from ${getChainById(origin).name}`
+				} yet: the same address is a different account there`,
 			}
 		: { allowed: true, beneficiary: account.address };
