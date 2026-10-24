@@ -36,14 +36,15 @@ import type {
 import { cn } from "../../utils/cn";
 import { getAccountName } from "../../utils/getAccountName";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
+import { isLowLiquidity } from "../../utils/getHoldingValuation";
 import { getTokenTypeLabel } from "../../utils/getTokenTypeLabel";
 import { isApplicableBalance } from "../../utils/isApplicableBalance";
 import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
 import { sortBigInt } from "../../utils/sortBigInt";
-import { LowLiquidityLabel } from "./LowLiquidityLabel";
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
+import { ValuationLabel } from "./ValuationLabel";
 
 const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
 	label,
@@ -58,19 +59,24 @@ const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
 const TokenDetailsRowValue: FC<
 	BalanceWithStableSummary & {
 		token: Token;
+		isPrice?: boolean;
 	}
 > = ({
 	token,
 	tokenPlancks,
 	isLoadingStablePlancks,
-	stablePlancks,
 	isLoadingTokenPlancks,
-	isLowLiquidity,
 	isInitializing,
+	isPrice = false,
+	...valuation
 }) => {
 	const { stableToken } = useRelayChains();
 
 	if (isInitializing) return null;
+
+	const showLabel =
+		valuation.status !== "priced" &&
+		(isLowLiquidity(valuation.status) || (!isPrice && !isLoadingStablePlancks));
 
 	return (
 		<div className="flex gap-2 whitespace-nowrap text-text">
@@ -79,21 +85,23 @@ const TokenDetailsRowValue: FC<
 				plancks={tokenPlancks ?? 0n}
 				pulse={isLoadingTokenPlancks}
 			/>
-			{isLowLiquidity && <LowLiquidityLabel className="text-xs" />}
-			<span
-				className={cn(
-					"text-muted",
-					!isBigInt(stablePlancks) && "hidden",
-					token.id === stableToken.id && "hidden",
-				)}
-			>
-				<Tokens
-					token={stableToken}
-					plancks={stablePlancks ?? 0n}
-					digits={2}
-					pulse={isLoadingStablePlancks}
+			{valuation.status !== "priced" && showLabel && (
+				<ValuationLabel
+					status={valuation.status}
+					isPrice={isPrice}
+					className="text-xs"
 				/>
-			</span>
+			)}
+			{valuation.status === "priced" && token.id !== stableToken.id && (
+				<span className="text-muted">
+					<Tokens
+						token={stableToken}
+						plancks={valuation.stablePlancks}
+						digits={2}
+						pulse={isLoadingStablePlancks}
+					/>
+				</span>
+			)}
 		</div>
 	);
 };
@@ -441,8 +449,8 @@ export const TokenDetails: FC<{ row: PortfolioRowData }> = ({ row }) => {
 				</TokenDetailsRow>
 			) : null}
 			<TokenDetailsRow label="Price">
-				{price?.stablePlancks ? (
-					<TokenDetailsRowValue {...price} token={nativeToken} />
+				{price?.tokenPlancks ? (
+					<TokenDetailsRowValue {...price} token={nativeToken} isPrice />
 				) : (
 					<span className="opacity-50">N/A</span>
 				)}

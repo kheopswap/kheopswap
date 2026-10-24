@@ -13,10 +13,15 @@ import { parseUnits } from "viem";
 import { isChainIdAssetHub } from "../registry/chains/chains";
 import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId, TokenType } from "../registry/tokens/types";
-import type { BalanceWithStable } from "../types/balances";
+import type { BalanceWithStableSummary } from "../types/balances";
 import { getAssetHubMirrorTokenIds } from "../utils/getAssetHubMirrorTokenId";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
-import { getHoldingValuation } from "../utils/getHoldingValuation";
+import {
+	getHoldingValuation,
+	type HoldingValuation,
+	UNPRICED,
+	valuationOf,
+} from "../utils/getHoldingValuation";
 import { isBigInt } from "../utils/isBigInt";
 import {
 	getAssetConversionLpFee$,
@@ -136,33 +141,21 @@ const getTokenValuation$ = (tokenId: TokenId): Observable<TokenValuation> =>
 		),
 	);
 
-export type HoldingStablePlancks = Pick<
-	BalanceWithStable,
-	"stablePlancks" | "isLoadingStablePlancks" | "isLowLiquidity"
->;
+export type HoldingStablePlancks = HoldingValuation & {
+	isLoadingStablePlancks: boolean;
+};
 
 export const getHoldingStablePlancks$ = (
 	tokenId: TokenId,
 	plancks: bigint | undefined,
 ): Observable<HoldingStablePlancks> =>
 	getTokenValuation$(tokenId).pipe(
-		map((valuation) => {
-			if (plancks === undefined)
-				return {
-					stablePlancks: null,
-					isLoadingStablePlancks: valuation.isLoading,
-					isLowLiquidity: false,
-				};
-			const { stablePlancks, isLowLiquidity } = getHoldingValuation({
-				...valuation,
-				plancks,
-			});
-			return {
-				stablePlancks,
-				isLoadingStablePlancks: valuation.isLoading,
-				isLowLiquidity,
-			};
-		}),
+		map((valuation) => ({
+			...(plancks === undefined
+				? UNPRICED
+				: getHoldingValuation({ ...valuation, plancks })),
+			isLoadingStablePlancks: valuation.isLoading,
+		})),
 	);
 
 const getTokenPrice$ = (token: Token) =>
@@ -187,16 +180,23 @@ const getTokenPrice$ = (token: Token) =>
 						getStablePlancks$(token.id, oneToken),
 						getHoldingStablePlancks$(token.id, oneToken),
 					]).pipe(
-						map(([nativePrice, stablePrice, holding]) => ({
-							tokenId: token.id,
-							tokenPlancks: nativePrice.plancksOut,
-							isLoadingTokenPlancks: nativePrice.isLoading,
-							stablePlancks: stablePrice.stablePlancks,
-							isLoadingStablePlancks: stablePrice.isLoadingStablePlancks,
-							isLowLiquidity: holding.isLowLiquidity,
-							isInitializing:
-								!isBigInt(nativePrice.plancksOut) && nativePrice.isLoading,
-						})),
+						map(
+							([
+								nativePrice,
+								stablePrice,
+								holding,
+							]): BalanceWithStableSummary => ({
+								tokenId: token.id,
+								tokenPlancks: nativePrice.plancksOut,
+								isLoadingTokenPlancks: nativePrice.isLoading,
+								isLoadingStablePlancks: stablePrice.isLoadingStablePlancks,
+								isInitializing:
+									!isBigInt(nativePrice.plancksOut) && nativePrice.isLoading,
+								...(holding.status === "priced"
+									? valuationOf(stablePrice.stablePlancks)
+									: holding),
+							}),
+						),
 					);
 				}),
 				shareReplay({ bufferSize: 1, refCount: true }),

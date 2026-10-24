@@ -4,8 +4,37 @@ import { Tokens } from "../../components/Tokens";
 import type { Token } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
 import { cn } from "../../utils/cn";
-import { isBigInt } from "../../utils/isBigInt";
-import { LowLiquidityLabel } from "./LowLiquidityLabel";
+import { isLowLiquidity } from "../../utils/getHoldingValuation";
+import { ValuationLabel } from "./ValuationLabel";
+
+const ValueLine: FC<
+	BalanceWithStableSummary & {
+		token: Token;
+		stableToken: Token;
+		isPrice: boolean;
+	}
+> = ({ token, stableToken, isPrice, isLoadingStablePlancks, ...valuation }) => {
+	const showLabel =
+		valuation.status !== "priced" &&
+		(isLowLiquidity(valuation.status) || (!isPrice && !isLoadingStablePlancks));
+
+	if (valuation.status !== "priced" && showLabel)
+		return <ValuationLabel status={valuation.status} isPrice={isPrice} />;
+
+	return (
+		<Tokens
+			token={stableToken}
+			plancks={valuation.stablePlancks ?? 0n}
+			pulse={isLoadingStablePlancks}
+			digits={2}
+			isPrice={isPrice}
+			className={cn(
+				(valuation.status !== "priced" || token.id === stableToken.id) &&
+					"invisible",
+			)}
+		/>
+	);
+};
 
 export const TokenBalancesSummary: FC<
 	BalanceWithStableSummary & {
@@ -13,17 +42,9 @@ export const TokenBalancesSummary: FC<
 		stableToken: Token;
 		isPrice?: boolean;
 	}
-> = ({
-	token,
-	stableToken,
-	tokenPlancks,
-	isLoadingStablePlancks,
-	stablePlancks,
-	isLoadingTokenPlancks,
-	isLowLiquidity,
-	isInitializing,
-	isPrice,
-}) => {
+> = ({ isPrice = false, ...props }) => {
+	const { token, tokenPlancks, isLoadingTokenPlancks, isInitializing } = props;
+
 	if (!isInitializing && !tokenPlancks) return null;
 
 	if (isInitializing)
@@ -53,21 +74,7 @@ export const TokenBalancesSummary: FC<
 				/>
 			</div>
 			<div className="truncate text-xs text-muted">
-				{isLowLiquidity && !isPrice ? (
-					<LowLiquidityLabel />
-				) : (
-					<Tokens
-						token={stableToken}
-						plancks={stablePlancks ?? 0n}
-						pulse={isLoadingStablePlancks}
-						digits={2}
-						isPrice={isPrice}
-						className={cn(
-							!isBigInt(stablePlancks) && "invisible",
-							token.id === stableToken.id && "invisible",
-						)}
-					/>
-				)}
+				<ValueLine {...props} isPrice={isPrice} />
 			</div>
 		</div>
 	);

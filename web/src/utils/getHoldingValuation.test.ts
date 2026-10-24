@@ -32,36 +32,49 @@ describe("getHoldingValuation", () => {
 			LP_FEE,
 		);
 		expect(valuation({})).toEqual({
+			status: "priced",
 			stablePlancks: amountOut * 4n,
-			isLowLiquidity: false,
 		});
 	});
 
-	it("never values a holding above the pool's native reserve", () => {
-		const { stablePlancks } = valuation({
-			plancks: 10n ** 30n,
-			reservesNativeToToken: [5_000_000_000n, 1_000n],
-		});
-		expect(stablePlancks).toBeLessThan(5_000_000_000n * 4n);
+	it("flags a holding that would drain its pool instead of valuing it at the whole reserve", () => {
+		expect(
+			valuation({
+				plancks: 10n ** 30n,
+				reservesNativeToToken: [5_000_000_000n, 1_000n],
+			}),
+		).toEqual({ status: "holding-dwarfs-pool", stablePlancks: null });
 	});
 
-	it("marks a pool whose native side is under the floor as low liquidity and leaves it unpriced", () => {
+	it("flags a holding whose exit value is under half of its spot value", () => {
+		const reserves: [bigint, bigint] = [10_000_000_000n, 10_000_000_000n];
+		expect(
+			valuation({ plancks: 10_000_000_000n, reservesNativeToToken: reserves })
+				.status,
+		).toBe("holding-dwarfs-pool");
+		expect(
+			valuation({ plancks: 5_000_000_000n, reservesNativeToToken: reserves })
+				.status,
+		).toBe("priced");
+	});
+
+	it("marks a pool whose native side is under the floor as thin and leaves it unpriced", () => {
 		expect(
 			valuation({ reservesNativeToToken: [20_000_000n, 1_000_000n] }),
-		).toEqual({ stablePlancks: null, isLowLiquidity: true });
+		).toEqual({ status: "thin-pool", stablePlancks: null });
 	});
 
 	it("values the native token at the stable spot rate", () => {
 		expect(valuation({ tokenId: NATIVE, plancks: 1_000n })).toEqual({
+			status: "priced",
 			stablePlancks: 4_000n,
-			isLowLiquidity: false,
 		});
 	});
 
 	it("values the stable token as itself", () => {
 		expect(valuation({ tokenId: STABLE, plancks: 1_000n })).toEqual({
+			status: "priced",
 			stablePlancks: 1_000n,
-			isLowLiquidity: false,
 		});
 	});
 
@@ -74,21 +87,28 @@ describe("getHoldingValuation", () => {
 		);
 		expect(
 			valuation({ stableTokenId: NATIVE, reservesNativeToStable: null }),
-		).toEqual({ stablePlancks: amountOut, isLowLiquidity: false });
+		).toEqual({ status: "priced", stablePlancks: amountOut });
 	});
 
-	it("leaves a token without a pool unpriced", () => {
+	it("leaves a token without a pool unpriced, distinct from low liquidity", () => {
 		expect(valuation({ reservesNativeToToken: null })).toEqual({
+			status: "unpriced",
 			stablePlancks: null,
-			isLowLiquidity: false,
 		});
 		expect(valuation({ reservesNativeToToken: [0n, 1_000n] })).toEqual({
+			status: "unpriced",
 			stablePlancks: null,
-			isLowLiquidity: false,
+		});
+		expect(valuation({ reservesNativeToStable: null })).toEqual({
+			status: "unpriced",
+			stablePlancks: null,
 		});
 	});
 
 	it("values an empty holding at zero", () => {
-		expect(valuation({ plancks: 0n }).stablePlancks).toBe(0n);
+		expect(valuation({ plancks: 0n })).toEqual({
+			status: "priced",
+			stablePlancks: 0n,
+		});
 	});
 });

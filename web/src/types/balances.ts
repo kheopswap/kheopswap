@@ -1,13 +1,12 @@
 import type { TokenId } from "../registry/tokens/types";
+import type { HoldingValuation } from "../utils/getHoldingValuation";
 
 export type BalanceWithStable = {
 	tokenId: TokenId;
 	tokenPlancks: bigint | null;
 	isLoadingTokenPlancks: boolean;
-	stablePlancks: bigint | null;
 	isLoadingStablePlancks: boolean;
-	isLowLiquidity: boolean;
-};
+} & HoldingValuation;
 
 export type BalanceWithStableSummary = BalanceWithStable & {
 	isInitializing: boolean;

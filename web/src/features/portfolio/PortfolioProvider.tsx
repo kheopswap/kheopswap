@@ -97,7 +97,7 @@ export const usePortfolioProvider = () => {
 
 	const balancesByTokenId = useBalancesByTokenSummaryOf(balances);
 
-	const { allocation, holdingsByTokenId, lowLiquidityCount } =
+	const { allocation, holdingsByTokenId, lowLiquidityCount, unpricedCount } =
 		usePortfolioAllocation({ tokens, balancesByTokenId });
 
 	stop();
@@ -109,6 +109,7 @@ export const usePortfolioProvider = () => {
 		allocation,
 		holdingsByTokenId,
 		lowLiquidityCount,
+		unpricedCount,
 		accounts,
 		tokens,
 		tvl,

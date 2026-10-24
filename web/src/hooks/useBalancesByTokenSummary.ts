@@ -7,6 +7,7 @@ import type {
 	AccountBalanceWithStable,
 	BalanceWithStableSummary,
 } from "../types/balances";
+import type { HoldingValuation } from "../utils/getHoldingValuation";
 import { isApplicableBalance } from "../utils/isApplicableBalance";
 import { logger } from "../utils/logger";
 import { useBalancesWithStables } from "./useBalancesWithStables";
@@ -15,6 +16,25 @@ import { useHoldingValuations } from "./useHoldingValuations";
 type UseBalancesByTokenSummaryProps = {
 	tokens: Token[] | TokenId[] | null | undefined;
 	accounts: PolkadotAccount[] | string[] | null | undefined;
+};
+
+const isPriced = (
+	balance: AccountBalanceWithStable,
+): balance is AccountBalanceWithStable & { status: "priced" } =>
+	balance.status === "priced";
+
+const summarizeValuation = (
+	balances: AccountBalanceWithStable[],
+): HoldingValuation => {
+	const known = balances.filter((b) => b.tokenPlancks !== null);
+	const unvalued = known.find((b) => !isPriced(b));
+	if (unvalued) return { status: unvalued.status, stablePlancks: null };
+	return {
+		status: "priced",
+		stablePlancks: known
+			.filter(isPriced)
+			.reduce((acc, { stablePlancks }) => acc + stablePlancks, 0n),
+	};
 };
 
 export const getBalancesByTokenSummary = (
@@ -37,31 +57,20 @@ export const getBalancesByTokenSummary = (
 			const isLoadingTokenPlancks = tokenBalances.some(
 				(b) => b.isLoadingTokenPlancks,
 			);
-			const hasStablePlancks = tokenBalances.some(
-				(b) => b.stablePlancks !== null,
-			);
-			const stablePlancks = hasStablePlancks
-				? tokenBalances.reduce(
-						(acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
-						0n,
-					)
-				: null;
 			const isLoadingStablePlancks = tokenBalances.some(
 				(b) => b.isLoadingStablePlancks,
 			);
 			const isInitializing =
 				tokenPlancks === 0n &&
 				tokenBalances.some((b) => b.tokenPlancks === null);
-			const isLowLiquidity = tokenBalances.some((b) => b.isLowLiquidity);
 
 			acc[tokenId] = {
 				tokenId,
 				tokenPlancks,
 				isLoadingTokenPlancks,
-				stablePlancks,
 				isLoadingStablePlancks,
-				isLowLiquidity,
 				isInitializing,
+				...summarizeValuation(tokenBalances),
 			};
 			return acc;
 		},

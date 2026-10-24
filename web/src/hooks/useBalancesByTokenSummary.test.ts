@@ -1,23 +1,31 @@
 import { describe, expect, it } from "vitest";
 import type { AccountBalanceWithStable } from "../types/balances";
 import {
+	type HoldingValuation,
+	valuationOf,
+} from "../utils/getHoldingValuation";
+import {
 	getBalancesByTokenSummary,
 	valueHoldingsTogether,
 } from "./useBalancesByTokenSummary";
 
 const tokenId = "native::hydration";
 
+type Overrides = Partial<
+	Omit<AccountBalanceWithStable, keyof HoldingValuation>
+>;
+
 const balance = (
-	overrides: Partial<AccountBalanceWithStable>,
+	overrides: Overrides,
+	valuation: HoldingValuation = valuationOf(null),
 ): AccountBalanceWithStable => ({
 	address: "5TestAddress",
 	tokenId,
 	tokenPlancks: 0n,
 	isLoadingTokenPlancks: false,
-	stablePlancks: null,
 	isLoadingStablePlancks: false,
-	isLowLiquidity: false,
 	...overrides,
+	...valuation,
 });
 
 const ethereumAccountBalance = balance({
@@ -56,21 +64,44 @@ describe("getBalancesByTokenSummary", () => {
 	it("omits tokens that no account can hold", () => {
 		expect(getBalancesByTokenSummary([ethereumAccountBalance])).toEqual({});
 	});
+
+	it("reports a holding without a pool as unpriced, distinct from low liquidity", () => {
+		const summary = getBalancesByTokenSummary([
+			balance(
+				{ tokenPlancks: 100n },
+				{ status: "unpriced", stablePlancks: null },
+			),
+		]);
+		expect(summary[tokenId]).toMatchObject({
+			status: "unpriced",
+			stablePlancks: null,
+		});
+	});
+
+	it("flags the whole token when one account's holding is flagged", () => {
+		const summary = getBalancesByTokenSummary([
+			balance({ tokenPlancks: 100n }, valuationOf(90n)),
+			balance(
+				{ address: "5Other", tokenPlancks: 10n ** 20n },
+				{ status: "holding-dwarfs-pool", stablePlancks: null },
+			),
+		]);
+		expect(summary[tokenId]).toMatchObject({
+			status: "holding-dwarfs-pool",
+			stablePlancks: null,
+		});
+	});
 });
 
 describe("valueHoldingsTogether", () => {
 	const summary = getBalancesByTokenSummary([
-		balance({ tokenPlancks: 100n, stablePlancks: 90n }),
-		balance({ address: "5Other", tokenPlancks: 100n, stablePlancks: 90n }),
+		balance({ tokenPlancks: 100n }, valuationOf(90n)),
+		balance({ address: "5Other", tokenPlancks: 100n }, valuationOf(90n)),
 	]);
 
 	it("replaces the sum of per-account quotes with the quote for the whole holding", () => {
 		const valued = valueHoldingsTogether(summary, {
-			[tokenId]: {
-				stablePlancks: 150n,
-				isLoadingStablePlancks: false,
-				isLowLiquidity: false,
-			},
+			[tokenId]: { ...valuationOf(150n), isLoadingStablePlancks: false },
 		});
 		expect(valued[tokenId]).toMatchObject({
 			tokenPlancks: 200n,
@@ -81,14 +112,14 @@ describe("valueHoldingsTogether", () => {
 	it("flags the whole holding when its pool is too thin", () => {
 		const valued = valueHoldingsTogether(summary, {
 			[tokenId]: {
+				status: "thin-pool",
 				stablePlancks: null,
 				isLoadingStablePlancks: false,
-				isLowLiquidity: true,
 			},
 		});
 		expect(valued[tokenId]).toMatchObject({
 			stablePlancks: null,
-			isLowLiquidity: true,
+			status: "thin-pool",
 		});
 	});
 

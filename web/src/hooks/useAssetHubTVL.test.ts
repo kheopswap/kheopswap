@@ -30,7 +30,7 @@ describe("getTvlRows", () => {
 			isLoadingTokenPlancks: false,
 			stablePlancks: null,
 			isLoadingStablePlancks: true,
-			isLowLiquidity: false,
+			status: "unpriced",
 		});
 	});
 
@@ -61,7 +61,7 @@ describe("getTvlRows", () => {
 			isLoadingTokenPlancks: false,
 			stablePlancks: null,
 			isLoadingStablePlancks: false,
-			isLowLiquidity: false,
+			status: "unpriced",
 		});
 	});
 

@@ -2,19 +2,66 @@ import { uniqBy } from "lodash-es";
 import { type FC, useMemo } from "react";
 import { CountUpDecimals } from "../../components/CountUpDecimals";
 import { Shimmer } from "../../components/Shimmer";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "../../components/tooltip/Tooltip";
 import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import { cn } from "../../utils/cn";
 import { plancksToTokens } from "../../utils/plancks";
 import { FALLBACK_LOGO_SRC, getValidTokenLogo } from "../../utils/tokenLogo";
 import { TEXT_COLOR } from "./getAllocation";
-import { LowLiquidityLabel } from "./LowLiquidityLabel";
 import { usePortfolio } from "./PortfolioProvider";
 
 const AMOUNT_CLASS_NAME =
 	"font-extralight font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]";
 
 const formatShare = (share: number) => `${Math.round(share * 100)}%`;
+
+const Explained: FC<{ children: string; explanation: string }> = ({
+	children,
+	explanation,
+}) => (
+	<Tooltip>
+		<TooltipTrigger render={<span />}>
+			<span className="underline decoration-dotted">{children}</span>
+		</TooltipTrigger>
+		<TooltipContent>{explanation}</TooltipContent>
+	</Tooltip>
+);
+
+const pluralTokens = (count: number) => (count === 1 ? "token" : "tokens");
+
+const ExcludedHoldings: FC<{
+	lowLiquidityCount: number;
+	unpricedCount: number;
+}> = ({ lowLiquidityCount, unpricedCount }) => {
+	if (!lowLiquidityCount && !unpricedCount) return null;
+	return (
+		<>
+			, not counting{" "}
+			{lowLiquidityCount > 0 && (
+				<>
+					{lowLiquidityCount} {pluralTokens(lowLiquidityCount)} with{" "}
+					<Explained explanation="Their pools are too thin to value these holdings reliably.">
+						low liquidity
+					</Explained>
+				</>
+			)}
+			{lowLiquidityCount > 0 && unpricedCount > 0 && " and "}
+			{unpricedCount > 0 && (
+				<>
+					{unpricedCount} {pluralTokens(unpricedCount)}{" "}
+					<Explained explanation="No Asset Hub pool prices these tokens.">
+						without a price
+					</Explained>
+				</>
+			)}
+		</>
+	);
+};
 
 const LegendItem: FC<{
 	token?: Token;
@@ -50,6 +97,7 @@ export const PortfolioAllocation = () => {
 		allocation,
 		holdingsByTokenId,
 		lowLiquidityCount,
+		unpricedCount,
 		isLoading,
 	} = usePortfolio();
 	const { stableToken } = useRelayChains();
@@ -93,13 +141,10 @@ export const PortfolioAllocation = () => {
 			<p className="mt-2.5 text-sm text-muted">
 				Held across {accountsCount}{" "}
 				{accountsCount === 1 ? "account" : "accounts"}
-				{lowLiquidityCount > 0 && (
-					<>
-						, not counting {lowLiquidityCount}{" "}
-						{lowLiquidityCount === 1 ? "token" : "tokens"} with{" "}
-						<LowLiquidityLabel className="lowercase text-muted underline decoration-dotted" />
-					</>
-				)}
+				<ExcludedHoldings
+					lowLiquidityCount={lowLiquidityCount}
+					unpricedCount={unpricedCount}
+				/>
 			</p>
 			{hasTotal ? (
 				<>

@@ -14,15 +14,22 @@ export type HoldingValuationInput = {
 	lowLiquidityFloorStablePlancks: bigint;
 };
 
-export type HoldingValuation = {
-	stablePlancks: bigint | null;
-	isLowLiquidity: boolean;
+export type UnvaluedStatus = "thin-pool" | "holding-dwarfs-pool" | "unpriced";
+
+export type HoldingValuation =
+	| { status: "priced"; stablePlancks: bigint }
+	| { status: UnvaluedStatus; stablePlancks: null };
+
+export const UNPRICED: HoldingValuation = {
+	status: "unpriced",
+	stablePlancks: null,
 };
 
-const UNPRICED: HoldingValuation = {
-	stablePlancks: null,
-	isLowLiquidity: false,
-};
+export const isLowLiquidity = (status: HoldingValuation["status"]) =>
+	status === "thin-pool" || status === "holding-dwarfs-pool";
+
+export const valuationOf = (stablePlancks: bigint | null): HoldingValuation =>
+	stablePlancks === null ? UNPRICED : { status: "priced", stablePlancks };
 
 export const getHoldingValuation = ({
 	plancks,
@@ -43,11 +50,9 @@ export const getHoldingValuation = ({
 			: null;
 	};
 
-	if (tokenId === stableTokenId)
-		return { stablePlancks: plancks, isLowLiquidity: false };
+	if (tokenId === stableTokenId) return valuationOf(plancks);
 
-	if (tokenId === nativeTokenId)
-		return { stablePlancks: nativeToStable(plancks), isLowLiquidity: false };
+	if (tokenId === nativeTokenId) return valuationOf(nativeToStable(plancks));
 
 	if (!reservesNativeToToken) return UNPRICED;
 	const [reserveNative, reserveToken] = reservesNativeToToken;
@@ -56,7 +61,7 @@ export const getHoldingValuation = ({
 	const poolDepthStablePlancks = nativeToStable(reserveNative);
 	if (poolDepthStablePlancks === null) return UNPRICED;
 	if (poolDepthStablePlancks < lowLiquidityFloorStablePlancks)
-		return { stablePlancks: null, isLowLiquidity: true };
+		return { status: "thin-pool", stablePlancks: null };
 
 	const { amountOut: exitNativePlancks } = getAmmOutput(
 		plancks,
@@ -64,9 +69,9 @@ export const getHoldingValuation = ({
 		reserveNative,
 		lpFee,
 	);
+	const spotNativePlancks = (plancks * reserveNative) / reserveToken;
+	if (exitNativePlancks * 2n < spotNativePlancks)
+		return { status: "holding-dwarfs-pool", stablePlancks: null };
 
-	return {
-		stablePlancks: nativeToStable(exitNativePlancks),
-		isLowLiquidity: false,
-	};
+	return valuationOf(nativeToStable(exitNativePlancks));
 };

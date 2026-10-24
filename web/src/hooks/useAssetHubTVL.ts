@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
+import { valuationOf } from "../utils/getHoldingValuation";
 import { isBigInt } from "../utils/isBigInt";
 import { logger } from "../utils/logger";
 import { useBalances } from "./useBalances";
@@ -47,9 +48,8 @@ export const getTvlRows = ({
 			tokenPlancks: locked?.plancks ?? null,
 			isInitializing: locked?.isInitializing ?? isLoadingInputs,
 			isLoadingTokenPlancks: locked?.isLoading ?? isLoadingInputs,
-			stablePlancks: stable?.stablePlancks ?? null,
 			isLoadingStablePlancks: stable?.isLoadingStablePlancks ?? !!locked,
-			isLowLiquidity: false,
+			...valuationOf(stable?.stablePlancks ?? null),
 		};
 	});
 
