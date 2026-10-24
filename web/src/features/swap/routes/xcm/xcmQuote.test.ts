@@ -38,6 +38,12 @@ import {
 	parseOriginDryRun,
 } from "./xcmQuote";
 import {
+	dotToPeople,
+	dotToPeopleTrapped,
+	ksmToPeople,
+	pasToPeople,
+} from "./xcmToPeople.fixtures";
+import {
 	dotOriginFailed,
 	dotSuccess,
 	dotTrapped,
@@ -640,5 +646,86 @@ describe("Hydration to Asset Hub", () => {
 				deliveryFee: { tokenId: HYDRATION_DOT, plancks: 0n },
 			}),
 		).toEqual({ [HYDRATION_USDT]: { plancks: 10_000_000n, allowDeath: true } });
+	});
+});
+
+describe("Asset Hub to People", () => {
+	const PEOPLE_PARA_ID = 1004;
+	const toPeople = { origin: "pah", destination: "ppeople" } as const;
+
+	it.each([
+		["DOT", dotToPeople],
+		["KSM", ksmToPeople],
+		["PAS", pasToPeople],
+	])(
+		"reads the %s teleported in the message forwarded to People",
+		(_, fixture) => {
+			if (!fixture.originDryRun.success)
+				throw new Error("fixture origin failed");
+			expect(parseOriginDryRun(fixture.originDryRun, PEOPLE_PARA_ID)).toEqual({
+				success: true,
+				value: {
+					message: fixture.originDryRun.value.forwarded_xcms[0]?.[1][0],
+					sent: fixture.amount,
+				},
+			});
+		},
+	);
+
+	it.each([
+		["DOT", dotToPeople, "native::ppeople", 9994562971n, 5437029n],
+		["KSM", ksmToPeople, "native::kpeople", 99963363946n, 36636054n],
+		["PAS", pasToPeople, "native::paspeople", 10000000000n, 0n],
+	])(
+		"quotes the %s received on People and the fee People keeps",
+		(_, fixture, tokenId, received, destinationFee) => {
+			expect(
+				parseDestinationDryRun(fixture.destinationDryRun, {
+					tokenId,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toEqual({ success: true, value: received });
+			expect(composeXcmQuote(fixture.amount, received).destinationFee).toBe(
+				destinationFee,
+			);
+		},
+	);
+
+	it.each([
+		["DOT", dotToPeople, 304850000n],
+		["KSM", ksmToPeople, 1032333300n],
+		["PAS", pasToPeople, 304850000n],
+	])(
+		"reads the %s Asset Hub charges to deliver to People",
+		(_, fixture, fee) => {
+			expect(parseDeliveryFee(fixture.deliveryFees)).toBe(fee);
+		},
+	);
+
+	it("reports trapped assets when the amount cannot endow an empty People account", () => {
+		const parsed = parseDestinationDryRun(
+			dotToPeopleTrapped.destinationDryRun,
+			{
+				tokenId: "native::ppeople",
+				beneficiary: dotToPeopleTrapped.beneficiary,
+			},
+		);
+		expect(parsed).toEqual({
+			success: false,
+			failure: {
+				kind: "destination-rejected",
+				reason: "FailedToTransactAsset",
+				assetsTrapped: true,
+			},
+		});
+		if (parsed.success) throw new Error("expected a failure");
+		expect(describeXcmQuoteFailure(parsed.failure, toPeople)).toBe(
+			"Amount too low for Polkadot People: the assets would be trapped",
+		);
+	});
+
+	it("labels the delivery fee in the native token of each Asset Hub", () => {
+		expect(getDeliveryFeeTokenId("kah")).toBe("native::kah");
+		expect(getDeliveryFeeTokenId("pasah")).toBe("native::pasah");
 	});
 });
