@@ -1,7 +1,7 @@
 import { type FC, Fragment } from "react";
 import { Tokens } from "../../../components/Tokens";
 import { useToken } from "../../../hooks/useToken";
-import type { TokenId } from "../../../registry/tokens/types";
+import type { TokenAmount, TokenId } from "../../../registry/tokens/types";
 import { type AmmPath, type AmmPathQuote, getPathTokenIds } from "./ammPath";
 
 const TokenSymbol: FC<{ tokenId: TokenId }> = ({ tokenId }) => {
@@ -20,10 +20,7 @@ export const RouteValue: FC<{ path: AmmPath }> = ({ path }) => (
 	</div>
 );
 
-const HopTokens: FC<{ tokenId: TokenId; plancks: bigint }> = ({
-	tokenId,
-	plancks,
-}) => {
+export const TokenAmountValue: FC<TokenAmount> = ({ tokenId, plancks }) => {
 	const { data: token } = useToken({ tokenId });
 	return token ? <Tokens plancks={plancks} token={token} /> : null;
 };
@@ -33,7 +30,7 @@ export const ProtocolFeeValue: FC<{ quote: AmmPathQuote }> = ({ quote }) => (
 		{quote.hops.map(({ tokenIdIn, protocolCommission }, index) => (
 			<Fragment key={tokenIdIn}>
 				{index > 0 && <span className="mx-1">+</span>}
-				<HopTokens tokenId={tokenIdIn} plancks={protocolCommission} />
+				<TokenAmountValue tokenId={tokenIdIn} plancks={protocolCommission} />
 			</Fragment>
 		))}
 	</div>

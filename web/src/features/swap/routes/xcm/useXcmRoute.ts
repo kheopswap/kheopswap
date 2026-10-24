@@ -14,6 +14,7 @@ import {
 	type AmmPath,
 	type AmmPathQuote,
 	getLastHop,
+	getPathTokenIds,
 	mapHopPath,
 } from "../ammPath";
 import {
@@ -223,6 +224,11 @@ const getXcmTitle = (
 	}
 };
 
+const getReturnTokenIds = (route: XcmRoute) =>
+	route.kind === "xcm-destination-swap"
+		? getPathTokenIds(route.path)
+		: [route.tokenIdOut];
+
 const getXcmTransactionType = (
 	route: XcmRoute | null,
 ): TransactionPlan["transactionType"] => {
@@ -375,6 +381,7 @@ export const useXcmRoute = ({
 				? {
 						origin: route.origin,
 						target: { tokenId: route.tokenIdOut, beneficiary },
+						returnTokenIds: getReturnTokenIds(route),
 						tokenOut,
 						estimatedReceived: received,
 					}

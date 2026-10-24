@@ -204,6 +204,21 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(1);
 	});
 
+	it("follows the arrival of every token the swap can return", async () => {
+		const { result } = renderDestinationSwap(usdtToPink);
+
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+		expect(result.current.plan.followUpData).toMatchObject({
+			target: {
+				tokenId: usdtToPink.tokenIdOut,
+				beneficiary: usdtToPink.beneficiary,
+			},
+			returnTokenIds: ["asset::pah::1984", "native::pah", "asset::pah::23"],
+		});
+	});
+
 	it("refuses an amount the Asset Hub fee would eat", async () => {
 		const { result } = renderDestinationSwap(
 			usdtToPink,
