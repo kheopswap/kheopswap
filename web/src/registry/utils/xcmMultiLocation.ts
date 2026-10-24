@@ -1,40 +1,33 @@
 import { XcmV5Junction, XcmV5Junctions } from "@polkadot-api/descriptors";
+import { isChainIdHydration } from "../chains/chains";
 import type { ChainIdAssetHub } from "../chains/types";
 import { getTokenId, parseTokenId } from "../tokens/helpers";
 import type { TokenId } from "../tokens/types";
 import type { XcmV5Multilocation } from "../types/xcm";
 
-type MultilocationV5<T> = T extends TokenId ? XcmV5Multilocation : null;
-
-// TODO take parent chain into account
-export const getXcmV5MultilocationFromTokenId = <
-	T extends TokenId | null | undefined,
->(
-	tokenId: T,
-): MultilocationV5<T> => {
-	if (!tokenId) return null as MultilocationV5<T>;
-
+export const getXcmV5MultilocationFromTokenId = (
+	tokenId: TokenId,
+): XcmV5Multilocation => {
 	const parsed = parseTokenId(tokenId);
+	if (isChainIdHydration(parsed.chainId))
+		throw new Error(`No Asset Hub location for ${tokenId}`);
 
-	if (parsed.type === "native")
-		return {
-			parents: 1,
-			interior: XcmV5Junctions.Here(),
-		} as MultilocationV5<T>;
-
-	if (parsed.type === "asset")
-		return {
-			parents: 0,
-			interior: XcmV5Junctions.X2([
-				XcmV5Junction.PalletInstance(50),
-				XcmV5Junction.GeneralIndex(BigInt(parsed.assetId)),
-			]),
-		} as MultilocationV5<T>;
-
-	if (parsed.type === "foreign-asset")
-		return parsed.location as MultilocationV5<T>;
-
-	throw new Error(`Invalid token type: ${parsed.type}`);
+	switch (parsed.type) {
+		case "native":
+			return { parents: 1, interior: XcmV5Junctions.Here() };
+		case "asset":
+			return {
+				parents: 0,
+				interior: XcmV5Junctions.X2([
+					XcmV5Junction.PalletInstance(50),
+					XcmV5Junction.GeneralIndex(BigInt(parsed.assetId)),
+				]),
+			};
+		case "foreign-asset":
+			return parsed.location;
+		default:
+			throw new Error(`No Asset Hub location for ${tokenId}`);
+	}
 };
 
 export const getTokenIdFromXcmV5Multilocation = (
