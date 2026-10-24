@@ -14,16 +14,35 @@ type UseDryRunProps<Id extends ChainId = ChainId> = {
 	from: SS58String | null | undefined;
 	call: AnyTransaction | null | undefined;
 	balances?: Partial<Record<TokenId, bigint | undefined>>;
+	enabled?: boolean;
 };
 
 export type DryRun<Id extends ChainId> = Awaited<
 	ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_call"]>
 >;
 
+// every chain's dry_run_call takes its own call and origin enums, which a call built
+// from the same chain's descriptors already matches at runtime
+type DryRunCall = (
+	origin: ReturnType<typeof getSignedOrigin>,
+	call: AnyTransaction["decodedCall"],
+	resultXcmsVersion: number,
+	options: { at: "best" },
+) => Promise<DryRun<ChainId>>;
+
+const getSignedOrigin = (from: SS58String) =>
+	Enum("system", Enum("Signed", from));
+
 export function useDryRun<Id extends ChainId>(
 	props: UseDryRunProps<Id>,
 ): UseQueryResult<DryRun<Id> | null>;
-export function useDryRun({ chainId, from, call, balances }: UseDryRunProps) {
+export function useDryRun({
+	chainId,
+	from,
+	call,
+	balances,
+	enabled = true,
+}: UseDryRunProps) {
 	return useQuery({
 		queryKey: [
 			"useDryRun",
@@ -37,16 +56,14 @@ export function useDryRun({ chainId, from, call, balances }: UseDryRunProps) {
 
 			try {
 				const api = await getApi(chainId);
+				const dryRunCall = api.apis.DryRunApi.dry_run_call as DryRunCall;
 
-				const origin = Enum("system", Enum("Signed", from));
-
-				// @ts-expect-error
-				const dryRun = (await api.apis.DryRunApi.dry_run_call(
-					origin,
+				const dryRun = await dryRunCall(
+					getSignedOrigin(from),
 					call.decodedCall,
 					XCM_VERSION,
 					{ at: "best" },
-				)) as DryRun<ChainId>;
+				);
 
 				logger.debug("[dry run]", {
 					dryRun,
@@ -60,8 +77,10 @@ export function useDryRun({ chainId, from, call, balances }: UseDryRunProps) {
 				throw err;
 			}
 		},
+		enabled,
 		retry: 1,
 		refetchInterval: false,
+		refetchOnWindowFocus: false,
 		structuralSharing: false,
 	});
 }

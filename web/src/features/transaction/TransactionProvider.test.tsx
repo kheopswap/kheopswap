@@ -2,6 +2,7 @@ import { cleanup, render, renderHook, screen } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChainId } from "../../registry/chains/types";
+import { TransactionDryRunSummaryValue } from "./TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "./TransactionFeeSummaryValue";
 import {
 	type SubmitGate,
@@ -16,11 +17,17 @@ const balanceCheck = vi.hoisted(() => ({
 
 const ethereum = vi.hoisted(() => ({
 	isEthereumNetworkMismatch: false,
+	platform: "polkadot" as "polkadot" | "ethereum",
+}));
+
+const fees = vi.hoisted(() => ({
+	options: { asset: undefined } as { asset: object | undefined },
 }));
 
 const dryRun = vi.hoisted(() => ({
 	data: undefined as unknown,
 	isLoading: false,
+	isFetching: false,
 }));
 
 const successfulDryRun = {
@@ -38,20 +45,31 @@ const failedDryRun = {
 beforeEach(() => {
 	balanceCheck.insufficientBalances = {};
 	ethereum.isEthereumNetworkMismatch = false;
+	ethereum.platform = "polkadot";
+	fees.options = { asset: undefined };
 	dryRun.data = successfulDryRun;
 	dryRun.isLoading = false;
+	dryRun.isFetching = false;
 });
 
 vi.mock("../../hooks/useDryRun", () => ({
-	useDryRun: () => ({ data: dryRun.data, isLoading: dryRun.isLoading }),
+	useDryRun: () => ({
+		data: dryRun.data,
+		isLoading: dryRun.isLoading,
+		isFetching: dryRun.isFetching,
+	}),
 }));
 
 afterEach(cleanup);
 
+vi.mock("../../hooks/useDryRunError", () => ({
+	useDryRunError: () => ({ data: null }),
+}));
+
 vi.mock("./useTransactionEthereum", () => ({
 	useTransactionEthereum: () => ({
-		account: { platform: "polkadot", address: "5Signer" },
-		isEthereumAccount: false,
+		account: { platform: ethereum.platform, address: "5Signer" },
+		isEthereumAccount: ethereum.platform === "ethereum",
 		isEthereumNetworkMismatch: ethereum.isEthereumNetworkMismatch,
 		isSwitchingEthereumNetwork: false,
 		nativeToken: undefined,
@@ -68,7 +86,7 @@ vi.mock("./useTransactionFees", async () => {
 			feeEstimate: 1n,
 			feeToken: KNOWN_TOKENS_MAP["native::pah"],
 			feeTokens: [],
-			options: { asset: undefined },
+			options: fees.options,
 		}),
 	};
 });
@@ -211,6 +229,14 @@ describe("TransactionProvider dry run", () => {
 	it("keeps submit disabled while the dry run reloads after a balance change", () => {
 		dryRun.data = undefined;
 		dryRun.isLoading = true;
+		dryRun.isFetching = true;
+		const transaction = renderTransaction(undefined, "pah");
+		expect(transaction.canSubmit).toBe(false);
+		expect(transaction.isLoading).toBe(true);
+	});
+
+	it("keeps submit disabled while a cached dry run is refetched for new inputs", () => {
+		dryRun.isFetching = true;
 		const transaction = renderTransaction(undefined, "pah");
 		expect(transaction.canSubmit).toBe(false);
 		expect(transaction.isLoading).toBe(true);
@@ -242,8 +268,50 @@ describe("TransactionProvider dry run", () => {
 		);
 	});
 
-	it("ignores a failed dry run on Hydration, where fees are not simulated", () => {
+	it("blocks submit when the Hydration dry run rejects the call", () => {
 		dryRun.data = failedDryRun;
-		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(true);
+		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(false);
+	});
+
+	it("blocks submit when the dry run rejects a call whose fee is paid in an asset", () => {
+		dryRun.data = failedDryRun;
+		fees.options = { asset: { parents: 1, interior: { type: "Here" } } };
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+	});
+
+	it("blocks submit for an Ethereum account when the dry run rejects the call", () => {
+		dryRun.data = failedDryRun;
+		ethereum.platform = "ethereum";
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+	});
+});
+
+describe("TransactionDryRunSummaryValue", () => {
+	const renderDryRun = (chainId: ChainId = "pah") => {
+		const Wrapper = getWrapper(undefined, chainId);
+		render(
+			<Wrapper>
+				<TransactionDryRunSummaryValue />
+			</Wrapper>,
+		);
+	};
+
+	it("reads Success when the dry run also covers the fee", () => {
+		renderDryRun();
+		expect(screen.getByText("Success")).toBeInTheDocument();
+	});
+
+	it("reads Succeeds before fees, muted, when the fee is paid in an asset", () => {
+		fees.options = { asset: { parents: 1, interior: { type: "Here" } } };
+		renderDryRun();
+		expect(screen.queryByText("Success")).toBeNull();
+		expect(screen.getByText("Succeeds before fees").parentElement).toHaveClass(
+			"text-muted",
+		);
+	});
+
+	it("reads Succeeds before fees on Hydration, which charges the fee in the account's currency", () => {
+		renderDryRun("hydration");
+		expect(screen.getByText("Succeeds before fees")).toBeInTheDocument();
 	});
 });

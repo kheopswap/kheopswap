@@ -73,13 +73,14 @@ const useTransactionProvider = ({
 
 	const {
 		data: dryRun,
-		isLoading: isLoadingDryRun,
+		isFetching: isLoadingDryRun,
 		error: errorDryRun,
 	} = useDryRun({
 		chainId,
 		from: fees.signerSubstrateAddress,
 		call,
 		balances: balanceCheck.balances,
+		enabled: !balanceCheck.isLoadingBalances,
 	});
 
 	const { onSubmit } = useTransactionSubmit({
@@ -113,7 +114,7 @@ const useTransactionProvider = ({
 		!fees.options?.asset &&
 		dryRun?.success === true;
 	const isRejectedByDryRun =
-		isDryRunConclusive && !dryRun.value.execution_result.success;
+		dryRun?.success === true && !dryRun.value.execution_result.success;
 	// the runtime knows about frozen funds that keep an account alive, the local check does not
 	const isKeepAliveWaived =
 		isDryRunConclusive && dryRun.value.execution_result.success;
@@ -135,6 +136,7 @@ const useTransactionProvider = ({
 		if (submitGate.status !== "open") return false;
 		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
 		if (!call || isLoading || error || hasInsufficientBalance) return false;
+		if (isRejectedByDryRun) return false;
 
 		if (ethereum.account.platform === "ethereum")
 			return (
@@ -142,12 +144,7 @@ const useTransactionProvider = ({
 				!ethereum.isSwitchingEthereumNetwork
 			);
 
-		return (
-			!isRejectedByDryRun &&
-			!!fees.feeEstimate &&
-			!!fees.feeToken &&
-			!!fees.options
-		);
+		return !!fees.feeEstimate && !!fees.feeToken && !!fees.options;
 	}, [
 		ethereum.account,
 		call,
@@ -196,6 +193,7 @@ const useTransactionProvider = ({
 		onReset,
 
 		dryRun,
+		isDryRunConclusive,
 		isLoadingDryRun,
 		errorDryRun,
 	};
