@@ -19,6 +19,8 @@ const chain = vi.hoisted(() => ({
 	queryXcmWeight: undefined as unknown as ReturnType<typeof vi.fn>,
 	canPriceFee: true,
 	firstPoolInflow: 0n,
+	balanceIn: 1n,
+	isUnfunded: false,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
@@ -55,6 +57,10 @@ vi.mock("../../../../papi/getApi", () => ({
 			},
 		},
 	}),
+}));
+
+vi.mock("../../../../hooks/useBalance", () => ({
+	useBalance: () => ({ data: chain.balanceIn, isLoading: false }),
 }));
 
 vi.mock("../../../../state/relay", () => ({
@@ -157,7 +163,13 @@ const renderDestinationSwap = (
 beforeEach(() => {
 	chain.canPriceFee = true;
 	chain.firstPoolInflow = 0n;
-	chain.dryRunCall = vi.fn(async () => chain.fixture.originDryRun);
+	chain.balanceIn = 1n;
+	chain.isUnfunded = false;
+	chain.dryRunCall = vi.fn(async () =>
+		chain.isUnfunded
+			? { success: false, value: { type: "InsufficientBalance" } }
+			: chain.fixture.originDryRun,
+	);
 	chain.queryXcmWeight = vi.fn(async () => ({
 		success: true,
 		value: chain.fixture.destinationWeight,
@@ -281,5 +293,25 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			}),
 		);
 		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(feeQueries);
+	});
+
+	it("quotes again once an account that could not send funds its input", async () => {
+		chain.isUnfunded = true;
+		chain.balanceIn = 0n;
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.outputErrorMessage).toBe("InsufficientBalance"),
+		);
+		const unfundedEstimates = chain.dryRunCall.mock.calls.length;
+		rerender();
+		expect(chain.dryRunCall).toHaveBeenCalledTimes(unfundedEstimates);
+
+		chain.isUnfunded = false;
+		chain.balanceIn = usdtToPink.amount;
+		rerender();
+
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
 	});
 });
