@@ -39,6 +39,7 @@ const ARRIVAL_TIMEOUT_MS = 10 * 60_000;
 const XCM_ARRIVAL_TYPES = [
 	"xcmTransfer",
 	"xcmSwap",
+	"xcmDestinationSwap",
 ] as const satisfies readonly TransactionType[];
 
 export type XcmArrivalType = (typeof XCM_ARRIVAL_TYPES)[number];

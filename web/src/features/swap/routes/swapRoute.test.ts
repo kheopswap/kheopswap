@@ -152,7 +152,12 @@ describe("resolveSwapRoute", () => {
 			WUD,
 			HYDRATION_WUD,
 		],
-		["a Hydration token to another Asset Hub token", HYDRATION_USDT, DOT],
+		["a Hydration token to an Asset Hub foreign asset", HYDRATION_USDT, VDOT],
+		[
+			"a Hydration token to an Asset Hub pool asset",
+			HYDRATION_USDT,
+			"pool-asset::pah::1",
+		],
 		["a Hydration token whose mirror is a foreign asset", HYDRATION_VDOT, VDOT],
 		["Hydration's native token", HDX, DOT],
 		["the People native token to another Asset Hub token", PEOPLE_DOT, USDT],
@@ -183,6 +188,42 @@ describe("resolveSwapRoute", () => {
 				destination: "pah",
 				tokenIdIn,
 				tokenIdOut,
+			});
+		},
+	);
+
+	it.each([
+		[
+			"Hydration USDT to DOT",
+			HYDRATION_USDT,
+			DOT,
+			[{ tokenIdIn: USDT, tokenIdOut: DOT }],
+		],
+		[
+			"Hydration DOT to USDC",
+			HYDRATION_DOT,
+			USDC,
+			[{ tokenIdIn: DOT, tokenIdOut: USDC }],
+		],
+		[
+			"Hydration USDT to PINK through DOT",
+			HYDRATION_USDT,
+			PINK,
+			[
+				{ tokenIdIn: USDT, tokenIdOut: DOT },
+				{ tokenIdIn: DOT, tokenIdOut: PINK },
+			],
+		],
+	])(
+		"resolves %s as a swap on Asset Hub of what Hydration sends",
+		(_, tokenIdIn, tokenIdOut, path) => {
+			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
+				kind: "xcm-destination-swap",
+				origin: "hydration",
+				destination: "pah",
+				tokenIdIn,
+				tokenIdOut,
+				path,
 			});
 		},
 	);
@@ -302,10 +343,10 @@ describe("getNextSwapTokens keeps the side the user changed", () => {
 			[DOT, PEOPLE_DOT],
 		],
 		[
-			"an Asset Hub output replaces Hydration DOT in with its Hydration mirror",
+			"an Asset Hub output keeps Hydration DOT in and swaps on Asset Hub",
 			[HYDRATION_DOT, DOT],
 			{ type: "out", tokenId: USDC },
-			[HYDRATION_USDC, USDC],
+			[HYDRATION_DOT, USDC],
 		],
 		[
 			"the output picked as input flips the pair",
@@ -467,10 +508,10 @@ describe("getNextSwapTokens on the XCM routes", () => {
 			[HYDRATION_DOT, DOT],
 		],
 		[
-			"flip does nothing",
+			"flip turns a swap sent to Hydration into a swap on Asset Hub from Hydration",
 			[USDC, HYDRATION_USDT],
 			{ type: "flip" },
-			[USDC, HYDRATION_USDT],
+			[HYDRATION_USDT, USDC],
 		],
 	])("%s", (_, prev, change, expected) => {
 		expect(next(prev, change)).toEqual(expected);
@@ -548,10 +589,10 @@ describe("getNextSwapTokens from People", () => {
 describe("getNextSwapTokens from Hydration", () => {
 	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
 		[
-			"a Hydration input sends it back to its Asset Hub source",
+			"a Hydration input keeps the Asset Hub output and swaps on Asset Hub",
 			[DOT, USDC],
 			{ type: "in", tokenId: HYDRATION_USDT },
-			[HYDRATION_USDT, USDT],
+			[HYDRATION_USDT, USDC],
 		],
 		[
 			"a Hydration input keeps its own Asset Hub source out",
@@ -566,28 +607,28 @@ describe("getNextSwapTokens from Hydration", () => {
 			[HYDRATION_DOT, DOT],
 		],
 		[
-			"a Hydration input replaces a swap sent to Hydration",
+			"the Hydration output picked as input takes the previous input as output",
 			[DOT, HYDRATION_USDT],
 			{ type: "in", tokenId: HYDRATION_USDT },
-			[HYDRATION_USDT, USDT],
+			[HYDRATION_USDT, DOT],
 		],
 		[
-			"a Hydration input Hydration does not take fees in still goes back",
+			"a Hydration input Hydration does not take fees in keeps the output",
 			[HYDRATION_USDT, USDT],
 			{ type: "in", tokenId: HYDRATION_WUD },
-			[HYDRATION_WUD, WUD],
+			[HYDRATION_WUD, USDT],
 		],
 		[
-			"an Asset Hub output moves the input to its Hydration mirror",
+			"an Asset Hub output keeps the Hydration input",
 			[HYDRATION_USDT, USDT],
 			{ type: "out", tokenId: USDC },
-			[HYDRATION_USDC, USDC],
+			[HYDRATION_USDT, USDC],
 		],
 		[
-			"DOT out moves the input to Hydration DOT",
+			"DOT out keeps the Hydration input",
 			[HYDRATION_USDT, USDT],
 			{ type: "out", tokenId: DOT },
-			[HYDRATION_DOT, DOT],
+			[HYDRATION_USDT, DOT],
 		],
 		[
 			"an output without a Hydration mirror swaps from the input's source",
@@ -643,7 +684,8 @@ describe("canFlipSwapTokens", () => {
 		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_DOT }, true],
 		[{ tokenIdIn: HYDRATION_DOT, tokenIdOut: DOT }, true],
 		[{ tokenIdIn: HYDRATION_USDT, tokenIdOut: USDT }, true],
-		[{ tokenIdIn: USDC, tokenIdOut: HYDRATION_USDT }, false],
+		[{ tokenIdIn: USDC, tokenIdOut: HYDRATION_USDT }, true],
+		[{ tokenIdIn: HYDRATION_USDT, tokenIdOut: PINK }, true],
 		[{ tokenIdIn: HYDRATION_WUD, tokenIdOut: WUD }, false],
 		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_VDOT }, false],
 		[{ tokenIdIn: DOT, tokenIdOut: PEOPLE_DOT }, true],

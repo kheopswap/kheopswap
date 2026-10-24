@@ -18,12 +18,28 @@ import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeS
 import { PriceImpact } from "../../PriceImpact";
 import { Slippage } from "../../Slippage";
 import { useSwap } from "../../SwapProvider";
-import type { XcmSwapDetails } from "../xcm/useXcmRoute";
+import { ProtocolFeeValue, RouteValue } from "../AmmPathValues";
+import type {
+	XcmDestinationSwapDetails,
+	XcmSwapDetails,
+} from "../xcm/useXcmRoute";
 import { XcmQuoteRows, XcmSimulationValue } from "../xcm/XcmQuoteRows";
 
-const MinReceivedValue: FC<{ details: XcmSwapDetails }> = ({
-	details: { route, quote, minReceived },
-}) => {
+type XcmPathSwapDetails = XcmSwapDetails | XcmDestinationSwapDetails;
+
+const getMinReceivedExplanation = ({ route }: XcmPathSwapDetails) => {
+	const origin = getChainById(route.origin).name;
+	const destination = getChainById(route.destination).name;
+	switch (route.kind) {
+		case "xcm-swap":
+			return `The swap reverts on ${origin} if it would output less than the minimum your slippage tolerance allows. ${destination} then takes its fee from what arrives.`;
+		case "xcm-destination-swap":
+			return `${destination} takes its fee from what arrives, then swaps the rest. If the swap would output less than the minimum your slippage tolerance allows, it does not happen and what arrived stays in your ${destination} account.`;
+	}
+};
+
+const MinReceivedValue: FC<{ details: XcmPathSwapDetails }> = ({ details }) => {
+	const { quote, minReceived } = details;
 	const { tokenOut } = useSwap();
 	if (quote.isLoading) return <Shimmer className="h-4">0.0000 AAA</Shimmer>;
 	if (!isBigInt(minReceived) || !tokenOut) return null;
@@ -37,26 +53,27 @@ const MinReceivedValue: FC<{ details: XcmSwapDetails }> = ({
 				</div>
 			</TooltipTrigger>
 			<TooltipContent>
-				<p className="max-w-72">
-					The swap reverts on {getChainById(route.origin).name} if it would
-					output less than the minimum your slippage tolerance allows.{" "}
-					{getChainById(route.destination).name} then takes its fee from what
-					arrives.
-				</p>
+				<p className="max-w-72">{getMinReceivedExplanation(details)}</p>
 			</TooltipContent>
 		</Tooltip>
 	);
 };
 
-export const XcmSwapSummary: FC<{ details: XcmSwapDetails }> = ({
+export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 	details,
 }) => {
 	const { tokenIn, transaction } = useSwap();
-	const { route, quote, priceImpact, slippage, appCommission } = details;
+	const { route, quote, pathQuote, priceImpact, slippage } = details;
 
 	return (
 		<FormSummary>
 			<FormSummarySection>
+				{route.path.length > 1 && (
+					<FormSummaryRow
+						label="Route"
+						value={<RouteValue path={route.path} />}
+					/>
+				)}
 				<FormSummaryRow
 					label="Price impact"
 					value={
@@ -71,7 +88,7 @@ export const XcmSwapSummary: FC<{ details: XcmSwapDetails }> = ({
 					label="Min. received (est.)"
 					value={<MinReceivedValue details={details} />}
 				/>
-				<XcmQuoteRows quote={quote} route={route} />
+				<XcmQuoteRows quote={quote} />
 			</FormSummarySection>
 			{!!transaction.call && (
 				<FormSummarySection>
@@ -83,14 +100,20 @@ export const XcmSwapSummary: FC<{ details: XcmSwapDetails }> = ({
 						label="Transaction fee"
 						value={<TransactionFeeSummaryValue />}
 					/>
+					{details.kind === "xcm-swap" && (
+						<FormSummaryRow
+							label="Service fee"
+							value={
+								!!tokenIn &&
+								isBigInt(details.appCommission) && (
+									<Tokens plancks={details.appCommission} token={tokenIn} />
+								)
+							}
+						/>
+					)}
 					<FormSummaryRow
-						label="Service fee"
-						value={
-							!!tokenIn &&
-							isBigInt(appCommission) && (
-								<Tokens plancks={appCommission} token={tokenIn} />
-							)
-						}
+						label="Protocol fee"
+						value={pathQuote && <ProtocolFeeValue quote={pathQuote} />}
 					/>
 				</FormSummarySection>
 			)}

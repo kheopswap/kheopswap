@@ -39,13 +39,16 @@ export type XcmQuoteFailure =
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
 	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
+	| { kind: "destination-price-moved" }
 	| { kind: "nothing-deposited" }
 	| { kind: "delivery-fee-unavailable" }
+	| { kind: "destination-fee-unavailable" }
+	| { kind: "below-destination-fee" }
 	| { kind: "call-unavailable" };
 
 export type XcmQuote = {
 	received: bigint;
-	destinationFee: bigint;
+	destinationFee: TokenAmount;
 };
 
 export type XcmQuoteResult =
@@ -54,7 +57,7 @@ export type XcmQuoteResult =
 
 type OriginLeg = { message: XcmVersionedXcm; sent: bigint };
 
-type Parsed<T> =
+export type Parsed<T> =
 	| { success: true; value: T }
 	| { success: false; failure: XcmQuoteFailure };
 
@@ -161,6 +164,11 @@ export const parseDestinationDryRun = (
 		return { success: false, failure: { kind: "destination-unavailable" } };
 
 	const { execution_result, emitted_events } = dryRun.value;
+	if (
+		execution_result.type === "Incomplete" &&
+		execution_result.value.error.error.type === "NoDeal"
+	)
+		return { success: false, failure: { kind: "destination-price-moved" } };
 	if (execution_result.type !== "Complete")
 		return {
 			success: false,
@@ -189,10 +197,41 @@ export const parseDestinationDryRun = (
 		: { success: false, failure: { kind: "nothing-deposited" } };
 };
 
-export const composeXcmQuote = (sent: bigint, received: bigint): XcmQuote => ({
-	received,
-	destinationFee: sent - received,
-});
+export const composeXcmQuote = (
+	route: XcmRoute,
+	{
+		sent,
+		received,
+		destinationSwapFee,
+	}: { sent: bigint; received: bigint; destinationSwapFee: bigint | undefined },
+): XcmQuote | undefined => {
+	switch (route.kind) {
+		case "xcm-transfer":
+		case "xcm-swap":
+			return {
+				received,
+				destinationFee: { tokenId: route.tokenIdOut, plancks: sent - received },
+			};
+		case "xcm-destination-swap":
+			return destinationSwapFee === undefined
+				? undefined
+				: {
+						received,
+						destinationFee: {
+							tokenId: route.path[0].tokenIdIn,
+							plancks: destinationSwapFee,
+						},
+					};
+	}
+};
+
+export const getDestinationSwapPlancksIn = (
+	sent: bigint,
+	destinationFee: bigint,
+): Parsed<bigint> =>
+	sent > destinationFee
+		? { success: true, value: sent - destinationFee }
+		: { success: false, failure: { kind: "below-destination-fee" } };
 
 export const describeXcmQuoteFailure = (
 	failure: XcmQuoteFailure,
@@ -211,6 +250,8 @@ export const describeXcmQuoteFailure = (
 			return `The transfer would not be sent to ${destination}`;
 		case "destination-unavailable":
 			return `Could not simulate the transfer on ${destination}`;
+		case "destination-price-moved":
+			return `The price moved beyond your slippage tolerance on ${destination}`;
 		case "destination-rejected":
 			return failure.assetsTrapped
 				? `Amount too low for ${destination}: the assets would be trapped`
@@ -219,6 +260,10 @@ export const describeXcmQuoteFailure = (
 			return `${destination} would not credit your account`;
 		case "delivery-fee-unavailable":
 			return `Could not estimate the ${origin} delivery fee`;
+		case "destination-fee-unavailable":
+			return `Could not estimate the ${destination} fee`;
+		case "below-destination-fee":
+			return `Amount too low to cover the ${destination} fee`;
 		case "call-unavailable":
 			return `Could not prepare the transaction on ${origin}`;
 	}
@@ -263,12 +308,10 @@ export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 export const getXcmFeeParts = (
 	deliveryFee: TokenAmount | undefined,
 	quote: XcmQuote | undefined,
-	tokenIdOut: TokenId,
 ): TokenAmount[] =>
-	[
-		deliveryFee,
-		quote && { tokenId: tokenIdOut, plancks: quote.destinationFee },
-	].filter((part): part is TokenAmount => !!part?.plancks);
+	[deliveryFee, quote?.destinationFee].filter(
+		(part): part is TokenAmount => !!part?.plancks,
+	);
 
 export const getXcmCallSpendings = ({
 	tokenIdIn,

@@ -12,10 +12,11 @@ import {
 	type XcmTransferFollowUpData,
 } from "../../../../state/transactions/xcmArrival";
 
-const ArrivalStatus: FC<{ arrival: XcmArrival; origin: ChainId }> = ({
-	arrival,
-	origin,
-}) => {
+const ArrivalStatus: FC<{
+	arrival: XcmArrival;
+	origin: ChainId;
+	failedLabel: string;
+}> = ({ arrival, origin, failedLabel }) => {
 	switch (arrival.status) {
 		case "awaiting-origin":
 			return (
@@ -28,7 +29,7 @@ const ArrivalStatus: FC<{ arrival: XcmArrival; origin: ChainId }> = ({
 		case "arrived":
 			return <span className="text-success">Arrived</span>;
 		case "failed-on-destination":
-			return <span className="text-error">Failed, assets trapped</span>;
+			return <span className="text-error">{failedLabel}</span>;
 		case "unconfirmed":
 			return <span className="text-warn">Not confirmed</span>;
 		case "origin-failed":
@@ -38,7 +39,8 @@ const ArrivalStatus: FC<{ arrival: XcmArrival; origin: ChainId }> = ({
 
 export const XcmTransferFollowUpContent: FC<{
 	transaction: TransactionRecord;
-}> = ({ transaction }) => {
+	failedLabel?: string;
+}> = ({ transaction, failedLabel = "Failed, assets trapped" }) => {
 	const { origin, target, tokenOut, estimatedReceived } =
 		transaction.followUpData as Partial<XcmTransferFollowUpData>;
 	const arrival = useXcmArrival(transaction.id);
@@ -59,7 +61,11 @@ export const XcmTransferFollowUpContent: FC<{
 			<FollowUpRow
 				label={`Arrival on ${getChainById(parseTokenId(target.tokenId).chainId).name}`}
 			>
-				<ArrivalStatus arrival={arrival} origin={origin} />
+				<ArrivalStatus
+					arrival={arrival}
+					origin={origin}
+					failedLabel={failedLabel}
+				/>
 			</FollowUpRow>
 			{estimatedReceived !== undefined && (
 				<FollowUpRow label="Estimated received" className="text-muted">
