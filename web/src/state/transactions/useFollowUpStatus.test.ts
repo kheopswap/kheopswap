@@ -1,7 +1,8 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
-import type { TransactionRecord } from "./types";
+import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
+import type { FollowUpTxEvent, TransactionRecord } from "./types";
 import { useFollowUpStatus } from "./useFollowUpStatus";
 import type { XcmArrival } from "./xcmArrival";
 
@@ -70,6 +71,104 @@ describe("useFollowUpStatus headline while the origin waits for finality", () =>
 			message: "Waiting for finalization",
 			result: "success",
 			isFinal: false,
+		});
+	});
+});
+
+const feePaid = (actual_fee: bigint): TxEvents[number] => ({
+	type: "TransactionPayment",
+	value: { type: "TransactionFeePaid", value: { actual_fee, tip: 0n } },
+});
+
+const extrinsicFailed: TxEvents[number] = {
+	type: "System",
+	value: {
+		type: "ExtrinsicFailed",
+		value: { dispatch_error: { type: "Token", value: { type: "Frozen" } } },
+	},
+};
+
+const failedInclusion = {
+	type: "inBestBlock",
+	ok: false,
+	txHash: "0x01",
+	events: [feePaid(11n), extrinsicFailed],
+} as unknown as FollowUpTxEvent;
+const retracted = { type: "notInBestBlock", txHash: "0x01" } as FollowUpTxEvent;
+const canonicalEvents = [feePaid(22n)];
+const okInclusion = {
+	type: "inBestBlock",
+	ok: true,
+	txHash: "0x01",
+	events: canonicalEvents,
+} as unknown as FollowUpTxEvent;
+const finalizedOk = {
+	type: "finalized",
+	ok: true,
+	txHash: "0x01",
+	events: canonicalEvents,
+} as unknown as FollowUpTxEvent;
+
+const transferWith = (txEvents: FollowUpTxEvent[]): TransactionRecord =>
+	({
+		id: "transfer",
+		createdAt: 0,
+		type: "transfer",
+		title: "Transfer DOT",
+		status: "pending",
+		txEvents: [
+			{ type: "pending" },
+			{ type: "broadcasted", txHash: "0x01" },
+			...txEvents,
+		],
+		account: { platform: "polkadot", walletName: "Test" },
+		feeEstimate: 0n,
+		feeToken: KNOWN_TOKENS_MAP["native::pah"],
+	}) as unknown as TransactionRecord;
+
+const renderTransfer = (txEvents: FollowUpTxEvent[]) =>
+	renderHook(() => useFollowUpStatus(transferWith(txEvents), null)).result
+		.current;
+
+describe("useFollowUpStatus after a retracted inclusion", () => {
+	it("reports the failed best-block inclusion while it stands", () => {
+		expect(renderTransfer([failedInclusion])).toMatchObject({
+			message: "Waiting for finalization",
+			result: "error",
+			errorMessage: "Token: Frozen",
+			effectiveFee: null,
+		});
+	});
+
+	it("drops the error and the fee once the chain retracts the block", () => {
+		expect(renderTransfer([failedInclusion, retracted])).toMatchObject({
+			message: "Transaction submitted...",
+			result: "loading",
+			errorMessage: null,
+			effectiveFee: null,
+		});
+	});
+
+	it("reads the successful reinclusion, not the retracted failure", () => {
+		expect(
+			renderTransfer([failedInclusion, retracted, okInclusion]),
+		).toMatchObject({
+			message: "Waiting for finalization",
+			result: "success",
+			errorMessage: null,
+			effectiveFee: 22n,
+		});
+	});
+
+	it("reports the finalized outcome with its own fee", () => {
+		expect(
+			renderTransfer([failedInclusion, retracted, okInclusion, finalizedOk]),
+		).toMatchObject({
+			message: "Transaction succeeded",
+			result: "success",
+			isFinal: true,
+			errorMessage: null,
+			effectiveFee: 22n,
 		});
 	});
 });

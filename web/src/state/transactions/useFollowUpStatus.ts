@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import urlJoin from "url-join";
 import { getChainById } from "../../registry/chains/chains";
+import { getErrorMessageFromTxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import {
-	getErrorMessageFromTxEvents,
-	type TxEvents,
-} from "../../utils/getErrorMessageFromTxEvents";
-import type { TransactionRecord } from "./types";
+	getCurrentInclusion,
+	type TransactionRecord,
+	type TxInclusion,
+} from "./types";
 import {
 	getXcmArrivalOutcome,
 	isXcmArrivalRecord,
@@ -20,31 +21,27 @@ type FollowUpHeadline = {
 	isFinal: boolean;
 };
 
+const TRANSACTION_FAILED: FollowUpHeadline = {
+	message: "Transaction failed",
+	result: "error",
+	isFinal: true,
+};
+
 const getHeadline = (
 	transaction: TransactionRecord,
+	inclusion: TxInclusion | null,
 	arrival: XcmArrival | null,
 	error: unknown,
 ): FollowUpHeadline => {
-	if (error)
-		return {
-			message: "Transaction failed",
-			result: "error",
-			isFinal: true,
-		};
+	if (error) return TRANSACTION_FAILED;
 
 	const { txEvents, account } = transaction;
 	const xcmOutcome = isXcmArrivalRecord(transaction)
 		? getXcmArrivalOutcome(transaction, arrival)
 		: null;
 
-	const finalized = txEvents.find((event) => event.type === "finalized");
-	if (finalized?.type === "finalized") {
-		if (!finalized.ok)
-			return {
-				message: "Transaction failed",
-				result: "error",
-				isFinal: true,
-			};
+	if (inclusion?.type === "finalized") {
+		if (!inclusion.ok) return TRANSACTION_FAILED;
 		if (xcmOutcome)
 			return {
 				message: xcmOutcome.text,
@@ -58,9 +55,8 @@ const getHeadline = (
 		};
 	}
 
-	const best = txEvents.find((event) => event.type === "inBestBlock");
-	if (best?.type === "inBestBlock") {
-		if (best.ok && xcmOutcome)
+	if (inclusion?.type === "inBestBlock") {
+		if (inclusion.ok && xcmOutcome)
 			return {
 				message: xcmOutcome.text,
 				result: xcmOutcome.kind,
@@ -68,7 +64,7 @@ const getHeadline = (
 			};
 		return {
 			message: "Waiting for finalization",
-			result: best.ok ? "success" : "error",
+			result: inclusion.ok ? "success" : "error",
 			isFinal: false,
 		};
 	}
@@ -92,6 +88,16 @@ const getHeadline = (
 		result: "loading",
 		isFinal: false,
 	};
+};
+
+const getPaidFee = (inclusion: TxInclusion): bigint | null => {
+	const actualFee = inclusion.events.find(
+		(e) =>
+			(e.type === "TransactionPayment" &&
+				e.value.type === "TransactionFeePaid") ||
+			(e.type === "AssetTxPayment" && e.value.type === "AssetTxFeePaid"),
+	)?.value.value.actual_fee;
+	return actualFee ? BigInt(actualFee) : null;
 };
 
 export const useFollowUpStatus = (
@@ -135,45 +141,25 @@ export const useFollowUpStatus = (
 		[txEvents],
 	);
 
-	const headline = useMemo(
-		() => getHeadline(transaction, arrival, error),
-		[transaction, arrival, error],
-	);
+	const inclusion = useMemo(() => getCurrentInclusion(txEvents), [txEvents]);
 
-	const allEvents = useMemo<TxEvents>(
-		() =>
-			txEvents.flatMap((e) =>
-				e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
-			),
-		[txEvents],
+	const headline = useMemo(
+		() => getHeadline(transaction, inclusion, arrival, error),
+		[transaction, inclusion, arrival, error],
 	);
 
 	const errorMessage = useMemo(() => {
 		if (error)
 			return (error as Error).message ?? error.toString() ?? "Unknown error";
-		return txEvents.some(
-			(e) =>
-				(e.type === "finalized" && !e.ok) ||
-				(e.type === "inBestBlock" && !e.ok),
-		)
-			? getErrorMessageFromTxEvents(allEvents)
+		return inclusion && !inclusion.ok
+			? getErrorMessageFromTxEvents(inclusion.events)
 			: null;
-	}, [txEvents, allEvents, error]);
+	}, [inclusion, error]);
 
-	const effectiveFee = useMemo(() => {
-		const isIncluded = txEvents.some(
-			(e) => (e.type === "finalized" || e.type === "inBestBlock") && e.ok,
-		);
-		if (!isIncluded) return null;
-
-		const actualFee = allEvents.find(
-			(e) =>
-				(e.type === "TransactionPayment" &&
-					e.value.type === "TransactionFeePaid") ||
-				(e.type === "AssetTxPayment" && e.value.type === "AssetTxFeePaid"),
-		)?.value.value.actual_fee;
-		return actualFee ? BigInt(actualFee) : null;
-	}, [allEvents, txEvents]);
+	const effectiveFee = useMemo(
+		() => (inclusion?.ok ? getPaidFee(inclusion) : null),
+		[inclusion],
+	);
 
 	return {
 		blockExplorerUrl,

@@ -1,17 +1,12 @@
 import { type FC, useMemo } from "react";
 import { Tokens } from "../../components/Tokens";
 import type { Token } from "../../registry/tokens/types";
-import type { TransactionRecord } from "../../state/transactions/types";
+import {
+	getIncludedTxEvents,
+	type TransactionRecord,
+} from "../../state/transactions/types";
 import { cn } from "../../utils/cn";
-import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { isBigInt } from "../../utils/isBigInt";
-
-export const getIncludedTxEvents = (
-	txEvents: TransactionRecord["txEvents"],
-): TxEvents =>
-	txEvents.flatMap((e) =>
-		e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
-	);
 
 export const SwapOutcomeRows: FC<{
 	swapPlancksOut: bigint;

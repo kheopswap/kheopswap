@@ -1,12 +1,16 @@
+import type { TxEvent } from "polkadot-api";
 import type { WalletAccount } from "../../common/kheopskit";
-import type {
-	FollowUpTxEvent,
-	FollowUpTxEvents,
-} from "../../components/FollowUpModal";
 import type { AmmPath } from "../../features/swap/routes/ammPath";
 import type { ChainId } from "../../registry/chains/types";
 import type { Token, TokenId } from "../../registry/tokens/types";
+import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import type { XcmDepositTarget } from "../../utils/xcmDeposit";
+
+export type FollowUpTxEvent =
+	| TxEvent
+	| { type: "pending" }
+	| { type: "error"; error: unknown };
+export type FollowUpTxEvents = FollowUpTxEvent[];
 
 export type TransactionId = string;
 
@@ -101,3 +105,32 @@ export const isTerminalStatus = (status: TransactionStatus): boolean =>
 
 export const isSettled = ({ txEvents }: TransactionRecord): boolean =>
 	txEvents.some(({ type }) => type === "finalized" || type === "error");
+
+export type TxInclusion = Extract<
+	FollowUpTxEvent,
+	{ type: "inBestBlock" | "finalized" }
+>;
+
+export const getCurrentInclusion = (
+	txEvents: FollowUpTxEvents,
+): TxInclusion | null => {
+	let current: TxInclusion | null = null;
+	for (const event of txEvents) {
+		switch (event.type) {
+			case "finalized":
+				return event;
+			case "inBestBlock":
+				current = event;
+				break;
+			case "notInBestBlock":
+				current = null;
+				break;
+			default:
+				break;
+		}
+	}
+	return current;
+};
+
+export const getIncludedTxEvents = (txEvents: FollowUpTxEvents): TxEvents =>
+	getCurrentInclusion(txEvents)?.events ?? [];

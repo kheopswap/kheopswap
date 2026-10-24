@@ -1,9 +1,9 @@
 import { type FC, useMemo } from "react";
-import type { TransactionRecord } from "../../../../state/transactions/types";
 import {
 	getIncludedTxEvents,
-	SwapOutcomeRows,
-} from "../../SwapFollowUpContent";
+	type TransactionRecord,
+} from "../../../../state/transactions/types";
+import { SwapOutcomeRows } from "../../SwapFollowUpContent";
 import { XcmTransferFollowUpContent } from "../xcmTransfer/XcmTransferFollowUpContent";
 import { matchSwapHops } from "./swapCredits";
 

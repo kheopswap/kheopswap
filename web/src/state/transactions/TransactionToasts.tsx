@@ -10,10 +10,10 @@ import { cn } from "../../utils/cn";
 import {
 	formatTxError,
 	getErrorMessageFromTxEvents,
-	type TxEvents,
 } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransactions } from "./TransactionsProvider";
 import {
+	getIncludedTxEvents,
 	isSettled,
 	type TransactionRecord,
 	type TransactionStatus,
@@ -161,16 +161,10 @@ const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 		}
 	}
 
-	const allEvents: TxEvents = tx.txEvents.flatMap((event) =>
-		event.type === "finalized" || event.type === "inBestBlock"
-			? event.events
-			: [],
-	);
+	const includedEvents = getIncludedTxEvents(tx.txEvents);
+	if (includedEvents.length === 0) return null;
 
-	if (allEvents.length === 0) return null;
-
-	const txFailedErrorMessage = getErrorMessageFromTxEvents(allEvents);
-	return txFailedErrorMessage || null;
+	return getErrorMessageFromTxEvents(includedEvents) || null;
 };
 
 const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {

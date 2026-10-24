@@ -1,6 +1,6 @@
 import { BehaviorSubject, map } from "rxjs";
-import type { FollowUpTxEvent } from "../../components/FollowUpModal";
 import {
+	type FollowUpTxEvent,
 	getStatusFromEvent,
 	isTerminalStatus,
 	type TransactionId,

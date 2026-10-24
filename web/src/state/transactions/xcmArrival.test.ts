@@ -1,6 +1,5 @@
 import { BehaviorSubject, firstValueFrom, Subject, throwError } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { FollowUpTxEvent } from "../../components/FollowUpModal";
 import { dotFromPeople } from "../../features/swap/routes/xcm/xcmFromPeople.fixtures";
 import {
 	usdtToPinkDust,
@@ -17,7 +16,7 @@ import {
 	dismissTransaction,
 	transactions$,
 } from "./transactionStore";
-import type { TransactionRecord } from "./types";
+import type { FollowUpTxEvent, TransactionRecord } from "./types";
 import {
 	type DestinationBlock,
 	describeFailedArrival,
