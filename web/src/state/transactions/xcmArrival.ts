@@ -20,6 +20,7 @@ import {
 	switchMap,
 	take,
 	takeWhile,
+	tap,
 	timer,
 } from "rxjs";
 import { type Api, getApi$ } from "../../papi/getApi";
@@ -435,43 +436,45 @@ const getPastBlockEvents = async (
 };
 
 type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
-type BlockEventsUpdate = {
-	tip: BlockInfo;
-	missing: number[];
-	events: TxEvents;
-};
 
 // watchValue only reports the latest block of its branch, so blocks that pass while a
 // query is in flight, or that finalize together, are read back through the tip
-const getBlockEvents$ = (chainId: ChainId, at: "best" | "finalized") =>
-	getApi$(chainId).pipe(
+const getBlockEvents$ = (
+	chainId: ChainId,
+	at: "best" | "finalized",
+): Observable<TxEvents> => {
+	let lastNumber: number | null = null;
+	const emitAt = (number: number) =>
+		tap<TxEvents>(() => {
+			lastNumber = number;
+		});
+
+	return getApi$(chainId).pipe(
 		switchMap((api) => {
 			const blocks$: Observable<{ block: BlockInfo; value: BlockRecords }> =
 				api.query.System.Events.watchValue({ at });
 			return blocks$.pipe(
-				scan(
-					(previous, { block, value }): BlockEventsUpdate => ({
-						tip: block,
-						missing: previous
-							? range(previous.tip.number + 1, block.number)
-							: [],
-						events: getXcmBlockEvents(value),
-					}),
-					null as BlockEventsUpdate | null,
-				),
-				filter((update): update is BlockEventsUpdate => !!update),
-				concatMap(({ tip, missing, events }) =>
-					concat(
+				concatMap(({ block, value }) => {
+					const missing =
+						lastNumber !== null && block.number > lastNumber
+							? range(lastNumber + 1, block.number)
+							: [];
+					return concat(
 						from(missing).pipe(
-							concatMap((number) => getPastBlockEvents(api, number, tip.hash)),
+							concatMap((number) =>
+								from(getPastBlockEvents(api, number, block.hash)).pipe(
+									emitAt(number),
+								),
+							),
 						),
-						of(events),
-					),
-				),
+						of(getXcmBlockEvents(value)).pipe(emitAt(block.number)),
+					);
+				}),
 			);
 		}),
 		retry(BLOCK_STREAM_RETRY),
 	);
+};
 
 const arrivalsSubject = new BehaviorSubject<Record<TransactionId, XcmArrival>>(
 	{},

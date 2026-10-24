@@ -1,3 +1,4 @@
+import { omitBy } from "lodash-es";
 import { useMemo } from "react";
 import { useDryRun } from "../../hooks/useDryRun";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
@@ -6,7 +7,10 @@ import type { TokenId } from "../../registry/tokens/types";
 import type { TransactionType } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { provideContext } from "../../utils/provideContext";
-import { useTransactionBalanceCheck } from "./useTransactionBalanceCheck";
+import {
+	INSUFFICIENT_BALANCE_TO_KEEP_ALIVE,
+	useTransactionBalanceCheck,
+} from "./useTransactionBalanceCheck";
 import { useTransactionEthereum } from "./useTransactionEthereum";
 import { useTransactionFees } from "./useTransactionFees";
 import { useTransactionSubmit } from "./useTransactionSubmit";
@@ -107,14 +111,28 @@ const useTransactionProvider = ({
 		submitGate.status === "pending";
 
 	// dry_run_call never charges the transaction fee, which Hydration takes in the account's currency
-	const isRejectedByDryRun =
+	const isDryRunConclusive =
 		isChainIdAssetHub(chainId) &&
 		!fees.options?.asset &&
-		dryRun?.success === true &&
-		!dryRun.value.execution_result.success;
+		dryRun?.success === true;
+	const isRejectedByDryRun =
+		isDryRunConclusive && !dryRun.value.execution_result.success;
+	// the runtime knows about frozen funds that keep an account alive, the local check does not
+	const isKeepAliveWaived =
+		isDryRunConclusive && dryRun.value.execution_result.success;
 
-	const hasInsufficientBalance =
-		Object.keys(balanceCheck.insufficientBalances).length > 0;
+	const insufficientBalances = useMemo(
+		() =>
+			isKeepAliveWaived
+				? omitBy(
+						balanceCheck.insufficientBalances,
+						(reason) => reason === INSUFFICIENT_BALANCE_TO_KEEP_ALIVE,
+					)
+				: balanceCheck.insufficientBalances,
+		[balanceCheck.insufficientBalances, isKeepAliveWaived],
+	);
+
+	const hasInsufficientBalance = Object.keys(insufficientBalances).length > 0;
 
 	const canSubmit = useMemo(() => {
 		if (submitGate.status !== "open") return false;
@@ -169,7 +187,7 @@ const useTransactionProvider = ({
 		feeTokenBalance: balanceCheck.feeTokenBalance,
 		isLoadingFeeTokenBalance: balanceCheck.isLoadingFeeTokenBalance,
 
-		insufficientBalances: balanceCheck.insufficientBalances,
+		insufficientBalances,
 
 		onSubmit,
 		canSubmit,
