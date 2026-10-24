@@ -7,12 +7,15 @@ import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { Token } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
-import type { XcmTransferFollowUpData } from "../../../../state/transactions/xcmArrival";
+import type {
+	TransactionFollowUp,
+	XcmSwapFollowUpData,
+	XcmTransferFollowUpData,
+} from "../../../../state/transactions/types";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { plancksToTokens } from "../../../../utils/plancks";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import {
-	type AmmPath,
 	type AmmPathQuote,
 	getLastHop,
 	getPathTokenIds,
@@ -77,15 +80,6 @@ export type XcmRouteDetails =
 	| XcmTransferDetails
 	| XcmSwapDetails
 	| XcmDestinationSwapDetails;
-
-export type XcmSwapFollowUpData = XcmTransferFollowUpData & {
-	swap: {
-		path: AmmPath;
-		swapPlancksIn: bigint;
-		swapPlancksOut: bigint;
-		mirrorToken: Token;
-	};
-};
 
 type XcmCallInputs =
 	| {
@@ -234,17 +228,21 @@ const getReturnTokenIds = (route: XcmRoute) =>
 		? getPathTokenIds(route.path)
 		: [route.tokenIdOut];
 
-const getXcmTransactionType = (
+const getXcmFollowUp = (
 	route: XcmRoute | null,
-): TransactionPlan["transactionType"] => {
-	switch (route?.kind) {
-		case "xcm-swap":
-			return "xcmSwap";
-		case "xcm-destination-swap":
-			return "xcmDestinationSwap";
+	transfer: XcmTransferFollowUpData | null,
+	swap: XcmSwapFollowUpData["swap"] | null,
+): TransactionFollowUp => {
+	if (!route || !transfer) return { type: "unknown" };
+	switch (route.kind) {
 		case "xcm-transfer":
-		case undefined:
-			return "xcmTransfer";
+			return { type: "xcmTransfer", followUpData: transfer };
+		case "xcm-destination-swap":
+			return { type: "xcmDestinationSwap", followUpData: transfer };
+		case "xcm-swap":
+			return swap
+				? { type: "xcmSwap", followUpData: { ...transfer, swap } }
+				: { type: "unknown" };
 	}
 };
 
@@ -495,22 +493,15 @@ export const useXcmRoute = ({
 						estimatedReceived: received,
 					}
 				: null;
-		const followUpData: XcmTransferFollowUpData | XcmSwapFollowUpData | object =
-			transferFollowUpData &&
-			swapRoute &&
-			swapPlancksIn &&
-			pathQuote.quote &&
-			mirrorToken
+		const swapFollowUpData: XcmSwapFollowUpData["swap"] | null =
+			swapRoute && swapPlancksIn && pathQuote.quote && mirrorToken
 				? {
-						...transferFollowUpData,
-						swap: {
-							path: swapRoute.path,
-							swapPlancksIn,
-							swapPlancksOut: pathQuote.quote.amountOut,
-							mirrorToken,
-						},
+						path: swapRoute.path,
+						swapPlancksIn,
+						swapPlancksOut: pathQuote.quote.amountOut,
+						mirrorToken,
 					}
-				: (transferFollowUpData ?? {});
+				: null;
 
 		return {
 			chainId: route?.origin,
@@ -523,8 +514,7 @@ export const useXcmRoute = ({
 						deliveryFee: quote.deliveryFee,
 					})
 				: {},
-			followUpData,
-			transactionType: getXcmTransactionType(route),
+			followUp: getXcmFollowUp(route, transferFollowUpData, swapFollowUpData),
 			title: route ? getXcmTitle(route, tokenIn, tokenOut) : "Transfer",
 			submitGate,
 		};

@@ -5,7 +5,6 @@ import {
 	isTerminalStatus,
 	type TransactionId,
 	type TransactionRecord,
-	type TransactionStatus,
 } from "./types";
 
 const MAX_TRANSACTIONS = 20;
@@ -49,18 +48,6 @@ export const addTransaction = (transaction: TransactionRecord): void => {
 	transactions.set(transaction.id, transaction);
 	autoPrune(transactions);
 	transactionsSubject.next(transactions);
-};
-
-export const updateTransaction = (
-	id: TransactionId,
-	updates: Partial<TransactionRecord>,
-): void => {
-	const transactions = new Map(transactionsSubject.getValue());
-	const existing = transactions.get(id);
-	if (existing) {
-		transactions.set(id, { ...existing, ...updates });
-		transactionsSubject.next(transactions);
-	}
 };
 
 export const appendTxEvent = (
@@ -112,11 +99,4 @@ export const dismissTransaction = (id: TransactionId): void => {
 
 export const getOpenTransactionId = (): TransactionId | null => {
 	return openTransactionIdSubject.getValue();
-};
-
-export const updateTransactionStatus = (
-	id: TransactionId,
-	status: TransactionStatus,
-): void => {
-	updateTransaction(id, { status });
 };

@@ -4,7 +4,7 @@ import { useDryRun } from "../../hooks/useDryRun";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import type { TokenId } from "../../registry/tokens/types";
-import type { TransactionType } from "../../state/transactions/types";
+import type { TransactionFollowUp } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { provideContext } from "../../utils/provideContext";
 import {
@@ -30,15 +30,14 @@ type UseTransactionProviderProps = {
 	signer: string | null | undefined;
 	chainId: ChainId | null | undefined;
 	callSpendings?: CallSpendings;
-	followUpData?: object;
-	transactionType?: TransactionType;
+	followUp?: TransactionFollowUp;
 	transactionTitle?: string;
 	submitGate?: SubmitGate;
 	onReset: () => void;
 };
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
-const DEFAULT_FOLLOW_UP_DATA = {};
+const UNKNOWN_FOLLOW_UP: TransactionFollowUp = { type: "unknown" };
 const OPEN_SUBMIT_GATE: SubmitGate = { status: "open" };
 
 const useTransactionProvider = ({
@@ -48,8 +47,7 @@ const useTransactionProvider = ({
 	chainId,
 	callSpendings = DEFAULT_CALL_SPENDINGS,
 	onReset,
-	followUpData = DEFAULT_FOLLOW_UP_DATA,
-	transactionType = "unknown",
+	followUp = UNKNOWN_FOLLOW_UP,
 	transactionTitle = "Transaction",
 	submitGate = OPEN_SUBMIT_GATE,
 }: UseTransactionProviderProps) => {
@@ -94,9 +92,8 @@ const useTransactionProvider = ({
 		options: fees.options,
 		isEthereumNetworkMismatch: ethereum.isEthereumNetworkMismatch,
 		targetEvmChainId: ethereum.targetEvmChainId,
-		transactionType,
+		followUp,
 		transactionTitle,
-		followUpData: followUpData as Record<string, unknown>,
 	});
 
 	const error = fees.errorFeeEstimate ?? balanceCheck.errorExistentialDeposits;

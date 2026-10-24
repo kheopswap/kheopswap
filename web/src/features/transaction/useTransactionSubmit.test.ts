@@ -1,6 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { firstValueFrom, Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { getToastView } from "../../state/transactions/TransactionToasts";
 import {
 	dismissTransaction,
 	transactions$,
@@ -32,9 +33,8 @@ const renderSubmit = (overrides: {
 			options: { nonce: 1 },
 			isEthereumNetworkMismatch: false,
 			targetEvmChainId: undefined,
-			transactionType: "transfer",
+			followUp: { type: "transfer" },
 			transactionTitle: "Transfer",
-			followUpData: {},
 			...overrides,
 		}),
 	).result.current;
@@ -42,6 +42,7 @@ const renderSubmit = (overrides: {
 afterEach(async () => {
 	for (const tx of await firstValueFrom(transactions$))
 		dismissTransaction(tx.id);
+	vi.useRealTimers();
 });
 
 describe("useTransactionSubmit", () => {
@@ -60,5 +61,25 @@ describe("useTransactionSubmit", () => {
 		expect(await firstValueFrom(transactions$)).toMatchObject([
 			{ status: "pending", title: "Transfer" },
 		]);
+	});
+
+	it("fails a transaction that is not finalized within 10 minutes with a reason the toast shows", async () => {
+		vi.useFakeTimers();
+		await renderSubmit({}).onSubmit();
+		vi.advanceTimersByTime(10 * 60_000);
+
+		const [record] = await firstValueFrom(transactions$);
+		if (!record) throw new Error("no record");
+		expect(record).toMatchObject({
+			status: "failed",
+			txEvents: [
+				{ type: "pending" },
+				{ type: "error", error: expect.any(Error) },
+			],
+		});
+		expect(getToastView(record, null)).toEqual({
+			outcome: "error",
+			text: "Transaction was not finalized within 10 minutes",
+		});
 	});
 });

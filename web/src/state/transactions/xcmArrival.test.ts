@@ -751,6 +751,25 @@ describe("trackXcmArrivals", () => {
 		subscription.unsubscribe();
 	});
 
+	it("keeps tracking the other transfers when one record cannot be tracked", () => {
+		const hydration$ = new Subject<BlockUpdate>();
+		chains.streams = { hydration: () => hydration$ };
+		const subscription = trackXcmArrivals();
+		addTransaction({
+			...getTrackedRecord("malformed", target.tokenId),
+			followUpData: { target: undefined },
+		} as unknown as TransactionRecord);
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		hydration$.next(atBlock(1, ourArrival));
+
+		expect(getTrackedXcmArrival("malformed")).toBeNull();
+		expect(getTrackedXcmArrival("to-hydration")).toMatchObject({
+			status: "arrived",
+			received: 9995190152n,
+		});
+		subscription.unsubscribe();
+	});
+
 	it("retries a destination stream that fails once", () => {
 		vi.useFakeTimers();
 		let attempts = 0;
@@ -1161,9 +1180,12 @@ describe("isAwaitingXcmArrival", () => {
 	});
 
 	it("does not hold other transactions", () => {
-		expect(isAwaitingXcmArrival({ ...finalized, type: "swap" }, null)).toBe(
-			false,
-		);
+		expect(
+			isAwaitingXcmArrival(
+				{ ...finalized, type: "transfer", followUpData: undefined },
+				null,
+			),
+		).toBe(false);
 	});
 });
 

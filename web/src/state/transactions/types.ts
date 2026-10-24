@@ -3,7 +3,10 @@ import type {
 	FollowUpTxEvent,
 	FollowUpTxEvents,
 } from "../../components/FollowUpModal";
-import type { Token } from "../../registry/tokens/types";
+import type { AmmPath } from "../../features/swap/routes/ammPath";
+import type { ChainId } from "../../registry/chains/types";
+import type { Token, TokenId } from "../../registry/tokens/types";
+import type { XcmDepositTarget } from "../../utils/xcmDeposit";
 
 export type TransactionId = string;
 
@@ -15,16 +18,48 @@ export type TransactionStatus =
 	| "finalized"
 	| "failed";
 
-export type TransactionType =
-	| "swap"
-	| "transfer"
-	| "addLiquidity"
-	| "removeLiquidity"
-	| "createPool"
-	| "xcmTransfer"
-	| "xcmSwap"
-	| "xcmDestinationSwap"
-	| "unknown";
+export type SwapFollowUpData = {
+	swapPlancksOut: bigint;
+	minPlancksOut: bigint;
+	slippage: number;
+	tokenOut: Token;
+};
+
+export type XcmTransferFollowUpData = {
+	origin: ChainId;
+	target: XcmDepositTarget;
+	returnTokenIds: TokenId[];
+	tokenOut: Token;
+	estimatedReceived: bigint | undefined;
+};
+
+export type XcmSwapFollowUpData = XcmTransferFollowUpData & {
+	swap: {
+		path: AmmPath;
+		swapPlancksIn: bigint;
+		swapPlancksOut: bigint;
+		mirrorToken: Token;
+	};
+};
+
+export type TransactionFollowUp =
+	| { type: "swap"; followUpData: SwapFollowUpData }
+	| {
+			type: "xcmTransfer" | "xcmDestinationSwap";
+			followUpData: XcmTransferFollowUpData;
+	  }
+	| { type: "xcmSwap"; followUpData: XcmSwapFollowUpData }
+	| {
+			type:
+				| "transfer"
+				| "addLiquidity"
+				| "removeLiquidity"
+				| "createPool"
+				| "unknown";
+			followUpData?: undefined;
+	  };
+
+export type TransactionType = TransactionFollowUp["type"];
 
 export type TransactionRecord = {
 	id: TransactionId;
@@ -35,11 +70,8 @@ export type TransactionRecord = {
 	account: WalletAccount;
 	feeEstimate: bigint;
 	feeToken: Token;
-	type: TransactionType;
 	title: string;
-	// biome-ignore lint/suspicious/noExplicitAny: varies by transaction type
-	followUpData: Record<string, any>;
-};
+} & TransactionFollowUp;
 
 export const getStatusFromEvent = (
 	event: FollowUpTxEvent,

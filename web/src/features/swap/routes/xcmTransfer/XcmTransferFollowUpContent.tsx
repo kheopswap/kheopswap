@@ -8,9 +8,9 @@ import { parseTokenId } from "../../../../registry/tokens/helpers";
 import type { TransactionRecord } from "../../../../state/transactions/types";
 import {
 	describeFailedArrival,
+	isXcmArrivalRecord,
 	useXcmArrival,
 	type XcmArrival,
-	type XcmTransferFollowUpData,
 } from "../../../../state/transactions/xcmArrival";
 import { TokenAmountValue } from "../AmmPathValues";
 
@@ -51,18 +51,17 @@ const ArrivalStatus: FC<{
 export const XcmTransferFollowUpContent: FC<{
 	transaction: TransactionRecord;
 }> = ({ transaction }) => {
-	const { origin, target, tokenOut, estimatedReceived } =
-		transaction.followUpData as Partial<XcmTransferFollowUpData>;
 	const arrival = useXcmArrival(transaction.id);
 
 	if (
-		!origin ||
-		!target ||
-		!tokenOut ||
+		!isXcmArrivalRecord(transaction) ||
 		!arrival ||
 		arrival.status === "origin-failed"
 	)
 		return null;
+
+	const { origin, target, tokenOut, estimatedReceived } =
+		transaction.followUpData;
 
 	const received = arrival.status === "arrived" ? arrival.received : null;
 	const returned =

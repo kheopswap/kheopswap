@@ -105,8 +105,7 @@ const useSwapProvider = () => {
 							},
 						}
 					: {},
-			followUpData: callData.followUpData,
-			transactionType: "swap",
+			followUp: callData.followUp,
 			title: getSwapTitle(pricing.tokenIn?.symbol, pricing.tokenOut?.symbol),
 			submitGate: OPEN_SUBMIT_GATE,
 		}),
@@ -118,7 +117,7 @@ const useSwapProvider = () => {
 			pricing.isCheckingRecipient,
 			callData.call,
 			callData.fakeCall,
-			callData.followUpData,
+			callData.followUp,
 		],
 	);
 

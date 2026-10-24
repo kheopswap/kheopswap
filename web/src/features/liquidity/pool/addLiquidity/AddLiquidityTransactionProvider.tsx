@@ -1,10 +1,13 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
+import type { TransactionFollowUp } from "../../../../state/transactions/types";
 import {
 	type CallSpendings,
 	TransactionProvider,
 } from "../../../transaction/TransactionProvider";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidity } from "./AddLiquidityProvider";
+
+const FOLLOW_UP: TransactionFollowUp = { type: "addLiquidity" };
 
 const getAddLiquidityTitle = (
 	token1Symbol: string | undefined,
@@ -44,7 +47,7 @@ export const AddLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 			signer={account?.id}
 			onReset={onReset}
 			callSpendings={spendings}
-			transactionType="addLiquidity"
+			followUp={FOLLOW_UP}
 			transactionTitle={title}
 		>
 			{children}

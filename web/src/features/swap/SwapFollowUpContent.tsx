@@ -6,13 +6,6 @@ import { cn } from "../../utils/cn";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { isBigInt } from "../../utils/isBigInt";
 
-type SwapFollowUpData = {
-	swapPlancksOut: bigint;
-	minPlancksOut: bigint;
-	slippage: number;
-	tokenOut: Token;
-};
-
 export const getIncludedTxEvents = (
 	txEvents: TransactionRecord["txEvents"],
 ): TxEvents =>
@@ -79,7 +72,6 @@ export const SwapOutcomeRows: FC<{
 export const SwapFollowUpContent: FC<{
 	transaction: TransactionRecord;
 }> = ({ transaction }) => {
-	const followUpData = transaction.followUpData as SwapFollowUpData;
 	const txEvents = transaction.txEvents;
 
 	const effectiveOutcome = useMemo(() => {
@@ -89,13 +81,13 @@ export const SwapFollowUpContent: FC<{
 		return amountOut ? BigInt(amountOut) : null;
 	}, [txEvents]);
 
-	if (!followUpData?.tokenOut) return null;
+	if (transaction.type !== "swap") return null;
 
 	return (
 		<SwapOutcomeRows
-			swapPlancksOut={followUpData.swapPlancksOut}
+			swapPlancksOut={transaction.followUpData.swapPlancksOut}
 			effectiveOutcome={effectiveOutcome}
-			token={followUpData.tokenOut}
+			token={transaction.followUpData.tokenOut}
 		/>
 	);
 };

@@ -22,8 +22,12 @@ import {
 	openTransactionModal,
 	transactions$,
 } from "./transactionStore";
-import type { TransactionRecord, TransactionType } from "./types";
-import type { XcmArrival, XcmTransferFollowUpData } from "./xcmArrival";
+import type {
+	TransactionRecord,
+	TransactionType,
+	XcmTransferFollowUpData,
+} from "./types";
+import type { XcmArrival } from "./xcmArrival";
 
 type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
 

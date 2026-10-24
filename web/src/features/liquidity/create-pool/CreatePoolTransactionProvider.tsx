@@ -1,10 +1,12 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
-
+import type { TransactionFollowUp } from "../../../state/transactions/types";
 import {
 	type CallSpendings,
 	TransactionProvider,
 } from "../../transaction/TransactionProvider";
 import { useCreatePool } from "./CreatePoolProvider";
+
+const FOLLOW_UP: TransactionFollowUp = { type: "createPool" };
 
 const getCreatePoolTitle = (
 	token1Symbol: string | undefined,
@@ -52,7 +54,7 @@ export const CreatePoolTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={assetHub.id}
 			signer={formData.from}
 			onReset={onReset}
-			transactionType="createPool"
+			followUp={FOLLOW_UP}
 			transactionTitle={title}
 		>
 			{children}

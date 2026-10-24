@@ -6,8 +6,10 @@ import {
 	combineLatest,
 	concat,
 	concatMap,
+	defer,
 	distinct,
 	distinctUntilChanged,
+	EMPTY,
 	filter,
 	from,
 	map,
@@ -27,7 +29,7 @@ import { type Api, getApi$ } from "../../papi/getApi";
 import { getChainById, isChainIdHydration } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import { parseTokenId } from "../../registry/tokens/helpers";
-import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
+import type { TokenAmount, TokenId } from "../../registry/tokens/types";
 import { bindSerialized } from "../../utils/bindSerialized";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { logger } from "../../utils/logger";
@@ -58,13 +60,14 @@ export const isXcmArrivalType = (
 ): type is XcmArrivalType =>
 	XCM_ARRIVAL_TYPES.some((arrivalType) => arrivalType === type);
 
-export type XcmTransferFollowUpData = {
-	origin: ChainId;
-	target: XcmDepositTarget;
-	returnTokenIds: TokenId[];
-	tokenOut: Token;
-	estimatedReceived: bigint | undefined;
-};
+export type XcmArrivalRecord = Extract<
+	TransactionRecord,
+	{ type: XcmArrivalType }
+>;
+
+export const isXcmArrivalRecord = (
+	record: TransactionRecord,
+): record is XcmArrivalRecord => isXcmArrivalType(record.type);
 
 type FailedArrival = { returned: TokenAmount[]; trapped: boolean };
 
@@ -215,10 +218,9 @@ export type XcmArrivalOutcome = {
 };
 
 export const getXcmArrivalOutcome = (
-	{ followUpData }: TransactionRecord,
+	{ followUpData: { target } }: XcmArrivalRecord,
 	arrival: XcmArrival | null,
 ): XcmArrivalOutcome => {
-	const { target } = followUpData as XcmTransferFollowUpData;
 	const destination = getChainById(parseTokenId(target.tokenId).chainId).name;
 
 	switch (arrival?.status) {
@@ -480,29 +482,37 @@ const arrivalsSubject = new BehaviorSubject<Record<TransactionId, XcmArrival>>(
 	{},
 );
 
+const trackXcmArrival$ = ({
+	id,
+	followUpData: { target, returnTokenIds },
+}: XcmArrivalRecord) =>
+	defer(() => {
+		const destination = parseTokenId(target.tokenId).chainId;
+		return getXcmArrival$({
+			record$: transactions$.pipe(
+				map((transactions) => transactions.find((tx) => tx.id === id)),
+			),
+			bestBlockEvents$: getBlockEvents$(destination, "best"),
+			finalizedBlockEvents$: getBlockEvents$(destination, "finalized"),
+			target,
+			returnTokenIds,
+			destinationParaId: getChainById(destination).paraId,
+			bufferBlocks: getArrivalBufferBlocks(destination),
+		});
+	}).pipe(
+		map((arrival) => [id, arrival] as const),
+		catchError((error) => {
+			logger.error("[xcm arrival] tracking failed", { id, error });
+			return EMPTY;
+		}),
+	);
+
 export const trackXcmArrivals = () =>
 	transactions$
 		.pipe(
-			mergeMap((transactions) =>
-				transactions.filter(({ type }) => isXcmArrivalType(type)),
-			),
+			mergeMap((transactions) => transactions.filter(isXcmArrivalRecord)),
 			distinct(({ id }) => id),
-			mergeMap(({ id, followUpData }) => {
-				const { target, returnTokenIds } =
-					followUpData as XcmTransferFollowUpData;
-				const destination = parseTokenId(target.tokenId).chainId;
-				return getXcmArrival$({
-					record$: transactions$.pipe(
-						map((transactions) => transactions.find((tx) => tx.id === id)),
-					),
-					bestBlockEvents$: getBlockEvents$(destination, "best"),
-					finalizedBlockEvents$: getBlockEvents$(destination, "finalized"),
-					target,
-					returnTokenIds,
-					destinationParaId: getChainById(destination).paraId,
-					bufferBlocks: getArrivalBufferBlocks(destination),
-				}).pipe(map((arrival) => [id, arrival] as const));
-			}),
+			mergeMap(trackXcmArrival$),
 		)
 		.subscribe(([id, arrival]) => {
 			arrivalsSubject.next({ ...arrivalsSubject.getValue(), [id]: arrival });

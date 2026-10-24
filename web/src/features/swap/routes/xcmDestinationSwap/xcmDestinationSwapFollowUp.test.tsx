@@ -1,11 +1,11 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
-import type { TransactionRecord } from "../../../../state/transactions/types";
 import type {
-	XcmArrival,
+	TransactionRecord,
 	XcmTransferFollowUpData,
-} from "../../../../state/transactions/xcmArrival";
+} from "../../../../state/transactions/types";
+import type { XcmArrival } from "../../../../state/transactions/xcmArrival";
 import { XcmTransferFollowUpContent } from "../xcmTransfer/XcmTransferFollowUpContent";
 import { usdtToPink } from "./xcmDestinationSwap.fixtures";
 

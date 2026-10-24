@@ -16,7 +16,7 @@ import { useTransactions } from "./TransactionsProvider";
 import type { TransactionRecord, TransactionStatus } from "./types";
 import {
 	getXcmArrivalOutcome,
-	isXcmArrivalType,
+	isXcmArrivalRecord,
 	useXcmArrival,
 	type XcmArrival,
 } from "./xcmArrival";
@@ -59,7 +59,7 @@ export const getToastView = (
 	tx: TransactionRecord,
 	arrival: XcmArrival | null,
 ): ToastView => {
-	if (tx.status === "finalized" && isXcmArrivalType(tx.type)) {
+	if (tx.status === "finalized" && isXcmArrivalRecord(tx)) {
 		const { kind, text } = getXcmArrivalOutcome(tx, arrival);
 		return { outcome: kind, text };
 	}

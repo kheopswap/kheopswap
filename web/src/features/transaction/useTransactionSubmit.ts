@@ -11,9 +11,8 @@ import {
 	appendTxEvent,
 	minimizeTransaction,
 	openTransactionModal,
-	updateTransactionStatus,
 } from "../../state/transactions/transactionStore";
-import type { TransactionType } from "../../state/transactions/types";
+import type { TransactionFollowUp } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
 import { logger } from "../../utils/logger";
@@ -72,7 +71,10 @@ const subscribeTxEvents = (
 
 	const safetyTimeout = setTimeout(() => {
 		logger.warn("Transaction timed out without finalized/error event", txId);
-		updateTransactionStatus(txId, "failed");
+		appendTxEvent(txId, {
+			type: "error",
+			error: new Error("Transaction was not finalized within 10 minutes"),
+		});
 		sub.unsubscribe();
 	}, TX_TIMEOUT_MS);
 
@@ -81,9 +83,7 @@ const subscribeTxEvents = (
 
 		if (x.type === "broadcasted") isSubmitted = true;
 
-		if (x.type !== "error") {
-			appendTxEvent(txId, x);
-		}
+		appendTxEvent(txId, x);
 
 		if (x.type === "finalized") cleanup();
 
@@ -102,15 +102,7 @@ const subscribeTxEvents = (
 					"It could be that the chain doesn't support CheckMetadataHash",
 				);
 
-			if (!isSubmitted) {
-				appendTxEvent(txId, x);
-				updateTransactionStatus(txId, "failed");
-				if (isUserRejected) {
-					minimizeTransaction(txId);
-				}
-			} else {
-				appendTxEvent(txId, x);
-			}
+			if (!isSubmitted && isUserRejected) minimizeTransaction(txId);
 
 			cleanup();
 		}
@@ -127,9 +119,8 @@ type UseTransactionSubmitProps = {
 	options: object | undefined;
 	isEthereumNetworkMismatch: boolean;
 	targetEvmChainId: number | undefined;
-	transactionType: TransactionType;
+	followUp: TransactionFollowUp;
 	transactionTitle: string;
-	followUpData: Record<string, unknown>;
 };
 
 export const useTransactionSubmit = ({
@@ -142,9 +133,8 @@ export const useTransactionSubmit = ({
 	options,
 	isEthereumNetworkMismatch,
 	targetEvmChainId,
-	transactionType,
+	followUp,
 	transactionTitle,
-	followUpData,
 }: UseTransactionSubmitProps) => {
 	const onSubmit = useCallback(async () => {
 		try {
@@ -189,9 +179,8 @@ export const useTransactionSubmit = ({
 				account,
 				feeEstimate: feeEstimate ?? 0n,
 				feeToken: txFeeToken,
-				type: transactionType,
 				title: transactionTitle,
-				followUpData,
+				...followUp,
 			});
 			openTransactionModal(txId);
 			subscribeTxEvents(txId, txEvents$);
@@ -204,12 +193,11 @@ export const useTransactionSubmit = ({
 		chainId,
 		feeEstimate,
 		feeToken,
-		followUpData,
+		followUp,
 		isEthereumNetworkMismatch,
 		nativeToken,
 		options,
 		targetEvmChainId,
-		transactionType,
 		transactionTitle,
 	]);
 

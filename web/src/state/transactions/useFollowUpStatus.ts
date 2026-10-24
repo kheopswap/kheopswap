@@ -8,7 +8,7 @@ import {
 import type { TransactionRecord } from "./types";
 import {
 	getXcmArrivalOutcome,
-	isXcmArrivalType,
+	isXcmArrivalRecord,
 	type XcmArrival,
 } from "./xcmArrival";
 
@@ -32,7 +32,7 @@ const getHeadline = (
 			isFinal: true,
 		};
 
-	const { txEvents, type, account } = transaction;
+	const { txEvents, account } = transaction;
 
 	const finalized = txEvents.find((event) => event.type === "finalized");
 	if (finalized?.type === "finalized") {
@@ -42,7 +42,7 @@ const getHeadline = (
 				result: "error",
 				isFinal: true,
 			};
-		if (isXcmArrivalType(type)) {
+		if (isXcmArrivalRecord(transaction)) {
 			const { kind, text, final } = getXcmArrivalOutcome(transaction, arrival);
 			return { message: text, result: kind, isFinal: final };
 		}

@@ -15,8 +15,7 @@ export const SwapTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={transaction.chainId}
 			signer={formData.from}
 			onReset={onReset}
-			followUpData={transaction.followUpData}
-			transactionType={transaction.transactionType}
+			followUp={transaction.followUp}
 			transactionTitle={transaction.title}
 			submitGate={transaction.submitGate}
 		>

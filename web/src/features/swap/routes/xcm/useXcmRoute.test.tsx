@@ -221,12 +221,15 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		await waitFor(() =>
 			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
 		);
-		expect(result.current.plan.followUpData).toMatchObject({
-			target: {
-				tokenId: usdtToPink.tokenIdOut,
-				beneficiary: usdtToPink.beneficiary,
+		expect(result.current.plan.followUp).toMatchObject({
+			type: "xcmDestinationSwap",
+			followUpData: {
+				target: {
+					tokenId: usdtToPink.tokenIdOut,
+					beneficiary: usdtToPink.beneficiary,
+				},
+				returnTokenIds: ["asset::pah::1984", "native::pah", "asset::pah::23"],
 			},
-			returnTokenIds: ["asset::pah::1984", "native::pah", "asset::pah::23"],
 		});
 	});
 
@@ -241,6 +244,7 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			"Connect a Polkadot account to quote cross-chain routes",
 		);
 		expect(result.current.plan.submitGate.status).toBe("closed");
+		expect(result.current.plan.followUp).toEqual({ type: "unknown" });
 	});
 
 	it("refuses an amount the Asset Hub fee would eat", async () => {
