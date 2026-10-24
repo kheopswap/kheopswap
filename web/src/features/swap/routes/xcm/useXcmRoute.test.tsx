@@ -283,6 +283,16 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(feeQueries);
 	});
 
+	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {
+		chain.dryRunCall.mockRejectedValue(new Error("RPC unavailable"));
+		const { result } = renderDestinationSwap(usdtToPink);
+
+		await new Promise((resolve) => setTimeout(resolve, 300));
+
+		expect(chain.dryRunCall).toHaveBeenCalledTimes(2);
+		expect(result.current.plan.submitGate.status).toBe("closed");
+	});
+
 	it("quotes again once an account that could not send funds its input", async () => {
 		chain.isUnfunded = true;
 		chain.balanceIn = 0n;
