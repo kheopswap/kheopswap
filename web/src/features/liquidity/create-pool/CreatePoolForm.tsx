@@ -11,9 +11,11 @@ import { AccountSelect } from "../../../components/AccountSelect";
 import { FormFieldContainer } from "../../../components/FormFieldContainer";
 import { TokenAmountPicker } from "../../../components/TokenAmountPicker";
 import { useToken } from "../../../hooks/useToken";
+import { isBigInt } from "../../../utils/isBigInt";
 import { plancksToTokens, tokensToPlancks } from "../../../utils/plancks";
 import { useTransaction } from "../../transaction/TransactionProvider";
 import { TransactionSubmitButton } from "../../transaction/TransactionSubmitButton";
+import { getSpendableBalance, getSpendingMargin } from "../maxLiquidity";
 import { useCreatePool } from "./CreatePoolProvider";
 import { CreatePoolSummary } from "./CreatePoolSummary";
 
@@ -114,52 +116,35 @@ const AddLiquidityEditor: FC = () => {
 
 	const handleMaxClick = useCallback(
 		(tokenIdx: "token1" | "token2") => () => {
-			if (
-				!accountBalances ||
-				!token1 ||
-				!token2 ||
-				!refInput1.current ||
-				!refInput2.current
-			)
+			if (!token1 || !token2 || !refInput1.current || !refInput2.current)
 				return;
 
-			if (tokenIdx === "token1") {
-				if (accountBalances[0] === undefined) return;
+			const [token, balance, existentialDeposit] =
+				tokenIdx === "token1"
+					? [token1, accountBalances[0], token1ExistentialDeposit]
+					: [token2, accountBalances[1], token2ExistentialDeposit];
+			const margin = getSpendingMargin({
+				token,
+				feeToken,
+				feeEstimate,
+				existentialDeposit,
+			});
+			if (!isBigInt(balance) || !isBigInt(margin)) return;
 
-				const fee = feeToken?.id === token1.id ? (feeEstimate ?? 0n) : 0n;
-				const margin = 2n * fee + (token1ExistentialDeposit ?? 0n);
-				const maxToken1 =
-					accountBalances[0] < margin
-						? accountBalances[0]
-						: accountBalances[0] - margin;
-				const maxToken2 = liquidityToAdd?.[1] ?? 0n;
+			const [current1, current2] = liquidityToAdd ?? [0n, 0n];
+			const max = getSpendableBalance(balance, margin);
+			const [maxToken1, maxToken2] =
+				tokenIdx === "token1" ? [max, current2] : [current1, max];
 
-				setLiquidityToAdd([maxToken1, maxToken2]);
-
-				refInput1.current.value = plancksToTokens(maxToken1, token1.decimals);
-				refInput2.current.value = plancksToTokens(maxToken2, token2.decimals);
-			} else {
-				if (accountBalances[1] === undefined) return;
-
-				const fee = feeToken?.id === token2.id ? (feeEstimate ?? 0n) : 0n;
-				const margin = 2n * fee + (token2ExistentialDeposit ?? 0n);
-				const maxToken2 =
-					accountBalances[1] < margin
-						? accountBalances[1]
-						: accountBalances[1] - margin;
-				const maxToken1 = liquidityToAdd?.[0] ?? 0n;
-
-				setLiquidityToAdd([maxToken1, maxToken2]);
-
-				refInput1.current.value = plancksToTokens(maxToken1, token1.decimals);
-				refInput2.current.value = plancksToTokens(maxToken2, token2.decimals);
-			}
+			setLiquidityToAdd([maxToken1, maxToken2]);
+			refInput1.current.value = plancksToTokens(maxToken1, token1.decimals);
+			refInput2.current.value = plancksToTokens(maxToken2, token2.decimals);
 		},
 		[
 			accountBalances,
 			token1,
 			token2,
-			feeToken?.id,
+			feeToken,
 			feeEstimate,
 			token1ExistentialDeposit,
 			setLiquidityToAdd,

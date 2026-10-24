@@ -6,8 +6,10 @@ import { FormFieldContainer } from "../../components/FormFieldContainer";
 import { TokenAmountPicker } from "../../components/TokenAmountPicker";
 import { useWalletAccount } from "../../hooks/useWalletAccount";
 import { isBigInt } from "../../utils/isBigInt";
+import { plancksToTokens } from "../../utils/plancks";
 import { useTransaction } from "../transaction/TransactionProvider";
 import { TransactionSubmitButton } from "../transaction/TransactionSubmitButton";
+import { getTransferMax } from "./getTransferMax";
 import { useTransfer } from "./TransferProvider";
 import { TransferSummary } from "./TransferSummary";
 
@@ -20,6 +22,7 @@ export const TransferForm = () => {
 		token,
 		plancks,
 		resolvedAddress,
+		existentialDeposit,
 		balanceSender,
 		isLoadingBalanceSender,
 		outputErrorMessage,
@@ -27,10 +30,10 @@ export const TransferForm = () => {
 		onTokenChange,
 		onFromChange,
 		onToChange,
-		onMaxClick,
 	} = useTransfer();
 
-	const { onSubmit, insufficientBalances } = useTransaction();
+	const { onSubmit, insufficientBalances, feeToken, feeEstimate } =
+		useTransaction();
 
 	const { accounts: allAccounts } = useWallets();
 	const account = useWalletAccount({ id: formData.from });
@@ -69,6 +72,25 @@ export const TransferForm = () => {
 		[onAmountChange],
 	);
 
+	const handleMaxClick = useCallback(() => {
+		if (!token) return;
+		const max = getTransferMax({
+			token,
+			balance: balanceSender,
+			existentialDeposit,
+			feeToken,
+			feeEstimate,
+		});
+		if (isBigInt(max)) onAmountChange(plancksToTokens(max, token.decimals));
+	}, [
+		token,
+		balanceSender,
+		existentialDeposit,
+		feeToken,
+		feeEstimate,
+		onAmountChange,
+	]);
+
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex w-full flex-col gap-5">
@@ -106,7 +128,7 @@ export const TransferForm = () => {
 					<TokenAmountPicker
 						inputProps={{
 							onInput: handleAmountInput,
-							value: formData.amount, // controlled because of send max button
+							value: formData.amount,
 						}}
 						tokenId={token?.id}
 						plancks={plancks}
@@ -117,7 +139,7 @@ export const TransferForm = () => {
 						errorMessage={inputErrorMessage}
 						balance={balanceSender}
 						isLoadingBalance={isLoadingBalanceSender}
-						onMaxClick={onMaxClick}
+						onMaxClick={handleMaxClick}
 						inputLabel="Transfer amount"
 					/>
 				</FormFieldContainer>
