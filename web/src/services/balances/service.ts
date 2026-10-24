@@ -9,9 +9,11 @@ import {
 	switchMap,
 } from "rxjs";
 import { parseTokenId } from "../../registry/tokens/helpers";
+import type { TokenId } from "../../registry/tokens/types";
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import { getResolvedSubstrateAddress$ } from "../addressResolution/service";
 import { balancesState$ } from "./state";
+import { balancesStore$ } from "./store";
 import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceDef, BalanceState } from "./types";
 import { getBalanceId } from "./utils";
@@ -71,3 +73,17 @@ export const getBalances$ = (defs: BalanceDef[]) => {
 			),
 	);
 };
+
+export const heldTokenIds$: Observable<TokenId[]> = balancesStore$.pipe(
+	map((store) =>
+		[
+			...new Set(
+				Object.values(store)
+					.filter(({ balance }) => balance > 0n)
+					.map(({ tokenId }) => tokenId),
+			),
+		].sort(),
+	),
+	distinctUntilChanged<TokenId[]>(isEqual),
+	shareReplay({ bufferSize: 1, refCount: true }),
+);
