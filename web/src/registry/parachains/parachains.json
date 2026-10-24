@@ -85,5 +85,32 @@
 		"paraId": 2039,
 		"name": "Integritee Polkadot",
 		"parachainsInfoUrl": "https://parachains.info/details/integritee/"
+	},
+	{
+		"chainId": "ppeople",
+		"relay": "polkadot",
+		"paraId": 1004,
+		"name": "Polkadot People",
+		"subscanUrl": "https://people-polkadot.subscan.io"
+	},
+	{
+		"chainId": "kpeople",
+		"relay": "kusama",
+		"paraId": 1004,
+		"name": "Kusama People",
+		"subscanUrl": "https://people-kusama.subscan.io"
+	},
+	{
+		"chainId": "wpeople",
+		"relay": "westend",
+		"paraId": 1004,
+		"name": "Westend People",
+		"subscanUrl": "https://people-westend.subscan.io"
+	},
+	{
+		"chainId": "paspeople",
+		"relay": "paseo",
+		"paraId": 1004,
+		"name": "Paseo People"
 	}
 ]

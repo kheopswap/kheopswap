@@ -2,13 +2,15 @@ import type {
 	DescriptorsAll,
 	DescriptorsAssetHub,
 	DescriptorsHydration,
+	DescriptorsPeople,
 } from "./descriptors.ts";
 
 export type ParaIdAssetHub = 1000;
 
 export type ChainIdAssetHub = keyof DescriptorsAssetHub;
 export type ChainIdHydration = keyof DescriptorsHydration;
-export type ChainId = ChainIdAssetHub | ChainIdHydration;
+export type ChainIdPeople = keyof DescriptorsPeople;
+export type ChainId = ChainIdAssetHub | ChainIdHydration | ChainIdPeople;
 
 export type Descriptors<Id extends ChainId> = DescriptorsAll[Id];
 
