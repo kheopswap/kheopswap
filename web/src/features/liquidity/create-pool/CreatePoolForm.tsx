@@ -12,7 +12,7 @@ import { FormFieldContainer } from "../../../components/FormFieldContainer";
 import { TokenAmountPicker } from "../../../components/TokenAmountPicker";
 import { useToken } from "../../../hooks/useToken";
 import { isBigInt } from "../../../utils/isBigInt";
-import { plancksToTokens, tokensToPlancks } from "../../../utils/plancks";
+import { inputToPlancks, plancksToTokens } from "../../../utils/plancks";
 import { useTransaction } from "../../transaction/TransactionProvider";
 import { TransactionSubmitButton } from "../../transaction/TransactionSubmitButton";
 import { getSpendableBalance, getSpendingMargin } from "../maxLiquidity";
@@ -86,8 +86,6 @@ const AddLiquidityEditor: FC = () => {
 	const handleTokensInput = useCallback(
 		(tokenIdx: "token1" | "token2"): FormEventHandler<HTMLInputElement> =>
 			(e) => {
-				const val = Number(e.currentTarget.value);
-
 				if (!token1 || !token2) {
 					if (tokenIdx === "token1" && refInput2.current)
 						refInput2.current.value = "";
@@ -99,15 +97,8 @@ const AddLiquidityEditor: FC = () => {
 				let [val1, val2] = liquidityToAdd ?? [0n, 0n];
 
 				if (tokenIdx === "token1")
-					val1 =
-						Number.isNaN(val) || val < 0
-							? 0n
-							: tokensToPlancks(val, token1.decimals);
-				else
-					val2 =
-						Number.isNaN(val) || val < 0
-							? 0n
-							: tokensToPlancks(val, token2.decimals);
+					val1 = inputToPlancks(e.currentTarget.value, token1.decimals);
+				else val2 = inputToPlancks(e.currentTarget.value, token2.decimals);
 
 				setLiquidityToAdd(!val1 && !val2 ? null : [val1, val2]);
 			},
