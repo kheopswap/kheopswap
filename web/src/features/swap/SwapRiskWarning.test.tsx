@@ -52,7 +52,7 @@ vi.mock("../../hooks/useToken", () => ({
 afterEach(cleanup);
 
 describe("SwapRiskWarning", () => {
-	it("says what a transfer pays in fees, transaction fee included, and what it delivers, naming the fee that makes most of it", () => {
+	it("says what a transfer pays in fees, transaction fee included, and what it delivers", () => {
 		swap.deliveryFee = { tokenId: "native::pah", plancks: 305_000_000n };
 		swap.totalIn = 1_000_000_000n;
 		swap.received = 995_000_000n;
@@ -65,7 +65,7 @@ describe("SwapRiskWarning", () => {
 		render(<SwapRiskWarning />);
 
 		expect(screen.getByRole("alert").textContent).toContain(
-			"You pay 0.0321 DOT in fees to deliver 0.0995 DOT, mostly the delivery fee.",
+			"You pay 0.0321 DOT in fees to deliver 0.0995 DOT.",
 		);
 		expect(
 			screen.getByLabelText("I accept these fees and want to transfer anyway"),

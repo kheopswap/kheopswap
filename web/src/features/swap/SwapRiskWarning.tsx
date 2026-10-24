@@ -1,7 +1,6 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, Fragment } from "react";
 import { getChainById } from "../../registry/chains/chains";
-import type { TokenAmount } from "../../registry/tokens/types";
 import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
 import { isBigInt } from "../../utils/isBigInt";
@@ -15,33 +14,21 @@ import {
 	type SwapLoss,
 } from "./swapRisk";
 
-const FeeAmount: FC<{ fee: TokenAmount | undefined }> = ({ fee }) =>
-	fee ? (
-		<>
-			<TokenAmountValue {...fee} />{" "}
-		</>
-	) : null;
-
-const LossCauseText: FC<{
-	cause: LossCause | null;
-	showsFeeAmount: boolean;
-}> = ({ cause, showsFeeAmount }) => {
+const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	const { details } = useSwap();
 	const xcm = details.kind === "amm-swap" ? undefined : details;
 	switch (cause) {
 		case "delivery-fee":
-			return xcm ? (
+			return xcm?.quote.deliveryFee ? (
 				<>
-					, mostly the{" "}
-					<FeeAmount fee={showsFeeAmount ? xcm.quote.deliveryFee : undefined} />
-					delivery fee
+					, mostly the <TokenAmountValue {...xcm.quote.deliveryFee} /> delivery
+					fee
 				</>
 			) : null;
 		case "destination-fee":
-			return xcm ? (
+			return xcm?.destinationFee ? (
 				<>
-					, mostly the{" "}
-					<FeeAmount fee={showsFeeAmount ? xcm.destinationFee : undefined} />
+					, mostly the <TokenAmountValue {...xcm.destinationFee} />{" "}
 					{getChainById(xcm.route.destination).name} fee
 				</>
 			) : null;
@@ -73,7 +60,7 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 		return (
 			<>
 				Fees take {formatPercent(ratio)} of what you send
-				<LossCauseText cause={cause} showsFeeAmount />.
+				<LossCauseText cause={cause} />.
 			</>
 		);
 	return (
@@ -86,8 +73,7 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 				</Fragment>
 			))}{" "}
 			in fees to deliver{" "}
-			<TokenAmountValue tokenId={tokenOut.id} plancks={swapPlancksOut} />
-			<LossCauseText cause={cause} showsFeeAmount={false} />.
+			<TokenAmountValue tokenId={tokenOut.id} plancks={swapPlancksOut} />.
 		</>
 	);
 };
@@ -103,7 +89,7 @@ const LossText: FC<{ loss: SwapLoss; cause: LossCause | null }> = ({
 			return (
 				<>
 					You receive {formatPercent(ratio)} less value than you send
-					<LossCauseText cause={cause} showsFeeAmount />.
+					<LossCauseText cause={cause} />.
 				</>
 			);
 		case "fees":
