@@ -53,14 +53,25 @@ const ammContext: SwapRouteContext = {
 };
 
 describe("resolveSwapRoute", () => {
-	it("resolves a pair of Asset Hub tokens to an AMM swap", () => {
-		expect(
-			resolveSwapRoute({ ...context, tokenIdIn: DOT, tokenIdOut: USDT }),
-		).toEqual({
+	it.each([
+		["DOT to USDT", DOT, USDT, [{ tokenIdIn: DOT, tokenIdOut: USDT }]],
+		["USDT to DOT", USDT, DOT, [{ tokenIdIn: USDT, tokenIdOut: DOT }]],
+		[
+			"USDC to USDT through DOT",
+			USDC,
+			USDT,
+			[
+				{ tokenIdIn: USDC, tokenIdOut: DOT },
+				{ tokenIdIn: DOT, tokenIdOut: USDT },
+			],
+		],
+	])("resolves %s as an AMM swap", (_, tokenIdIn, tokenIdOut, path) => {
+		expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
 			kind: "amm-swap",
 			chainId: "pah",
-			tokenIdIn: DOT,
-			tokenIdOut: USDT,
+			tokenIdIn,
+			tokenIdOut,
+			path,
 		});
 	});
 

@@ -3,7 +3,12 @@ import { useAllTokens } from "../../hooks/useAllTokens";
 import { useBalance } from "../../hooks/useBalance";
 import { useToken } from "../../hooks/useToken";
 import { provideContext } from "../../utils/provideContext";
-import { getSwapTokenLists, type TransactionPlan } from "./routes/swapRoute";
+import type { AmmPathQuote, PathLiquidity } from "./routes/ammPath";
+import {
+	type AmmSwapRoute,
+	getSwapTokenLists,
+	type TransactionPlan,
+} from "./routes/swapRoute";
 import {
 	useXcmRoute,
 	type XcmSwapDetails,
@@ -16,14 +21,13 @@ import { useSwapPricing } from "./useSwapPricing";
 
 export type AmmSwapDetails = {
 	kind: "amm-swap";
-	reserveIn: bigint | undefined;
-	reserveOut: bigint | undefined;
-	isPoolNotFound: boolean | null | undefined;
+	route: AmmSwapRoute | null;
+	liquidity: PathLiquidity | null;
+	quote: AmmPathQuote | undefined;
 	priceImpact: number | undefined;
 	minPlancksOut: bigint | null;
 	slippage: number;
 	appCommission: bigint | null | undefined;
-	protocolCommission: bigint | undefined;
 };
 
 const getSwapTitle = (
@@ -48,7 +52,7 @@ const useSwapProvider = () => {
 
 	const pricing = useSwapPricing({
 		tokenIdIn: formState.tokenIdIn,
-		tokenIdOut: isTokenIdOutAmm ? formState.tokenIdOut : undefined,
+		route: ammRoute,
 		amountIn: formState.formData.amountIn,
 		accountAddress: formState.account?.address,
 	});
@@ -148,25 +152,23 @@ const useSwapProvider = () => {
 		() =>
 			xcm.details ?? {
 				kind: "amm-swap",
-				reserveIn: pricing.reserveIn,
-				reserveOut: pricing.reserveOut,
-				isPoolNotFound: pricing.isPoolNotFound,
+				route: ammRoute,
+				liquidity: pricing.pathQuote.liquidity,
+				quote: pricing.pathQuote.quote,
 				priceImpact: pricing.priceImpact,
 				minPlancksOut: pricing.minPlancksOut,
 				slippage: pricing.slippage,
 				appCommission: pricing.appCommission,
-				protocolCommission: pricing.protocolCommission,
 			},
 		[
 			xcm.details,
-			pricing.reserveIn,
-			pricing.reserveOut,
-			pricing.isPoolNotFound,
+			ammRoute,
+			pricing.pathQuote.liquidity,
+			pricing.pathQuote.quote,
 			pricing.priceImpact,
 			pricing.minPlancksOut,
 			pricing.slippage,
 			pricing.appCommission,
-			pricing.protocolCommission,
 		],
 	);
 

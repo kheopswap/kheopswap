@@ -9,45 +9,57 @@ import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
+import type { PathLiquidity } from "./routes/ammPath";
 import { XcmSwapSummary } from "./routes/xcmSwap/XcmSwapSummary";
 import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
 import { Slippage } from "./Slippage";
 import { type AmmSwapDetails, useSwap } from "./SwapProvider";
+
+const PoolReservesValue: FC<{ liquidity: PathLiquidity | null }> = ({
+	liquidity,
+}) => {
+	const { tokenIn, tokenOut } = useSwap();
+	if (!tokenIn || !tokenOut) return null;
+
+	switch (liquidity?.status) {
+		case "no-pool":
+			return <div className="text-error">Pool not found</div>;
+		case "no-liquidity":
+			return <div className="text-error">No liquidity</div>;
+		case "available": {
+			const [{ reserveIn, reserveOut }] = liquidity.hops;
+			return (
+				<div className="flex flex-wrap justify-end">
+					<Tokens plancks={reserveIn} token={tokenIn} />
+					<span className="mx-1">/</span>
+					<Tokens plancks={reserveOut} token={tokenOut} />
+				</div>
+			);
+		}
+		default:
+			return null;
+	}
+};
 
 const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 	const { tokenIn, tokenOut, transaction } = useSwap();
 	const {
 		minPlancksOut,
 		priceImpact,
-		reserveIn,
-		reserveOut,
-		isPoolNotFound,
+		liquidity,
+		quote,
 		appCommission,
-		protocolCommission,
 		slippage,
 	} = details;
 	const { call } = transaction;
+	const protocolCommission = quote?.hops[0].protocolCommission;
 
 	return (
 		<FormSummary>
 			<FormSummarySection>
 				<FormSummaryRow
 					label="Pool reserves"
-					value={
-						isPoolNotFound ? (
-							<div className="text-error">Pool not found</div>
-						) : reserveIn && reserveOut && tokenIn && tokenOut ? (
-							<div className="flex flex-wrap justify-end">
-								<Tokens plancks={reserveIn} token={tokenIn} />
-								<span className="mx-1">/</span>
-								<Tokens plancks={reserveOut} token={tokenOut} />
-							</div>
-						) : tokenIn &&
-							tokenOut &&
-							(reserveIn === 0n || reserveOut === 0n) ? (
-							<div className="text-error">No liquidity</div>
-						) : null
-					}
+					value={<PoolReservesValue liquidity={liquidity} />}
 				/>
 				<FormSummaryRow
 					label="Price impact"

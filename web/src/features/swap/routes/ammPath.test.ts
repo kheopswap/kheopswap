@@ -109,16 +109,16 @@ describe("getPathLiquidity", () => {
 	});
 
 	it.each([
-		["a missing second pool", loaded(null), "Liquidity pool not found"],
-		["an empty second pool", loaded([0n, 0n]), "Insufficient liquidity"],
-	])("refuses a two-hop path with %s", (_, secondReserves, reason) => {
+		["a missing second pool", loaded(null), "no-pool"],
+		["an empty second pool", loaded([0n, 0n]), "no-liquidity"],
+	] as const)("refuses a two-hop path with %s", (_, secondReserves, status) => {
 		expect(
 			getPathLiquidity(
 				getAmmPath(USDC, USDT, DOT),
 				loaded([1n, 2n]),
 				secondReserves,
 			),
-		).toEqual({ status: "unavailable", reason });
+		).toEqual({ status });
 	});
 
 	it("waits for every pool of the path", () => {
