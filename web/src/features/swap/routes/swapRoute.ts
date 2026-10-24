@@ -19,14 +19,15 @@ import type {
 	CallSpendings,
 	SubmitGate,
 } from "../../transaction/TransactionProvider";
+import { type AmmPath, getAmmPath } from "./ammPath";
 import { isXcmLane, type XcmLane } from "./xcmLanes";
-import { type AmmPath, getAmmPath } from "./xcmSwap/ammPath";
 
 export type AmmSwapRoute = {
 	kind: "amm-swap";
 	chainId: ChainIdAssetHub;
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
+	path: AmmPath;
 };
 
 export type XcmTransferRoute = XcmLane & {
@@ -146,22 +147,6 @@ const getXcmSource = (
 	return isXcmLane(lane) ? { ...mirror, lane } : null;
 };
 
-const findXcmSourceOf = (
-	assetHubTokenId: TokenId,
-	origin: XcmLane["origin"],
-	context: SwapRouteContext,
-): XcmMirror | null => {
-	for (const remoteTokenId of context.mirrors.keys()) {
-		const source = getXcmSource(remoteTokenId, context);
-		if (
-			source?.lane.origin === origin &&
-			source.assetHubTokenId === assetHubTokenId
-		)
-			return source;
-	}
-	return null;
-};
-
 const isXcmSwapLane = (lane: XcmLane): lane is XcmSwapLane =>
 	isChainIdHydration(lane.destination);
 
@@ -213,7 +198,13 @@ export const resolveSwapRoute = ({
 	const tokenIn = tryParseTokenId(tokenIdIn);
 	const tokenOut = tryParseTokenId(tokenIdOut);
 	if (tokenIn?.chainId === assetHubId && tokenOut?.chainId === assetHubId)
-		return { kind: "amm-swap", chainId: assetHubId, tokenIdIn, tokenIdOut };
+		return {
+			kind: "amm-swap",
+			chainId: assetHubId,
+			tokenIdIn,
+			tokenIdOut,
+			path: getAmmPath(tokenIdIn, tokenIdOut, context.nativeTokenId),
+		};
 
 	return resolveXcmRoute(tokenIdIn, tokenIdOut, context);
 };
@@ -232,59 +223,71 @@ export const canFlipSwapTokens = (
 		tokenIdOut: tokenIdIn,
 	});
 
+const getAssetHubMirror = (
+	tokenId: TokenId,
+	{ assetHubId, mirrors }: SwapRouteContext,
+): TokenId | undefined =>
+	tryParseTokenId(tokenId)?.chainId === assetHubId
+		? tokenId
+		: mirrors.get(tokenId);
+
+const getMirrorOnChainOf = (
+	tokenId: TokenId,
+	chainTokenId: TokenId,
+	context: SwapRouteContext,
+): TokenId | undefined => {
+	const chainId = tryParseTokenId(chainTokenId)?.chainId;
+	const assetHubTokenId = getAssetHubMirror(tokenId, context);
+	if (!chainId || chainId === context.assetHubId) return assetHubTokenId;
+	return [...context.mirrors].find(
+		([remoteTokenId, mirror]) =>
+			mirror === assetHubTokenId &&
+			tryParseTokenId(remoteTokenId)?.chainId === chainId,
+	)?.[0];
+};
+
+const toSwapTokenIds = (
+	side: "in" | "out",
+	tokenId: TokenId,
+	otherTokenId: TokenId,
+): SwapTokenIds =>
+	side === "in"
+		? { tokenIdIn: tokenId, tokenIdOut: otherTokenId }
+		: { tokenIdIn: otherTokenId, tokenIdOut: tokenId };
+
 export const getNextSwapTokens = (
 	prev: SwapTokenIds,
 	change: SwapTokensChange,
 	context: SwapRouteContext,
 ): SwapTokenIds => {
-	const { nativeTokenId } = context;
+	if (change.type === "flip")
+		return canFlipSwapTokens(prev, context)
+			? { tokenIdIn: prev.tokenIdOut, tokenIdOut: prev.tokenIdIn }
+			: prev;
 
-	switch (change.type) {
-		case "in": {
-			const { tokenId } = change;
-			if (resolveXcmRoute(tokenId, prev.tokenIdOut, context))
-				return { ...prev, tokenIdIn: tokenId };
-			const source = getXcmSource(tokenId, context);
-			if (source)
-				return { tokenIdIn: tokenId, tokenIdOut: source.assetHubTokenId };
-			if (tokenId !== nativeTokenId)
-				return { tokenIdIn: tokenId, tokenIdOut: nativeTokenId };
-			if (prev.tokenIdOut === nativeTokenId)
-				return { tokenIdIn: tokenId, tokenIdOut: prev.tokenIdIn };
-			return { ...prev, tokenIdIn: tokenId };
-		}
-		case "out": {
-			const { tokenId } = change;
-			const destination = getXcmDestination(tokenId, context);
-			if (destination)
-				return resolveXcmRoute(prev.tokenIdIn, tokenId, context)
-					? { ...prev, tokenIdOut: tokenId }
-					: { tokenIdIn: destination.assetHubTokenId, tokenIdOut: tokenId };
-			const prevSource = getXcmSource(prev.tokenIdIn, context);
-			if (prevSource) {
-				if (resolveXcmRoute(prev.tokenIdIn, tokenId, context))
-					return { ...prev, tokenIdOut: tokenId };
-				const source = findXcmSourceOf(
-					tokenId,
-					prevSource.lane.origin,
-					context,
-				);
-				if (source)
-					return { tokenIdIn: source.remoteTokenId, tokenIdOut: tokenId };
-			}
-			if (tokenId !== nativeTokenId)
-				return { tokenIdIn: nativeTokenId, tokenIdOut: tokenId };
-			if (prev.tokenIdIn === nativeTokenId)
-				return getXcmDestination(prev.tokenIdOut, context)
-					? { ...prev, tokenIdOut: tokenId }
-					: { tokenIdIn: prev.tokenIdOut, tokenIdOut: tokenId };
-			return { ...prev, tokenIdOut: tokenId };
-		}
-		case "flip":
-			return canFlipSwapTokens(prev, context)
-				? { tokenIdIn: prev.tokenIdOut, tokenIdOut: prev.tokenIdIn }
-				: prev;
-	}
+	const { type: side, tokenId } = change;
+	const [prevSideTokenId, prevOtherTokenId] =
+		side === "in"
+			? [prev.tokenIdIn, prev.tokenIdOut]
+			: [prev.tokenIdOut, prev.tokenIdIn];
+
+	const otherCandidates = [
+		prevOtherTokenId === tokenId ? prevSideTokenId : prevOtherTokenId,
+		getMirrorOnChainOf(tokenId, prevOtherTokenId, context),
+		getAssetHubMirror(prevOtherTokenId, context),
+		getAssetHubMirror(tokenId, context),
+		context.nativeTokenId,
+	];
+	const otherTokenId = otherCandidates.find(
+		(candidate) =>
+			!!candidate &&
+			!!resolveSwapRoute({
+				...context,
+				...toSwapTokenIds(side, tokenId, candidate),
+			}),
+	);
+
+	return toSwapTokenIds(side, tokenId, otherTokenId ?? "");
 };
 
 export const getSwapTokenLists = ({

@@ -7,16 +7,19 @@ import {
 	getPriceImpact,
 } from "../../utils/ammMath";
 import { plancksToTokens } from "../../utils/plancks";
+import { getAmmPath } from "./routes/ammPath";
+import type { AmmSwapRoute } from "./routes/swapRoute";
 import { useSwapPricing } from "./useSwapPricing";
 
 const USER_ADDRESS = "5UserAddress";
 const DOT = "native::pah";
 const USDC = "asset::pah::1337";
+const USDT = "asset::pah::1984";
 const HYDRATION_DOT = "hydration-asset::hydration::5";
 
 // mutable per-test fixture, referenced by the hoisted vi.mock factories
 const fixture = vi.hoisted(() => ({
-	reserves: undefined as [bigint, bigint] | null | undefined,
+	pools: {} as Record<string, [bigint, bigint] | null>,
 	isLoadingReserves: false,
 	lpFee: 3000 as number | undefined,
 	balances: {} as Record<string, bigint | undefined>,
@@ -36,6 +39,7 @@ const fixture = vi.hoisted(() => ({
 const TOKENS: Record<string, { decimals: number; symbol: string }> = {
 	[DOT]: { decimals: 10, symbol: "DOT" },
 	[USDC]: { decimals: 6, symbol: "USDC" },
+	[USDT]: { decimals: 6, symbol: "USDT" },
 	[HYDRATION_DOT]: { decimals: 10, symbol: "DOT" },
 };
 
@@ -66,8 +70,17 @@ vi.mock("../../hooks/useSetting", () => ({
 }));
 
 vi.mock("../../hooks/usePoolReservesByTokenIds", () => ({
-	usePoolReservesByTokenIds: () => ({
-		data: fixture.reserves,
+	usePoolReservesByTokenIds: ({
+		tokenId1,
+		tokenId2,
+	}: {
+		tokenId1: TokenId | undefined;
+		tokenId2: TokenId | undefined;
+	}) => ({
+		data:
+			tokenId1 && tokenId2
+				? fixture.pools[`${tokenId1}/${tokenId2}`]
+				: undefined,
 		isLoading: fixture.isLoadingReserves,
 	}),
 }));
@@ -122,18 +135,37 @@ const RESERVE_DOT = 7_842_000_000_000n; // 784.2 DOT (10 decimals)
 const RESERVE_USDC = 663_200_000n; // 663.2 USDC (6 decimals)
 const FOUR_DOT = 40_000_000_000n;
 
-const renderPricing = (amountIn = "4") =>
+const RESERVE_DOT_USDT = 10_000_000_000_000n;
+const RESERVE_USDT = 850_000_000n;
+const TEN_USDC = 10_000_000n;
+
+const getAmmRoute = (
+	tokenIdIn: TokenId,
+	tokenIdOut: TokenId,
+): AmmSwapRoute => ({
+	kind: "amm-swap",
+	chainId: "pah",
+	tokenIdIn,
+	tokenIdOut,
+	path: getAmmPath(tokenIdIn, tokenIdOut, DOT),
+});
+
+const renderPricing = (amountIn = "4", route = getAmmRoute(DOT, USDC)) =>
 	renderHook(() =>
 		useSwapPricing({
-			tokenIdIn: DOT,
-			tokenIdOut: USDC,
+			tokenIdIn: route.tokenIdIn,
+			route,
 			amountIn,
 			accountAddress: USER_ADDRESS,
 		}),
 	).result.current;
 
 beforeEach(() => {
-	fixture.reserves = [RESERVE_DOT, RESERVE_USDC];
+	fixture.pools = {
+		[`${DOT}/${USDC}`]: [RESERVE_DOT, RESERVE_USDC],
+		[`${USDC}/${DOT}`]: [RESERVE_USDC, RESERVE_DOT],
+		[`${DOT}/${USDT}`]: [RESERVE_DOT_USDT, RESERVE_USDT],
+	};
 	fixture.isLoadingReserves = false;
 	fixture.lpFee = 3000;
 	fixture.balances = { [DOT]: 1_000_000_000_000n, [USDC]: 0n };
@@ -199,7 +231,7 @@ describe("useSwapPricing", () => {
 		const result = renderHook(() =>
 			useSwapPricing({
 				tokenIdIn: HYDRATION_DOT,
-				tokenIdOut: undefined,
+				route: null,
 				amountIn: "4",
 				accountAddress: USER_ADDRESS,
 			}),
@@ -231,24 +263,60 @@ describe("useSwapPricing", () => {
 	});
 
 	it("reports insufficient liquidity for an empty pool", () => {
-		fixture.reserves = [0n, 0n];
+		fixture.pools[`${DOT}/${USDC}`] = [0n, 0n];
 		const result = renderPricing();
 
-		expect(result.hasInsufficientLiquidity).toBe(true);
+		expect(result.pathQuote.liquidity).toEqual({ status: "no-liquidity" });
 		expect(result.outputErrorMessage).toBe("Insufficient liquidity");
 	});
 
 	it("reports a missing pool once reserves are done loading", () => {
-		fixture.reserves = null;
-		fixture.isLoadingReserves = false;
+		fixture.pools[`${DOT}/${USDC}`] = null;
 		const result = renderPricing();
 
-		expect(result.isPoolNotFound).toBe(true);
+		expect(result.pathQuote.liquidity).toEqual({ status: "no-pool" });
+		expect(result.outputErrorMessage).toBe("Liquidity pool not found");
+	});
+
+	it("waits for the pools before reporting a missing one", () => {
+		fixture.pools[`${DOT}/${USDC}`] = null;
+		fixture.isLoadingReserves = true;
+		const result = renderPricing();
+
+		expect(result.outputErrorMessage).toBeNull();
+		expect(result.isLoadingAmountOut).toBe(true);
+	});
+
+	it("quotes two assets through DOT along both pools", () => {
+		fixture.slippage = 0.005;
+		const result = renderPricing("10", getAmmRoute(USDC, USDT));
+
+		const toDot = getAmmOutput(TEN_USDC, RESERVE_USDC, RESERVE_DOT, 3000);
+		const toUsdt = getAmmOutput(
+			toDot.amountOut,
+			RESERVE_DOT_USDT,
+			RESERVE_USDT,
+			3000,
+		);
+
+		expect(result.swapPlancksOut).toBe(toUsdt.amountOut);
+		expect(result.amountOut).toBe(plancksToTokens(toUsdt.amountOut, 6));
+		expect(result.minPlancksOut).toBe(getMinAmountOut(toUsdt.amountOut, 0.005));
+		expect(
+			result.pathQuote.quote?.hops.map((hop) => hop.protocolCommission),
+		).toEqual([toDot.protocolCommission, toUsdt.protocolCommission]);
+	});
+
+	it("reports a missing second pool on a two-hop swap", () => {
+		fixture.pools[`${DOT}/${USDT}`] = null;
+		const result = renderPricing("10", getAmmRoute(USDC, USDT));
+
+		expect(result.swapPlancksOut).toBeUndefined();
 		expect(result.outputErrorMessage).toBe("Liquidity pool not found");
 	});
 
 	it("gives the recipient error precedence over liquidity errors", () => {
-		fixture.reserves = [0n, 0n];
+		fixture.pools[`${DOT}/${USDC}`] = [0n, 0n];
 		fixture.recipientCanReceive = {
 			canReceive: false,
 			reason: "Recipient cannot receive this token",
