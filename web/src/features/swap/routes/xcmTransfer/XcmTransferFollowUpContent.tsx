@@ -41,6 +41,8 @@ const ArrivalStatus: FC<{
 						.join(", ")}
 				</Pulse>
 			);
+		case "unreachable":
+			return <Pulse pulse>Unreachable, retrying</Pulse>;
 		case "unconfirmed":
 			return <span className="text-warn">Not confirmed</span>;
 		case "origin-failed":

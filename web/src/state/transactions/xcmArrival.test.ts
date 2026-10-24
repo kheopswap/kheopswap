@@ -18,6 +18,7 @@ import {
 } from "./transactionStore";
 import type { TransactionRecord } from "./types";
 import {
+	type DestinationBlock,
 	describeFailedArrival,
 	findArrival,
 	getArrivalBufferBlocks,
@@ -117,6 +118,12 @@ const ourArrival: TxEvents = [
 	deposited(FEE_RECEIVER, 4809848n),
 	processed(MESSAGE_ID),
 ];
+
+const block = (events: TxEvents): DestinationBlock => ({
+	type: "block",
+	events,
+});
+const UNREACHABLE: DestinationBlock = { type: "unreachable" };
 
 const getRecord = (
 	status: TransactionRecord["status"],
@@ -317,8 +324,8 @@ describe("getXcmArrival$", () => {
 		bufferBlocks = getArrivalBufferBlocks("hydration"),
 	) => {
 		const record$ = new BehaviorSubject<TransactionRecord | undefined>(initial);
-		const bestBlockEvents$ = new Subject<TxEvents>();
-		const finalizedBlockEvents$ = new Subject<TxEvents>();
+		const bestBlockEvents$ = new Subject<DestinationBlock>();
+		const finalizedBlockEvents$ = new Subject<DestinationBlock>();
 		const arrivals: XcmArrival[] = [];
 		let isComplete = false;
 		getXcmArrival$({
@@ -357,13 +364,13 @@ describe("getXcmArrival$", () => {
 			arrivals,
 			isComplete,
 		} = track(getRecord("pending"));
-		bestBlockEvents$.next([processed(OTHER_MESSAGE_ID)]);
+		bestBlockEvents$.next(block([processed(OTHER_MESSAGE_ID)]));
 		record$.next(getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]));
-		bestBlockEvents$.next([]);
-		bestBlockEvents$.next(ourArrival);
+		bestBlockEvents$.next(block([]));
+		bestBlockEvents$.next(block(ourArrival));
 		expect(isComplete()).toBe(false);
 		record$.next(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
-		finalizedBlockEvents$.next(ourArrival);
+		finalizedBlockEvents$.next(block(ourArrival));
 
 		expect(arrivals).toEqual([
 			{ status: "awaiting-origin" },
@@ -388,7 +395,7 @@ describe("getXcmArrival$", () => {
 		const { finalizedBlockEvents$, arrivals, isComplete } = track(
 			getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]),
 		);
-		finalizedBlockEvents$.next(ourArrival);
+		finalizedBlockEvents$.next(block(ourArrival));
 
 		expect(arrivals.at(-1)).toMatchObject({
 			status: "arrived",
@@ -402,7 +409,7 @@ describe("getXcmArrival$", () => {
 			track(
 				getRecord("inBlock", [sentTo(HYDRATION_PARA_ID, OTHER_MESSAGE_ID)]),
 			);
-		bestBlockEvents$.next([]);
+		bestBlockEvents$.next(block([]));
 		expect(arrivals.at(-1)).toEqual({
 			status: "in-transit",
 			messageId: OTHER_MESSAGE_ID,
@@ -427,7 +434,7 @@ describe("getXcmArrival$", () => {
 				],
 			),
 		);
-		finalizedBlockEvents$.next(ourArrival);
+		finalizedBlockEvents$.next(block(ourArrival));
 
 		expect(arrivals.at(-1)).toEqual({
 			status: "arrived",
@@ -441,7 +448,7 @@ describe("getXcmArrival$", () => {
 		const { bestBlockEvents$, arrivals, isComplete } = track(
 			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),
 		);
-		bestBlockEvents$.next(ourArrival);
+		bestBlockEvents$.next(block(ourArrival));
 
 		expect(arrivals.at(-1)).toMatchObject({
 			status: "arrived",
@@ -452,8 +459,8 @@ describe("getXcmArrival$", () => {
 
 	it("catches an arrival processed before the origin events reveal the message id", () => {
 		const { record$, bestBlockEvents$, arrivals } = track(getRecord("pending"));
-		bestBlockEvents$.next(ourArrival);
-		bestBlockEvents$.next([]);
+		bestBlockEvents$.next(block(ourArrival));
+		bestBlockEvents$.next(block([]));
 		record$.next(getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]));
 
 		expect(arrivals.at(-1)).toEqual({
@@ -469,7 +476,7 @@ describe("getXcmArrival$", () => {
 			getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]),
 		);
 		record$.next(undefined);
-		bestBlockEvents$.next(ourArrival);
+		bestBlockEvents$.next(block(ourArrival));
 
 		expect(arrivals).toEqual([{ status: "in-transit", messageId: MESSAGE_ID }]);
 		expect(isComplete()).toBe(true);
@@ -480,7 +487,7 @@ describe("getXcmArrival$", () => {
 			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),
 		);
 		record$.next(undefined);
-		finalizedBlockEvents$.next(ourArrival);
+		finalizedBlockEvents$.next(block(ourArrival));
 
 		expect(arrivals.at(-1)?.status).toBe("arrived");
 	});
@@ -488,7 +495,7 @@ describe("getXcmArrival$", () => {
 	it("reports a failure on Hydration once finalized", () => {
 		const { bestBlockEvents$, finalizedBlockEvents$, arrivals, isComplete } =
 			track(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
-		bestBlockEvents$.next([processed(MESSAGE_ID, false)]);
+		bestBlockEvents$.next(block([processed(MESSAGE_ID, false)]));
 		expect(arrivals.at(-1)).toEqual({
 			status: "failed-on-destination",
 			messageId: MESSAGE_ID,
@@ -498,7 +505,7 @@ describe("getXcmArrival$", () => {
 		});
 		expect(isComplete()).toBe(false);
 
-		finalizedBlockEvents$.next([processed(MESSAGE_ID, false)]);
+		finalizedBlockEvents$.next(block([processed(MESSAGE_ID, false)]));
 		expect(arrivals.at(-1)).toEqual({
 			status: "failed-on-destination",
 			messageId: MESSAGE_ID,
@@ -530,7 +537,7 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(false);
 
 		record$.next(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
-		finalizedBlockEvents$.next(ourArrival);
+		finalizedBlockEvents$.next(block(ourArrival));
 		expect(arrivals.at(-1)).toMatchObject({
 			status: "arrived",
 			finalized: true,
@@ -579,8 +586,8 @@ describe("getXcmArrival$", () => {
 			undefined,
 			getArrivalBufferBlocks("pah"),
 		);
-		finalizedBlockEvents$.next(ourArrival);
-		for (let block = 0; block < 20; block++) finalizedBlockEvents$.next([]);
+		finalizedBlockEvents$.next(block(ourArrival));
+		for (let i = 0; i < 20; i++) finalizedBlockEvents$.next(block([]));
 		record$.next(getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]));
 
 		expect(arrivals.at(-1)?.status).toBe("arrived");
@@ -592,7 +599,7 @@ describe("getXcmArrival$", () => {
 			getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]),
 			60_000,
 		);
-		bestBlockEvents$.next(ourArrival);
+		bestBlockEvents$.next(block(ourArrival));
 		vi.advanceTimersByTime(59_999);
 		expect(arrivals.at(-1)?.status).toBe("arrived");
 		vi.advanceTimersByTime(1);
@@ -604,16 +611,50 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(true);
 	});
 
-	it("gives up as unconfirmed when the destination chain stops answering", () => {
+	it("reports an unreachable destination and gives up as unconfirmed at the expiry", () => {
+		vi.useFakeTimers();
 		const { bestBlockEvents$, arrivals, isComplete } = track(
 			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),
+			60_000,
 		);
-		bestBlockEvents$.error(new Error("rpc down"));
+		bestBlockEvents$.next(UNREACHABLE);
+		expect(arrivals.at(-1)).toEqual({
+			status: "unreachable",
+			messageId: MESSAGE_ID,
+		});
+		expect(isComplete()).toBe(false);
 
+		bestBlockEvents$.next(block([]));
+		expect(arrivals.at(-1)).toEqual({
+			status: "in-transit",
+			messageId: MESSAGE_ID,
+		});
+
+		bestBlockEvents$.next(UNREACHABLE);
+		vi.advanceTimersByTime(60_000);
 		expect(arrivals.at(-1)).toEqual({
 			status: "unconfirmed",
 			messageId: MESSAGE_ID,
 		});
+		expect(isComplete()).toBe(true);
+	});
+
+	it("resolves a finalized origin that sent no message as unconfirmed", () => {
+		const { arrivals, isComplete } = track(finalizedRecord([]));
+
+		expect(arrivals).toEqual([{ status: "unconfirmed", messageId: null }]);
+		expect(isComplete()).toBe(true);
+	});
+
+	it("gives up as unconfirmed when the origin is still awaited at the expiry", () => {
+		vi.useFakeTimers();
+		const { arrivals, isComplete } = track(getRecord("pending"), 60_000);
+		vi.advanceTimersByTime(60_000);
+
+		expect(arrivals).toEqual([
+			{ status: "awaiting-origin" },
+			{ status: "unconfirmed", messageId: null },
+		]);
 		expect(isComplete()).toBe(true);
 	});
 });
@@ -728,11 +769,15 @@ describe("trackXcmArrivals", () => {
 		subscription.unsubscribe();
 	});
 
-	it("keeps tracking a transfer to Asset Hub while Hydration keeps failing", () => {
+	it("keeps retrying an unreachable Hydration until the expiry while tracking Asset Hub", () => {
 		vi.useFakeTimers();
 		const assetHub$ = new Subject<BlockUpdate>();
+		let hydrationAttempts = 0;
 		chains.streams = {
-			hydration: () => throwError(() => new Error("hydration rpc down")),
+			hydration: () => {
+				hydrationAttempts += 1;
+				return throwError(() => new Error("hydration rpc down"));
+			},
 			pah: () => assetHub$,
 		};
 		const subscription = trackXcmArrivals();
@@ -750,7 +795,7 @@ describe("trackXcmArrivals", () => {
 		);
 
 		expect(getTrackedXcmArrival("to-hydration")).toEqual({
-			status: "unconfirmed",
+			status: "unreachable",
 			messageId: MESSAGE_ID,
 		});
 		expect(getTrackedXcmArrival("to-asset-hub")).toEqual({
@@ -759,6 +804,37 @@ describe("trackXcmArrivals", () => {
 			received: 7n,
 			finalized: true,
 		});
+		const attemptsInFirstMinute = hydrationAttempts;
+		expect(attemptsInFirstMinute).toBe(2 * 3);
+
+		vi.advanceTimersByTime(9 * 60_000);
+		expect(getTrackedXcmArrival("to-hydration")).toEqual({
+			status: "unconfirmed",
+			messageId: MESSAGE_ID,
+		});
+		expect(hydrationAttempts).toBeGreaterThan(attemptsInFirstMinute);
+		subscription.unsubscribe();
+	});
+
+	it("shares one block stream per destination and finality between transfers", async () => {
+		const hydration$ = new Subject<BlockUpdate>();
+		let subscriptions = 0;
+		chains.streams = {
+			hydration: () => {
+				subscriptions += 1;
+				return hydration$;
+			},
+		};
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("first", target.tokenId));
+		addTransaction(getTrackedRecord("second", target.tokenId));
+		hydration$.next(atBlock(1, ourArrival));
+		await vi.waitFor(() =>
+			expect(getTrackedXcmArrival("second")?.status).toBe("arrived"),
+		);
+
+		expect(subscriptions).toBe(2);
+		expect(getTrackedXcmArrival("first")?.status).toBe("arrived");
 		subscription.unsubscribe();
 	});
 

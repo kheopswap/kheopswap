@@ -10,17 +10,15 @@ import {
 	distinct,
 	distinctUntilChanged,
 	EMPTY,
-	filter,
 	from,
 	map,
 	mergeMap,
 	type Observable,
 	of,
-	retry,
 	scan,
+	shareReplay,
 	startWith,
 	switchMap,
-	take,
 	takeWhile,
 	tap,
 	timer,
@@ -31,6 +29,7 @@ import type { ChainId } from "../../registry/chains/types";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import type { TokenAmount, TokenId } from "../../registry/tokens/types";
 import { bindSerialized } from "../../utils/bindSerialized";
+import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { logger } from "../../utils/logger";
 import {
@@ -45,7 +44,7 @@ import type {
 } from "./types";
 
 const ARRIVAL_TIMEOUT_MS = 10 * 60_000;
-const BLOCK_STREAM_RETRY = { count: 5, delay: 10_000, resetOnSuccess: true };
+const BLOCK_STREAM_RETRY_DELAYS_MS = [10_000, 20_000, 40_000, 60_000];
 
 const XCM_ARRIVAL_TYPES = [
 	"xcmTransfer",
@@ -86,7 +85,8 @@ export type XcmArrival =
 			messageId: HexString;
 			finalized: boolean;
 	  } & FailedArrival)
-	| { status: "unconfirmed"; messageId: HexString };
+	| { status: "unreachable"; messageId: HexString }
+	| { status: "unconfirmed"; messageId: HexString | null };
 
 export type SentMessage = { messageId: HexString; finalized: boolean };
 
@@ -94,6 +94,7 @@ type OriginState =
 	| { status: "pending" }
 	| { status: "failed" }
 	| { status: "dismissed" }
+	| { status: "finalized-without-message" }
 	| ({ status: "sent" } & SentMessage);
 
 const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
@@ -254,6 +255,14 @@ export const getXcmArrivalOutcome = (
 						final: true,
 					}
 				: null;
+		case "unreachable":
+			return isOriginFinalized
+				? {
+						kind: "loading",
+						text: "Destination unreachable, retrying",
+						final: false,
+					}
+				: null;
 		default:
 			return isOriginFinalized
 				? {
@@ -271,6 +280,8 @@ const getOriginState = (
 ): OriginState => {
 	const sent = getSentMessage(record.txEvents, destinationParaId);
 	if (sent) return { status: "sent", ...sent };
+	if (record.status === "finalized")
+		return { status: "finalized-without-message" };
 	if (record.status !== "failed") return { status: "pending" };
 	const lastInclusion = findLast(
 		record.txEvents,
@@ -285,11 +296,16 @@ const getOriginState = (
 const isOriginSettled = (origin: OriginState) =>
 	origin.status === "failed" ||
 	origin.status === "dismissed" ||
+	origin.status === "finalized-without-message" ||
 	(origin.status === "sent" && origin.finalized);
 
-type DestinationBlocks =
-	| { reachable: true; best: TxEvents[]; finalized: TxEvents[] }
-	| { reachable: false };
+export type DestinationBlock =
+	| { type: "block"; events: TxEvents }
+	| { type: "unreachable" };
+
+type RecentBlocks = { blocks: TxEvents[]; reachable: boolean };
+
+type DestinationBlocks = { best: RecentBlocks; finalized: RecentBlocks };
 
 type ArrivalWatch = { target: XcmDepositTarget; returnTokenIds: TokenId[] };
 
@@ -323,22 +339,34 @@ const toArrival = (
 ): XcmArrival => {
 	switch (origin.status) {
 		case "pending":
-			return { status: "awaiting-origin" };
+			return isExpired
+				? { status: "unconfirmed", messageId: null }
+				: { status: "awaiting-origin" };
 		case "failed":
 		case "dismissed":
 			return { status: "origin-failed" };
+		case "finalized-without-message":
+			return { status: "unconfirmed", messageId: null };
 		case "sent": {
 			const { messageId } = origin;
-			if (!destination.reachable) return { status: "unconfirmed", messageId };
-			return (
-				findArrivalInBlocks(destination.finalized, messageId, watch, true) ??
-				(isExpired
-					? { status: "unconfirmed", messageId }
-					: (findArrivalInBlocks(destination.best, messageId, watch, false) ?? {
-							status: "in-transit",
-							messageId,
-						}))
+			const finalized = findArrivalInBlocks(
+				destination.finalized.blocks,
+				messageId,
+				watch,
+				true,
 			);
+			if (finalized) return finalized;
+			if (isExpired) return { status: "unconfirmed", messageId };
+			const provisional = findArrivalInBlocks(
+				destination.best.blocks,
+				messageId,
+				watch,
+				false,
+			);
+			if (provisional) return provisional;
+			return destination.best.reachable && destination.finalized.reachable
+				? { status: "in-transit", messageId }
+				: { status: "unreachable", messageId };
 		}
 	}
 };
@@ -347,6 +375,7 @@ const isFinalArrival = (arrival: XcmArrival) => {
 	switch (arrival.status) {
 		case "awaiting-origin":
 		case "in-transit":
+		case "unreachable":
 			return false;
 		case "arrived":
 		case "failed-on-destination":
@@ -365,16 +394,24 @@ export const getXcmBlockEvents = (records: BlockRecords): TxEvents =>
 		.filter(({ phase }) => phase.type !== "ApplyExtrinsic")
 		.map(({ event }) => event);
 
+const NO_BLOCKS: RecentBlocks = { blocks: [], reachable: true };
+
 const keepRecentBlocks = (
-	blockEvents$: Observable<TxEvents>,
+	blocks$: Observable<DestinationBlock>,
 	bufferBlocks: number,
 ) =>
-	blockEvents$.pipe(
+	blocks$.pipe(
 		scan(
-			(blocks, events) => [...blocks, events].slice(-bufferBlocks),
-			[] as TxEvents[],
+			(recent, block): RecentBlocks =>
+				block.type === "unreachable"
+					? { ...recent, reachable: false }
+					: {
+							blocks: [...recent.blocks, block.events].slice(-bufferBlocks),
+							reachable: true,
+						},
+			NO_BLOCKS,
 		),
-		startWith([] as TxEvents[]),
+		startWith(NO_BLOCKS),
 	);
 
 export const getXcmArrival$ = ({
@@ -388,8 +425,8 @@ export const getXcmArrival$ = ({
 	timeoutMs = ARRIVAL_TIMEOUT_MS,
 }: {
 	record$: Observable<TransactionRecord | undefined>;
-	bestBlockEvents$: Observable<TxEvents>;
-	finalizedBlockEvents$: Observable<TxEvents>;
+	bestBlockEvents$: Observable<DestinationBlock>;
+	finalizedBlockEvents$: Observable<DestinationBlock>;
 	target: XcmDepositTarget;
 	returnTokenIds: TokenId[];
 	destinationParaId: number;
@@ -410,24 +447,9 @@ export const getXcmArrival$ = ({
 	const destination$ = combineLatest([
 		keepRecentBlocks(bestBlockEvents$, bufferBlocks),
 		keepRecentBlocks(finalizedBlockEvents$, bufferBlocks),
-	]).pipe(
-		map(
-			([best, finalized]): DestinationBlocks => ({
-				reachable: true,
-				best,
-				finalized,
-			}),
-		),
-		catchError((error) => {
-			logger.error("[xcm arrival] destination unreachable", { error });
-			return of<DestinationBlocks>({ reachable: false });
-		}),
-	);
+	]).pipe(map(([best, finalized]): DestinationBlocks => ({ best, finalized })));
 
-	const isExpired$ = origin$.pipe(
-		filter((origin) => origin.status === "sent"),
-		take(1),
-		switchMap(() => timer(timeoutMs)),
+	const isExpired$ = timer(timeoutMs).pipe(
 		map(() => true),
 		startWith(false),
 	);
@@ -457,44 +479,74 @@ const getPastBlockEvents = async (
 
 type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
 
+const getRetryDelayMs = (failures: number) =>
+	BLOCK_STREAM_RETRY_DELAYS_MS[
+		Math.min(failures, BLOCK_STREAM_RETRY_DELAYS_MS.length) - 1
+	] ?? 0;
+
 // watchValue only reports the latest block of its branch, so blocks that pass while a
 // query is in flight, or that finalize together, are read back through the tip
-const getBlockEvents$ = (
+const watchBlockEvents$ = (
 	chainId: ChainId,
 	at: "best" | "finalized",
-): Observable<TxEvents> => {
+): Observable<DestinationBlock> => {
 	let lastNumber: number | null = null;
+	let failures = 0;
 	const emitAt = (number: number) =>
 		tap<TxEvents>(() => {
 			lastNumber = number;
+			failures = 0;
 		});
 
-	return getApi$(chainId).pipe(
-		switchMap((api) => {
-			const blocks$: Observable<{ block: BlockInfo; value: BlockRecords }> =
-				api.query.System.Events.watchValue({ at });
-			return blocks$.pipe(
-				concatMap(({ block, value }) => {
-					const missing =
-						lastNumber !== null && block.number > lastNumber
-							? range(lastNumber + 1, block.number)
-							: [];
-					return concat(
-						from(missing).pipe(
-							concatMap((number) =>
-								from(getPastBlockEvents(api, number, block.hash)).pipe(
-									emitAt(number),
+	const watch = (): Observable<DestinationBlock> =>
+		getApi$(chainId).pipe(
+			switchMap((api) => {
+				const blocks$: Observable<{ block: BlockInfo; value: BlockRecords }> =
+					api.query.System.Events.watchValue({ at });
+				return blocks$.pipe(
+					concatMap(({ block, value }) => {
+						const missing =
+							lastNumber !== null && block.number > lastNumber
+								? range(lastNumber + 1, block.number)
+								: [];
+						return concat(
+							from(missing).pipe(
+								concatMap((number) =>
+									from(getPastBlockEvents(api, number, block.hash)).pipe(
+										emitAt(number),
+									),
 								),
 							),
-						),
-						of(getXcmBlockEvents(value)).pipe(emitAt(block.number)),
-					);
-				}),
-			);
-		}),
-		retry(BLOCK_STREAM_RETRY),
-	);
+							of(getXcmBlockEvents(value)).pipe(emitAt(block.number)),
+						);
+					}),
+				);
+			}),
+			map((events): DestinationBlock => ({ type: "block", events })),
+			catchError((error) => {
+				failures += 1;
+				logger.warn("[xcm arrival] destination unreachable, retrying", {
+					chainId,
+					at,
+					failures,
+					error,
+				});
+				return concat(
+					of<DestinationBlock>({ type: "unreachable" }),
+					timer(getRetryDelayMs(failures)).pipe(switchMap(watch)),
+				);
+			}),
+		);
+
+	return defer(watch);
 };
+
+const getBlockEvents$ = (chainId: ChainId, at: "best" | "finalized") =>
+	getCachedObservable$("xcmBlockEvents$", `${chainId}::${at}`, () =>
+		watchBlockEvents$(chainId, at).pipe(
+			shareReplay({ bufferSize: 1, refCount: true }),
+		),
+	);
 
 const arrivalsSubject = new BehaviorSubject<Record<TransactionId, XcmArrival>>(
 	{},
