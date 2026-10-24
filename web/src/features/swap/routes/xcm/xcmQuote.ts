@@ -321,7 +321,7 @@ export const getNewAccountMinimum = ({
 }): bigint | null =>
 	isSufficient &&
 	destinationBalance < existentialDeposit &&
-	trappedPlancks <= sent
+	trappedPlancks < sent
 		? existentialDeposit + sent - trappedPlancks
 		: null;
 
