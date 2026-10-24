@@ -464,6 +464,17 @@ describe("getXcmArrival$", () => {
 		});
 	});
 
+	it("ends when the record is dismissed before the origin settles", () => {
+		const { record$, bestBlockEvents$, arrivals, isComplete } = track(
+			getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]),
+		);
+		record$.next(undefined);
+		bestBlockEvents$.next(ourArrival);
+
+		expect(arrivals).toEqual([{ status: "in-transit", messageId: MESSAGE_ID }]);
+		expect(isComplete()).toBe(true);
+	});
+
 	it("keeps tracking after the transaction record is dismissed", () => {
 		const { record$, finalizedBlockEvents$, arrivals } = track(
 			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),

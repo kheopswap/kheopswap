@@ -15,7 +15,11 @@ import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { GlobalFollowUpModal } from "./GlobalFollowUpModal";
 import { TransactionsProvider } from "./TransactionsProvider";
-import { getToastView, TransactionToasts } from "./TransactionToasts";
+import {
+	getToastAutoClose,
+	getToastView,
+	TransactionToasts,
+} from "./TransactionToasts";
 import {
 	addTransaction,
 	dismissTransaction,
@@ -271,6 +275,35 @@ describe("closing the follow-up modal", () => {
 	});
 });
 
+describe("getToastAutoClose", () => {
+	const failedIn = (
+		inclusion: "inBestBlock" | "finalized" | "error",
+	): TransactionRecord => ({
+		...getFinalizedRecord("swap", "swap", "Swap DOT/USDC"),
+		status: "failed",
+		txEvents: [
+			inclusion === "error"
+				? { type: "error", error: new Error("rejected") }
+				: { type: inclusion, ok: false, txHash: "0x01", events: [] },
+		] as TransactionRecord["txEvents"],
+	});
+
+	it("keeps a failure that a best block may still retract", () => {
+		expect(getToastAutoClose(failedIn("inBestBlock"))).toBe(false);
+	});
+
+	it("auto-closes a failure that is finalized or errored", () => {
+		expect(getToastAutoClose(failedIn("finalized"))).toBe(5_000);
+		expect(getToastAutoClose(failedIn("error"))).toBe(5_000);
+	});
+
+	it("keeps a finalized success until the user dismisses it", () => {
+		expect(
+			getToastAutoClose(getFinalizedRecord("swap", "swap", "Swap DOT/USDC")),
+		).toBe(false);
+	});
+});
+
 describe("getToastView", () => {
 	const transfer = getFinalizedRecord(
 		"xcm-transfer",
@@ -348,6 +381,21 @@ describe("getToastView", () => {
 			outcome: "loading",
 			text: "In block, waiting for finalization...",
 		});
+	});
+
+	it("shows a provisional destination failure while the origin waits for finality", () => {
+		expect(
+			getToastView(
+				{ ...transfer, status: "inBlock" },
+				{
+					status: "failed-on-destination",
+					messageId: MESSAGE_ID,
+					returned: [],
+					trapped: false,
+					finalized: false,
+				},
+			),
+		).toEqual({ outcome: "error", text: "Failed on Hydration" });
 	});
 
 	it("shows other transactions as finalized", () => {

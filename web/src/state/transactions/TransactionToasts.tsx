@@ -13,7 +13,11 @@ import {
 	type TxEvents,
 } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransactions } from "./TransactionsProvider";
-import type { TransactionRecord, TransactionStatus } from "./types";
+import {
+	isSettled,
+	type TransactionRecord,
+	type TransactionStatus,
+} from "./types";
 import {
 	getXcmArrivalOutcome,
 	isXcmArrivalRecord,
@@ -59,10 +63,10 @@ export const getToastView = (
 	tx: TransactionRecord,
 	arrival: XcmArrival | null,
 ): ToastView => {
-	if (tx.status === "finalized" && isXcmArrivalRecord(tx)) {
-		const { kind, text } = getXcmArrivalOutcome(tx, arrival);
-		return { outcome: kind, text };
-	}
+	const xcmOutcome = isXcmArrivalRecord(tx)
+		? getXcmArrivalOutcome(tx, arrival)
+		: null;
+	if (xcmOutcome) return { outcome: xcmOutcome.kind, text: xcmOutcome.text };
 
 	return {
 		outcome: getStatusOutcome(tx.status),
@@ -125,6 +129,9 @@ const programmaticDismissals = new Set<string>();
 const shouldShowToast = (status: TransactionStatus): boolean => {
 	return status !== "pending";
 };
+
+export const getToastAutoClose = (tx: TransactionRecord): number | false =>
+	tx.status === "failed" && isSettled(tx) ? 5_000 : false;
 
 const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 	if (tx.status !== "failed") return null;
@@ -190,7 +197,7 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 		const toastType = view.outcome === "loading" ? "default" : view.outcome;
 		const existingToast = activeToasts.get(tx.id);
 		const showToast = shouldShowToast(tx.status);
-		const autoClose = tx.status === "failed" ? 5_000 : false;
+		const autoClose = getToastAutoClose(tx);
 
 		if (showToast) {
 			if (existingToast === undefined) {

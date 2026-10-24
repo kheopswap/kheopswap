@@ -98,3 +98,6 @@ export const getStatusFromEvent = (
 
 export const isTerminalStatus = (status: TransactionStatus): boolean =>
 	status === "finalized" || status === "failed";
+
+export const isSettled = ({ txEvents }: TransactionRecord): boolean =>
+	txEvents.some(({ type }) => type === "finalized" || type === "error");

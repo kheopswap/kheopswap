@@ -93,6 +93,7 @@ export type SentMessage = { messageId: HexString; finalized: boolean };
 type OriginState =
 	| { status: "pending" }
 	| { status: "failed" }
+	| { status: "dismissed" }
 	| ({ status: "sent" } & SentMessage);
 
 const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
@@ -217,41 +218,50 @@ export type XcmArrivalOutcome = {
 	final: boolean;
 };
 
+// null while the origin is not finalized and the destination has not reported
+// anything, so the origin headline applies
 export const getXcmArrivalOutcome = (
-	{ followUpData: { target } }: XcmArrivalRecord,
+	{ status, followUpData: { target } }: XcmArrivalRecord,
 	arrival: XcmArrival | null,
-): XcmArrivalOutcome => {
+): XcmArrivalOutcome | null => {
 	const destination = getChainById(parseTokenId(target.tokenId).chainId).name;
+	const isOriginFinalized = status === "finalized";
 
 	switch (arrival?.status) {
-		case "arrived":
-			return arrival.finalized
-				? { kind: "success", text: `Arrived on ${destination}`, final: true }
-				: {
-						kind: "success",
-						text: `Arrived on ${destination}, awaiting finalization`,
-						final: false,
-					};
+		case "arrived": {
+			const final = arrival.finalized && isOriginFinalized;
+			return {
+				kind: "success",
+				text: final
+					? `Arrived on ${destination}`
+					: `Arrived on ${destination}, awaiting finalization`,
+				final,
+			};
+		}
 		case "failed-on-destination":
 			return {
 				kind: "error",
 				text: [`Failed on ${destination}`, describeFailedArrival(arrival)]
 					.filter(Boolean)
 					.join(", "),
-				final: arrival.finalized,
+				final: arrival.finalized && isOriginFinalized,
 			};
 		case "unconfirmed":
-			return {
-				kind: "warning",
-				text: `Arrival on ${destination} not confirmed`,
-				final: true,
-			};
+			return isOriginFinalized
+				? {
+						kind: "warning",
+						text: `Arrival on ${destination} not confirmed`,
+						final: true,
+					}
+				: null;
 		default:
-			return {
-				kind: "loading",
-				text: `Sent, awaiting ${destination}...`,
-				final: false,
-			};
+			return isOriginFinalized
+				? {
+						kind: "loading",
+						text: `Sent, awaiting ${destination}...`,
+						final: false,
+					}
+				: null;
 	}
 };
 
@@ -273,7 +283,9 @@ const getOriginState = (
 };
 
 const isOriginSettled = (origin: OriginState) =>
-	origin.status === "failed" || (origin.status === "sent" && origin.finalized);
+	origin.status === "failed" ||
+	origin.status === "dismissed" ||
+	(origin.status === "sent" && origin.finalized);
 
 type DestinationBlocks =
 	| { reachable: true; best: TxEvents[]; finalized: TxEvents[] }
@@ -313,6 +325,7 @@ const toArrival = (
 		case "pending":
 			return { status: "awaiting-origin" };
 		case "failed":
+		case "dismissed":
 			return { status: "origin-failed" };
 		case "sent": {
 			const { messageId } = origin;
@@ -384,8 +397,12 @@ export const getXcmArrival$ = ({
 	timeoutMs?: number;
 }): Observable<XcmArrival> => {
 	const origin$ = record$.pipe(
-		filter((record): record is TransactionRecord => !!record),
-		map((record) => getOriginState(record, destinationParaId)),
+		map(
+			(record): OriginState =>
+				record
+					? getOriginState(record, destinationParaId)
+					: { status: "dismissed" },
+		),
 		distinctUntilChanged(isEqual),
 		takeWhile((origin) => !isOriginSettled(origin), true),
 	);
@@ -416,6 +433,7 @@ export const getXcmArrival$ = ({
 	);
 
 	return combineLatest([origin$, destination$, isExpired$]).pipe(
+		takeWhile(([origin]) => origin.status !== "dismissed"),
 		map(([origin, destination, isExpired]) =>
 			toArrival(origin, destination, isExpired, { target, returnTokenIds }),
 		),

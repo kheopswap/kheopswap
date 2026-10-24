@@ -33,6 +33,9 @@ const getHeadline = (
 		};
 
 	const { txEvents, account } = transaction;
+	const xcmOutcome = isXcmArrivalRecord(transaction)
+		? getXcmArrivalOutcome(transaction, arrival)
+		: null;
 
 	const finalized = txEvents.find((event) => event.type === "finalized");
 	if (finalized?.type === "finalized") {
@@ -42,10 +45,12 @@ const getHeadline = (
 				result: "error",
 				isFinal: true,
 			};
-		if (isXcmArrivalRecord(transaction)) {
-			const { kind, text, final } = getXcmArrivalOutcome(transaction, arrival);
-			return { message: text, result: kind, isFinal: final };
-		}
+		if (xcmOutcome)
+			return {
+				message: xcmOutcome.text,
+				result: xcmOutcome.kind,
+				isFinal: xcmOutcome.final,
+			};
 		return {
 			message: "Transaction succeeded",
 			result: "success",
@@ -54,12 +59,19 @@ const getHeadline = (
 	}
 
 	const best = txEvents.find((event) => event.type === "inBestBlock");
-	if (best?.type === "inBestBlock")
+	if (best?.type === "inBestBlock") {
+		if (best.ok && xcmOutcome)
+			return {
+				message: xcmOutcome.text,
+				result: xcmOutcome.kind,
+				isFinal: false,
+			};
 		return {
 			message: "Waiting for finalization",
 			result: best.ok ? "success" : "error",
 			isFinal: false,
 		};
+	}
 
 	if (txEvents.some((event) => event.type === "broadcasted"))
 		return {
