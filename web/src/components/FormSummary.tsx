@@ -21,7 +21,7 @@ export const FormSummaryRow: FC<{
 			className,
 		)}
 	>
-		<div className="grow truncate text-muted">{label}</div>
-		<div className="shrink-0 text-right">{value}</div>
+		<div className="shrink-0 grow text-muted">{label}</div>
+		<div className="min-w-0 text-right">{value}</div>
 	</div>
 );
