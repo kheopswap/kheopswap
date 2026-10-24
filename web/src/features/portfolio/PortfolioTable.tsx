@@ -55,6 +55,7 @@ export const PortfolioTable = () => {
 		balances,
 		holdingsByTokenId,
 		isLoading,
+		isLoadingTokens,
 		search,
 		setSearch,
 	} = usePortfolio();
@@ -77,9 +78,11 @@ export const PortfolioTable = () => {
 		[allRows, sortByCol],
 	);
 
+	const isSearching = !!search.trim();
+
 	const rows = useMemo(
 		() =>
-			search.trim()
+			isSearching
 				? sortedRows.filter(({ token }) => matchesTokenSearch(token, search))
 				: sortedRows.filter(
 						({ token, balance, tvl }) =>
@@ -87,8 +90,10 @@ export const PortfolioTable = () => {
 							!!balance?.tokenPlancks ||
 							!!tvl?.tokenPlancks,
 					),
-		[search, sortedRows],
+		[isSearching, search, sortedRows],
 	);
+
+	const isLoadingRows = isSearching ? isLoadingTokens : isLoading;
 
 	const handleSortClick = useCallback((column: PortfolioSortMode) => {
 		if (column !== "symbol") setVisibleCol(column);
@@ -106,7 +111,7 @@ export const PortfolioTable = () => {
 			/>
 			<PortfolioHeaderRow
 				rows={rows}
-				isLoading={isLoading}
+				isLoading={isLoadingRows}
 				sortByCol={sortByCol}
 				withBalances={!!accounts.length}
 				hasBalances={!!balances.length}
@@ -116,7 +121,7 @@ export const PortfolioTable = () => {
 				rows={rows}
 				visibleCol={visibleCol}
 				holdingsByTokenId={holdingsByTokenId}
-				isLoading={isLoading}
+				isLoading={isLoadingRows}
 				onTokenSelect={setSelectedTokenId}
 			/>
 			<PortfolioTokenDrawer

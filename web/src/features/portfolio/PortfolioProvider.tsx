@@ -109,6 +109,7 @@ export const usePortfolioProvider = () => {
 
 	return {
 		isLoading: isLoadingTokens || isLoadingBalances || isLoadingPrices,
+		isLoadingTokens,
 		balances,
 		balancesByTokenId,
 		allocation,

@@ -47,37 +47,40 @@ type UseBalancesWithStablesResult = {
 	isLoading: boolean;
 };
 
-const DEFAULT_VALUE: UseBalancesWithStablesResult = {
+const LOADING: UseBalancesWithStablesResult = { data: [], isLoading: true };
+const NOTHING_TO_WATCH: UseBalancesWithStablesResult = {
 	data: [],
-	isLoading: true,
+	isLoading: false,
+};
+
+export const getBalancesWithStables$ = ({
+	tokenIds,
+	addresses,
+}: {
+	tokenIds: TokenId[];
+	addresses: string[];
+}): Observable<UseBalancesWithStablesResult> => {
+	if (!tokenIds.length || !addresses.length) return of(NOTHING_TO_WATCH);
+
+	const observables = tokenIds.flatMap((tokenId) =>
+		addresses.map((address) => getBalanceWithStable$(tokenId, address)),
+	);
+
+	return combineLatest(observables).pipe(
+		throttleTime(300, undefined, { leading: true, trailing: true }),
+		map((data) => ({
+			data,
+			isLoading: data.some(
+				({ isLoadingTokenPlancks, isLoadingStablePlancks }) =>
+					isLoadingTokenPlancks || isLoadingStablePlancks,
+			),
+		})),
+	);
 };
 
 const useBalancesWithStablesByIds = bindSerialized(
-	({
-		tokenIds,
-		addresses,
-	}: {
-		tokenIds: TokenId[];
-		addresses: string[];
-	}): Observable<UseBalancesWithStablesResult> => {
-		if (!tokenIds.length || !addresses.length) return of(DEFAULT_VALUE);
-
-		const observables = tokenIds.flatMap((tokenId) =>
-			addresses.map((address) => getBalanceWithStable$(tokenId, address)),
-		);
-
-		return combineLatest(observables).pipe(
-			throttleTime(300, undefined, { leading: true, trailing: true }),
-			map((data) => ({
-				data,
-				isLoading: data.some(
-					({ isLoadingTokenPlancks, isLoadingStablePlancks }) =>
-						isLoadingTokenPlancks || isLoadingStablePlancks,
-				),
-			})),
-		);
-	},
-	() => DEFAULT_VALUE,
+	getBalancesWithStables$,
+	() => LOADING,
 );
 
 export const useBalancesWithStables = ({
