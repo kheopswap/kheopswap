@@ -90,14 +90,6 @@ export const buildXcmTransferArgs = ({
 
 export const getXcmTransferCall = async (props: XcmTransferCallProps) => {
 	const args = buildXcmTransferArgs(props);
-	switch (props.route.origin) {
-		case "pah": {
-			const api = await getApi(props.route.origin);
-			return api.tx.PolkadotXcm.transfer_assets_using_type_and_then(args);
-		}
-		case "hydration": {
-			const api = await getApi(props.route.origin);
-			return api.tx.PolkadotXcm.transfer_assets_using_type_and_then(args);
-		}
-	}
+	const api = await getApi(props.route.origin);
+	return api.tx.PolkadotXcm.transfer_assets_using_type_and_then(args);
 };
