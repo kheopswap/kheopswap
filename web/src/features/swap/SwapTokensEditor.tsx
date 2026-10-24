@@ -3,8 +3,10 @@ import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { TokenAmountPicker } from "../../components/TokenAmountPicker";
 import { useWalletAccount } from "../../hooks/useWalletAccount";
+import { getMaxSwapAmount } from "../../utils/ammMath";
 import { cn } from "../../utils/cn";
 import { isBigInt } from "../../utils/isBigInt";
+import { plancksToTokens } from "../../utils/plancks";
 import { useTransaction } from "../transaction/TransactionProvider";
 import { formatAmountOut } from "./formatAmountOut";
 import { useSwap } from "./SwapProvider";
@@ -41,6 +43,8 @@ export const SwapTokensEditor = () => {
 		outputErrorMessage,
 
 		balanceIn,
+		edTokenIn,
+		deliveryFee,
 		balanceOut,
 		hasInsufficientBalance,
 		isLoadingBalanceIn,
@@ -51,11 +55,37 @@ export const SwapTokensEditor = () => {
 		onTokenInChange,
 		onTokenOutChange,
 		onSwapTokens,
-		onMaxClick,
 		canFlip,
 	} = useSwap();
 
-	const { insufficientBalances } = useTransaction();
+	const { insufficientBalances, feeToken, feeEstimate } = useTransaction();
+
+	const handleMaxClick = useCallback(() => {
+		if (
+			!tokenIn ||
+			!feeToken ||
+			!balanceIn ||
+			!isBigInt(edTokenIn) ||
+			!isBigInt(feeEstimate)
+		)
+			return;
+		const plancks = getMaxSwapAmount({
+			balance: balanceIn,
+			tokenIn,
+			existentialDeposit: edTokenIn,
+			fee: { tokenId: feeToken.id, plancks: feeEstimate },
+			deliveryFee,
+		});
+		onAmountInChange(plancksToTokens(plancks, tokenIn.decimals));
+	}, [
+		tokenIn,
+		feeToken,
+		balanceIn,
+		edTokenIn,
+		feeEstimate,
+		deliveryFee,
+		onAmountInChange,
+	]);
 
 	const inputErrorMessage = useMemo(() => {
 		if (formData.amountIn && !isBigInt(totalIn)) return "Invalid amount";
@@ -104,7 +134,7 @@ export const SwapTokensEditor = () => {
 				errorMessage={inputErrorMessage}
 				balance={balanceIn}
 				isLoadingBalance={isLoadingBalanceIn}
-				onMaxClick={onMaxClick}
+				onMaxClick={handleMaxClick}
 				inputLabel="Amount to swap"
 			/>
 			{canFlip && <SwapTokensButton onClick={onSwapTokens} />}

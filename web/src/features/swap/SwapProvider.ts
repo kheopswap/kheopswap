@@ -13,7 +13,6 @@ import {
 import { useXcmRoute, type XcmRouteDetails } from "./routes/xcm/useXcmRoute";
 import { getRiskSubmitGate } from "./swapRisk";
 import { useSwapCall } from "./useSwapCall";
-import { useSwapFees } from "./useSwapFees";
 import { useSwapFormState } from "./useSwapFormState";
 import { useSwapPricing } from "./useSwapPricing";
 import { useSwapRisk } from "./useSwapRisk";
@@ -160,18 +159,6 @@ const useSwapProvider = () => {
 		[routePlan, risk],
 	);
 
-	const { onMaxClick } = useSwapFees({
-		from: formState.from,
-		accountAddress: formState.account?.address,
-		tokenIn: pricing.tokenIn,
-		balanceIn: pricing.balanceIn,
-		edTokenIn: pricing.edTokenIn,
-		call: xcmRoute ? xcm.plan.call : callData.call,
-		fakeCall: transaction.fakeCall,
-		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
-		setFormData: formState.setFormData,
-	});
-
 	const { data: allTokens, isLoading: isLoadingAllTokens } = useAllTokens({});
 	const { tokensIn, tokensOut } = useMemo(
 		() =>
@@ -201,6 +188,8 @@ const useSwapProvider = () => {
 		tokenOut,
 		totalIn: pricing.totalIn,
 		balanceIn: pricing.balanceIn,
+		edTokenIn: pricing.edTokenIn,
+		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
 		hasInsufficientBalance: pricing.hasInsufficientBalance,
 		balanceOut,
 		isLoadingBalanceIn: pricing.isLoadingBalanceIn,
@@ -222,7 +211,6 @@ const useSwapProvider = () => {
 		onTokenInChange: formState.onTokenInChange,
 		onTokenOutChange: formState.onTokenOutChange,
 		onSwapTokens: formState.onSwapTokens,
-		onMaxClick,
 		onAmountInChange: formState.onAmountInChange,
 		onReset: formState.onReset,
 	};
