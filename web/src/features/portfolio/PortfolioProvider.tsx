@@ -12,6 +12,7 @@ import { PORTFOLIO_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
 import { heldTokenIds$ } from "../../services/balances/service";
 import { useRelayChains } from "../../state/relay";
+import { uniqByPublicKey } from "../../utils/accountPublicKey";
 import { logger } from "../../utils/logger";
 import { provideContext } from "../../utils/provideContext";
 import { getWatchedTokens } from "./getWatchedTokens";
@@ -24,7 +25,11 @@ const DISCOVERED_ACCOUNTS = new Set<string>();
 export const usePortfolioProvider = () => {
 	const stop = logger.cumulativeTimer("usePortfolioProvider");
 
-	const { accounts } = useWallets();
+	const { accounts: walletAccounts } = useWallets();
+	const accounts = useMemo(
+		() => uniqByPublicKey(walletAccounts, (account) => account.address),
+		[walletAccounts],
+	);
 	const { assetHub } = useRelayChains();
 
 	const { data: tokensMap, isLoading: isLoadingTokens } = useAllTokens({

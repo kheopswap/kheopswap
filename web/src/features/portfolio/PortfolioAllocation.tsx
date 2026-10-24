@@ -1,5 +1,4 @@
-import { uniqBy } from "lodash-es";
-import { type FC, useMemo } from "react";
+import type { FC } from "react";
 import { CountUpDecimals } from "../../components/CountUpDecimals";
 import { Shimmer } from "../../components/Shimmer";
 import {
@@ -102,10 +101,7 @@ export const PortfolioAllocation = () => {
 	} = usePortfolio();
 	const { stableToken } = useRelayChains();
 
-	const accountsCount = useMemo(
-		() => uniqBy(accounts, "address").length,
-		[accounts],
-	);
+	const accountsCount = accounts.length;
 
 	const hasTotal = allocation.total > 0n;
 

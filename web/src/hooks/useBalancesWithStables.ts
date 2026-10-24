@@ -12,6 +12,7 @@ import type { Token, TokenId } from "../registry/tokens/types";
 import { getBalance$ } from "../services/balances/service";
 import { getHoldingStablePlancks$ } from "../state/prices";
 import type { AccountBalanceWithStable } from "../types/balances";
+import { uniqByPublicKey } from "../utils/accountPublicKey";
 import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 
@@ -87,7 +88,10 @@ export const useBalancesWithStables = ({
 		tokenIds: (tokens ?? []).map((token) =>
 			typeof token === "string" ? token : token.id,
 		),
-		addresses: (accounts ?? []).map((acc) =>
-			typeof acc === "string" ? acc : acc.address,
+		addresses: uniqByPublicKey(
+			(accounts ?? []).map((acc) =>
+				typeof acc === "string" ? acc : acc.address,
+			),
+			(address) => address,
 		),
 	});
