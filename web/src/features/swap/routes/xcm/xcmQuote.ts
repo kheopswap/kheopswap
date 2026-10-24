@@ -3,6 +3,7 @@ import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
+import { KNOWN_TOKENS_LIST } from "../../../../registry/tokens/tokens";
 import type {
 	Token,
 	TokenAmount,
@@ -400,7 +401,14 @@ export const getXcmSubmitGate = ({
 	return { status: "closed", reason: "Nothing to send yet" };
 };
 
-const HYDRATION_DOT_ASSET_ID = 5;
+const isRelayTokenOnHydration = (token: Token) =>
+	token.type === "hydration-asset" &&
+	token.location?.parents === 1 &&
+	token.location.interior.type === "Here";
+
+const HYDRATION_RELAY_TOKEN_ID = KNOWN_TOKENS_LIST.find(
+	isRelayTokenOnHydration,
+)?.id;
 
 export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 	switch (origin) {
@@ -413,11 +421,9 @@ export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 		case "wpeople":
 			return getTokenId({ type: "native", chainId: origin });
 		case "hydration":
-			return getTokenId({
-				type: "hydration-asset",
-				chainId: origin,
-				assetId: HYDRATION_DOT_ASSET_ID,
-			});
+			if (!HYDRATION_RELAY_TOKEN_ID)
+				throw new Error("Hydration has no relay token");
+			return HYDRATION_RELAY_TOKEN_ID;
 	}
 };
 
