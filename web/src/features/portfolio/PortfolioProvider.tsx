@@ -38,15 +38,19 @@ export const usePortfolioProvider = () => {
 	const { data: pools } = usePoolsByChainId({ chainId: assetHub.id });
 	const heldTokenIds = useHeldTokenIds();
 
-	const accountsKey = useMemo(
+	const discoveryKey = useMemo(
 		() =>
-			uniq(accounts.map((account) => account.address))
-				.sort()
-				.join(","),
-		[accounts],
+			accounts.length
+				? [
+						assetHub.id,
+						...uniq(accounts.map((account) => account.address)).sort(),
+					].join(",")
+				: "",
+		[assetHub.id, accounts],
 	);
 	const [, rerender] = useReducer((n: number) => n + 1, 0);
-	const isDiscovering = !!accountsKey && !DISCOVERED_ACCOUNTS.has(accountsKey);
+	const isDiscovering =
+		!!discoveryKey && !DISCOVERED_ACCOUNTS.has(discoveryKey);
 
 	const watchedTokens = useMemo(
 		() =>
@@ -67,10 +71,22 @@ export const usePortfolioProvider = () => {
 		useBalancesWithStables({ tokens: watchedTokens, accounts });
 
 	useEffect(() => {
-		if (!isDiscovering || isLoadingBalances || !liveBalances.length) return;
-		DISCOVERED_ACCOUNTS.add(accountsKey);
+		if (
+			!isDiscovering ||
+			isLoadingTokens ||
+			isLoadingBalances ||
+			!liveBalances.length
+		)
+			return;
+		DISCOVERED_ACCOUNTS.add(discoveryKey);
 		rerender();
-	}, [isDiscovering, isLoadingBalances, liveBalances.length, accountsKey]);
+	}, [
+		isDiscovering,
+		isLoadingTokens,
+		isLoadingBalances,
+		liveBalances.length,
+		discoveryKey,
+	]);
 
 	const lastBalances = useRef(liveBalances);
 	if (liveBalances.length || !accounts.length)
