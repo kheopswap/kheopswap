@@ -22,7 +22,7 @@ import type { LoadingStatus } from "../common";
 import { balancesStore$, flushBalancesStore } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
 import type { Address, BalanceId } from "./types";
-import { parseBalanceId } from "./utils";
+import { isHeld, parseBalanceId } from "./utils";
 
 type ParsedToken = ReturnType<typeof parseTokenId>;
 
@@ -222,11 +222,12 @@ const applyUpdates = (updates: BalanceUpdate[]) => {
 	if (!updates.length) return;
 
 	const store = balancesStore$.value;
-	const changed = updates.filter(
-		([balanceId, { balance, frozen }]) =>
-			store[balanceId]?.balance !== balance ||
-			store[balanceId]?.frozen !== frozen,
-	);
+	const changed = updates.filter(([balanceId, value]) => {
+		const stored = store[balanceId];
+		return stored
+			? stored.balance !== value.balance || stored.frozen !== value.frozen
+			: isHeld(value);
+	});
 	if (changed.length)
 		balancesStore$.next({
 			...store,
@@ -303,12 +304,7 @@ export const readBalances = async (balanceIds: BalanceId[]) => {
 	const updates = await Promise.all(
 		[...groupEntriesByChain(balanceIds).values()].map(readChainBalances),
 	);
-	const store = balancesStore$.value;
-	applyUpdates(
-		updates
-			.flat()
-			.filter(([balanceId, { balance }]) => balance > 0n || balanceId in store),
-	);
+	applyUpdates(updates.flat());
 	flushBalancesStore();
 };
 

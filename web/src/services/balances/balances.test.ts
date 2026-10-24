@@ -332,6 +332,57 @@ describe("balances service pipeline", () => {
 		},
 	);
 
+	it("reports a zero balance it never stored as loaded at zero without storing it", async () => {
+		const address = "5TestAddressEmpty";
+		const balanceId = getBalanceId({ address, tokenId: "native::pah" });
+
+		const unsubscribe = addBalanceSubscription(balanceId);
+
+		const loaded = await waitForBalanceState(
+			balanceId,
+			(s) => s?.status === "loaded",
+		);
+		expect(loaded).toMatchObject({ balance: 0n, frozen: 0n });
+		expect(balancesStore$.value[balanceId]).toBeUndefined();
+
+		unsubscribe();
+	});
+
+	it("keeps storing a balance that drops to zero", async () => {
+		const address = "5TestAddressSpender";
+		mocks.nativeAccounts.set(address, { free: 10n, frozen: 0n });
+		const balanceId = getBalanceId({ address, tokenId: "native::kah" });
+
+		const unsubscribe = addBalanceSubscription(balanceId);
+		await waitForBalanceState(balanceId, (s) => s?.balance === 10n);
+
+		mocks.nativeAccounts.set(address, { free: 0n, frozen: 0n });
+		tickBestBlock("kah", 2);
+
+		await waitForBalanceState(balanceId, (s) => s?.balance === 0n);
+		expect(balancesStore$.value[balanceId]?.balance).toBe(0n);
+
+		unsubscribe();
+	});
+
+	it("counts a fully frozen hydration asset as held", async () => {
+		const address = "5TestAddressFrozen";
+		mocks.hydrationAccounts.set(`9||${address}`, { free: 100n, frozen: 100n });
+		const balanceId = getBalanceId({
+			address,
+			tokenId: "hydration-asset::hydration::9",
+		});
+
+		const unsubscribe = addBalanceSubscription(balanceId);
+		await waitForBalanceState(balanceId, (s) => s?.frozen === 100n);
+
+		expect(await firstValueFrom(heldTokenIds$)).toContain(
+			"hydration-asset::hydration::9",
+		);
+
+		unsubscribe();
+	});
+
 	it("deducts frozen from free for hydration asset balances", async () => {
 		const address = "5TestAddressCharlie";
 		mocks.hydrationAccounts.set(`5||${address}`, { free: 100n, frozen: 10n });

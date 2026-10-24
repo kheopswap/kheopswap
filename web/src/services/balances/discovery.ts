@@ -27,10 +27,7 @@ export const getLastDiscovery = (key: string): number | undefined =>
 	loadLog()[key];
 
 export const recordDiscovery = (key: string, at = Date.now()) => {
-	localStorage.setItem(
-		STORAGE_KEY,
-		JSON.stringify({ ...loadLog(), [key]: at }),
-	);
+	localStorage.setItem(STORAGE_KEY, JSON.stringify({ [key]: at }));
 };
 
 export const getNextDiscoveryDelay = (

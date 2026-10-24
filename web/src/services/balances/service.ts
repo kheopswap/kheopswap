@@ -16,7 +16,7 @@ import { balancesState$ } from "./state";
 import { balancesStore$ } from "./store";
 import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceDef, BalanceState } from "./types";
-import { getBalanceId } from "./utils";
+import { getBalanceId, isHeld } from "./utils";
 
 const DEFAULT_BALANCE_STATE: BalanceState = {
 	balance: undefined,
@@ -84,7 +84,7 @@ export const heldTokenIds$: Observable<TokenId[]> = balancesStore$.pipe(
 		[
 			...new Set(
 				Object.values(store)
-					.filter(({ balance }) => balance > 0n)
+					.filter(isHeld)
 					.map(({ tokenId }) => tokenId),
 			),
 		].sort(),

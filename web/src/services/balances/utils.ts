@@ -8,3 +8,11 @@ export const parseBalanceId = (balanceId: BalanceId): BalanceDef => {
 
 export const getBalanceId = ({ address, tokenId }: BalanceDef): BalanceId =>
 	`${address}||${tokenId}`;
+
+export const isHeld = ({
+	balance,
+	frozen = 0n,
+}: {
+	balance: bigint;
+	frozen?: bigint;
+}) => balance > 0n || frozen > 0n;

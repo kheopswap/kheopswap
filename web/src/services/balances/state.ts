@@ -21,8 +21,9 @@ const combineState = (
 			allBalanceIds.map((balanceId) => {
 				const status = statuses[balanceId] ?? "stale";
 				const stored = balances[balanceId];
-				const balance = stored ? BigInt(stored.balance) : undefined;
-				const frozen = stored ? BigInt(stored.frozen ?? 0n) : undefined;
+				const empty = status === "loaded" ? 0n : undefined;
+				const balance = stored ? BigInt(stored.balance) : empty;
+				const frozen = stored ? BigInt(stored.frozen ?? 0n) : empty;
 
 				return [balanceId, { status, balance, frozen }];
 			}),
