@@ -1,11 +1,12 @@
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
-import { Navigate, NavLink, useParams } from "react-router";
+import { NavLink, useParams } from "react-router";
 
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Layout } from "../components/layout/Layout";
 import { PageContent } from "../components/layout/PageContent";
 import { PageTitle } from "../components/layout/PageTitle";
+import { NotFoundPage } from "../components/NotFoundPage";
 import { TabTitle } from "../components/TabTitle";
 import { LiquidityPool } from "../features/liquidity/pool/LiquidityPool";
 import { useNativeToken } from "../hooks/useNativeToken";
@@ -31,15 +32,26 @@ const usePoolName = () => {
 		return `${nativeToken.symbol}/${assetToken.symbol}`;
 	}, [assetToken, nativeToken]);
 
-	return { data: poolName, isLoading: isLoadingPool || isLoadingToken };
+	return {
+		data: poolName,
+		isLoading: isLoadingPool || isLoadingToken,
+		chainName: assetHub.name,
+	};
 };
 
 export const LiquidityPoolPage = () => {
-	const { data: poolName, isLoading } = usePoolName();
-	const { relayId } = useParams();
+	const { data: poolName, isLoading, chainName } = usePoolName();
+	const { relayId, poolAssetId } = useParams();
 
 	if (!isLoading && !poolName)
-		return <Navigate to={`/${relayId}/pools`} replace />;
+		return (
+			<NotFoundPage
+				title="Pool not found"
+				backTo={{ to: `/${relayId}/pools`, label: "Liquidity pools" }}
+			>
+				No liquidity pool has the id {poolAssetId} on {chainName}.
+			</NotFoundPage>
+		);
 
 	return (
 		<Layout>

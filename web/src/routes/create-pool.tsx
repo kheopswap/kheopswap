@@ -6,9 +6,11 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Layout } from "../components/layout/Layout";
 import { PageContent } from "../components/layout/PageContent";
 import { PageTitle } from "../components/layout/PageTitle";
+import { NotFoundPage } from "../components/NotFoundPage";
 import { TabTitle } from "../components/TabTitle";
 import { CreatePool } from "../features/liquidity/create-pool/CreatePool";
 import { useNativeToken } from "../hooks/useNativeToken";
+import { usePoolByTokenId } from "../hooks/usePoolByTokenId";
 import { useToken } from "../hooks/useToken";
 import { useRelayChains } from "../state/relay";
 
@@ -18,6 +20,12 @@ export const CreateLiquidityPoolPage = () => {
 	const nativeToken = useNativeToken({ chain: assetHub });
 	const { data: token, isLoading } = useToken({
 		tokenId,
+	});
+	const { data: existingPool } = usePoolByTokenId({
+		tokenId:
+			token?.type === "asset" || token?.type === "foreign-asset"
+				? token.id
+				: null,
 	});
 
 	const poolName = useMemo(() => {
@@ -30,7 +38,19 @@ export const CreateLiquidityPoolPage = () => {
 	if (!tokenId) return <Navigate to={`/${relayId}/pools`} replace />;
 
 	if (!isLoading && (!token || token.chainId !== assetHub.id))
-		return <Navigate to={`/${relayId}/pools`} replace />;
+		return (
+			<NotFoundPage
+				title="Token not found"
+				backTo={{ to: `/${relayId}/pools`, label: "Liquidity pools" }}
+			>
+				No token with the id {tokenId} exists on {assetHub.name}.
+			</NotFoundPage>
+		);
+
+	if (existingPool)
+		return (
+			<Navigate to={`/${relayId}/pools/${existingPool.poolAssetId}`} replace />
+		);
 
 	return (
 		<Layout>

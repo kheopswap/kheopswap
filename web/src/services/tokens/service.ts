@@ -14,7 +14,6 @@ import {
 	type ChainTokensState,
 	type TokenState,
 	tokensByChainState$,
-	tokensByIdState$,
 } from "./state";
 import {
 	addTokensByChainSubscription,
@@ -60,34 +59,19 @@ export const getTokensByChains$ = (
 		),
 	);
 
-const DEFAULT_VALUE_BY_TOKEN: TokenState = {
-	status: "stale",
-	token: undefined,
-};
-
-export const getTokenById$ = (tokenId: TokenId) => {
-	return getCachedObservable$("getTokenById$", tokenId, () =>
-		new Observable<TokenState>((subscriber) => {
-			const chainId = getChainIdFromTokenId(tokenId);
-			const subId = addTokensByChainSubscription([chainId]);
-
-			const sub = tokensByIdState$
-				.pipe(
-					map(
-						(statusAndTokens) =>
-							statusAndTokens[tokenId] ?? DEFAULT_VALUE_BY_TOKEN,
-					),
-					distinctUntilChanged<TokenState>(isEqual),
-				)
-				.subscribe(subscriber);
-
-			return () => {
-				sub.unsubscribe();
-				removeTokensByChainSubscription(subId);
-			};
-		}).pipe(shareReplay(1)),
+export const getTokenById$ = (tokenId: TokenId) =>
+	getCachedObservable$("getTokenById$", tokenId, () =>
+		getTokensByChain$(getChainIdFromTokenId(tokenId)).pipe(
+			map(
+				({ status, tokens }): TokenState => ({
+					status,
+					token: tokens[tokenId],
+				}),
+			),
+			distinctUntilChanged<TokenState>(isEqual),
+			shareReplay(1),
+		),
 	);
-};
 
 /** @knipignore */
 export const getTokensById$ = (
