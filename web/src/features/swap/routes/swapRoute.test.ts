@@ -1,6 +1,7 @@
 import { pick } from "lodash-es";
 import { describe, expect, it } from "vitest";
 import { getChainById, getChains } from "../../../registry/chains/chains";
+import type { ChainIdAssetHub } from "../../../registry/chains/types";
 import { KNOWN_TOKENS_MAP } from "../../../registry/tokens/tokens";
 import type { TokenId } from "../../../registry/tokens/types";
 import { getAssetHubMirrorTokenIds } from "../../../utils/getAssetHubMirrorTokenId";
@@ -15,15 +16,16 @@ import {
 	type SwapTokensChange,
 } from "./swapRoute";
 
-const polkadotChains = getChains().filter(
-	(chain) => chain.relay === "polkadot",
-);
+const getRelayMirrors = (assetHubId: ChainIdAssetHub) => {
+	const assetHub = getChainById(assetHubId);
+	return getAssetHubMirrorTokenIds(
+		KNOWN_TOKENS_MAP,
+		assetHub,
+		getChains().filter((chain) => chain.relay === assetHub.relay),
+	);
+};
 
-const mirrors = getAssetHubMirrorTokenIds(
-	KNOWN_TOKENS_MAP,
-	getChainById("pah"),
-	polkadotChains,
-);
+const mirrors = getRelayMirrors("pah");
 
 const DOT = "native::pah";
 const USDT = "asset::pah::1984";
@@ -142,7 +144,7 @@ describe("resolveSwapRoute", () => {
 		["a Hydration token whose mirror is a foreign asset", HYDRATION_VDOT, VDOT],
 		["Hydration's native token", HDX, DOT],
 		["the People native token to its Asset Hub mirror", PEOPLE_DOT, DOT],
-		["DOT to the People native token", DOT, PEOPLE_DOT],
+		["an asset to the People native token", USDT, PEOPLE_DOT],
 		[
 			"a Hydration token to another Hydration token",
 			HYDRATION_DOT,
@@ -167,6 +169,35 @@ describe("resolveSwapRoute", () => {
 				kind: "xcm-transfer",
 				origin: "hydration",
 				destination: "pah",
+				tokenIdIn,
+				tokenIdOut,
+			});
+		},
+	);
+
+	it.each([
+		["pah", "ppeople"],
+		["kah", "kpeople"],
+		["wah", "wpeople"],
+		["pasah", "paspeople"],
+	] as const)(
+		"resolves the %s native token to %s as an XCM transfer",
+		(assetHubId, peopleId) => {
+			const tokenIdIn = `native::${assetHubId}` as const;
+			const tokenIdOut = `native::${peopleId}` as const;
+			expect(
+				resolveSwapRoute({
+					...context,
+					assetHubId,
+					mirrors: getRelayMirrors(assetHubId),
+					nativeTokenId: tokenIdIn,
+					tokenIdIn,
+					tokenIdOut,
+				}),
+			).toEqual({
+				kind: "xcm-transfer",
+				origin: assetHubId,
+				destination: peopleId,
 				tokenIdIn,
 				tokenIdOut,
 			});
@@ -328,6 +359,37 @@ describe("getNextSwapTokens on the XCM routes", () => {
 	});
 });
 
+describe("getNextSwapTokens to People", () => {
+	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
+		[
+			"the People output keeps DOT in",
+			[DOT, USDT],
+			{ type: "out", tokenId: PEOPLE_DOT },
+			[DOT, PEOPLE_DOT],
+		],
+		[
+			"the People output moves DOT in",
+			[USDT, DOT],
+			{ type: "out", tokenId: PEOPLE_DOT },
+			[DOT, PEOPLE_DOT],
+		],
+		[
+			"an asset in falls back to an AMM swap to DOT",
+			[DOT, PEOPLE_DOT],
+			{ type: "in", tokenId: USDT },
+			[USDT, DOT],
+		],
+		[
+			"flip does nothing",
+			[DOT, PEOPLE_DOT],
+			{ type: "flip" },
+			[DOT, PEOPLE_DOT],
+		],
+	])("%s", (_, prev, change, expected) => {
+		expect(next(prev, change)).toEqual(expected);
+	});
+});
+
 describe("getNextSwapTokens from Hydration", () => {
 	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
 		[
@@ -429,6 +491,7 @@ describe("canFlipSwapTokens", () => {
 		[{ tokenIdIn: USDC, tokenIdOut: HYDRATION_USDT }, false],
 		[{ tokenIdIn: HYDRATION_WUD, tokenIdOut: WUD }, false],
 		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_VDOT }, false],
+		[{ tokenIdIn: DOT, tokenIdOut: PEOPLE_DOT }, false],
 	])("%o -> %s", (pair, expected) => {
 		expect(canFlipSwapTokens(pair, context)).toBe(expected);
 	});
@@ -485,10 +548,26 @@ describe("getSwapTokenLists", () => {
 		expect(tokensOut).not.toHaveProperty(HDX);
 	});
 
-	it("does not offer the People native token although it mirrors DOT", () => {
-		expect(mirrors.get(PEOPLE_DOT)).toBe(DOT);
+	it("offers the People native token as output only", () => {
+		expect(tokensOut).toHaveProperty(PEOPLE_DOT);
 		expect(tokensIn).not.toHaveProperty(PEOPLE_DOT);
-		expect(tokensOut).not.toHaveProperty(PEOPLE_DOT);
+	});
+
+	it("offers the People native token on relays without Hydration", () => {
+		const ksm = "native::kah";
+		const kusamaAmmTokens = pick(KNOWN_TOKENS_MAP, [ksm]);
+		const lists = getSwapTokenLists({
+			ammTokens: kusamaAmmTokens,
+			allTokens: KNOWN_TOKENS_MAP,
+			context: {
+				...context,
+				assetHubId: "kah",
+				mirrors: getRelayMirrors("kah"),
+				nativeTokenId: ksm,
+			},
+		});
+		expect(Object.keys(lists.tokensIn)).toEqual([ksm]);
+		expect(Object.keys(lists.tokensOut)).toEqual([ksm, "native::kpeople"]);
 	});
 
 	it("adds nothing on relays without Hydration", () => {
@@ -506,6 +585,7 @@ describe("getRouteAccess", () => {
 	const substrate = "16xrRcxrBT6NfiukMzxeHGHPuJtHa9ypdgvvPJVw5zV8hwo";
 
 	const toHydration = { origin: "pah", destination: "hydration" } as const;
+	const toPeople = { origin: "pah", destination: "ppeople" } as const;
 	const fromHydration = { origin: "hydration", destination: "pah" } as const;
 
 	it("lets a substrate account receive on its own address", () => {
@@ -533,6 +613,11 @@ describe("getRouteAccess", () => {
 			allowed: false,
 			reason:
 				"Ethereum accounts cannot send to Hydration yet: the same address is a different account there",
+		});
+		expect(getRouteAccess({ platform, address }, toPeople)).toEqual({
+			allowed: false,
+			reason:
+				"Ethereum accounts cannot send to Polkadot People yet: the same address is a different account there",
 		});
 		expect(getRouteAccess({ platform, address }, fromHydration)).toEqual({
 			allowed: false,

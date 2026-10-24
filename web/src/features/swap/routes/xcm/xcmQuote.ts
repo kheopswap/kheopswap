@@ -20,7 +20,7 @@ type XcmDestination = XcmRoute["destination"];
 
 export type OriginDryRun = DryRun<XcmOrigin>;
 
-type DeliveryFees = {
+export type DeliveryFees = {
 	[Id in XcmOrigin]: Awaited<
 		ReturnType<Api<Id>["apis"]["XcmPaymentApi"]["query_delivery_fees"]>
 	>;
@@ -93,10 +93,13 @@ const getSentAmount = (message: XcmVersionedXcm): bigint | null => {
 	const loaded = message.value.find(
 		(instruction) =>
 			instruction.type === "ReserveAssetDeposited" ||
+			instruction.type === "ReceiveTeleportedAsset" ||
 			instruction.type === "WithdrawAsset",
 	);
 	const [asset] =
-		loaded?.type === "ReserveAssetDeposited" || loaded?.type === "WithdrawAsset"
+		loaded?.type === "ReserveAssetDeposited" ||
+		loaded?.type === "ReceiveTeleportedAsset" ||
+		loaded?.type === "WithdrawAsset"
 			? loaded.value
 			: [];
 	return asset?.fun.type === "Fungible" ? asset.fun.value : null;
@@ -241,6 +244,9 @@ const HYDRATION_DOT_ASSET_ID = 5;
 export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 	switch (origin) {
 		case "pah":
+		case "kah":
+		case "wah":
+		case "pasah":
 			return getTokenId({ type: "native", chainId: origin });
 		case "hydration":
 			return getTokenId({

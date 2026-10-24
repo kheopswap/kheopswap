@@ -43,7 +43,10 @@ const getParachainLocation = (chainId: ChainId) =>
 const queryDeliveryFees = async (route: XcmRoute, message: XcmVersionedXcm) => {
 	const destination = getParachainLocation(route.destination);
 	switch (route.origin) {
-		case "pah": {
+		case "pah":
+		case "kah":
+		case "wah":
+		case "pasah": {
 			const api = await getApi(route.origin);
 			return api.apis.XcmPaymentApi.query_delivery_fees(
 				destination,
