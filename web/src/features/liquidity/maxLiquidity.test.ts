@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+	getMaxCapHint,
 	getMaxLiquidity,
 	getSpendableBalance,
 	getSpendingMargin,
@@ -68,7 +69,7 @@ describe("getMaxLiquidity", () => {
 				margins: [10n, 0n],
 				side: 0,
 			}),
-		).toEqual([100n, 200n]);
+		).toEqual({ amounts: [100n, 200n], cappedBy: null });
 	});
 
 	it("caps the chosen side when the other side's balance cannot follow", () => {
@@ -79,7 +80,18 @@ describe("getMaxLiquidity", () => {
 				margins: [10n, 0n],
 				side: 0,
 			}),
-		).toEqual([25n, 50n]);
+		).toEqual({ amounts: [25n, 50n], cappedBy: { side: 1, kept: 0n } });
+	});
+
+	it("reports what the capping side keeps for its margin", () => {
+		expect(
+			getMaxLiquidity({
+				balances: [110n, 57n],
+				reserves,
+				margins: [10n, 7n],
+				side: 0,
+			}),
+		).toEqual({ amounts: [25n, 50n], cappedBy: { side: 1, kept: 7n } });
 	});
 
 	it("offers nothing when the native balance cannot cover its margin", () => {
@@ -90,7 +102,7 @@ describe("getMaxLiquidity", () => {
 				margins: [10n, 0n],
 				side: 0,
 			}),
-		).toEqual([0n, 0n]);
+		).toEqual({ amounts: [0n, 0n], cappedBy: null });
 	});
 
 	it("caps the asset side by the native balance net of its margin", () => {
@@ -101,6 +113,20 @@ describe("getMaxLiquidity", () => {
 				margins: [10n, 0n],
 				side: 1,
 			}),
-		).toEqual([20n, 40n]);
+		).toEqual({ amounts: [20n, 40n], cappedBy: { side: 0, kept: 10n } });
+	});
+});
+
+describe("getMaxCapHint", () => {
+	const usdc = { decimals: 6, symbol: "USDC" };
+
+	it("names what the capping side keeps", () => {
+		expect(getMaxCapHint(71_466n, usdc)).toBe(
+			"Limits the max, keeps 0.0715 USDC",
+		);
+	});
+
+	it("only flags the cap when nothing is kept", () => {
+		expect(getMaxCapHint(0n, usdc)).toBe("Limits the max");
 	});
 });

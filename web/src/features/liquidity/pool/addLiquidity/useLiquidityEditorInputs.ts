@@ -5,12 +5,18 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
+	useState,
 } from "react";
 import type { Token } from "../../../../registry/tokens/types";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { plancksToTokens, tokensToPlancks } from "../../../../utils/plancks";
 import { useTransaction } from "../../../transaction/TransactionProvider";
-import { getMaxLiquidity, getSpendingMargin } from "../../maxLiquidity";
+import {
+	getMaxCapHint,
+	getMaxLiquidity,
+	getSpendingMargin,
+	type MaxLiquidity,
+} from "../../maxLiquidity";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidity } from "./AddLiquidityProvider";
 
@@ -41,9 +47,13 @@ export const useLiquidityEditorInputs = () => {
 	const refInput1 = useRef<HTMLInputElement>(null);
 	const refInput2 = useRef<HTMLInputElement>(null);
 
+	const [maxCappedBy, setMaxCappedBy] =
+		useState<MaxLiquidity["cappedBy"]>(null);
+
 	const handleTokensInput = useCallback(
 		(tokenIdx: "token1" | "token2"): FormEventHandler<HTMLInputElement> =>
 			(e) => {
+				setMaxCappedBy(null);
 				const val = Number(e.currentTarget.value);
 
 				if (
@@ -135,13 +145,17 @@ export const useLiquidityEditorInputs = () => {
 			});
 			if (!isBigInt(nativeMargin) || !isBigInt(assetMargin)) return;
 
-			const [maxNative, maxAsset] = getMaxLiquidity({
+			const {
+				amounts: [maxNative, maxAsset],
+				cappedBy,
+			} = getMaxLiquidity({
 				balances: accountBalances,
 				reserves,
 				margins: [nativeMargin, assetMargin],
 				side: tokenIdx === "token1" ? 0 : 1,
 			});
 
+			setMaxCappedBy(cappedBy);
 			setLiquidityToAdd([maxNative, maxAsset]);
 			refInput1.current.value = plancksToTokens(
 				maxNative,
@@ -166,8 +180,18 @@ export const useLiquidityEditorInputs = () => {
 		if (liquidityToAdd === null && refInput1.current && refInput2.current) {
 			refInput1.current.value = "";
 			refInput2.current.value = "";
+			setMaxCappedBy(null);
 		}
 	}, [liquidityToAdd]);
+
+	const [hintNative, hintAsset] = useMemo(() => {
+		const hints: [string | null, string | null] = [null, null];
+		const cappingToken =
+			maxCappedBy && [nativeToken, assetToken][maxCappedBy.side];
+		if (maxCappedBy && cappingToken)
+			hints[maxCappedBy.side] = getMaxCapHint(maxCappedBy.kept, cappingToken);
+		return hints;
+	}, [maxCappedBy, nativeToken, assetToken]);
 
 	const errorMessageNative = useMemo(() => {
 		return insufficientBalances[nativeToken?.id ?? ""];
@@ -191,5 +215,7 @@ export const useLiquidityEditorInputs = () => {
 		handleMaxClick,
 		errorMessageNative,
 		errorMessageAsset,
+		hintNative,
+		hintAsset,
 	};
 };

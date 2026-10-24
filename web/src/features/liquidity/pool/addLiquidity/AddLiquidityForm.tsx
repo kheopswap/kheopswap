@@ -21,6 +21,8 @@ const AddLiquidityEditor: FC = () => {
 		handleMaxClick,
 		errorMessageNative,
 		errorMessageAsset,
+		hintNative,
+		hintAsset,
 	} = useLiquidityEditorInputs();
 
 	return (
@@ -38,6 +40,7 @@ const AddLiquidityEditor: FC = () => {
 				isLoading={isLoadingToken}
 				onTokenChange={() => {}}
 				errorMessage={errorMessageNative}
+				hint={hintNative}
 				disableTokenButton
 				balance={accountBalances?.[0]}
 				isLoadingBalance={isLoadingAccountBalances}
@@ -57,6 +60,7 @@ const AddLiquidityEditor: FC = () => {
 				isLoading={isLoadingToken}
 				onTokenChange={() => {}}
 				errorMessage={errorMessageAsset}
+				hint={hintAsset}
 				disableTokenButton
 				balance={accountBalances?.[1]}
 				isLoadingBalance={isLoadingAccountBalances}
