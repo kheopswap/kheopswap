@@ -388,10 +388,14 @@ export const useXcmRoute = ({
 				].join(":")
 			: null,
 	);
+	const originFailure =
+		quote.data?.success === false
+			? quote.data.failure
+			: destinationSwap.feeFailure;
 	const isBalanceShortfall =
 		hasInsufficientBalance &&
-		quote.data?.success === false &&
-		isOriginDispatchFailure(quote.data.failure);
+		!!originFailure &&
+		isOriginDispatchFailure(originFailure);
 	const pathEstimate =
 		route?.kind === "xcm-destination-swap" ||
 		(route?.kind === "xcm-swap" && mirrorToken?.decimals === tokenOut?.decimals)
@@ -450,9 +454,9 @@ export const useXcmRoute = ({
 		if (access && !access.allowed) return access.reason;
 		if (callQuery.error)
 			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
+		if (isBalanceShortfall) return null;
 		if (destinationSwap.errorMessage) return destinationSwap.errorMessage;
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
-		if (isBalanceShortfall) return null;
 		if (newAccountMinimumMessage) return newAccountMinimumMessage;
 		if (quote.data && !quote.data.success)
 			return describeXcmQuoteFailure(quote.data.failure, route);

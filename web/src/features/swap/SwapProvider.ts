@@ -206,6 +206,7 @@ const useSwapProvider = () => {
 		tokenOut,
 		totalIn: pricing.totalIn,
 		balanceIn: pricing.balanceIn,
+		hasInsufficientBalance: pricing.hasInsufficientBalance,
 		balanceOut,
 		isLoadingBalanceIn: pricing.isLoadingBalanceIn,
 		isLoadingBalanceOut,
