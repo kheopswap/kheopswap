@@ -279,6 +279,40 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(feeQueries);
 	});
 
+	it("keeps the last quote on screen while a moved pool refreshes it", async () => {
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+		const shownOut = result.current.swapPlancksOut;
+		expect(shownOut).toBe(usdtToPink.hops[1]?.amountOut);
+
+		const pendingDryRuns: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					pendingDryRuns.push(() => resolve(chain.fixture.originDryRun));
+				}),
+		);
+		const [firstPool] = usdtToPink.hops;
+		if (!firstPool) throw new Error("expected a first hop");
+		chain.firstPoolInflow = firstPool.reserveIn / 1000n;
+		rerender();
+
+		await waitFor(() => expect(pendingDryRuns).toHaveLength(1));
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+		expect(result.current.swapPlancksOut).toBe(shownOut);
+		expect(result.current.isLoadingAmountOut).toBe(false);
+		expect(result.current.details).toMatchObject({
+			quote: { isLoading: false, data: { success: true } },
+		});
+
+		for (const finish of pendingDryRuns) finish();
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+	});
+
 	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {
 		chain.dryRunCall.mockRejectedValue(new Error("RPC unavailable"));
 		const { result } = renderDestinationSwap(usdtToPink);

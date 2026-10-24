@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { WalletAccount } from "../../../../common/kheopskit";
 import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
@@ -41,6 +41,7 @@ import {
 	describeXcmQuoteFailure,
 	getXcmCallSpendings,
 	getXcmSubmitGate,
+	type XcmQuoteResult,
 } from "./xcmQuote";
 
 export type XcmTransferDetails = {
@@ -243,6 +244,27 @@ const getXcmTransactionType = (
 	}
 };
 
+const useQuoteShownWhileRefreshing = (
+	quote: XcmQuoteState,
+	isLoading: boolean,
+	key: string | null,
+): XcmQuoteState => {
+	const lastQuote = useRef<{ key: string; data: XcmQuoteResult } | null>(null);
+	useEffect(() => {
+		if (key && quote.data?.success)
+			lastQuote.current = { key, data: quote.data };
+	}, [key, quote.data]);
+
+	const shownData =
+		isLoading && !quote.data && key && lastQuote.current?.key === key
+			? lastQuote.current.data
+			: undefined;
+	return useMemo(
+		() => (shownData ? { ...quote, data: shownData, isLoading: false } : quote),
+		[shownData, quote],
+	);
+};
+
 type UseXcmRouteProps = {
 	route: XcmRoute | null;
 	account: WalletAccount | null | undefined;
@@ -345,6 +367,22 @@ export const useXcmRoute = ({
 		pathQuote.isLoading ||
 		destinationSwap.isLoading;
 
+	const shownQuote = useQuoteShownWhileRefreshing(
+		quote,
+		isLoading,
+		route && beneficiary && totalIn
+			? [
+					route.kind,
+					route.tokenIdIn,
+					route.tokenIdOut,
+					beneficiary,
+					totalIn,
+				].join(":")
+			: null,
+	);
+	const shownReceived = shownQuote.data?.success
+		? shownQuote.data.quote.received
+		: undefined;
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
@@ -439,18 +477,19 @@ export const useXcmRoute = ({
 		if (!route) return null;
 		switch (route.kind) {
 			case "xcm-transfer":
-				return { kind: route.kind, route, quote };
+				return { kind: route.kind, route, quote: shownQuote };
 			case "xcm-swap": {
 				const minReceived =
 					pathQuote.quote &&
-					xcmQuote &&
+					shownQuote.data?.success &&
 					mirrorToken?.decimals === tokenOut?.decimals
-						? pathQuote.quote.minOut - xcmQuote.destinationFee.plancks
+						? pathQuote.quote.minOut -
+							shownQuote.data.quote.destinationFee.plancks
 						: undefined;
 				return {
 					kind: route.kind,
 					route,
-					quote,
+					quote: shownQuote,
 					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
@@ -463,7 +502,7 @@ export const useXcmRoute = ({
 				return {
 					kind: route.kind,
 					route,
-					quote,
+					quote: shownQuote,
 					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
@@ -472,8 +511,7 @@ export const useXcmRoute = ({
 		}
 	}, [
 		route,
-		quote,
-		xcmQuote,
+		shownQuote,
 		pathQuote.quote,
 		mirrorToken?.decimals,
 		tokenOut?.decimals,
@@ -486,11 +524,11 @@ export const useXcmRoute = ({
 		plan,
 		details,
 		outputErrorMessage,
-		swapPlancksOut: received,
+		swapPlancksOut: shownReceived,
 		amountOut:
-			received !== undefined && tokenOut
-				? plancksToTokens(received, tokenOut.decimals)
+			shownReceived !== undefined && tokenOut
+				? plancksToTokens(shownReceived, tokenOut.decimals)
 				: "",
-		isLoadingAmountOut: !!totalIn && isLoading,
+		isLoadingAmountOut: !!totalIn && isLoading && shownReceived === undefined,
 	};
 };
