@@ -1,4 +1,4 @@
-import type { Token, TokenAmount } from "../../registry/tokens/types";
+import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
 import type { SubmitGate } from "../transaction/TransactionProvider";
 
 export type SwapLoss = {
@@ -138,12 +138,14 @@ export const getTransferFees = ({
 	totalIn,
 	received,
 	deliveryFee,
+	transactionFee,
 }: {
 	tokenIn: Pick<Token, "id" | "decimals"> | null | undefined;
 	tokenOut: Pick<Token, "decimals"> | null | undefined;
 	totalIn: bigint | null | undefined;
 	received: bigint | null | undefined;
 	deliveryFee: TokenAmount | undefined;
+	transactionFee: TokenAmount | undefined;
 }): TokenAmount[] | undefined => {
 	if (
 		!tokenIn ||
@@ -155,16 +157,16 @@ export const getTransferFees = ({
 		tokenIn.decimals !== tokenOut.decimals
 	)
 		return undefined;
-	const isPaidInTokenIn = deliveryFee?.tokenId === tokenIn.id;
-	const fees: TokenAmount[] = [
-		{
-			tokenId: tokenIn.id,
-			plancks:
-				totalIn - received + (isPaidInTokenIn ? deliveryFee.plancks : 0n),
-		},
-		...(deliveryFee && !isPaidInTokenIn ? [deliveryFee] : []),
-	];
-	return fees.filter(({ plancks }) => plancks > 0n);
+	const fees = new Map<TokenId, bigint>();
+	for (const { tokenId, plancks } of [
+		{ tokenId: tokenIn.id, plancks: totalIn - received },
+		deliveryFee,
+		transactionFee,
+	].filter((fee) => !!fee))
+		fees.set(tokenId, (fees.get(tokenId) ?? 0n) + plancks);
+	return [...fees]
+		.filter(([, plancks]) => plancks > 0n)
+		.map(([tokenId, plancks]) => ({ tokenId, plancks }));
 };
 
 export const getRiskSubmitGate = (

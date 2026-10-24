@@ -285,8 +285,9 @@ describe("getTransferFees", () => {
 		id: "hydration-asset::hydration::22",
 		decimals: 6,
 	} as const;
+	const HDX = "native::hydration";
 
-	it("adds a delivery fee paid in the sent token to what does not arrive", () => {
+	it("adds the fees paid in the sent token to what does not arrive", () => {
 		expect(
 			getTransferFees({
 				tokenIn: DOT,
@@ -294,11 +295,12 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000_000n,
 				received: 995_000_000n,
 				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
+				transactionFee: { tokenId: DOT.id, plancks: 11_000_000n },
 			}),
-		).toEqual([{ tokenId: DOT.id, plancks: 310_000_000n }]);
+		).toEqual([{ tokenId: DOT.id, plancks: 321_000_000n }]);
 	});
 
-	it("lists a delivery fee paid in another token on its own", () => {
+	it("lists the fees paid in another token on their own", () => {
 		expect(
 			getTransferFees({
 				tokenIn: USDC,
@@ -306,10 +308,11 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000n,
 				received: 980_000n,
 				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
+				transactionFee: { tokenId: DOT.id, plancks: 11_000_000n },
 			}),
 		).toEqual([
 			{ tokenId: USDC.id, plancks: 20_000n },
-			{ tokenId: DOT.id, plancks: 305_000_000n },
+			{ tokenId: DOT.id, plancks: 316_000_000n },
 		]);
 	});
 
@@ -321,8 +324,12 @@ describe("getTransferFees", () => {
 				totalIn: 100_000_000n,
 				received: 83_000_000n,
 				deliveryFee: { tokenId: HYDRATION_DOT.id, plancks: 0n },
+				transactionFee: { tokenId: HDX, plancks: 573_200_000_000n },
 			}),
-		).toEqual([{ tokenId: HYDRATION_DOT.id, plancks: 17_000_000n }]);
+		).toEqual([
+			{ tokenId: HYDRATION_DOT.id, plancks: 17_000_000n },
+			{ tokenId: HDX, plancks: 573_200_000_000n },
+		]);
 	});
 
 	it("is unknown when the tokens do not share decimals", () => {
@@ -333,6 +340,7 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000_000n,
 				received: 995_000n,
 				deliveryFee: undefined,
+				transactionFee: undefined,
 			}),
 		).toBeUndefined();
 	});

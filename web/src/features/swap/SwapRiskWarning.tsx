@@ -1,8 +1,11 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, Fragment } from "react";
 import { getChainById } from "../../registry/chains/chains";
+import type { TokenAmount } from "../../registry/tokens/types";
 import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
+import { isBigInt } from "../../utils/isBigInt";
+import { useTransaction } from "../transaction/TransactionProvider";
 import { TokenAmountValue } from "./routes/AmmPathValues";
 import { useSwap } from "./SwapProvider";
 import {
@@ -12,21 +15,33 @@ import {
 	type SwapLoss,
 } from "./swapRisk";
 
-const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
+const FeeAmount: FC<{ fee: TokenAmount | undefined }> = ({ fee }) =>
+	fee ? (
+		<>
+			<TokenAmountValue {...fee} />{" "}
+		</>
+	) : null;
+
+const LossCauseText: FC<{
+	cause: LossCause | null;
+	showsFeeAmount: boolean;
+}> = ({ cause, showsFeeAmount }) => {
 	const { details } = useSwap();
 	const xcm = details.kind === "amm-swap" ? undefined : details;
 	switch (cause) {
 		case "delivery-fee":
-			return xcm?.quote.deliveryFee ? (
+			return xcm ? (
 				<>
-					, mostly the <TokenAmountValue {...xcm.quote.deliveryFee} /> delivery
-					fee
+					, mostly the{" "}
+					<FeeAmount fee={showsFeeAmount ? xcm.quote.deliveryFee : undefined} />
+					delivery fee
 				</>
 			) : null;
 		case "destination-fee":
-			return xcm?.destinationFee ? (
+			return xcm ? (
 				<>
-					, mostly the <TokenAmountValue {...xcm.destinationFee} />{" "}
+					, mostly the{" "}
+					<FeeAmount fee={showsFeeAmount ? xcm.destinationFee : undefined} />
 					{getChainById(xcm.route.destination).name} fee
 				</>
 			) : null;
@@ -42,18 +57,23 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 	cause,
 }) => {
 	const { tokenIn, tokenOut, totalIn, swapPlancksOut, deliveryFee } = useSwap();
+	const { feeEstimate, feeToken } = useTransaction();
 	const fees = getTransferFees({
 		tokenIn,
 		tokenOut,
 		totalIn,
 		received: swapPlancksOut,
 		deliveryFee,
+		transactionFee:
+			feeToken && isBigInt(feeEstimate)
+				? { tokenId: feeToken.id, plancks: feeEstimate }
+				: undefined,
 	});
 	if (!fees?.length || !tokenOut || !swapPlancksOut)
 		return (
 			<>
 				Fees take {formatPercent(ratio)} of what you send
-				<LossCauseText cause={cause} />.
+				<LossCauseText cause={cause} showsFeeAmount />.
 			</>
 		);
 	return (
@@ -67,7 +87,7 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 			))}{" "}
 			in fees to deliver{" "}
 			<TokenAmountValue tokenId={tokenOut.id} plancks={swapPlancksOut} />
-			<LossCauseText cause={cause} />.
+			<LossCauseText cause={cause} showsFeeAmount={false} />.
 		</>
 	);
 };
@@ -83,7 +103,7 @@ const LossText: FC<{ loss: SwapLoss; cause: LossCause | null }> = ({
 			return (
 				<>
 					You receive {formatPercent(ratio)} less value than you send
-					<LossCauseText cause={cause} />.
+					<LossCauseText cause={cause} showsFeeAmount />.
 				</>
 			);
 		case "fees":
