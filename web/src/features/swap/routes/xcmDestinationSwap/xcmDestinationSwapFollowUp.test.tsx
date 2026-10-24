@@ -60,6 +60,7 @@ const failed = (
 	messageId: "0x01",
 	returned,
 	trapped,
+	finalized: true,
 });
 
 describe("follow-up of a swap on Asset Hub of what Hydration sends", () => {
@@ -102,6 +103,7 @@ describe("follow-up of a swap on Asset Hub of what Hydration sends", () => {
 			status: "arrived",
 			messageId: "0x01",
 			received: 497686228859862n,
+			finalized: true,
 		};
 		render(<XcmTransferFollowUpContent transaction={record} />);
 

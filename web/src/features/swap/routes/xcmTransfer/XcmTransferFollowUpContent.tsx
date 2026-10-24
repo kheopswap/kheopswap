@@ -28,14 +28,18 @@ const ArrivalStatus: FC<{
 		case "in-transit":
 			return <Pulse pulse>In transit</Pulse>;
 		case "arrived":
-			return <span className="text-success">Arrived</span>;
+			return (
+				<Pulse pulse={!arrival.finalized} className="text-success">
+					Arrived
+				</Pulse>
+			);
 		case "failed-on-destination":
 			return (
-				<span className="text-error">
+				<Pulse pulse={!arrival.finalized} className="text-error">
 					{["Failed", describeFailedArrival(arrival)]
 						.filter(Boolean)
 						.join(", ")}
-				</span>
+				</Pulse>
 			);
 		case "unconfirmed":
 			return <span className="text-warn">Not confirmed</span>;
