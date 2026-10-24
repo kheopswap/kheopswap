@@ -1,26 +1,34 @@
-import { renderHook } from "@testing-library/react";
+import { cleanup, render, renderHook, screen } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChainId } from "../../registry/chains/types";
 import {
 	type SubmitGate,
 	TransactionProvider,
 	useTransaction,
 } from "./TransactionProvider";
+import { TransactionSubmitButton } from "./TransactionSubmitButton";
 
 const balanceCheck = vi.hoisted(() => ({
 	insufficientBalances: {} as Record<string, string>,
 }));
 
+const ethereum = vi.hoisted(() => ({
+	isEthereumNetworkMismatch: false,
+}));
+
 beforeEach(() => {
 	balanceCheck.insufficientBalances = {};
+	ethereum.isEthereumNetworkMismatch = false;
 });
+
+afterEach(cleanup);
 
 vi.mock("./useTransactionEthereum", () => ({
 	useTransactionEthereum: () => ({
 		account: { platform: "polkadot", address: "5Signer" },
 		isEthereumAccount: false,
-		isEthereumNetworkMismatch: false,
+		isEthereumNetworkMismatch: ethereum.isEthereumNetworkMismatch,
 		isSwitchingEthereumNetwork: false,
 		nativeToken: undefined,
 	}),
@@ -54,11 +62,9 @@ vi.mock("./useTransactionSubmit", () => ({
 	useTransactionSubmit: () => ({ onSubmit: vi.fn() }),
 }));
 
-const renderTransaction = (
-	submitGate?: SubmitGate,
-	chainId: ChainId = "pah",
-) => {
-	const wrapper: FC<PropsWithChildren> = ({ children }) => (
+const getWrapper =
+	(submitGate?: SubmitGate, chainId: ChainId = "pah"): FC<PropsWithChildren> =>
+	({ children }) => (
 		<TransactionProvider
 			call={{} as never}
 			fakeCall={null}
@@ -70,8 +76,42 @@ const renderTransaction = (
 			{children}
 		</TransactionProvider>
 	);
-	return renderHook(() => useTransaction(), { wrapper }).result.current;
+
+const renderTransaction = (submitGate?: SubmitGate, chainId: ChainId = "pah") =>
+	renderHook(() => useTransaction(), {
+		wrapper: getWrapper(submitGate, chainId),
+	}).result.current;
+
+const renderSubmitButton = (submitGate?: SubmitGate) => {
+	const Wrapper = getWrapper(submitGate);
+	render(
+		<Wrapper>
+			<TransactionSubmitButton>Swap</TransactionSubmitButton>
+		</Wrapper>,
+	);
+	return screen.getByRole("button");
 };
+
+describe("TransactionSubmitButton on an Ethereum network mismatch", () => {
+	beforeEach(() => {
+		ethereum.isEthereumNetworkMismatch = true;
+	});
+
+	it("offers to switch network when the route is open", () => {
+		expect(renderSubmitButton({ status: "open" })).toHaveTextContent(
+			"Switch network",
+		);
+	});
+
+	it("keeps the disabled action when the route is closed", () => {
+		const button = renderSubmitButton({
+			status: "closed",
+			reason: "Ethereum accounts cannot send to Hydration yet",
+		});
+		expect(button).toHaveTextContent("Swap");
+		expect(button).toBeDisabled();
+	});
+});
 
 describe("TransactionProvider submit gate", () => {
 	it("lets a successful dry run enable submit when no gate is given", () => {
