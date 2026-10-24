@@ -34,6 +34,7 @@ const HYDRATION_USDC = "hydration-asset::hydration::22";
 const HYDRATION_VDOT = "hydration-asset::hydration::15";
 const HYDRATION_WUD = "hydration-asset::hydration::1000085";
 const HDX = "native::hydration";
+const PEOPLE_DOT = "native::ppeople";
 const VDOT = mirrors.get(HYDRATION_VDOT) as TokenId;
 const WUD = mirrors.get(HYDRATION_WUD) as TokenId;
 
@@ -140,6 +141,8 @@ describe("resolveSwapRoute", () => {
 		["a Hydration token to another Asset Hub token", HYDRATION_USDT, DOT],
 		["a Hydration token whose mirror is a foreign asset", HYDRATION_VDOT, VDOT],
 		["Hydration's native token", HDX, DOT],
+		["the People native token to its Asset Hub mirror", PEOPLE_DOT, DOT],
+		["DOT to the People native token", DOT, PEOPLE_DOT],
 		[
 			"a Hydration token to another Hydration token",
 			HYDRATION_DOT,
@@ -480,6 +483,12 @@ describe("getSwapTokenLists", () => {
 		expect(tokensOut).not.toHaveProperty(HYDRATION_WUD);
 		expect(tokensOut).not.toHaveProperty(HYDRATION_VDOT);
 		expect(tokensOut).not.toHaveProperty(HDX);
+	});
+
+	it("does not offer the People native token although it mirrors DOT", () => {
+		expect(mirrors.get(PEOPLE_DOT)).toBe(DOT);
+		expect(tokensIn).not.toHaveProperty(PEOPLE_DOT);
+		expect(tokensOut).not.toHaveProperty(PEOPLE_DOT);
 	});
 
 	it("adds nothing on relays without Hydration", () => {

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getChainById, getChains } from "../registry/chains/chains";
-import { getTokenId } from "../registry/tokens/helpers";
+import {
+	getChainById,
+	getChains,
+	isChainIdAssetHub,
+} from "../registry/chains/chains";
+import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import { KNOWN_TOKENS_MAP } from "../registry/tokens/tokens";
 import type {
 	Token,
@@ -59,12 +63,29 @@ describe("getAssetHubMirrorTokenIds", () => {
 
 	it("does not map asset hub tokens", () => {
 		expect(
-			[...mirrorTokenIds.keys()].every(
-				(tokenId) =>
-					tokenId.startsWith("hydration-asset::") ||
-					tokenId === "native::hydration",
+			[...mirrorTokenIds.keys()].filter((tokenId) =>
+				isChainIdAssetHub(getChainIdFromTokenId(tokenId)),
 			),
-		).toBe(true);
+		).toEqual([]);
+	});
+
+	it.each([
+		["pah", "native::ppeople", "native::pah"],
+		["kah", "native::kpeople", "native::kah"],
+		["wah", "native::wpeople", "native::wah"],
+		["pasah", "native::paspeople", "native::pasah"],
+	] as const)("on %s maps %s to %s", (assetHubId, tokenId, expected) => {
+		const relayAssetHub = getChainById(assetHubId);
+		const relayChains = getChains().filter(
+			(chain) => chain.relay === relayAssetHub.relay,
+		);
+		expect(
+			getAssetHubMirrorTokenIds(
+				KNOWN_TOKENS_MAP,
+				relayAssetHub,
+				relayChains,
+			).get(tokenId),
+		).toBe(expected);
 	});
 
 	describe("hydration local locations", () => {
