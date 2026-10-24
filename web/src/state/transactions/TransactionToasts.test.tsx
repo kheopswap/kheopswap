@@ -268,6 +268,20 @@ describe("closing the follow-up modal", () => {
 		expect(within(modal).queryByText("Transaction succeeded")).toBeNull();
 	});
 
+	it("minimizes a swap that failed in a best block until the finalized verdict", async () => {
+		const record: TransactionRecord = {
+			...getFinalizedRecord("swap", "swap", "Swap DOT/USDC"),
+			status: "failed",
+			txEvents: [
+				{ type: "inBestBlock", ok: false, txHash: "0x01", events: [] },
+			] as unknown as TransactionRecord["txEvents"],
+		};
+		await openAndClose(record);
+
+		expect(screen.queryByRole("dialog")).toBeNull();
+		expect(await isInStore(record.id)).toBe(true);
+	});
+
 	it("dismisses a finalized swap", async () => {
 		const record = getFinalizedRecord("swap", "swap", "Swap DOT/USDC");
 		await openAndClose(record);

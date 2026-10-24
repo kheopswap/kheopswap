@@ -1,4 +1,4 @@
-import { findLast, isEqual, range } from "lodash-es";
+import { findLast, isEqual, omit, range } from "lodash-es";
 import type { BlockInfo, HexString } from "polkadot-api";
 import {
 	BehaviorSubject,
@@ -7,9 +7,9 @@ import {
 	concat,
 	concatMap,
 	defer,
-	distinct,
 	distinctUntilChanged,
 	EMPTY,
+	filter,
 	from,
 	map,
 	mergeMap,
@@ -19,6 +19,8 @@ import {
 	shareReplay,
 	startWith,
 	switchMap,
+	take,
+	takeUntil,
 	takeWhile,
 	tap,
 	timer,
@@ -93,7 +95,6 @@ export type SentMessage = { messageId: HexString; finalized: boolean };
 type OriginState =
 	| { status: "pending" }
 	| { status: "failed" }
-	| { status: "dismissed" }
 	| { status: "finalized-without-message" }
 	| ({ status: "sent" } & SentMessage);
 
@@ -295,7 +296,6 @@ const getOriginState = (
 
 const isOriginSettled = (origin: OriginState) =>
 	origin.status === "failed" ||
-	origin.status === "dismissed" ||
 	origin.status === "finalized-without-message" ||
 	(origin.status === "sent" && origin.finalized);
 
@@ -343,7 +343,6 @@ const toArrival = (
 				? { status: "unconfirmed", messageId: null }
 				: { status: "awaiting-origin" };
 		case "failed":
-		case "dismissed":
 			return { status: "origin-failed" };
 		case "finalized-without-message":
 			return { status: "unconfirmed", messageId: null };
@@ -433,13 +432,14 @@ export const getXcmArrival$ = ({
 	bufferBlocks: number;
 	timeoutMs?: number;
 }): Observable<XcmArrival> => {
+	const dismissed$ = record$.pipe(
+		filter((record) => !record),
+		take(1),
+	);
+
 	const origin$ = record$.pipe(
-		map(
-			(record): OriginState =>
-				record
-					? getOriginState(record, destinationParaId)
-					: { status: "dismissed" },
-		),
+		filter((record) => !!record),
+		map((record) => getOriginState(record, destinationParaId)),
 		distinctUntilChanged(isEqual),
 		takeWhile((origin) => !isOriginSettled(origin), true),
 	);
@@ -455,7 +455,7 @@ export const getXcmArrival$ = ({
 	);
 
 	return combineLatest([origin$, destination$, isExpired$]).pipe(
-		takeWhile(([origin]) => origin.status !== "dismissed"),
+		takeUntil(dismissed$),
 		map(([origin, destination, isExpired]) =>
 			toArrival(origin, destination, isExpired, { target, returnTokenIds }),
 		),
@@ -489,14 +489,33 @@ const getRetryDelayMs = (failures: number) =>
 const watchBlockEvents$ = (
 	chainId: ChainId,
 	at: "best" | "finalized",
+	bufferBlocks: number,
 ): Observable<DestinationBlock> => {
 	let lastNumber: number | null = null;
 	let failures = 0;
-	const emitAt = (number: number) =>
-		tap<TxEvents>(() => {
-			lastNumber = number;
-			failures = 0;
-		});
+	const markRead = (number: number) => {
+		lastNumber = number;
+		failures = 0;
+	};
+
+	const readPastBlock = (
+		api: Api<ChainId>,
+		number: number,
+		tipHash: HexString,
+	) =>
+		from(getPastBlockEvents(api, number, tipHash)).pipe(
+			tap(() => markRead(number)),
+			catchError((error) => {
+				logger.warn("[xcm arrival] skipping a block that could not be read", {
+					chainId,
+					at,
+					number,
+					error,
+				});
+				markRead(number);
+				return EMPTY;
+			}),
+		);
 
 	const watch = (): Observable<DestinationBlock> =>
 		getApi$(chainId).pipe(
@@ -507,17 +526,18 @@ const watchBlockEvents$ = (
 					concatMap(({ block, value }) => {
 						const missing =
 							lastNumber !== null && block.number > lastNumber
-								? range(lastNumber + 1, block.number)
+								? range(
+										Math.max(lastNumber + 1, block.number - bufferBlocks),
+										block.number,
+									)
 								: [];
 						return concat(
 							from(missing).pipe(
-								concatMap((number) =>
-									from(getPastBlockEvents(api, number, block.hash)).pipe(
-										emitAt(number),
-									),
-								),
+								concatMap((number) => readPastBlock(api, number, block.hash)),
 							),
-							of(getXcmBlockEvents(value)).pipe(emitAt(block.number)),
+							of(getXcmBlockEvents(value)).pipe(
+								tap(() => markRead(block.number)),
+							),
 						);
 					}),
 				);
@@ -543,7 +563,7 @@ const watchBlockEvents$ = (
 
 const getBlockEvents$ = (chainId: ChainId, at: "best" | "finalized") =>
 	getCachedObservable$("xcmBlockEvents$", `${chainId}::${at}`, () =>
-		watchBlockEvents$(chainId, at).pipe(
+		watchBlockEvents$(chainId, at, getArrivalBufferBlocks(chainId)).pipe(
 			shareReplay({ bufferSize: 1, refCount: true }),
 		),
 	);
@@ -577,16 +597,32 @@ const trackXcmArrival$ = ({
 		}),
 	);
 
-export const trackXcmArrivals = () =>
-	transactions$
+const forgetDismissedArrivals = (kept: Set<TransactionId>) => {
+	const arrivals = arrivalsSubject.getValue();
+	const dismissed = Object.keys(arrivals).filter((id) => !kept.has(id));
+	if (dismissed.length) arrivalsSubject.next(omit(arrivals, dismissed));
+};
+
+export const trackXcmArrivals = () => {
+	const tracked = new Set<TransactionId>();
+	return transactions$
 		.pipe(
-			mergeMap((transactions) => transactions.filter(isXcmArrivalRecord)),
-			distinct(({ id }) => id),
+			mergeMap((transactions) => {
+				const ids = new Set(transactions.map(({ id }) => id));
+				for (const id of tracked) if (!ids.has(id)) tracked.delete(id);
+				forgetDismissedArrivals(ids);
+				return transactions.filter(
+					(tx): tx is XcmArrivalRecord =>
+						isXcmArrivalRecord(tx) && !tracked.has(tx.id),
+				);
+			}),
+			tap(({ id }) => tracked.add(id)),
 			mergeMap(trackXcmArrival$),
 		)
 		.subscribe(([id, arrival]) => {
 			arrivalsSubject.next({ ...arrivalsSubject.getValue(), [id]: arrival });
 		});
+};
 
 export const getTrackedXcmArrival = (id: TransactionId): XcmArrival | null =>
 	arrivalsSubject.getValue()[id] ?? null;

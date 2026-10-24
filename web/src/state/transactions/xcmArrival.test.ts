@@ -1,3 +1,4 @@
+import { range } from "lodash-es";
 import { BehaviorSubject, firstValueFrom, Subject, throwError } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { dotFromPeople } from "../../features/swap/routes/xcm/xcmFromPeople.fixtures";
@@ -57,8 +58,12 @@ vi.mock("../../papi/getApi", async () => {
 						Events: {
 							watchValue: ({ at }: { at: "best" | "finalized" }) =>
 								chains.streams[chainId]?.(at),
-							getValue: async ({ at }: { at: string }) =>
-								chains.pastBlocks[Number(at.replace("0xhash", ""))],
+							getValue: async ({ at }: { at: string }) => {
+								const block =
+									chains.pastBlocks[Number(at.replace("0xhash", ""))];
+								if (!block) throw new Error(`block ${at} unavailable`);
+								return block;
+							},
 						},
 						BlockHash: {
 							getValue: async (number: number, { at }: { at: string }) => {
@@ -482,14 +487,15 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(true);
 	});
 
-	it("keeps tracking after the transaction record is dismissed", () => {
-		const { record$, finalizedBlockEvents$, arrivals } = track(
+	it("stops tracking when the record is dismissed after the origin finalized", () => {
+		const { record$, finalizedBlockEvents$, arrivals, isComplete } = track(
 			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),
 		);
 		record$.next(undefined);
 		finalizedBlockEvents$.next(block(ourArrival));
 
-		expect(arrivals.at(-1)?.status).toBe("arrived");
+		expect(arrivals).toEqual([{ status: "in-transit", messageId: MESSAGE_ID }]);
+		expect(isComplete()).toBe(true);
 	});
 
 	it("reports a failure on Hydration once finalized", () => {
@@ -715,6 +721,64 @@ describe("trackXcmArrivals", () => {
 			received: 9995190152n,
 			finalized: true,
 		});
+		subscription.unsubscribe();
+	});
+
+	it("reads back no more than the buffer window after a long gap", async () => {
+		const finalized$ = new Subject<BlockUpdate>();
+		chains.streams = {
+			hydration: (at) => (at === "finalized" ? finalized$ : new Subject()),
+		};
+		chains.pastBlocks = Object.fromEntries(
+			range(90, 100).map((number) => [
+				number,
+				inPhase(number === 95 ? ourArrival : []),
+			]),
+		);
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		finalized$.next(atBlock(10, []));
+		finalized$.next(atBlock(100, []));
+		await vi.waitFor(() =>
+			expect(getTrackedXcmArrival("to-hydration")?.status).toBe("arrived"),
+		);
+
+		expect(chains.pastReads.map(({ number }) => number)).toEqual(
+			range(90, 100),
+		);
+		subscription.unsubscribe();
+	});
+
+	it("skips a block it cannot read and goes on with the next ones", async () => {
+		const finalized$ = new Subject<BlockUpdate>();
+		chains.streams = {
+			hydration: (at) => (at === "finalized" ? finalized$ : new Subject()),
+		};
+		chains.pastBlocks = { 12: inPhase(ourArrival) };
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		finalized$.next(atBlock(10, []));
+		finalized$.next(atBlock(13, []));
+		await vi.waitFor(() =>
+			expect(getTrackedXcmArrival("to-hydration")?.status).toBe("arrived"),
+		);
+
+		expect(chains.pastReads.map(({ number }) => number)).toEqual([11, 12]);
+		subscription.unsubscribe();
+	});
+
+	it("forgets the arrival of a dismissed record", async () => {
+		const hydration$ = new Subject<BlockUpdate>();
+		chains.streams = { hydration: () => hydration$ };
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		hydration$.next(atBlock(1, ourArrival));
+		await vi.waitFor(() =>
+			expect(getTrackedXcmArrival("to-hydration")?.status).toBe("arrived"),
+		);
+
+		dismissTransaction("to-hydration");
+		expect(getTrackedXcmArrival("to-hydration")).toBeNull();
 		subscription.unsubscribe();
 	});
 
