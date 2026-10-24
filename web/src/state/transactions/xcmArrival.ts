@@ -1,12 +1,15 @@
-import { isEqual } from "lodash-es";
-import type { HexString } from "polkadot-api";
+import { findLast, isEqual, range } from "lodash-es";
+import type { BlockInfo, HexString } from "polkadot-api";
 import {
 	BehaviorSubject,
 	catchError,
 	combineLatest,
+	concat,
+	concatMap,
 	distinct,
 	distinctUntilChanged,
 	filter,
+	from,
 	map,
 	mergeMap,
 	type Observable,
@@ -19,7 +22,7 @@ import {
 	takeWhile,
 	timer,
 } from "rxjs";
-import { getApi$ } from "../../papi/getApi";
+import { type Api, getApi$ } from "../../papi/getApi";
 import { getChainById, isChainIdHydration } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import { parseTokenId } from "../../registry/tokens/helpers";
@@ -253,9 +256,17 @@ const getOriginState = (
 	record: TransactionRecord,
 	destinationParaId: number,
 ): OriginState => {
-	if (record.status === "failed") return { status: "failed" };
 	const sent = getSentMessage(record.txEvents, destinationParaId);
-	return sent ? { status: "sent", ...sent } : { status: "pending" };
+	if (sent) return { status: "sent", ...sent };
+	if (record.status !== "failed") return { status: "pending" };
+	const lastInclusion = findLast(
+		record.txEvents,
+		({ type }) =>
+			type !== "pending" && type !== "created" && type !== "broadcasted",
+	);
+	return lastInclusion?.type === "inBestBlock"
+		? { status: "pending" }
+		: { status: "failed" };
 };
 
 const isOriginSettled = (origin: OriginState) =>
@@ -333,9 +344,7 @@ const isFinalArrival = (arrival: XcmArrival) => {
 export const getArrivalBufferBlocks = (destination: ChainId) =>
 	isChainIdHydration(destination) ? 10 : 30;
 
-export const getXcmBlockEvents = (
-	records: { phase: { type: string }; event: TxEvents[number] }[],
-): TxEvents =>
+export const getXcmBlockEvents = (records: BlockRecords): TxEvents =>
 	records
 		.filter(({ phase }) => phase.type !== "ApplyExtrinsic")
 		.map(({ event }) => event);
@@ -412,10 +421,55 @@ export const getXcmArrival$ = ({
 	);
 };
 
+const getPastBlockEvents = async (
+	api: Api<ChainId>,
+	number: number,
+	tipHash: HexString,
+): Promise<TxEvents> => {
+	const hash = await api.query.System.BlockHash.getValue(number, {
+		at: tipHash,
+	});
+	return getXcmBlockEvents(
+		await api.query.System.Events.getValue({ at: hash }),
+	);
+};
+
+type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
+type BlockEventsUpdate = {
+	tip: BlockInfo;
+	missing: number[];
+	events: TxEvents;
+};
+
+// watchValue only reports the latest block of its branch, so blocks that pass while a
+// query is in flight, or that finalize together, are read back through the tip
 const getBlockEvents$ = (chainId: ChainId, at: "best" | "finalized") =>
 	getApi$(chainId).pipe(
-		switchMap((api) => api.query.System.Events.watchValue({ at })),
-		map(({ value }) => getXcmBlockEvents(value)),
+		switchMap((api) => {
+			const blocks$: Observable<{ block: BlockInfo; value: BlockRecords }> =
+				api.query.System.Events.watchValue({ at });
+			return blocks$.pipe(
+				scan(
+					(previous, { block, value }): BlockEventsUpdate => ({
+						tip: block,
+						missing: previous
+							? range(previous.tip.number + 1, block.number)
+							: [],
+						events: getXcmBlockEvents(value),
+					}),
+					null as BlockEventsUpdate | null,
+				),
+				filter((update): update is BlockEventsUpdate => !!update),
+				concatMap(({ tip, missing, events }) =>
+					concat(
+						from(missing).pipe(
+							concatMap((number) => getPastBlockEvents(api, number, tip.hash)),
+						),
+						of(events),
+					),
+				),
+			);
+		}),
 		retry(BLOCK_STREAM_RETRY),
 	);
 

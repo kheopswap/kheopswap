@@ -52,6 +52,12 @@ describe("getTokenById$", () => {
 		expect(await loaded).toEqual({ status: "loaded", token: undefined });
 	});
 
+	it("reports a malformed token id as loaded and missing", async () => {
+		expect(await firstValueFrom(getTokenById$("not-a-token" as never))).toEqual(
+			{ status: "loaded", token: undefined },
+		);
+	});
+
 	it("resolves a known token with the chain's status", async () => {
 		expect(await firstValueFrom(getTokenById$("native::pasah"))).toEqual({
 			status: "loaded",

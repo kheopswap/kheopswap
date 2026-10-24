@@ -43,7 +43,12 @@ vi.mock("../../papi/getApi", async () => {
 					System: {
 						Events: {
 							watchValue: ({ at }: { at: "best" | "finalized" }) =>
-								hydration[`${at}$`].pipe(map((value) => ({ value }))),
+								hydration[`${at}$`].pipe(
+									map((value, index) => ({
+										block: { number: index, hash: `0x${index}` },
+										value,
+									})),
+								),
 						},
 					},
 				},
