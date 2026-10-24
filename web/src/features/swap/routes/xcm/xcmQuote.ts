@@ -318,12 +318,12 @@ export const getNewAccountMinimum = ({
 	existentialDeposit: bigint;
 	destinationBalance: bigint;
 	isSufficient: boolean;
-}): bigint | null =>
-	isSufficient &&
-	destinationBalance < existentialDeposit &&
-	trappedPlancks < sent
-		? existentialDeposit + sent - trappedPlancks
-		: null;
+}): bigint | null => {
+	if (!isSufficient || destinationBalance >= existentialDeposit) return null;
+	const keptFee = sent - trappedPlancks;
+	const isTrappedBelowDeposit = keptFee > 0n || sent < existentialDeposit;
+	return isTrappedBelowDeposit ? existentialDeposit + keptFee : null;
+};
 
 const MINIMUM_DISPLAY_DECIMALS = 4;
 

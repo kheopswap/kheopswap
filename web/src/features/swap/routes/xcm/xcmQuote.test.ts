@@ -803,8 +803,21 @@ describe("Asset Hub to People", () => {
 			expect(minimum(0n, false)).toBeNull();
 		});
 
-		it("does not apply when the destination kept no fee, as execution never started", () => {
-			expect(minimum(0n, true, dotToPeopleTrapped.amount)).toBeNull();
+		it("is the existential deposit when a destination that charges nothing trapped everything sent", () => {
+			expect(dotToPeopleTrapped.amount).toBeLessThan(PEOPLE_ED);
+			expect(minimum(0n, true, dotToPeopleTrapped.amount)).toBe(PEOPLE_ED);
+		});
+
+		it("does not apply when everything sent was trapped although it covered the deposit", () => {
+			expect(
+				getNewAccountMinimum({
+					sent: PEOPLE_ED,
+					trappedPlancks: PEOPLE_ED,
+					existentialDeposit: PEOPLE_ED,
+					destinationBalance: 0n,
+					isSufficient: true,
+				}),
+			).toBeNull();
 		});
 
 		it("is said rounded up, with the deposit it covers", () => {
