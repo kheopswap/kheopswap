@@ -39,6 +39,6 @@ Steps:
 - `Transaction fee` reads `0 PAS` until a sender is selected and the estimate arrives.
 - A self-transfer leaves the balance unchanged except for the fee. Check that the drop matches the fee, not the amount.
 - The amount stays filled after a successful submit (seen 2026-10-24).
-- The Paseo signing break (see `../SKILL.md`) applies here too: on 2026-10-24 the dialog read `Transfer PAS`, `Transaction failed`, `PJS does not support this signed-extension: AsScarcity`, and closed about 5 s later. Fall back to `#/polkadot/transfer` with ≤ 0.01 DOT, sent to the test account itself.
+- Signing on Paseo needs the Talisman build from `~/.kheopswap/talisman.zip` (see `../SKILL.md`). On 2026-10-24, with 3.12.0, a 0.1 PAS self-transfer showed the popup `Approve Request ... Transfer 0.1 PAS to <account name>` and ended at `Transaction succeeded` with `Effective fee 0.0009 PAS`. With the Web Store build, the dialog reads `Transaction failed`, `PJS does not support this signed-extension: AsScarcity`, and closes about 5 s later.
 - Never send to an address you can't name as a user-owned test account.
 - The follow-up dialog ignores `Escape` in every state. Close it with `agent-browser find role button click --name "CLOSE" --exact`.

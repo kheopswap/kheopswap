@@ -19,11 +19,11 @@ Every launch restores the same Talisman backup into a fresh Chromium profile, so
 |---|---|---|
 | `talisman.json` | yes | A Talisman backup (support page → Backup → Save). |
 | `talisman.password` | yes | The password of the wallet the backup came from. |
-| `talisman.zip` | no | A Talisman build, used when the Chrome Web Store download fails. |
+| `talisman.zip` | no | A Talisman build. When it exists, it replaces the Chrome Web Store version. |
 
 `launch.sh` checks both required files before it starts anything, and prints how to make a missing one. To make the backup, lock Talisman in your own browser and click the version number on its login page 10 times: the support page opens. Click Backup, then Save, and move the download to `~/.kheopswap/talisman.json`. Keep the folder at `700` and the files at `600`. Use a wallet that holds only test accounts, because every container gets a copy.
 
-The container installs Talisman from the Chrome Web Store, or from `talisman.zip` when the download fails. `launch.sh` and the doctor print the source and version. Restore and unlock go through Talisman's own pages: `support.html` → Restore, then `popup.html` → Unlock. Logs are in `$ARTIFACTS/setup-wallet.log`.
+The container installs Talisman from `talisman.zip` when it exists, and from the Chrome Web Store otherwise. Keep a build there that supports `createTransaction`: it is the one that signs on Paseo (see Networks). `launch.sh` and the doctor print the source and version. Restore and unlock go through Talisman's own pages: `support.html` → Restore, then `popup.html` → Unlock. Logs are in `$ARTIFACTS/setup-wallet.log`.
 
 After the restore, Talisman is connected only to the sites the backup authorized. Connect the app once per launch (see `features/network-and-account.md`). Talisman locks itself after 15 idle minutes. `talisman.mjs` unlocks a locked popup with `talisman.password`, and `talisman.mjs unlock` unlocks it outside a request.
 
@@ -41,7 +41,7 @@ Parallel runs share the wallet's accounts. Two sends from one account on one net
 - **Polkadot (`#/polkadot/...`) is the fallback when Paseo is broken.** Paseo breaks from time to time: RPC down, or a runtime upgrade the app can't sign for yet. Use mainnet only for that, with tiny amounts (≤ 0.01 DOT), and say in the report that mainnet was used and why.
 - Kusama and Westend: read-only checks only.
 
-Known Paseo break, first seen 2026-10-03 and still there on 2026-10-24 with Talisman 3.11.0: every submit fails before Talisman opens. The follow-up dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity`. Before the runtime upgrade handled in #148, it named `AsPgas`. polkadot-api's `pjs-signer` rejects signed extensions it does not know. Since #154 it lets the wallet build the transaction when the wallet supports `createTransaction`, which Talisman does not ship yet (TalismanSociety/talisman#2670). Until it does, prove signing flows on Polkadot and report the Paseo failure as a finding.
+Signing on Paseo needs a Talisman build whose signer has `createTransaction` (TalismanSociety/talisman#2670). polkadot-api's `pjs-signer` rejects signed extensions it does not know, such as Paseo's `AsScarcity`, and since #154 the app lets a wallet with `createTransaction` build the transaction instead. Talisman 3.11.0 from the Chrome Web Store lacks it, so put a build that has it in `~/.kheopswap/talisman.zip`. On 2026-10-24, with 3.12.0 from the zip, a PAS self-transfer and a PAS → USDC swap signed and reached `Transaction succeeded` on Paseo. Without such a build, every Paseo submit fails before Talisman opens: the follow-up dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity`. `launch.sh` and the doctor print the Talisman version and source.
 
 ## Launch
 
