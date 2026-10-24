@@ -302,6 +302,7 @@ export const useXcmRoute = ({
 		slippage,
 	});
 	const leftovers = useCanReceiveSwapLeftovers({
+		route: destinationSwapRoute,
 		beneficiary: destinationSwapRoute && beneficiary,
 		pathQuote: destinationSwapRoute ? pathQuote.quote : undefined,
 	});
