@@ -142,6 +142,7 @@ const useSwapProvider = () => {
 
 	const swapPlancksOut = xcmRoute ? xcm.swapPlancksOut : pricing.swapPlancksOut;
 	const risk = useSwapRisk({
+		signer: formState.from,
 		route,
 		totalIn: pricing.totalIn,
 		plancksOut: swapPlancksOut,

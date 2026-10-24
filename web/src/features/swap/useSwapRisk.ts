@@ -37,12 +37,14 @@ const useSentValue = (
 };
 
 export const useSwapRisk = ({
+	signer,
 	route,
 	totalIn,
 	plancksOut,
 	deliveryFee,
 	priceImpact,
 }: {
+	signer: string | undefined;
 	route: SwapRoute | null;
 	totalIn: bigint | null | undefined;
 	plancksOut: bigint | null | undefined;
@@ -70,7 +72,7 @@ export const useSwapRisk = ({
 		[priceImpact, valueLoss],
 	);
 
-	const key = `${route?.tokenIdIn}>${route?.tokenIdOut}:${totalIn}`;
+	const key = `${signer}:${route?.tokenIdIn}>${route?.tokenIdOut}:${totalIn}`;
 	const [acknowledgement, setAcknowledgement] =
 		useState<RiskAcknowledgement | null>(null);
 	useEffect(() => {

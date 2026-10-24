@@ -39,7 +39,8 @@ const ROUTE = {
 
 type Props = Parameters<typeof useSwapRisk>[0];
 
-const severeSwap = (totalIn: bigint): Props => ({
+const severeSwap = (totalIn: bigint, signer = "account-1"): Props => ({
+	signer,
 	route: ROUTE,
 	totalIn,
 	plancksOut: totalIn / 2n,
@@ -63,6 +64,35 @@ describe("useSwapRisk", () => {
 		expect(result.current.isAcknowledged).toBe(false);
 
 		rerender(severeSwap(1_000_000n));
+		expect(result.current.isAcknowledged).toBe(false);
+	});
+
+	it("drops the acknowledgement once the amount is cleared", () => {
+		const { result, rerender } = renderHook(useSwapRisk, {
+			initialProps: severeSwap(1_000_000n),
+		});
+		act(() => result.current.onAcknowledgeChange(true));
+
+		rerender({
+			...severeSwap(1_000_000n),
+			totalIn: null,
+			plancksOut: undefined,
+			priceImpact: undefined,
+		});
+		rerender(severeSwap(1_000_000n));
+		expect(result.current.isAcknowledged).toBe(false);
+	});
+
+	it("drops the acknowledgement once the account changes, even if it changes back", () => {
+		const { result, rerender } = renderHook(useSwapRisk, {
+			initialProps: severeSwap(1_000_000n, "account-1"),
+		});
+		act(() => result.current.onAcknowledgeChange(true));
+
+		rerender(severeSwap(1_000_000n, "account-2"));
+		expect(result.current.isAcknowledged).toBe(false);
+
+		rerender(severeSwap(1_000_000n, "account-1"));
 		expect(result.current.isAcknowledged).toBe(false);
 	});
 
@@ -101,6 +131,7 @@ describe("useSwapRisk", () => {
 		const DOT = "native::pah" as TokenId;
 		const HYDRATION_DOT = "hydration-asset::hydration::5" as TokenId;
 		const transfer = (totalIn: bigint, received: bigint): Props => ({
+			signer: "account-1",
 			route: {
 				kind: "xcm-transfer",
 				origin: "pah",
