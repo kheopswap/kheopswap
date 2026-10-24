@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import type { TokenValuation } from "../state/prices";
 import type { AccountBalanceWithStable } from "../types/balances";
+import { getAmmOutput } from "../utils/ammMath";
 import {
 	type HoldingValuation,
 	valuationOf,
@@ -98,29 +100,48 @@ describe("valueHoldingsTogether", () => {
 		balance({ tokenPlancks: 100n }, valuationOf(90n)),
 		balance({ address: "5Other", tokenPlancks: 100n }, valuationOf(90n)),
 	]);
+	const tokenValuation: TokenValuation = {
+		tokenId,
+		nativeTokenId: "native::pah",
+		stableTokenId: "native::pah",
+		lowLiquidityFloorStablePlancks: 0n,
+		reservesNativeToToken: [1_000_000n, 1_000_000n],
+		reservesNativeToStable: null,
+		lpFee: 0,
+		isLoading: false,
+	};
 
-	it("replaces the sum of per-account quotes with the quote for the whole holding", () => {
+	it("values the whole holding through the pool instead of summing per-account quotes", () => {
 		const valued = valueHoldingsTogether(summary, {
-			[tokenId]: { ...valuationOf(150n), isLoadingStablePlancks: false },
+			[tokenId]: tokenValuation,
 		});
 		expect(valued[tokenId]).toMatchObject({
 			tokenPlancks: 200n,
-			stablePlancks: 150n,
+			status: "priced",
+			stablePlancks: getAmmOutput(200n, 1_000_000n, 1_000_000n, 0).amountOut,
+			isLoadingStablePlancks: false,
 		});
 	});
 
 	it("flags the whole holding when its pool is too thin", () => {
 		const valued = valueHoldingsTogether(summary, {
 			[tokenId]: {
-				status: "thin-pool",
-				stablePlancks: null,
-				isLoadingStablePlancks: false,
+				...tokenValuation,
+				lowLiquidityFloorStablePlancks: 10n ** 9n,
 			},
 		});
 		expect(valued[tokenId]).toMatchObject({
 			stablePlancks: null,
 			status: "thin-pool",
 		});
+	});
+
+	it("revalues a changed balance from the same token valuation", () => {
+		const grown = getBalancesByTokenSummary([
+			balance({ tokenPlancks: 10n ** 9n }, valuationOf(90n)),
+		]);
+		const valued = valueHoldingsTogether(grown, { [tokenId]: tokenValuation });
+		expect(valued[tokenId]).toMatchObject({ status: "holding-dwarfs-pool" });
 	});
 
 	it("shows the per-account sum as still loading until the whole holding is valued", () => {

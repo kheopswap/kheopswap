@@ -82,7 +82,7 @@ export const getStablePlancks$ = (
 	);
 };
 
-type TokenValuation = {
+export type TokenValuation = {
 	tokenId: TokenId;
 	nativeTokenId: TokenId;
 	stableTokenId: TokenId;
@@ -93,7 +93,9 @@ type TokenValuation = {
 	isLoading: boolean;
 };
 
-const getTokenValuation$ = (tokenId: TokenId): Observable<TokenValuation> =>
+export const getTokenValuation$ = (
+	tokenId: TokenId,
+): Observable<TokenValuation> =>
 	getCachedObservable$("getTokenValuation$", tokenId, () =>
 		combineLatest([
 			assetHub$,
