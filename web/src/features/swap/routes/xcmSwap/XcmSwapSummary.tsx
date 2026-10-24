@@ -34,7 +34,7 @@ const getMinReceivedExplanation = ({ route }: XcmPathSwapDetails) => {
 		case "xcm-swap":
 			return `The swap reverts on ${origin} if it would output less than the minimum your slippage tolerance allows. ${destination} then takes its fee from what arrives.`;
 		case "xcm-destination-swap":
-			return `${destination} takes its fee from what arrives, then swaps the rest. If the swap would output less than the minimum your slippage tolerance allows, it does not happen and what arrived stays in your ${destination} account.`;
+			return `${destination} takes its fee from what arrives, then swaps the rest. If a step of the swap would output less than the minimum your slippage tolerance allows, the swap stops there and the token it holds at that point goes to your ${destination} account.`;
 	}
 };
 
