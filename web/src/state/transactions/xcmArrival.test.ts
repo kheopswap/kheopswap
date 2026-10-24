@@ -354,6 +354,71 @@ describe("arrival on Asset Hub", () => {
 	});
 });
 
+describe("arrival on People", () => {
+	const PEOPLE_PARA_ID = getChainById("paspeople").paraId;
+	const PEOPLE_MESSAGE_ID =
+		"0xaf19eb7ec0977875d46022870a6a30b75627f426c48647787367b05e405b1f82";
+	const peopleTarget: XcmDepositTarget = {
+		tokenId: "native::paspeople",
+		beneficiary: BENEFICIARY,
+	};
+	const inPhase = (type: string, event: TxEvents[number]) => ({
+		phase: { type },
+		event,
+	});
+	const extrinsicSuccess = {
+		type: "System",
+		value: { type: "ExtrinsicSuccess", value: {} },
+	};
+
+	it("follows a teleport whose message People processes at the end of a block", () => {
+		const sent = getRecord("finalized", [
+			sentTo(PEOPLE_PARA_ID, PEOPLE_MESSAGE_ID),
+		]);
+		expect(getSentMessageId(sent.txEvents, PEOPLE_PARA_ID)).toBe(
+			PEOPLE_MESSAGE_ID,
+		);
+
+		const blockEvents = getXcmBlockEvents([
+			inPhase("ApplyExtrinsic", extrinsicSuccess),
+			inPhase("ApplyExtrinsic", extrinsicSuccess),
+			inPhase("Finalization", {
+				type: "Balances",
+				value: { type: "Issued", value: { amount: 10000000000n } },
+			}),
+			inPhase("Finalization", {
+				type: "Balances",
+				value: {
+					type: "Deposit",
+					value: { who: BENEFICIARY, amount: 10000000000n },
+				},
+			}),
+			inPhase("Finalization", {
+				type: "MessageQueue",
+				value: {
+					type: "Processed",
+					value: {
+						id: PEOPLE_MESSAGE_ID,
+						origin: { type: "Sibling", value: 1000 },
+						weight_used: { ref_time: 181708000n, proof_size: 3593n },
+						success: true,
+					},
+				},
+			}),
+		]);
+		expect(
+			findArrival(blockEvents, {
+				messageId: PEOPLE_MESSAGE_ID,
+				target: peopleTarget,
+			}),
+		).toEqual({ success: true, received: 10000000000n });
+	});
+
+	it("keeps 30 blocks of People events", () => {
+		expect(getArrivalBufferBlocks("paspeople")).toBe(30);
+	});
+});
+
 describe("isAwaitingXcmArrival", () => {
 	const finalized = getRecord("finalized", [sentTo(HYDRATION_PARA_ID)]);
 
