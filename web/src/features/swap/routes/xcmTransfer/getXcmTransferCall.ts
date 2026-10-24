@@ -20,7 +20,7 @@ import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcm
 import type { XcmTransferRoute } from "../swapRoute";
 import { getXcmTransferType } from "../xcmLanes";
 
-type XcmTransferArgs = Parameters<
+export type XcmTransferArgs = Parameters<
 	Api<"pah">["tx"]["PolkadotXcm"]["transfer_assets_using_type_and_then"]
 >[0];
 
@@ -37,6 +37,9 @@ const getOriginAssetLocation = (
 ): XcmV5Multilocation => {
 	switch (route.origin) {
 		case "pah":
+		case "kah":
+		case "wah":
+		case "pasah":
 			return getXcmV5MultilocationFromTokenId(route.tokenIdIn);
 		case "hydration":
 			if (
