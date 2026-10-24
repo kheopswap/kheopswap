@@ -1,7 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	type Mock,
+	vi,
+} from "vitest";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { getAmmPath } from "../ammPath";
@@ -425,6 +433,60 @@ describe("useXcmQuote", () => {
 			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
 			data: { success: false, failure: { kind: "destination-unavailable" } },
 		});
+	});
+
+	describe("when a chain never answers", () => {
+		const NEVER = new Promise<never>(() => {});
+
+		beforeEach(() => {
+			vi.useFakeTimers({ shouldAdvanceTime: true });
+			givenDryRuns({
+				origin: dotSuccess.origin,
+				destination: dotSuccess.destination,
+			});
+		});
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
+		it.each([
+			[
+				"the origin dry run",
+				() => chain.dryRunCall.mockReturnValue(NEVER),
+				"origin-unavailable",
+			],
+			[
+				"the destination dry run",
+				() => chain.dryRunXcm.mockReturnValue(NEVER),
+				"destination-unavailable",
+			],
+			[
+				"the delivery fee",
+				() => chain.queryDeliveryFees.mockReturnValue(NEVER),
+				"delivery-fee-unavailable",
+			],
+		])(
+			"gives up on %s after 30 seconds, without asking again",
+			async (_, hang, kind) => {
+				hang();
+				const { result } = renderQuote();
+
+				await vi.advanceTimersByTimeAsync(29_000);
+				expect(result.current).toMatchObject({
+					isLoading: true,
+					data: undefined,
+				});
+
+				await vi.advanceTimersByTimeAsync(1_000);
+				await waitFor(() =>
+					expect(result.current.data).toEqual({
+						success: false,
+						failure: { kind },
+					}),
+				);
+				expect(result.current.isLoading).toBe(false);
+			},
+		);
 	});
 
 	it("quotes a transfer back from Hydration, asking Hydration's delivery fee without an asset id", async () => {

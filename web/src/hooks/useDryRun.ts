@@ -6,6 +6,11 @@ import type { TokenId } from "../registry/tokens/types";
 import type { AnyTransaction } from "../types/transactions";
 import { logger } from "../utils/logger";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
+import {
+	CHAIN_QUERY_TIMEOUT_MS,
+	retryOnceUnlessTimedOut,
+	withTimeout,
+} from "../utils/withTimeout";
 
 const XCM_VERSION = 5;
 
@@ -35,6 +40,35 @@ type DryRunCall = (
 const getSignedOrigin = (from: SS58String) =>
 	Enum("system", Enum("Signed", from));
 
+const queryDryRun = async (
+	chainId: ChainId,
+	from: SS58String,
+	call: AnyTransaction,
+) => {
+	try {
+		const api = await getApi(chainId);
+		const dryRunCall = api.apis.DryRunApi.dry_run_call as DryRunCall;
+
+		const dryRun = await dryRunCall(
+			getSignedOrigin(from),
+			call.decodedCall,
+			XCM_VERSION,
+			{ at: "best" },
+		);
+
+		logger.debug("[dry run]", {
+			dryRun,
+			call: call.decodedCall,
+			chainId: api.chainId,
+		});
+
+		return dryRun;
+	} catch (err) {
+		logger.error("[dry run]", { err, call: call.decodedCall });
+		throw err;
+	}
+};
+
 export function useDryRun<Id extends ChainId>(
 	props: UseDryRunProps<Id>,
 ): UseQueryResult<DryRun<Id> | null>;
@@ -53,34 +87,15 @@ export function useDryRun({
 			safeQueryKeyPart(call?.decodedCall),
 			safeQueryKeyPart(balances),
 		],
-		queryFn: async () => {
-			if (!chainId || !from || !call) return null;
-
-			try {
-				const api = await getApi(chainId);
-				const dryRunCall = api.apis.DryRunApi.dry_run_call as DryRunCall;
-
-				const dryRun = await dryRunCall(
-					getSignedOrigin(from),
-					call.decodedCall,
-					XCM_VERSION,
-					{ at: "best" },
-				);
-
-				logger.debug("[dry run]", {
-					dryRun,
-					call: call.decodedCall,
-					chainId: api.chainId,
-				});
-
-				return dryRun;
-			} catch (err) {
-				logger.error("[dry run]", { err, call: call.decodedCall });
-				throw err;
-			}
-		},
+		queryFn: ({ signal }) =>
+			chainId && from && call
+				? withTimeout(queryDryRun(chainId, from, call), {
+						ms: CHAIN_QUERY_TIMEOUT_MS,
+						signal,
+					})
+				: null,
 		enabled,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
 		structuralSharing: false,

@@ -16,6 +16,11 @@ import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
+import {
+	CHAIN_QUERY_TIMEOUT_MS,
+	retryOnceUnlessTimedOut,
+	withTimeout,
+} from "../../../../utils/withTimeout";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import {
@@ -91,11 +96,16 @@ const useXcmDeliveryFee = (
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!message,
-		queryFn: async () =>
+		queryFn: async ({ signal }) =>
 			route && message
-				? parseDeliveryFee(await queryDeliveryFees(route, message))
+				? parseDeliveryFee(
+						await withTimeout(queryDeliveryFees(route, message), {
+							ms: CHAIN_QUERY_TIMEOUT_MS,
+							signal,
+						}),
+					)
 				: null,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
@@ -164,14 +174,17 @@ export const useXcmQuote = ({
 			safeQueryKeyPart(balances.destination),
 		],
 		enabled: !!route && !!beneficiary && !!message,
-		queryFn: async () =>
+		queryFn: async ({ signal }) =>
 			route && beneficiary && message
-				? parseDestinationDryRun(await queryDestinationDryRun(route, message), {
-						tokenId: route.tokenIdOut,
-						beneficiary,
-					})
+				? parseDestinationDryRun(
+						await withTimeout(queryDestinationDryRun(route, message), {
+							ms: CHAIN_QUERY_TIMEOUT_MS,
+							signal,
+						}),
+						{ tokenId: route.tokenIdOut, beneficiary },
+					)
 				: null,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});

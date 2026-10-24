@@ -16,6 +16,11 @@ import { isBigInt } from "../../../../utils/isBigInt";
 import { plancksToTokens } from "../../../../utils/plancks";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import {
+	CHAIN_QUERY_TIMEOUT_MS,
+	retryOnceUnlessTimedOut,
+	withTimeout,
+} from "../../../../utils/withTimeout";
+import {
 	type AmmPathQuote,
 	getLastHop,
 	getPathTokenIds,
@@ -206,9 +211,14 @@ const useXcmCall = (
 ) =>
 	useQuery({
 		queryKey: ["xcmCall", safeQueryKeyPart(inputs), beneficiary],
-		queryFn: () =>
-			inputs && beneficiary ? getXcmCall(inputs, beneficiary) : null,
-		retry: 1,
+		queryFn: ({ signal }) =>
+			inputs && beneficiary
+				? withTimeout(getXcmCall(inputs, beneficiary), {
+						ms: CHAIN_QUERY_TIMEOUT_MS,
+						signal,
+					})
+				: null,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});

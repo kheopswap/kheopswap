@@ -15,6 +15,11 @@ import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcm
 import { useRelayChains } from "../../../../state/relay";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
+import {
+	CHAIN_QUERY_TIMEOUT_MS,
+	retryOnceUnlessTimedOut,
+	withTimeout,
+} from "../../../../utils/withTimeout";
 import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { type AmmPathQuoteState, useAmmPathQuote } from "../useAmmPathQuote";
@@ -94,9 +99,14 @@ const useDestinationNativeFee = ({
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!message,
-		queryFn: () =>
-			route && message ? queryDestinationNativeFee(route, message) : null,
-		retry: 1,
+		queryFn: ({ signal }) =>
+			route && message
+				? withTimeout(queryDestinationNativeFee(route, message), {
+						ms: CHAIN_QUERY_TIMEOUT_MS,
+						signal,
+					})
+				: null,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
