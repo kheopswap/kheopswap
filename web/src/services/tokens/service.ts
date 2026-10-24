@@ -74,7 +74,7 @@ export const getTokenById$ = (tokenId: TokenId) =>
 				}),
 			),
 			distinctUntilChanged<TokenState>(isEqual),
-			shareReplay(1),
+			shareReplay({ bufferSize: 1, refCount: true }),
 		);
 	});
 
