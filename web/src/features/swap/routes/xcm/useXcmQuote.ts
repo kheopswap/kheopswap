@@ -66,16 +66,8 @@ const queryDestinationDryRun = async (
 	message: XcmVersionedXcm,
 ) => {
 	const origin = getParachainLocation(route.origin);
-	switch (route.destination) {
-		case "pah": {
-			const api = await getApi(route.destination);
-			return api.apis.DryRunApi.dry_run_xcm(origin, message, { at: "best" });
-		}
-		case "hydration": {
-			const api = await getApi(route.destination);
-			return api.apis.DryRunApi.dry_run_xcm(origin, message, { at: "best" });
-		}
-	}
+	const api = await getApi(route.destination);
+	return api.apis.DryRunApi.dry_run_xcm(origin, message, { at: "best" });
 };
 
 const useXcmDeliveryFee = (
