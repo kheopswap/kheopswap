@@ -173,6 +173,9 @@ const renderDestinationSwap = (
 	);
 };
 
+const FEE_ESTIMATE_FAILED =
+	"Could not estimate the Polkadot Asset Hub fee: Hydration rejected a test withdrawal from your account";
+
 beforeEach(() => {
 	chain.canPriceFee = true;
 	chain.firstPoolInflow = 0n;
@@ -350,11 +353,7 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 
 	it.each([
 		[true, null, usdtToPink.hops[1]?.amountOut],
-		[
-			false,
-			"Hydration could not withdraw the amount and its fees from your account",
-			undefined,
-		],
+		[false, "Hydration rejected the withdrawal from your account", undefined],
 	])(
 		"with an amount above the balance (%s), leaves the shortfall to the input field and keeps the swap estimate",
 		async (hasInsufficientBalance, outputErrorMessage, swapPlancksOut) => {
@@ -382,9 +381,9 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 
 	it.each([
 		[true, null],
-		[false, "InsufficientBalance"],
+		[false, FEE_ESTIMATE_FAILED],
 	])(
-		"with an unfunded input (%s), leaves the shortfall to the input field even when the fee estimate cannot be sent",
+		"with an unfunded input (%s), leaves the shortfall to the input field, or says the fee estimate failed",
 		async (hasInsufficientBalance, outputErrorMessage) => {
 			chain.isUnfunded = true;
 			chain.hasInsufficientBalance = hasInsufficientBalance;
@@ -397,6 +396,16 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
 		},
 	);
+
+	it("reports a fee estimate that Hydration cannot withdraw as a fee estimate failure, not as a shortfall of the amount", async () => {
+		chain.dryRunCall.mockResolvedValue(pinkToAssetHubInsufficient.origin);
+		const { result } = renderDestinationSwap(usdtToPink);
+
+		await waitFor(() =>
+			expect(result.current.outputErrorMessage).toBe(FEE_ESTIMATE_FAILED),
+		);
+		expect(result.current.plan.submitGate.status).toBe("closed");
+	});
 
 	it("holds the gate on a balance change until the dry runs answer again", async () => {
 		chain.balanceIn = usdtToPink.amount * 2n;
@@ -439,7 +448,7 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		chain.balanceIn = 0n;
 		const { result, rerender } = renderDestinationSwap(usdtToPink);
 		await waitFor(() =>
-			expect(result.current.outputErrorMessage).toBe("InsufficientBalance"),
+			expect(result.current.outputErrorMessage).toBe(FEE_ESTIMATE_FAILED),
 		);
 		const unfundedEstimates = chain.dryRunCall.mock.calls.length;
 		rerender();

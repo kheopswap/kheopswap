@@ -59,6 +59,7 @@ export type XcmQuoteFailure =
 	| { kind: "nothing-deposited" }
 	| { kind: "delivery-fee-unavailable" }
 	| { kind: "destination-fee-unavailable" }
+	| { kind: "fee-estimate-failed"; cause: XcmQuoteFailure }
 	| { kind: "below-destination-fee" }
 	| { kind: "leftovers-unreceivable" }
 	| { kind: "call-unavailable" };
@@ -263,8 +264,10 @@ const ORIGIN_DISPATCH_FAILURES = new Set<XcmQuoteFailure["kind"]>([
 	"origin-rejected",
 ]);
 
-export const isOriginDispatchFailure = ({ kind }: XcmQuoteFailure) =>
-	ORIGIN_DISPATCH_FAILURES.has(kind);
+export const isOriginDispatchFailure = (failure: XcmQuoteFailure): boolean =>
+	failure.kind === "fee-estimate-failed"
+		? isOriginDispatchFailure(failure.cause)
+		: ORIGIN_DISPATCH_FAILURES.has(failure.kind);
 
 export const describeXcmQuoteFailure = (
 	failure: XcmQuoteFailure,
@@ -278,7 +281,7 @@ export const describeXcmQuoteFailure = (
 		case "origin-failed":
 			return failure.reason;
 		case "origin-withdraw-failed":
-			return `${origin} could not withdraw the amount and its fees from your account`;
+			return `${origin} rejected the withdrawal from your account`;
 		case "origin-rejected":
 			return `${origin} would reject the transfer: ${failure.xcmError}`;
 		case "message-not-forwarded":
@@ -297,6 +300,8 @@ export const describeXcmQuoteFailure = (
 			return `Could not estimate the ${origin} delivery fee`;
 		case "destination-fee-unavailable":
 			return `Could not estimate the ${destination} fee`;
+		case "fee-estimate-failed":
+			return `Could not estimate the ${destination} fee: ${origin} rejected a test withdrawal from your account`;
 		case "below-destination-fee":
 			return `Amount too low to cover the ${destination} fee`;
 		case "leftovers-unreceivable":

@@ -668,9 +668,7 @@ describe("Hydration to Asset Hub", () => {
 				{ kind: "origin-withdraw-failed" },
 				fromHydration,
 			),
-		).toBe(
-			"Hydration could not withdraw the amount and its fees from your account",
-		);
+		).toBe("Hydration rejected the withdrawal from your account");
 	});
 
 	it("names Hydration when it would reject the transfer", () => {
