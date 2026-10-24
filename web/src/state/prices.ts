@@ -136,15 +136,15 @@ const getTokenValuation$ = (tokenId: TokenId): Observable<TokenValuation> =>
 		),
 	);
 
+export type HoldingStablePlancks = Pick<
+	BalanceWithStable,
+	"stablePlancks" | "isLoadingStablePlancks" | "isLowLiquidity"
+>;
+
 export const getHoldingStablePlancks$ = (
 	tokenId: TokenId,
 	plancks: bigint | undefined,
-): Observable<
-	Pick<
-		BalanceWithStable,
-		"stablePlancks" | "isLoadingStablePlancks" | "isLowLiquidity"
-	>
-> =>
+): Observable<HoldingStablePlancks> =>
 	getTokenValuation$(tokenId).pipe(
 		map((valuation) => {
 			if (plancks === undefined)
