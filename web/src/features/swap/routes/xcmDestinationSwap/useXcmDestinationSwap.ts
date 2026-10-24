@@ -4,7 +4,7 @@ import {
 } from "@polkadot-api/descriptors";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useBalance } from "../../../../hooks/useBalance";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import { usePoolReservesByTokenIds } from "../../../../hooks/usePoolReservesByTokenIds";
@@ -85,8 +85,11 @@ const useDestinationNativeFee = ({
 	});
 	const isEstimateFailed = !!estimate.error || estimateLeg?.success === false;
 	const { refetch: refetchEstimate } = estimate;
+	const estimatedBalanceIn = useRef(balanceIn);
 	useEffect(() => {
-		if (balanceIn !== undefined && isEstimateFailed) refetchEstimate();
+		if (estimatedBalanceIn.current === balanceIn) return;
+		estimatedBalanceIn.current = balanceIn;
+		if (isEstimateFailed) refetchEstimate();
 	}, [balanceIn, isEstimateFailed, refetchEstimate]);
 
 	const fee = useQuery({
