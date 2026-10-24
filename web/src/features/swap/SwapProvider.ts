@@ -84,6 +84,7 @@ const useSwapProvider = () => {
 		appCommission: pricing.appCommission,
 		slippage: pricing.slippage,
 		edTokenIn: pricing.edTokenIn,
+		hasInsufficientBalance: pricing.hasInsufficientBalance,
 	});
 
 	const ammTransaction = useMemo<TransactionPlan>(

@@ -271,10 +271,7 @@ describe("useXcmQuote", () => {
 		);
 		expect(result.current.data).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 		expect(chain.dryRunXcm).not.toHaveBeenCalled();
 	});

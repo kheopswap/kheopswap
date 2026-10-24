@@ -41,6 +41,7 @@ import {
 	describeXcmQuoteFailure,
 	getXcmCallSpendings,
 	getXcmSubmitGate,
+	isOriginDispatchFailure,
 	type XcmQuoteResult,
 } from "./xcmQuote";
 
@@ -275,6 +276,7 @@ type UseXcmRouteProps = {
 	appCommission: bigint | null | undefined;
 	slippage: number;
 	edTokenIn: bigint | null | undefined;
+	hasInsufficientBalance: boolean;
 };
 
 export const useXcmRoute = ({
@@ -287,6 +289,7 @@ export const useXcmRoute = ({
 	appCommission,
 	slippage,
 	edTokenIn,
+	hasInsufficientBalance,
 }: UseXcmRouteProps) => {
 	const access = useMemo(
 		() => (route && account ? getRouteAccess(account, route) : null),
@@ -380,9 +383,21 @@ export const useXcmRoute = ({
 				].join(":")
 			: null,
 	);
+	const isBalanceShortfall =
+		hasInsufficientBalance &&
+		quote.data?.success === false &&
+		isOriginDispatchFailure(quote.data.failure);
+	const pathEstimate =
+		route?.kind === "xcm-destination-swap" ||
+		(route?.kind === "xcm-swap" && mirrorToken?.decimals === tokenOut?.decimals)
+			? pathQuote.quote?.amountOut
+			: undefined;
 	const shownReceived = shownQuote.data?.success
 		? shownQuote.data.quote.received
-		: undefined;
+		: isBalanceShortfall
+			? pathEstimate
+			: undefined;
+
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
@@ -390,10 +405,12 @@ export const useXcmRoute = ({
 			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
 		if (destinationSwap.errorMessage) return destinationSwap.errorMessage;
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
+		if (isBalanceShortfall) return null;
 		if (quote.data && !quote.data.success)
 			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
 	}, [
+		isBalanceShortfall,
 		access,
 		callQuery.error,
 		destinationSwap.errorMessage,
