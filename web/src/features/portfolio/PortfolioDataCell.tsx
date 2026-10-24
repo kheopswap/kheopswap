@@ -5,6 +5,7 @@ import type { Token } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
 import { cn } from "../../utils/cn";
 import { isBigInt } from "../../utils/isBigInt";
+import { LowLiquidityLabel } from "./LowLiquidityLabel";
 
 export const TokenBalancesSummary: FC<
 	BalanceWithStableSummary & {
@@ -19,6 +20,7 @@ export const TokenBalancesSummary: FC<
 	isLoadingStablePlancks,
 	stablePlancks,
 	isLoadingTokenPlancks,
+	isLowLiquidity,
 	isInitializing,
 	isPrice,
 }) => {
@@ -51,17 +53,21 @@ export const TokenBalancesSummary: FC<
 				/>
 			</div>
 			<div className="truncate text-xs text-muted">
-				<Tokens
-					token={stableToken}
-					plancks={stablePlancks ?? 0n}
-					pulse={isLoadingStablePlancks}
-					digits={2}
-					isPrice={isPrice}
-					className={cn(
-						!isBigInt(stablePlancks) && "invisible",
-						token.id === stableToken.id && "invisible",
-					)}
-				/>
+				{isLowLiquidity && !isPrice ? (
+					<LowLiquidityLabel />
+				) : (
+					<Tokens
+						token={stableToken}
+						plancks={stablePlancks ?? 0n}
+						pulse={isLoadingStablePlancks}
+						digits={2}
+						isPrice={isPrice}
+						className={cn(
+							!isBigInt(stablePlancks) && "invisible",
+							token.id === stableToken.id && "invisible",
+						)}
+					/>
+				)}
 			</div>
 		</div>
 	);

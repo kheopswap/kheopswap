@@ -6,6 +6,7 @@ export type BalanceWithStable = {
 	isLoadingTokenPlancks: boolean;
 	stablePlancks: bigint | null;
 	isLoadingStablePlancks: boolean;
+	isLowLiquidity: boolean;
 };
 
 export type BalanceWithStableSummary = BalanceWithStable & {
