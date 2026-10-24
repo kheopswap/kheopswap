@@ -3,7 +3,11 @@ import { useDryRun } from "../../hooks/useDryRun";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import type { Token, TokenId } from "../../registry/tokens/types";
-import type { TransactionFollowUp } from "../../state/transactions/types";
+import { useTransactionRecords } from "../../state/transactions/transactionStore";
+import {
+	isAwaitingInclusion,
+	type TransactionFollowUp,
+} from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { provideContext } from "../../utils/provideContext";
 import { useTransactionBalanceCheck } from "./useTransactionBalanceCheck";
@@ -100,7 +104,21 @@ const useTransactionProvider = ({
 		targetEvmChainId: ethereum.targetEvmChainId,
 		followUp,
 		transactionTitle,
+		onReset,
 	});
+
+	const transactionRecords = useTransactionRecords();
+	const signerAddress = ethereum.account?.address;
+	const hasTransactionAwaitingInclusion = useMemo(
+		() =>
+			transactionRecords.some(
+				(tx) =>
+					tx.account.address === signerAddress &&
+					tx.feeToken.chainId === chainId &&
+					isAwaitingInclusion(tx),
+			),
+		[transactionRecords, signerAddress, chainId],
+	);
 
 	const error = fees.errorFeeEstimate ?? balanceCheck.errorExistentialDeposits;
 
@@ -128,7 +146,7 @@ const useTransactionProvider = ({
 		if (submitGate.status !== "open") return false;
 		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
 		if (!call || isLoading || error || hasInsufficientBalance) return false;
-		if (isRejectedByDryRun) return false;
+		if (isRejectedByDryRun || hasTransactionAwaitingInclusion) return false;
 
 		if (ethereum.account.platform === "ethereum")
 			return (
@@ -144,6 +162,7 @@ const useTransactionProvider = ({
 		fees.feeEstimate,
 		fees.feeToken,
 		hasInsufficientBalance,
+		hasTransactionAwaitingInclusion,
 		isLoading,
 		ethereum.isEthereumNetworkMismatch,
 		ethereum.isSwitchingEthereumNetwork,

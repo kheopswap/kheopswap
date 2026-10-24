@@ -69,6 +69,13 @@ const getHeadline = (
 		};
 	}
 
+	if (txEvents.some((event) => event.type === "unconfirmed"))
+		return {
+			message: "Not confirmed after 10 minutes",
+			result: "warning",
+			isFinal: false,
+		};
+
 	if (txEvents.some((event) => event.type === "broadcasted"))
 		return {
 			message: "Transaction submitted...",

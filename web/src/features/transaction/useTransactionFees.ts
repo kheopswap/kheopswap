@@ -12,6 +12,8 @@ import { isBigInt } from "../../utils/isBigInt";
 import { isNumber } from "../../utils/isNumber";
 import type { TxOptionsWithChargeAssetTxPayment } from "../../utils/txOptions";
 
+export const TX_MORTALITY_BLOCKS = 64;
+
 type UseTransactionFeesProps = {
 	signer: string | null | undefined;
 	signerAddress: string | undefined;
@@ -61,7 +63,7 @@ export const useTransactionFees = ({
 		if (!isNumber(nonce) || !feeToken) return undefined;
 		return {
 			asset: getFeeAssetLocation(feeToken),
-			mortality: { mortal: true, period: 64 },
+			mortality: { mortal: true, period: TX_MORTALITY_BLOCKS },
 			nonce,
 		};
 	}, [feeToken, nonce]);

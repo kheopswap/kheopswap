@@ -2,6 +2,15 @@ import { cleanup, render, renderHook, screen } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChainId } from "../../registry/chains/types";
+import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
+import {
+	addTransaction,
+	dismissTransaction,
+} from "../../state/transactions/transactionStore";
+import type {
+	TransactionRecord,
+	TransactionStatus,
+} from "../../state/transactions/types";
 import { TransactionDryRunSummaryValue } from "./TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "./TransactionFeeSummaryValue";
 import {
@@ -205,6 +214,57 @@ describe("TransactionProvider submit gate", () => {
 		const transaction = renderTransaction({ status: "pending" });
 		expect(transaction.canSubmit).toBe(false);
 		expect(transaction.isLoading).toBe(true);
+	});
+});
+
+describe("TransactionProvider while an earlier transaction awaits inclusion", () => {
+	const recordWith = (
+		status: TransactionStatus,
+		overrides: Partial<TransactionRecord> = {},
+	): TransactionRecord =>
+		({
+			id: `earlier-${status}`,
+			createdAt: 0,
+			status,
+			txEvents: [{ type: "pending" }],
+			account: { platform: "polkadot", address: "5Signer" },
+			feeEstimate: 1n,
+			feeToken: KNOWN_TOKENS_MAP["native::pah"],
+			title: "Transfer",
+			type: "transfer",
+			...overrides,
+		}) as unknown as TransactionRecord;
+
+	afterEach(() => {
+		for (const status of ["pending", "broadcasted", "inBlock"] as const)
+			dismissTransaction(`earlier-${status}`);
+	});
+
+	it.each(["pending", "broadcasted"] as const)(
+		"holds submit while a %s transaction of the signer would reuse the nonce",
+		(status) => {
+			addTransaction(recordWith(status));
+			expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+		},
+	);
+
+	it("opens submit once the earlier transaction is in a block", () => {
+		addTransaction(recordWith("inBlock"));
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(true);
+	});
+
+	it("ignores pending transactions of other signers and chains", () => {
+		addTransaction(
+			recordWith("broadcasted", {
+				account: { platform: "polkadot", address: "5Other" } as never,
+			}),
+		);
+		addTransaction(
+			recordWith("pending", {
+				feeToken: KNOWN_TOKENS_MAP["native::hydration"],
+			}),
+		);
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(true);
 	});
 });
 

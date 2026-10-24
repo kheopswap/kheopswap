@@ -1,3 +1,4 @@
+import { bind } from "@react-rxjs/core";
 import { BehaviorSubject, map } from "rxjs";
 import {
 	type FollowUpTxEvent,
@@ -21,6 +22,8 @@ const transactionsSubject = new BehaviorSubject<
 export const transactions$ = transactionsSubject
 	.asObservable()
 	.pipe(map((m) => Array.from(m.values())));
+
+export const [useTransactionRecords] = bind(transactions$, []);
 
 const openTransactionIdSubject = new BehaviorSubject<TransactionId | null>(
 	null,

@@ -1,6 +1,6 @@
 import type { TxEvent } from "polkadot-api";
 import { useCallback } from "react";
-import { catchError, type Observable, of, shareReplay } from "rxjs";
+import { catchError, type Observable, of } from "rxjs";
 import { toHex } from "viem";
 import type { WalletAccount } from "../../common/kheopskit";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
@@ -18,8 +18,13 @@ import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
 import { logger } from "../../utils/logger";
 import { notifyError } from "../../utils/notifyError";
 import { createEthereumTxObservable } from "./createEthereumTxObservable";
+import { TX_MORTALITY_BLOCKS } from "./useTransactionFees";
 
-const TX_TIMEOUT_MS = 10 * 60 * 1000;
+const TX_UNCONFIRMED_MS = 10 * 60 * 1000;
+const SLOWEST_BLOCK_TIME_MS = 12_000;
+export const TX_EXPIRY_MS = TX_MORTALITY_BLOCKS * SLOWEST_BLOCK_TIME_MS;
+export const TX_EXPIRED_MESSAGE =
+	"Transaction was not finalized before it expired";
 
 const isUserRejectedTxError = (error: unknown): boolean => {
 	if (typeof error !== "object" || error === null) return false;
@@ -56,57 +61,64 @@ const isUserRejectedTxError = (error: unknown): boolean => {
 const subscribeTxEvents = (
 	txId: string,
 	txEvents$: Observable<TxEvent>,
+	onSigned: () => void,
 ): void => {
-	let isSubmitted = false;
-
-	const obs$ = txEvents$.pipe(
-		catchError((error) => of({ type: "error" as const, error })),
-		shareReplay(1),
-	);
+	let isSigned = false;
 
 	const cleanup = () => {
-		clearTimeout(safetyTimeout);
+		clearTimeout(unconfirmedTimeout);
+		clearTimeout(expiryTimeout);
 		sub.unsubscribe();
 	};
 
-	const safetyTimeout = setTimeout(() => {
-		logger.warn("Transaction timed out without finalized/error event", txId);
+	const unconfirmedTimeout = setTimeout(() => {
+		logger.warn("Transaction not finalized after 10 minutes", txId);
+		appendTxEvent(txId, { type: "unconfirmed" });
+	}, TX_UNCONFIRMED_MS);
+
+	const expiryTimeout = setTimeout(() => {
+		logger.warn("Transaction expired without finalized/error event", txId);
 		appendTxEvent(txId, {
 			type: "error",
-			error: new Error("Transaction was not finalized within 10 minutes"),
+			error: new Error(TX_EXPIRED_MESSAGE),
 		});
-		sub.unsubscribe();
-	}, TX_TIMEOUT_MS);
+		cleanup();
+	}, TX_EXPIRY_MS);
 
-	const sub = obs$.subscribe((x) => {
-		logger.log("Transaction status update", x);
+	const sub = txEvents$
+		.pipe(catchError((error) => of({ type: "error" as const, error })))
+		.subscribe((x) => {
+			logger.log("Transaction status update", x);
 
-		if (x.type === "broadcasted") isSubmitted = true;
+			if (!isSigned && x.type !== "error") {
+				isSigned = true;
+				onSigned();
+			}
 
-		appendTxEvent(txId, x);
+			appendTxEvent(txId, x);
 
-		if (x.type === "finalized") cleanup();
+			if (x.type === "finalized") cleanup();
 
-		if (x.type === "error") {
-			logger.error("Transaction error", x.error);
-			const err = x.error;
-			const isUserRejected = isUserRejectedTxError(err);
-			const hasNestedError =
-				typeof err === "object" && err !== null && "error" in err;
-			const errorMessage = hasNestedError
-				? formatTxError((err as { error: unknown }).error)
-				: "";
+			if (x.type === "error") {
+				logger.error("Transaction error", x.error);
+				const err = x.error;
+				const isUserRejected = isUserRejectedTxError(err);
+				const hasNestedError =
+					typeof err === "object" && err !== null && "error" in err;
+				const errorMessage = hasNestedError
+					? formatTxError((err as { error: unknown }).error)
+					: "";
 
-			if (errorMessage === "Unknown: CannotLookup")
-				console.warn(
-					"It could be that the chain doesn't support CheckMetadataHash",
-				);
+				if (errorMessage === "Unknown: CannotLookup")
+					console.warn(
+						"It could be that the chain doesn't support CheckMetadataHash",
+					);
 
-			if (!isSubmitted && isUserRejected) minimizeTransaction(txId);
+				if (!isSigned && isUserRejected) minimizeTransaction(txId);
 
-			cleanup();
-		}
-	});
+				cleanup();
+			}
+		});
 };
 
 type UseTransactionSubmitProps = {
@@ -121,6 +133,7 @@ type UseTransactionSubmitProps = {
 	targetEvmChainId: number | undefined;
 	followUp: TransactionFollowUp;
 	transactionTitle: string;
+	onReset: () => void;
 };
 
 export const useTransactionSubmit = ({
@@ -135,6 +148,7 @@ export const useTransactionSubmit = ({
 	targetEvmChainId,
 	followUp,
 	transactionTitle,
+	onReset,
 }: UseTransactionSubmitProps) => {
 	const onSubmit = useCallback(async () => {
 		try {
@@ -183,7 +197,7 @@ export const useTransactionSubmit = ({
 				...followUp,
 			});
 			openTransactionModal(txId);
-			subscribeTxEvents(txId, txEvents$);
+			subscribeTxEvents(txId, txEvents$, onReset);
 		} catch (err) {
 			notifyError(err);
 		}
@@ -196,6 +210,7 @@ export const useTransactionSubmit = ({
 		followUp,
 		isEthereumNetworkMismatch,
 		nativeToken,
+		onReset,
 		options,
 		targetEvmChainId,
 		transactionTitle,

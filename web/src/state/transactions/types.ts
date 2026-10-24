@@ -9,6 +9,7 @@ import type { XcmDepositTarget } from "../../utils/xcmDeposit";
 export type FollowUpTxEvent =
 	| TxEvent
 	| { type: "pending" }
+	| { type: "unconfirmed" }
 	| { type: "error"; error: unknown };
 export type FollowUpTxEvents = FollowUpTxEvent[];
 
@@ -19,6 +20,7 @@ export type TransactionStatus =
 	| "signed"
 	| "broadcasted"
 	| "inBlock"
+	| "unconfirmed"
 	| "finalized"
 	| "failed";
 
@@ -91,6 +93,8 @@ export const getStatusFromEvent = (
 			return event.ok ? "inBlock" : "failed";
 		case "notInBestBlock":
 			return "broadcasted";
+		case "unconfirmed":
+			return "unconfirmed";
 		case "finalized":
 			return event.ok ? "finalized" : "failed";
 		case "error":
@@ -105,6 +109,12 @@ export const isTerminalStatus = (status: TransactionStatus): boolean =>
 
 export const isSettled = ({ txEvents }: TransactionRecord): boolean =>
 	txEvents.some(({ type }) => type === "finalized" || type === "error");
+
+export const isAwaitingInclusion = ({ status }: TransactionRecord): boolean =>
+	status === "pending" ||
+	status === "signed" ||
+	status === "broadcasted" ||
+	status === "unconfirmed";
 
 export type TxInclusion = Extract<
 	FollowUpTxEvent,
