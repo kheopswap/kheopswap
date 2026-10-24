@@ -19,11 +19,25 @@ type SwapCreditExecuted = {
 
 export type ExecutedHop = AmmHop & { amountIn: bigint; amountOut: bigint };
 
+const isSwapCreditExecuted = (value: unknown): value is SwapCreditExecuted =>
+	typeof value === "object" &&
+	value !== null &&
+	"amount_in" in value &&
+	typeof value.amount_in === "bigint" &&
+	"amount_out" in value &&
+	typeof value.amount_out === "bigint" &&
+	"path" in value &&
+	Array.isArray(value.path);
+
 const getSwapCredits = (events: TxEvents): SwapCredit[] =>
 	events.flatMap(({ type, value }) => {
-		if (type !== "AssetConversion" || value.type !== "SwapCreditExecuted")
+		if (
+			type !== "AssetConversion" ||
+			value.type !== "SwapCreditExecuted" ||
+			!isSwapCreditExecuted(value.value)
+		)
 			return [];
-		const { amount_in, amount_out, path } = value.value as SwapCreditExecuted;
+		const { amount_in, amount_out, path } = value.value;
 		return [
 			{
 				amountIn: amount_in,
