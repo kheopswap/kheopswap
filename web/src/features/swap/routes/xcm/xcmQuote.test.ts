@@ -36,8 +36,8 @@ import {
 	type DestinationDryRun,
 	describeXcmQuoteFailure,
 	getDeliveryFeeTokenId,
+	getTotalDebited,
 	getXcmCallSpendings,
-	getXcmFeeParts,
 	getXcmSubmitGate,
 	type OriginDryRun,
 	parseDeliveryFee,
@@ -526,27 +526,52 @@ describe("getXcmCallSpendings", () => {
 	});
 });
 
-describe("getXcmFeeParts", () => {
-	const deliveryFee = { tokenId: DOT, plancks: 304850000n };
-	const quote = {
-		received: 9995190152n,
-		destinationFee: { tokenId: HYDRATION_DOT, plancks: 4809848n },
-	};
+describe("getTotalDebited", () => {
+	const deliveryFee = { tokenId: DOT, plancks: 304_850_000n };
+	const transactionFee = { tokenId: DOT, plancks: 11_000_000n };
 
-	it("adds the destination fee in the output token to the delivery fee", () => {
-		expect(getXcmFeeParts(deliveryFee, quote)).toEqual([
-			deliveryFee,
-			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+	it("adds the delivery and transaction fees to the DOT sent", () => {
+		expect(
+			getTotalDebited(
+				getXcmCallSpendings({
+					tokenIdIn: DOT,
+					totalIn: 1_000_000_000n,
+					deliveryFee,
+				}),
+				transactionFee,
+			),
+		).toEqual([{ tokenId: DOT, plancks: 1_315_850_000n }]);
+	});
+
+	it("lists the asset sent apart from the DOT fees", () => {
+		expect(
+			getTotalDebited(
+				getXcmCallSpendings({
+					tokenIdIn: USDT,
+					totalIn: 10_000_000n,
+					deliveryFee,
+				}),
+				transactionFee,
+			),
+		).toEqual([
+			{ tokenId: USDT, plancks: 10_000_000n },
+			{ tokenId: DOT, plancks: 315_850_000n },
 		]);
 	});
 
-	it("shows the delivery fee alone before a quote", () => {
-		expect(getXcmFeeParts(deliveryFee, undefined)).toEqual([deliveryFee]);
-	});
-
-	it("drops a free delivery", () => {
-		expect(getXcmFeeParts({ tokenId: DOT, plancks: 0n }, quote)).toEqual([
-			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+	it("adds a transaction fee paid in the asset sent to that asset", () => {
+		expect(
+			getTotalDebited(
+				getXcmCallSpendings({
+					tokenIdIn: USDT,
+					totalIn: 10_000_000n,
+					deliveryFee,
+				}),
+				{ tokenId: USDT, plancks: 20_000n },
+			),
+		).toEqual([
+			{ tokenId: USDT, plancks: 10_020_000n },
+			{ tokenId: DOT, plancks: 304_850_000n },
 		]);
 	});
 });
@@ -648,18 +673,6 @@ describe("Hydration to Asset Hub", () => {
 	it("labels the delivery fee in Hydration DOT", () => {
 		expect(getDeliveryFeeTokenId("hydration")).toBe(HYDRATION_DOT);
 		expect(getDeliveryFeeTokenId("pah")).toBe(DOT_AH);
-	});
-
-	it("shows only the Asset Hub fee when Hydration delivers for free", () => {
-		expect(
-			getXcmFeeParts(
-				{ tokenId: HYDRATION_DOT, plancks: 0n },
-				{
-					received: 9999003n,
-					destinationFee: { tokenId: USDT, plancks: 997n },
-				},
-			),
-		).toEqual([{ tokenId: USDT, plancks: 997n }]);
 	});
 
 	it("spends the Hydration token sent and nothing else", () => {
