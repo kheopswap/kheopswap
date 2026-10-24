@@ -115,16 +115,18 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 							label="Transaction fee"
 							value={<TransactionFeeSummaryValue />}
 						/>
-						<FormSummaryRow
-							label="Service fee"
-							value={
-								!!tokenIn &&
-								isBigInt(minPlancksOut) &&
-								isBigInt(appCommission) && (
-									<Tokens plancks={appCommission} token={tokenIn} />
-								)
-							}
-						/>
+						{appCommission !== 0n && (
+							<FormSummaryRow
+								label="Service fee"
+								value={
+									!!tokenIn &&
+									isBigInt(minPlancksOut) &&
+									isBigInt(appCommission) && (
+										<Tokens plancks={appCommission} token={tokenIn} />
+									)
+								}
+							/>
+						)}
 						<FormSummaryRow
 							label="Protocol fee"
 							value={

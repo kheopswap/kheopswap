@@ -133,7 +133,7 @@ export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 						label="Transaction fee"
 						value={<TransactionFeeSummaryValue />}
 					/>
-					{details.kind === "xcm-swap" && (
+					{details.kind === "xcm-swap" && details.appCommission !== 0n && (
 						<FormSummaryRow
 							label="Service fee"
 							value={

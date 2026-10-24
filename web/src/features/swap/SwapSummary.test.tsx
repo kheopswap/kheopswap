@@ -63,4 +63,16 @@ describe("SwapSummary on a pool swap", () => {
 
 		expect(screen.queryByText("Slippage tolerance")).toBeNull();
 	});
+
+	it.each([
+		[3_000n, true],
+		[0n, false],
+	])("shows a service fee of %s: %s", (appCommission, isShown) => {
+		swap.call = {};
+		swap.isLoadingCall = false;
+		swap.appCommission = appCommission;
+		render(<SwapSummary />);
+
+		expect(!!screen.queryByText("Service fee")).toBe(isShown);
+	});
 });
