@@ -20,6 +20,7 @@ const search = (text: string) =>
 describe("tokenMatchesSearch", () => {
 	it("matches the network name", () => {
 		expect(search("hydra")).toEqual([hydrationUsdt.id]);
+		expect(search("dration")).toEqual([]);
 		expect(search("Asset Hub")).toEqual([assetHubDot.id, assetHubUsdt.id]);
 	});
 
@@ -27,6 +28,11 @@ describe("tokenMatchesSearch", () => {
 		expect(search("usdt hydration")).toEqual([hydrationUsdt.id]);
 		expect(search("hub usdt")).toEqual([assetHubUsdt.id]);
 		expect(search("dot hydration")).toEqual([]);
+	});
+
+	it("ignores the network's relay name, shared by every token", () => {
+		expect(search("dot")).toEqual([assetHubDot.id]);
+		expect(search("polkadot")).toEqual([assetHubDot.id]);
 	});
 
 	it("matches symbol, name and exact asset id", () => {
