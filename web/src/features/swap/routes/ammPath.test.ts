@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { OriginDryRun } from "../xcm/xcmQuote";
 import {
 	type AmmPath,
 	getAmmPath,
@@ -7,7 +6,8 @@ import {
 	mapHopPath,
 	quoteAmmPath,
 } from "./ammPath";
-import { dotToUsdt, usdcToUsdt } from "./xcmSwap.fixtures";
+import type { OriginDryRun } from "./xcm/xcmQuote";
+import { dotToUsdt, usdcToUsdt } from "./xcmSwap/xcmSwap.fixtures";
 
 const DOT = "native::pah";
 const USDT = "asset::pah::1984";

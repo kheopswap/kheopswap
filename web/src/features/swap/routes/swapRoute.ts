@@ -19,8 +19,8 @@ import type {
 	CallSpendings,
 	SubmitGate,
 } from "../../transaction/TransactionProvider";
+import { type AmmPath, getAmmPath } from "./ammPath";
 import { isXcmLane, type XcmLane } from "./xcmLanes";
-import { type AmmPath, getAmmPath } from "./xcmSwap/ammPath";
 
 export type AmmSwapRoute = {
 	kind: "amm-swap";

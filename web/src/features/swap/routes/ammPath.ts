@@ -1,5 +1,5 @@
-import type { TokenId } from "../../../../registry/tokens/types";
-import { getAmmOutput, getMinAmountOut } from "../../../../utils/ammMath";
+import type { TokenId } from "../../../registry/tokens/types";
+import { getAmmOutput, getMinAmountOut } from "../../../utils/ammMath";
 
 export type HopPath<T> = readonly [T] | readonly [T, T];
 

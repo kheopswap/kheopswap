@@ -2,7 +2,7 @@ import { isEqual } from "lodash-es";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { TxEvents } from "../../../../utils/getErrorMessageFromTxEvents";
-import type { AmmHop, AmmPath } from "./ammPath";
+import type { AmmHop, AmmPath } from "../ammPath";
 
 type SwapCredit = {
 	amountIn: bigint;

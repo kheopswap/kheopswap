@@ -4,8 +4,8 @@ import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { TransactionRecord } from "../../../../state/transactions/types";
 import type { TxEvents } from "../../../../utils/getErrorMessageFromTxEvents";
+import { getAmmPath } from "../ammPath";
 import type { XcmSwapFollowUpData } from "../xcm/useXcmRoute";
-import { getAmmPath } from "./ammPath";
 import { XcmSwapFollowUpContent } from "./XcmSwapFollowUpContent";
 import { usdcToUsdt } from "./xcmSwap.fixtures";
 
