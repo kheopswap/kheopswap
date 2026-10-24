@@ -29,8 +29,7 @@ import {
 	getXcmDestinationSwapCall,
 	type XcmDestinationSwapCallInputs,
 } from "../xcmDestinationSwap/getXcmDestinationSwapCall";
-import { useCanReceiveSwapLeftovers } from "../xcmDestinationSwap/useCanReceiveSwapLeftovers";
-import { useDestinationSwapPlancksIn } from "../xcmDestinationSwap/useDestinationSwapPlancksIn";
+import { useXcmDestinationSwap } from "../xcmDestinationSwap/useXcmDestinationSwap";
 import {
 	getXcmSwapCall,
 	type XcmSwapCallInputs,
@@ -144,21 +143,6 @@ const getXcmCallInputs = (
 	}
 };
 
-const getUnquotedDestinationSwapInputs = (
-	route: XcmDestinationSwapRoute,
-	tokenIn: Token | null | undefined,
-	plancks: bigint | null | undefined,
-): XcmCallInputs | null =>
-	plancks && tokenIn?.id === route.tokenIdIn
-		? {
-				kind: route.kind,
-				route,
-				tokenIn,
-				plancks,
-				hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
-			}
-		: null;
-
 // Sized like the AMM fake call, so the fee estimate covers the commission batch.
 const getFakeXcmCallInputs = (
 	route: XcmRoute,
@@ -184,7 +168,15 @@ const getFakeXcmCallInputs = (
 					}
 				: null;
 		case "xcm-destination-swap":
-			return getUnquotedDestinationSwapInputs(route, tokenIn, edTokenIn);
+			return tokenIn?.id === route.tokenIdIn
+				? {
+						kind: route.kind,
+						route,
+						tokenIn,
+						plancks: edTokenIn,
+						hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
+					}
+				: null;
 	}
 };
 
@@ -279,38 +271,35 @@ export const useXcmRoute = ({
 	const { data: mirrorToken } = useToken({ tokenId: mirrorTokenId });
 	const destinationSwapRoute =
 		route?.kind === "xcm-destination-swap" ? route : null;
-	const unquotedInputs = useMemo(
-		() =>
-			destinationSwapRoute &&
-			getUnquotedDestinationSwapInputs(destinationSwapRoute, tokenIn, totalIn),
-		[destinationSwapRoute, tokenIn, totalIn],
-	);
-	const unquotedCall = useXcmCall(unquotedInputs, beneficiary);
-	const destinationSwapIn = useDestinationSwapPlancksIn({
-		route: destinationSwapRoute,
-		beneficiary,
-		unquotedCall: unquotedCall.data,
-	});
-	const destinationSwapPlancksIn = destinationSwapIn.data?.success
-		? destinationSwapIn.data.value
-		: null;
-
-	const pathQuote = useAmmPathQuote({
-		path: (swapRoute ?? destinationSwapRoute)?.path ?? null,
-		plancksIn: swapRoute ? swapPlancksIn : destinationSwapPlancksIn,
-		totalIn: swapRoute ? totalIn : destinationSwapPlancksIn,
-		slippage,
-	});
-	const leftovers = useCanReceiveSwapLeftovers({
-		route: destinationSwapRoute,
-		beneficiary: destinationSwapRoute && beneficiary,
-		pathQuote: destinationSwapRoute ? pathQuote.quote : undefined,
-	});
 
 	const remoteFeeLocation =
 		tokenOut?.type === "hydration-asset" && tokenOut.id === route?.tokenIdOut
 			? tokenOut.location
 			: undefined;
+	const fakeInputs = useMemo(
+		() =>
+			route &&
+			getFakeXcmCallInputs(route, tokenIn, edTokenIn, remoteFeeLocation),
+		[route, tokenIn, edTokenIn, remoteFeeLocation],
+	);
+	const { data: fakeCall } = useXcmCall(fakeInputs, beneficiary);
+
+	const destinationSwap = useXcmDestinationSwap({
+		route: destinationSwapRoute,
+		beneficiary,
+		totalIn,
+		fakeCall,
+		slippage,
+	});
+	const swapPathQuote = useAmmPathQuote({
+		path: swapRoute?.path ?? null,
+		plancksIn: swapPlancksIn,
+		totalIn,
+		slippage,
+	});
+	const pathQuote = destinationSwapRoute
+		? destinationSwap.pathQuote
+		: swapPathQuote;
 
 	const inputs = useMemo(
 		() =>
@@ -333,48 +322,39 @@ export const useXcmRoute = ({
 			remoteFeeLocation,
 		],
 	);
-	const fakeInputs = useMemo(
-		() =>
-			route &&
-			getFakeXcmCallInputs(route, tokenIn, edTokenIn, remoteFeeLocation),
-		[route, tokenIn, edTokenIn, remoteFeeLocation],
-	);
-
 	const callQuery = useXcmCall(inputs, beneficiary);
-	const { data: fakeCall } = useXcmCall(fakeInputs, beneficiary);
 	const call = callQuery.data;
 
-	const quote = useXcmQuote({ route, beneficiary, call, fakeCall });
+	const quote = useXcmQuote({
+		route,
+		destinationFee: destinationSwap.fee,
+		beneficiary,
+		call,
+		fakeCall,
+	});
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
 	const received = xcmQuote?.received;
 	const isLoading =
 		quote.isLoading ||
 		callQuery.isLoading ||
 		pathQuote.isLoading ||
-		unquotedCall.isLoading ||
-		destinationSwapIn.isLoading ||
-		leftovers.isLoading;
+		destinationSwap.isLoading;
 
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
-		if (unquotedCall.error || callQuery.error)
+		if (callQuery.error)
 			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
-		if (destinationSwapIn.data && !destinationSwapIn.data.success)
-			return describeXcmQuoteFailure(destinationSwapIn.data.failure, route);
+		if (destinationSwap.errorMessage) return destinationSwap.errorMessage;
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
-		if (leftovers.canReceive === false)
-			return describeXcmQuoteFailure({ kind: "leftovers-unreceivable" }, route);
 		if (quote.data && !quote.data.success)
 			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
 	}, [
 		access,
-		unquotedCall.error,
-		destinationSwapIn.data,
-		pathQuote.errorMessage,
-		leftovers.canReceive,
 		callQuery.error,
+		destinationSwap.errorMessage,
+		pathQuote.errorMessage,
 		quote.data,
 		route,
 	]);

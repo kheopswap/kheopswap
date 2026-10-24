@@ -11,6 +11,8 @@ export type AmmPath = HopPath<AmmHop>;
 
 export type PoolHop = AmmHop & { reserveIn: bigint; reserveOut: bigint };
 
+export type PoolSwap = { amountIn: bigint; amountOut: bigint };
+
 export type QuotedHop = AmmHop & {
 	amountIn: bigint;
 	amountOut: bigint;
@@ -32,6 +34,20 @@ export const mapHopPath = <T, U>(
 	map: (hop: T, index: 0 | 1) => U,
 ): HopPath<U> =>
 	path.length === 1 ? [map(path[0], 0)] : [map(path[0], 0), map(path[1], 1)];
+
+export const afterFirstPoolSwap = (
+	hops: HopPath<PoolHop>,
+	{ amountIn, amountOut }: PoolSwap,
+): HopPath<PoolHop> =>
+	mapHopPath(hops, (hop, index) =>
+		index === 0
+			? {
+					...hop,
+					reserveIn: hop.reserveIn + amountIn,
+					reserveOut: hop.reserveOut - amountOut,
+				}
+			: hop,
+	);
 
 export const getPathTokenIds = (path: AmmPath): TokenId[] => [
 	path[0].tokenIdIn,

@@ -3,9 +3,10 @@ import { renderHook, waitFor } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
+import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { getAmmPath } from "../ammPath";
-import type { XcmRoute } from "../swapRoute";
+import type { XcmDestinationSwapRoute, XcmRoute } from "../swapRoute";
 import { usdtToPink } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
 import { useXcmQuote } from "./useXcmQuote";
@@ -119,10 +120,12 @@ const givenDryRuns = ({
 
 const renderQuote = ({
 	route = transferRoute,
+	destinationFee,
 	beneficiary = dotSuccess.beneficiary,
 	extra,
 }: {
 	route?: XcmRoute;
+	destinationFee?: TokenAmount;
 	beneficiary?: string;
 	extra?: () => unknown;
 } = {}) => {
@@ -135,7 +138,13 @@ const renderQuote = ({
 	return renderHook(
 		() => {
 			extra?.();
-			return useXcmQuote({ route, beneficiary, call, fakeCall });
+			return useXcmQuote({
+				route,
+				destinationFee,
+				beneficiary,
+				call,
+				fakeCall,
+			});
 		},
 		{ wrapper },
 	);
@@ -378,17 +387,7 @@ describe("useXcmQuote", () => {
 	});
 
 	describe("on a swap on Asset Hub of what Hydration sends", () => {
-		const USDT_LOCATION = {
-			parents: 0,
-			interior: {
-				type: "X2",
-				value: [
-					{ type: "PalletInstance", value: 50 },
-					{ type: "GeneralIndex", value: 1984n },
-				],
-			},
-		};
-		const destinationSwapRoute: XcmRoute = {
+		const destinationSwapRoute: XcmDestinationSwapRoute = {
 			kind: "xcm-destination-swap",
 			origin: "hydration",
 			destination: "pah",
@@ -400,27 +399,21 @@ describe("useXcmQuote", () => {
 				"native::pah",
 			),
 		};
+		const destinationFee = {
+			tokenId: "asset::pah::1984",
+			plancks: usdtToPink.destinationFee.plancks,
+		};
 
-		beforeEach(() => {
+		it("quotes the output deposited with the fee Asset Hub takes in the input, without weighing the message again", async () => {
 			givenDryRuns({
 				origin: usdtToPink.originDryRun,
 				estimate: usdtToPink.originDryRun,
 				destination: usdtToPink.destinationDryRun,
 				deliveryFees: usdtToPink.deliveryFees,
 			});
-			chain.destinationWeight = {
-				success: true,
-				value: usdtToPink.destinationWeight,
-			};
-			chain.destinationFee = {
-				success: true,
-				value: usdtToPink.destinationFee,
-			};
-		});
-
-		it("quotes the output deposited and the fee Asset Hub takes in the input", async () => {
 			const { result } = renderQuote({
 				route: destinationSwapRoute,
+				destinationFee,
 				beneficiary: usdtToPink.beneficiary,
 			});
 
@@ -431,49 +424,15 @@ describe("useXcmQuote", () => {
 				data: {
 					success: true,
 					quote: {
-						received: 497686228859862n,
-						destinationFee: { tokenId: "asset::pah::1984", plancks: 1875n },
+						received: usdtToPink.hops[1]?.amountOut,
+						destinationFee,
 					},
 				},
 			});
-			expect(chain.queryWeightToAssetFee).toHaveBeenCalledWith(
-				usdtToPink.destinationWeight,
-				{ type: "V5", value: USDT_LOCATION },
-				{ at: "best" },
-			);
-			expect(chain.calledChains).toEqual(
-				expect.arrayContaining([
-					["query_xcm_weight", "pah"],
-					["query_weight_to_asset_fee", "pah"],
-				]),
-			);
-		});
-
-		it("fails when Asset Hub cannot price its fee in the input", async () => {
-			chain.destinationFee = {
-				success: false,
-				value: { type: "AssetNotFound" },
-			};
-			const { result } = renderQuote({
-				route: destinationSwapRoute,
-				beneficiary: usdtToPink.beneficiary,
-			});
-
-			await waitFor(() => expect(result.current.data).toBeDefined());
-			expect(result.current.data).toEqual({
-				success: false,
-				failure: { kind: "destination-fee-unavailable" },
-			});
-		});
-
-		it("does not ask other routes for an Asset Hub swap fee", async () => {
-			givenDryRuns({
-				origin: dotSuccess.origin,
-				destination: dotSuccess.destination,
-			});
-			const { result } = renderQuote();
-
-			await waitFor(() => expect(result.current.data?.success).toBe(true));
+			expect(chain.calledChains).not.toContainEqual([
+				"query_xcm_weight",
+				"pah",
+			]);
 			expect(chain.queryWeightToAssetFee).not.toHaveBeenCalled();
 		});
 	});

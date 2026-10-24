@@ -67,14 +67,16 @@ const HYDRATION_USDT = "hydration-asset::hydration::10";
 const getTransferFee = (tokenIdOut: string, sent: bigint, received: bigint) =>
 	composeXcmQuote(
 		{
-			kind: "xcm-transfer",
-			origin: "pah",
-			destination: "hydration",
-			tokenIdIn: tokenIdOut,
-			tokenIdOut,
+			route: {
+				kind: "xcm-transfer",
+				origin: "pah",
+				destination: "hydration",
+				tokenIdIn: tokenIdOut,
+				tokenIdOut,
+			},
 		},
-		{ sent, received, destinationSwapFee: undefined },
-	)?.destinationFee;
+		{ sent, received },
+	).destinationFee;
 
 const requireDestination = (destination: DestinationDryRun | undefined) => {
 	if (!destination) throw new Error("fixture has no destination dry run");
