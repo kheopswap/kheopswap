@@ -10,7 +10,7 @@ import {
 import type { WalletAccount } from "../common/kheopskit";
 import type { Token, TokenId } from "../registry/tokens/types";
 import { getBalance$ } from "../services/balances/service";
-import { getStablePlancks$ } from "../state/prices";
+import { getHoldingStablePlancks$ } from "../state/prices";
 import type { AccountBalanceWithStable } from "../types/balances";
 import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
@@ -23,28 +23,23 @@ type UseAccountBalancesWithStablesProps = {
 const getBalanceWithStable$ = (
 	tokenId: TokenId,
 	address: string,
-): Observable<AccountBalanceWithStable> => {
-	return getCachedObservable$(
-		"getBalanceWithStable$",
-		`${address},${tokenId}`,
-		() =>
-			getBalance$({ address, tokenId }).pipe(
-				switchMap(({ balance, status }) =>
-					getStablePlancks$(tokenId, balance).pipe(
-						map(({ stablePlancks, isLoadingStablePlancks }) => ({
-							address,
-							tokenId,
-							tokenPlancks: balance ?? null,
-							isLoadingTokenPlancks: status !== "loaded",
-							stablePlancks,
-							isLoadingStablePlancks,
-						})),
-					),
+): Observable<AccountBalanceWithStable> =>
+	getCachedObservable$("getBalanceWithStable$", `${address},${tokenId}`, () =>
+		getBalance$({ address, tokenId }).pipe(
+			switchMap(({ balance, status }) =>
+				getHoldingStablePlancks$(tokenId, balance).pipe(
+					map((valuation) => ({
+						address,
+						tokenId,
+						tokenPlancks: balance ?? null,
+						isLoadingTokenPlancks: status !== "loaded",
+						...valuation,
+					})),
 				),
-				shareReplay({ bufferSize: 1, refCount: true }),
 			),
+			shareReplay({ bufferSize: 1, refCount: true }),
+		),
 	);
-};
 
 type UseBalancesWithStablesResult = {
 	data: AccountBalanceWithStable[];

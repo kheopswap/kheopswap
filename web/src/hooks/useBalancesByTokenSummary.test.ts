@@ -13,6 +13,7 @@ const balance = (
 	isLoadingTokenPlancks: false,
 	stablePlancks: null,
 	isLoadingStablePlancks: false,
+	isLowLiquidity: false,
 	...overrides,
 });
 

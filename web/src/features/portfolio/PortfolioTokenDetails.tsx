@@ -41,6 +41,7 @@ import { isApplicableBalance } from "../../utils/isApplicableBalance";
 import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
 import { sortBigInt } from "../../utils/sortBigInt";
+import { LowLiquidityLabel } from "./LowLiquidityLabel";
 import { usePortfolio } from "./PortfolioProvider";
 import type { PortfolioRowData } from "./types";
 
@@ -64,6 +65,7 @@ const TokenDetailsRowValue: FC<
 	isLoadingStablePlancks,
 	stablePlancks,
 	isLoadingTokenPlancks,
+	isLowLiquidity,
 	isInitializing,
 }) => {
 	const { stableToken } = useRelayChains();
@@ -77,6 +79,7 @@ const TokenDetailsRowValue: FC<
 				plancks={tokenPlancks ?? 0n}
 				pulse={isLoadingTokenPlancks}
 			/>
+			{isLowLiquidity && <LowLiquidityLabel className="text-xs" />}
 			<span
 				className={cn(
 					"text-muted",

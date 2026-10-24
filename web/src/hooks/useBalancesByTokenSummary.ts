@@ -50,6 +50,7 @@ export const getBalancesByTokenSummary = (
 			const isInitializing =
 				tokenPlancks === 0n &&
 				tokenBalances.some((b) => b.tokenPlancks === null);
+			const isLowLiquidity = tokenBalances.some((b) => b.isLowLiquidity);
 
 			acc[tokenId] = {
 				tokenId,
@@ -57,6 +58,7 @@ export const getBalancesByTokenSummary = (
 				isLoadingTokenPlancks,
 				stablePlancks,
 				isLoadingStablePlancks,
+				isLowLiquidity,
 				isInitializing,
 			};
 			return acc;
