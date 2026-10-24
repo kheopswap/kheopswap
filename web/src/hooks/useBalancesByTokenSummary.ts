@@ -75,7 +75,9 @@ export const valueHoldingsTogether = (
 ) =>
 	mapValues(summary, (tokenSummary) => {
 		const valuation = valuations[tokenSummary.tokenId];
-		return valuation ? { ...tokenSummary, ...valuation } : tokenSummary;
+		return valuation
+			? { ...tokenSummary, ...valuation }
+			: { ...tokenSummary, isLoadingStablePlancks: true };
 	});
 
 export const useBalancesByTokenSummaryOf = (
