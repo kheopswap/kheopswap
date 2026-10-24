@@ -80,8 +80,7 @@ export const useTransactionEthereum = ({
 	}, [wallets, account]);
 
 	const isEthereumNetworkMismatch = useMemo(() => {
-		if (!isEthereumAccount) return false;
-		if (!targetEvmChainId || !connectedEvmChainId) return false;
+		if (!isEthereumAccount || !targetEvmChainId) return false;
 		return targetEvmChainId !== connectedEvmChainId;
 	}, [connectedEvmChainId, isEthereumAccount, targetEvmChainId]);
 
