@@ -16,6 +16,7 @@ import { getChainById } from "../../../../registry/chains/chains";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "../../PriceImpact";
+import { RateValue } from "../../RateValue";
 import { Slippage } from "../../Slippage";
 import { useSwap } from "../../SwapProvider";
 import { ProtocolFeeValue, RouteValue } from "../AmmPathValues";
@@ -68,6 +69,7 @@ export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 	return (
 		<FormSummary>
 			<FormSummarySection>
+				<FormSummaryRow label="Rate" value={<RateValue />} />
 				{route.path.length > 1 && (
 					<FormSummaryRow
 						label="Route"
