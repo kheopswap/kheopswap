@@ -43,6 +43,7 @@ const dryRun = vi.hoisted(() => ({
 	data: undefined as unknown,
 	isLoading: false,
 	isFetching: false,
+	lastProps: undefined as { enabled?: boolean } | undefined,
 }));
 
 const successfulDryRun = {
@@ -70,11 +71,14 @@ beforeEach(() => {
 });
 
 vi.mock("../../hooks/useDryRun", () => ({
-	useDryRun: () => ({
-		data: dryRun.data,
-		isLoading: dryRun.isLoading,
-		isFetching: dryRun.isFetching,
-	}),
+	useDryRun: (props: { enabled?: boolean }) => {
+		dryRun.lastProps = props;
+		return {
+			data: dryRun.data,
+			isLoading: dryRun.isLoading,
+			isFetching: dryRun.isFetching,
+		};
+	},
 }));
 
 afterEach(cleanup);
@@ -318,6 +322,16 @@ describe("TransactionProvider dry run", () => {
 		const transaction = renderTransaction(undefined, "pah");
 		expect(transaction.isLoadingDryRun).toBe(true);
 		expect(transaction.canSubmit).toBe(false);
+	});
+
+	it("does not run the dry run while the balances it depends on load", () => {
+		balanceCheck.isLoadingBalances = true;
+		renderTransaction(undefined, "pah");
+		expect(dryRun.lastProps).toMatchObject({ enabled: false });
+
+		balanceCheck.isLoadingBalances = false;
+		renderTransaction(undefined, "pah");
+		expect(dryRun.lastProps).toMatchObject({ enabled: true });
 	});
 
 	it("keeps submit disabled while a cached dry run is refetched for new inputs", () => {

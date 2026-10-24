@@ -12,6 +12,8 @@ import type { ChainId } from "../../registry/chains/types";
 import { notifyError } from "../../utils/notifyError";
 
 const EIP1193_USER_REJECTED_REQUEST = 4001;
+const EIP1193_UNSUPPORTED_METHOD = 4200;
+const JSON_RPC_METHOD_NOT_FOUND = -32601;
 
 const isUserRejection = (error: unknown): boolean =>
 	typeof error === "object" &&
@@ -19,16 +21,11 @@ const isUserRejection = (error: unknown): boolean =>
 	"code" in error &&
 	(error as { code: unknown }).code === EIP1193_USER_REJECTED_REQUEST;
 
-/**
- * True when the wallet can't switch/add a chain from the dapp — e.g. mobile
- * WalletConnect wallets that don't implement the chain-management RPC methods.
- * Covers JSON-RPC -32601 (method not found), EIP-1193 4200 (unsupported method)
- * and the matching error messages viem surfaces.
- */
 const isUnsupportedSwitch = (error: unknown): boolean => {
 	if (typeof error !== "object" || error === null) return false;
 	const code = "code" in error ? (error as { code: unknown }).code : undefined;
-	if (code === -32601 || code === 4200) return true;
+	if (code === JSON_RPC_METHOD_NOT_FOUND || code === EIP1193_UNSUPPORTED_METHOD)
+		return true;
 	const message =
 		"message" in error &&
 		typeof (error as { message: unknown }).message === "string"
@@ -70,13 +67,11 @@ export const useTransactionEthereum = ({
 		[account],
 	);
 
-	// AppKit instance backing this account when it's connected over
-	// WalletConnect — the escape hatch kheopskit exposes on the WC connector.
 	const walletConnectAppKit = useMemo(() => {
 		if (!account) return null;
 		const wallet = wallets.find((w) => w.id === account.walletId);
 		return wallet && isWalletConnectWallet(wallet) && !wallet.isPlaceholder
-			? (wallet.appKit as unknown as AppKit)
+			? (wallet.appKit as AppKit)
 			: null;
 	}, [wallets, account]);
 
@@ -96,9 +91,7 @@ export const useTransactionEthereum = ({
 		try {
 			setIsSwitchingEthereumNetwork(true);
 
-			// WalletConnect sessions don't support the injected-wallet chain RPC
-			// methods (wallet_switchEthereumChain / wallet_addEthereumChain), so
-			// switch the active network through AppKit instead.
+			// WalletConnect sessions lack wallet_switchEthereumChain and wallet_addEthereumChain
 			if (walletConnectAppKit) {
 				const network = getEvmAppKitNetwork(targetEvmChainId);
 				if (!network)
@@ -115,9 +108,6 @@ export const useTransactionEthereum = ({
 		} catch (switchError) {
 			if (isUserRejection(switchError)) return;
 
-			// WalletConnect can't switch from the dapp, or the injected wallet
-			// reported the switch method as unsupported: ask the user to switch
-			// manually rather than surfacing a raw RPC error.
 			if (walletConnectAppKit || isUnsupportedSwitch(switchError)) {
 				notifyError(
 					new Error(
