@@ -33,6 +33,11 @@ export const mapHopPath = <T, U>(
 ): HopPath<U> =>
 	path.length === 1 ? [map(path[0], 0)] : [map(path[0], 0), map(path[1], 1)];
 
+export const getPathTokenIds = (path: AmmPath): TokenId[] => [
+	path[0].tokenIdIn,
+	...path.map(({ tokenIdOut }) => tokenIdOut),
+];
+
 export const getAmmPath = (
 	tokenIdIn: TokenId,
 	tokenIdOut: TokenId,
