@@ -215,8 +215,8 @@ export const useXcmQuote = ({
 	return {
 		isLoading:
 			(balances.isLoading && !!call) ||
-			origin.isLoading ||
-			(!!message && (destination.isLoading || deliveryFee.isLoading)),
+			origin.isFetching ||
+			(!!message && (destination.isFetching || deliveryFee.isLoading)),
 		data,
 		sent: originLeg?.success ? originLeg.value.sent : undefined,
 		deliveryFee:

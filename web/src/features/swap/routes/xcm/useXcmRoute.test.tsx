@@ -469,6 +469,40 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		});
 	});
 
+	it("holds the gate until the fee estimate answers again when the balance returns to a value estimated before", async () => {
+		chain.balanceIn = usdtToPink.amount * 2n;
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+		chain.balanceIn = usdtToPink.amount;
+		rerender();
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+
+		const estimateCall = result.current.plan.fakeCall?.decodedCall;
+		const pendingEstimates: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(async (_origin, decodedCall) =>
+			decodedCall === estimateCall
+				? new Promise((resolve) => {
+						pendingEstimates.push(() => resolve(chain.fixture.originDryRun));
+					})
+				: chain.fixture.originDryRun,
+		);
+		chain.balanceIn = usdtToPink.amount * 2n;
+		rerender();
+
+		await waitFor(() => expect(pendingEstimates.length).toBeGreaterThan(0));
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+
+		await waitFor(() => {
+			for (const finish of pendingEstimates.splice(0)) finish();
+			expect(result.current.plan.submitGate).toEqual({ status: "open" });
+		});
+	});
+
 	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {
 		chain.dryRunCall.mockRejectedValue(new Error("RPC unavailable"));
 		const { result } = renderDestinationSwap(usdtToPink);

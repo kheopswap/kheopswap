@@ -227,6 +227,46 @@ describe("useXcmQuote", () => {
 			expect(chain.dryRunXcm.mock.calls.length).toBe(destinationRuns + 1);
 			expect(chain.dryRunCall.mock.calls.length).toBe(originRuns);
 		});
+
+		it.each([
+			{
+				side: "origin",
+				changed: {
+					...LOADED_BALANCES,
+					origin: { "native::pah": { balance: 1_000_000n, frozen: 0n } },
+				},
+			},
+			{
+				side: "destination",
+				changed: {
+					...LOADED_BALANCES,
+					destination: {
+						"hydration-asset::hydration::5": {
+							balance: 5_000_000_000n,
+							frozen: 0n,
+						},
+					},
+				},
+			},
+		])(
+			"stays loading when the $side balance returns to a value simulated before",
+			async ({ changed }) => {
+				const { result, rerender } = await quoteThenChange(changed);
+				await waitFor(() => expect(result.current.isLoading).toBe(false));
+				const runs =
+					chain.dryRunCall.mock.calls.length +
+					chain.dryRunXcm.mock.calls.length;
+
+				rerender({ balances: LOADED_BALANCES });
+
+				expect(result.current.isLoading).toBe(true);
+				await waitFor(() => expect(result.current.isLoading).toBe(false));
+				expect(
+					chain.dryRunCall.mock.calls.length +
+						chain.dryRunXcm.mock.calls.length,
+				).toBeGreaterThan(runs);
+			},
+		);
 	});
 
 	it("waits for the balances before simulating", async () => {

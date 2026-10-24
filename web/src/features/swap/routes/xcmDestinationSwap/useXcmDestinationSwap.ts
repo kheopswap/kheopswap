@@ -119,7 +119,9 @@ const useDestinationNativeFee = ({
 
 	return {
 		isLoading:
-			(balances.isLoading && !!fakeCall) || estimate.isLoading || fee.isLoading,
+			(balances.isLoading && !!fakeCall) ||
+			estimate.isFetching ||
+			fee.isLoading,
 		data,
 	};
 };
