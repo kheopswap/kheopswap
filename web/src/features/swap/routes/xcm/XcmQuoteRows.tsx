@@ -86,13 +86,16 @@ const TokenAmounts: FC<{ amounts: TokenAmount[] }> = ({ amounts }) => (
 	</div>
 );
 
-const TotalDebitedValue: FC = () => {
+const TotalDebitedValue: FC<{ deliveryFee: TokenAmount | undefined }> = ({
+	deliveryFee,
+}) => {
 	const { transaction } = useSwap();
 	const { feeEstimate, feeToken, isLoadingFeeEstimate } = useTransaction();
 	const transactionFee =
 		feeToken && isBigInt(feeEstimate)
 			? { tokenId: feeToken.id, plancks: feeEstimate }
 			: undefined;
+	if (!deliveryFee) return null;
 	if (!transactionFee && isLoadingFeeEstimate)
 		return <Shimmer className="h-4">0.0000 AAA</Shimmer>;
 
@@ -150,7 +153,10 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
 					(xcmQuote && <TokenAmountValue {...xcmQuote.destinationFee} />)
 				}
 			/>
-			<FormSummaryRow label="Total debited" value={<TotalDebitedValue />} />
+			<FormSummaryRow
+				label="Total debited"
+				value={<TotalDebitedValue deliveryFee={quote.deliveryFee} />}
+			/>
 		</>
 	);
 };
