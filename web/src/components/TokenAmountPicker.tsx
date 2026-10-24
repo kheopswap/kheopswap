@@ -51,6 +51,13 @@ const TokenInput = forwardRef<
 	return <input ref={ref} {...props} />;
 });
 
+const getAmountTextSize = (value: unknown) => {
+	const length = String(value ?? "").length;
+	if (length <= 8) return "text-[28px]";
+	if (length <= 11) return "text-[22px]";
+	return "text-[18px]";
+};
+
 export type TokenAmountPickerProps = Partial<
 	DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 >;
@@ -112,7 +119,8 @@ export const TokenAmountPicker: FC<{
 					autoCorrect="off"
 					aria-label={inputLabel ?? "Token amount"}
 					className={cn(
-						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left font-mono text-[28px] font-medium tracking-[-0.02em] text-text placeholder:text-faint focus:border-none focus:outline-hidden focus:ring-0",
+						"h-[42px] w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left font-mono font-medium tracking-[-0.02em] text-text placeholder:text-faint focus:border-none focus:outline-hidden focus:ring-0",
+						getAmountTextSize(inputProps.value),
 						isComputingValue && "invisible",
 					)}
 				/>
