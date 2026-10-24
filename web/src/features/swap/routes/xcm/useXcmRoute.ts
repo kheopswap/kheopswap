@@ -19,11 +19,17 @@ import {
 import {
 	getRouteAccess,
 	type TransactionPlan,
+	type XcmDestinationSwapRoute,
 	type XcmRoute,
 	type XcmSwapRoute,
 	type XcmTransferRoute,
 } from "../swapRoute";
 import { useAmmPathQuote } from "../useAmmPathQuote";
+import {
+	getXcmDestinationSwapCall,
+	type XcmDestinationSwapCallInputs,
+} from "../xcmDestinationSwap/getXcmDestinationSwapCall";
+import { useDestinationSwapPlancksIn } from "../xcmDestinationSwap/useDestinationSwapPlancksIn";
 import {
 	getXcmSwapCall,
 	type XcmSwapCallInputs,
@@ -42,15 +48,29 @@ export type XcmTransferDetails = {
 	quote: XcmQuoteState;
 };
 
-export type XcmSwapDetails = {
-	kind: "xcm-swap";
-	route: XcmSwapRoute;
+type XcmPathSwapDetails = {
 	quote: XcmQuoteState;
+	pathQuote: AmmPathQuote | undefined;
 	priceImpact: number | undefined;
 	slippage: number;
 	minReceived: bigint | undefined;
+};
+
+export type XcmSwapDetails = XcmPathSwapDetails & {
+	kind: "xcm-swap";
+	route: XcmSwapRoute;
 	appCommission: bigint | null | undefined;
 };
+
+export type XcmDestinationSwapDetails = XcmPathSwapDetails & {
+	kind: "xcm-destination-swap";
+	route: XcmDestinationSwapRoute;
+};
+
+export type XcmRouteDetails =
+	| XcmTransferDetails
+	| XcmSwapDetails
+	| XcmDestinationSwapDetails;
 
 export type XcmSwapFollowUpData = XcmTransferFollowUpData & {
 	swap: {
@@ -68,7 +88,8 @@ type XcmCallInputs =
 			tokenIn: Token;
 			plancks: bigint;
 	  }
-	| ({ kind: "xcm-swap" } & XcmSwapCallInputs);
+	| ({ kind: "xcm-swap" } & XcmSwapCallInputs)
+	| ({ kind: "xcm-destination-swap" } & XcmDestinationSwapCallInputs);
 
 type XcmAmounts = {
 	tokenIn: Token | null | undefined;
@@ -109,8 +130,33 @@ const getXcmCallInputs = (
 						remoteFeeLocation,
 					}
 				: null;
+		case "xcm-destination-swap":
+			return totalIn && tokenIn?.id === route.tokenIdIn && pathQuote
+				? {
+						kind: route.kind,
+						route,
+						tokenIn,
+						plancks: totalIn,
+						hops: pathQuote.hops,
+					}
+				: null;
 	}
 };
+
+const getUnquotedDestinationSwapInputs = (
+	route: XcmDestinationSwapRoute,
+	tokenIn: Token | null | undefined,
+	plancks: bigint | null | undefined,
+): XcmCallInputs | null =>
+	plancks && tokenIn?.id === route.tokenIdIn
+		? {
+				kind: route.kind,
+				route,
+				tokenIn,
+				plancks,
+				hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
+			}
+		: null;
 
 // Sized like the AMM fake call, so the fee estimate covers the commission batch.
 const getFakeXcmCallInputs = (
@@ -136,6 +182,8 @@ const getFakeXcmCallInputs = (
 						remoteFeeLocation,
 					}
 				: null;
+		case "xcm-destination-swap":
+			return getUnquotedDestinationSwapInputs(route, tokenIn, edTokenIn);
 	}
 };
 
@@ -145,6 +193,8 @@ const getXcmCall = (inputs: XcmCallInputs, beneficiary: SS58String) => {
 			return getXcmTransferCall({ ...inputs, beneficiary });
 		case "xcm-swap":
 			return getXcmSwapCall({ ...inputs, beneficiary });
+		case "xcm-destination-swap":
+			return getXcmDestinationSwapCall({ ...inputs, beneficiary });
 	}
 };
 
@@ -173,9 +223,24 @@ const getXcmTitle = (
 				? `Transfer ${tokenIn.symbol} to ${destinationName}`
 				: "Transfer";
 		case "xcm-swap":
+		case "xcm-destination-swap":
 			return tokenIn && tokenOut
 				? `Swap ${tokenIn.symbol} to ${tokenOut.symbol} on ${destinationName}`
 				: "Swap";
+	}
+};
+
+const getXcmTransactionType = (
+	route: XcmRoute | null,
+): TransactionPlan["transactionType"] => {
+	switch (route?.kind) {
+		case "xcm-swap":
+			return "xcmSwap";
+		case "xcm-destination-swap":
+			return "xcmDestinationSwap";
+		case "xcm-transfer":
+		case undefined:
+			return "xcmTransfer";
 	}
 };
 
@@ -211,10 +276,28 @@ export const useXcmRoute = ({
 	const swapRoute = route?.kind === "xcm-swap" ? route : null;
 	const mirrorTokenId = swapRoute && getLastHop(swapRoute.path).tokenIdOut;
 	const { data: mirrorToken } = useToken({ tokenId: mirrorTokenId });
+	const destinationSwapRoute =
+		route?.kind === "xcm-destination-swap" ? route : null;
+	const unquotedInputs = useMemo(
+		() =>
+			destinationSwapRoute &&
+			getUnquotedDestinationSwapInputs(destinationSwapRoute, tokenIn, totalIn),
+		[destinationSwapRoute, tokenIn, totalIn],
+	);
+	const { data: unquotedCall } = useXcmCall(unquotedInputs, beneficiary);
+	const destinationSwapIn = useDestinationSwapPlancksIn({
+		route: destinationSwapRoute,
+		beneficiary,
+		unquotedCall,
+	});
+	const destinationSwapPlancksIn = destinationSwapIn.data?.success
+		? destinationSwapIn.data.value
+		: null;
+
 	const pathQuote = useAmmPathQuote({
-		path: swapRoute?.path ?? null,
-		plancksIn: swapPlancksIn,
-		totalIn,
+		path: (swapRoute ?? destinationSwapRoute)?.path ?? null,
+		plancksIn: swapRoute ? swapPlancksIn : destinationSwapPlancksIn,
+		totalIn: swapRoute ? totalIn : destinationSwapPlancksIn,
 		slippage,
 	});
 
@@ -259,18 +342,30 @@ export const useXcmRoute = ({
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
 	const received = xcmQuote?.received;
 	const isLoading =
-		quote.isLoading || callQuery.isLoading || pathQuote.isLoading;
+		quote.isLoading ||
+		callQuery.isLoading ||
+		pathQuote.isLoading ||
+		destinationSwapIn.isLoading;
 
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
+		if (destinationSwapIn.data && !destinationSwapIn.data.success)
+			return describeXcmQuoteFailure(destinationSwapIn.data.failure, route);
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
 		if (callQuery.error)
 			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
 		if (quote.data && !quote.data.success)
 			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
-	}, [access, pathQuote.errorMessage, callQuery.error, quote.data, route]);
+	}, [
+		access,
+		destinationSwapIn.data,
+		pathQuote.errorMessage,
+		callQuery.error,
+		quote.data,
+		route,
+	]);
 
 	const submitGate = useMemo(
 		() =>
@@ -321,7 +416,7 @@ export const useXcmRoute = ({
 					})
 				: {},
 			followUpData,
-			transactionType: swapRoute ? "xcmSwap" : "xcmTransfer",
+			transactionType: getXcmTransactionType(route),
 			title: route ? getXcmTitle(route, tokenIn, tokenOut) : "Transfer",
 			submitGate,
 		};
@@ -342,7 +437,7 @@ export const useXcmRoute = ({
 		submitGate,
 	]);
 
-	const details = useMemo((): XcmTransferDetails | XcmSwapDetails | null => {
+	const details = useMemo((): XcmRouteDetails | null => {
 		if (!route) return null;
 		switch (route.kind) {
 			case "xcm-transfer":
@@ -352,12 +447,13 @@ export const useXcmRoute = ({
 					pathQuote.quote &&
 					xcmQuote &&
 					mirrorToken?.decimals === tokenOut?.decimals
-						? pathQuote.quote.minOut - xcmQuote.destinationFee
+						? pathQuote.quote.minOut - xcmQuote.destinationFee.plancks
 						: undefined;
 				return {
 					kind: route.kind,
 					route,
 					quote,
+					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.priceImpact,
 					slippage,
 					minReceived:
@@ -365,6 +461,16 @@ export const useXcmRoute = ({
 					appCommission,
 				};
 			}
+			case "xcm-destination-swap":
+				return {
+					kind: route.kind,
+					route,
+					quote,
+					pathQuote: pathQuote.quote,
+					priceImpact: pathQuote.priceImpact,
+					slippage,
+					minReceived: pathQuote.quote?.minOut,
+				};
 		}
 	}, [
 		route,

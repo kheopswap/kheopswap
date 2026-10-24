@@ -1,26 +1,27 @@
 import {
-	XcmV2MultiassetWildFungibility,
-	XcmV3MultiassetFungibility,
 	XcmV3WeightLimit,
-	XcmV5AssetFilter,
 	XcmV5Instruction,
 	XcmV5Junction,
 	XcmV5Junctions,
-	XcmV5WildAsset,
 	XcmVersionedXcm,
 } from "@polkadot-api/descriptors";
-import { AccountId, Binary, type SS58String } from "polkadot-api";
+import type { SS58String } from "polkadot-api";
 import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
-import type { TokenId } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { withAppCommission } from "../../withAppCommission";
-import { type AmmHop, getLastHop, type HopPath } from "../ammPath";
+import { getLastHop, type HopPath } from "../ammPath";
 import type { XcmSwapRoute } from "../swapRoute";
-
-type SwapHop = AmmHop & { minOut: bigint };
+import {
+	allOf,
+	anyOneAsset,
+	depositAsset,
+	exchangeAsset,
+	type SwapHop,
+	toFungible,
+} from "../xcm/xcmInstructions";
 
 export type XcmSwapCallInputs = {
 	route: XcmSwapRoute;
@@ -33,18 +34,6 @@ export type XcmSwapCallInputs = {
 type XcmSwapMessageProps = Omit<XcmSwapCallInputs, "appCommission"> & {
 	beneficiary: SS58String;
 };
-
-// query_xcm_weight traps on any Fungible(0) in the program.
-const toFungible = (plancks: bigint) =>
-	XcmV3MultiassetFungibility.Fungible(plancks > 0n ? plancks : 1n);
-
-const allOf = (tokenId: TokenId) =>
-	XcmV5AssetFilter.Wild(
-		XcmV5WildAsset.AllOf({
-			id: getXcmV5MultilocationFromTokenId(tokenId),
-			fun: XcmV2MultiassetWildFungibility.Fungible(),
-		}),
-	);
 
 export const buildXcmSwapMessage = ({
 	route,
@@ -63,18 +52,7 @@ export const buildXcmSwapMessage = ({
 				fun: toFungible(swapPlancksIn),
 			},
 		]),
-		...hops.map(({ tokenIdIn, tokenIdOut, minOut }) =>
-			XcmV5Instruction.ExchangeAsset({
-				give: allOf(tokenIdIn),
-				want: [
-					{
-						id: getXcmV5MultilocationFromTokenId(tokenIdOut),
-						fun: toFungible(minOut),
-					},
-				],
-				maximal: true,
-			}),
-		),
+		...hops.map(exchangeAsset),
 		XcmV5Instruction.DepositReserveAsset({
 			assets: allOf(lastHop.tokenIdOut),
 			dest: {
@@ -88,18 +66,7 @@ export const buildXcmSwapMessage = ({
 					fees: { id: remoteFeeLocation, fun: toFungible(lastHop.minOut) },
 					weight_limit: XcmV3WeightLimit.Unlimited(),
 				}),
-				XcmV5Instruction.DepositAsset({
-					assets: XcmV5AssetFilter.Wild(XcmV5WildAsset.AllCounted(1)),
-					beneficiary: {
-						parents: 0,
-						interior: XcmV5Junctions.X1(
-							XcmV5Junction.AccountId32({
-								network: undefined,
-								id: Binary.toHex(AccountId().enc(beneficiary)),
-							}),
-						),
-					},
-				}),
+				depositAsset(anyOneAsset, beneficiary),
 			],
 		}),
 	]);

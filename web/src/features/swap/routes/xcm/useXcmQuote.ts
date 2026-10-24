@@ -13,10 +13,11 @@ import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { ChainId } from "../../../../registry/chains/types";
 import type { TokenAmount } from "../../../../registry/tokens/types";
+import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
-import type { XcmRoute } from "../swapRoute";
+import type { XcmDestinationSwapRoute, XcmRoute } from "../swapRoute";
 import {
 	composeXcmQuote,
 	getDeliveryFeeTokenId,
@@ -74,6 +75,48 @@ const queryDestinationDryRun = async (
 	const origin = getParachainLocation(route.origin);
 	const api = await getApi(route.destination);
 	return api.apis.DryRunApi.dry_run_xcm(origin, message, { at: "best" });
+};
+
+const queryDestinationSwapFee = async (
+	route: XcmDestinationSwapRoute,
+	message: XcmVersionedXcm,
+) => {
+	const api = await getApi(route.destination);
+	const weight = await api.apis.XcmPaymentApi.query_xcm_weight(message, {
+		at: "best",
+	});
+	if (!weight.success) return null;
+	const fee = await api.apis.XcmPaymentApi.query_weight_to_asset_fee(
+		weight.value,
+		XcmVersionedAssetId.V5(
+			getXcmV5MultilocationFromTokenId(route.path[0].tokenIdIn),
+		),
+		{ at: "best" },
+	);
+	return fee.success ? fee.value : null;
+};
+
+export const useDestinationSwapFee = (
+	route: XcmRoute | null,
+	message: XcmVersionedXcm | null,
+) => {
+	const destinationSwapRoute =
+		route?.kind === "xcm-destination-swap" ? route : null;
+	return useQuery({
+		queryKey: [
+			"xcmDestinationSwapFee",
+			destinationSwapRoute?.path[0].tokenIdIn,
+			safeQueryKeyPart(message),
+		],
+		enabled: !!destinationSwapRoute && !!message,
+		queryFn: () =>
+			destinationSwapRoute && message
+				? queryDestinationSwapFee(destinationSwapRoute, message)
+				: null,
+		retry: 1,
+		refetchInterval: false,
+		structuralSharing: false,
+	});
 };
 
 const useXcmDeliveryFee = (
@@ -137,6 +180,7 @@ export const useXcmQuote = ({
 
 	const deliveryFee = useXcmDeliveryFee(route, message);
 	const estimatedDeliveryFee = useXcmDeliveryFee(route, estimateMessage);
+	const destinationSwapFee = useDestinationSwapFee(route, message);
 
 	const destination = useQuery({
 		queryKey: [
@@ -161,6 +205,7 @@ export const useXcmQuote = ({
 	});
 
 	const data = useMemo((): XcmQuoteResult | undefined => {
+		if (!route) return undefined;
 		if (origin.error)
 			return { success: false, failure: { kind: "origin-unavailable" } };
 		if (!originLeg) return undefined;
@@ -172,18 +217,28 @@ export const useXcmQuote = ({
 			return { success: false, failure: destination.data.failure };
 		if (deliveryFee.error || deliveryFee.data === null)
 			return { success: false, failure: { kind: "delivery-fee-unavailable" } };
+		if (destinationSwapFee.error || destinationSwapFee.data === null)
+			return {
+				success: false,
+				failure: { kind: "destination-fee-unavailable" },
+			};
 		if (!destination.data || deliveryFee.data === undefined) return undefined;
-		return {
-			success: true,
-			quote: composeXcmQuote(originLeg.value.sent, destination.data.value),
-		};
+		const quote = composeXcmQuote(route, {
+			sent: originLeg.value.sent,
+			received: destination.data.value,
+			destinationSwapFee: destinationSwapFee.data,
+		});
+		return quote && { success: true, quote };
 	}, [
+		route,
 		origin.error,
 		originLeg,
 		destination.error,
 		destination.data,
 		deliveryFee.error,
 		deliveryFee.data,
+		destinationSwapFee.error,
+		destinationSwapFee.data,
 	]);
 
 	const deliveryFeePlancks = deliveryFee.data ?? estimatedDeliveryFee.data;
@@ -191,7 +246,10 @@ export const useXcmQuote = ({
 	return {
 		isLoading:
 			origin.isLoading ||
-			(!!message && (destination.isLoading || deliveryFee.isLoading)),
+			(!!message &&
+				(destination.isLoading ||
+					deliveryFee.isLoading ||
+					destinationSwapFee.isLoading)),
 		data,
 		deliveryFee:
 			route && isBigInt(deliveryFeePlancks)
