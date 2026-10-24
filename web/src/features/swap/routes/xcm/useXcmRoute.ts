@@ -477,10 +477,13 @@ export const useXcmRoute = ({
 		balanceOut,
 	]);
 
+	const outputHint =
+		route && !account
+			? "Connect a Polkadot account to quote cross-chain routes"
+			: null;
+
 	const outputErrorMessage = useMemo(() => {
-		if (!route) return null;
-		if (!account)
-			return "Connect a Polkadot account to quote cross-chain routes";
+		if (!route || !account) return null;
 		if (access && !access.allowed) return access.reason;
 		if (callQuery.error)
 			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
@@ -506,11 +509,11 @@ export const useXcmRoute = ({
 	const submitGate = useMemo(
 		() =>
 			getXcmSubmitGate({
-				errorMessage: outputErrorMessage,
+				errorMessage: outputErrorMessage ?? outputHint,
 				isLoading,
 				isQuoted: !!xcmQuote,
 			}),
-		[outputErrorMessage, isLoading, xcmQuote],
+		[outputErrorMessage, outputHint, isLoading, xcmQuote],
 	);
 
 	const plan = useMemo<TransactionPlan>(() => {
@@ -620,6 +623,7 @@ export const useXcmRoute = ({
 		plan,
 		details,
 		outputErrorMessage,
+		outputHint,
 		swapPlancksOut: received?.plancks,
 		amountOut:
 			received && tokenOut

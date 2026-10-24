@@ -255,10 +255,14 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			null,
 		);
 
-		expect(result.current.outputErrorMessage).toBe(
+		expect(result.current.outputErrorMessage).toBeNull();
+		expect(result.current.outputHint).toBe(
 			"Connect a Polkadot account to quote cross-chain routes",
 		);
-		expect(result.current.plan.submitGate.status).toBe("closed");
+		expect(result.current.plan.submitGate).toEqual({
+			status: "closed",
+			reason: "Connect a Polkadot account to quote cross-chain routes",
+		});
 		expect(result.current.plan.followUp).toEqual({ type: "unknown" });
 	});
 

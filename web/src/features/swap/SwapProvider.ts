@@ -201,6 +201,7 @@ const useSwapProvider = () => {
 			: pricing.isLoadingAmountOut,
 		isLoadingCall: xcmRoute ? xcm.isLoadingCall : callData.isLoadingCall,
 		outputErrorMessage,
+		outputHint: xcmRoute ? xcm.outputHint : null,
 		details,
 		transaction,
 		risk: risk.risk,

@@ -70,9 +70,10 @@ export const TokenAmountPicker: FC<{
 	plancks: bigint | null | undefined;
 	isLoading: boolean;
 	errorMessage?: string | null;
+	hint?: string | null;
 	disableTokenButton?: boolean;
 	onTokenChange: (tokenId: TokenId) => void;
-	balance?: bigint | null | undefined; // TODO remove optional
+	balance?: bigint | null | undefined;
 	isLoadingBalance?: boolean;
 	onMaxClick?: () => void;
 	isComputingValue?: boolean;
@@ -85,6 +86,7 @@ export const TokenAmountPicker: FC<{
 	isLoading,
 	plancks,
 	errorMessage,
+	hint,
 	onTokenChange,
 	disableTokenButton,
 
@@ -157,6 +159,8 @@ export const TokenAmountPicker: FC<{
 							</TooltipTrigger>
 							<TooltipContent>{errorMessage}</TooltipContent>
 						</Tooltip>
+					) : hint ? (
+						<span className="text-muted">{hint}</span>
 					) : (
 						<StablePrice
 							plancks={plancks}

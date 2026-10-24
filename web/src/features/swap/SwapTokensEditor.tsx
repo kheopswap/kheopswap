@@ -41,6 +41,7 @@ export const SwapTokensEditor = () => {
 		tokensOut,
 		isLoadingTokens,
 		outputErrorMessage,
+		outputHint,
 
 		balanceIn,
 		edTokenIn,
@@ -151,6 +152,7 @@ export const SwapTokensEditor = () => {
 				isLoading={isLoadingTokens}
 				onTokenChange={onTokenOutChange}
 				errorMessage={outputErrorMessage}
+				hint={outputHint}
 				balance={balanceOut}
 				isLoadingBalance={isLoadingBalanceOut}
 				isComputingValue={isLoadingAmountOut}
