@@ -17,6 +17,7 @@ import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import type { XcmRoute } from "../swapRoute";
+import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import {
 	composeXcmQuote,
 	getDeliveryFeeTokenId,
@@ -105,6 +106,7 @@ type UseXcmQuoteProps = {
 	beneficiary: SS58String | null;
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
+	balances: XcmDryRunBalances;
 };
 
 export const useXcmQuote = ({
@@ -113,14 +115,23 @@ export const useXcmQuote = ({
 	beneficiary,
 	call,
 	fakeCall,
+	balances,
 }: UseXcmQuoteProps): XcmQuoteState => {
 	const destinationParaId = route && getChainById(route.destination).paraId;
 
-	const origin = useDryRun({ chainId: route?.origin, from: beneficiary, call });
+	const origin = useDryRun({
+		chainId: route?.origin,
+		from: beneficiary,
+		call,
+		balances: balances.origin,
+		enabled: !balances.isLoading,
+	});
 	const originEstimate = useDryRun({
 		chainId: route?.origin,
 		from: beneficiary,
 		call: fakeCall,
+		balances: balances.origin,
+		enabled: !balances.isLoading,
 	});
 
 	const originLeg = useMemo(
@@ -150,6 +161,7 @@ export const useXcmQuote = ({
 			route?.tokenIdOut,
 			beneficiary,
 			safeQueryKeyPart(message),
+			safeQueryKeyPart(balances.destination),
 		],
 		enabled: !!route && !!beneficiary && !!message,
 		queryFn: async () =>
@@ -202,6 +214,7 @@ export const useXcmQuote = ({
 
 	return {
 		isLoading:
+			(balances.isLoading && !!call) ||
 			origin.isLoading ||
 			(!!message && (destination.isLoading || deliveryFee.isLoading)),
 		data,

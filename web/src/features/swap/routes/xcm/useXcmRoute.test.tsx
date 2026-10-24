@@ -61,8 +61,20 @@ vi.mock("../../../../papi/getApi", () => ({
 	}),
 }));
 
-vi.mock("../../../../hooks/useBalance", () => ({
-	useBalance: () => ({ data: chain.balanceIn, isLoading: false }),
+vi.mock("../../../../hooks/useBalances", () => ({
+	useBalances: ({
+		balanceDefs = [],
+	}: {
+		balanceDefs?: { address: string; tokenId: string }[];
+	}) => ({
+		isLoading: false,
+		data: balanceDefs.map((def) => ({
+			...def,
+			balance: chain.balanceIn,
+			frozen: 0n,
+			isLoading: false,
+		})),
+	}),
 }));
 
 vi.mock("../../../../state/relay", () => ({
@@ -385,6 +397,32 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
 		},
 	);
+
+	it("holds the gate on a balance change until the dry runs answer again", async () => {
+		chain.balanceIn = usdtToPink.amount * 2n;
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+
+		const pendingDryRuns: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					pendingDryRuns.push(() => resolve(chain.fixture.originDryRun));
+				}),
+		);
+		chain.balanceIn = usdtToPink.amount;
+		rerender();
+
+		await waitFor(() => expect(pendingDryRuns.length).toBeGreaterThan(0));
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+
+		await waitFor(() => {
+			for (const finish of pendingDryRuns.splice(0)) finish();
+			expect(result.current.plan.submitGate).toEqual({ status: "open" });
+		});
+	});
 
 	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {
 		chain.dryRunCall.mockRejectedValue(new Error("RPC unavailable"));

@@ -4,8 +4,7 @@ import {
 } from "@polkadot-api/descriptors";
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import { useEffect, useMemo, useRef } from "react";
-import { useBalance } from "../../../../hooks/useBalance";
+import { useMemo } from "react";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import { usePoolReservesByTokenIds } from "../../../../hooks/usePoolReservesByTokenIds";
 import { getApi } from "../../../../papi/getApi";
@@ -19,6 +18,7 @@ import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { type AmmPathQuoteState, useAmmPathQuote } from "../useAmmPathQuote";
+import type { XcmDryRunBalances } from "../xcm/useXcmDryRunBalances";
 import {
 	describeXcmQuoteFailure,
 	type Parsed,
@@ -58,15 +58,19 @@ const useDestinationNativeFee = ({
 	route,
 	beneficiary,
 	fakeCall,
+	balances,
 }: {
 	route: XcmDestinationSwapRoute | null;
 	beneficiary: SS58String | null;
 	fakeCall: AnyTransaction | null | undefined;
+	balances: XcmDryRunBalances;
 }): { isLoading: boolean; data: Parsed<bigint> | undefined } => {
 	const estimate = useDryRun({
 		chainId: route?.origin,
 		from: beneficiary,
 		call: fakeCall,
+		balances: balances.origin,
+		enabled: !balances.isLoading,
 	});
 	const estimateLeg = useMemo(
 		() =>
@@ -79,19 +83,6 @@ const useDestinationNativeFee = ({
 		[route, estimate.data],
 	);
 	const message = estimateLeg?.success ? estimateLeg.value.message : null;
-
-	const { data: balanceIn } = useBalance({
-		address: beneficiary,
-		tokenId: route?.tokenIdIn,
-	});
-	const isEstimateFailed = !!estimate.error || estimateLeg?.success === false;
-	const { refetch: refetchEstimate } = estimate;
-	const estimatedBalanceIn = useRef(balanceIn);
-	useEffect(() => {
-		if (estimatedBalanceIn.current === balanceIn) return;
-		estimatedBalanceIn.current = balanceIn;
-		if (isEstimateFailed) refetchEstimate();
-	}, [balanceIn, isEstimateFailed, refetchEstimate]);
 
 	const fee = useQuery({
 		queryKey: [
@@ -121,7 +112,11 @@ const useDestinationNativeFee = ({
 			: { success: true, value: fee.data };
 	}, [estimate.error, estimateLeg, fee.error, fee.data]);
 
-	return { isLoading: estimate.isLoading || fee.isLoading, data };
+	return {
+		isLoading:
+			(balances.isLoading && !!fakeCall) || estimate.isLoading || fee.isLoading,
+		data,
+	};
 };
 
 export type XcmDestinationSwapState = {
@@ -138,14 +133,21 @@ export const useXcmDestinationSwap = ({
 	totalIn,
 	fakeCall,
 	slippage,
+	balances,
 }: {
 	route: XcmDestinationSwapRoute | null;
 	beneficiary: SS58String | null;
 	totalIn: bigint | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
 	slippage: number;
+	balances: XcmDryRunBalances;
 }): XcmDestinationSwapState => {
-	const nativeFee = useDestinationNativeFee({ route, beneficiary, fakeCall });
+	const nativeFee = useDestinationNativeFee({
+		route,
+		beneficiary,
+		fakeCall,
+		balances,
+	});
 	const { assetHub } = useRelayChains();
 	const { data: lpFee } = useAssetConvertionLPFee({ chain: assetHub });
 	const firstPool = usePoolReservesByTokenIds({

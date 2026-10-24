@@ -40,6 +40,7 @@ import {
 	type XcmSwapCallInputs,
 } from "../xcmSwap/getXcmSwapCall";
 import { getXcmTransferCall } from "../xcmTransfer/getXcmTransferCall";
+import { useXcmDryRunBalances } from "./useXcmDryRunBalances";
 import { useXcmQuote, type XcmQuoteState } from "./useXcmQuote";
 import {
 	describeNewAccountMinimum,
@@ -317,6 +318,7 @@ export const useXcmRoute = ({
 		[route, tokenIn, edTokenIn, remoteFeeLocation],
 	);
 	const { data: fakeCall } = useXcmCall(fakeInputs, beneficiary);
+	const dryRunBalances = useXcmDryRunBalances(route, beneficiary);
 
 	const destinationSwap = useXcmDestinationSwap({
 		route: destinationSwapRoute,
@@ -324,6 +326,7 @@ export const useXcmRoute = ({
 		totalIn,
 		fakeCall,
 		slippage,
+		balances: dryRunBalances,
 	});
 	const swapPathQuote = useAmmPathQuote({
 		path: swapRoute?.path ?? null,
@@ -364,6 +367,7 @@ export const useXcmRoute = ({
 		beneficiary,
 		call,
 		fakeCall,
+		balances: dryRunBalances,
 	});
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
 	const received = xcmQuote?.received;
