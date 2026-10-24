@@ -19,7 +19,8 @@ import { usePortfolio } from "./PortfolioProvider";
 const AMOUNT_CLASS_NAME =
 	"font-extralight font-mono text-6xl leading-none tracking-[-0.07em] sm:text-[88px]";
 
-const formatShare = (share: number) => `${Math.round(share * 100)}%`;
+export const formatShare = (share: number) =>
+	share > 0 && share < 0.005 ? "< 1%" : `${Math.round(share * 100)}%`;
 
 export const getLegendLabels = (tokens: Token[]) => {
 	const symbolCounts = new Map<string, number>();
