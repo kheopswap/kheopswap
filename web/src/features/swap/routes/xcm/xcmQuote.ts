@@ -258,6 +258,39 @@ export const composeXcmQuote = (
 	},
 });
 
+export type XcmReceived = { plancks: bigint; isEstimate: boolean };
+
+const takeFee = (
+	arriving: bigint | undefined,
+	destinationFee: bigint | undefined,
+): bigint | undefined =>
+	arriving !== undefined &&
+	destinationFee !== undefined &&
+	arriving > destinationFee
+		? arriving - destinationFee
+		: undefined;
+
+export const estimateXcmReceived = ({
+	kind,
+	totalIn,
+	pathAmountOut,
+	lastDestinationFee,
+}: {
+	kind: XcmRoute["kind"];
+	totalIn: bigint;
+	pathAmountOut: bigint | undefined;
+	lastDestinationFee: bigint | undefined;
+}): bigint | undefined => {
+	switch (kind) {
+		case "xcm-transfer":
+			return takeFee(totalIn, lastDestinationFee);
+		case "xcm-swap":
+			return takeFee(pathAmountOut, lastDestinationFee ?? 0n);
+		case "xcm-destination-swap":
+			return pathAmountOut;
+	}
+};
+
 const ORIGIN_DISPATCH_FAILURES = new Set<XcmQuoteFailure["kind"]>([
 	"origin-failed",
 	"origin-withdraw-failed",

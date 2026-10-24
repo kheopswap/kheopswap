@@ -45,21 +45,25 @@ import { useXcmQuote, type XcmQuoteState } from "./useXcmQuote";
 import {
 	describeNewAccountMinimum,
 	describeXcmQuoteFailure,
+	estimateXcmReceived,
 	getNewAccountMinimum,
 	getXcmCallSpendings,
 	getXcmSubmitGate,
 	isOriginDispatchFailure,
-	type XcmQuoteResult,
+	type XcmQuote,
+	type XcmReceived,
 } from "./xcmQuote";
 
 export type XcmTransferDetails = {
 	kind: "xcm-transfer";
 	route: XcmTransferRoute;
 	quote: XcmQuoteState;
+	received: XcmReceived | undefined;
 };
 
 type XcmPathSwapDetails = {
 	quote: XcmQuoteState;
+	received: XcmReceived | undefined;
 	pathQuote: AmmPathQuote | undefined;
 	priceImpact: number | undefined;
 	slippage: number;
@@ -247,25 +251,21 @@ const getXcmFollowUp = (
 	}
 };
 
-const useQuoteShownWhileRefreshing = (
-	quote: XcmQuoteState,
-	isLoading: boolean,
-	key: string | null,
-): XcmQuoteState => {
-	const lastQuote = useRef<{ key: string; data: XcmQuoteResult } | null>(null);
-	useEffect(() => {
-		if (key && quote.data?.success)
-			lastQuote.current = { key, data: quote.data };
-	}, [key, quote.data]);
+type LastQuote = { pairKey: string; totalIn: bigint; quote: XcmQuote };
 
-	const shownData =
-		isLoading && !quote.data && key && lastQuote.current?.key === key
-			? lastQuote.current.data
-			: undefined;
-	return useMemo(
-		() => (shownData ? { ...quote, data: shownData, isLoading: false } : quote),
-		[shownData, quote],
-	);
+const useLastQuote = (
+	pairKey: string | null,
+	totalIn: bigint | null | undefined,
+	quote: XcmQuoteState,
+): LastQuote | null => {
+	const lastQuote = useRef<LastQuote | null>(null);
+	useEffect(() => {
+		if (pairKey && totalIn && quote.data?.success)
+			lastQuote.current = { pairKey, totalIn, quote: quote.data.quote };
+	}, [pairKey, totalIn, quote.data]);
+	return pairKey && lastQuote.current?.pairKey === pairKey
+		? lastQuote.current
+		: null;
 };
 
 type UseXcmRouteProps = {
@@ -370,25 +370,33 @@ export const useXcmRoute = ({
 		balances: dryRunBalances,
 	});
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
-	const received = xcmQuote?.received;
 	const isLoading =
 		quote.isLoading ||
 		callQuery.isLoading ||
 		pathQuote.isLoading ||
 		destinationSwap.isLoading;
 
-	const shownQuote = useQuoteShownWhileRefreshing(
-		quote,
-		isLoading,
-		route && beneficiary && totalIn
-			? [
-					route.kind,
-					route.tokenIdIn,
-					route.tokenIdOut,
-					beneficiary,
-					totalIn,
-				].join(":")
+	const lastQuote = useLastQuote(
+		route && beneficiary
+			? [route.kind, route.tokenIdIn, route.tokenIdOut, beneficiary].join(":")
 			: null,
+		totalIn,
+		quote,
+	);
+	const replayedQuote =
+		isLoading && !quote.data && lastQuote && lastQuote.totalIn === totalIn
+			? lastQuote.quote
+			: undefined;
+	const shownQuote = useMemo(
+		(): XcmQuoteState =>
+			replayedQuote
+				? {
+						...quote,
+						data: { success: true, quote: replayedQuote },
+						isLoading: false,
+					}
+				: { ...quote, isLoading },
+		[quote, replayedQuote, isLoading],
 	);
 	const originFailure =
 		quote.data?.success === false
@@ -398,16 +406,35 @@ export const useXcmRoute = ({
 		hasInsufficientBalance &&
 		!!originFailure &&
 		isOriginDispatchFailure(originFailure);
-	const pathEstimate =
+	const pathAmountOut =
 		route?.kind === "xcm-destination-swap" ||
 		(route?.kind === "xcm-swap" && mirrorToken?.decimals === tokenOut?.decimals)
 			? pathQuote.quote?.amountOut
 			: undefined;
-	const shownReceived = shownQuote.data?.success
-		? shownQuote.data.quote.received
-		: isBalanceShortfall
-			? pathEstimate
-			: undefined;
+	const shownDestinationFee = shownQuote.data?.success
+		? shownQuote.data.quote.destinationFee.plancks
+		: lastQuote?.quote.destinationFee.plancks;
+	const received = useMemo((): XcmReceived | undefined => {
+		if (shownQuote.data?.success)
+			return { plancks: shownQuote.data.quote.received, isEstimate: false };
+		if (!route || !totalIn || !(isLoading || isBalanceShortfall))
+			return undefined;
+		const plancks = estimateXcmReceived({
+			kind: route.kind,
+			totalIn,
+			pathAmountOut,
+			lastDestinationFee: lastQuote?.quote.destinationFee.plancks,
+		});
+		return plancks === undefined ? undefined : { plancks, isEstimate: true };
+	}, [
+		shownQuote.data,
+		route,
+		totalIn,
+		isLoading,
+		isBalanceShortfall,
+		pathAmountOut,
+		lastQuote,
+	]);
 
 	const transferRoute = route?.kind === "xcm-transfer" ? route : null;
 	const { data: existentialDepositOut } = useExistentialDeposit({
@@ -494,7 +521,7 @@ export const useXcmRoute = ({
 						target: { tokenId: route.tokenIdOut, beneficiary },
 						returnTokenIds: getReturnTokenIds(route),
 						tokenOut,
-						estimatedReceived: received,
+						estimatedReceived: xcmQuote?.received,
 					}
 				: null;
 		const swapFollowUpData: XcmSwapFollowUpData["swap"] | null =
@@ -529,7 +556,7 @@ export const useXcmRoute = ({
 		tokenIn,
 		tokenOut,
 		mirrorToken,
-		received,
+		xcmQuote,
 		swapPlancksIn,
 		pathQuote.quote,
 		call,
@@ -543,19 +570,19 @@ export const useXcmRoute = ({
 		if (!route) return null;
 		switch (route.kind) {
 			case "xcm-transfer":
-				return { kind: route.kind, route, quote: shownQuote };
+				return { kind: route.kind, route, quote: shownQuote, received };
 			case "xcm-swap": {
 				const minReceived =
 					pathQuote.quote &&
-					shownQuote.data?.success &&
+					shownDestinationFee !== undefined &&
 					mirrorToken?.decimals === tokenOut?.decimals
-						? pathQuote.quote.minOut -
-							shownQuote.data.quote.destinationFee.plancks
+						? pathQuote.quote.minOut - shownDestinationFee
 						: undefined;
 				return {
 					kind: route.kind,
 					route,
 					quote: shownQuote,
+					received,
 					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
@@ -569,6 +596,7 @@ export const useXcmRoute = ({
 					kind: route.kind,
 					route,
 					quote: shownQuote,
+					received,
 					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
@@ -578,6 +606,8 @@ export const useXcmRoute = ({
 	}, [
 		route,
 		shownQuote,
+		received,
+		shownDestinationFee,
 		pathQuote.quote,
 		mirrorToken?.decimals,
 		tokenOut?.decimals,
@@ -590,11 +620,12 @@ export const useXcmRoute = ({
 		plan,
 		details,
 		outputErrorMessage,
-		swapPlancksOut: shownReceived,
+		swapPlancksOut: received?.plancks,
 		amountOut:
-			shownReceived !== undefined && tokenOut
-				? plancksToTokens(shownReceived, tokenOut.decimals)
+			received && tokenOut
+				? plancksToTokens(received.plancks, tokenOut.decimals)
 				: "",
-		isLoadingAmountOut: !!totalIn && isLoading && shownReceived === undefined,
+		isLoadingAmountOut: !!totalIn && isLoading && !received,
+		isLoadingCall: callQuery.isLoading,
 	};
 };

@@ -90,7 +90,7 @@ const MinReceivedValue: FC<{ details: XcmPathSwapDetails }> = ({ details }) => {
 export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 	details,
 }) => {
-	const { tokenIn, transaction } = useSwap();
+	const { tokenIn, transaction, isLoadingCall } = useSwap();
 	const { route, quote, pathQuote, priceImpact, slippage } = details;
 
 	return (
@@ -115,13 +115,19 @@ export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 					label="Min. received (est.)"
 					value={<MinReceivedValue details={details} />}
 				/>
-				<XcmQuoteRows quote={quote} route={route} />
+				<XcmQuoteRows quote={quote} received={details.received} route={route} />
 			</FormSummarySection>
-			{!!transaction.call && (
+			{(!!transaction.call || isLoadingCall) && (
 				<FormSummarySection>
 					<FormSummaryRow
 						label="Simulation"
-						value={<XcmSimulationValue quote={quote} route={route} />}
+						value={
+							transaction.call ? (
+								<XcmSimulationValue quote={quote} route={route} />
+							) : (
+								<Shimmer className="h-4">Success</Shimmer>
+							)
+						}
 					/>
 					<FormSummaryRow
 						label="Transaction fee"

@@ -31,7 +31,7 @@ export const useSwapCall = ({
 	tokenOut,
 	swapPlancksOut,
 }: UseSwapCallProps) => {
-	const { data: call } = useSwapExtrinsic({
+	const { data: call, isLoading: isLoadingCall } = useSwapExtrinsic({
 		path,
 		amountIn: swapPlancksIn,
 		amountOutMin: minPlancksOut,
@@ -39,7 +39,6 @@ export const useSwapCall = ({
 		appCommission,
 	});
 
-	// Fake call for fee estimation when the real call isn't ready yet
 	const { data: fakeCall } = useSwapExtrinsic({
 		path,
 		amountIn: tokenIn && edTokenIn,
@@ -59,5 +58,5 @@ export const useSwapCall = ({
 		[minPlancksOut, slippage, swapPlancksOut, tokenOut],
 	);
 
-	return { call, fakeCall, followUp };
+	return { call, isLoadingCall, fakeCall, followUp };
 };

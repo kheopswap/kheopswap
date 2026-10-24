@@ -210,6 +210,7 @@ const useSwapProvider = () => {
 		isLoadingAmountOut: xcmRoute
 			? xcm.isLoadingAmountOut
 			: pricing.isLoadingAmountOut,
+		isLoadingCall: xcmRoute ? xcm.isLoadingCall : callData.isLoadingCall,
 		outputErrorMessage,
 		details,
 		transaction,

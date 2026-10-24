@@ -36,6 +36,7 @@ import {
 	type DestinationDryRun,
 	describeNewAccountMinimum,
 	describeXcmQuoteFailure,
+	estimateXcmReceived,
 	getDeliveryFeeTokenId,
 	getNewAccountMinimum,
 	getTotalDebited,
@@ -955,4 +956,69 @@ describe("People to Asset Hub", () => {
 			"native::ppeople": { plancks: 10304850000n, allowDeath: false },
 		});
 	});
+});
+
+describe("estimateXcmReceived", () => {
+	it.each([
+		[
+			"a transfer: the amount minus the last destination fee",
+			"xcm-transfer",
+			1_000n,
+			undefined,
+			10n,
+			990n,
+		],
+		[
+			"a transfer without a fee to replay: nothing",
+			"xcm-transfer",
+			1_000n,
+			undefined,
+			undefined,
+			undefined,
+		],
+		[
+			"a swap then send: the swap output minus the last destination fee",
+			"xcm-swap",
+			1_000n,
+			500n,
+			10n,
+			490n,
+		],
+		[
+			"a swap then send never quoted: the swap output",
+			"xcm-swap",
+			1_000n,
+			500n,
+			undefined,
+			500n,
+		],
+		[
+			"a send then swap: the swap output, which already paid the fee",
+			"xcm-destination-swap",
+			1_000n,
+			500n,
+			10n,
+			500n,
+		],
+		[
+			"an amount the fee would eat: nothing",
+			"xcm-transfer",
+			10n,
+			undefined,
+			10n,
+			undefined,
+		],
+	] as const)(
+		"estimates %s",
+		(_, kind, totalIn, pathAmountOut, lastDestinationFee, expected) => {
+			expect(
+				estimateXcmReceived({
+					kind,
+					totalIn,
+					pathAmountOut,
+					lastDestinationFee,
+				}),
+			).toBe(expected);
+		},
+	);
 });

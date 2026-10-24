@@ -4,6 +4,7 @@ import {
 	FormSummaryRow,
 	FormSummarySection,
 } from "../../components/FormSummary";
+import { Shimmer } from "../../components/Shimmer";
 import { Tokens } from "../../components/Tokens";
 import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
@@ -48,7 +49,7 @@ const PoolReservesValue: FC<{ liquidity: PathLiquidity | null }> = ({
 };
 
 const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
-	const { tokenIn, tokenOut, transaction } = useSwap();
+	const { tokenIn, tokenOut, transaction, isLoadingCall } = useSwap();
 	const {
 		route,
 		minPlancksOut,
@@ -82,7 +83,7 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 					}
 				/>
 			</FormSummarySection>
-			{!!call && (
+			{(!!call || isLoadingCall) && (
 				<>
 					<FormSummarySection>
 						<FormSummaryRow
@@ -102,7 +103,13 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 					<FormSummarySection>
 						<FormSummaryRow
 							label="Simulation"
-							value={<TransactionDryRunSummaryValue />}
+							value={
+								call ? (
+									<TransactionDryRunSummaryValue />
+								) : (
+									<Shimmer className="h-4">Success</Shimmer>
+								)
+							}
 						/>
 						<FormSummaryRow
 							label="Transaction fee"

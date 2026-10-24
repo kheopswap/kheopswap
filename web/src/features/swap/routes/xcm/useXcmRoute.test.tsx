@@ -155,13 +155,13 @@ const renderDestinationSwap = (
 		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 	);
 	return renderHook(
-		() =>
+		(props?: { totalIn: bigint }) =>
 			useXcmRoute({
 				route,
 				account,
 				tokenIn: getToken(fixture.tokenIdIn),
 				tokenOut: getToken(fixture.tokenIdOut),
-				totalIn,
+				totalIn: props?.totalIn ?? totalIn,
 				swapPlancksIn: null,
 				appCommission: null,
 				slippage: fixture.slippage,
@@ -169,7 +169,7 @@ const renderDestinationSwap = (
 				hasInsufficientBalance: chain.hasInsufficientBalance,
 				balanceOut: 0n,
 			}),
-		{ wrapper },
+		{ wrapper, initialProps: { totalIn } },
 	);
 };
 
@@ -376,6 +376,11 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			);
 			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
 			expect(result.current.swapPlancksOut).toBe(swapPlancksOut);
+			expect(result.current.details?.received).toEqual(
+				swapPlancksOut === undefined
+					? undefined
+					: { plancks: swapPlancksOut, isEstimate: true },
+			);
 		},
 	);
 
@@ -405,6 +410,33 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			expect(result.current.outputErrorMessage).toBe(FEE_ESTIMATE_FAILED),
 		);
 		expect(result.current.plan.submitGate.status).toBe("closed");
+	});
+
+	it("on an amount edit, shows the local estimate until the dry runs quote the new amount", async () => {
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+
+		const pendingDryRuns: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					pendingDryRuns.push(() => resolve(chain.fixture.originDryRun));
+				}),
+		);
+		rerender({ totalIn: usdtToPink.amount / 2n });
+
+		await waitFor(() =>
+			expect(result.current.details?.received?.isEstimate).toBe(true),
+		);
+		const estimate = result.current.swapPlancksOut;
+		expect(estimate).toBeGreaterThan(0n);
+		expect(estimate).toBeLessThan(usdtToPink.hops[1]?.amountOut ?? 0n);
+		expect(result.current.details?.received?.plancks).toBe(estimate);
+		expect(result.current.isLoadingAmountOut).toBe(false);
+		expect(result.current.details?.quote.isLoading).toBe(true);
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
 	});
 
 	it("holds the gate on a balance change until the dry runs answer again", async () => {

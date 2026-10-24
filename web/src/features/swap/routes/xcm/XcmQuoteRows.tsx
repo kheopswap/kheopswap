@@ -17,7 +17,11 @@ import { useSwap } from "../../SwapProvider";
 import { TokenAmountValue } from "../AmmPathValues";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
-import { describeXcmQuoteFailure, getTotalDebited } from "./xcmQuote";
+import {
+	describeXcmQuoteFailure,
+	getTotalDebited,
+	type XcmReceived,
+} from "./xcmQuote";
 
 export const XcmSimulationValue: FC<{
 	quote: XcmQuoteState;
@@ -103,11 +107,25 @@ const TotalDebitedValue: FC<{ deliveryFee: TokenAmount | undefined }> = ({
 	return amounts.length ? <TokenAmounts amounts={amounts} /> : null;
 };
 
-export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
-	quote,
-	route,
+const ReceivedValue: FC<{ received: XcmReceived; isLoading: boolean }> = ({
+	received: { plancks, isEstimate },
+	isLoading,
 }) => {
 	const { tokenOut } = useSwap();
+	if (!tokenOut) return null;
+	return (
+		<span className={cn(isEstimate && "text-muted")}>
+			~<Tokens plancks={plancks} token={tokenOut} pulse={isLoading} />
+			{isEstimate && " (est.)"}
+		</span>
+	);
+};
+
+export const XcmQuoteRows: FC<{
+	quote: XcmQuoteState;
+	received: XcmReceived | undefined;
+	route: XcmRoute;
+}> = ({ quote, received, route }) => {
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
 	const origin = getChainById(route.origin).name;
 	const destination = getChainById(route.destination).name;
@@ -120,12 +138,11 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
 			<FormSummaryRow
 				label="You receive"
 				value={
-					feeShimmer ||
-					(xcmQuote && tokenOut && (
-						<span>
-							~<Tokens plancks={xcmQuote.received} token={tokenOut} />
-						</span>
-					))
+					received ? (
+						<ReceivedValue received={received} isLoading={quote.isLoading} />
+					) : (
+						feeShimmer
+					)
 				}
 			/>
 			{quote.deliveryFee?.plancks !== 0n && (
