@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 import { useEffect, useMemo, useRef } from "react";
 import type { WalletAccount } from "../../../../common/kheopskit";
+import { useExistentialDeposit } from "../../../../hooks/useExistentialDeposit";
 import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { Token } from "../../../../registry/tokens/types";
@@ -38,7 +39,9 @@ import {
 import { getXcmTransferCall } from "../xcmTransfer/getXcmTransferCall";
 import { useXcmQuote, type XcmQuoteState } from "./useXcmQuote";
 import {
+	describeNewAccountMinimum,
 	describeXcmQuoteFailure,
+	getNewAccountMinimum,
 	getXcmCallSpendings,
 	getXcmSubmitGate,
 	isOriginDispatchFailure,
@@ -277,6 +280,7 @@ type UseXcmRouteProps = {
 	slippage: number;
 	edTokenIn: bigint | null | undefined;
 	hasInsufficientBalance: boolean;
+	balanceOut: bigint | undefined;
 };
 
 export const useXcmRoute = ({
@@ -290,6 +294,7 @@ export const useXcmRoute = ({
 	slippage,
 	edTokenIn,
 	hasInsufficientBalance,
+	balanceOut,
 }: UseXcmRouteProps) => {
 	const access = useMemo(
 		() => (route && account ? getRouteAccess(account, route) : null),
@@ -398,6 +403,46 @@ export const useXcmRoute = ({
 			? pathEstimate
 			: undefined;
 
+	const transferRoute = route?.kind === "xcm-transfer" ? route : null;
+	const { data: existentialDepositOut } = useExistentialDeposit({
+		tokenId: transferRoute?.tokenIdOut,
+	});
+	const newAccountMinimumMessage = useMemo(() => {
+		const failure = quote.data?.success === false ? quote.data.failure : null;
+		if (
+			!transferRoute ||
+			!tokenOut ||
+			failure?.kind !== "destination-rejected" ||
+			failure.trappedPlancks === null ||
+			quote.sent === undefined ||
+			!isBigInt(existentialDepositOut) ||
+			balanceOut === undefined
+		)
+			return null;
+		const minimum = getNewAccountMinimum({
+			sent: quote.sent,
+			trappedPlancks: failure.trappedPlancks,
+			existentialDeposit: existentialDepositOut,
+			destinationBalance: balanceOut,
+		});
+		return (
+			minimum &&
+			describeNewAccountMinimum({
+				minimum,
+				existentialDeposit: existentialDepositOut,
+				token: tokenOut,
+				destination: transferRoute.destination,
+			})
+		);
+	}, [
+		transferRoute,
+		tokenOut,
+		quote.data,
+		quote.sent,
+		existentialDepositOut,
+		balanceOut,
+	]);
+
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
@@ -406,11 +451,13 @@ export const useXcmRoute = ({
 		if (destinationSwap.errorMessage) return destinationSwap.errorMessage;
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
 		if (isBalanceShortfall) return null;
+		if (newAccountMinimumMessage) return newAccountMinimumMessage;
 		if (quote.data && !quote.data.success)
 			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
 	}, [
 		isBalanceShortfall,
+		newAccountMinimumMessage,
 		access,
 		callQuery.error,
 		destinationSwap.errorMessage,

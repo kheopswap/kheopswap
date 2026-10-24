@@ -3,8 +3,13 @@ import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
-import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
+import type {
+	Token,
+	TokenAmount,
+	TokenId,
+} from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
+import { plancksToTokens } from "../../../../utils/plancks";
 import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
@@ -44,7 +49,12 @@ export type XcmQuoteFailure =
 	| { kind: "origin-rejected"; xcmError: string }
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
-	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
+	| {
+			kind: "destination-rejected";
+			reason: string;
+			assetsTrapped: boolean;
+			trappedPlancks: bigint | null;
+	  }
 	| { kind: "destination-price-moved" }
 	| { kind: "nothing-deposited" }
 	| { kind: "delivery-fee-unavailable" }
@@ -160,6 +170,25 @@ export const parseDeliveryFee = (deliveryFees: DeliveryFees): bigint | null => {
 	return fee;
 };
 
+type DestinationEvent = Extract<
+	DestinationDryRun,
+	{ success: true }
+>["value"]["emitted_events"][number];
+
+const getTrappedPlancks = (events: DestinationEvent[]): bigint | null => {
+	for (const event of events)
+		if (
+			event.type === "PolkadotXcm" &&
+			event.value.type === "AssetsTrapped" &&
+			event.value.value.assets.type === "V5"
+		)
+			return event.value.value.assets.value.reduce(
+				(sum, { fun }) => sum + (fun.type === "Fungible" ? fun.value : 0n),
+				0n,
+			);
+	return null;
+};
+
 export const parseDestinationDryRun = (
 	dryRun: DestinationDryRun,
 	target: XcmDepositTarget,
@@ -187,6 +216,7 @@ export const parseDestinationDryRun = (
 						event.type === "PolkadotXcm" &&
 						event.value.type === "AssetsTrapped",
 				),
+				trappedPlancks: getTrappedPlancks(emitted_events),
 			},
 		};
 
@@ -275,6 +305,43 @@ export const describeXcmQuoteFailure = (
 			return `Could not prepare the transaction on ${origin}`;
 	}
 };
+
+export const getNewAccountMinimum = ({
+	sent,
+	trappedPlancks,
+	existentialDeposit,
+	destinationBalance,
+}: {
+	sent: bigint;
+	trappedPlancks: bigint;
+	existentialDeposit: bigint;
+	destinationBalance: bigint;
+}): bigint | null =>
+	destinationBalance < existentialDeposit && trappedPlancks <= sent
+		? existentialDeposit + sent - trappedPlancks
+		: null;
+
+const MINIMUM_DISPLAY_DECIMALS = 4;
+
+const formatPlancksUp = (plancks: bigint, decimals: number) => {
+	const step = 10n ** BigInt(Math.max(decimals - MINIMUM_DISPLAY_DECIMALS, 0));
+	return plancksToTokens(((plancks + step - 1n) / step) * step, decimals);
+};
+
+export const describeNewAccountMinimum = ({
+	minimum,
+	existentialDeposit,
+	token,
+	destination,
+}: {
+	minimum: bigint;
+	existentialDeposit: bigint;
+	token: Pick<Token, "symbol" | "decimals">;
+	destination: XcmDestination;
+}): string =>
+	`Send at least ${formatPlancksUp(minimum, token.decimals)} ${token.symbol}: ${
+		getChainById(destination).name
+	} needs ${formatPlancksUp(existentialDeposit, token.decimals)} ${token.symbol} to open your account`;
 
 export const getXcmSubmitGate = ({
 	errorMessage,
