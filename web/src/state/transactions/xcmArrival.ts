@@ -2,6 +2,7 @@ import { isEqual } from "lodash-es";
 import type { HexString } from "polkadot-api";
 import {
 	BehaviorSubject,
+	catchError,
 	combineLatest,
 	distinct,
 	distinctUntilChanged,
@@ -9,6 +10,8 @@ import {
 	map,
 	mergeMap,
 	type Observable,
+	of,
+	retry,
 	scan,
 	startWith,
 	switchMap,
@@ -23,6 +26,7 @@ import { parseTokenId } from "../../registry/tokens/helpers";
 import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
 import { bindSerialized } from "../../utils/bindSerialized";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
+import { logger } from "../../utils/logger";
 import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
@@ -35,6 +39,7 @@ import type {
 } from "./types";
 
 const ARRIVAL_TIMEOUT_MS = 10 * 60_000;
+const BLOCK_STREAM_RETRY = { count: 5, delay: 10_000, resetOnSuccess: true };
 
 const XCM_ARRIVAL_TYPES = [
 	"xcmTransfer",
@@ -63,37 +68,73 @@ export type XcmArrival =
 	| { status: "awaiting-origin" }
 	| { status: "origin-failed" }
 	| { status: "in-transit"; messageId: HexString }
-	| { status: "arrived"; messageId: HexString; received: bigint | null }
-	| ({ status: "failed-on-destination"; messageId: HexString } & FailedArrival)
+	| {
+			status: "arrived";
+			messageId: HexString;
+			received: bigint | null;
+			finalized: boolean;
+	  }
+	| ({
+			status: "failed-on-destination";
+			messageId: HexString;
+			finalized: boolean;
+	  } & FailedArrival)
 	| { status: "unconfirmed"; messageId: HexString };
+
+export type SentMessage = { messageId: HexString; finalized: boolean };
 
 type OriginState =
 	| { status: "pending" }
 	| { status: "failed" }
-	| { status: "sent"; messageId: HexString };
+	| ({ status: "sent" } & SentMessage);
 
 const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
-export const getSentMessageId = (
-	txEvents: TransactionRecord["txEvents"],
+const findSentMessageId = (
+	events: TxEvents,
 	destinationParaId: number,
 ): HexString | null => {
-	for (const txEvent of txEvents) {
-		if (txEvent.type !== "inBestBlock" && txEvent.type !== "finalized")
-			continue;
-		for (const { type, value } of txEvent.events) {
-			if (type !== "PolkadotXcm" || value.type !== "Sent") continue;
-			const { destination, message_id } = value.value;
-			if (
-				destination.parents === 1 &&
-				destination.interior.type === "X1" &&
-				destination.interior.value.type === "Parachain" &&
-				destination.interior.value.value === destinationParaId
-			)
-				return message_id;
-		}
+	for (const { type, value } of events) {
+		if (type !== "PolkadotXcm" || value.type !== "Sent") continue;
+		const { destination, message_id } = value.value;
+		if (
+			destination.parents === 1 &&
+			destination.interior.type === "X1" &&
+			destination.interior.value.type === "Parachain" &&
+			destination.interior.value.value === destinationParaId
+		)
+			return message_id;
 	}
 	return null;
+};
+
+export const getSentMessage = (
+	txEvents: TransactionRecord["txEvents"],
+	destinationParaId: number,
+): SentMessage | null => {
+	let bestBlockMessageId: HexString | null = null;
+	for (const txEvent of txEvents) {
+		switch (txEvent.type) {
+			case "finalized": {
+				const messageId = findSentMessageId(txEvent.events, destinationParaId);
+				return messageId ? { messageId, finalized: true } : null;
+			}
+			case "inBestBlock":
+				bestBlockMessageId = findSentMessageId(
+					txEvent.events,
+					destinationParaId,
+				);
+				break;
+			case "notInBestBlock":
+				bestBlockMessageId = null;
+				break;
+			default:
+				break;
+		}
+	}
+	return bestBlockMessageId
+		? { messageId: bestBlockMessageId, finalized: false }
+		: null;
 };
 
 type ArrivalOutcome =
@@ -163,20 +204,96 @@ export const describeFailedArrival = ({ returned, trapped }: FailedArrival) => {
 	return returned.length ? "funds returned" : null;
 };
 
+export type XcmArrivalOutcome = {
+	kind: "loading" | "success" | "error" | "warning";
+	text: string;
+	final: boolean;
+};
+
+export const getXcmArrivalOutcome = (
+	{ followUpData }: TransactionRecord,
+	arrival: XcmArrival | null,
+): XcmArrivalOutcome => {
+	const { target } = followUpData as XcmTransferFollowUpData;
+	const destination = getChainById(parseTokenId(target.tokenId).chainId).name;
+
+	switch (arrival?.status) {
+		case "arrived":
+			return arrival.finalized
+				? { kind: "success", text: `Arrived on ${destination}`, final: true }
+				: {
+						kind: "success",
+						text: `Arrived on ${destination}, awaiting finalization`,
+						final: false,
+					};
+		case "failed-on-destination":
+			return {
+				kind: "error",
+				text: [`Failed on ${destination}`, describeFailedArrival(arrival)]
+					.filter(Boolean)
+					.join(", "),
+				final: arrival.finalized,
+			};
+		case "unconfirmed":
+			return {
+				kind: "warning",
+				text: `Arrival on ${destination} not confirmed`,
+				final: true,
+			};
+		default:
+			return {
+				kind: "loading",
+				text: `Sent, awaiting ${destination}...`,
+				final: false,
+			};
+	}
+};
+
 const getOriginState = (
 	record: TransactionRecord,
 	destinationParaId: number,
 ): OriginState => {
 	if (record.status === "failed") return { status: "failed" };
-	const messageId = getSentMessageId(record.txEvents, destinationParaId);
-	return messageId ? { status: "sent", messageId } : { status: "pending" };
+	const sent = getSentMessage(record.txEvents, destinationParaId);
+	return sent ? { status: "sent", ...sent } : { status: "pending" };
+};
+
+const isOriginSettled = (origin: OriginState) =>
+	origin.status === "failed" || (origin.status === "sent" && origin.finalized);
+
+type DestinationBlocks =
+	| { reachable: true; best: TxEvents[]; finalized: TxEvents[] }
+	| { reachable: false };
+
+type ArrivalWatch = { target: XcmDepositTarget; returnTokenIds: TokenId[] };
+
+const findArrivalInBlocks = (
+	blocks: TxEvents[],
+	messageId: HexString,
+	watch: ArrivalWatch,
+	finalized: boolean,
+): XcmArrival | null => {
+	for (const blockEvents of blocks) {
+		const arrival = findArrival(blockEvents, { messageId, ...watch });
+		if (!arrival) continue;
+		return arrival.success
+			? { status: "arrived", messageId, received: arrival.received, finalized }
+			: {
+					status: "failed-on-destination",
+					messageId,
+					returned: arrival.returned,
+					trapped: arrival.trapped,
+					finalized,
+				};
+	}
+	return null;
 };
 
 const toArrival = (
 	origin: OriginState,
-	recentBlocks: TxEvents[],
+	destination: DestinationBlocks,
 	isExpired: boolean,
-	watch: { target: XcmDepositTarget; returnTokenIds: TokenId[] },
+	watch: ArrivalWatch,
 ): XcmArrival => {
 	switch (origin.status) {
 		case "pending":
@@ -185,27 +302,33 @@ const toArrival = (
 			return { status: "origin-failed" };
 		case "sent": {
 			const { messageId } = origin;
-			for (const blockEvents of recentBlocks) {
-				const arrival = findArrival(blockEvents, { messageId, ...watch });
-				if (arrival)
-					return arrival.success
-						? { status: "arrived", messageId, received: arrival.received }
-						: {
-								status: "failed-on-destination",
-								messageId,
-								returned: arrival.returned,
-								trapped: arrival.trapped,
-							};
-			}
-			return isExpired
-				? { status: "unconfirmed", messageId }
-				: { status: "in-transit", messageId };
+			if (!destination.reachable) return { status: "unconfirmed", messageId };
+			return (
+				findArrivalInBlocks(destination.finalized, messageId, watch, true) ??
+				(isExpired
+					? { status: "unconfirmed", messageId }
+					: (findArrivalInBlocks(destination.best, messageId, watch, false) ?? {
+							status: "in-transit",
+							messageId,
+						}))
+			);
 		}
 	}
 };
 
-const isFinalArrival = (arrival: XcmArrival) =>
-	arrival.status !== "awaiting-origin" && arrival.status !== "in-transit";
+const isFinalArrival = (arrival: XcmArrival) => {
+	switch (arrival.status) {
+		case "awaiting-origin":
+		case "in-transit":
+			return false;
+		case "arrived":
+		case "failed-on-destination":
+			return arrival.finalized;
+		case "origin-failed":
+		case "unconfirmed":
+			return true;
+	}
+};
 
 export const getArrivalBufferBlocks = (destination: ChainId) =>
 	isChainIdHydration(destination) ? 10 : 30;
@@ -217,9 +340,22 @@ export const getXcmBlockEvents = (
 		.filter(({ phase }) => phase.type !== "ApplyExtrinsic")
 		.map(({ event }) => event);
 
+const keepRecentBlocks = (
+	blockEvents$: Observable<TxEvents>,
+	bufferBlocks: number,
+) =>
+	blockEvents$.pipe(
+		scan(
+			(blocks, events) => [...blocks, events].slice(-bufferBlocks),
+			[] as TxEvents[],
+		),
+		startWith([] as TxEvents[]),
+	);
+
 export const getXcmArrival$ = ({
 	record$,
-	blockEvents$,
+	bestBlockEvents$,
+	finalizedBlockEvents$,
 	target,
 	returnTokenIds,
 	destinationParaId,
@@ -227,7 +363,8 @@ export const getXcmArrival$ = ({
 	timeoutMs = ARRIVAL_TIMEOUT_MS,
 }: {
 	record$: Observable<TransactionRecord | undefined>;
-	blockEvents$: Observable<TxEvents>;
+	bestBlockEvents$: Observable<TxEvents>;
+	finalizedBlockEvents$: Observable<TxEvents>;
 	target: XcmDepositTarget;
 	returnTokenIds: TokenId[];
 	destinationParaId: number;
@@ -238,15 +375,24 @@ export const getXcmArrival$ = ({
 		filter((record): record is TransactionRecord => !!record),
 		map((record) => getOriginState(record, destinationParaId)),
 		distinctUntilChanged(isEqual),
-		takeWhile((origin) => origin.status === "pending", true),
+		takeWhile((origin) => !isOriginSettled(origin), true),
 	);
 
-	const recentBlocks$ = blockEvents$.pipe(
-		scan(
-			(blocks, events) => [...blocks, events].slice(-bufferBlocks),
-			[] as TxEvents[],
+	const destination$ = combineLatest([
+		keepRecentBlocks(bestBlockEvents$, bufferBlocks),
+		keepRecentBlocks(finalizedBlockEvents$, bufferBlocks),
+	]).pipe(
+		map(
+			([best, finalized]): DestinationBlocks => ({
+				reachable: true,
+				best,
+				finalized,
+			}),
 		),
-		startWith([] as TxEvents[]),
+		catchError((error) => {
+			logger.error("[xcm arrival] destination unreachable", { error });
+			return of<DestinationBlocks>({ reachable: false });
+		}),
 	);
 
 	const isExpired$ = origin$.pipe(
@@ -257,19 +403,20 @@ export const getXcmArrival$ = ({
 		startWith(false),
 	);
 
-	return combineLatest([origin$, recentBlocks$, isExpired$]).pipe(
-		map(([origin, recentBlocks, isExpired]) =>
-			toArrival(origin, recentBlocks, isExpired, { target, returnTokenIds }),
+	return combineLatest([origin$, destination$, isExpired$]).pipe(
+		map(([origin, destination, isExpired]) =>
+			toArrival(origin, destination, isExpired, { target, returnTokenIds }),
 		),
 		distinctUntilChanged(isEqual),
 		takeWhile((arrival) => !isFinalArrival(arrival), true),
 	);
 };
 
-const getBestBlockEvents$ = (chainId: ChainId) =>
+const getBlockEvents$ = (chainId: ChainId, at: "best" | "finalized") =>
 	getApi$(chainId).pipe(
-		switchMap((api) => api.query.System.Events.watchValue({ at: "best" })),
+		switchMap((api) => api.query.System.Events.watchValue({ at })),
 		map(({ value }) => getXcmBlockEvents(value)),
+		retry(BLOCK_STREAM_RETRY),
 	);
 
 const arrivalsSubject = new BehaviorSubject<Record<TransactionId, XcmArrival>>(
@@ -291,7 +438,8 @@ export const trackXcmArrivals = () =>
 					record$: transactions$.pipe(
 						map((transactions) => transactions.find((tx) => tx.id === id)),
 					),
-					blockEvents$: getBestBlockEvents$(destination),
+					bestBlockEvents$: getBlockEvents$(destination, "best"),
+					finalizedBlockEvents$: getBlockEvents$(destination, "finalized"),
 					target,
 					returnTokenIds,
 					destinationParaId: getChainById(destination).paraId,

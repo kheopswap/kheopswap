@@ -1,28 +1,106 @@
 import { useMemo } from "react";
 import urlJoin from "url-join";
-import type { FollowUpData } from "../../components/FollowUpModal";
 import { getChainById } from "../../registry/chains/chains";
 import {
 	getErrorMessageFromTxEvents,
 	type TxEvents,
 } from "../../utils/getErrorMessageFromTxEvents";
+import type { TransactionRecord } from "./types";
+import {
+	getXcmArrivalOutcome,
+	isXcmArrivalType,
+	type XcmArrival,
+} from "./xcmArrival";
 
-export type FollowUpResult = "loading" | "success" | "error";
+export type FollowUpResult = "loading" | "success" | "error" | "warning";
 
-export const useFollowUpStatus = (followUp: FollowUpData) => {
+type FollowUpHeadline = {
+	message: string;
+	result: FollowUpResult;
+	isFinal: boolean;
+};
+
+const getHeadline = (
+	transaction: TransactionRecord,
+	arrival: XcmArrival | null,
+	error: unknown,
+): FollowUpHeadline => {
+	if (error)
+		return {
+			message: "Transaction failed",
+			result: "error",
+			isFinal: true,
+		};
+
+	const { txEvents, type, account } = transaction;
+
+	const finalized = txEvents.find((event) => event.type === "finalized");
+	if (finalized?.type === "finalized") {
+		if (!finalized.ok)
+			return {
+				message: "Transaction failed",
+				result: "error",
+				isFinal: true,
+			};
+		if (isXcmArrivalType(type)) {
+			const { kind, text, final } = getXcmArrivalOutcome(transaction, arrival);
+			return { message: text, result: kind, isFinal: final };
+		}
+		return {
+			message: "Transaction succeeded",
+			result: "success",
+			isFinal: true,
+		};
+	}
+
+	const best = txEvents.find((event) => event.type === "inBestBlock");
+	if (best?.type === "inBestBlock")
+		return {
+			message: "Waiting for finalization",
+			result: best.ok ? "success" : "error",
+			isFinal: false,
+		};
+
+	if (txEvents.some((event) => event.type === "broadcasted"))
+		return {
+			message: "Transaction submitted...",
+			result: "loading",
+			isFinal: false,
+		};
+
+	if (txEvents.some((event) => event.type === "created"))
+		return {
+			message: "Submitting transaction...",
+			result: "loading",
+			isFinal: false,
+		};
+
+	return {
+		message: `Approve in ${account.walletName}`,
+		result: "loading",
+		isFinal: false,
+	};
+};
+
+export const useFollowUpStatus = (
+	transaction: TransactionRecord,
+	arrival: XcmArrival | null,
+) => {
+	const { txEvents, account, feeToken } = transaction;
+
 	const blockExplorerUrl = useMemo(() => {
-		const chain = getChainById(followUp.feeToken.chainId);
+		const chain = getChainById(feeToken.chainId);
 		if (!chain) return null;
 
 		// Ethereum accounts submit through the Revive precompile, so their txHash is an
 		// EVM transaction hash that only the EVM explorer can resolve.
 		const [baseUrl, path] =
-			followUp.account.platform === "ethereum"
+			account.platform === "ethereum"
 				? [chain.evmBlockExplorers?.[0], "tx"]
 				: [chain.blockExplorerUrl, "extrinsic"];
 		if (!baseUrl) return null;
 
-		for (const event of followUp.txEvents) {
+		for (const event of txEvents) {
 			switch (event.type) {
 				case "created":
 				case "broadcasted":
@@ -35,87 +113,46 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 			}
 		}
 		return null;
-	}, [followUp]);
+	}, [txEvents, account.platform, feeToken.chainId]);
 
 	const error = useMemo(
 		() =>
-			followUp.txEvents.find(
+			txEvents.find(
 				(e): e is { type: "error"; error: unknown } => e.type === "error",
 			)?.error,
-		[followUp.txEvents],
+		[txEvents],
 	);
 
-	const [message, canClose, result] = useMemo<
-		[string, boolean, FollowUpResult]
-	>(() => {
-		if (error) return ["Transaction failed", true, "error"];
+	const headline = useMemo(
+		() => getHeadline(transaction, arrival, error),
+		[transaction, arrival, error],
+	);
 
-		const finalized = followUp.txEvents.find(
-			(event) => event.type === "finalized",
-		);
-		if (finalized?.type === "finalized") {
-			return finalized.ok
-				? ["Transaction succeeded", true, "success"]
-				: ["Transaction failed", true, "error"];
-		}
+	const allEvents = useMemo<TxEvents>(
+		() =>
+			txEvents.flatMap((e) =>
+				e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
+			),
+		[txEvents],
+	);
 
-		const best = followUp.txEvents.find(
-			(event) => event.type === "inBestBlock",
-		);
-		if (best?.type === "inBestBlock") {
-			return best.ok
-				? ["Waiting for finalization", true, "success"]
-				: ["Waiting for finalization", true, "error"];
-		}
-
-		const broadcasted = followUp.txEvents.find(
-			(event) => event.type === "broadcasted",
-		);
-		if (broadcasted?.type === "broadcasted")
-			return ["Transaction submitted...", false, "loading"];
-
-		const created = followUp.txEvents.find((event) => event.type === "created");
-		if (created?.type === "created")
-			return ["Submitting transaction...", false, "loading"];
-
-		// Use walletName from the account if available (from kheopskit)
-		const extensionName = followUp.account.walletName;
-
-		return [`Approve in ${extensionName}`, false, "loading"];
-	}, [followUp, error]);
-
-	const [errorMessage, isPendingFinalization, isFinalized] = useMemo<
-		[string | null, boolean, boolean]
-	>(() => {
-		const allEvents: TxEvents = followUp.txEvents.flatMap((e) =>
-			e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
-		);
-
-		const errorMsg = error
-			? ((error as Error).message ?? error.toString() ?? "Unknown error")
-			: null;
-		const txFailedErrorMessage = followUp.txEvents.some(
+	const errorMessage = useMemo(() => {
+		if (error)
+			return (error as Error).message ?? error.toString() ?? "Unknown error";
+		return txEvents.some(
 			(e) =>
 				(e.type === "finalized" && !e.ok) ||
 				(e.type === "inBestBlock" && !e.ok),
 		)
-			? getErrorMessageFromTxEvents(allEvents) // TODO cleanup, since papi 1.13 no need to lookup for extrinsic failed, we have event.dispatchError
+			? getErrorMessageFromTxEvents(allEvents)
 			: null;
-
-		return [
-			errorMsg ?? txFailedErrorMessage ?? null,
-			result !== "loading" &&
-				!followUp.txEvents.some((e) => e.type === "finalized"),
-			followUp.txEvents.some((e) => e.type === "finalized"),
-		];
-	}, [followUp.txEvents, result, error]);
+	}, [txEvents, allEvents, error]);
 
 	const effectiveFee = useMemo(() => {
-		if (result !== "success") return null;
-
-		const allEvents: TxEvents = followUp.txEvents.flatMap((e) =>
-			e.type === "finalized" || e.type === "inBestBlock" ? e.events : [],
+		const isIncluded = txEvents.some(
+			(e) => (e.type === "finalized" || e.type === "inBestBlock") && e.ok,
 		);
+		if (!isIncluded) return null;
 
 		const actualFee = allEvents.find(
 			(e) =>
@@ -124,17 +161,13 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 				(e.type === "AssetTxPayment" && e.value.type === "AssetTxFeePaid"),
 		)?.value.value.actual_fee;
 		return actualFee ? BigInt(actualFee) : null;
-	}, [followUp.txEvents, result]);
+	}, [allEvents, txEvents]);
 
 	return {
 		blockExplorerUrl,
 		error,
-		message,
-		canClose,
-		result,
+		...headline,
 		errorMessage,
-		isPendingFinalization,
-		isFinalized,
 		effectiveFee,
 	};
 };

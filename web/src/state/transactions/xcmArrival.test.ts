@@ -1,5 +1,12 @@
-import { BehaviorSubject, Subject } from "rxjs";
+import {
+	BehaviorSubject,
+	firstValueFrom,
+	map,
+	Subject,
+	throwError,
+} from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { FollowUpTxEvent } from "../../components/FollowUpModal";
 import { dotFromPeople } from "../../features/swap/routes/xcm/xcmFromPeople.fixtures";
 import {
 	usdtToPinkDust,
@@ -7,20 +14,52 @@ import {
 	type XcmDestinationSwapFixture,
 } from "../../features/swap/routes/xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { getChainById } from "../../registry/chains/chains";
+import { parseTokenId } from "../../registry/tokens/helpers";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import type { XcmDepositTarget } from "../../utils/xcmDeposit";
+import {
+	addTransaction,
+	dismissTransaction,
+	transactions$,
+} from "./transactionStore";
 import type { TransactionRecord } from "./types";
 import {
 	describeFailedArrival,
 	findArrival,
 	getArrivalBufferBlocks,
-	getSentMessageId,
+	getSentMessage,
+	getTrackedXcmArrival,
 	getXcmArrival$,
 	getXcmBlockEvents,
 	isAwaitingXcmArrival,
 	isXcmArrivalType,
+	trackXcmArrivals,
 	type XcmArrival,
 } from "./xcmArrival";
+
+const chains = vi.hoisted(() => ({
+	streams: {} as Record<
+		string,
+		(at: "best" | "finalized") => import("rxjs").Observable<unknown>
+	>,
+}));
+
+vi.mock("../../papi/getApi", async () => {
+	const { of } = await import("rxjs");
+	return {
+		getApi$: (chainId: string) =>
+			of({
+				query: {
+					System: {
+						Events: {
+							watchValue: ({ at }: { at: "best" | "finalized" }) =>
+								chains.streams[chainId]?.(at),
+						},
+					},
+				},
+			}),
+	};
+});
 
 const HYDRATION_PARA_ID = getChainById("hydration").paraId;
 const MESSAGE_ID =
@@ -72,15 +111,22 @@ const ourArrival: TxEvents = [
 const getRecord = (
 	status: TransactionRecord["status"],
 	events: TxEvents = [],
+	txEvents: FollowUpTxEvent[] = events.length
+		? [{ type: "inBestBlock", ok: true, events } as FollowUpTxEvent]
+		: [{ type: "pending" }],
 ): TransactionRecord =>
 	({
 		id: "tx",
 		type: "xcmTransfer",
 		status,
-		txEvents: events.length
-			? [{ type: "inBestBlock", ok: true, events }]
-			: [{ type: "pending" }],
+		txEvents,
 	}) as unknown as TransactionRecord;
+
+const finalizedRecord = (events: TxEvents): TransactionRecord =>
+	getRecord("finalized", events, [
+		{ type: "inBestBlock", ok: true, events } as FollowUpTxEvent,
+		{ type: "finalized", ok: true, events } as FollowUpTxEvent,
+	]);
 
 describe("isXcmArrivalType", () => {
 	it.each([
@@ -177,19 +223,70 @@ describe("findArrival", () => {
 	});
 });
 
-describe("getSentMessageId", () => {
-	it("reads the id of the message sent to Hydration", () => {
+describe("getSentMessage", () => {
+	it("reads the id of the message sent to Hydration from a best block as provisional", () => {
 		expect(
-			getSentMessageId(
+			getSentMessage(
 				getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]).txEvents,
 				HYDRATION_PARA_ID,
 			),
-		).toBe(MESSAGE_ID);
+		).toEqual({ messageId: MESSAGE_ID, finalized: false });
+	});
+
+	it("reads the id from the finalized block as final", () => {
+		expect(
+			getSentMessage(
+				finalizedRecord([sentTo(HYDRATION_PARA_ID)]).txEvents,
+				HYDRATION_PARA_ID,
+			),
+		).toEqual({ messageId: MESSAGE_ID, finalized: true });
+	});
+
+	it("prefers the id of the finalized inclusion over a retracted best block", () => {
+		expect(
+			getSentMessage(
+				[
+					{
+						type: "inBestBlock",
+						ok: true,
+						events: [sentTo(HYDRATION_PARA_ID, OTHER_MESSAGE_ID)],
+					} as FollowUpTxEvent,
+					{ type: "notInBestBlock" } as FollowUpTxEvent,
+					{
+						type: "inBestBlock",
+						ok: true,
+						events: [sentTo(HYDRATION_PARA_ID)],
+					} as FollowUpTxEvent,
+					{
+						type: "finalized",
+						ok: true,
+						events: [sentTo(HYDRATION_PARA_ID)],
+					} as FollowUpTxEvent,
+				],
+				HYDRATION_PARA_ID,
+			),
+		).toEqual({ messageId: MESSAGE_ID, finalized: true });
+	});
+
+	it("forgets the id of a block the chain retracted", () => {
+		expect(
+			getSentMessage(
+				[
+					{
+						type: "inBestBlock",
+						ok: true,
+						events: [sentTo(HYDRATION_PARA_ID)],
+					} as FollowUpTxEvent,
+					{ type: "notInBestBlock" } as FollowUpTxEvent,
+				],
+				HYDRATION_PARA_ID,
+			),
+		).toBeNull();
 	});
 
 	it("ignores messages sent to other chains", () => {
 		expect(
-			getSentMessageId(
+			getSentMessage(
 				getRecord("inBlock", [sentTo(1002)]).txEvents,
 				HYDRATION_PARA_ID,
 			),
@@ -198,7 +295,7 @@ describe("getSentMessageId", () => {
 
 	it("returns null before the transaction is included", () => {
 		expect(
-			getSentMessageId(getRecord("broadcasted").txEvents, HYDRATION_PARA_ID),
+			getSentMessage(getRecord("broadcasted").txEvents, HYDRATION_PARA_ID),
 		).toBeNull();
 	});
 });
@@ -210,12 +307,14 @@ describe("getXcmArrival$", () => {
 		bufferBlocks = getArrivalBufferBlocks("hydration"),
 	) => {
 		const record$ = new BehaviorSubject<TransactionRecord | undefined>(initial);
-		const blockEvents$ = new Subject<TxEvents>();
+		const bestBlockEvents$ = new Subject<TxEvents>();
+		const finalizedBlockEvents$ = new Subject<TxEvents>();
 		const arrivals: XcmArrival[] = [];
 		let isComplete = false;
 		getXcmArrival$({
 			record$,
-			blockEvents$,
+			bestBlockEvents$,
+			finalizedBlockEvents$,
 			target,
 			returnTokenIds,
 			destinationParaId: HYDRATION_PARA_ID,
@@ -227,64 +326,164 @@ describe("getXcmArrival$", () => {
 				isComplete = true;
 			},
 		});
-		return { record$, blockEvents$, arrivals, isComplete: () => isComplete };
+		return {
+			record$,
+			bestBlockEvents$,
+			finalizedBlockEvents$,
+			arrivals,
+			isComplete: () => isComplete,
+		};
 	};
 
 	afterEach(() => {
 		vi.useRealTimers();
 	});
 
-	it("follows the transfer from the wallet prompt to its arrival on Hydration", () => {
-		const { record$, blockEvents$, arrivals, isComplete } = track(
-			getRecord("pending"),
-		);
-		blockEvents$.next([processed(OTHER_MESSAGE_ID)]);
+	it("follows the transfer from the wallet prompt to its finalized arrival on Hydration", () => {
+		const {
+			record$,
+			bestBlockEvents$,
+			finalizedBlockEvents$,
+			arrivals,
+			isComplete,
+		} = track(getRecord("pending"));
+		bestBlockEvents$.next([processed(OTHER_MESSAGE_ID)]);
 		record$.next(getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]));
-		blockEvents$.next([]);
-		blockEvents$.next(ourArrival);
+		bestBlockEvents$.next([]);
+		bestBlockEvents$.next(ourArrival);
+		expect(isComplete()).toBe(false);
+		record$.next(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
+		finalizedBlockEvents$.next(ourArrival);
 
 		expect(arrivals).toEqual([
 			{ status: "awaiting-origin" },
 			{ status: "in-transit", messageId: MESSAGE_ID },
-			{ status: "arrived", messageId: MESSAGE_ID, received: 9995190152n },
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 9995190152n,
+				finalized: false,
+			},
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 9995190152n,
+				finalized: true,
+			},
 		]);
 		expect(isComplete()).toBe(true);
 	});
 
+	it("ends on the finalized destination block even when the origin is still waiting for finality", () => {
+		const { finalizedBlockEvents$, arrivals, isComplete } = track(
+			getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]),
+		);
+		finalizedBlockEvents$.next(ourArrival);
+
+		expect(arrivals.at(-1)).toMatchObject({
+			status: "arrived",
+			finalized: true,
+		});
+		expect(isComplete()).toBe(true);
+	});
+
+	it("switches to the message id of the canonical inclusion when the best block is retracted", () => {
+		const { record$, bestBlockEvents$, finalizedBlockEvents$, arrivals } =
+			track(
+				getRecord("inBlock", [sentTo(HYDRATION_PARA_ID, OTHER_MESSAGE_ID)]),
+			);
+		bestBlockEvents$.next([]);
+		expect(arrivals.at(-1)).toEqual({
+			status: "in-transit",
+			messageId: OTHER_MESSAGE_ID,
+		});
+
+		record$.next(
+			getRecord(
+				"finalized",
+				[],
+				[
+					{
+						type: "inBestBlock",
+						ok: true,
+						events: [sentTo(HYDRATION_PARA_ID, OTHER_MESSAGE_ID)],
+					} as FollowUpTxEvent,
+					{ type: "notInBestBlock" } as FollowUpTxEvent,
+					{
+						type: "finalized",
+						ok: true,
+						events: [sentTo(HYDRATION_PARA_ID)],
+					} as FollowUpTxEvent,
+				],
+			),
+		);
+		finalizedBlockEvents$.next(ourArrival);
+
+		expect(arrivals.at(-1)).toEqual({
+			status: "arrived",
+			messageId: MESSAGE_ID,
+			received: 9995190152n,
+			finalized: true,
+		});
+	});
+
+	it("keeps a best-block arrival provisional and does not complete on it", () => {
+		const { bestBlockEvents$, arrivals, isComplete } = track(
+			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),
+		);
+		bestBlockEvents$.next(ourArrival);
+
+		expect(arrivals.at(-1)).toMatchObject({
+			status: "arrived",
+			finalized: false,
+		});
+		expect(isComplete()).toBe(false);
+	});
+
 	it("catches an arrival processed before the origin events reveal the message id", () => {
-		const { record$, blockEvents$, arrivals } = track(getRecord("pending"));
-		blockEvents$.next(ourArrival);
-		blockEvents$.next([]);
+		const { record$, bestBlockEvents$, arrivals } = track(getRecord("pending"));
+		bestBlockEvents$.next(ourArrival);
+		bestBlockEvents$.next([]);
 		record$.next(getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]));
 
 		expect(arrivals.at(-1)).toEqual({
 			status: "arrived",
 			messageId: MESSAGE_ID,
 			received: 9995190152n,
+			finalized: false,
 		});
 	});
 
 	it("keeps tracking after the transaction record is dismissed", () => {
-		const { record$, blockEvents$, arrivals } = track(
-			getRecord("finalized", [sentTo(HYDRATION_PARA_ID)]),
+		const { record$, finalizedBlockEvents$, arrivals } = track(
+			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),
 		);
 		record$.next(undefined);
-		blockEvents$.next(ourArrival);
+		finalizedBlockEvents$.next(ourArrival);
 
 		expect(arrivals.at(-1)?.status).toBe("arrived");
 	});
 
-	it("reports a failure on Hydration", () => {
-		const { blockEvents$, arrivals, isComplete } = track(
-			getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]),
-		);
-		blockEvents$.next([processed(MESSAGE_ID, false)]);
-
+	it("reports a failure on Hydration once finalized", () => {
+		const { bestBlockEvents$, finalizedBlockEvents$, arrivals, isComplete } =
+			track(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
+		bestBlockEvents$.next([processed(MESSAGE_ID, false)]);
 		expect(arrivals.at(-1)).toEqual({
 			status: "failed-on-destination",
 			messageId: MESSAGE_ID,
 			returned: [],
 			trapped: false,
+			finalized: false,
+		});
+		expect(isComplete()).toBe(false);
+
+		finalizedBlockEvents$.next([processed(MESSAGE_ID, false)]);
+		expect(arrivals.at(-1)).toEqual({
+			status: "failed-on-destination",
+			messageId: MESSAGE_ID,
+			returned: [],
+			trapped: false,
+			finalized: true,
 		});
 		expect(isComplete()).toBe(true);
 	});
@@ -301,26 +500,27 @@ describe("getXcmArrival$", () => {
 	});
 
 	it("catches an arrival processed many fast Asset Hub blocks before the message id is known", () => {
-		const { record$, blockEvents$, arrivals } = track(
+		const { record$, finalizedBlockEvents$, arrivals } = track(
 			getRecord("pending"),
 			undefined,
 			getArrivalBufferBlocks("pah"),
 		);
-		blockEvents$.next(ourArrival);
-		for (let block = 0; block < 20; block++) blockEvents$.next([]);
+		finalizedBlockEvents$.next(ourArrival);
+		for (let block = 0; block < 20; block++) finalizedBlockEvents$.next([]);
 		record$.next(getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]));
 
 		expect(arrivals.at(-1)?.status).toBe("arrived");
 	});
 
-	it("gives up as unconfirmed when nothing arrives before the timeout", () => {
+	it("gives up as unconfirmed when nothing is finalized before the timeout, even after a best-block arrival", () => {
 		vi.useFakeTimers();
-		const { arrivals, isComplete } = track(
+		const { bestBlockEvents$, arrivals, isComplete } = track(
 			getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]),
 			60_000,
 		);
+		bestBlockEvents$.next(ourArrival);
 		vi.advanceTimersByTime(59_999);
-		expect(arrivals.at(-1)?.status).toBe("in-transit");
+		expect(arrivals.at(-1)?.status).toBe("arrived");
 		vi.advanceTimersByTime(1);
 
 		expect(arrivals.at(-1)).toEqual({
@@ -328,6 +528,102 @@ describe("getXcmArrival$", () => {
 			messageId: MESSAGE_ID,
 		});
 		expect(isComplete()).toBe(true);
+	});
+
+	it("gives up as unconfirmed when the destination chain stops answering", () => {
+		const { bestBlockEvents$, arrivals, isComplete } = track(
+			finalizedRecord([sentTo(HYDRATION_PARA_ID)]),
+		);
+		bestBlockEvents$.error(new Error("rpc down"));
+
+		expect(arrivals.at(-1)).toEqual({
+			status: "unconfirmed",
+			messageId: MESSAGE_ID,
+		});
+		expect(isComplete()).toBe(true);
+	});
+});
+
+describe("trackXcmArrivals", () => {
+	const getTrackedRecord = (
+		id: string,
+		destinationTokenId: string,
+	): TransactionRecord =>
+		({
+			...finalizedRecord([
+				sentTo(getChainById(parseTokenId(destinationTokenId).chainId).paraId),
+			]),
+			id,
+			followUpData: {
+				target: { tokenId: destinationTokenId, beneficiary: BENEFICIARY },
+				returnTokenIds: [destinationTokenId],
+			},
+		}) as unknown as TransactionRecord;
+
+	const inPhase = (events: TxEvents) =>
+		events.map((event) => ({ phase: { type: "Finalization" }, event }));
+
+	afterEach(async () => {
+		for (const tx of await firstValueFrom(transactions$))
+			dismissTransaction(tx.id);
+		chains.streams = {};
+		vi.useRealTimers();
+	});
+
+	it("keeps tracking a transfer to Asset Hub while Hydration keeps failing", () => {
+		vi.useFakeTimers();
+		const assetHub$ = new Subject<ReturnType<typeof inPhase>>();
+		chains.streams = {
+			hydration: () => throwError(() => new Error("hydration rpc down")),
+			pah: () => assetHub$.pipe(map((value) => ({ value }))),
+		};
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		addTransaction(getTrackedRecord("to-asset-hub", "native::pah"));
+		vi.advanceTimersByTime(60_000);
+		assetHub$.next(
+			inPhase([
+				{
+					type: "Balances",
+					value: { type: "Deposit", value: { who: BENEFICIARY, amount: 7n } },
+				},
+				processed(MESSAGE_ID),
+			]),
+		);
+
+		expect(getTrackedXcmArrival("to-hydration")).toEqual({
+			status: "unconfirmed",
+			messageId: MESSAGE_ID,
+		});
+		expect(getTrackedXcmArrival("to-asset-hub")).toEqual({
+			status: "arrived",
+			messageId: MESSAGE_ID,
+			received: 7n,
+			finalized: true,
+		});
+		subscription.unsubscribe();
+	});
+
+	it("retries a destination stream that fails once", () => {
+		vi.useFakeTimers();
+		let attempts = 0;
+		const hydration$ = new Subject<ReturnType<typeof inPhase>>();
+		chains.streams = {
+			hydration: () =>
+				++attempts === 1
+					? throwError(() => new Error("transient"))
+					: hydration$.pipe(map((value) => ({ value }))),
+		};
+		const subscription = trackXcmArrivals();
+		addTransaction(getTrackedRecord("to-hydration", target.tokenId));
+		vi.advanceTimersByTime(10_000);
+		hydration$.next(inPhase(ourArrival));
+
+		expect(getTrackedXcmArrival("to-hydration")).toMatchObject({
+			status: "arrived",
+			received: 9995190152n,
+		});
+		subscription.unsubscribe();
 	});
 });
 
@@ -396,7 +692,7 @@ describe("arrival on People", () => {
 		const sent = getRecord("finalized", [
 			sentTo(PEOPLE_PARA_ID, PEOPLE_MESSAGE_ID),
 		]);
-		expect(getSentMessageId(sent.txEvents, PEOPLE_PARA_ID)).toBe(
+		expect(getSentMessage(sent.txEvents, PEOPLE_PARA_ID)?.messageId).toBe(
 			PEOPLE_MESSAGE_ID,
 		);
 
@@ -639,7 +935,9 @@ describe("arrival on Asset Hub from People", () => {
 			"finalized",
 			dotFromPeople.originDryRun.value.emitted_events,
 		);
-		expect(getSentMessageId(record.txEvents, getChainById("pah").paraId)).toBe(
+		expect(
+			getSentMessage(record.txEvents, getChainById("pah").paraId)?.messageId,
+		).toBe(
 			"0x683cf77a60b984103a1a86f1dbb9e61e86e4d88453c30d67e7cdda47eb555b85",
 		);
 	});
@@ -648,9 +946,9 @@ describe("arrival on Asset Hub from People", () => {
 		const sent = getRecord("finalized", [
 			sentTo(getChainById("pah").paraId, PEOPLE_MESSAGE_ID),
 		]);
-		expect(getSentMessageId(sent.txEvents, getChainById("pah").paraId)).toBe(
-			PEOPLE_MESSAGE_ID,
-		);
+		expect(
+			getSentMessage(sent.txEvents, getChainById("pah").paraId)?.messageId,
+		).toBe(PEOPLE_MESSAGE_ID);
 		expect(
 			findArrival(getXcmBlockEvents(ASSET_HUB_BLOCK_22023474), {
 				messageId: PEOPLE_MESSAGE_ID,
@@ -662,19 +960,47 @@ describe("arrival on Asset Hub from People", () => {
 });
 
 describe("isAwaitingXcmArrival", () => {
-	const finalized = getRecord("finalized", [sentTo(HYDRATION_PARA_ID)]);
+	const finalized = finalizedRecord([sentTo(HYDRATION_PARA_ID)]);
 
 	it.each<[XcmArrival | null, boolean]>([
 		[null, true],
 		[{ status: "awaiting-origin" }, true],
 		[{ status: "in-transit", messageId: MESSAGE_ID }, true],
-		[{ status: "arrived", messageId: MESSAGE_ID, received: 1n }, false],
+		[
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 1n,
+				finalized: false,
+			},
+			true,
+		],
+		[
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 1n,
+				finalized: true,
+			},
+			false,
+		],
 		[
 			{
 				status: "failed-on-destination",
 				messageId: MESSAGE_ID,
 				returned: [],
 				trapped: false,
+				finalized: false,
+			},
+			true,
+		],
+		[
+			{
+				status: "failed-on-destination",
+				messageId: MESSAGE_ID,
+				returned: [],
+				trapped: false,
+				finalized: true,
 			},
 			false,
 		],
