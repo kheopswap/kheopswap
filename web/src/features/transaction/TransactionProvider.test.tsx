@@ -18,10 +18,33 @@ const ethereum = vi.hoisted(() => ({
 	isEthereumNetworkMismatch: false,
 }));
 
+const dryRun = vi.hoisted(() => ({
+	data: undefined as unknown,
+	isLoading: false,
+}));
+
+const successfulDryRun = {
+	success: true,
+	value: { execution_result: { success: true } },
+};
+
+const failedDryRun = {
+	success: true,
+	value: {
+		execution_result: { success: false, value: { error: { type: "Token" } } },
+	},
+};
+
 beforeEach(() => {
 	balanceCheck.insufficientBalances = {};
 	ethereum.isEthereumNetworkMismatch = false;
+	dryRun.data = successfulDryRun;
+	dryRun.isLoading = false;
 });
+
+vi.mock("../../hooks/useDryRun", () => ({
+	useDryRun: () => ({ data: dryRun.data, isLoading: dryRun.isLoading }),
+}));
 
 afterEach(cleanup);
 
@@ -46,10 +69,6 @@ vi.mock("./useTransactionFees", async () => {
 			feeToken: KNOWN_TOKENS_MAP["native::pah"],
 			feeTokens: [],
 			options: { asset: undefined },
-			dryRun: {
-				success: true,
-				value: { execution_result: { success: true } },
-			},
 		}),
 	};
 });
@@ -168,13 +187,15 @@ describe("TransactionProvider submit gate", () => {
 	});
 });
 
-describe("TransactionProvider fee shortfall", () => {
+describe("TransactionProvider dry run", () => {
 	const feeShortfall = {
-		"hydration-asset::hydration::5": "Insufficient balance to pay for fee",
+		"native::pah": "Insufficient balance to pay for fee",
 	};
 
 	it("keeps submit disabled on Hydration when the fee currency falls short, despite a successful dry run", () => {
-		balanceCheck.insufficientBalances = feeShortfall;
+		balanceCheck.insufficientBalances = {
+			"hydration-asset::hydration::5": "Insufficient balance to pay for fee",
+		};
 		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(false);
 	});
 
@@ -182,8 +203,26 @@ describe("TransactionProvider fee shortfall", () => {
 		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(true);
 	});
 
-	it("keeps trusting a successful dry run on Asset Hub", () => {
+	it("does not let a successful dry run override a fee shortfall on Asset Hub", () => {
 		balanceCheck.insufficientBalances = feeShortfall;
-		expect(renderTransaction(undefined, "pah").canSubmit).toBe(true);
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+	});
+
+	it("keeps submit disabled while the dry run reloads after a balance change", () => {
+		dryRun.data = undefined;
+		dryRun.isLoading = true;
+		const transaction = renderTransaction(undefined, "pah");
+		expect(transaction.canSubmit).toBe(false);
+		expect(transaction.isLoading).toBe(true);
+	});
+
+	it("blocks submit when the Asset Hub dry run rejects the call", () => {
+		dryRun.data = failedDryRun;
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+	});
+
+	it("ignores a failed dry run on Hydration, where fees are not simulated", () => {
+		dryRun.data = failedDryRun;
+		expect(renderTransaction(undefined, "hydration").canSubmit).toBe(true);
 	});
 });

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
 import { useConvertedFee } from "../../hooks/useConvertedFee";
-import { useDryRun } from "../../hooks/useDryRun";
 import { useEstimateFee } from "../../hooks/useEstimateFee";
 import { useFeeToken } from "../../hooks/useFeeToken";
 import { useNonce } from "../../hooks/useNonce";
@@ -97,16 +96,6 @@ export const useTransactionFees = ({
 		],
 	);
 
-	const {
-		data: dryRun,
-		isLoading: isLoadingDryRun,
-		error: errorDryRun,
-	} = useDryRun({
-		chainId,
-		from: signerSubstrateAddress,
-		call,
-	});
-
 	const onFeeTokenChange = useCallback(
 		(feeTokenId: TokenId) => {
 			if (isEthereumAccount) return;
@@ -126,8 +115,5 @@ export const useTransactionFees = ({
 		errorFeeEstimate,
 		isLoadingFeeEstimate,
 		options,
-		dryRun,
-		isLoadingDryRun,
-		errorDryRun,
 	};
 };

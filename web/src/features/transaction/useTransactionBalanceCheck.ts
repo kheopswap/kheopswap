@@ -20,7 +20,7 @@ export const getInsufficientBalances = ({
 	fee,
 }: {
 	callSpendings: CallSpendings;
-	balances: Partial<Record<TokenId, bigint>>;
+	balances: Partial<Record<TokenId, bigint | undefined>>;
 	existentialDeposits: Partial<Record<TokenId, bigint | null>>;
 	fee: TokenAmount;
 }): Record<TokenId, string> => {
@@ -94,22 +94,38 @@ export const useTransactionBalanceCheck = ({
 			tokenId: feeToken?.id,
 		});
 
+	const balancesByTokenId = useMemo<
+		Partial<Record<TokenId, bigint | undefined>>
+	>(
+		() =>
+			Object.fromEntries(
+				balances.map(({ tokenId, balance }) => [tokenId, balance]),
+			),
+		[balances],
+	);
+
 	const insufficientBalances = useMemo(
 		() =>
-			call && existentialDeposits && balances && feeEstimate && feeToken
+			call && existentialDeposits && feeEstimate && feeToken
 				? getInsufficientBalances({
 						callSpendings,
-						balances: Object.fromEntries(
-							balances.map(({ tokenId, balance }) => [tokenId, balance]),
-						),
+						balances: balancesByTokenId,
 						existentialDeposits,
 						fee: { tokenId: feeToken.id, plancks: feeEstimate },
 					})
 				: {},
-		[call, balances, existentialDeposits, feeEstimate, feeToken, callSpendings],
+		[
+			call,
+			balancesByTokenId,
+			existentialDeposits,
+			feeEstimate,
+			feeToken,
+			callSpendings,
+		],
 	);
 
 	return {
+		balances: balancesByTokenId,
 		insufficientBalances,
 		isLoadingBalances,
 		isLoadingExistentialDeposits,
