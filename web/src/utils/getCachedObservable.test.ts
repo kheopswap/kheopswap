@@ -1,6 +1,9 @@
 import { Observable, of } from "rxjs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getCachedObservable$ } from "./getCachedObservable";
+import {
+	clearCachedObservables,
+	getCachedObservable$,
+} from "./getCachedObservable";
 
 describe("getCachedObservable$", () => {
 	beforeEach(() => vi.useFakeTimers());
@@ -178,6 +181,43 @@ describe("getCachedObservable$", () => {
 
 		expect(errors).toHaveLength(1);
 		expect(values).toEqual([-1]);
+	});
+
+	it("reconnects a source that errored synchronously when the same entry is retried", () => {
+		let attempts = 0;
+		const obs = getCachedObservable$(
+			"sync-error-ns",
+			"k",
+			() =>
+				new Observable<number>((subscriber) => {
+					attempts++;
+					if (attempts === 1) subscriber.error(new Error("transient"));
+					else subscriber.next(attempts);
+				}),
+		);
+		const values: number[] = [];
+
+		obs.subscribe({ error: () => {} });
+		obs.subscribe((v) => values.push(v));
+
+		expect(values).toEqual([2]);
+	});
+
+	it("drops every entry and its upstream when cleared", () => {
+		let connections = 0;
+		const create = () =>
+			new Observable<number>(() => {
+				connections++;
+			});
+		const obs = getCachedObservable$("clear-ns", "k", create);
+		const subscription = obs.subscribe();
+
+		clearCachedObservables();
+		subscription.unsubscribe();
+		getCachedObservable$("clear-ns", "k", create).subscribe().unsubscribe();
+
+		expect(getCachedObservable$("clear-ns", "k", create)).not.toBe(obs);
+		expect(connections).toBe(2);
 	});
 
 	it("keeps an entry nobody has subscribed to yet", () => {

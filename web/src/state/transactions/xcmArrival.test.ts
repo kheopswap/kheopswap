@@ -9,6 +9,7 @@ import {
 } from "../../features/swap/routes/xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { getChainById } from "../../registry/chains/chains";
 import { parseTokenId } from "../../registry/tokens/helpers";
+import { clearCachedObservables } from "../../utils/getCachedObservable";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import type { XcmDepositTarget } from "../../utils/xcmDeposit";
 import {
@@ -686,6 +687,7 @@ describe("trackXcmArrivals", () => {
 	afterEach(async () => {
 		for (const tx of await firstValueFrom(transactions$))
 			dismissTransaction(tx.id);
+		clearCachedObservables();
 		chains.streams = {};
 		chains.pastBlocks = {};
 		chains.pastReads = [];

@@ -1,8 +1,15 @@
 import { Observable, ReplaySubject, type Subscription } from "rxjs";
 
-const CACHE = new Map<string, Observable<unknown>>();
+type CacheEntry = { observable: Observable<unknown>; disconnect: () => void };
+
+const CACHE = new Map<string, CacheEntry>();
 
 const UNUSED_ENTRY_EVICTION_DELAY = 500;
+
+export const clearCachedObservables = () => {
+	for (const { disconnect } of CACHE.values()) disconnect();
+	CACHE.clear();
+};
 
 export const getCachedObservable$ = <T>(
 	namespace: string,
@@ -12,7 +19,7 @@ export const getCachedObservable$ = <T>(
 	const cacheKey = `${namespace}::${key}`;
 
 	const cached = CACHE.get(cacheKey);
-	if (cached) return cached as Observable<T>;
+	if (cached) return cached.observable as Observable<T>;
 
 	const source = create();
 	let replay = new ReplaySubject<T>(1);
@@ -21,10 +28,11 @@ export const getCachedObservable$ = <T>(
 	let eviction: ReturnType<typeof setTimeout> | undefined;
 
 	const evict = () => {
-		if (CACHE.get(cacheKey) === entry) CACHE.delete(cacheKey);
+		if (CACHE.get(cacheKey)?.observable === entry) CACHE.delete(cacheKey);
 	};
 
 	const disconnect = () => {
+		clearTimeout(eviction);
 		connection?.unsubscribe();
 		connection = undefined;
 		replay = new ReplaySubject<T>(1);
@@ -32,15 +40,18 @@ export const getCachedObservable$ = <T>(
 
 	const connect = () => {
 		const subject = replay;
-		connection = source.subscribe({
+		let failed = false;
+		const subscription = source.subscribe({
 			next: (value) => subject.next(value),
 			complete: () => subject.complete(),
 			error: (err) => {
+				failed = true;
 				evict();
 				disconnect();
 				subject.error(err);
 			},
 		});
+		if (!failed) connection = subscription;
 	};
 
 	const entry = new Observable<T>((subscriber) => {
@@ -60,6 +71,6 @@ export const getCachedObservable$ = <T>(
 		};
 	});
 
-	CACHE.set(cacheKey, entry);
+	CACHE.set(cacheKey, { observable: entry, disconnect });
 	return entry;
 };

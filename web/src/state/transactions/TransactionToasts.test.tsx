@@ -12,6 +12,7 @@ import { firstValueFrom, type Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getChainById } from "../../registry/chains/chains";
 import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
+import { clearCachedObservables } from "../../utils/getCachedObservable";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { GlobalFollowUpModal } from "./GlobalFollowUpModal";
 import { TransactionsProvider } from "./TransactionsProvider";
@@ -183,6 +184,7 @@ const openAndClose = async (record: TransactionRecord) => {
 afterEach(async () => {
 	for (const tx of await firstValueFrom(transactions$))
 		act(() => dismissTransaction(tx.id));
+	clearCachedObservables();
 	cleanup();
 });
 
