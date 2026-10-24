@@ -11,8 +11,6 @@ import { getTokenById$ } from "../services/tokens/service";
 import { getAssetConvert$ } from "../state/convert";
 import { bindSerialized } from "../utils/bindSerialized";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
-import { isBigInt } from "../utils/isBigInt";
-import { plancksToTokens } from "../utils/plancks";
 
 type UseAssetConvertPlancks = {
 	tokenIdIn: TokenId | null | undefined;
@@ -27,11 +25,6 @@ type AssetConvertTokens = {
 
 type UseAssetConvertPlancksResult = AssetConvertTokens & {
 	plancksOut: bigint | null | undefined;
-	isLoading: boolean;
-};
-
-type UseAssetConvertPriceResult = AssetConvertTokens & {
-	price: string | undefined;
 	isLoading: boolean;
 };
 
@@ -56,32 +49,6 @@ export const useAssetConvertPlancks = ({
 	plancks,
 }: UseAssetConvertPlancks) =>
 	useAssetConvertPlancksByArgs(
-		tokenIdIn ?? null,
-		tokenIdOut ?? null,
-		plancks ?? null,
-	);
-
-const useAssetConvertPriceByArgs = bindSerialized(
-	(
-		tokenIdIn: TokenId | null,
-		tokenIdOut: TokenId | null,
-		plancks: bigint | null,
-	): Observable<UseAssetConvertPriceResult> =>
-		getAssetConvertTokens$(tokenIdIn, tokenIdOut, plancks),
-	(): UseAssetConvertPriceResult => ({
-		price: undefined,
-		isLoading: true,
-		tokenIn: undefined,
-		tokenOut: undefined,
-	}),
-);
-
-export const useAssetConvertPrice = ({
-	tokenIdIn,
-	tokenIdOut,
-	plancks,
-}: UseAssetConvertPlancks) =>
-	useAssetConvertPriceByArgs(
 		tokenIdIn ?? null,
 		tokenIdOut ?? null,
 		plancks ?? null,
@@ -131,31 +98,6 @@ const getAssetConvertPlancks$ = (
 						);
 					},
 				),
-				shareReplay({ bufferSize: 1, refCount: true }),
-			);
-		},
-	);
-};
-
-const getAssetConvertTokens$ = (
-	tokenIdIn: TokenId | null | undefined,
-	tokenIdOut: TokenId | null | undefined,
-	plancks: bigint | null | undefined,
-) => {
-	return getCachedObservable$(
-		"getAssetConvertTokens$",
-		`${tokenIdIn},${tokenIdOut},${plancks}`,
-		() => {
-			return getAssetConvertPlancks$(tokenIdIn, tokenIdOut, plancks).pipe(
-				map(({ plancksOut, isLoading, tokenIn, tokenOut }) => ({
-					isLoading,
-					price:
-						isBigInt(plancksOut) && tokenOut
-							? plancksToTokens(plancksOut, tokenOut.decimals)
-							: undefined,
-					tokenIn,
-					tokenOut,
-				})),
 				shareReplay({ bufferSize: 1, refCount: true }),
 			);
 		},
