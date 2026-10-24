@@ -18,6 +18,7 @@ import type { Token } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { XcmTransferRoute } from "../swapRoute";
+import { getXcmTransferType } from "../xcmLanes";
 
 type XcmTransferArgs = Parameters<
 	Api<"pah">["tx"]["PolkadotXcm"]["transfer_assets_using_type_and_then"]
@@ -48,17 +49,6 @@ const getOriginAssetLocation = (
 	}
 };
 
-const getTransferType = (
-	route: XcmTransferRoute,
-): XcmTransferArgs["assets_transfer_type"] => {
-	switch (route.origin) {
-		case "pah":
-			return Enum("LocalReserve");
-		case "hydration":
-			return Enum("DestinationReserve");
-	}
-};
-
 export const buildXcmTransferArgs = ({
 	route,
 	tokenIn,
@@ -66,7 +56,7 @@ export const buildXcmTransferArgs = ({
 	beneficiary,
 }: XcmTransferCallProps): XcmTransferArgs => {
 	const id = getOriginAssetLocation(route, tokenIn);
-	const transferType = getTransferType(route);
+	const transferType = Enum(getXcmTransferType(route));
 	const { paraId } = getChainById(route.destination);
 
 	return {

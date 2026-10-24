@@ -502,8 +502,8 @@ describe("getSwapTokenLists", () => {
 describe("getRouteAccess", () => {
 	const substrate = "16xrRcxrBT6NfiukMzxeHGHPuJtHa9ypdgvvPJVw5zV8hwo";
 
-	const toHydration = { origin: "pah" } as const;
-	const fromHydration = { origin: "hydration" } as const;
+	const toHydration = { origin: "pah", destination: "hydration" } as const;
+	const fromHydration = { origin: "hydration", destination: "pah" } as const;
 
 	it("lets a substrate account receive on its own address", () => {
 		expect(
