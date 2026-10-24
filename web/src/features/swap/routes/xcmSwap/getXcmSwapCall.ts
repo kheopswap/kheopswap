@@ -17,8 +17,8 @@ import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { withAppCommission } from "../../withAppCommission";
+import { type AmmHop, getLastHop, type HopPath } from "../ammPath";
 import type { XcmSwapRoute } from "../swapRoute";
-import { type AmmHop, getLastHop, type HopPath } from "./ammPath";
 
 type SwapHop = AmmHop & { minOut: bigint };
 

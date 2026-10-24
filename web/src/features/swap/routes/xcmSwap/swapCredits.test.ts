@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { TxEvents } from "../../../../utils/getErrorMessageFromTxEvents";
-import { getAmmPath } from "./ammPath";
+import { getAmmPath } from "../ammPath";
 import { matchSwapHops } from "./swapCredits";
 import { usdcToUsdt } from "./xcmSwap.fixtures";
 
