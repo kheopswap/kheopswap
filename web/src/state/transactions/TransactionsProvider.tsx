@@ -28,7 +28,6 @@ import {
 	trackXcmArrivals,
 } from "./xcmArrival";
 
-// React-rxjs bindings for reactive updates
 const [useAllTransactions] = bind(transactions$, []);
 
 const [useOpenTransaction] = bind(

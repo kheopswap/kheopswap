@@ -6,8 +6,3 @@ export type TxOptionsWithChargeAssetTxPayment = {
 	tip?: bigint;
 	mortality?: { mortal: false } | { mortal: true; period: number };
 };
-
-// saves the need to declare the type everywhere
-export const getTxOptions = (options: TxOptionsWithChargeAssetTxPayment) => {
-	return options;
-};

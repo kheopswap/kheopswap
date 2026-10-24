@@ -11,12 +11,13 @@ import { getChainById } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import { notifyError } from "../../utils/notifyError";
 
-/** EIP-1193 code 4001 = user rejected the request. */
+const EIP1193_USER_REJECTED_REQUEST = 4001;
+
 const isUserRejection = (error: unknown): boolean =>
 	typeof error === "object" &&
 	error !== null &&
 	"code" in error &&
-	(error as { code: unknown }).code === 4001;
+	(error as { code: unknown }).code === EIP1193_USER_REJECTED_REQUEST;
 
 /**
  * True when the wallet can't switch/add a chain from the dapp — e.g. mobile
@@ -128,7 +129,6 @@ export const useTransactionEthereum = ({
 				return;
 			}
 
-			// Injected wallet: chain not recognized — try adding it first.
 			try {
 				await account.client.request({
 					method: "wallet_addEthereumChain",
@@ -141,7 +141,7 @@ export const useTransactionEthereum = ({
 							nativeCurrency: {
 								name: nativeToken?.symbol ?? "Native Token",
 								symbol: nativeToken?.symbol ?? "UNIT",
-								decimals: 18, // always 18 on ethereum
+								decimals: 18,
 							},
 						},
 					],

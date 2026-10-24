@@ -87,14 +87,12 @@ const getModuleErrorMessage = async (
 		const lookup = getLookupFn(unifyMetadata(metadata));
 
 		const palletErrors = lookup(pallet.errors);
-		if (
-			palletErrors.type !== "enum" ||
-			!palletErrors.innerDocs[error.value.type]?.length
-		)
-			throw new Error("Unknown error type");
+		if (palletErrors.type !== "enum") throw new Error("Unknown error type");
 
-		// biome-ignore lint/style/noNonNullAssertion: checked above
-		return palletErrors.innerDocs[error.value.type]!.join(" ");
+		const docs = palletErrors.innerDocs[error.value.type];
+		if (!docs?.length) throw new Error("Unknown error type");
+
+		return docs.join(" ");
 	} catch (err) {
 		logger.error("Failed to parse module error", { chainId, error, err });
 		return null;

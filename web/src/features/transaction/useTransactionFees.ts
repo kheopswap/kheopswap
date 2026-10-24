@@ -8,9 +8,9 @@ import type { ChainId } from "../../registry/chains/types";
 import type { Token, TokenId } from "../../registry/tokens/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
-import { getTxOptions } from "../../utils/getTxOptions";
 import { isBigInt } from "../../utils/isBigInt";
 import { isNumber } from "../../utils/isNumber";
+import type { TxOptionsWithChargeAssetTxPayment } from "../../utils/txOptions";
 
 type UseTransactionFeesProps = {
 	signer: string | null | undefined;
@@ -57,13 +57,13 @@ export const useTransactionFees = ({
 		[isEthereumAccount, nativeToken, selectedFeeToken],
 	);
 
-	const options = useMemo(() => {
+	const options = useMemo<TxOptionsWithChargeAssetTxPayment | undefined>(() => {
 		if (!isNumber(nonce) || !feeToken) return undefined;
-		return getTxOptions({
-			asset: feeToken ? getFeeAssetLocation(feeToken) : undefined,
+		return {
+			asset: getFeeAssetLocation(feeToken),
 			mortality: { mortal: true, period: 64 },
 			nonce,
-		});
+		};
 	}, [feeToken, nonce]);
 
 	const {

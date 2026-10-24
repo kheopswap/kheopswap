@@ -8,10 +8,10 @@ import type { Token, TokenAmount } from "../../registry/tokens/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { getMaxSwapAmount } from "../../utils/ammMath";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
-import { getTxOptions } from "../../utils/getTxOptions";
 import { isBigInt } from "../../utils/isBigInt";
 import { isNumber } from "../../utils/isNumber";
 import { plancksToTokens } from "../../utils/plancks";
+import type { TxOptionsWithChargeAssetTxPayment } from "../../utils/txOptions";
 import type { SwapFormInputs } from "./schema";
 
 type UseSwapFeesProps = {
@@ -47,13 +47,15 @@ export const useSwapFees = ({
 		chainId: tokenIn?.chainId,
 	});
 
-	const txOptions = useMemo(() => {
+	const txOptions = useMemo<
+		TxOptionsWithChargeAssetTxPayment | undefined
+	>(() => {
 		if (!isNumber(nonce) || !feeToken) return undefined;
-		return getTxOptions({
-			asset: feeToken ? getFeeAssetLocation(feeToken) : undefined,
+		return {
+			asset: getFeeAssetLocation(feeToken),
 			mortality: { mortal: true, period: 64 },
 			nonce,
-		});
+		};
 	}, [feeToken, nonce]);
 
 	const { data: feeEstimateNative, isLoading: isLoadingFeeEstimateNative } =
