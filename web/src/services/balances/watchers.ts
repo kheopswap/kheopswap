@@ -61,7 +61,20 @@ const liquidBalance = (
 	frozen: 0n,
 });
 
-const spendableBalance = ({
+const nativeSpendableBalance = ({
+	free,
+	reserved,
+	frozen,
+}: {
+	free: bigint;
+	reserved: bigint;
+	frozen: bigint;
+}): BalanceValue => {
+	const locked = frozen > reserved ? frozen - reserved : 0n;
+	return { balance: free > locked ? free - locked : 0n, frozen: locked };
+};
+
+const tokensSpendableBalance = ({
 	free,
 	frozen,
 }: {
@@ -96,7 +109,9 @@ const readNativeBalances = async (
 		entries.map((entry): [SS58String] => [entry.address]),
 		(keys) => api.query.System.Account.getValues(keys, { at: "best" }),
 	);
-	return zip(entries, accounts, (account) => spendableBalance(account.data));
+	return zip(entries, accounts, (account) =>
+		nativeSpendableBalance(account.data),
+	);
 };
 
 const readAssetBalances = async (
@@ -160,7 +175,7 @@ const readHydrationAssetBalances = async (
 		]),
 		(keys) => api.query.Tokens.Accounts.getValues(keys, { at: "best" }),
 	);
-	return zip(entries, accounts, spendableBalance);
+	return zip(entries, accounts, tokensSpendableBalance);
 };
 
 const readChainBalances = (entries: BalanceEntry[]) =>

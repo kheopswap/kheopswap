@@ -19,7 +19,10 @@ type GetValuesCall = { chainId: string; pallet: string; keys: unknown[][] };
 
 const mocks = vi.hoisted(() => ({
 	bestBlocks: new Map<string, unknown>(),
-	nativeAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
+	nativeAccounts: new Map<
+		string,
+		{ free: bigint; reserved?: bigint; frozen: bigint }
+	>(),
 	hydrationAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
 	assetAccounts: new Map<string, { balance: bigint }>(),
 	failingPallets: new Set<string>(),
@@ -62,9 +65,11 @@ vi.mock("../../papi/getApi", async () => {
 							getValues: async (keys: [string][]) => {
 								mocks.getValuesCalls.push({ chainId, pallet: "System", keys });
 								return keys.map(([address]) => ({
-									data: mocks.nativeAccounts.get(address) ?? {
+									data: {
 										free: 0n,
+										reserved: 0n,
 										frozen: 0n,
+										...mocks.nativeAccounts.get(address),
 									},
 								}));
 							},
@@ -303,6 +308,29 @@ describe("balances service pipeline", () => {
 
 		unsubscribe();
 	});
+
+	it.each([
+		{ free: 50n, reserved: 1_000n, frozen: 1_000n, balance: 50n, locked: 0n },
+		{ free: 100n, reserved: 30n, frozen: 50n, balance: 80n, locked: 20n },
+		{ free: 10n, reserved: 0n, frozen: 30n, balance: 0n, locked: 30n },
+	])(
+		"lets a native freeze cover reserved funds first (free $free, reserved $reserved, frozen $frozen)",
+		async ({ free, reserved, frozen, balance, locked }) => {
+			const address = `5TestAddressNative${free}-${reserved}-${frozen}`;
+			mocks.nativeAccounts.set(address, { free, reserved, frozen });
+			const balanceId = getBalanceId({ address, tokenId: "native::pah" });
+
+			const unsubscribe = addBalanceSubscription(balanceId);
+
+			await waitForBalanceState(balanceId, (s) => s?.status === "loaded");
+			expect(balancesStore$.value[balanceId]).toMatchObject({
+				balance,
+				frozen: locked,
+			});
+
+			unsubscribe();
+		},
+	);
 
 	it("deducts frozen from free for hydration asset balances", async () => {
 		const address = "5TestAddressCharlie";
