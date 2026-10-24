@@ -157,6 +157,28 @@ describe("balances service pipeline", () => {
 		for (const unsubscribe of unsubscribes) unsubscribe();
 	});
 
+	it("splits a chain's keys into storage queries of at most 250", async () => {
+		const addresses = Array.from({ length: 251 }, (_, i) => `5Bulk${i}`);
+		const balanceIds = addresses.map((address) =>
+			getBalanceId({ address, tokenId: "native::wah" }),
+		);
+		const callsBefore = nativeCalls("wah").length;
+
+		const unsubscribes = balanceIds.map(addBalanceSubscription);
+		await waitForBalanceState(
+			balanceIds[250] as string,
+			(s) => s?.status === "loaded",
+		);
+
+		expect(
+			nativeCalls("wah")
+				.slice(callsBefore)
+				.map((call) => call.keys.length),
+		).toEqual([250, 1]);
+
+		for (const unsubscribe of unsubscribes) unsubscribe();
+	});
+
 	it("stops reading a balance once nobody watches it but keeps it cached as stale", async () => {
 		const address = "5TestAddressDave";
 		mocks.nativeAccounts.set(address, { free: 100n, frozen: 10n });
