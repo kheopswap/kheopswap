@@ -1,5 +1,9 @@
 import type { TokenId } from "../../../registry/tokens/types";
-import { getAmmOutput, getMinAmountOut } from "../../../utils/ammMath";
+import {
+	getAmmOutput,
+	getLpFeeUnit,
+	getMinAmountOut,
+} from "../../../utils/ammMath";
 
 export type HopPath<T> = readonly [T] | readonly [T, T];
 
@@ -24,6 +28,7 @@ export type AmmPathQuote = {
 	hops: HopPath<QuotedHop>;
 	amountOut: bigint;
 	minOut: bigint;
+	priceImpact: number;
 };
 
 export const getLastHop = <T>(path: HopPath<T>): T =>
@@ -102,7 +107,36 @@ export const quoteAmmPath = ({
 		hops.length === 1 ? [first] : [first, quoteHop(hops[1], first.amountOut)];
 	const { amountOut, minOut } = getLastHop(quoted);
 
-	return { hops: quoted, amountOut, minOut };
+	return {
+		hops: quoted,
+		amountOut,
+		minOut,
+		priceImpact: getPriceImpact(hops, lpFee, plancksIn, amountOut),
+	};
+};
+
+const PRICE_IMPACT_PRECISION = 1_000_000n;
+
+const getPriceImpact = (
+	hops: HopPath<PoolHop>,
+	lpFee: number,
+	plancksIn: bigint,
+	amountOut: bigint,
+): number => {
+	const feeUnit = getLpFeeUnit(lpFee);
+	const afterFee = feeUnit - BigInt(lpFee);
+	const [idealOut, idealScale] = hops.reduce(
+		([out, scale], { reserveIn, reserveOut }) => [
+			out * afterFee * reserveOut,
+			scale * feeUnit * reserveIn,
+		],
+		[plancksIn, 1n],
+	);
+	if (!idealOut) return 0;
+	const ratio = (amountOut * idealScale * PRICE_IMPACT_PRECISION) / idealOut;
+	return (
+		Number(ratio - PRICE_IMPACT_PRECISION) / Number(PRICE_IMPACT_PRECISION)
+	);
 };
 
 type HopReserves = {

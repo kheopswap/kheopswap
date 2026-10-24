@@ -1,14 +1,11 @@
 import { useMemo } from "react";
-import { useAssetConvertPlancks } from "../../../hooks/useAssetConvertPlancks";
 import { usePoolReservesByTokenIds } from "../../../hooks/usePoolReservesByTokenIds";
 import { useRelayChains } from "../../../state/relay";
-import { getPriceImpact } from "../../../utils/ammMath";
 import { useAssetConvertionLPFee } from "../useAssetConvertionLPFee";
 import {
 	type AmmPath,
 	type AmmPathQuote,
 	afterFirstPoolSwap,
-	getLastHop,
 	getPathLiquidity,
 	type PathLiquidity,
 	type PoolSwap,
@@ -23,7 +20,6 @@ const LIQUIDITY_ERRORS: Partial<Record<PathLiquidity["status"], string>> = {
 export type AmmPathQuoteState = {
 	liquidity: PathLiquidity | null;
 	quote: AmmPathQuote | undefined;
-	priceImpact: number | undefined;
 	isLoading: boolean;
 	errorMessage: string | null;
 };
@@ -31,13 +27,11 @@ export type AmmPathQuoteState = {
 export const useAmmPathQuote = ({
 	path,
 	plancksIn,
-	totalIn,
 	slippage,
 	firstPoolSwap = null,
 }: {
 	path: AmmPath | null;
 	plancksIn: bigint | null | undefined;
-	totalIn: bigint | null | undefined;
 	slippage: number;
 	firstPoolSwap?: PoolSwap | null;
 }): AmmPathQuoteState => {
@@ -52,11 +46,6 @@ export const useAmmPathQuote = ({
 	});
 	const { data: lpFee, isLoading: isLoadingLpFee } = useAssetConvertionLPFee({
 		chain: assetHub,
-	});
-	const { plancksOut: spotPlancksOut } = useAssetConvertPlancks({
-		tokenIdIn: path?.[0].tokenIdIn,
-		tokenIdOut: path && getLastHop(path).tokenIdOut,
-		plancks: totalIn,
 	});
 
 	const liquidity = useMemo(
@@ -79,18 +68,9 @@ export const useAmmPathQuote = ({
 		[liquidity, lpFee, plancksIn, slippage, firstPoolSwap],
 	);
 
-	const priceImpact = useMemo(
-		() =>
-			spotPlancksOut && quote
-				? getPriceImpact(spotPlancksOut, quote.amountOut)
-				: undefined,
-		[spotPlancksOut, quote],
-	);
-
 	return {
 		liquidity,
 		quote,
-		priceImpact,
 		isLoading: liquidity?.status === "loading" || isLoadingLpFee,
 		errorMessage: (liquidity && LIQUIDITY_ERRORS[liquidity.status]) ?? null,
 	};

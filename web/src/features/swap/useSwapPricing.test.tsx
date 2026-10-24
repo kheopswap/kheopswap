@@ -1,11 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Token, TokenId } from "../../registry/tokens/types";
-import {
-	getAmmOutput,
-	getMinAmountOut,
-	getPriceImpact,
-} from "../../utils/ammMath";
+import { getAmmOutput, getMinAmountOut } from "../../utils/ammMath";
 import { plancksToTokens } from "../../utils/plancks";
 import { getAmmPath } from "./routes/ammPath";
 import type { AmmSwapRoute } from "./routes/swapRoute";
@@ -31,7 +27,6 @@ const fixture = vi.hoisted(() => ({
 		canReceive: boolean;
 		reason?: string;
 	},
-	rawPlancksOut: undefined as bigint | undefined,
 	slippage: 0.01,
 	receivingAddresses: [] as (string | undefined)[],
 }));
@@ -126,10 +121,6 @@ vi.mock("../../hooks/useCanAccountReceive", () => ({
 	},
 }));
 
-vi.mock("../../hooks/useAssetConvertPlancks", () => ({
-	useAssetConvertPlancks: () => ({ plancksOut: fixture.rawPlancksOut }),
-}));
-
 // real pool numbers from the Permill LPFee bug report (#79)
 const RESERVE_DOT = 7_842_000_000_000n; // 784.2 DOT (10 decimals)
 const RESERVE_USDC = 663_200_000n; // 663.2 USDC (6 decimals)
@@ -171,7 +162,6 @@ beforeEach(() => {
 	fixture.balances = { [DOT]: 1_000_000_000_000n, [USDC]: 0n };
 	fixture.appFeeCanReceive = { canReceive: false };
 	fixture.recipientCanReceive = { canReceive: true };
-	fixture.rawPlancksOut = undefined;
 	fixture.slippage = 0.01;
 	fixture.receivingAddresses = [];
 });
@@ -242,17 +232,13 @@ describe("useSwapPricing", () => {
 		expect(fixture.receivingAddresses).not.toContain("5AppFeeAddress");
 	});
 
-	it("derives the price impact from the spot conversion", () => {
-		const spot = 3_400_000n;
-		fixture.rawPlancksOut = spot;
-		const result = renderPricing();
+	it("leaves the service fee and the pool fee out of the price impact", () => {
+		fixture.appFeeCanReceive = { canReceive: true };
+		const result = renderPricing("0.1");
 
-		expect(result.priceImpact).toBe(
-			// biome-ignore lint/style/noNonNullAssertion: asserted above
-			getPriceImpact(spot, result.swapPlancksOut!),
-		);
-		// biome-ignore lint/style/noNonNullAssertion: asserted above
-		expect(result.priceImpact!).toBeLessThan(0);
+		expect(result.appCommission).toBeGreaterThan(0n);
+		expect(result.priceImpact).toBeGreaterThan(-0.0002);
+		expect(result.priceImpact).toBeLessThan(-0.0001);
 	});
 
 	it("flags an insufficient balance", () => {
