@@ -6,9 +6,11 @@ import {
 	from,
 	map,
 	type Observable,
+	retry,
 	type Subscription,
 	shareReplay,
 	switchMap,
+	timer,
 } from "rxjs";
 import { getApi } from "../../papi/getApi";
 import type { ChainId } from "../../registry/chains/types";
@@ -177,13 +179,28 @@ const readChainBalances = (entries: BalanceEntry[]) =>
 		),
 	).then((updates) => updates.flat());
 
+const BLOCK_STREAM_RETRY_DELAY = 1_000;
+
 const getBestBlockNumber$ = (chainId: ChainId): Observable<number> =>
 	getCachedObservable$("getBestBlockNumber$", chainId, () =>
 		from(getApi(chainId)).pipe(
 			switchMap((api) => api.query.System.Number.watchValue({ at: "best" })),
 			map(({ value }) => value),
+			retry({
+				delay: (err) => {
+					logger.error("Best block stream failed, retrying", { chainId, err });
+					return timer(BLOCK_STREAM_RETRY_DELAY);
+				},
+			}),
 			shareReplay({ bufferSize: 1, refCount: true }),
 		),
+	);
+
+const groupEntriesByChain = (balanceIds: BalanceId[]) =>
+	new Map(
+		Object.entries(
+			groupBy(balanceIds.map(toEntry), (entry) => entry.token.chainId),
+		) as [ChainId, BalanceEntry[]][],
 	);
 
 const applyUpdates = (updates: BalanceUpdate[]) => {
@@ -269,6 +286,10 @@ const watchChainBalances = (
 
 const CHAIN_WATCHERS = new Map<ChainId, ChainWatcher>();
 
+const sameEntries = (a: BalanceEntry[], b: BalanceEntry[]) =>
+	a.length === b.length &&
+	a.every((entry, i) => entry.balanceId === b[i]?.balanceId);
+
 const syncStatuses = (balanceIds: BalanceId[]) => {
 	const statuses = statusByBalanceId$.value;
 	const next = Object.fromEntries(
@@ -282,11 +303,7 @@ const syncStatuses = (balanceIds: BalanceId[]) => {
 
 balanceSubscriptions$.subscribe((balanceIds) => {
 	try {
-		const entriesByChain = new Map(
-			Object.entries(
-				groupBy(balanceIds.map(toEntry), (entry) => entry.token.chainId),
-			) as [ChainId, BalanceEntry[]][],
-		);
+		const entriesByChain = groupEntriesByChain(balanceIds);
 
 		for (const [chainId, watcher] of CHAIN_WATCHERS)
 			if (!entriesByChain.has(chainId)) {
@@ -296,8 +313,10 @@ balanceSubscriptions$.subscribe((balanceIds) => {
 
 		for (const [chainId, entries] of entriesByChain) {
 			const watcher = CHAIN_WATCHERS.get(chainId);
-			if (watcher) watcher.entries$.next(entries);
-			else CHAIN_WATCHERS.set(chainId, watchChainBalances(chainId, entries));
+			if (!watcher)
+				CHAIN_WATCHERS.set(chainId, watchChainBalances(chainId, entries));
+			else if (!sameEntries(watcher.entries$.value, entries))
+				watcher.entries$.next(entries);
 		}
 
 		syncStatuses(balanceIds);

@@ -18,6 +18,8 @@ const mocks = vi.hoisted(() => ({
 	bestBlocks: new Map<string, unknown>(),
 	nativeAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
 	hydrationAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
+	assetAccounts: new Map<string, { balance: bigint }>(),
+	failingPallets: new Set<string>(),
 	getValuesCalls: [] as GetValuesCall[],
 	getApiChainIds: [] as string[],
 	addedBalanceIds: [] as string[],
@@ -38,7 +40,10 @@ vi.mock("../../papi/getApi", async () => {
 	const { BehaviorSubject } = await import("rxjs");
 
 	const getBestBlock$ = (chainId: string) => {
-		if (!mocks.bestBlocks.has(chainId))
+		const current = mocks.bestBlocks.get(chainId) as
+			| BehaviorSubject<{ value: number }>
+			| undefined;
+		if (!current || current.hasError)
 			mocks.bestBlocks.set(chainId, new BehaviorSubject({ value: 1 }));
 		return mocks.bestBlocks.get(chainId);
 	};
@@ -59,6 +64,23 @@ vi.mock("../../papi/getApi", async () => {
 										frozen: 0n,
 									},
 								}));
+							},
+						},
+					},
+					Assets: {
+						Account: {
+							getValues: async (keys: [number, string][]) => {
+								mocks.getValuesCalls.push({ chainId, pallet: "Assets", keys });
+								if (mocks.failingPallets.has("Assets"))
+									throw new Error("Assets pallet unavailable");
+								return keys.map(([assetId, address]) => {
+									const account = mocks.assetAccounts.get(
+										`${assetId}||${address}`,
+									);
+									return account
+										? { status: { type: "Liquid" }, balance: account.balance }
+										: undefined;
+								});
 							},
 						},
 					},
@@ -159,14 +181,20 @@ describe("balances service pipeline", () => {
 
 	it("splits a chain's keys into storage queries of at most 250", async () => {
 		const addresses = Array.from({ length: 251 }, (_, i) => `5Bulk${i}`);
+		mocks.nativeAccounts.set("5Bulk249", { free: 249n, frozen: 0n });
+		mocks.nativeAccounts.set("5Bulk250", { free: 250n, frozen: 0n });
 		const balanceIds = addresses.map((address) =>
 			getBalanceId({ address, tokenId: "native::wah" }),
 		);
 		const callsBefore = nativeCalls("wah").length;
 
 		const unsubscribes = balanceIds.map(addBalanceSubscription);
-		await waitForBalanceState(
+		const last = await waitForBalanceState(
 			balanceIds[250] as string,
+			(s) => s?.status === "loaded",
+		);
+		const beforeBoundary = await waitForBalanceState(
+			balanceIds[249] as string,
 			(s) => s?.status === "loaded",
 		);
 
@@ -175,6 +203,8 @@ describe("balances service pipeline", () => {
 				.slice(callsBefore)
 				.map((call) => call.keys.length),
 		).toEqual([250, 1]);
+		expect(beforeBoundary?.balance).toBe(249n);
+		expect(last?.balance).toBe(250n);
 
 		for (const unsubscribe of unsubscribes) unsubscribe();
 	});
@@ -202,6 +232,53 @@ describe("balances service pipeline", () => {
 		tickBestBlock("kah", 2);
 		await settle();
 		expect(nativeCalls("kah").slice(callsBefore)).toHaveLength(0);
+	});
+
+	it("keeps reading after the best block stream errors", async () => {
+		const address = "5TestAddressFrank";
+		mocks.nativeAccounts.set(address, { free: 10n, frozen: 0n });
+		const balanceId = getBalanceId({ address, tokenId: "native::kah" });
+		const unsubscribe = addBalanceSubscription(balanceId);
+		await waitForBalanceState(balanceId, (s) => s?.balance === 10n);
+
+		(mocks.bestBlocks.get("kah") as BehaviorSubject<{ value: number }>).error(
+			new Error("subscription dropped"),
+		);
+		await settle();
+		mocks.nativeAccounts.set(address, { free: 20n, frozen: 0n });
+		await new Promise((resolve) => setTimeout(resolve, 1_100));
+		tickBestBlock("kah", 3);
+
+		const recovered = await waitForBalanceState(
+			balanceId,
+			(s) => s?.balance === 20n,
+		);
+		expect(recovered?.status).toBe("loaded");
+
+		unsubscribe();
+	});
+
+	it("does not re-read a chain whose watched entries did not change", async () => {
+		const pahId = getBalanceId({
+			address: "5TestAddressGrace",
+			tokenId: "native::pah",
+		});
+		const unsubscribePah = addBalanceSubscription(pahId);
+		await waitForBalanceState(pahId, (s) => s?.status === "loaded");
+		const pahCallsBefore = nativeCalls("pah").length;
+
+		const wahId = getBalanceId({
+			address: "5TestAddressHeidi",
+			tokenId: "native::wah",
+		});
+		const unsubscribeWah = addBalanceSubscription(wahId);
+		await waitForBalanceState(wahId, (s) => s?.status === "loaded");
+		await settle();
+
+		expect(nativeCalls("pah").length).toBe(pahCallsBefore);
+
+		unsubscribePah();
+		unsubscribeWah();
 	});
 
 	it("watches System.Account on the people chain for its native token", async () => {
