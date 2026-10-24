@@ -6,6 +6,7 @@ import { useWalletAccount } from "../../hooks/useWalletAccount";
 import { cn } from "../../utils/cn";
 import { isBigInt } from "../../utils/isBigInt";
 import { useTransaction } from "../transaction/TransactionProvider";
+import { formatAmountOut } from "./formatAmountOut";
 import { useSwap } from "./SwapProvider";
 
 const SwapTokensButton: FC<{ onClick: () => void; className?: string }> = ({
@@ -98,7 +99,11 @@ export const SwapTokensEditor = () => {
 			/>
 			{canFlip && <SwapTokensButton onClick={onSwapTokens} />}
 			<TokenAmountPicker
-				inputProps={{ value: amountOut, readOnly: true }}
+				inputProps={{
+					value: formatAmountOut(amountOut),
+					title: amountOut,
+					readOnly: true,
+				}}
 				tokenId={tokenOut?.id}
 				plancks={swapPlancksOut}
 				tokens={tokensOut}
