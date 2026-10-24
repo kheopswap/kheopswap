@@ -175,7 +175,7 @@ export const LiquidityPoolForm = () => {
 	const { isLoadingToken, assetToken, defaultAccountId, setDefaultAccountId } =
 		useLiquidityPoolPage();
 
-	if (!assetToken) return isLoadingToken ? null : <div>Pool not found</div>; // TODO
+	if (!assetToken) return isLoadingToken ? null : <div>Pool not found</div>;
 
 	return (
 		<div className="flex flex-col gap-5">

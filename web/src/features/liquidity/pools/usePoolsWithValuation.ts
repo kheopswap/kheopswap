@@ -5,7 +5,6 @@ import type { Pool } from "../../../services/pools/types";
 import { getAssetConvertPlancks } from "../../../utils/getAssetConvertPlancks";
 import { getPoolReserves } from "../../../utils/getPoolReserves";
 import { isBigInt } from "../../../utils/isBigInt";
-import { logger } from "../../../utils/logger";
 
 export type PoolWithValuation = Pool & {
 	valuation: bigint | null;
@@ -24,8 +23,6 @@ export const usePoolsWithValuation = ({
 	nativeToken,
 	stableToken,
 }: UsePoolsWithValuationProps) => {
-	const stop = logger.cumulativeTimer("usePoolsWithValuation");
-
 	const poolsBalanceDefs = useMemo(
 		() =>
 			pools?.flatMap((pool) =>
@@ -94,8 +91,6 @@ export const usePoolsWithValuation = ({
 		stableToken,
 		tokens,
 	]);
-
-	stop();
 
 	return { data: poolsWithStablePrices, isLoading };
 };
