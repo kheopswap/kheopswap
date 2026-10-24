@@ -7,13 +7,14 @@ import type {
 } from "../../../registry/chains/types";
 import { parseTokenId } from "../../../registry/tokens/helpers";
 import type { Token, TokenId } from "../../../registry/tokens/types";
-import type { TransactionType } from "../../../state/transactions/types";
+import type { XcmArrivalType } from "../../../state/transactions/xcmArrival";
 import type { AnyTransaction } from "../../../types/transactions";
 import { isEthereumAddress } from "../../../utils/ethereumAddress";
 import type {
 	CallSpendings,
 	SubmitGate,
 } from "../../transaction/TransactionProvider";
+import { type AmmPath, getAmmPath } from "./xcmSwap/ammPath";
 
 export type AmmSwapRoute = {
 	kind: "amm-swap";
@@ -31,7 +32,19 @@ export type XcmTransferRoute = {
 	destinationAssetId: number;
 };
 
-export type SwapRoute = AmmSwapRoute | XcmTransferRoute;
+export type XcmSwapRoute = {
+	kind: "xcm-swap";
+	origin: "pah";
+	destination: ChainIdHydration;
+	tokenIdIn: TokenId;
+	tokenIdOut: TokenId;
+	destinationAssetId: number;
+	path: AmmPath;
+};
+
+export type XcmRoute = XcmTransferRoute | XcmSwapRoute;
+
+export type SwapRoute = AmmSwapRoute | XcmRoute;
 
 export type TransactionPlan = {
 	chainId: ChainId | undefined;
@@ -39,7 +52,7 @@ export type TransactionPlan = {
 	fakeCall: AnyTransaction | null | undefined;
 	callSpendings: CallSpendings;
 	followUpData: object;
-	transactionType: Extract<TransactionType, "swap" | "xcmTransfer">;
+	transactionType: "swap" | XcmArrivalType;
 	title: string;
 	submitGate: SubmitGate;
 };
@@ -55,6 +68,7 @@ export type SwapTokensChange =
 
 type SwapRouteContext = {
 	assetHubId: ChainIdAssetHub;
+	nativeTokenId: TokenId;
 	mirrors: MirrorTokenIds;
 };
 
@@ -66,46 +80,79 @@ const tryParseTokenId = (tokenId: TokenId) => {
 	}
 };
 
-const resolveXcmTransferRoute = (
-	tokenIdIn: TokenId,
+type XcmDestination = {
+	origin: XcmRoute["origin"];
+	destination: ChainIdHydration;
+	destinationAssetId: number;
+	mirrorTokenId: TokenId;
+};
+
+const getXcmDestination = (
 	tokenIdOut: TokenId,
 	mirrors: MirrorTokenIds,
-): XcmTransferRoute | null => {
-	if (mirrors.get(tokenIdOut) !== tokenIdIn) return null;
-
-	const tokenIn = tryParseTokenId(tokenIdIn);
+): XcmDestination | null => {
+	const mirrorTokenId = mirrors.get(tokenIdOut);
+	const mirror = mirrorTokenId && tryParseTokenId(mirrorTokenId);
 	const tokenOut = tryParseTokenId(tokenIdOut);
-	if (tokenOut?.type !== "hydration-asset" || tokenIn?.chainId !== "pah")
+	if (
+		!mirrorTokenId ||
+		!mirror ||
+		tokenOut?.type !== "hydration-asset" ||
+		mirror.chainId !== "pah" ||
+		(mirror.type !== "native" && mirror.type !== "asset")
+	)
 		return null;
-	if (tokenIn.type !== "native" && tokenIn.type !== "asset") return null;
 
 	return {
-		kind: "xcm-transfer",
-		origin: tokenIn.chainId,
+		origin: mirror.chainId,
 		destination: tokenOut.chainId,
+		destinationAssetId: tokenOut.assetId,
+		mirrorTokenId,
+	};
+};
+
+const resolveXcmRoute = (
+	tokenIdIn: TokenId,
+	tokenIdOut: TokenId,
+	{ nativeTokenId, mirrors }: SwapRouteContext,
+): XcmRoute | null => {
+	const xcmDestination = getXcmDestination(tokenIdOut, mirrors);
+	const tokenIn = tryParseTokenId(tokenIdIn);
+	if (!xcmDestination || tokenIn?.chainId !== xcmDestination.origin)
+		return null;
+
+	const { mirrorTokenId, ...target } = xcmDestination;
+	if (tokenIdIn === mirrorTokenId)
+		return { kind: "xcm-transfer", ...target, tokenIdIn, tokenIdOut };
+
+	if (tokenIn.type === "pool-asset") return null;
+
+	return {
+		kind: "xcm-swap",
+		...target,
 		tokenIdIn,
 		tokenIdOut,
-		destinationAssetId: tokenOut.assetId,
+		path: getAmmPath(tokenIdIn, mirrorTokenId, nativeTokenId),
 	};
 };
 
 export const resolveSwapRoute = ({
-	assetHubId,
-	mirrors,
 	tokenIdIn,
 	tokenIdOut,
+	...context
 }: SwapRouteContext & {
 	tokenIdIn: TokenId | undefined;
 	tokenIdOut: TokenId | undefined;
 }): SwapRoute | null => {
 	if (!tokenIdIn || !tokenIdOut || tokenIdIn === tokenIdOut) return null;
 
+	const { assetHubId } = context;
 	const tokenIn = tryParseTokenId(tokenIdIn);
 	const tokenOut = tryParseTokenId(tokenIdOut);
 	if (tokenIn?.chainId === assetHubId && tokenOut?.chainId === assetHubId)
 		return { kind: "amm-swap", chainId: assetHubId, tokenIdIn, tokenIdOut };
 
-	return resolveXcmTransferRoute(tokenIdIn, tokenIdOut, mirrors);
+	return resolveXcmRoute(tokenIdIn, tokenIdOut, context);
 };
 
 export const getFeePayableMirrorTokenIds = (
@@ -122,34 +169,11 @@ export const getFeePayableMirrorTokenIds = (
 		}),
 	);
 
-const getXcmTransferSourceId = (
-	mirrors: MirrorTokenIds,
-	tokenIdOut: TokenId,
-): TokenId | null => {
-	const tokenIdIn = mirrors.get(tokenIdOut);
-	return tokenIdIn && resolveXcmTransferRoute(tokenIdIn, tokenIdOut, mirrors)
-		? tokenIdIn
-		: null;
-};
-
-export const getMirrorTokenOutId = (
-	mirrors: MirrorTokenIds,
-	tokenIdIn: TokenId,
-): TokenId | null => {
-	for (const [tokenIdOut, sourceId] of mirrors)
-		if (
-			sourceId === tokenIdIn &&
-			resolveXcmTransferRoute(tokenIdIn, tokenIdOut, mirrors)
-		)
-			return tokenIdOut;
-	return null;
-};
-
 export const canFlipSwapTokens = (
 	{ tokenIdIn, tokenIdOut }: SwapTokenIds,
 	context: SwapRouteContext,
 ): boolean =>
-	!getXcmTransferSourceId(context.mirrors, tokenIdOut) ||
+	!getXcmDestination(tokenIdOut, context.mirrors) ||
 	!!resolveSwapRoute({
 		...context,
 		tokenIdIn: tokenIdOut,
@@ -159,17 +183,15 @@ export const canFlipSwapTokens = (
 export const getNextSwapTokens = (
 	prev: SwapTokenIds,
 	change: SwapTokensChange,
-	context: SwapRouteContext & { nativeTokenId: TokenId },
+	context: SwapRouteContext,
 ): SwapTokenIds => {
 	const { nativeTokenId, mirrors } = context;
 
 	switch (change.type) {
 		case "in": {
 			const { tokenId } = change;
-			if (getXcmTransferSourceId(mirrors, prev.tokenIdOut)) {
-				const tokenIdOut = getMirrorTokenOutId(mirrors, tokenId);
-				if (tokenIdOut) return { tokenIdIn: tokenId, tokenIdOut };
-			}
+			if (resolveXcmRoute(tokenId, prev.tokenIdOut, context))
+				return { ...prev, tokenIdIn: tokenId };
 			if (tokenId !== nativeTokenId)
 				return { tokenIdIn: tokenId, tokenIdOut: nativeTokenId };
 			if (prev.tokenIdOut === nativeTokenId)
@@ -178,12 +200,15 @@ export const getNextSwapTokens = (
 		}
 		case "out": {
 			const { tokenId } = change;
-			const sourceId = getXcmTransferSourceId(mirrors, tokenId);
-			if (sourceId) return { tokenIdIn: sourceId, tokenIdOut: tokenId };
+			const xcmDestination = getXcmDestination(tokenId, mirrors);
+			if (xcmDestination)
+				return resolveXcmRoute(prev.tokenIdIn, tokenId, context)
+					? { ...prev, tokenIdOut: tokenId }
+					: { tokenIdIn: xcmDestination.mirrorTokenId, tokenIdOut: tokenId };
 			if (tokenId !== nativeTokenId)
 				return { tokenIdIn: nativeTokenId, tokenIdOut: tokenId };
 			if (prev.tokenIdIn === nativeTokenId)
-				return getXcmTransferSourceId(mirrors, prev.tokenIdOut)
+				return getXcmDestination(prev.tokenIdOut, mirrors)
 					? { ...prev, tokenIdOut: tokenId }
 					: { tokenIdIn: prev.tokenIdOut, tokenIdOut: tokenId };
 			return { ...prev, tokenIdOut: tokenId };
@@ -211,7 +236,7 @@ export const getSwapTokenLists = ({
 	const destinationTokens: Record<TokenId, Token> = {};
 
 	for (const tokenIdOut of mirrors.keys()) {
-		const tokenIdIn = getXcmTransferSourceId(mirrors, tokenIdOut);
+		const tokenIdIn = getXcmDestination(tokenIdOut, mirrors)?.mirrorTokenId;
 		const tokenIn = tokenIdIn && allTokens[tokenIdIn];
 		const tokenOut = allTokens[tokenIdOut];
 		if (!tokenIn || !tokenOut) continue;
