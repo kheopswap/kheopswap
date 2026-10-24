@@ -6,13 +6,16 @@ import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { useDryRun } from "../../../../hooks/useDryRun";
+import { usePoolReservesByTokenIds } from "../../../../hooks/usePoolReservesByTokenIds";
 import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import { getTokenId } from "../../../../registry/tokens/helpers";
-import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
+import type { TokenAmount } from "../../../../registry/tokens/types";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
+import { useRelayChains } from "../../../../state/relay";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
+import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { type AmmPathQuoteState, useAmmPathQuote } from "../useAmmPathQuote";
 import {
@@ -22,38 +25,34 @@ import {
 } from "../xcm/xcmQuote";
 import {
 	type DestinationSwapFee,
+	getDestinationSwapFee,
 	getDestinationSwapPlancksIn,
 	getFeeSwap,
 } from "./destinationSwapFee";
 import { useCanReceiveSwapLeftovers } from "./useCanReceiveSwapLeftovers";
 
-const queryDestinationSwapFee = async (
+const queryDestinationNativeFee = async (
 	route: XcmDestinationSwapRoute,
 	message: XcmVersionedXcm,
-): Promise<DestinationSwapFee | null> => {
+): Promise<bigint | null> => {
 	const api = await getApi(route.destination);
 	const weight = await api.apis.XcmPaymentApi.query_xcm_weight(message, {
 		at: "best",
 	});
 	if (!weight.success) return null;
-	const getFee = async (tokenId: TokenId) => {
-		const fee = await api.apis.XcmPaymentApi.query_weight_to_asset_fee(
-			weight.value,
-			XcmVersionedAssetId.V5(getXcmV5MultilocationFromTokenId(tokenId)),
-			{ at: "best" },
-		);
-		return fee.success ? fee.value : null;
-	};
-	const [plancks, nativePlancks] = await Promise.all([
-		getFee(route.path[0].tokenIdIn),
-		getFee(getTokenId({ type: "native", chainId: route.destination })),
-	]);
-	return plancks === null || nativePlancks === null
-		? null
-		: { plancks, nativePlancks };
+	const fee = await api.apis.XcmPaymentApi.query_weight_to_asset_fee(
+		weight.value,
+		XcmVersionedAssetId.V5(
+			getXcmV5MultilocationFromTokenId(
+				getTokenId({ type: "native", chainId: route.destination }),
+			),
+		),
+		{ at: "best" },
+	);
+	return fee.success ? fee.value : null;
 };
 
-const useDestinationSwapFee = ({
+const useDestinationNativeFee = ({
 	route,
 	beneficiary,
 	fakeCall,
@@ -61,7 +60,7 @@ const useDestinationSwapFee = ({
 	route: XcmDestinationSwapRoute | null;
 	beneficiary: SS58String | null;
 	fakeCall: AnyTransaction | null | undefined;
-}): { isLoading: boolean; data: Parsed<DestinationSwapFee> | undefined } => {
+}): { isLoading: boolean; data: Parsed<bigint> | undefined } => {
 	const estimate = useDryRun({
 		chainId: route?.origin,
 		from: beneficiary,
@@ -81,20 +80,19 @@ const useDestinationSwapFee = ({
 
 	const fee = useQuery({
 		queryKey: [
-			"xcmDestinationSwapFee",
+			"xcmDestinationNativeFee",
 			route?.destination,
-			route?.path[0].tokenIdIn,
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!message,
 		queryFn: () =>
-			route && message ? queryDestinationSwapFee(route, message) : null,
+			route && message ? queryDestinationNativeFee(route, message) : null,
 		retry: 1,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
 
-	const data = useMemo((): Parsed<DestinationSwapFee> | undefined => {
+	const data = useMemo((): Parsed<bigint> | undefined => {
 		if (estimate.error)
 			return { success: false, failure: { kind: "origin-unavailable" } };
 		if (!estimateLeg?.success) return estimateLeg;
@@ -103,7 +101,9 @@ const useDestinationSwapFee = ({
 				success: false,
 				failure: { kind: "destination-fee-unavailable" },
 			};
-		return fee.data && { success: true, value: fee.data };
+		return fee.data === undefined
+			? undefined
+			: { success: true, value: fee.data };
 	}, [estimate.error, estimateLeg, fee.error, fee.data]);
 
 	return { isLoading: estimate.isLoading || fee.isLoading, data };
@@ -129,8 +129,28 @@ export const useXcmDestinationSwap = ({
 	fakeCall: AnyTransaction | null | undefined;
 	slippage: number;
 }): XcmDestinationSwapState => {
-	const fee = useDestinationSwapFee({ route, beneficiary, fakeCall });
-	const feeValue = fee.data?.success ? fee.data.value : undefined;
+	const nativeFee = useDestinationNativeFee({ route, beneficiary, fakeCall });
+	const { assetHub } = useRelayChains();
+	const { data: lpFee } = useAssetConvertionLPFee({ chain: assetHub });
+	const firstPool = usePoolReservesByTokenIds({
+		tokenId1: route?.path[0].tokenIdIn,
+		tokenId2: route?.path[0].tokenIdOut,
+	});
+	const fee = useMemo((): Parsed<DestinationSwapFee> | undefined => {
+		if (!route || !nativeFee.data) return undefined;
+		if (!nativeFee.data.success) return nativeFee.data;
+		if (lpFee === undefined || !firstPool.data) return undefined;
+		const [reserveIn, reserveOut] = firstPool.data;
+		const value = getDestinationSwapFee(
+			{ ...route.path[0], reserveIn, reserveOut },
+			lpFee,
+			nativeFee.data.value,
+		);
+		return value
+			? { success: true, value }
+			: { success: false, failure: { kind: "destination-fee-unavailable" } };
+	}, [route, nativeFee.data, lpFee, firstPool.data]);
+	const feeValue = fee?.success ? fee.value : undefined;
 
 	const plancksIn = useMemo(
 		() =>
@@ -167,27 +187,21 @@ export const useXcmDestinationSwap = ({
 
 	const errorMessage = useMemo(() => {
 		if (!route) return null;
-		if (fee.data && !fee.data.success)
-			return describeXcmQuoteFailure(fee.data.failure, route);
+		if (fee && !fee.success) return describeXcmQuoteFailure(fee.failure, route);
 		if (plancksIn && !plancksIn.success)
 			return describeXcmQuoteFailure(plancksIn.failure, route);
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
 		if (leftovers.canReceive === false)
 			return describeXcmQuoteFailure({ kind: "leftovers-unreceivable" }, route);
 		return null;
-	}, [
-		route,
-		fee.data,
-		plancksIn,
-		pathQuote.errorMessage,
-		leftovers.canReceive,
-	]);
+	}, [route, fee, plancksIn, pathQuote.errorMessage, leftovers.canReceive]);
 
 	return {
 		fee: feeAmount,
 		pathQuote,
 		errorMessage,
 		isLoading:
-			!!route && (fee.isLoading || pathQuote.isLoading || leftovers.isLoading),
+			!!route &&
+			(nativeFee.isLoading || pathQuote.isLoading || leftovers.isLoading),
 	};
 };
