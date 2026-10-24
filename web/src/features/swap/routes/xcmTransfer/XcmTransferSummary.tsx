@@ -13,14 +13,19 @@ import { XcmQuoteRows, XcmSimulationValue } from "../xcm/XcmQuoteRows";
 import { isXcmLane } from "../xcmLanes";
 
 export const XcmTransferSummary: FC<{ details: XcmTransferDetails }> = ({
-	details: { route, quote, received },
+	details: { route, quote, received, destinationFee },
 }) => {
 	const { transaction, isLoadingCall } = useSwap();
 
 	return (
 		<FormSummary>
 			<FormSummarySection>
-				<XcmQuoteRows quote={quote} received={received} route={route} />
+				<XcmQuoteRows
+					quote={quote}
+					received={received}
+					destinationFee={destinationFee}
+					route={route}
+				/>
 				{!isXcmLane({
 					origin: route.destination,
 					destination: route.origin,

@@ -115,7 +115,12 @@ export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 					label="Min. received (est.)"
 					value={<MinReceivedValue details={details} />}
 				/>
-				<XcmQuoteRows quote={quote} received={details.received} route={route} />
+				<XcmQuoteRows
+					quote={quote}
+					received={details.received}
+					destinationFee={details.destinationFee}
+					route={route}
+				/>
 			</FormSummarySection>
 			{(!!transaction.call || isLoadingCall) && (
 				<FormSummarySection>

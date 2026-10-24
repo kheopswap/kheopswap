@@ -20,6 +20,7 @@ import type { XcmQuoteState } from "./useXcmQuote";
 import {
 	describeXcmQuoteFailure,
 	getTotalDebited,
+	type XcmDestinationFee,
 	type XcmReceived,
 } from "./xcmQuote";
 
@@ -90,22 +91,36 @@ const TokenAmounts: FC<{ amounts: TokenAmount[] }> = ({ amounts }) => (
 	</div>
 );
 
-const TotalDebitedValue: FC<{ deliveryFee: TokenAmount | undefined }> = ({
-	deliveryFee,
-}) => {
-	const { transaction } = useSwap();
+const feeShimmer = <Shimmer className="h-4">0.0000 AAA</Shimmer>;
+
+const TotalDebitedValue: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
+	const { totalIn, transaction, isLoadingCall } = useSwap();
 	const { feeEstimate, feeToken, isLoadingFeeEstimate } = useTransaction();
+	if (!totalIn) return null;
 	const transactionFee =
-		feeToken && isBigInt(feeEstimate)
+		transaction.call &&
+		!isLoadingFeeEstimate &&
+		feeToken &&
+		isBigInt(feeEstimate)
 			? { tokenId: feeToken.id, plancks: feeEstimate }
 			: undefined;
-	if (!deliveryFee) return null;
-	if (!transactionFee && isLoadingFeeEstimate)
-		return <Shimmer className="h-4">0.0000 AAA</Shimmer>;
+	if (!quote.deliveryFee || !transactionFee)
+		return quote.isLoading || isLoadingCall || isLoadingFeeEstimate
+			? feeShimmer
+			: null;
 
 	const amounts = getTotalDebited(transaction.callSpendings, transactionFee);
 	return amounts.length ? <TokenAmounts amounts={amounts} /> : null;
 };
+
+const DestinationFeeValue: FC<{ fee: XcmDestinationFee }> = ({
+	fee: { isEstimate, ...amount },
+}) => (
+	<span className={cn(isEstimate && "text-muted")}>
+		<TokenAmountValue {...amount} />
+		{isEstimate && " (est.)"}
+	</span>
+);
 
 const ReceivedValue: FC<{ received: XcmReceived; isLoading: boolean }> = ({
 	received: { plancks, isEstimate },
@@ -124,14 +139,12 @@ const ReceivedValue: FC<{ received: XcmReceived; isLoading: boolean }> = ({
 export const XcmQuoteRows: FC<{
 	quote: XcmQuoteState;
 	received: XcmReceived | undefined;
+	destinationFee: XcmDestinationFee | undefined;
 	route: XcmRoute;
-}> = ({ quote, received, route }) => {
-	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
+}> = ({ quote, received, destinationFee, route }) => {
 	const origin = getChainById(route.origin).name;
 	const destination = getChainById(route.destination).name;
-	const feeShimmer = quote.isLoading && (
-		<Shimmer className="h-4">0.0000 AAA</Shimmer>
-	);
+	const loadingShimmer = quote.isLoading && feeShimmer;
 
 	return (
 		<>
@@ -141,7 +154,7 @@ export const XcmQuoteRows: FC<{
 					received ? (
 						<ReceivedValue received={received} isLoading={quote.isLoading} />
 					) : (
-						feeShimmer
+						loadingShimmer
 					)
 				}
 			/>
@@ -166,13 +179,13 @@ export const XcmQuoteRows: FC<{
 					/>
 				}
 				value={
-					feeShimmer ||
-					(xcmQuote && <TokenAmountValue {...xcmQuote.destinationFee} />)
+					loadingShimmer ||
+					(destinationFee && <DestinationFeeValue fee={destinationFee} />)
 				}
 			/>
 			<FormSummaryRow
 				label="Total debited"
-				value={<TotalDebitedValue deliveryFee={quote.deliveryFee} />}
+				value={<TotalDebitedValue quote={quote} />}
 			/>
 		</>
 	);
