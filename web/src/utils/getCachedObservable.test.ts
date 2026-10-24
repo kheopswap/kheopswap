@@ -92,6 +92,46 @@ describe("getCachedObservable$", () => {
 		subscription.unsubscribe();
 	});
 
+	it("keeps the upstream connected through the eviction delay", () => {
+		let connections = 0;
+		const obs = getCachedObservable$(
+			"upstream-ns",
+			"k",
+			() =>
+				new Observable<number>((subscriber) => {
+					connections++;
+					subscriber.next(connections);
+				}),
+		);
+		const values: number[] = [];
+
+		obs.subscribe((v) => values.push(v)).unsubscribe();
+		vi.advanceTimersByTime(400);
+		const subscription = obs.subscribe((v) => values.push(v));
+
+		expect(connections).toBe(1);
+		expect(values).toEqual([1, 1]);
+		subscription.unsubscribe();
+	});
+
+	it("disconnects the upstream once the entry is evicted", () => {
+		let connections = 0;
+		const obs = getCachedObservable$(
+			"disconnect-ns",
+			"k",
+			() =>
+				new Observable<number>(() => {
+					connections++;
+				}),
+		);
+
+		obs.subscribe().unsubscribe();
+		vi.advanceTimersByTime(500);
+		obs.subscribe().unsubscribe();
+
+		expect(connections).toBe(2);
+	});
+
 	it("keeps an entry nobody has subscribed to yet", () => {
 		const create = vi.fn(() => new Observable<number>());
 		const obs = getCachedObservable$("never-ns", "k", create);
