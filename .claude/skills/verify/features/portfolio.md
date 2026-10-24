@@ -6,6 +6,8 @@ Portfolio lists the tokens of the current Asset Hub with their prices, and the b
 
 - `portfolio-allocation`: with accounts and a non-zero total, a `Total portfolio` block sits above the table: the total in the stable token, `Held across <n> accounts`, and a legend of `<SYMBOL> <n>%` plus `Other` for tokens under 2%.
 - `portfolio-rows`: one row per token that is verified, held, or in a pool, with the balance, its value, and the price.
+- `portfolio-value`: a holding's value is what selling it through its Asset Hub pool would return (token to native through the pool, native to stable at the spot rate), so it never exceeds the pool's native reserve. The price column stays the spot price.
+- `portfolio-low-liquidity`: a token whose pool holds under 100 stable units on the native side is unpriced. Its balance cell reads `Low liquidity` instead of a value, `Token Details` shows `Low liquidity` next to the `Portfolio` amount, the allocation header reads `Held across <n> accounts, not counting <m> tokens with low liquidity`, and the total leaves it out. Hovering `low liquidity` explains why.
 - `portfolio-search`: `Search for more tokens` matches symbol, name, or an exact asset id, including tokens nobody holds. `Clear search` empties it. No match shows `No tokens match your search`.
 - `portfolio-sort`: the `Balance` and `Price` column header buttons. The active one has `aria-pressed="true"`. `Balance` is the default with accounts. Without accounts only `Price` shows.
 - `portfolio-details`: clicking a row opens `Token Details`. Rows depend on the token type:
@@ -30,7 +32,7 @@ Preconditions:
 
 Steps:
 
-- **Allocation.** With accounts, `get text "#main-content"` starts with `Total portfolio`, the total, `Held across <n> accounts`, and the legend. On 2026-10-24, a thin PAS/MYTH pool priced MYTH at 486.4K PAS, so MYTH filled the legend at `100%`.
+- **Allocation.** With accounts, `get text "#main-content"` starts with `Total portfolio`, the total, `Held across <n> accounts`, and the legend. On 2026-10-25, the thin PAS/MYTH pool priced MYTH at 486.4K PAS, but the 3.475K MYTH holding was valued at its 5K PAS exit value, so the legend read `PAS 34% PAS 33% MYTH 33%` and the total `15.2K PAS`.
 - **Rows load.** With accounts, run `agent-browser wait --text "Balance"`. Without, run `agent-browser wait --text "Price"`. Then run `agent-browser snapshot -i -c`. Buttons named like `PAS PAS Paseo Asset Hub <balance> ...` and `USDC USDC Asset Hub - 1337 ...` are listed. The tab title is `Portfolio | Kheopswap`, or `Tokens | Kheopswap` without accounts.
 - **Sort.** Run `agent-browser find role button click --name "Price" --exact`. Read the state with `agent-browser eval "[...document.querySelectorAll('#main-content button[aria-pressed]')].map((b) => b.innerText + ':' + b.getAttribute('aria-pressed')).join()"`, and check that the row order changed. Click `Balance` to restore.
 - **Search.** Run `agent-browser find role textbox fill "USDC" --name "Search for more tokens"`. Several rows remain on Paseo: USDC `1337`, `27`, and `50000309`, plus `fUSDCx` and `tUSDC` tokens. Fill `1337` to keep one. Click `Clear search` to restore the list.
@@ -43,6 +45,8 @@ Steps:
 ## Gotchas
 
 - Totals add up every connected account, including Ethereum accounts. Per-account amounts only appear in `Token Details`.
+- Right after accounts connect, the footer's `active subscriptions` climbs to every token times every account (about 2400 on Paseo with 4 accounts) for a few seconds while balances are discovered, then settles around 140: native, verified, pooled, held and searched tokens. A count that stays in the thousands is a regression.
+- No token the test wallet holds trips the low-liquidity floor on Paseo. To see the rendering, raise `LOW_LIQUIDITY_FLOOR_STABLE_UNITS` in `web/src/state/prices.ts` to `10000` for the check (MYTH's pool then qualifies) and revert it.
 - `wait --text "Search for more tokens"` never matches, because it is a placeholder.
 - Row names change with balances. Match them on the stable prefix (`<SYMBOL> <SYMBOL> <origin>`).
 - Paseo's stable token is PAS itself, so prices and values are in PAS with no second line.
