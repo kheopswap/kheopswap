@@ -160,7 +160,12 @@ export const TokenAmountPicker: FC<{
 							<TooltipContent>{errorMessage}</TooltipContent>
 						</Tooltip>
 					) : hint ? (
-						<span className="text-muted">{hint}</span>
+						<Tooltip>
+							<TooltipTrigger render={<span />} className="text-muted">
+								{hint}
+							</TooltipTrigger>
+							<TooltipContent>{hint}</TooltipContent>
+						</Tooltip>
 					) : (
 						<StablePrice
 							plancks={plancks}

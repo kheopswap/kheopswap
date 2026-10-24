@@ -65,5 +65,5 @@ export const getMaxCapHint = (
 	token: Pick<Token, "decimals" | "symbol">,
 ) =>
 	kept > 0n
-		? `Limits the max, keeps ${formatDecimals(plancksToTokens(kept, token.decimals))} ${token.symbol}`
-		: "Limits the max";
+		? `Capped, ${formatDecimals(plancksToTokens(kept, token.decimals))} ${token.symbol} kept`
+		: "Capped";

@@ -121,12 +121,10 @@ describe("getMaxCapHint", () => {
 	const usdc = { decimals: 6, symbol: "USDC" };
 
 	it("names what the capping side keeps", () => {
-		expect(getMaxCapHint(71_466n, usdc)).toBe(
-			"Limits the max, keeps 0.0715 USDC",
-		);
+		expect(getMaxCapHint(71_466n, usdc)).toBe("Capped, 0.0715 USDC kept");
 	});
 
 	it("only flags the cap when nothing is kept", () => {
-		expect(getMaxCapHint(0n, usdc)).toBe("Limits the max");
+		expect(getMaxCapHint(0n, usdc)).toBe("Capped");
 	});
 });
