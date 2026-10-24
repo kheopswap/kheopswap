@@ -172,10 +172,7 @@ describe("parseOriginDryRun", () => {
 			parseOriginDryRun(dotOriginFailed.origin, HYDRATION_PARA_ID),
 		).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 	});
 
@@ -184,10 +181,7 @@ describe("parseOriginDryRun", () => {
 			parseOriginDryRun(usdcToDotInsufficient.origin, HYDRATION_PARA_ID),
 		).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 	});
 
@@ -603,10 +597,7 @@ describe("Hydration to Asset Hub", () => {
 			parseOriginDryRun(pinkToAssetHubInsufficient.origin, ASSET_HUB_PARA_ID),
 		).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 	});
 
@@ -658,6 +649,17 @@ describe("Hydration to Asset Hub", () => {
 		if (parsed.success) throw new Error("expected a failure");
 		expect(describeXcmQuoteFailure(parsed.failure, fromHydration)).toBe(
 			"Amount too low for Polkadot Asset Hub: the assets would be trapped",
+		);
+	});
+
+	it("says Hydration could not withdraw what the transfer needs, without guessing why", () => {
+		expect(
+			describeXcmQuoteFailure(
+				{ kind: "origin-withdraw-failed" },
+				fromHydration,
+			),
+		).toBe(
+			"Hydration could not withdraw the amount and its fees from your account",
 		);
 	});
 

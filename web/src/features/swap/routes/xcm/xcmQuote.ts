@@ -40,6 +40,7 @@ export type DestinationDryRun = {
 export type XcmQuoteFailure =
 	| { kind: "origin-unavailable" }
 	| { kind: "origin-failed"; reason: string }
+	| { kind: "origin-withdraw-failed" }
 	| { kind: "origin-rejected"; xcmError: string }
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
@@ -67,9 +68,6 @@ export type Parsed<T> =
 	| { success: true; value: T }
 	| { success: false; failure: XcmQuoteFailure };
 
-const INSUFFICIENT_BALANCE =
-	"Insufficient balance to cover the transfer and its fees";
-
 type OriginDispatchError = Extract<
 	Extract<OriginDryRun, { success: true }>["value"]["execution_result"],
 	{ success: false }
@@ -86,7 +84,7 @@ const getOriginFailure = (error: OriginDispatchError): XcmQuoteFailure => {
 	const xcmError = error.value.value.value.error.type;
 	switch (xcmError) {
 		case "FailedToTransactAsset":
-			return { kind: "origin-failed", reason: INSUFFICIENT_BALANCE };
+			return { kind: "origin-withdraw-failed" };
 		case "NoDeal":
 			return {
 				kind: "origin-failed",
@@ -229,6 +227,15 @@ export const composeXcmQuote = (
 	},
 });
 
+const ORIGIN_DISPATCH_FAILURES = new Set<XcmQuoteFailure["kind"]>([
+	"origin-failed",
+	"origin-withdraw-failed",
+	"origin-rejected",
+]);
+
+export const isOriginDispatchFailure = ({ kind }: XcmQuoteFailure) =>
+	ORIGIN_DISPATCH_FAILURES.has(kind);
+
 export const describeXcmQuoteFailure = (
 	failure: XcmQuoteFailure,
 	route: Pick<XcmRoute, "origin" | "destination">,
@@ -240,6 +247,8 @@ export const describeXcmQuoteFailure = (
 			return `Could not simulate the transfer on ${origin}`;
 		case "origin-failed":
 			return failure.reason;
+		case "origin-withdraw-failed":
+			return `${origin} could not withdraw the amount and its fees from your account`;
 		case "origin-rejected":
 			return `${origin} would reject the transfer: ${failure.xcmError}`;
 		case "message-not-forwarded":

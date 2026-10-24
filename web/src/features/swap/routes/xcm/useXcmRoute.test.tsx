@@ -12,6 +12,7 @@ import {
 	type XcmDestinationSwapFixture,
 } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { useXcmRoute } from "./useXcmRoute";
+import { pinkToAssetHubInsufficient } from "./xcmFromHydration.fixtures";
 
 const chain = vi.hoisted(() => ({
 	fixture: undefined as unknown as XcmDestinationSwapFixture,
@@ -21,6 +22,7 @@ const chain = vi.hoisted(() => ({
 	firstPoolInflow: 0n,
 	balanceIn: 1n,
 	isUnfunded: false,
+	hasInsufficientBalance: false,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
@@ -151,6 +153,7 @@ const renderDestinationSwap = (
 				appCommission: null,
 				slippage: fixture.slippage,
 				edTokenIn: 10_000n,
+				hasInsufficientBalance: chain.hasInsufficientBalance,
 			}),
 		{ wrapper },
 	);
@@ -161,6 +164,7 @@ beforeEach(() => {
 	chain.firstPoolInflow = 0n;
 	chain.balanceIn = 1n;
 	chain.isUnfunded = false;
+	chain.hasInsufficientBalance = false;
 	chain.dryRunCall = vi.fn(async () =>
 		chain.isUnfunded
 			? { success: false, value: { type: "InsufficientBalance" } }
@@ -312,6 +316,38 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
 		);
 	});
+
+	it.each([
+		[true, null, usdtToPink.hops[1]?.amountOut],
+		[
+			false,
+			"Hydration could not withdraw the amount and its fees from your account",
+			undefined,
+		],
+	])(
+		"with an amount above the balance (%s), leaves the shortfall to the input field and keeps the swap estimate",
+		async (hasInsufficientBalance, outputErrorMessage, swapPlancksOut) => {
+			chain.hasInsufficientBalance = hasInsufficientBalance;
+			chain.dryRunCall.mockImplementation(
+				async (
+					_origin: unknown,
+					call: {
+						args: { assets: { value: { fun: { value: bigint } }[] } };
+					},
+				) =>
+					call.args.assets.value[0]?.fun.value === usdtToPink.amount
+						? pinkToAssetHubInsufficient.origin
+						: chain.fixture.originDryRun,
+			);
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() =>
+				expect(result.current.quote.data).toMatchObject({ success: false }),
+			);
+			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
+			expect(result.current.swapPlancksOut).toBe(swapPlancksOut);
+		},
+	);
 
 	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {
 		chain.dryRunCall.mockRejectedValue(new Error("RPC unavailable"));
