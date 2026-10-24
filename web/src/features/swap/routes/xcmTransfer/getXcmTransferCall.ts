@@ -1,23 +1,22 @@
 import {
 	XcmV3MultiassetFungibility,
 	XcmV3WeightLimit,
-	XcmV5AssetFilter,
-	XcmV5Instruction,
+	type XcmV5Instruction,
 	XcmV5Junction,
 	XcmV5Junctions,
-	XcmV5WildAsset,
 	XcmVersionedAssetId,
 	XcmVersionedAssets,
 	XcmVersionedLocation,
 	XcmVersionedXcm,
 } from "@polkadot-api/descriptors";
-import { AccountId, Binary, Enum, type SS58String } from "polkadot-api";
+import { Enum, type SS58String } from "polkadot-api";
 import { type Api, getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { Token } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
-import type { XcmTransferRoute } from "../swapRoute";
+import type { XcmDestinationSwapRoute, XcmTransferRoute } from "../swapRoute";
+import { anyOneAsset, depositAsset } from "../xcm/xcmInstructions";
 import { getXcmTransferType } from "../xcmLanes";
 
 export type XcmTransferArgs = Parameters<
@@ -31,8 +30,10 @@ type XcmTransferCallProps = {
 	beneficiary: SS58String;
 };
 
+type XcmTransferringRoute = XcmTransferRoute | XcmDestinationSwapRoute;
+
 const getOriginAssetLocation = (
-	route: XcmTransferRoute,
+	route: XcmTransferringRoute,
 	tokenIn: Token,
 ): XcmV5Multilocation => {
 	switch (route.origin) {
@@ -55,12 +56,17 @@ const getOriginAssetLocation = (
 	}
 };
 
-export const buildXcmTransferArgs = ({
+export const buildReserveTransferArgs = ({
 	route,
 	tokenIn,
 	plancks,
-	beneficiary,
-}: XcmTransferCallProps): XcmTransferArgs => {
+	customXcmOnDest,
+}: {
+	route: XcmTransferringRoute;
+	tokenIn: Token;
+	plancks: bigint;
+	customXcmOnDest: XcmV5Instruction[];
+}): XcmTransferArgs => {
 	const id = getOriginAssetLocation(route, tokenIn);
 	const transferType = Enum(getXcmTransferType(route));
 	const { paraId } = getChainById(route.destination);
@@ -76,23 +82,19 @@ export const buildXcmTransferArgs = ({
 		assets_transfer_type: transferType,
 		remote_fees_id: XcmVersionedAssetId.V5(id),
 		fees_transfer_type: transferType,
-		custom_xcm_on_dest: XcmVersionedXcm.V5([
-			XcmV5Instruction.DepositAsset({
-				assets: XcmV5AssetFilter.Wild(XcmV5WildAsset.AllCounted(1)),
-				beneficiary: {
-					parents: 0,
-					interior: XcmV5Junctions.X1(
-						XcmV5Junction.AccountId32({
-							network: undefined,
-							id: Binary.toHex(AccountId().enc(beneficiary)),
-						}),
-					),
-				},
-			}),
-		]),
+		custom_xcm_on_dest: XcmVersionedXcm.V5(customXcmOnDest),
 		weight_limit: XcmV3WeightLimit.Unlimited(),
 	};
 };
+
+export const buildXcmTransferArgs = ({
+	beneficiary,
+	...props
+}: XcmTransferCallProps): XcmTransferArgs =>
+	buildReserveTransferArgs({
+		...props,
+		customXcmOnDest: [depositAsset(anyOneAsset, beneficiary)],
+	});
 
 export const getXcmTransferCall = async (props: XcmTransferCallProps) => {
 	const args = buildXcmTransferArgs(props);

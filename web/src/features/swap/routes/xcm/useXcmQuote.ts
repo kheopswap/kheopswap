@@ -20,6 +20,7 @@ import type { XcmRoute } from "../swapRoute";
 import {
 	composeXcmQuote,
 	getDeliveryFeeTokenId,
+	getXcmQuoteSubject,
 	parseDeliveryFee,
 	parseDestinationDryRun,
 	parseOriginDryRun,
@@ -99,6 +100,7 @@ const useXcmDeliveryFee = (
 
 type UseXcmQuoteProps = {
 	route: XcmRoute | null;
+	destinationFee?: TokenAmount;
 	beneficiary: SS58String | null;
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
@@ -106,6 +108,7 @@ type UseXcmQuoteProps = {
 
 export const useXcmQuote = ({
 	route,
+	destinationFee,
 	beneficiary,
 	call,
 	fakeCall,
@@ -161,6 +164,7 @@ export const useXcmQuote = ({
 	});
 
 	const data = useMemo((): XcmQuoteResult | undefined => {
+		if (!route) return undefined;
 		if (origin.error)
 			return { success: false, failure: { kind: "origin-unavailable" } };
 		if (!originLeg) return undefined;
@@ -172,12 +176,19 @@ export const useXcmQuote = ({
 			return { success: false, failure: destination.data.failure };
 		if (deliveryFee.error || deliveryFee.data === null)
 			return { success: false, failure: { kind: "delivery-fee-unavailable" } };
-		if (!destination.data || deliveryFee.data === undefined) return undefined;
+		const subject = getXcmQuoteSubject(route, destinationFee);
+		if (!destination.data || deliveryFee.data === undefined || !subject)
+			return undefined;
 		return {
 			success: true,
-			quote: composeXcmQuote(originLeg.value.sent, destination.data.value),
+			quote: composeXcmQuote(subject, {
+				sent: originLeg.value.sent,
+				received: destination.data.value,
+			}),
 		};
 	}, [
+		route,
+		destinationFee,
 		origin.error,
 		originLeg,
 		destination.error,

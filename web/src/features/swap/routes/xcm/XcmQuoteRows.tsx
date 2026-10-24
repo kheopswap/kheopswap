@@ -56,24 +56,25 @@ export const XcmSimulationValue: FC<{
 	);
 };
 
-export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
-	quote,
-	route,
-}) => {
+export const XcmQuoteRows: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
 	const { tokenOut } = useSwap();
 	const { data: deliveryFeeToken } = useToken({
 		tokenId: quote.deliveryFee?.tokenId,
 	});
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
-	const feeTokens = keyBy(compact([deliveryFeeToken, tokenOut]), "id");
-	const fees = getXcmFeeParts(
-		quote.deliveryFee,
-		xcmQuote,
-		route.tokenIdOut,
-	).flatMap(({ tokenId, plancks }) => {
-		const token = feeTokens[tokenId];
-		return token ? [{ token, plancks }] : [];
+	const { data: destinationFeeToken } = useToken({
+		tokenId: xcmQuote?.destinationFee.tokenId,
 	});
+	const feeTokens = keyBy(
+		compact([deliveryFeeToken, destinationFeeToken]),
+		"id",
+	);
+	const fees = getXcmFeeParts(quote.deliveryFee, xcmQuote).flatMap(
+		({ tokenId, plancks }) => {
+			const token = feeTokens[tokenId];
+			return token ? [{ token, plancks }] : [];
+		},
+	);
 
 	return (
 		<>

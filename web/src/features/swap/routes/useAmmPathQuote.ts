@@ -7,9 +7,11 @@ import { useAssetConvertionLPFee } from "../useAssetConvertionLPFee";
 import {
 	type AmmPath,
 	type AmmPathQuote,
+	afterFirstPoolSwap,
 	getLastHop,
 	getPathLiquidity,
 	type PathLiquidity,
+	type PoolSwap,
 	quoteAmmPath,
 } from "./ammPath";
 
@@ -31,11 +33,13 @@ export const useAmmPathQuote = ({
 	plancksIn,
 	totalIn,
 	slippage,
+	firstPoolSwap = null,
 }: {
 	path: AmmPath | null;
 	plancksIn: bigint | null | undefined;
 	totalIn: bigint | null | undefined;
 	slippage: number;
+	firstPoolSwap?: PoolSwap | null;
 }): AmmPathQuoteState => {
 	const { assetHub } = useRelayChains();
 	const firstReserves = usePoolReservesByTokenIds({
@@ -63,9 +67,16 @@ export const useAmmPathQuote = ({
 	const quote = useMemo(
 		() =>
 			liquidity?.status === "available" && lpFee !== undefined && plancksIn
-				? quoteAmmPath({ hops: liquidity.hops, lpFee, plancksIn, slippage })
+				? quoteAmmPath({
+						hops: firstPoolSwap
+							? afterFirstPoolSwap(liquidity.hops, firstPoolSwap)
+							: liquidity.hops,
+						lpFee,
+						plancksIn,
+						slippage,
+					})
 				: undefined,
-		[liquidity, lpFee, plancksIn, slippage],
+		[liquidity, lpFee, plancksIn, slippage, firstPoolSwap],
 	);
 
 	const priceImpact = useMemo(

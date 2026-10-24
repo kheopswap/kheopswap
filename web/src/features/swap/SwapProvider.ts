@@ -9,11 +9,7 @@ import {
 	getSwapTokenLists,
 	type TransactionPlan,
 } from "./routes/swapRoute";
-import {
-	useXcmRoute,
-	type XcmSwapDetails,
-	type XcmTransferDetails,
-} from "./routes/xcm/useXcmRoute";
+import { useXcmRoute, type XcmRouteDetails } from "./routes/xcm/useXcmRoute";
 import { useSwapCall } from "./useSwapCall";
 import { useSwapFees } from "./useSwapFees";
 import { useSwapFormState } from "./useSwapFormState";
@@ -147,7 +143,7 @@ const useSwapProvider = () => {
 		[pricing.tokens, allTokens, formState.routeContext],
 	);
 
-	const details = useMemo<AmmSwapDetails | XcmTransferDetails | XcmSwapDetails>(
+	const details = useMemo<AmmSwapDetails | XcmRouteDetails>(
 		() =>
 			xcm.details ?? {
 				kind: "amm-swap",

@@ -1,11 +1,17 @@
 import { BehaviorSubject, Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { dotFromPeople } from "../../features/swap/routes/xcm/xcmFromPeople.fixtures";
+import {
+	usdtToPinkDust,
+	usdtToPinkPriceMoved,
+	type XcmDestinationSwapFixture,
+} from "../../features/swap/routes/xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { getChainById } from "../../registry/chains/chains";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import type { XcmDepositTarget } from "../../utils/xcmDeposit";
 import type { TransactionRecord } from "./types";
 import {
+	describeFailedArrival,
 	findArrival,
 	getArrivalBufferBlocks,
 	getSentMessageId,
@@ -28,6 +34,7 @@ const target: XcmDepositTarget = {
 	tokenId: "hydration-asset::hydration::5",
 	beneficiary: BENEFICIARY,
 };
+const returnTokenIds = [target.tokenId];
 
 const deposited = (who: string, amount: bigint, currency_id = 5) => ({
 	type: "Tokens",
@@ -88,7 +95,13 @@ describe("isXcmArrivalType", () => {
 
 describe("findArrival", () => {
 	it("returns the amount deposited to the beneficiary by our message, ignoring the fee receiver", () => {
-		expect(findArrival(ourArrival, { messageId: MESSAGE_ID, target })).toEqual({
+		expect(
+			findArrival(ourArrival, {
+				messageId: MESSAGE_ID,
+				target,
+				returnTokenIds,
+			}),
+		).toEqual({
 			success: true,
 			received: 9995190152n,
 		});
@@ -102,7 +115,7 @@ describe("findArrival", () => {
 					processed(OTHER_MESSAGE_ID),
 					...ourArrival,
 				],
-				{ messageId: MESSAGE_ID, target },
+				{ messageId: MESSAGE_ID, target, returnTokenIds },
 			),
 		).toEqual({ success: true, received: 9995190152n });
 	});
@@ -112,6 +125,7 @@ describe("findArrival", () => {
 			findArrival([deposited(BENEFICIARY, 7n, 10), ...ourArrival], {
 				messageId: MESSAGE_ID,
 				target,
+				returnTokenIds,
 			}),
 		).toEqual({ success: true, received: 9995190152n });
 	});
@@ -121,6 +135,7 @@ describe("findArrival", () => {
 			findArrival(ourArrival, {
 				messageId: MESSAGE_ID.toUpperCase().replace("0X", "0x"),
 				target,
+				returnTokenIds,
 			}),
 		).toEqual({ success: true, received: 9995190152n });
 	});
@@ -129,9 +144,9 @@ describe("findArrival", () => {
 		expect(
 			findArrival(
 				[deposited(FEE_RECEIVER, 3847879n), processed(MESSAGE_ID, false)],
-				{ messageId: MESSAGE_ID, target },
+				{ messageId: MESSAGE_ID, target, returnTokenIds },
 			),
-		).toEqual({ success: false, received: null });
+		).toEqual({ success: false, returned: [], trapped: false });
 	});
 
 	it("reports a message that failed to process", () => {
@@ -146,9 +161,9 @@ describe("findArrival", () => {
 						},
 					},
 				],
-				{ messageId: MESSAGE_ID, target },
+				{ messageId: MESSAGE_ID, target, returnTokenIds },
 			),
-		).toEqual({ success: false, received: null });
+		).toEqual({ success: false, returned: [], trapped: false });
 	});
 
 	it("returns null for a block that did not process our message", () => {
@@ -156,6 +171,7 @@ describe("findArrival", () => {
 			findArrival([deposited(BENEFICIARY, 123n), processed(OTHER_MESSAGE_ID)], {
 				messageId: MESSAGE_ID,
 				target,
+				returnTokenIds,
 			}),
 		).toBeNull();
 	});
@@ -201,6 +217,7 @@ describe("getXcmArrival$", () => {
 			record$,
 			blockEvents$,
 			target,
+			returnTokenIds,
 			destinationParaId: HYDRATION_PARA_ID,
 			bufferBlocks,
 			timeoutMs,
@@ -266,6 +283,8 @@ describe("getXcmArrival$", () => {
 		expect(arrivals.at(-1)).toEqual({
 			status: "failed-on-destination",
 			messageId: MESSAGE_ID,
+			returned: [],
+			trapped: false,
 		});
 		expect(isComplete()).toBe(true);
 	});
@@ -345,6 +364,7 @@ describe("arrival on Asset Hub", () => {
 			findArrival(blockEvents, {
 				messageId: MESSAGE_ID,
 				target: assetHubTarget,
+				returnTokenIds: [assetHubTarget.tokenId],
 			}),
 		).toEqual({ success: true, received: 9991650007n });
 	});
@@ -411,6 +431,7 @@ describe("arrival on People", () => {
 			findArrival(blockEvents, {
 				messageId: PEOPLE_MESSAGE_ID,
 				target: peopleTarget,
+				returnTokenIds: [peopleTarget.tokenId],
 			}),
 		).toEqual({ success: true, received: 10000000000n });
 	});
@@ -634,6 +655,7 @@ describe("arrival on Asset Hub from People", () => {
 			findArrival(getXcmBlockEvents(ASSET_HUB_BLOCK_22023474), {
 				messageId: PEOPLE_MESSAGE_ID,
 				target: { tokenId: "native::pah", beneficiary: PEOPLE_BENEFICIARY },
+				returnTokenIds: ["native::pah"],
 			}),
 		).toEqual({ success: true, received: 7791782414n });
 	});
@@ -647,7 +669,15 @@ describe("isAwaitingXcmArrival", () => {
 		[{ status: "awaiting-origin" }, true],
 		[{ status: "in-transit", messageId: MESSAGE_ID }, true],
 		[{ status: "arrived", messageId: MESSAGE_ID, received: 1n }, false],
-		[{ status: "failed-on-destination", messageId: MESSAGE_ID }, false],
+		[
+			{
+				status: "failed-on-destination",
+				messageId: MESSAGE_ID,
+				returned: [],
+				trapped: false,
+			},
+			false,
+		],
 		[{ status: "unconfirmed", messageId: MESSAGE_ID }, false],
 	])("finalized transfer with arrival %o: %s", (arrival, expected) => {
 		expect(isAwaitingXcmArrival(finalized, arrival)).toBe(expected);
@@ -661,5 +691,86 @@ describe("isAwaitingXcmArrival", () => {
 		expect(isAwaitingXcmArrival({ ...finalized, type: "swap" }, null)).toBe(
 			false,
 		);
+	});
+});
+
+describe("arrival of a swap that failed on Asset Hub", () => {
+	const DOT = "native::pah";
+	const USDT = "asset::pah::1984";
+	const PINK = "asset::pah::23";
+
+	const getFailedSwapBlock = ({
+		destinationDryRun,
+	}: XcmDestinationSwapFixture) => {
+		if (!destinationDryRun.success) throw new Error("expected a dry run");
+		const events = destinationDryRun.value.emitted_events as TxEvents;
+		const messageId = events.flatMap(({ type, value }) =>
+			type === "PolkadotXcm" && value.type === "ProcessXcmError"
+				? [value.value.message_id]
+				: [],
+		)[0];
+		if (!messageId) throw new Error("expected a failed message");
+		return { messageId, events: [...events, processed(messageId, false)] };
+	};
+
+	const findFailedSwap = (fixture: XcmDestinationSwapFixture) => {
+		const { messageId, events } = getFailedSwapBlock(fixture);
+		return findArrival(events, {
+			messageId,
+			target: { tokenId: PINK, beneficiary: fixture.beneficiary },
+			returnTokenIds: [USDT, DOT, PINK],
+		});
+	};
+
+	it("reports the DOT and the unused USDT fee returned to the beneficiary", () => {
+		const arrival = findFailedSwap(usdtToPinkPriceMoved);
+
+		expect(arrival).toEqual({
+			success: false,
+			returned: [
+				{ tokenId: USDT, plancks: expect.any(BigInt) },
+				{ tokenId: DOT, plancks: usdtToPinkPriceMoved.hops[0]?.amountOut },
+			],
+			trapped: false,
+		});
+		if (arrival?.success !== false) throw new Error("expected a failure");
+		expect(describeFailedArrival(arrival)).toBe("funds returned");
+	});
+
+	it("reports the dust Asset Hub trapped next to the DOT it returned", () => {
+		const arrival = findFailedSwap(usdtToPinkDust);
+
+		expect(arrival).toEqual({
+			success: false,
+			returned: [{ tokenId: DOT, plancks: usdtToPinkDust.hops[0]?.amountOut }],
+			trapped: true,
+		});
+		if (arrival?.success !== false) throw new Error("expected a failure");
+		expect(describeFailedArrival(arrival)).toBe("some assets trapped");
+	});
+
+	it("does not blame our message for assets another message trapped", () => {
+		const trapped = getFailedSwapBlock(usdtToPinkDust).events.filter(
+			({ type, value }) =>
+				type === "PolkadotXcm" && value.type === "AssetsTrapped",
+		);
+
+		expect(
+			findArrival(
+				[...trapped, processed(OTHER_MESSAGE_ID), processed(MESSAGE_ID, false)],
+				{
+					messageId: MESSAGE_ID,
+					target,
+					returnTokenIds,
+				},
+			),
+		).toEqual({ success: false, returned: [], trapped: false });
+	});
+
+	it.each([
+		[{ returned: [], trapped: true }, "assets trapped"],
+		[{ returned: [], trapped: false }, null],
+	])("describes a failure with %o as %s", (failure, description) => {
+		expect(describeFailedArrival(failure)).toBe(description);
 	});
 });

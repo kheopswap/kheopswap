@@ -3,9 +3,11 @@ import { renderHook, waitFor } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
+import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { getAmmPath } from "../ammPath";
-import type { XcmRoute } from "../swapRoute";
+import type { XcmDestinationSwapRoute, XcmRoute } from "../swapRoute";
+import { usdtToPink } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
 import { useXcmQuote } from "./useXcmQuote";
 import { dotToAssetHub } from "./xcmFromHydration.fixtures";
@@ -23,6 +25,11 @@ const chain = vi.hoisted(() => ({
 	dryRunCall: undefined as unknown as ReturnType<typeof vi.fn>,
 	dryRunXcm: undefined as unknown as Mock<(...args: unknown[]) => unknown>,
 	queryDeliveryFees: undefined as unknown as Mock<
+		(...args: unknown[]) => unknown
+	>,
+	destinationWeight: undefined as unknown,
+	destinationFee: undefined as unknown,
+	queryWeightToAssetFee: undefined as unknown as Mock<
 		(...args: unknown[]) => unknown
 	>,
 	calledChains: [] as [string, string][],
@@ -43,6 +50,14 @@ vi.mock("../../../../papi/getApi", () => ({
 				query_delivery_fees: (...args: unknown[]) => {
 					chain.calledChains.push(["query_delivery_fees", chainId]);
 					return chain.queryDeliveryFees(...args);
+				},
+				query_xcm_weight: async () => {
+					chain.calledChains.push(["query_xcm_weight", chainId]);
+					return chain.destinationWeight;
+				},
+				query_weight_to_asset_fee: (...args: unknown[]) => {
+					chain.calledChains.push(["query_weight_to_asset_fee", chainId]);
+					return chain.queryWeightToAssetFee(...args);
 				},
 			},
 		},
@@ -105,10 +120,12 @@ const givenDryRuns = ({
 
 const renderQuote = ({
 	route = transferRoute,
+	destinationFee,
 	beneficiary = dotSuccess.beneficiary,
 	extra,
 }: {
 	route?: XcmRoute;
+	destinationFee?: TokenAmount;
 	beneficiary?: string;
 	extra?: () => unknown;
 } = {}) => {
@@ -121,7 +138,13 @@ const renderQuote = ({
 	return renderHook(
 		() => {
 			extra?.();
-			return useXcmQuote({ route, beneficiary, call, fakeCall });
+			return useXcmQuote({
+				route,
+				destinationFee,
+				beneficiary,
+				call,
+				fakeCall,
+			});
 		},
 		{ wrapper },
 	);
@@ -136,6 +159,7 @@ beforeEach(() => {
 		if (chain.destinationDryRun instanceof Error) throw chain.destinationDryRun;
 		return chain.destinationDryRun;
 	});
+	chain.queryWeightToAssetFee = vi.fn(async () => chain.destinationFee);
 	chain.queryDeliveryFees = vi.fn(async () => {
 		if (chain.deliveryFees instanceof Error) throw chain.deliveryFees;
 		return chain.deliveryFees;
@@ -164,7 +188,13 @@ describe("useXcmQuote", () => {
 			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
 			data: {
 				success: true,
-				quote: { received: 9995190152n, destinationFee: 4809848n },
+				quote: {
+					received: 9995190152n,
+					destinationFee: {
+						tokenId: "hydration-asset::hydration::5",
+						plancks: 4809848n,
+					},
+				},
 			},
 		});
 		expect(chain.queryDeliveryFees).toHaveBeenCalledWith(
@@ -205,7 +235,13 @@ describe("useXcmQuote", () => {
 			deliveryFee: { tokenId: "native::pah", plancks: 305450000n },
 			data: {
 				success: true,
-				quote: { received: 98764625n, destinationFee: 574n },
+				quote: {
+					received: 98764625n,
+					destinationFee: {
+						tokenId: "hydration-asset::hydration::10",
+						plancks: 574n,
+					},
+				},
 			},
 		});
 	});
@@ -318,7 +354,10 @@ describe("useXcmQuote", () => {
 			deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
 			data: {
 				success: true,
-				quote: { received: 9991650007n, destinationFee: 8349993n },
+				quote: {
+					received: 9991650007n,
+					destinationFee: { tokenId: "native::pah", plancks: 8349993n },
+				},
 			},
 		});
 		const message =
@@ -345,5 +384,56 @@ describe("useXcmQuote", () => {
 			]),
 		);
 		expect(chain.calledChains).not.toContainEqual(["dry_run_xcm", "hydration"]);
+	});
+
+	describe("on a swap on Asset Hub of what Hydration sends", () => {
+		const destinationSwapRoute: XcmDestinationSwapRoute = {
+			kind: "xcm-destination-swap",
+			origin: "hydration",
+			destination: "pah",
+			tokenIdIn: usdtToPink.tokenIdIn,
+			tokenIdOut: usdtToPink.tokenIdOut,
+			path: getAmmPath(
+				"asset::pah::1984",
+				usdtToPink.tokenIdOut,
+				"native::pah",
+			),
+		};
+		const destinationFee = {
+			tokenId: "asset::pah::1984",
+			plancks: usdtToPink.destinationFee.plancks,
+		};
+
+		it("quotes the output deposited with the fee Asset Hub takes in the input, without weighing the message again", async () => {
+			givenDryRuns({
+				origin: usdtToPink.originDryRun,
+				estimate: usdtToPink.originDryRun,
+				destination: usdtToPink.destinationDryRun,
+				deliveryFees: usdtToPink.deliveryFees,
+			});
+			const { result } = renderQuote({
+				route: destinationSwapRoute,
+				destinationFee,
+				beneficiary: usdtToPink.beneficiary,
+			});
+
+			await waitFor(() => expect(result.current.data).toBeDefined());
+			expect(result.current).toEqual({
+				isLoading: false,
+				deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+				data: {
+					success: true,
+					quote: {
+						received: usdtToPink.hops[1]?.amountOut,
+						destinationFee,
+					},
+				},
+			});
+			expect(chain.calledChains).not.toContainEqual([
+				"query_xcm_weight",
+				"pah",
+			]);
+			expect(chain.queryWeightToAssetFee).not.toHaveBeenCalled();
+		});
 	});
 });

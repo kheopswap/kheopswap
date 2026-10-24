@@ -64,6 +64,20 @@ const USDT = "asset::pah::1984";
 const HYDRATION_DOT = "hydration-asset::hydration::5";
 const HYDRATION_USDT = "hydration-asset::hydration::10";
 
+const getTransferFee = (tokenIdOut: string, sent: bigint, received: bigint) =>
+	composeXcmQuote(
+		{
+			route: {
+				kind: "xcm-transfer",
+				origin: "pah",
+				destination: "hydration",
+				tokenIdIn: tokenIdOut,
+				tokenIdOut,
+			},
+		},
+		{ sent, received },
+	).destinationFee;
+
 const requireDestination = (destination: DestinationDryRun | undefined) => {
 	if (!destination) throw new Error("fixture has no destination dry run");
 	return destination;
@@ -381,10 +395,9 @@ describe("parseDeliveryFee", () => {
 
 describe("composeXcmQuote", () => {
 	it("charges Hydration the difference between sent and received", () => {
-		expect(composeXcmQuote(10_000_000_000n, 9995190152n)).toEqual({
-			received: 9995190152n,
-			destinationFee: 4809848n,
-		});
+		expect(getTransferFee(HYDRATION_DOT, 10_000_000_000n, 9995190152n)).toEqual(
+			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+		);
 	});
 });
 
@@ -515,25 +528,26 @@ describe("getXcmCallSpendings", () => {
 
 describe("getXcmFeeParts", () => {
 	const deliveryFee = { tokenId: DOT, plancks: 304850000n };
-	const quote = { received: 9995190152n, destinationFee: 4809848n };
+	const quote = {
+		received: 9995190152n,
+		destinationFee: { tokenId: HYDRATION_DOT, plancks: 4809848n },
+	};
 
 	it("adds the destination fee in the output token to the delivery fee", () => {
-		expect(getXcmFeeParts(deliveryFee, quote, HYDRATION_DOT)).toEqual([
+		expect(getXcmFeeParts(deliveryFee, quote)).toEqual([
 			deliveryFee,
 			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
 		]);
 	});
 
 	it("shows the delivery fee alone before a quote", () => {
-		expect(getXcmFeeParts(deliveryFee, undefined, HYDRATION_DOT)).toEqual([
-			deliveryFee,
-		]);
+		expect(getXcmFeeParts(deliveryFee, undefined)).toEqual([deliveryFee]);
 	});
 
 	it("drops a free delivery", () => {
-		expect(
-			getXcmFeeParts({ tokenId: DOT, plancks: 0n }, quote, HYDRATION_DOT),
-		).toEqual([{ tokenId: HYDRATION_DOT, plancks: 4809848n }]);
+		expect(getXcmFeeParts({ tokenId: DOT, plancks: 0n }, quote)).toEqual([
+			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+		]);
 	});
 });
 
@@ -596,9 +610,10 @@ describe("Hydration to Asset Hub", () => {
 				{ tokenId, beneficiary: fixture.beneficiary },
 			);
 			expect(parsed).toEqual({ success: true, value: received });
-			expect(composeXcmQuote(fixture.amount, received).destinationFee).toBe(
-				destinationFee,
-			);
+			expect(getTransferFee(tokenId, fixture.amount, received)).toEqual({
+				tokenId,
+				plancks: destinationFee,
+			});
 		},
 	);
 
@@ -639,8 +654,10 @@ describe("Hydration to Asset Hub", () => {
 		expect(
 			getXcmFeeParts(
 				{ tokenId: HYDRATION_DOT, plancks: 0n },
-				{ received: 9999003n, destinationFee: 997n },
-				USDT,
+				{
+					received: 9999003n,
+					destinationFee: { tokenId: USDT, plancks: 997n },
+				},
 			),
 		).toEqual([{ tokenId: USDT, plancks: 997n }]);
 	});
@@ -692,9 +709,10 @@ describe("Asset Hub to People", () => {
 					beneficiary: fixture.beneficiary,
 				}),
 			).toEqual({ success: true, value: received });
-			expect(composeXcmQuote(fixture.amount, received).destinationFee).toBe(
-				destinationFee,
-			);
+			expect(getTransferFee(tokenId, fixture.amount, received)).toEqual({
+				tokenId,
+				plancks: destinationFee,
+			});
 		},
 	);
 
@@ -774,9 +792,10 @@ describe("People to Asset Hub", () => {
 					beneficiary: fixture.beneficiary,
 				}),
 			).toEqual({ success: true, value: received });
-			expect(composeXcmQuote(fixture.amount, received).destinationFee).toBe(
-				destinationFee,
-			);
+			expect(getTransferFee(tokenId, fixture.amount, received)).toEqual({
+				tokenId,
+				plancks: destinationFee,
+			});
 		},
 	);
 

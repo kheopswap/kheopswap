@@ -14,16 +14,23 @@ import {
 	type AmmPath,
 	type AmmPathQuote,
 	getLastHop,
+	getPathTokenIds,
 	mapHopPath,
 } from "../ammPath";
 import {
 	getRouteAccess,
 	type TransactionPlan,
+	type XcmDestinationSwapRoute,
 	type XcmRoute,
 	type XcmSwapRoute,
 	type XcmTransferRoute,
 } from "../swapRoute";
 import { useAmmPathQuote } from "../useAmmPathQuote";
+import {
+	getXcmDestinationSwapCall,
+	type XcmDestinationSwapCallInputs,
+} from "../xcmDestinationSwap/getXcmDestinationSwapCall";
+import { useXcmDestinationSwap } from "../xcmDestinationSwap/useXcmDestinationSwap";
 import {
 	getXcmSwapCall,
 	type XcmSwapCallInputs,
@@ -42,15 +49,29 @@ export type XcmTransferDetails = {
 	quote: XcmQuoteState;
 };
 
-export type XcmSwapDetails = {
-	kind: "xcm-swap";
-	route: XcmSwapRoute;
+type XcmPathSwapDetails = {
 	quote: XcmQuoteState;
+	pathQuote: AmmPathQuote | undefined;
 	priceImpact: number | undefined;
 	slippage: number;
 	minReceived: bigint | undefined;
+};
+
+export type XcmSwapDetails = XcmPathSwapDetails & {
+	kind: "xcm-swap";
+	route: XcmSwapRoute;
 	appCommission: bigint | null | undefined;
 };
+
+export type XcmDestinationSwapDetails = XcmPathSwapDetails & {
+	kind: "xcm-destination-swap";
+	route: XcmDestinationSwapRoute;
+};
+
+export type XcmRouteDetails =
+	| XcmTransferDetails
+	| XcmSwapDetails
+	| XcmDestinationSwapDetails;
 
 export type XcmSwapFollowUpData = XcmTransferFollowUpData & {
 	swap: {
@@ -68,7 +89,8 @@ type XcmCallInputs =
 			tokenIn: Token;
 			plancks: bigint;
 	  }
-	| ({ kind: "xcm-swap" } & XcmSwapCallInputs);
+	| ({ kind: "xcm-swap" } & XcmSwapCallInputs)
+	| ({ kind: "xcm-destination-swap" } & XcmDestinationSwapCallInputs);
 
 type XcmAmounts = {
 	tokenIn: Token | null | undefined;
@@ -109,6 +131,16 @@ const getXcmCallInputs = (
 						remoteFeeLocation,
 					}
 				: null;
+		case "xcm-destination-swap":
+			return totalIn && tokenIn?.id === route.tokenIdIn && pathQuote
+				? {
+						kind: route.kind,
+						route,
+						tokenIn,
+						plancks: totalIn,
+						hops: pathQuote.hops,
+					}
+				: null;
 	}
 };
 
@@ -136,6 +168,16 @@ const getFakeXcmCallInputs = (
 						remoteFeeLocation,
 					}
 				: null;
+		case "xcm-destination-swap":
+			return tokenIn?.id === route.tokenIdIn
+				? {
+						kind: route.kind,
+						route,
+						tokenIn,
+						plancks: edTokenIn,
+						hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
+					}
+				: null;
 	}
 };
 
@@ -145,6 +187,8 @@ const getXcmCall = (inputs: XcmCallInputs, beneficiary: SS58String) => {
 			return getXcmTransferCall({ ...inputs, beneficiary });
 		case "xcm-swap":
 			return getXcmSwapCall({ ...inputs, beneficiary });
+		case "xcm-destination-swap":
+			return getXcmDestinationSwapCall({ ...inputs, beneficiary });
 	}
 };
 
@@ -173,9 +217,29 @@ const getXcmTitle = (
 				? `Transfer ${tokenIn.symbol} to ${destinationName}`
 				: "Transfer";
 		case "xcm-swap":
+		case "xcm-destination-swap":
 			return tokenIn && tokenOut
 				? `Swap ${tokenIn.symbol} to ${tokenOut.symbol} on ${destinationName}`
 				: "Swap";
+	}
+};
+
+const getReturnTokenIds = (route: XcmRoute) =>
+	route.kind === "xcm-destination-swap"
+		? getPathTokenIds(route.path)
+		: [route.tokenIdOut];
+
+const getXcmTransactionType = (
+	route: XcmRoute | null,
+): TransactionPlan["transactionType"] => {
+	switch (route?.kind) {
+		case "xcm-swap":
+			return "xcmSwap";
+		case "xcm-destination-swap":
+			return "xcmDestinationSwap";
+		case "xcm-transfer":
+		case undefined:
+			return "xcmTransfer";
 	}
 };
 
@@ -211,17 +275,37 @@ export const useXcmRoute = ({
 	const swapRoute = route?.kind === "xcm-swap" ? route : null;
 	const mirrorTokenId = swapRoute && getLastHop(swapRoute.path).tokenIdOut;
 	const { data: mirrorToken } = useToken({ tokenId: mirrorTokenId });
-	const pathQuote = useAmmPathQuote({
-		path: swapRoute?.path ?? null,
-		plancksIn: swapPlancksIn,
-		totalIn,
-		slippage,
-	});
+	const destinationSwapRoute =
+		route?.kind === "xcm-destination-swap" ? route : null;
 
 	const remoteFeeLocation =
 		tokenOut?.type === "hydration-asset" && tokenOut.id === route?.tokenIdOut
 			? tokenOut.location
 			: undefined;
+	const fakeInputs = useMemo(
+		() =>
+			route &&
+			getFakeXcmCallInputs(route, tokenIn, edTokenIn, remoteFeeLocation),
+		[route, tokenIn, edTokenIn, remoteFeeLocation],
+	);
+	const { data: fakeCall } = useXcmCall(fakeInputs, beneficiary);
+
+	const destinationSwap = useXcmDestinationSwap({
+		route: destinationSwapRoute,
+		beneficiary,
+		totalIn,
+		fakeCall,
+		slippage,
+	});
+	const swapPathQuote = useAmmPathQuote({
+		path: swapRoute?.path ?? null,
+		plancksIn: swapPlancksIn,
+		totalIn,
+		slippage,
+	});
+	const pathQuote = destinationSwapRoute
+		? destinationSwap.pathQuote
+		: swapPathQuote;
 
 	const inputs = useMemo(
 		() =>
@@ -244,33 +328,42 @@ export const useXcmRoute = ({
 			remoteFeeLocation,
 		],
 	);
-	const fakeInputs = useMemo(
-		() =>
-			route &&
-			getFakeXcmCallInputs(route, tokenIn, edTokenIn, remoteFeeLocation),
-		[route, tokenIn, edTokenIn, remoteFeeLocation],
-	);
-
 	const callQuery = useXcmCall(inputs, beneficiary);
-	const { data: fakeCall } = useXcmCall(fakeInputs, beneficiary);
 	const call = callQuery.data;
 
-	const quote = useXcmQuote({ route, beneficiary, call, fakeCall });
+	const quote = useXcmQuote({
+		route,
+		destinationFee: destinationSwap.fee,
+		beneficiary,
+		call,
+		fakeCall,
+	});
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
 	const received = xcmQuote?.received;
 	const isLoading =
-		quote.isLoading || callQuery.isLoading || pathQuote.isLoading;
+		quote.isLoading ||
+		callQuery.isLoading ||
+		pathQuote.isLoading ||
+		destinationSwap.isLoading;
 
 	const outputErrorMessage = useMemo(() => {
 		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
-		if (pathQuote.errorMessage) return pathQuote.errorMessage;
 		if (callQuery.error)
 			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
+		if (destinationSwap.errorMessage) return destinationSwap.errorMessage;
+		if (pathQuote.errorMessage) return pathQuote.errorMessage;
 		if (quote.data && !quote.data.success)
 			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
-	}, [access, pathQuote.errorMessage, callQuery.error, quote.data, route]);
+	}, [
+		access,
+		callQuery.error,
+		destinationSwap.errorMessage,
+		pathQuote.errorMessage,
+		quote.data,
+		route,
+	]);
 
 	const submitGate = useMemo(
 		() =>
@@ -288,6 +381,7 @@ export const useXcmRoute = ({
 				? {
 						origin: route.origin,
 						target: { tokenId: route.tokenIdOut, beneficiary },
+						returnTokenIds: getReturnTokenIds(route),
 						tokenOut,
 						estimatedReceived: received,
 					}
@@ -321,7 +415,7 @@ export const useXcmRoute = ({
 					})
 				: {},
 			followUpData,
-			transactionType: swapRoute ? "xcmSwap" : "xcmTransfer",
+			transactionType: getXcmTransactionType(route),
 			title: route ? getXcmTitle(route, tokenIn, tokenOut) : "Transfer",
 			submitGate,
 		};
@@ -342,7 +436,7 @@ export const useXcmRoute = ({
 		submitGate,
 	]);
 
-	const details = useMemo((): XcmTransferDetails | XcmSwapDetails | null => {
+	const details = useMemo((): XcmRouteDetails | null => {
 		if (!route) return null;
 		switch (route.kind) {
 			case "xcm-transfer":
@@ -352,12 +446,13 @@ export const useXcmRoute = ({
 					pathQuote.quote &&
 					xcmQuote &&
 					mirrorToken?.decimals === tokenOut?.decimals
-						? pathQuote.quote.minOut - xcmQuote.destinationFee
+						? pathQuote.quote.minOut - xcmQuote.destinationFee.plancks
 						: undefined;
 				return {
 					kind: route.kind,
 					route,
 					quote,
+					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.priceImpact,
 					slippage,
 					minReceived:
@@ -365,6 +460,16 @@ export const useXcmRoute = ({
 					appCommission,
 				};
 			}
+			case "xcm-destination-swap":
+				return {
+					kind: route.kind,
+					route,
+					quote,
+					pathQuote: pathQuote.quote,
+					priceImpact: pathQuote.priceImpact,
+					slippage,
+					minReceived: pathQuote.quote?.minOut,
+				};
 		}
 	}, [
 		route,

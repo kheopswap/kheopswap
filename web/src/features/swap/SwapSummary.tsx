@@ -1,22 +1,16 @@
-import { type FC, Fragment } from "react";
+import type { FC } from "react";
 import {
 	FormSummary,
 	FormSummaryRow,
 	FormSummarySection,
 } from "../../components/FormSummary";
 import { Tokens } from "../../components/Tokens";
-import { useToken } from "../../hooks/useToken";
-import type { TokenId } from "../../registry/tokens/types";
 import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
-import {
-	type AmmPath,
-	type AmmPathQuote,
-	getPathTokenIds,
-	type PathLiquidity,
-} from "./routes/ammPath";
+import { ProtocolFeeValue, RouteValue } from "./routes/AmmPathValues";
+import type { PathLiquidity } from "./routes/ammPath";
 import { XcmSwapSummary } from "./routes/xcmSwap/XcmSwapSummary";
 import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
 import { Slippage } from "./Slippage";
@@ -47,41 +41,6 @@ const PoolReservesValue: FC<{ liquidity: PathLiquidity | null }> = ({
 			return null;
 	}
 };
-
-const TokenSymbol: FC<{ tokenId: TokenId }> = ({ tokenId }) => {
-	const { data: token } = useToken({ tokenId });
-	return token?.symbol ?? null;
-};
-
-const RouteValue: FC<{ path: AmmPath }> = ({ path }) => (
-	<div className="flex flex-wrap justify-end gap-1">
-		{getPathTokenIds(path).map((tokenId, index) => (
-			<Fragment key={tokenId}>
-				{index > 0 && <span className="text-muted">→</span>}
-				<TokenSymbol tokenId={tokenId} />
-			</Fragment>
-		))}
-	</div>
-);
-
-const HopTokens: FC<{ tokenId: TokenId; plancks: bigint }> = ({
-	tokenId,
-	plancks,
-}) => {
-	const { data: token } = useToken({ tokenId });
-	return token ? <Tokens plancks={plancks} token={token} /> : null;
-};
-
-const ProtocolFeeValue: FC<{ quote: AmmPathQuote }> = ({ quote }) => (
-	<div className="flex flex-wrap justify-end">
-		{quote.hops.map(({ tokenIdIn, protocolCommission }, index) => (
-			<Fragment key={tokenIdIn}>
-				{index > 0 && <span className="mx-1">+</span>}
-				<HopTokens tokenId={tokenIdIn} plancks={protocolCommission} />
-			</Fragment>
-		))}
-	</div>
-);
 
 const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 	const { tokenIn, tokenOut, transaction } = useSwap();
@@ -176,6 +135,7 @@ export const SwapSummary = () => {
 		case "xcm-transfer":
 			return <XcmTransferSummary details={details} />;
 		case "xcm-swap":
+		case "xcm-destination-swap":
 			return <XcmSwapSummary details={details} />;
 	}
 };
