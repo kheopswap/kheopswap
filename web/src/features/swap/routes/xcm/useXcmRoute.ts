@@ -157,6 +157,12 @@ const getXcmCallInputs = (
 	}
 };
 
+const FAKE_CALL_WITHDRAWALS: Record<XcmRoute["kind"], bigint> = {
+	"xcm-transfer": 1n,
+	"xcm-swap": 2n,
+	"xcm-destination-swap": 1n,
+};
+
 // Carries a commission so the fee estimate covers the batch with the service fee transfer.
 const getFakeXcmCallInputs = (
 	route: XcmRoute,
@@ -327,7 +333,13 @@ export const useXcmRoute = ({
 		tokenOut?.type === "hydration-asset" && tokenOut.id === route?.tokenIdOut
 			? tokenOut.location
 			: undefined;
-	const probePlancks = getFeeProbePlancks(edTokenIn, balanceIn);
+	const probePlancks = route
+		? getFeeProbePlancks({
+				existentialDeposit: edTokenIn,
+				spendable: balanceIn,
+				withdrawals: FAKE_CALL_WITHDRAWALS[route.kind],
+			})
+		: undefined;
 	const feeProbe = useMemo(
 		() =>
 			tokenIn && probePlancks

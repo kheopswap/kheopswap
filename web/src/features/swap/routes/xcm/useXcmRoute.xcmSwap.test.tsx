@@ -239,6 +239,16 @@ describe("useXcmRoute on a swap on Asset Hub sent to Hydration", () => {
 		});
 	});
 
+	it("splits what the account can spend between the swap and the service fee of the fee estimate", async () => {
+		chain.balance = 15_000_000_000n;
+		const { result } = renderXcmSwap();
+
+		await waitFor(() => expect(result.current.plan.fakeCall).toBeTruthy());
+		expect(result.current.plan.fakeCall?.decodedCall).toMatchObject({
+			appCommission: 7_500_000_000n,
+		});
+	});
+
 	it("sends the swap alone when there is no service fee", async () => {
 		const { result } = renderXcmSwap({ appCommission: 0n });
 

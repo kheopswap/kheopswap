@@ -493,33 +493,34 @@ describe("describeXcmQuoteFailure", () => {
 
 describe("getFeeProbePlancks", () => {
 	it.each([
-		[
-			"the minimum balance when the account holds more",
-			10_000n,
-			50_000n,
-			10_000n,
-		],
-		[
-			"the spendable balance when it is below the minimum",
-			10_000n,
-			4_000n,
-			4_000n,
-		],
-		["one plank when nothing is spendable", 10_000n, 0n, 1n],
+		["the minimum balance when the account holds more", 50_000n, 1n, 10_000n],
+		["the spendable balance when it is below the minimum", 4_000n, 1n, 4_000n],
+		["a share of the spendable balance per withdrawal", 15_000n, 2n, 7_500n],
+		["one plank when nothing is spendable", 0n, 1n, 1n],
 		[
 			"the minimum balance while the balance is unknown",
-			10_000n,
 			undefined,
+			1n,
 			10_000n,
 		],
-		[
-			"nothing while the minimum balance is unknown",
-			undefined,
-			4_000n,
-			undefined,
-		],
-	])("is %s", (_, existentialDeposit, spendable, expected) => {
-		expect(getFeeProbePlancks(existentialDeposit, spendable)).toBe(expected);
+	])("is %s", (_, spendable, withdrawals, expected) => {
+		expect(
+			getFeeProbePlancks({
+				existentialDeposit: 10_000n,
+				spendable,
+				withdrawals,
+			}),
+		).toBe(expected);
+	});
+
+	it("is unknown while the minimum balance is unknown", () => {
+		expect(
+			getFeeProbePlancks({
+				existentialDeposit: undefined,
+				spendable: 4_000n,
+				withdrawals: 1n,
+			}),
+		).toBeUndefined();
 	});
 });
 

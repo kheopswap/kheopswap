@@ -70,14 +70,20 @@ export type FeeProbe = {
 	token: Pick<Token, "symbol" | "decimals">;
 };
 
-export const getFeeProbePlancks = (
-	existentialDeposit: bigint | null | undefined,
-	spendable: bigint | undefined,
-): bigint | undefined => {
+export const getFeeProbePlancks = ({
+	existentialDeposit,
+	spendable,
+	withdrawals,
+}: {
+	existentialDeposit: bigint | null | undefined;
+	spendable: bigint | undefined;
+	withdrawals: bigint;
+}): bigint | undefined => {
 	if (!existentialDeposit) return undefined;
+	const share = spendable === undefined ? undefined : spendable / withdrawals;
 	const probe =
-		spendable !== undefined && spendable < existentialDeposit
-			? spendable
+		share !== undefined && share < existentialDeposit
+			? share
 			: existentialDeposit;
 	return probe > 0n ? probe : 1n;
 };
