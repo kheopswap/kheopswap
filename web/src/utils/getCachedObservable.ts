@@ -1,4 +1,4 @@
-import { Observable, ReplaySubject, share } from "rxjs";
+import { Observable, ReplaySubject, type Subscription } from "rxjs";
 
 const CACHE = new Map<string, Observable<unknown>>();
 
@@ -14,22 +14,51 @@ export const getCachedObservable$ = <T>(
 	const cached = CACHE.get(cacheKey);
 	if (cached) return cached as Observable<T>;
 
-	const evictWhenUnused$ = new Observable<void>((subscriber) => {
-		const eviction = setTimeout(() => {
-			if (CACHE.get(cacheKey) === entry) CACHE.delete(cacheKey);
-			subscriber.next();
-		}, UNUSED_ENTRY_EVICTION_DELAY);
-		return () => clearTimeout(eviction);
-	});
+	const source = create();
+	let replay = new ReplaySubject<T>(1);
+	let connection: Subscription | undefined;
+	let subscribers = 0;
+	let eviction: ReturnType<typeof setTimeout> | undefined;
 
-	const entry = create().pipe(
-		share({
-			connector: () => new ReplaySubject<T>(1),
-			resetOnError: true,
-			resetOnComplete: false,
-			resetOnRefCountZero: () => evictWhenUnused$,
-		}),
-	);
+	const evict = () => {
+		if (CACHE.get(cacheKey) === entry) CACHE.delete(cacheKey);
+	};
+
+	const disconnect = () => {
+		connection?.unsubscribe();
+		connection = undefined;
+		replay = new ReplaySubject<T>(1);
+	};
+
+	const connect = () => {
+		const subject = replay;
+		connection = source.subscribe({
+			next: (value) => subject.next(value),
+			complete: () => subject.complete(),
+			error: (err) => {
+				evict();
+				disconnect();
+				subject.error(err);
+			},
+		});
+	};
+
+	const entry = new Observable<T>((subscriber) => {
+		subscribers++;
+		clearTimeout(eviction);
+		const subscription = replay.subscribe(subscriber);
+		if (!connection) connect();
+
+		return () => {
+			subscription.unsubscribe();
+			subscribers--;
+			if (subscribers) return;
+			eviction = setTimeout(() => {
+				evict();
+				disconnect();
+			}, UNUSED_ENTRY_EVICTION_DELAY);
+		};
+	});
 
 	CACHE.set(cacheKey, entry);
 	return entry;

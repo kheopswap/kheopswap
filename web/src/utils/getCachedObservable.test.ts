@@ -132,6 +132,54 @@ describe("getCachedObservable$", () => {
 		expect(connections).toBe(2);
 	});
 
+	it("evicts a completed entry once nobody uses it", () => {
+		const create = vi.fn(() => of(1));
+		const obs = getCachedObservable$("complete-ns", "k", create);
+		obs.subscribe().unsubscribe();
+
+		vi.advanceTimersByTime(500);
+
+		expect(getCachedObservable$("complete-ns", "k", create)).not.toBe(obs);
+		expect(create).toHaveBeenCalledTimes(2);
+	});
+
+	it("replays a completed source within the delay without re-running it", () => {
+		const create = vi.fn(() => of(42));
+		const obs = getCachedObservable$("replay-ns", "k", create);
+		const values: number[] = [];
+
+		obs.subscribe((v) => values.push(v));
+		vi.advanceTimersByTime(400);
+		obs.subscribe((v) => values.push(v));
+
+		expect(values).toEqual([42, 42]);
+		expect(create).toHaveBeenCalledTimes(1);
+	});
+
+	it("re-runs a source that errored on the next subscription", () => {
+		let attempts = 0;
+		const obs = getCachedObservable$(
+			"error-ns",
+			"k",
+			() =>
+				new Observable<number>((subscriber) => {
+					attempts++;
+					if (attempts === 1) subscriber.error(new Error("rpc down"));
+					else subscriber.next(attempts);
+				}),
+		);
+		const errors: unknown[] = [];
+		const values: number[] = [];
+
+		obs.subscribe({ error: (err) => errors.push(err) });
+		getCachedObservable$("error-ns", "k", () => of(-1)).subscribe((v) =>
+			values.push(v),
+		);
+
+		expect(errors).toHaveLength(1);
+		expect(values).toEqual([-1]);
+	});
+
 	it("keeps an entry nobody has subscribed to yet", () => {
 		const create = vi.fn(() => new Observable<number>());
 		const obs = getCachedObservable$("never-ns", "k", create);
