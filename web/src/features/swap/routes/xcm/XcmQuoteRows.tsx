@@ -145,6 +145,9 @@ export const XcmQuoteRows: FC<{
 	const origin = getChainById(route.origin).name;
 	const destination = getChainById(route.destination).name;
 	const loadingShimmer = quote.isLoading && feeShimmer;
+	const showDeliveryFee = quote.deliveryFee
+		? quote.deliveryFee.plancks > 0n
+		: quote.isLoading;
 
 	return (
 		<>
@@ -158,7 +161,7 @@ export const XcmQuoteRows: FC<{
 					)
 				}
 			/>
-			{quote.deliveryFee?.plancks !== 0n && (
+			{showDeliveryFee && (
 				<FormSummaryRow
 					label={
 						<FeeLabel
@@ -167,7 +170,11 @@ export const XcmQuoteRows: FC<{
 						/>
 					}
 					value={
-						quote.deliveryFee && <TokenAmountValue {...quote.deliveryFee} />
+						quote.deliveryFee ? (
+							<TokenAmountValue {...quote.deliveryFee} />
+						) : (
+							feeShimmer
+						)
 					}
 				/>
 			)}

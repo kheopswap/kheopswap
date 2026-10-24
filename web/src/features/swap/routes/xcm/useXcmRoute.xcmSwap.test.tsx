@@ -193,6 +193,7 @@ const renderXcmSwap = ({
 				appCommission,
 				slippage: 0.005,
 				edTokenIn: 10_000_000_000n,
+				balanceIn: chain.balance,
 				hasInsufficientBalance,
 				balanceOut: 0n,
 			}),

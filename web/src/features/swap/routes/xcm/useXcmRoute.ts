@@ -46,6 +46,7 @@ import {
 	describeNewAccountMinimum,
 	describeXcmQuoteFailure,
 	estimateXcmReceived,
+	getFeeProbePlancks,
 	getNewAccountMinimum,
 	getXcmCallSpendings,
 	getXcmSubmitGate,
@@ -155,22 +156,22 @@ const getXcmCallInputs = (
 const getFakeXcmCallInputs = (
 	route: XcmRoute,
 	tokenIn: Token | null | undefined,
-	edTokenIn: bigint | null | undefined,
+	probePlancks: bigint | undefined,
 	remoteFeeLocation: XcmV5Multilocation | undefined,
 ): XcmCallInputs | null => {
-	if (!edTokenIn) return null;
+	if (!probePlancks) return null;
 	switch (route.kind) {
 		case "xcm-transfer":
 			return tokenIn?.id === route.tokenIdIn
-				? { kind: route.kind, route, tokenIn, plancks: edTokenIn }
+				? { kind: route.kind, route, tokenIn, plancks: probePlancks }
 				: null;
 		case "xcm-swap":
 			return remoteFeeLocation
 				? {
 						kind: route.kind,
 						route,
-						swapPlancksIn: edTokenIn,
-						appCommission: edTokenIn,
+						swapPlancksIn: probePlancks,
+						appCommission: probePlancks,
 						hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
 						remoteFeeLocation,
 					}
@@ -181,7 +182,7 @@ const getFakeXcmCallInputs = (
 						kind: route.kind,
 						route,
 						tokenIn,
-						plancks: edTokenIn,
+						plancks: probePlancks,
 						hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
 					}
 				: null;
@@ -281,6 +282,7 @@ type UseXcmRouteProps = {
 	appCommission: bigint | null | undefined;
 	slippage: number;
 	edTokenIn: bigint | null | undefined;
+	balanceIn: bigint | undefined;
 	hasInsufficientBalance: boolean;
 	balanceOut: bigint | undefined;
 };
@@ -295,6 +297,7 @@ export const useXcmRoute = ({
 	appCommission,
 	slippage,
 	edTokenIn,
+	balanceIn,
 	hasInsufficientBalance,
 	balanceOut,
 }: UseXcmRouteProps) => {
@@ -314,11 +317,19 @@ export const useXcmRoute = ({
 		tokenOut?.type === "hydration-asset" && tokenOut.id === route?.tokenIdOut
 			? tokenOut.location
 			: undefined;
+	const probePlancks = getFeeProbePlancks(edTokenIn, balanceIn);
+	const feeProbe = useMemo(
+		() =>
+			tokenIn && probePlancks
+				? { plancks: probePlancks, token: tokenIn }
+				: undefined,
+		[tokenIn, probePlancks],
+	);
 	const fakeInputs = useMemo(
 		() =>
 			route &&
-			getFakeXcmCallInputs(route, tokenIn, edTokenIn, remoteFeeLocation),
-		[route, tokenIn, edTokenIn, remoteFeeLocation],
+			getFakeXcmCallInputs(route, tokenIn, probePlancks, remoteFeeLocation),
+		[route, tokenIn, probePlancks, remoteFeeLocation],
 	);
 	const { data: fakeCall } = useXcmCall(fakeInputs, beneficiary);
 	const dryRunBalances = useXcmDryRunBalances(route, beneficiary);
@@ -328,6 +339,7 @@ export const useXcmRoute = ({
 		beneficiary,
 		totalIn,
 		fakeCall,
+		feeProbe,
 		slippage,
 		balances: dryRunBalances,
 	});

@@ -38,6 +38,7 @@ import {
 	describeXcmQuoteFailure,
 	estimateXcmReceived,
 	getDeliveryFeeTokenId,
+	getFeeProbePlancks,
 	getNewAccountMinimum,
 	getTotalDebited,
 	getXcmCallSpendings,
@@ -474,8 +475,51 @@ describe("describeXcmQuoteFailure", () => {
 			{ kind: "call-unavailable" },
 			"Could not prepare the transaction on Polkadot Asset Hub",
 		],
+		[
+			{
+				kind: "fee-estimate-failed",
+				cause: { kind: "origin-withdraw-failed" },
+				probe: {
+					plancks: 20_000_000_000_000n,
+					token: { symbol: "WUD", decimals: 10 },
+				},
+			},
+			"Could not estimate the Hydration fee: Polkadot Asset Hub rejected a test withdrawal of 2000 WUD from your account",
+		],
 	] as const)("%o", (failure, expected) => {
 		expect(describeXcmQuoteFailure(failure, toHydration)).toBe(expected);
+	});
+});
+
+describe("getFeeProbePlancks", () => {
+	it.each([
+		[
+			"the minimum balance when the account holds more",
+			10_000n,
+			50_000n,
+			10_000n,
+		],
+		[
+			"the spendable balance when it is below the minimum",
+			10_000n,
+			4_000n,
+			4_000n,
+		],
+		["one plank when nothing is spendable", 10_000n, 0n, 1n],
+		[
+			"the minimum balance while the balance is unknown",
+			10_000n,
+			undefined,
+			10_000n,
+		],
+		[
+			"nothing while the minimum balance is unknown",
+			undefined,
+			4_000n,
+			undefined,
+		],
+	])("is %s", (_, existentialDeposit, spendable, expected) => {
+		expect(getFeeProbePlancks(existentialDeposit, spendable)).toBe(expected);
 	});
 });
 

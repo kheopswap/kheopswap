@@ -84,6 +84,7 @@ const useSwapProvider = () => {
 		appCommission: pricing.appCommission,
 		slippage: pricing.slippage,
 		edTokenIn: pricing.edTokenIn,
+		balanceIn: pricing.balanceIn,
 		hasInsufficientBalance: pricing.hasInsufficientBalance,
 		balanceOut,
 	});

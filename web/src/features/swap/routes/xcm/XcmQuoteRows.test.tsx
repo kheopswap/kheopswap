@@ -131,4 +131,10 @@ describe("XcmQuoteRows fees", () => {
 		expect(value?.textContent).toBe("0.0017 DOT (est.)");
 		expect(value?.firstElementChild?.className).toContain("text-muted");
 	});
+
+	it("leaves out the delivery fee row once its estimate has failed", () => {
+		renderRows(settledQuote(undefined));
+
+		expect(screen.queryByText("Delivery fee")).toBeNull();
+	});
 });

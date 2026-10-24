@@ -21,6 +21,7 @@ import { type AmmPathQuoteState, useAmmPathQuote } from "../useAmmPathQuote";
 import type { XcmDryRunBalances } from "../xcm/useXcmDryRunBalances";
 import {
 	describeXcmQuoteFailure,
+	type FeeProbe,
 	type Parsed,
 	parseOriginDryRun,
 	type XcmQuoteFailure,
@@ -58,11 +59,13 @@ const useDestinationNativeFee = ({
 	route,
 	beneficiary,
 	fakeCall,
+	feeProbe,
 	balances,
 }: {
 	route: XcmDestinationSwapRoute | null;
 	beneficiary: SS58String | null;
 	fakeCall: AnyTransaction | null | undefined;
+	feeProbe: FeeProbe | undefined;
 	balances: XcmDryRunBalances;
 }): { isLoading: boolean; data: Parsed<bigint> | undefined } => {
 	const estimate = useDryRun({
@@ -101,11 +104,15 @@ const useDestinationNativeFee = ({
 	const data = useMemo((): Parsed<bigint> | undefined => {
 		if (estimate.error)
 			return { success: false, failure: { kind: "origin-unavailable" } };
-		if (!estimateLeg) return undefined;
+		if (!estimateLeg || !feeProbe) return undefined;
 		if (!estimateLeg.success)
 			return {
 				success: false,
-				failure: { kind: "fee-estimate-failed", cause: estimateLeg.failure },
+				failure: {
+					kind: "fee-estimate-failed",
+					cause: estimateLeg.failure,
+					probe: feeProbe,
+				},
 			};
 		if (fee.error || fee.data === null)
 			return {
@@ -115,7 +122,7 @@ const useDestinationNativeFee = ({
 		return fee.data === undefined
 			? undefined
 			: { success: true, value: fee.data };
-	}, [estimate.error, estimateLeg, fee.error, fee.data]);
+	}, [estimate.error, estimateLeg, feeProbe, fee.error, fee.data]);
 
 	return {
 		isLoading:
@@ -139,6 +146,7 @@ export const useXcmDestinationSwap = ({
 	beneficiary,
 	totalIn,
 	fakeCall,
+	feeProbe,
 	slippage,
 	balances,
 }: {
@@ -146,6 +154,7 @@ export const useXcmDestinationSwap = ({
 	beneficiary: SS58String | null;
 	totalIn: bigint | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
+	feeProbe: FeeProbe | undefined;
 	slippage: number;
 	balances: XcmDryRunBalances;
 }): XcmDestinationSwapState => {
@@ -153,6 +162,7 @@ export const useXcmDestinationSwap = ({
 		route,
 		beneficiary,
 		fakeCall,
+		feeProbe,
 		balances,
 	});
 	const { assetHub } = useRelayChains();

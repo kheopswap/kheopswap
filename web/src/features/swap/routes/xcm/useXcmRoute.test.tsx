@@ -4,9 +4,10 @@ import type { FC, PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WalletAccount } from "../../../../common/kheopskit";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
-import { getAmmPath } from "../ammPath";
+import { getAmmPath, mapHopPath } from "../ammPath";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { getDestinationSwapFee } from "../xcmDestinationSwap/destinationSwapFee";
+import { buildXcmDestinationSwapArgs } from "../xcmDestinationSwap/getXcmDestinationSwapCall";
 import {
 	usdtToPink,
 	type XcmDestinationSwapFixture,
@@ -166,6 +167,7 @@ const renderDestinationSwap = (
 				appCommission: null,
 				slippage: fixture.slippage,
 				edTokenIn: 10_000n,
+				balanceIn: chain.balanceIn,
 				hasInsufficientBalance: chain.hasInsufficientBalance,
 				balanceOut: 0n,
 			}),
@@ -174,7 +176,7 @@ const renderDestinationSwap = (
 };
 
 const FEE_ESTIMATE_FAILED =
-	"Could not estimate the Polkadot Asset Hub fee: Hydration rejected a test withdrawal from your account";
+	"Could not estimate the Polkadot Asset Hub fee: Hydration rejected a test withdrawal of 0.000001 USDT from your account";
 
 beforeEach(() => {
 	chain.canPriceFee = true;
@@ -403,6 +405,31 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			);
 			expect(chain.dryRunCall).toHaveBeenCalled();
 			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
+		},
+	);
+
+	it.each([
+		["the spendable balance when it is below", 4_000n, 4_000n],
+		["the minimum balance when the account holds more than", 50_000n, 10_000n],
+	])(
+		"estimates the fees with %s the minimum balance",
+		async (_, balanceIn, probePlancks) => {
+			chain.balanceIn = balanceIn;
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() => expect(result.current.plan.fakeCall).toBeTruthy());
+			const route = result.current.details?.route;
+			if (route?.kind !== "xcm-destination-swap")
+				throw new Error("not a destination swap");
+			expect(result.current.plan.fakeCall?.decodedCall).toEqual({
+				args: buildXcmDestinationSwapArgs({
+					route,
+					tokenIn: getToken(usdtToPink.tokenIdIn),
+					plancks: probePlancks,
+					hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
+					beneficiary: usdtToPink.beneficiary,
+				}),
+			});
 		},
 	);
 
