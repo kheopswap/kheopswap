@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import type { WalletAccount } from "../../../../common/kheopskit";
 import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
-import { getTokenId } from "../../../../registry/tokens/helpers";
 import type { Token } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import type { XcmTransferFollowUpData } from "../../../../state/transactions/xcmArrival";
@@ -63,10 +62,16 @@ export type XcmSwapFollowUpData = XcmTransferFollowUpData & {
 };
 
 type XcmCallInputs =
-	| { kind: "xcm-transfer"; route: XcmTransferRoute; plancks: bigint }
+	| {
+			kind: "xcm-transfer";
+			route: XcmTransferRoute;
+			tokenIn: Token;
+			plancks: bigint;
+	  }
 	| ({ kind: "xcm-swap" } & XcmSwapCallInputs);
 
 type XcmAmounts = {
+	tokenIn: Token | null | undefined;
 	totalIn: bigint | null | undefined;
 	swapPlancksIn: bigint | null | undefined;
 	appCommission: bigint | null | undefined;
@@ -77,6 +82,7 @@ type XcmAmounts = {
 const getXcmCallInputs = (
 	route: XcmRoute,
 	{
+		tokenIn,
 		totalIn,
 		swapPlancksIn,
 		appCommission,
@@ -86,7 +92,9 @@ const getXcmCallInputs = (
 ): XcmCallInputs | null => {
 	switch (route.kind) {
 		case "xcm-transfer":
-			return totalIn ? { kind: route.kind, route, plancks: totalIn } : null;
+			return totalIn && tokenIn?.id === route.tokenIdIn
+				? { kind: route.kind, route, tokenIn, plancks: totalIn }
+				: null;
 		case "xcm-swap":
 			return swapPlancksIn &&
 				isBigInt(appCommission) &&
@@ -107,13 +115,16 @@ const getXcmCallInputs = (
 // Sized like the AMM fake call, so the fee estimate covers the commission batch.
 const getFakeXcmCallInputs = (
 	route: XcmRoute,
+	tokenIn: Token | null | undefined,
 	edTokenIn: bigint | null | undefined,
 	remoteFeeLocation: XcmV5Multilocation | undefined,
 ): XcmCallInputs | null => {
 	if (!edTokenIn) return null;
 	switch (route.kind) {
 		case "xcm-transfer":
-			return { kind: route.kind, route, plancks: edTokenIn };
+			return tokenIn?.id === route.tokenIdIn
+				? { kind: route.kind, route, tokenIn, plancks: edTokenIn }
+				: null;
 		case "xcm-swap":
 			return remoteFeeLocation
 				? {
@@ -192,7 +203,7 @@ export const useXcmRoute = ({
 	edTokenIn,
 }: UseXcmRouteProps) => {
 	const access = useMemo(
-		() => (route && account ? getRouteAccess(account) : null),
+		() => (route && account ? getRouteAccess(account, route) : null),
 		[route, account],
 	);
 	const beneficiary = access?.allowed ? access.beneficiary : null;
@@ -216,6 +227,7 @@ export const useXcmRoute = ({
 		() =>
 			route &&
 			getXcmCallInputs(route, {
+				tokenIn,
 				totalIn,
 				swapPlancksIn,
 				appCommission,
@@ -224,6 +236,7 @@ export const useXcmRoute = ({
 			}),
 		[
 			route,
+			tokenIn,
 			totalIn,
 			swapPlancksIn,
 			appCommission,
@@ -232,8 +245,10 @@ export const useXcmRoute = ({
 		],
 	);
 	const fakeInputs = useMemo(
-		() => route && getFakeXcmCallInputs(route, edTokenIn, remoteFeeLocation),
-		[route, edTokenIn, remoteFeeLocation],
+		() =>
+			route &&
+			getFakeXcmCallInputs(route, tokenIn, edTokenIn, remoteFeeLocation),
+		[route, tokenIn, edTokenIn, remoteFeeLocation],
 	);
 
 	const callQuery = useXcmCall(inputs, beneficiary);
@@ -247,14 +262,15 @@ export const useXcmRoute = ({
 		quote.isLoading || callQuery.isLoading || pathQuote.isLoading;
 
 	const outputErrorMessage = useMemo(() => {
+		if (!route) return null;
 		if (access && !access.allowed) return access.reason;
 		if (pathQuote.errorMessage) return pathQuote.errorMessage;
 		if (callQuery.error)
-			return describeXcmQuoteFailure({ kind: "call-unavailable" });
+			return describeXcmQuoteFailure({ kind: "call-unavailable" }, route);
 		if (quote.data && !quote.data.success)
-			return describeXcmQuoteFailure(quote.data.failure);
+			return describeXcmQuoteFailure(quote.data.failure, route);
 		return null;
-	}, [access, pathQuote.errorMessage, callQuery.error, quote.data]);
+	}, [access, pathQuote.errorMessage, callQuery.error, quote.data, route]);
 
 	const submitGate = useMemo(
 		() =>
@@ -270,11 +286,8 @@ export const useXcmRoute = ({
 		const transferFollowUpData: XcmTransferFollowUpData | null =
 			route && beneficiary && tokenOut
 				? {
-						target: {
-							destination: route.destination,
-							assetId: route.destinationAssetId,
-							beneficiary,
-						},
+						origin: route.origin,
+						target: { tokenId: route.tokenIdOut, beneficiary },
 						tokenOut,
 						estimatedReceived: received,
 					}
@@ -303,10 +316,6 @@ export const useXcmRoute = ({
 			callSpendings: route
 				? getXcmCallSpendings({
 						tokenIdIn: route.tokenIdIn,
-						nativeTokenId: getTokenId({
-							type: "native",
-							chainId: route.origin,
-						}),
 						totalIn,
 						deliveryFee: quote.deliveryFee,
 					})

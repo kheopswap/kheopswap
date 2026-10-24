@@ -10,7 +10,7 @@ import type { XcmV5Multilocation } from "../registry/types/xcm";
 
 const ASSETS_PALLET_INSTANCE = 50;
 
-const HDX_LOCAL_LOCATION: XcmV5Multilocation = {
+export const HDX_LOCAL_LOCATION: XcmV5Multilocation = {
 	parents: 0,
 	interior: { type: "X1", value: { type: "GeneralIndex", value: 0n } },
 };
