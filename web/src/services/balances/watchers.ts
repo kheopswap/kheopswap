@@ -19,7 +19,7 @@ import type { XcmV5Multilocation } from "../../registry/types/xcm";
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
-import { balancesStore$ } from "./store";
+import { balancesStore$, flushBalancesStore } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
 import type { Address, BalanceId } from "./types";
 import { parseBalanceId } from "./utils";
@@ -294,6 +294,7 @@ export const readBalances = async (balanceIds: BalanceId[]) => {
 			.flat()
 			.filter(([balanceId, { balance }]) => balance > 0n || balanceId in store),
 	);
+	flushBalancesStore();
 };
 
 const CHAIN_WATCHERS = new Map<ChainId, ChainWatcher>();

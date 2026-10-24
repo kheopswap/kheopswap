@@ -6,6 +6,7 @@ import {
 	timeout,
 } from "rxjs";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { getLocalStorageKey } from "../../utils/getLocalStorageKey";
 import { discoverBalances } from "./discovery";
 import { getBalance$, heldTokenIds$ } from "./service";
 import { balancesState$ } from "./state";
@@ -337,6 +338,9 @@ describe("discoverBalances", () => {
 
 		expect(balancesStore$.value[receivedId]?.balance).toBe(5n);
 		expect(balancesStore$.value[emptyId]).toBeUndefined();
+		expect(
+			localStorage.getItem(getLocalStorageKey("balances::v3")) ?? "",
+		).toContain(`"address":"${address}","tokenId":"asset::pah::1984"`);
 		expect(await firstValueFrom(heldTokenIds$)).toContain("asset::pah::1984");
 		expect(mocks.addedBalanceIds).not.toContain(receivedId);
 	});
