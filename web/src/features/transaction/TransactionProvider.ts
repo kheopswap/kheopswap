@@ -1,16 +1,12 @@
-import { omitBy } from "lodash-es";
 import { useMemo } from "react";
 import { useDryRun } from "../../hooks/useDryRun";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
-import type { TokenId } from "../../registry/tokens/types";
+import type { Token, TokenId } from "../../registry/tokens/types";
 import type { TransactionFollowUp } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { provideContext } from "../../utils/provideContext";
-import {
-	INSUFFICIENT_BALANCE_TO_KEEP_ALIVE,
-	useTransactionBalanceCheck,
-} from "./useTransactionBalanceCheck";
+import { useTransactionBalanceCheck } from "./useTransactionBalanceCheck";
 import { useTransactionEthereum } from "./useTransactionEthereum";
 import { useTransactionFees } from "./useTransactionFees";
 import { useTransactionSubmit } from "./useTransactionSubmit";
@@ -18,6 +14,14 @@ import { useTransactionSubmit } from "./useTransactionSubmit";
 export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
 >;
+
+// native transfers and swaps are submitted as keep-alive calls
+export const getTokenSpending = (
+	token: Pick<Token, "id" | "type">,
+	plancks: bigint,
+): CallSpendings => ({
+	[token.id]: { plancks, allowDeath: token.type !== "native" },
+});
 
 export type SubmitGate =
 	| { status: "open" }
@@ -115,21 +119,8 @@ const useTransactionProvider = ({
 		dryRun?.success === true;
 	const isRejectedByDryRun =
 		dryRun?.success === true && !dryRun.value.execution_result.success;
-	// the runtime knows about frozen funds that keep an account alive, the local check does not
-	const isKeepAliveWaived =
-		isDryRunConclusive && dryRun.value.execution_result.success;
 
-	const insufficientBalances = useMemo(
-		() =>
-			isKeepAliveWaived
-				? omitBy(
-						balanceCheck.insufficientBalances,
-						(reason) => reason === INSUFFICIENT_BALANCE_TO_KEEP_ALIVE,
-					)
-				: balanceCheck.insufficientBalances,
-		[balanceCheck.insufficientBalances, isKeepAliveWaived],
-	);
-
+	const { insufficientBalances } = balanceCheck;
 	const hasInsufficientBalance = Object.keys(insufficientBalances).length > 0;
 
 	const canSubmit = useMemo(() => {

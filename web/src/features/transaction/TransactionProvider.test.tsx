@@ -5,6 +5,7 @@ import type { ChainId } from "../../registry/chains/types";
 import { TransactionDryRunSummaryValue } from "./TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "./TransactionFeeSummaryValue";
 import {
+	getTokenSpending,
 	type SubmitGate,
 	TransactionProvider,
 	useTransaction,
@@ -247,13 +248,15 @@ describe("TransactionProvider dry run", () => {
 		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
 	});
 
-	it("lets a successful Asset Hub dry run waive the keep-alive heuristic, which cannot see frozen funds", () => {
+	it("keeps the keep-alive shortfall despite a successful Asset Hub dry run, which does not charge the fee", () => {
 		balanceCheck.insufficientBalances = {
 			"native::pah": "Insufficient balance to keep account alive",
 		};
 		const transaction = renderTransaction(undefined, "pah");
-		expect(transaction.canSubmit).toBe(true);
-		expect(transaction.insufficientBalances).toEqual({});
+		expect(transaction.canSubmit).toBe(false);
+		expect(transaction.insufficientBalances).toEqual(
+			balanceCheck.insufficientBalances,
+		);
 	});
 
 	it("keeps the keep-alive shortfall when the dry run is not conclusive", () => {
@@ -283,6 +286,20 @@ describe("TransactionProvider dry run", () => {
 		dryRun.data = failedDryRun;
 		ethereum.platform = "ethereum";
 		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+	});
+});
+
+describe("getTokenSpending", () => {
+	it("keeps a native sender alive, as its transfer and swap calls do", () => {
+		expect(getTokenSpending({ id: "native::pah", type: "native" }, 5n)).toEqual(
+			{ "native::pah": { plancks: 5n, allowDeath: false } },
+		);
+	});
+
+	it("lets an asset sender spend its whole balance", () => {
+		expect(
+			getTokenSpending({ id: "asset::pah::1984", type: "asset" }, 5n),
+		).toEqual({ "asset::pah::1984": { plancks: 5n, allowDeath: true } });
 	});
 });
 

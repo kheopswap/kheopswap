@@ -24,18 +24,21 @@ describe("useDryRun", () => {
 			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 		);
 		const { result, rerender } = renderHook(
-			(balances: Record<string, bigint>) =>
+			(balances: Record<string, { balance: bigint; frozen: bigint }>) =>
 				useDryRun({ chainId: "pah", from: "5Signer", call, balances }),
-			{ wrapper, initialProps: { "native::pah": 10n } },
+			{
+				wrapper,
+				initialProps: { "native::pah": { balance: 10n, frozen: 0n } },
+			},
 		);
 		await waitFor(() => expect(result.current.data).toEqual({ success: true }));
 		expect(dryRunCall).toHaveBeenCalledTimes(1);
 
-		rerender({ "native::pah": 10n });
+		rerender({ "native::pah": { balance: 10n, frozen: 0n } });
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
 		expect(dryRunCall).toHaveBeenCalledTimes(1);
 
-		rerender({ "native::pah": 5n });
+		rerender({ "native::pah": { balance: 5n, frozen: 0n } });
 		await waitFor(() => expect(dryRunCall).toHaveBeenCalledTimes(2));
 	});
 });

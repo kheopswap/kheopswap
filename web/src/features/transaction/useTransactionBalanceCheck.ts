@@ -1,7 +1,7 @@
 import { uniq } from "lodash-es";
 import { useMemo } from "react";
-import { useBalance } from "../../hooks/useBalance";
 import { useBalances } from "../../hooks/useBalances";
+import type { AccountBalance } from "../../hooks/useDryRun";
 import { useExistentialDeposits } from "../../hooks/useExistentialDeposits";
 import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
 import type { BalanceDef } from "../../services/balances/types";
@@ -13,6 +13,20 @@ export const INSUFFICIENT_FEE_BALANCE = "Insufficient balance to pay for fee";
 export const INSUFFICIENT_BALANCE_TO_KEEP_ALIVE =
 	"Insufficient balance to keep account alive";
 
+export type AccountBalances = Partial<
+	Record<TokenId, AccountBalance | undefined>
+>;
+
+const getTokenIds = (callSpendings: CallSpendings) =>
+	Object.keys(callSpendings) as TokenId[];
+
+// a keep-alive call must leave the existential deposit in the account, and the
+// spendable balance already excludes the frozen funds that count towards it
+const getKeepAliveReserve = (
+	existentialDeposit: bigint,
+	frozen: bigint,
+): bigint => (existentialDeposit > frozen ? existentialDeposit - frozen : 0n);
+
 export const getInsufficientBalances = ({
 	callSpendings,
 	balances,
@@ -20,25 +34,27 @@ export const getInsufficientBalances = ({
 	fee,
 }: {
 	callSpendings: CallSpendings;
-	balances: Partial<Record<TokenId, bigint | undefined>>;
+	balances: AccountBalances;
 	existentialDeposits: Partial<Record<TokenId, bigint | null>>;
 	fee: TokenAmount;
 }): Record<TokenId, string> => {
 	const result: Record<TokenId, string> = {};
-	const tokenIds = uniq([...Object.keys(callSpendings), fee.tokenId]);
+	const tokenIds = uniq([...getTokenIds(callSpendings), fee.tokenId]);
 
 	for (const tokenId of tokenIds) {
-		const balance = balances[tokenId];
-		if (balance === undefined) continue;
+		const held = balances[tokenId];
+		if (!held) continue;
+		const { balance, frozen } = held;
 		const ed = existentialDeposits[tokenId] ?? 0n;
 		const feePlancks = tokenId === fee.tokenId ? fee.plancks : 0n;
 		const spendings = callSpendings[tokenId]?.plancks ?? 0n;
 		const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
+		const keepAlive = allowDeath ? 0n : getKeepAliveReserve(ed, frozen);
 
 		if (balance < spendings) result[tokenId] = INSUFFICIENT_BALANCE;
 		else if (balance < spendings + feePlancks)
 			result[tokenId] = INSUFFICIENT_FEE_BALANCE;
-		else if (!allowDeath && balance < spendings + feePlancks + ed)
+		else if (balance < spendings + feePlancks + keepAlive)
 			result[tokenId] = INSUFFICIENT_BALANCE_TO_KEEP_ALIVE;
 	}
 
@@ -60,12 +76,15 @@ export const useTransactionBalanceCheck = ({
 	feeToken,
 	feeEstimate,
 }: UseTransactionBalanceCheckProps) => {
-	const tokenIds = useMemo(() => {
-		const allTokenIds = Object.keys(callSpendings)
-			.concat(feeToken?.id ?? "")
-			.filter(Boolean) as TokenId[];
-		return uniq(allTokenIds);
-	}, [callSpendings, feeToken?.id]);
+	const feeTokenId = feeToken?.id;
+	const tokenIds = useMemo(
+		() =>
+			uniq([
+				...getTokenIds(callSpendings),
+				...(feeTokenId ? [feeTokenId] : []),
+			]),
+		[callSpendings, feeTokenId],
+	);
 
 	const balanceDefs = useMemo<BalanceDef[] | undefined>(
 		() =>
@@ -88,24 +107,25 @@ export const useTransactionBalanceCheck = ({
 		error: errorExistentialDeposits,
 	} = useExistentialDeposits({ tokenIds });
 
-	const { data: feeTokenBalance, isLoading: isLoadingFeeTokenBalance } =
-		useBalance({
-			address: accountAddress,
-			tokenId: feeToken?.id,
-		});
-
-	const balancesByTokenId = useMemo<
-		Partial<Record<TokenId, bigint | undefined>>
-	>(
+	const balancesByTokenId = useMemo<AccountBalances>(
 		() =>
 			Object.fromEntries(
-				balances.map(({ tokenId, balance, isLoading }) => [
+				balances.map(({ tokenId, balance, frozen, isLoading }) => [
 					tokenId,
-					isLoading ? undefined : balance,
+					isLoading || balance === undefined
+						? undefined
+						: { balance, frozen: frozen ?? 0n },
 				]),
 			),
 		[balances],
 	);
+
+	const feeTokenBalance = feeTokenId
+		? balancesByTokenId[feeTokenId]?.balance
+		: undefined;
+	const isLoadingFeeTokenBalance =
+		!!feeTokenId &&
+		balances.some((b) => b.tokenId === feeTokenId && b.isLoading);
 
 	const insufficientBalances = useMemo(
 		() =>

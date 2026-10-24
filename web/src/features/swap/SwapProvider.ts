@@ -3,6 +3,7 @@ import { useAllTokens } from "../../hooks/useAllTokens";
 import { useBalance } from "../../hooks/useBalance";
 import { useToken } from "../../hooks/useToken";
 import { provideContext } from "../../utils/provideContext";
+import { getTokenSpending } from "../transaction/TransactionProvider";
 import type { AmmPathQuote, PathLiquidity } from "./routes/ammPath";
 import {
 	type AmmSwapRoute,
@@ -98,12 +99,7 @@ const useSwapProvider = () => {
 			fakeCall: callData.fakeCall,
 			callSpendings:
 				pricing.tokenIn && pricing.totalIn
-					? {
-							[pricing.tokenIn.id]: {
-								plancks: pricing.totalIn,
-								allowDeath: true,
-							},
-						}
+					? getTokenSpending(pricing.tokenIn, pricing.totalIn)
 					: {},
 			followUp: callData.followUp,
 			title: getSwapTitle(pricing.tokenIn?.symbol, pricing.tokenOut?.symbol),

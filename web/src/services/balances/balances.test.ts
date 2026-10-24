@@ -136,9 +136,9 @@ describe("balances service pipeline", () => {
 				waitForBalanceState(balanceId, (s) => s?.status === "loaded"),
 			),
 		);
-		expect(alice?.balance).toBe(90n);
-		expect(bob?.balance).toBe(50n);
-		expect(carol?.balance).toBe(0n);
+		expect(alice).toMatchObject({ balance: 90n, frozen: 10n });
+		expect(bob).toMatchObject({ balance: 50n, frozen: 0n });
+		expect(carol).toMatchObject({ balance: 0n, frozen: 0n });
 
 		const firstBlockCalls = nativeCalls("pah").slice(callsBefore);
 		expect(firstBlockCalls).toHaveLength(1);

@@ -9,11 +9,13 @@ import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 
 const XCM_VERSION = 5;
 
+export type AccountBalance = { balance: bigint; frozen: bigint };
+
 type UseDryRunProps<Id extends ChainId = ChainId> = {
 	chainId: Id | null | undefined;
 	from: SS58String | null | undefined;
 	call: AnyTransaction | null | undefined;
-	balances?: Partial<Record<TokenId, bigint | undefined>>;
+	balances?: Partial<Record<TokenId, AccountBalance | undefined>>;
 	enabled?: boolean;
 };
 

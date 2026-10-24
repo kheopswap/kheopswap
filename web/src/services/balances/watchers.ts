@@ -30,7 +30,9 @@ type BalanceEntry<T extends ParsedToken = ParsedToken> = {
 	token: T;
 };
 
-type BalanceUpdate = [BalanceId, bigint];
+type BalanceValue = { balance: bigint; frozen: bigint };
+
+type BalanceUpdate = [BalanceId, BalanceValue];
 
 const statusByBalanceId$ = new BehaviorSubject<Record<string, LoadingStatus>>(
 	{},
@@ -52,7 +54,18 @@ const ofType = <T extends ParsedToken["type"]>(
 
 const liquidBalance = (
 	account: { status: { type: string }; balance: bigint } | undefined,
-) => (account?.status.type === "Liquid" ? account.balance : 0n);
+): BalanceValue => ({
+	balance: account?.status.type === "Liquid" ? account.balance : 0n,
+	frozen: 0n,
+});
+
+const spendableBalance = ({
+	free,
+	frozen,
+}: {
+	free: bigint;
+	frozen: bigint;
+}): BalanceValue => ({ balance: free - frozen, frozen });
 
 const KEYS_PER_STORAGE_QUERY = 250;
 
@@ -67,7 +80,7 @@ const getValuesInChunks = async <K, V>(
 const zip = <T>(
 	entries: BalanceEntry[],
 	values: T[],
-	getBalance: (value: T) => bigint,
+	getBalance: (value: T) => BalanceValue,
 ): BalanceUpdate[] =>
 	entries.map((entry, i) => [entry.balanceId, getBalance(values[i] as T)]);
 
@@ -81,11 +94,7 @@ const readNativeBalances = async (
 		entries.map((entry): [SS58String] => [entry.address]),
 		(keys) => api.query.System.Account.getValues(keys, { at: "best" }),
 	);
-	return zip(
-		entries,
-		accounts,
-		(account) => account.data.free - account.data.frozen,
-	);
+	return zip(entries, accounts, (account) => spendableBalance(account.data));
 };
 
 const readAssetBalances = async (
@@ -149,7 +158,7 @@ const readHydrationAssetBalances = async (
 		]),
 		(keys) => api.query.Tokens.Accounts.getValues(keys, { at: "best" }),
 	);
-	return zip(entries, accounts, (account) => account.free - account.frozen);
+	return zip(entries, accounts, spendableBalance);
 };
 
 const readChainBalances = (entries: BalanceEntry[]) =>
@@ -182,15 +191,17 @@ const applyUpdates = (updates: BalanceUpdate[]) => {
 
 	const store = balancesStore$.value;
 	const changed = updates.filter(
-		([balanceId, balance]) => store[balanceId]?.balance !== balance,
+		([balanceId, { balance, frozen }]) =>
+			store[balanceId]?.balance !== balance ||
+			store[balanceId]?.frozen !== frozen,
 	);
 	if (changed.length)
 		balancesStore$.next({
 			...store,
 			...Object.fromEntries(
-				changed.map(([balanceId, balance]) => [
+				changed.map(([balanceId, { balance, frozen }]) => [
 					balanceId,
-					{ ...parseBalanceId(balanceId), balance },
+					{ ...parseBalanceId(balanceId), balance, frozen },
 				]),
 			),
 		});

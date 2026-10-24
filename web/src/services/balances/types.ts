@@ -8,6 +8,7 @@ export type StoredBalance = {
 	tokenId: TokenId;
 	address: Address;
 	balance: bigint;
+	frozen?: bigint;
 };
 
 export type BalanceId = string; // `${Address}||${TokenId}`;
@@ -19,5 +20,6 @@ export type BalanceDef = {
 
 export type BalanceState = {
 	balance: bigint | undefined;
+	frozen: bigint | undefined;
 	status: LoadingStatus;
 };

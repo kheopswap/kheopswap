@@ -20,6 +20,7 @@ import { getBalanceId } from "./utils";
 
 const DEFAULT_BALANCE_STATE: BalanceState = {
 	balance: undefined,
+	frozen: undefined,
 	status: "stale",
 };
 
@@ -31,7 +32,11 @@ export const getBalance$ = (def: BalanceDef) => {
 		getResolvedSubstrateAddress$({ address: def.address, chainId }).pipe(
 			switchMap(({ address: resolvedAddress, status }) => {
 				if (status !== "loaded" || !resolvedAddress) {
-					return of<BalanceState>({ balance: undefined, status });
+					return of<BalanceState>({
+						balance: undefined,
+						frozen: undefined,
+						status,
+					});
 				}
 
 				const resolvedBalanceId = getBalanceId({
