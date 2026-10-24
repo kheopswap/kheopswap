@@ -251,6 +251,16 @@ html[data-mode="light"] {
 	--color-hero-glow: color-mix(in oklab, var(--color-grid) 22%, transparent);
 }
 
+.collapsed-zeros > span {
+	font-size: 0;
+}
+
+.collapsed-zeros::after {
+	content: attr(data-count) / "";
+	font-size: 0.75em;
+	vertical-align: sub;
+}
+
 @utility nav-trail {
 	background: linear-gradient(
 		90deg,
