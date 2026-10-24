@@ -9,6 +9,7 @@ import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
 import { isValidAnyAddress } from "../utils/ethereumAddress";
 import { getAccountName } from "../utils/getAccountName";
+import { hasValueLine } from "../utils/hasValueLine";
 import { shortenAddress } from "../utils/shortenAddress";
 import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
@@ -123,13 +124,18 @@ const AccountButton = memo<{
 							/>
 						</div>
 						<div className="text-xs text-muted">
-							{balance.stablePlancks !== null && (
-								<StableValue
-									stableToken={stableToken}
-									plancks={balance.stablePlancks}
-									pulse={balance.isLoadingStablePlancks}
-								/>
-							)}
+							{balance.stablePlancks !== null &&
+								hasValueLine(
+									token.id,
+									stableToken.id,
+									balance.tokenPlancks,
+								) && (
+									<StableValue
+										stableToken={stableToken}
+										plancks={balance.stablePlancks}
+										pulse={balance.isLoadingStablePlancks}
+									/>
+								)}
 						</div>
 					</div>
 				)

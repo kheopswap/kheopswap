@@ -11,6 +11,7 @@ import { useRelayChains } from "../../state/relay";
 import type { BalanceWithStable } from "../../types/balances";
 import { cn } from "../../utils/cn";
 import { getAccountName } from "../../utils/getAccountName";
+import { hasValueLine } from "../../utils/hasValueLine";
 import { isApplicableBalance } from "../../utils/isApplicableBalance";
 import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
@@ -78,7 +79,7 @@ export const TokenDetailsBalances: FC<{ token: Token }> = ({ token }) => {
 									)}
 								</div>
 
-								{stableToken.id !== token.id &&
+								{hasValueLine(token.id, stableToken.id, balance.tokenPlancks) &&
 									(isBigInt(balance.stablePlancks) ||
 										balance.isLoadingStablePlancks) && (
 										<div className="text-xs text-muted">

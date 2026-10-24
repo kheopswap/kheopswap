@@ -5,6 +5,7 @@ import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import type { BalanceWithStableSummary } from "../../types/balances";
 import { isLowLiquidity } from "../../utils/getHoldingValuation";
+import { hasValueLine } from "../../utils/hasValueLine";
 import { ValuationLabel } from "./ValuationLabel";
 
 export const TokenDetailsRow: FC<{
@@ -35,7 +36,10 @@ export const TokenDetailsRowValue: FC<
 
 	if (isInitializing) return null;
 
+	const plancks = tokenPlancks ?? 0n;
+	const showValue = hasValueLine(token.id, stableToken.id, plancks);
 	const showLabel =
+		showValue &&
 		valuation.status !== "priced" &&
 		(isLowLiquidity(valuation.status) || (!isPrice && !isLoadingStablePlancks));
 
@@ -43,8 +47,9 @@ export const TokenDetailsRowValue: FC<
 		<div className="flex gap-2 whitespace-nowrap text-text">
 			<Tokens
 				token={token}
-				plancks={tokenPlancks ?? 0n}
+				plancks={plancks}
 				pulse={isLoadingTokenPlancks}
+				isPrice={isPrice}
 			/>
 			{valuation.status !== "priced" && showLabel && (
 				<ValuationLabel
@@ -53,7 +58,7 @@ export const TokenDetailsRowValue: FC<
 					className="text-xs"
 				/>
 			)}
-			{valuation.status === "priced" && token.id !== stableToken.id && (
+			{valuation.status === "priced" && showValue && (
 				<span className="text-muted">
 					{isPrice ? (
 						<Tokens

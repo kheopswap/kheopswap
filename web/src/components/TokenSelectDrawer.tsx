@@ -7,6 +7,7 @@ import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
 import { getTokenDescription } from "../utils/getTokenDescription";
+import { hasValueLine } from "../utils/hasValueLine";
 import { isBigInt } from "../utils/isBigInt";
 import { tokenMatchesSearch } from "../utils/tokenMatchesSearch";
 import { Drawer } from "./Drawer";
@@ -71,8 +72,13 @@ const TokenButton = memo<{
 								stableToken={stableToken}
 								plancks={balances.stablePlancks ?? 0n}
 								className={cn(
-									!isBigInt(balances.stablePlancks) && "invisible",
-									token.id === stableToken.id && "invisible",
+									(!isBigInt(balances.stablePlancks) ||
+										!hasValueLine(
+											token.id,
+											stableToken.id,
+											balances.tokenPlancks,
+										)) &&
+										"invisible",
 								)}
 								pulse={balances.isLoadingStablePlancks}
 							/>

@@ -6,6 +6,7 @@ import type { Token } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
 import { cn } from "../../utils/cn";
 import { isLowLiquidity } from "../../utils/getHoldingValuation";
+import { hasValueLine } from "../../utils/hasValueLine";
 import { ValuationLabel } from "./ValuationLabel";
 
 const ValueLine: FC<
@@ -15,7 +16,13 @@ const ValueLine: FC<
 		isPrice: boolean;
 	}
 > = ({ token, stableToken, isPrice, isLoadingStablePlancks, ...valuation }) => {
+	const showValue = hasValueLine(
+		token.id,
+		stableToken.id,
+		valuation.tokenPlancks,
+	);
 	const showLabel =
+		showValue &&
 		valuation.status !== "priced" &&
 		(isLowLiquidity(valuation.status) || (!isPrice && !isLoadingStablePlancks));
 
@@ -23,8 +30,7 @@ const ValueLine: FC<
 		return <ValuationLabel status={valuation.status} isPrice={isPrice} />;
 
 	const className = cn(
-		(valuation.status !== "priced" || token.id === stableToken.id) &&
-			"invisible",
+		(valuation.status !== "priced" || !showValue) && "invisible",
 	);
 	const plancks = valuation.stablePlancks ?? 0n;
 
