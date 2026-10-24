@@ -5,27 +5,30 @@ import { logger } from "../utils/logger";
 import { getMetadataV15 } from "./getMetadataV15";
 
 const ERRORS_TRANSACTIONAL = {
-	LimitReached: "Too many transactional layers have been spawned",
-	NoLayer: "A transactional layer was expected, but does not exist",
+	LimitReached: "The transaction nests too many operations",
+	NoLayer: "The transaction is missing an operation layer",
 };
 
 const ERRORS_TOKEN = {
-	FundsUnavailable: "Funds are unavailable",
-	OnlyProvider: "Account that must exist would die",
-	BelowMinimum: "Account cannot exist with the funds that would be given",
-	CannotCreate: "Account cannot be created",
-	UnknownAsset: "The asset in question is unknown",
-	Frozen: "Funds exist but are frozen",
-	Unsupported: "Operation is not supported by the asset",
-	CannotCreateHold: "Account cannot be created for recording amount on hold",
-	NotExpendable: "Account that is desired to remain would die",
-	Blocked: "Account cannot receive the assets",
+	FundsUnavailable: "Not enough funds are available",
+	OnlyProvider:
+		"This would empty the account while other assets still depend on it",
+	BelowMinimum:
+		"The recipient would hold less than the minimum balance for this token",
+	CannotCreate: "The recipient account cannot be created",
+	UnknownAsset: "This token does not exist on the chain",
+	Frozen: "These funds are frozen",
+	Unsupported: "This token does not support the operation",
+	CannotCreateHold: "The account cannot hold this amount",
+	NotExpendable:
+		"This would leave the account below its minimum balance, which is not allowed for this call",
+	Blocked: "The recipient account cannot receive this token",
 };
 
 const ERRORS_ARITHMETIC = {
-	Overflow: "An underflow would occur",
-	Underflow: "An overflow would occur",
-	DivisionByZero: "Division by zero",
+	Overflow: "The amount is too large for the chain to compute",
+	Underflow: "The amount is too small for the chain to compute",
+	DivisionByZero: "The chain divided by zero",
 };
 
 const ERROR_METADATA_LOOKUP = "METADATA_LOOKUP";
@@ -44,11 +47,10 @@ const DISPATCH_ERROR = {
 	Corruption: "State corrupt",
 	Unavailable: "Resource unavailable",
 	RootNotAllowed: "Root not allowed",
-	Trie: "Unknown error", // unsupported,
-	Other: "Unknown error", // unsupported,
+	Trie: "Unknown error",
+	Other: "Unknown error",
 };
 
-// TODO cleanup :)
 type DispatchError = {
 	type: string;
 	value:
