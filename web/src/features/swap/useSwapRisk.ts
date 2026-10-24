@@ -13,7 +13,18 @@ import {
 	type ValueLoss,
 } from "./swapRisk";
 
-const NO_DELIVERY_FEE_VALUE = 0n;
+const NO_FEE_VALUE = 0n;
+
+const useFeeValue = (fee: TokenAmount | undefined) => {
+	const value = useStablePlancks({
+		tokenId: fee?.tokenId,
+		plancks: fee?.plancks,
+	});
+	return {
+		isLoading: !!fee && value.isLoading,
+		value: fee ? value.stablePlancks : NO_FEE_VALUE,
+	};
+};
 
 const useSentValue = (
 	tokenIdIn: TokenId | undefined,
@@ -21,18 +32,14 @@ const useSentValue = (
 	deliveryFee: TokenAmount | undefined,
 ) => {
 	const amount = useStablePlancks({ tokenId: tokenIdIn, plancks: totalIn });
-	const fee = useStablePlancks({
-		tokenId: deliveryFee?.tokenId,
-		plancks: deliveryFee?.plancks,
-	});
-	const feeValue = deliveryFee ? fee.stablePlancks : NO_DELIVERY_FEE_VALUE;
+	const fee = useFeeValue(deliveryFee);
 	return {
-		isLoading: amount.isLoading || (!!deliveryFee && fee.isLoading),
+		isLoading: amount.isLoading || fee.isLoading,
 		sentValue:
-			isBigInt(amount.stablePlancks) && isBigInt(feeValue)
-				? amount.stablePlancks + feeValue
+			isBigInt(amount.stablePlancks) && isBigInt(fee.value)
+				? amount.stablePlancks + fee.value
 				: undefined,
-		feeValue,
+		deliveryFeeValue: fee.value,
 	};
 };
 
@@ -42,6 +49,7 @@ export const useSwapRisk = ({
 	totalIn,
 	plancksOut,
 	deliveryFee,
+	destinationFee,
 	priceImpact,
 }: {
 	signer: string | undefined;
@@ -49,6 +57,7 @@ export const useSwapRisk = ({
 	totalIn: bigint | null | undefined;
 	plancksOut: bigint | null | undefined;
 	deliveryFee: TokenAmount | undefined;
+	destinationFee: TokenAmount | undefined;
 	priceImpact: number | undefined;
 }) => {
 	const sent = useSentValue(route?.tokenIdIn, totalIn, deliveryFee);
@@ -56,6 +65,7 @@ export const useSwapRisk = ({
 		tokenId: route?.tokenIdOut,
 		plancks: plancksOut,
 	});
+	const destinationFeeValue = useFeeValue(destinationFee);
 
 	const valueLoss = useMemo((): ValueLoss | undefined => {
 		const ratio = getValueLoss(sent.sentValue, received.stablePlancks);
@@ -63,9 +73,19 @@ export const useSwapRisk = ({
 		return {
 			kind: route?.kind === "xcm-transfer" ? "fees" : "value-loss",
 			ratio,
-			deliveryFeeShare: getShare(sent.feeValue, sent.sentValue) ?? 0,
+			feeShares: {
+				"delivery-fee": getShare(sent.deliveryFeeValue, sent.sentValue) ?? 0,
+				"destination-fee":
+					getShare(destinationFeeValue.value, sent.sentValue) ?? 0,
+			},
 		};
-	}, [route?.kind, sent.sentValue, sent.feeValue, received.stablePlancks]);
+	}, [
+		route?.kind,
+		sent.sentValue,
+		sent.deliveryFeeValue,
+		destinationFeeValue.value,
+		received.stablePlancks,
+	]);
 
 	const risk = useMemo(
 		() => getSwapRisk({ priceImpact, valueLoss }),
@@ -90,7 +110,9 @@ export const useSwapRisk = ({
 	);
 
 	const isAssessing =
-		!!route && isBigInt(totalIn) && (sent.isLoading || received.isLoading);
+		!!route &&
+		isBigInt(totalIn) &&
+		(sent.isLoading || received.isLoading || destinationFeeValue.isLoading);
 
 	return { risk, isAcknowledged, isAssessing, onAcknowledgeChange };
 };

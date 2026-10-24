@@ -5,15 +5,19 @@ export type SwapLoss = {
 	ratio: number;
 };
 
+const FEE_CAUSES = ["delivery-fee", "destination-fee"] as const;
+
+type FeeCause = (typeof FEE_CAUSES)[number];
+
 export type ValueLoss = {
 	kind: "value-loss" | "fees";
 	ratio: number;
-	deliveryFeeShare: number;
+	feeShares: Record<FeeCause, number>;
 };
 
 type RiskLevel = "warn" | "confirm";
 
-export type LossCause = "price-impact" | "delivery-fee";
+export type LossCause = "price-impact" | FeeCause;
 
 export type SwapRisk =
 	| { level: "none" }
@@ -62,7 +66,10 @@ const getLossCause = (
 	valueLoss: ValueLoss | undefined,
 ): LossCause | null => {
 	if (headline.kind === "price-impact" || !valueLoss) return null;
-	if (isMostOf(valueLoss.deliveryFeeShare, headline)) return "delivery-fee";
+	const feeCause = FEE_CAUSES.find((cause) =>
+		isMostOf(valueLoss.feeShares[cause], headline),
+	);
+	if (feeCause) return feeCause;
 	if (headline.kind === "value-loss" && isMostOf(priceImpactLoss, headline))
 		return "price-impact";
 	return null;

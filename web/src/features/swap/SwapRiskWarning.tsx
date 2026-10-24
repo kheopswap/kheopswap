@@ -1,5 +1,6 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type { FC } from "react";
+import { getChainById } from "../../registry/chains/chains";
 import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
 import { TokenAmountValue } from "./routes/AmmPathValues";
@@ -8,13 +9,20 @@ import { isTransferRisk, type LossCause, type SwapLoss } from "./swapRisk";
 
 const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	const { details } = useSwap();
-	const deliveryFee =
-		details.kind === "amm-swap" ? undefined : details.quote.deliveryFee;
+	const xcm = details.kind === "amm-swap" ? undefined : details;
 	switch (cause) {
 		case "delivery-fee":
-			return deliveryFee ? (
+			return xcm?.quote.deliveryFee ? (
 				<>
-					, mostly the <TokenAmountValue {...deliveryFee} /> delivery fee
+					, mostly the <TokenAmountValue {...xcm.quote.deliveryFee} /> delivery
+					fee
+				</>
+			) : null;
+		case "destination-fee":
+			return xcm?.destinationFee ? (
+				<>
+					, mostly the <TokenAmountValue {...xcm.destinationFee} />{" "}
+					{getChainById(xcm.route.destination).name} fee
 				</>
 			) : null;
 		case "price-impact":

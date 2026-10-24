@@ -50,6 +50,7 @@ import {
 	getXcmCallSpendings,
 	getXcmSubmitGate,
 	isOriginDispatchFailure,
+	type XcmDestinationFee,
 	type XcmQuote,
 	type XcmReceived,
 } from "./xcmQuote";
@@ -59,11 +60,13 @@ export type XcmTransferDetails = {
 	route: XcmTransferRoute;
 	quote: XcmQuoteState;
 	received: XcmReceived | undefined;
+	destinationFee: XcmDestinationFee | undefined;
 };
 
 type XcmPathSwapDetails = {
 	quote: XcmQuoteState;
 	received: XcmReceived | undefined;
+	destinationFee: XcmDestinationFee | undefined;
 	pathQuote: AmmPathQuote | undefined;
 	priceImpact: number | undefined;
 	slippage: number;
@@ -435,6 +438,13 @@ export const useXcmRoute = ({
 		pathAmountOut,
 		lastQuote,
 	]);
+	const destinationFee = useMemo((): XcmDestinationFee | undefined => {
+		if (shownQuote.data?.success)
+			return { ...shownQuote.data.quote.destinationFee, isEstimate: false };
+		if (received?.isEstimate && lastQuote)
+			return { ...lastQuote.quote.destinationFee, isEstimate: true };
+		return undefined;
+	}, [shownQuote.data, received?.isEstimate, lastQuote]);
 
 	const transferRoute = route?.kind === "xcm-transfer" ? route : null;
 	const { data: existentialDepositOut } = useExistentialDeposit({
@@ -573,7 +583,13 @@ export const useXcmRoute = ({
 		if (!route) return null;
 		switch (route.kind) {
 			case "xcm-transfer":
-				return { kind: route.kind, route, quote: shownQuote, received };
+				return {
+					kind: route.kind,
+					route,
+					quote: shownQuote,
+					received,
+					destinationFee,
+				};
 			case "xcm-swap": {
 				const minReceived =
 					pathQuote.quote &&
@@ -586,6 +602,7 @@ export const useXcmRoute = ({
 					route,
 					quote: shownQuote,
 					received,
+					destinationFee,
 					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
@@ -600,6 +617,7 @@ export const useXcmRoute = ({
 					route,
 					quote: shownQuote,
 					received,
+					destinationFee,
 					pathQuote: pathQuote.quote,
 					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
@@ -610,6 +628,7 @@ export const useXcmRoute = ({
 		route,
 		shownQuote,
 		received,
+		destinationFee,
 		shownDestinationFee,
 		pathQuote.quote,
 		mirrorToken?.decimals,
@@ -625,6 +644,7 @@ export const useXcmRoute = ({
 		outputErrorMessage,
 		outputHint,
 		swapPlancksOut: received?.plancks,
+		destinationFee,
 		amountOut:
 			received && tokenOut
 				? plancksToTokens(received.plancks, tokenOut.decimals)

@@ -45,6 +45,7 @@ const severeSwap = (totalIn: bigint, signer = "account-1"): Props => ({
 	totalIn,
 	plancksOut: totalIn / 2n,
 	deliveryFee: undefined,
+	destinationFee: undefined,
 	priceImpact: -0.5,
 });
 
@@ -142,6 +143,7 @@ describe("useSwapRisk", () => {
 			totalIn,
 			plancksOut: received,
 			deliveryFee: { tokenId: DOT, plancks: 305_000_000n },
+			destinationFee: undefined,
 			priceImpact: undefined,
 		});
 
@@ -171,6 +173,32 @@ describe("useSwapRisk", () => {
 				initialProps: transfer(1_000_000_000n, 995_000_000n),
 			});
 			expect(result.current.isAssessing).toBe(true);
+		});
+	});
+
+	it("blames the destination fee for a Hydration swap that loses value to it", () => {
+		const HYDRATION_DOT = "hydration-asset::hydration::5" as TokenId;
+		const DOT = "native::pah" as TokenId;
+		const { result } = renderHook(useSwapRisk, {
+			initialProps: {
+				signer: "account-1",
+				route: {
+					kind: "xcm-destination-swap",
+					origin: "hydration",
+					destination: "pah",
+					tokenIdIn: HYDRATION_DOT,
+					tokenIdOut: USDC,
+				} as SwapRoute,
+				totalIn: 100_000_000n,
+				plancksOut: 82_610_000n,
+				deliveryFee: { tokenId: HYDRATION_DOT, plancks: 0n },
+				destinationFee: { tokenId: DOT, plancks: 17_000_000n },
+				priceImpact: -0.0001,
+			},
+		});
+		expect(result.current.risk).toMatchObject({
+			headline: { kind: "value-loss", ratio: 0.1739 },
+			cause: "destination-fee",
 		});
 	});
 });

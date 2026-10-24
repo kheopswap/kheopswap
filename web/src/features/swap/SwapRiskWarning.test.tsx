@@ -4,9 +4,14 @@ import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
 import { SwapRiskWarning } from "./SwapRiskWarning";
 import type { SwapRisk } from "./swapRisk";
 
+type Amount = { tokenId: string; plancks: bigint };
+
 const swap = vi.hoisted(() => ({
 	risk: { level: "none" } as SwapRisk,
-	deliveryFee: undefined as { tokenId: string; plancks: bigint } | undefined,
+	kind: "xcm-transfer",
+	destination: "hydration",
+	deliveryFee: undefined as Amount | undefined,
+	destinationFee: undefined as Amount | undefined,
 }));
 
 vi.mock("./SwapProvider", () => ({
@@ -14,7 +19,12 @@ vi.mock("./SwapProvider", () => ({
 		risk: swap.risk,
 		isRiskAcknowledged: false,
 		onRiskAcknowledgeChange: () => {},
-		details: { kind: "xcm-transfer", quote: { deliveryFee: swap.deliveryFee } },
+		details: {
+			kind: swap.kind,
+			route: { destination: swap.destination },
+			quote: { deliveryFee: swap.deliveryFee },
+			destinationFee: swap.destinationFee,
+		},
 	}),
 }));
 
@@ -44,6 +54,24 @@ describe("SwapRiskWarning", () => {
 		expect(
 			screen.getByLabelText("I accept these fees and want to transfer anyway"),
 		).toBeTruthy();
+	});
+
+	it("names the destination chain fee when it makes most of a swap's loss", () => {
+		swap.kind = "xcm-destination-swap";
+		swap.destination = "pah";
+		swap.deliveryFee = { tokenId: "native::pah", plancks: 0n };
+		swap.destinationFee = { tokenId: "native::pah", plancks: 17_000_000n };
+		swap.risk = {
+			level: "confirm",
+			losses: [{ kind: "value-loss", ratio: 0.1739 }],
+			headline: { kind: "value-loss", ratio: 0.1739 },
+			cause: "destination-fee",
+		};
+		render(<SwapRiskWarning />);
+
+		expect(screen.getByRole("alert").textContent).toContain(
+			"You receive 17.39% less value than you send, mostly the 0.0017 DOT Polkadot Asset Hub fee.",
+		);
 	});
 
 	it("shows a single line for a swap that loses value through price impact", () => {

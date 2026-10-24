@@ -147,6 +147,7 @@ const useSwapProvider = () => {
 		totalIn: pricing.totalIn,
 		plancksOut: swapPlancksOut,
 		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
+		destinationFee: xcmRoute ? xcm.destinationFee : undefined,
 		priceImpact:
 			details.kind === "xcm-transfer" ? undefined : details.priceImpact,
 	});

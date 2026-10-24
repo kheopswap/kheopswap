@@ -10,9 +10,15 @@ import {
 const valueLossOf = (
 	ratio: number | undefined,
 	kind: ValueLoss["kind"] = "value-loss",
-	deliveryFeeShare = 0,
+	feeShares: Partial<ValueLoss["feeShares"]> = {},
 ): ValueLoss | undefined =>
-	ratio === undefined ? undefined : { kind, ratio, deliveryFeeShare };
+	ratio === undefined
+		? undefined
+		: {
+				kind,
+				ratio,
+				feeShares: { "delivery-fee": 0, "destination-fee": 0, ...feeShares },
+			};
 
 describe("getValueLoss", () => {
 	it("is the share of the sent value that does not come back", () => {
@@ -96,7 +102,7 @@ describe("getSwapRisk", () => {
 		expect(
 			getSwapRisk({
 				priceImpact: -0.0001,
-				valueLoss: valueLossOf(0.0398, "value-loss", 0.03),
+				valueLoss: valueLossOf(0.0398, "value-loss", { "delivery-fee": 0.03 }),
 			}),
 		).toMatchObject({
 			level: "warn",
@@ -105,11 +111,29 @@ describe("getSwapRisk", () => {
 		});
 	});
 
-	it("names no cause when neither the delivery fee nor the price impact dominates", () => {
+	it("blames the destination fee when it is most of the value lost", () => {
+		expect(
+			getSwapRisk({
+				priceImpact: -0.0001,
+				valueLoss: valueLossOf(0.1739, "value-loss", {
+					"destination-fee": 0.17,
+				}),
+			}),
+		).toMatchObject({
+			level: "confirm",
+			headline: { kind: "value-loss", ratio: 0.1739 },
+			cause: "destination-fee",
+		});
+	});
+
+	it("names no cause when no fee nor the price impact dominates", () => {
 		expect(
 			getSwapRisk({
 				priceImpact: -0.01,
-				valueLoss: valueLossOf(0.1, "value-loss", 0.01),
+				valueLoss: valueLossOf(0.1, "value-loss", {
+					"delivery-fee": 0.04,
+					"destination-fee": 0.04,
+				}),
 			}),
 		).toMatchObject({ cause: null });
 	});
@@ -124,7 +148,7 @@ describe("getSwapRisk", () => {
 			expect(
 				getSwapRisk({
 					priceImpact: undefined,
-					valueLoss: valueLossOf(ratio, "fees", ratio),
+					valueLoss: valueLossOf(ratio, "fees", { "delivery-fee": ratio }),
 				}).level,
 			).toBe(level);
 		},
@@ -194,7 +218,7 @@ describe("getRiskSubmitGate", () => {
 				{
 					risk: getSwapRisk({
 						priceImpact: undefined,
-						valueLoss: valueLossOf(0.24, "fees", 0.23),
+						valueLoss: valueLossOf(0.24, "fees", { "delivery-fee": 0.23 }),
 					}),
 					isAssessing: false,
 					isAcknowledged: false,
