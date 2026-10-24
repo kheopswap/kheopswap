@@ -12,10 +12,7 @@ import { parseTokenId } from "../../registry/tokens/helpers";
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import { getResolvedSubstrateAddress$ } from "../addressResolution/service";
 import { balancesState$ } from "./state";
-import {
-	addBalanceSubscription,
-	removeBalancesSubscription,
-} from "./subscriptions";
+import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceDef, BalanceState } from "./types";
 import { getBalanceId } from "./utils";
 
@@ -41,7 +38,7 @@ export const getBalance$ = (def: BalanceDef) => {
 				});
 
 				return new Observable<BalanceState>((subscriber) => {
-					const subId = addBalanceSubscription(resolvedBalanceId);
+					const removeSubscription = addBalanceSubscription(resolvedBalanceId);
 
 					const sub = balancesState$
 						.pipe(
@@ -55,7 +52,7 @@ export const getBalance$ = (def: BalanceDef) => {
 
 					return () => {
 						sub.unsubscribe();
-						removeBalancesSubscription(subId);
+						removeSubscription();
 					};
 				});
 			}),
