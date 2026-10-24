@@ -34,7 +34,7 @@ describe("parseTokenId", () => {
 	});
 
 	it("parses native token id for all supported chains", () => {
-		for (const chainId of ["pah", "kah", "wah", "pasah"]) {
+		for (const chainId of ["pah", "kah", "wah", "pasah", "hydration"]) {
 			const result = parseTokenId(`native::${chainId}` as TokenId);
 			expect(result).toEqual({ type: "native", chainId });
 		}
@@ -44,6 +44,15 @@ describe("parseTokenId", () => {
 		expect(() => parseTokenId("native::unknown" as TokenId)).toThrow(
 			"Failed to parse token id",
 		);
+	});
+
+	it("throws for asset hub token types on a non asset hub chain", () => {
+		for (const tokenId of [
+			"asset::hydration::1",
+			"pool-asset::hydration::1",
+			"foreign-asset::hydration::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABIE0C+TQA==",
+		])
+			expect(() => parseTokenId(tokenId)).toThrow("Failed to parse token id");
 	});
 
 	it("throws for unsupported token type", () => {
