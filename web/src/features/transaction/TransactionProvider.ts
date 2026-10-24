@@ -185,6 +185,7 @@ const useTransactionProvider = ({
 
 		onSubmit,
 		canSubmit,
+		submitGate,
 
 		error,
 		isLoading,
