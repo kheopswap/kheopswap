@@ -8,6 +8,7 @@ import { cn } from "../../utils/cn";
 import { plancksToTokens } from "../../utils/plancks";
 import { FALLBACK_LOGO_SRC, getValidTokenLogo } from "../../utils/tokenLogo";
 import { TEXT_COLOR } from "./getAllocation";
+import { LowLiquidityLabel } from "./LowLiquidityLabel";
 import { usePortfolio } from "./PortfolioProvider";
 
 const AMOUNT_CLASS_NAME =
@@ -44,7 +45,13 @@ const LegendItem: FC<{
 );
 
 export const PortfolioAllocation = () => {
-	const { accounts, allocation, holdingsByTokenId, isLoading } = usePortfolio();
+	const {
+		accounts,
+		allocation,
+		holdingsByTokenId,
+		lowLiquidityCount,
+		isLoading,
+	} = usePortfolio();
 	const { stableToken } = useRelayChains();
 
 	const accountsCount = useMemo(
@@ -86,6 +93,13 @@ export const PortfolioAllocation = () => {
 			<p className="mt-2.5 text-sm text-muted">
 				Held across {accountsCount}{" "}
 				{accountsCount === 1 ? "account" : "accounts"}
+				{lowLiquidityCount > 0 && (
+					<>
+						, not counting {lowLiquidityCount}{" "}
+						{lowLiquidityCount === 1 ? "token" : "tokens"} with{" "}
+						<LowLiquidityLabel className="lowercase text-muted underline decoration-dotted" />
+					</>
+				)}
 			</p>
 			{hasTotal ? (
 				<>

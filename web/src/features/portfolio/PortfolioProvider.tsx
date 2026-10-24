@@ -1,20 +1,31 @@
-import { values } from "lodash-es";
-import { useMemo, useRef } from "react";
+import { bind } from "@react-rxjs/core";
+import { uniq, values } from "lodash-es";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
 import { useAssetHubTVL } from "../../hooks/useAssetHubTVL";
 import { getBalancesByTokenSummary } from "../../hooks/useBalancesByTokenSummary";
 import { useBalancesWithStables } from "../../hooks/useBalancesWithStables";
+import { usePoolsByChainId } from "../../hooks/usePoolsByChainId";
 import { useTokenPrices } from "../../hooks/useTokenPrices";
 import { PORTFOLIO_TOKEN_TYPES } from "../../registry/tokens/tokens";
+import type { TokenId } from "../../registry/tokens/types";
+import { heldTokenIds$ } from "../../services/balances/service";
+import { useRelayChains } from "../../state/relay";
 import { logger } from "../../utils/logger";
 import { provideContext } from "../../utils/provideContext";
+import { getWatchedTokens } from "./getWatchedTokens";
 import { usePortfolioAllocation } from "./usePortfolioAllocation";
 
+const [useHeldTokenIds] = bind(heldTokenIds$, [] as TokenId[]);
+
+const DISCOVERED_ACCOUNTS = new Set<string>();
+
 export const usePortfolioProvider = () => {
-	const stop = logger.cumulativeTimer("usePortfolioProvicer");
+	const stop = logger.cumulativeTimer("usePortfolioProvider");
 
 	const { accounts } = useWallets();
+	const { assetHub } = useRelayChains();
 
 	const { data: tokensMap, isLoading: isLoadingTokens } = useAllTokens({
 		types: PORTFOLIO_TOKEN_TYPES,
@@ -22,10 +33,44 @@ export const usePortfolioProvider = () => {
 
 	const tokens = useMemo(() => values(tokensMap), [tokensMap]);
 
+	const [search, setSearch] = useState("");
+
+	const { data: pools } = usePoolsByChainId({ chainId: assetHub.id });
+	const heldTokenIds = useHeldTokenIds();
+
+	const accountsKey = useMemo(
+		() =>
+			uniq(accounts.map((account) => account.address))
+				.sort()
+				.join(","),
+		[accounts],
+	);
+	const [, rerender] = useReducer((n: number) => n + 1, 0);
+	const isDiscovering = !!accountsKey && !DISCOVERED_ACCOUNTS.has(accountsKey);
+
+	const watchedTokens = useMemo(
+		() =>
+			isDiscovering
+				? tokens
+				: getWatchedTokens({
+						tokens,
+						poolTokenIds: new Set(pools.flatMap((pool) => pool.tokenIds)),
+						heldTokenIds: new Set(heldTokenIds),
+						search,
+					}),
+		[isDiscovering, tokens, pools, heldTokenIds, search],
+	);
+
 	const { data: tvl } = useAssetHubTVL();
 
 	const { data: liveBalances, isLoading: isLoadingBalances } =
-		useBalancesWithStables({ tokens, accounts });
+		useBalancesWithStables({ tokens: watchedTokens, accounts });
+
+	useEffect(() => {
+		if (!isDiscovering || isLoadingBalances || !liveBalances.length) return;
+		DISCOVERED_ACCOUNTS.add(accountsKey);
+		rerender();
+	}, [isDiscovering, isLoadingBalances, liveBalances.length, accountsKey]);
 
 	const lastBalances = useRef(liveBalances);
 	if (liveBalances.length || !accounts.length)
@@ -39,10 +84,8 @@ export const usePortfolioProvider = () => {
 		[balances],
 	);
 
-	const { allocation, holdingsByTokenId } = usePortfolioAllocation({
-		tokens,
-		balancesByTokenId,
-	});
+	const { allocation, holdingsByTokenId, lowLiquidityCount } =
+		usePortfolioAllocation({ tokens, balancesByTokenId });
 
 	stop();
 
@@ -52,10 +95,13 @@ export const usePortfolioProvider = () => {
 		balancesByTokenId,
 		allocation,
 		holdingsByTokenId,
+		lowLiquidityCount,
 		accounts,
 		tokens,
 		tvl,
 		prices,
+		search,
+		setSearch,
 	};
 };
 
