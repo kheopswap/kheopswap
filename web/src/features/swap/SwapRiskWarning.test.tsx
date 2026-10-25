@@ -42,6 +42,10 @@ vi.mock("../transaction/TransactionProvider", () => ({
 	}),
 }));
 
+vi.mock("../../hooks/useStablePlancksMulti", () => ({
+	useStablePlancksMulti: () => ({ isLoading: true, data: [] }),
+}));
+
 vi.mock("../../hooks/useToken", () => ({
 	useToken: ({ tokenId }: { tokenId: string }) => ({
 		data: KNOWN_TOKENS_MAP[tokenId],
@@ -52,6 +56,23 @@ vi.mock("../../hooks/useToken", () => ({
 afterEach(cleanup);
 
 describe("SwapRiskWarning", () => {
+	it("states the share of what a transfer sends that its fees take, below the confirmation threshold too", () => {
+		swap.deliveryFee = { tokenId: "native::pah", plancks: 30_000_000n };
+		swap.totalIn = 1_000_000_000n;
+		swap.received = 995_000_000n;
+		swap.risk = {
+			level: "warn",
+			losses: [{ kind: "fees", ratio: 0.034 }],
+			headline: { kind: "fees", ratio: 0.034 },
+			cause: "delivery-fee",
+		};
+		render(<SwapRiskWarning />);
+
+		expect(screen.getByRole("alert").textContent).toContain(
+			"You pay 0.0046 DOT in fees (4.6% of what you send) to deliver 0.0995 DOT.",
+		);
+	});
+
 	it("says what a transfer pays in fees, transaction fee included, and what it delivers", () => {
 		swap.deliveryFee = { tokenId: "native::pah", plancks: 305_000_000n };
 		swap.totalIn = 1_000_000_000n;
@@ -65,7 +86,7 @@ describe("SwapRiskWarning", () => {
 		render(<SwapRiskWarning />);
 
 		expect(screen.getByRole("alert").textContent).toContain(
-			"You pay 0.0321 DOT in fees to deliver 0.0995 DOT.",
+			"You pay 0.0321 DOT in fees (32.1% of what you send) to deliver 0.0995 DOT.",
 		);
 		expect(
 			screen.getByLabelText("I accept these fees and want to transfer anyway"),

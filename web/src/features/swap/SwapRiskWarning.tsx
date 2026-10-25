@@ -1,6 +1,8 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, Fragment } from "react";
+import { useStablePlancksMulti } from "../../hooks/useStablePlancksMulti";
 import { getChainById } from "../../registry/chains/chains";
+import type { TokenAmount } from "../../registry/tokens/types";
 import { cn } from "../../utils/cn";
 import { formatFixedPercent, formatPercent } from "../../utils/formatPercent";
 import { isBigInt } from "../../utils/isBigInt";
@@ -8,6 +10,7 @@ import { useTransaction } from "../transaction/TransactionProvider";
 import { TokenAmountValue } from "./routes/AmmPathValues";
 import { useSwap } from "./SwapProvider";
 import {
+	getFeeShare,
 	getTransferFees,
 	isTransferRisk,
 	type LossCause,
@@ -39,6 +42,21 @@ const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	}
 };
 
+const NO_FEES: TokenAmount[] = [];
+
+const useFeeShare = (
+	sent: TokenAmount | undefined,
+	fees: TokenAmount[] | undefined = NO_FEES,
+) => {
+	const amounts = sent ? [sent, ...fees] : NO_FEES;
+	const { data: values } = useStablePlancksMulti({ inputs: amounts });
+	const [sentValue, ...feeValues] = amounts.map((amount, index) => ({
+		...amount,
+		value: values[index]?.stablePlancks,
+	}));
+	return sentValue && getFeeShare(sentValue, feeValues);
+};
+
 const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 	ratio,
 	cause,
@@ -56,6 +74,10 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 				? { tokenId: feeToken.id, plancks: feeEstimate }
 				: undefined,
 	});
+	const share = useFeeShare(
+		tokenIn && totalIn ? { tokenId: tokenIn.id, plancks: totalIn } : undefined,
+		fees,
+	);
 	if (!fees?.length || !tokenOut || !swapPlancksOut)
 		return (
 			<>
@@ -72,7 +94,9 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 					<TokenAmountValue {...fee} />
 				</Fragment>
 			))}{" "}
-			in fees to deliver{" "}
+			in fees
+			{share !== undefined && ` (${formatPercent(share)} of what you send)`} to
+			deliver{" "}
 			<TokenAmountValue tokenId={tokenOut.id} plancks={swapPlancksOut} />.
 		</>
 	);

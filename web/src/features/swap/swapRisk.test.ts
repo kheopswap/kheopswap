@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+	getFeeShare,
 	getRiskSubmitGate,
 	getSwapRisk,
 	getTransferFees,
@@ -342,6 +343,39 @@ describe("getTransferFees", () => {
 				deliveryFee: undefined,
 				transactionFee: undefined,
 			}),
+		).toBeUndefined();
+	});
+});
+
+describe("getFeeShare", () => {
+	const sent = {
+		tokenId: "asset::pah::1337",
+		plancks: 1_000_000n,
+		value: 1_000_000n,
+	};
+
+	it("divides the fees paid in the sent token by the amount sent", () => {
+		expect(
+			getFeeShare(sent, [
+				{ tokenId: sent.tokenId, plancks: 20_000n, value: undefined },
+			]),
+		).toBe(0.02);
+	});
+
+	it("adds the fees paid in another token by their value", () => {
+		expect(
+			getFeeShare(sent, [
+				{ tokenId: sent.tokenId, plancks: 20_000n, value: undefined },
+				{ tokenId: "native::pah", plancks: 316_000_000n, value: 130_000n },
+			]),
+		).toBeCloseTo(0.15);
+	});
+
+	it("is unknown while a fee in another token has no value", () => {
+		expect(
+			getFeeShare(sent, [
+				{ tokenId: "native::pah", plancks: 316_000_000n, value: undefined },
+			]),
 		).toBeUndefined();
 	});
 });

@@ -167,6 +167,24 @@ export const getTransferFees = ({
 	);
 };
 
+export type ValuedAmount = TokenAmount & { value: bigint | null | undefined };
+
+export const getFeeShare = (
+	sent: ValuedAmount,
+	fees: ValuedAmount[],
+): number | undefined => {
+	let share = 0;
+	for (const fee of fees) {
+		const feeShare =
+			fee.tokenId === sent.tokenId
+				? getShare(fee.plancks, sent.plancks)
+				: getShare(fee.value, sent.value);
+		if (feeShare === undefined) return undefined;
+		share += feeShare;
+	}
+	return share;
+};
+
 export const getRiskSubmitGate = (
 	gate: SubmitGate,
 	{
