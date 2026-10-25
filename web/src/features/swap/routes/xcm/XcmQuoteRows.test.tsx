@@ -158,9 +158,12 @@ describe("XcmQuoteRows fees", () => {
 		expect(value?.firstElementChild?.className).toContain("text-muted");
 	});
 
-	it("leaves out the delivery fee row once its estimate has failed", () => {
-		renderRows(settledQuote(undefined));
+	it.each([
+		["quoted at zero", quoted(0n), "0 DOT"],
+		["not estimated", undefined, ""],
+	])("keeps the delivery fee row when the fee is %s", (_, fee, text) => {
+		renderRows(settledQuote(fee));
 
-		expect(screen.queryByText("Delivery fee")).toBeNull();
+		expect(rowValue("Delivery fee")?.textContent).toBe(text);
 	});
 });
