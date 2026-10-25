@@ -15,6 +15,9 @@ overrides:
   deepmerge-ts: ^8.0.0
   postcss: ^8.5.23
 
+patchedDependencies:
+  '@polkadot-api/observable-client@0.19.4': 9ca0b855d7275aa93f00647dd6a957324b13772748620f378137507c33f97cfb
+
 importers:
 
   .:
@@ -5506,7 +5509,7 @@ snapshots:
       '@polkadot-api/json-rpc-provider': 0.2.0
       '@polkadot-api/known-chains': 0.12.5
       '@polkadot-api/metadata-compatibility': 0.7.2
-      '@polkadot-api/observable-client': 0.19.4(rxjs@7.8.2)
+      '@polkadot-api/observable-client': 0.19.4(patch_hash=9ca0b855d7275aa93f00647dd6a957324b13772748620f378137507c33f97cfb)(rxjs@7.8.2)
       '@polkadot-api/sm-provider': 0.3.10(@polkadot-api/smoldot@0.4.9(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       '@polkadot-api/smoldot': 0.4.9(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot-api/substrate-bindings': 0.21.2
@@ -5577,7 +5580,7 @@ snapshots:
       '@polkadot-api/metadata-builders': 0.15.2
       '@polkadot-api/substrate-bindings': 0.21.2
 
-  '@polkadot-api/observable-client@0.19.4(rxjs@7.8.2)':
+  '@polkadot-api/observable-client@0.19.4(patch_hash=9ca0b855d7275aa93f00647dd6a957324b13772748620f378137507c33f97cfb)(rxjs@7.8.2)':
     dependencies:
       '@polkadot-api/metadata-builders': 0.15.2
       '@polkadot-api/substrate-bindings': 0.21.2
@@ -8770,7 +8773,7 @@ snapshots:
       '@polkadot-api/logs-provider': 0.2.0
       '@polkadot-api/metadata-builders': 0.15.2
       '@polkadot-api/metadata-compatibility': 0.7.2
-      '@polkadot-api/observable-client': 0.19.4(rxjs@7.8.2)
+      '@polkadot-api/observable-client': 0.19.4(patch_hash=9ca0b855d7275aa93f00647dd6a957324b13772748620f378137507c33f97cfb)(rxjs@7.8.2)
       '@polkadot-api/pjs-signer': 0.9.0(rxjs@7.8.2)
       '@polkadot-api/raw-tx-creator': 0.5.0(rxjs@7.8.2)
       '@polkadot-api/signers-common': 0.4.0(rxjs@7.8.2)

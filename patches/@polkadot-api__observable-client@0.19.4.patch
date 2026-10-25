@@ -1,0 +1,35 @@
+diff --git a/dist/chainHead/enhancers/operationLimitRecovery.js b/dist/chainHead/enhancers/operationLimitRecovery.js
+index 9a7f3286a86704edce3a6f5e4481b7ef75005749..e765e08d3f69f1745e973a87999529d22d425d91 100644
+--- a/dist/chainHead/enhancers/operationLimitRecovery.js
++++ b/dist/chainHead/enhancers/operationLimitRecovery.js
+@@ -59,8 +59,17 @@ class PendingTaskQueue {
+     return !this.first;
+   }
+ }
++const LIMIT_RETRY_MS = 500;
+ const getWithRecovery = () => {
+   const tearDownOperations = /* @__PURE__ */ new Map();
++  let limitRetry;
++  const scheduleLimitRetry = () => {
++    if (limitRetry !== void 0) return;
++    limitRetry = setTimeout(() => {
++      limitRetry = void 0;
++      onEmptySlot();
++    }, LIMIT_RETRY_MS);
++  };
+   const setTeardown = (observable, cb) => {
+     tearDownOperations.set(observable, () => {
+       tearDownOperations.delete(observable);
+@@ -91,7 +100,11 @@ const getWithRecovery = () => {
+         observer.next(x);
+       },
+       error(e) {
+-        (isOperationLimit = e instanceof Error && e.name === OperationLimitError.errorName) ? addTask(data, true) : observer.error(e);
++        if (e instanceof Error && e.name === OperationLimitError.errorName) {
++          isOperationLimit = true;
++          addTask(data, true);
++          scheduleLimitRetry();
++        } else observer.error(e);
+       },
+       complete() {
+         observer.complete();
