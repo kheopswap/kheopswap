@@ -144,7 +144,7 @@ export const TokenAmountPicker: FC<{
 					</Shimmer>
 				)}
 			</div>
-			<div className="flex w-full items-center overflow-hidden text-xs">
+			<div className="flex w-full items-center gap-2 overflow-hidden text-xs">
 				<div
 					className={cn(
 						"grow truncate",
@@ -154,14 +154,17 @@ export const TokenAmountPicker: FC<{
 				>
 					{errorMessage ? (
 						<Tooltip>
-							<TooltipTrigger className={cn("text-error")}>
+							<TooltipTrigger className="block max-w-full truncate text-left text-error">
 								{errorMessage}
 							</TooltipTrigger>
 							<TooltipContent>{errorMessage}</TooltipContent>
 						</Tooltip>
 					) : hint ? (
 						<Tooltip>
-							<TooltipTrigger render={<span />} className="text-muted">
+							<TooltipTrigger
+								render={<span />}
+								className="block truncate text-muted"
+							>
 								{hint}
 							</TooltipTrigger>
 							<TooltipContent>{hint}</TooltipContent>
