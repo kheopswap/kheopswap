@@ -55,7 +55,7 @@ import {
 	getXcmCallSpendings,
 	getXcmSubmitGate,
 	isOriginDispatchFailure,
-	type XcmDestinationFee,
+	type XcmFee,
 	type XcmQuote,
 	type XcmReceived,
 } from "./xcmQuote";
@@ -65,13 +65,13 @@ export type XcmTransferDetails = {
 	route: XcmTransferRoute;
 	quote: XcmQuoteState;
 	received: XcmReceived | undefined;
-	destinationFee: XcmDestinationFee | undefined;
+	destinationFee: XcmFee | undefined;
 };
 
 type XcmPathSwapDetails = {
 	quote: XcmQuoteState;
 	received: XcmReceived | undefined;
-	destinationFee: XcmDestinationFee | undefined;
+	destinationFee: XcmFee | undefined;
 	pathQuote: AmmPathQuote | undefined;
 	priceImpact: number | undefined;
 	slippage: number;
@@ -416,6 +416,7 @@ export const useXcmRoute = ({
 		isLoading && !quote.data && lastQuote && lastQuote.totalIn === totalIn
 			? lastQuote.quote
 			: undefined;
+	const isReplayed = !!replayedQuote;
 	const shownQuote = useMemo(
 		(): XcmQuoteState =>
 			replayedQuote
@@ -445,7 +446,10 @@ export const useXcmRoute = ({
 		: lastQuote?.quote.destinationFee.plancks;
 	const received = useMemo((): XcmReceived | undefined => {
 		if (shownQuote.data?.success)
-			return { plancks: shownQuote.data.quote.received, isEstimate: false };
+			return {
+				plancks: shownQuote.data.quote.received,
+				isEstimate: isReplayed,
+			};
 		if (!route || !totalIn || !(isLoading || isBalanceShortfall))
 			return undefined;
 		const plancks = estimateXcmReceived({
@@ -457,6 +461,7 @@ export const useXcmRoute = ({
 		return plancks === undefined ? undefined : { plancks, isEstimate: true };
 	}, [
 		shownQuote.data,
+		isReplayed,
 		route,
 		totalIn,
 		isLoading,
@@ -464,13 +469,16 @@ export const useXcmRoute = ({
 		pathAmountOut,
 		lastQuote,
 	]);
-	const destinationFee = useMemo((): XcmDestinationFee | undefined => {
+	const destinationFee = useMemo((): XcmFee | undefined => {
 		if (shownQuote.data?.success)
-			return { ...shownQuote.data.quote.destinationFee, isEstimate: false };
+			return {
+				...shownQuote.data.quote.destinationFee,
+				isEstimate: isReplayed,
+			};
 		if (received?.isEstimate && lastQuote)
 			return { ...lastQuote.quote.destinationFee, isEstimate: true };
 		return undefined;
-	}, [shownQuote.data, received?.isEstimate, lastQuote]);
+	}, [shownQuote.data, isReplayed, received?.isEstimate, lastQuote]);
 
 	const transferRoute = route?.kind === "xcm-transfer" ? route : null;
 	const { data: existentialDepositOut } = useExistentialDeposit({

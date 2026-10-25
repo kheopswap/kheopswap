@@ -349,6 +349,8 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		expect(result.current.isLoadingAmountOut).toBe(false);
 		expect(result.current.details).toMatchObject({
 			quote: { isLoading: false, data: { success: true } },
+			received: { plancks: shownOut, isEstimate: true },
+			destinationFee: { isEstimate: true },
 		});
 
 		for (const finish of pendingDryRuns) finish();

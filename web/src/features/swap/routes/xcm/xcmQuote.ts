@@ -280,7 +280,7 @@ export const composeXcmQuote = (
 
 export type XcmReceived = { plancks: bigint; isEstimate: boolean };
 
-export type XcmDestinationFee = TokenAmount & { isEstimate: boolean };
+export type XcmFee = TokenAmount & { isEstimate: boolean };
 
 const takeFee = (
 	arriving: bigint | undefined,

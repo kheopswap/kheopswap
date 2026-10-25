@@ -307,7 +307,11 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
+			deliveryFee: {
+				tokenId: "native::pah",
+				plancks: 304850000n,
+				isEstimate: false,
+			},
 			sent: expect.any(BigInt),
 			data: {
 				success: true,
@@ -355,7 +359,11 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: { tokenId: "native::pah", plancks: 305450000n },
+			deliveryFee: {
+				tokenId: "native::pah",
+				plancks: 305450000n,
+				isEstimate: false,
+			},
 			sent: expect.any(BigInt),
 			data: {
 				success: true,
@@ -391,7 +399,11 @@ describe("useXcmQuote", () => {
 
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		await waitFor(() =>
-			expect(result.current.deliveryFee?.plancks).toBe(304850000n),
+			expect(result.current.deliveryFee).toEqual({
+				tokenId: "native::pah",
+				plancks: 304850000n,
+				isEstimate: true,
+			}),
 		);
 		expect(result.current.data).toEqual({
 			success: false,
@@ -430,7 +442,11 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toMatchObject({
 			isLoading: false,
-			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
+			deliveryFee: {
+				tokenId: "native::pah",
+				plancks: 304850000n,
+				isEstimate: false,
+			},
 			data: { success: false, failure: { kind: "destination-unavailable" } },
 		});
 	});
@@ -510,7 +526,11 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+			deliveryFee: {
+				tokenId: "hydration-asset::hydration::5",
+				plancks: 0n,
+				isEstimate: false,
+			},
 			sent: expect.any(BigInt),
 			data: {
 				success: true,
@@ -580,7 +600,11 @@ describe("useXcmQuote", () => {
 			await waitFor(() => expect(result.current.data).toBeDefined());
 			expect(result.current).toEqual({
 				isLoading: false,
-				deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+				deliveryFee: {
+					tokenId: "hydration-asset::hydration::5",
+					plancks: 0n,
+					isEstimate: false,
+				},
 				sent: expect.any(BigInt),
 				data: {
 					success: true,

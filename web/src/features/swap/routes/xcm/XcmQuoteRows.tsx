@@ -20,7 +20,7 @@ import type { XcmQuoteState } from "./useXcmQuote";
 import {
 	describeXcmQuoteFailure,
 	getTotalDebited,
-	type XcmDestinationFee,
+	type XcmFee,
 	type XcmReceived,
 } from "./xcmQuote";
 
@@ -104,7 +104,7 @@ const TotalDebitedValue: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
 			: undefined;
 	const isEstimatingCallFee =
 		!!transaction.call && !isCallFeeEstimated && !errorFeeEstimate;
-	if (!quote.deliveryFee || !transactionFee)
+	if (!quote.deliveryFee || quote.deliveryFee.isEstimate || !transactionFee)
 		return quote.isLoading || isLoadingCall || isEstimatingCallFee
 			? feeShimmer
 			: null;
@@ -113,9 +113,7 @@ const TotalDebitedValue: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
 	return amounts.length ? <TokenAmounts amounts={amounts} /> : null;
 };
 
-const DestinationFeeValue: FC<{ fee: XcmDestinationFee }> = ({
-	fee: { isEstimate, ...amount },
-}) => (
+const FeeValue: FC<{ fee: XcmFee }> = ({ fee: { isEstimate, ...amount } }) => (
 	<span className={cn(isEstimate && "text-muted")}>
 		<TokenAmountValue {...amount} />
 		{isEstimate && " (est.)"}
@@ -139,7 +137,7 @@ const ReceivedValue: FC<{ received: XcmReceived; isLoading: boolean }> = ({
 export const XcmQuoteRows: FC<{
 	quote: XcmQuoteState;
 	received: XcmReceived | undefined;
-	destinationFee: XcmDestinationFee | undefined;
+	destinationFee: XcmFee | undefined;
 	route: XcmRoute;
 }> = ({ quote, received, destinationFee, route }) => {
 	const origin = getChainById(route.origin).name;
@@ -171,7 +169,7 @@ export const XcmQuoteRows: FC<{
 					}
 					value={
 						quote.deliveryFee ? (
-							<TokenAmountValue {...quote.deliveryFee} />
+							<FeeValue fee={quote.deliveryFee} />
 						) : (
 							feeShimmer
 						)
@@ -187,7 +185,7 @@ export const XcmQuoteRows: FC<{
 				}
 				value={
 					loadingShimmer ||
-					(destinationFee && <DestinationFeeValue fee={destinationFee} />)
+					(destinationFee && <FeeValue fee={destinationFee} />)
 				}
 			/>
 			<FormSummaryRow

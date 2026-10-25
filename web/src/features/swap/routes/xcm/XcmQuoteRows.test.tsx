@@ -5,7 +5,7 @@ import type { TokenId } from "../../../../registry/tokens/types";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
 import { XcmQuoteRows } from "./XcmQuoteRows";
-import type { XcmDestinationFee } from "./xcmQuote";
+import type { XcmFee } from "./xcmQuote";
 
 const DOT_ID = "native::pah" as TokenId;
 
@@ -51,6 +51,12 @@ const ROUTE = {
 	tokenIdOut: DOT_ID,
 } as XcmRoute;
 
+const quoted = (plancks: bigint): XcmFee => ({
+	tokenId: DOT_ID,
+	plancks,
+	isEstimate: false,
+});
+
 const settledQuote = (
 	deliveryFee: XcmQuoteState["deliveryFee"],
 ): XcmQuoteState => ({
@@ -63,7 +69,7 @@ const settledQuote = (
 const rowValue = (label: string) =>
 	screen.getByText(label).closest(".flex.w-full")?.lastElementChild;
 
-const renderRows = (quote: XcmQuoteState, destinationFee?: XcmDestinationFee) =>
+const renderRows = (quote: XcmQuoteState, destinationFee?: XcmFee) =>
 	render(
 		<XcmQuoteRows
 			quote={quote}
@@ -87,13 +93,13 @@ describe("XcmQuoteRows total debited", () => {
 	it("is empty before an amount is entered", () => {
 		state.totalIn = undefined;
 		state.call = undefined;
-		renderRows(settledQuote({ tokenId: DOT_ID, plancks: 0n }));
+		renderRows(settledQuote(quoted(0n)));
 
 		expect(rowValue("Total debited")?.textContent).toBe("");
 	});
 
 	it("adds what the call spends and its transaction fee", () => {
-		renderRows(settledQuote({ tokenId: DOT_ID, plancks: 305_000_000n }));
+		renderRows(settledQuote(quoted(305_000_000n)));
 
 		expect(rowValue("Total debited")?.textContent).toBe("0.102 DOT");
 	});
@@ -101,7 +107,19 @@ describe("XcmQuoteRows total debited", () => {
 	it("shimmers while the call for a new amount is built, whatever fee is known", () => {
 		state.call = undefined;
 		state.isLoadingCall = true;
-		renderRows(settledQuote({ tokenId: DOT_ID, plancks: 305_000_000n }));
+		renderRows(settledQuote(quoted(305_000_000n)));
+
+		expect(rowValue("Total debited")?.textContent).toBe("");
+		expect(
+			rowValue("Total debited")?.querySelector("[data-testid=shimmer]"),
+		).toBeTruthy();
+	});
+
+	it("shimmers while only the fake call's delivery fee is known", () => {
+		renderRows({
+			...settledQuote({ ...quoted(305_000_000n), isEstimate: true }),
+			isLoading: true,
+		});
 
 		expect(rowValue("Total debited")?.textContent).toBe("");
 		expect(
@@ -111,7 +129,7 @@ describe("XcmQuoteRows total debited", () => {
 
 	it("shimmers while only the fake call's fee is known", () => {
 		state.isCallFeeEstimated = false;
-		renderRows(settledQuote({ tokenId: DOT_ID, plancks: 305_000_000n }));
+		renderRows(settledQuote(quoted(305_000_000n)));
 
 		expect(
 			rowValue("Total debited")?.querySelector("[data-testid=shimmer]"),
@@ -121,7 +139,7 @@ describe("XcmQuoteRows total debited", () => {
 
 describe("XcmQuoteRows fees", () => {
 	it("shows the last quote's destination fee as an estimate", () => {
-		renderRows(settledQuote({ tokenId: DOT_ID, plancks: 0n }), {
+		renderRows(settledQuote(quoted(0n)), {
 			tokenId: DOT_ID,
 			plancks: 17_000_000n,
 			isEstimate: true,
@@ -129,6 +147,14 @@ describe("XcmQuoteRows fees", () => {
 
 		const value = rowValue("Polkadot Asset Hub fee");
 		expect(value?.textContent).toBe("0.0017 DOT (est.)");
+		expect(value?.firstElementChild?.className).toContain("text-muted");
+	});
+
+	it("marks the fake call's delivery fee as an estimate", () => {
+		renderRows(settledQuote({ ...quoted(305_000_000n), isEstimate: true }));
+
+		const value = rowValue("Delivery fee");
+		expect(value?.textContent).toBe("0.0305 DOT (est.)");
 		expect(value?.firstElementChild?.className).toContain("text-muted");
 	});
 

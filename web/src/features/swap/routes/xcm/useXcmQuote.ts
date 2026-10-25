@@ -12,7 +12,7 @@ import { useDryRun } from "../../../../hooks/useDryRun";
 import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { ChainId } from "../../../../registry/chains/types";
-import type { TokenAmount } from "../../../../registry/tokens/types";
+import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
@@ -29,14 +29,26 @@ import {
 	parseDeliveryFee,
 	parseDestinationDryRun,
 	parseOriginDryRun,
+	type XcmFee,
 	type XcmQuoteResult,
 } from "./xcmQuote";
 
 export type XcmQuoteState = {
 	isLoading: boolean;
 	data: XcmQuoteResult | undefined;
-	deliveryFee: TokenAmount | undefined;
+	deliveryFee: XcmFee | undefined;
 	sent: bigint | undefined;
+};
+
+const getDeliveryFee = (
+	tokenId: TokenId,
+	quoted: bigint | null | undefined,
+	estimated: bigint | null | undefined,
+): XcmFee | undefined => {
+	if (isBigInt(quoted)) return { tokenId, plancks: quoted, isEstimate: false };
+	if (isBigInt(estimated))
+		return { tokenId, plancks: estimated, isEstimate: true };
+	return undefined;
 };
 
 const getParachainLocation = (chainId: ChainId) =>
@@ -224,8 +236,6 @@ export const useXcmQuote = ({
 		deliveryFee.data,
 	]);
 
-	const deliveryFeePlancks = deliveryFee.data ?? estimatedDeliveryFee.data;
-
 	return {
 		isLoading:
 			(balances.isLoading && !!call) ||
@@ -233,12 +243,12 @@ export const useXcmQuote = ({
 			(!!message && (destination.isFetching || deliveryFee.isLoading)),
 		data,
 		sent: originLeg?.success ? originLeg.value.sent : undefined,
-		deliveryFee:
-			route && isBigInt(deliveryFeePlancks)
-				? {
-						tokenId: getDeliveryFeeTokenId(route.origin),
-						plancks: deliveryFeePlancks,
-					}
-				: undefined,
+		deliveryFee: route
+			? getDeliveryFee(
+					getDeliveryFeeTokenId(route.origin),
+					deliveryFee.data,
+					estimatedDeliveryFee.data,
+				)
+			: undefined,
 	};
 };
