@@ -6,10 +6,12 @@ import { Shimmer } from "../../components/Shimmer";
 import { StableValue } from "../../components/StableValue";
 import { Tokens } from "../../components/Tokens";
 import { useOpenClose } from "../../hooks/useOpenClose";
+import { getChainById, isChainIdAssetHub } from "../../registry/chains/chains";
 import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import type { BalanceWithStable } from "../../types/balances";
 import { cn } from "../../utils/cn";
+import { isEthereumAddress } from "../../utils/ethereumAddress";
 import { getAccountName } from "../../utils/getAccountName";
 import { hasValueLine } from "../../utils/hasValueLine";
 import { isApplicableBalance } from "../../utils/isApplicableBalance";
@@ -45,6 +47,10 @@ export const TokenDetailsBalances: FC<{ token: Token }> = ({ token }) => {
 				.sort((a, b) => sortBalances(a.balance, b.balance)),
 		[accounts, balances, token.id],
 	);
+
+	const unsupportedAccounts = isChainIdAssetHub(token.chainId)
+		? []
+		: accounts.filter((account) => isEthereumAddress(account.address));
 
 	return (
 		<div>
@@ -102,7 +108,7 @@ export const TokenDetailsBalances: FC<{ token: Token }> = ({ token }) => {
 						</div>
 					))}
 				</div>
-			) : (
+			) : unsupportedAccounts.length ? null : (
 				<div className="my-4 rounded-control bg-surface-2 p-4 text-muted">
 					<button
 						type="button"
@@ -112,6 +118,13 @@ export const TokenDetailsBalances: FC<{ token: Token }> = ({ token }) => {
 						Connect your accounts
 					</button>{" "}
 					to browse your balances.
+				</div>
+			)}
+			{!!unsupportedAccounts.length && (
+				<div className="my-4 rounded-control bg-surface-2 p-4 text-muted">
+					Ethereum accounts are not supported on{" "}
+					{getChainById(token.chainId).name}: the same address is a different
+					account there.
 				</div>
 			)}
 			<AccountSelectDrawer
