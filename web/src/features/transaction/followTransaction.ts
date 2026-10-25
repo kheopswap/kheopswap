@@ -23,6 +23,7 @@ import type {
 } from "../../state/transactions/types";
 import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
 import { logger } from "../../utils/logger";
+import { withChainTimeout } from "../../utils/withTimeout";
 
 const TX_UNCONFIRMED_MS = 10 * 60 * 1000;
 const EXPIRY_WATCH_RETRY_MS = 10_000;
@@ -106,9 +107,14 @@ const settleTimeout = async (
 ): Promise<FollowUpTxEvent> => {
 	try {
 		const api = await getApi(submission.chainId);
-		const { nonce } = await api.query.System.Account.getValue(
-			submission.signer,
-			{ at: "finalized" },
+		const { nonce } = await withChainTimeout(
+			submission.chainId,
+			(signal) =>
+				api.query.System.Account.getValue(submission.signer, {
+					at: "finalized",
+					signal,
+				}),
+			new AbortController().signal,
 		);
 		return getVerdict(nonce, submission, { type: "unknown" });
 	} catch (readError) {

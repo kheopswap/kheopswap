@@ -11,6 +11,7 @@ import {
 	transactions$,
 } from "../../state/transactions/transactionStore";
 import { holdsNonce } from "../../state/transactions/types";
+import { CHAIN_QUERY_TIMEOUT_MS } from "../../utils/withTimeout";
 import { useTransactionSubmit } from "./useTransactionSubmit";
 
 vi.mock("../../utils/notifyError", () => ({ notifyError: vi.fn() }));
@@ -20,6 +21,7 @@ type FinalizedBlock = { number: number; nonce: number };
 const chain = vi.hoisted(() => ({
 	finalized$: undefined as unknown as BehaviorSubject<FinalizedBlock>,
 	isDown: false,
+	isStalled: false,
 }));
 
 const ethereum = vi.hoisted(() => ({
@@ -63,7 +65,11 @@ vi.mock("../../papi/getApi", async () => {
 							})),
 						),
 					getValue: () =>
-						firstValueFrom(finalized$().pipe(map(({ nonce }) => ({ nonce })))),
+						chain.isStalled
+							? new Promise<never>(() => {})
+							: firstValueFrom(
+									finalized$().pipe(map(({ nonce }) => ({ nonce }))),
+								),
 				},
 			},
 		},
@@ -155,6 +161,7 @@ const flush = () => new Promise<void>((resolve) => process.nextTick(resolve));
 
 beforeEach(() => {
 	chain.isDown = false;
+	chain.isStalled = false;
 	chain.finalized$.next({ number: 100, nonce: 1 });
 	ethereum.txEvents$ = new Subject<TxEvent>();
 });
@@ -382,6 +389,17 @@ describe("useTransactionSubmit", () => {
 			chain.isDown = true;
 			txEvents$.error(timeout);
 			await flush();
+
+			expect((await getRecord()).status).toBe("unknown");
+		});
+
+		it("cannot confirm a timed out transaction when the chain read stalls", async () => {
+			vi.useFakeTimers();
+			const txEvents$ = await submitEthereum();
+			txEvents$.next(broadcasted);
+			chain.isStalled = true;
+			txEvents$.error(timeout);
+			await vi.advanceTimersByTimeAsync(CHAIN_QUERY_TIMEOUT_MS);
 
 			expect((await getRecord()).status).toBe("unknown");
 		});
