@@ -107,4 +107,18 @@ describe("SwapRiskWarning", () => {
 			"You receive 53.67% less value than you send, mostly from price impact.",
 		);
 	});
+
+	it("prints the price impact with two decimals, as the summary row does", () => {
+		swap.risk = {
+			level: "confirm",
+			losses: [{ kind: "price-impact", ratio: 0.53 }],
+			headline: { kind: "price-impact", ratio: 0.53 },
+			cause: null,
+		};
+		render(<SwapRiskWarning />);
+
+		expect(screen.getByRole("alert").textContent).toContain(
+			"Price impact is 53.00%",
+		);
+	});
 });

@@ -2,7 +2,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, Fragment } from "react";
 import { getChainById } from "../../registry/chains/chains";
 import { cn } from "../../utils/cn";
-import { formatPercent } from "../../utils/formatPercent";
+import { formatFixedPercent, formatPercent } from "../../utils/formatPercent";
 import { isBigInt } from "../../utils/isBigInt";
 import { useTransaction } from "../transaction/TransactionProvider";
 import { TokenAmountValue } from "./routes/AmmPathValues";
@@ -84,7 +84,7 @@ const LossText: FC<{ loss: SwapLoss; cause: LossCause | null }> = ({
 }) => {
 	switch (kind) {
 		case "price-impact":
-			return `Price impact is ${formatPercent(ratio)}: this trade moves the pool price against you.`;
+			return `Price impact is ${formatFixedPercent(ratio)}: this trade moves the pool price against you.`;
 		case "value-loss":
 			return (
 				<>
