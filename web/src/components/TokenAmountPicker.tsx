@@ -17,7 +17,6 @@ import { StablePrice } from "./StablePrice";
 import { Styles } from "./styles";
 import { TokenSelectButton } from "./TokenSelectButton";
 import { Tokens } from "./Tokens";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
 const TokenInput = forwardRef<
 	HTMLInputElement,
@@ -144,36 +143,17 @@ export const TokenAmountPicker: FC<{
 					</Shimmer>
 				)}
 			</div>
-			<div className="flex w-full items-center gap-2 overflow-hidden text-xs">
-				<div
-					className={cn(
-						"grow truncate",
-						!!errorMessage && "text-error",
-						isComputingValue && "invisible",
-					)}
-				>
+			<div className="flex w-full items-start gap-2 text-xs">
+				<div className={cn("min-w-0 grow", isComputingValue && "invisible")}>
 					{errorMessage ? (
-						<Tooltip>
-							<TooltipTrigger className="block max-w-full truncate text-left text-error">
-								{errorMessage}
-							</TooltipTrigger>
-							<TooltipContent>{errorMessage}</TooltipContent>
-						</Tooltip>
+						<p className="text-error">{errorMessage}</p>
 					) : hint ? (
-						<Tooltip>
-							<TooltipTrigger
-								render={<span />}
-								className="block truncate text-muted"
-							>
-								{hint}
-							</TooltipTrigger>
-							<TooltipContent>{hint}</TooltipContent>
-						</Tooltip>
+						<p className="text-muted">{hint}</p>
 					) : (
 						<StablePrice
 							plancks={plancks}
 							tokenId={tokenId}
-							className="text-muted"
+							className="block truncate text-muted"
 						/>
 					)}
 				</div>
