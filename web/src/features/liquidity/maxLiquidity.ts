@@ -25,9 +25,11 @@ export const getSpendableBalance = (balance: bigint, margin: bigint) =>
 
 export type Side = 0 | 1;
 
+export type MaxLimit = { side: Side; kept: bigint; capped: boolean };
+
 export type MaxLiquidity = {
 	amounts: [bigint, bigint];
-	cappedBy: { side: Side; kept: bigint } | null;
+	limit: MaxLimit;
 };
 
 export const getMaxLiquidity = ({
@@ -50,20 +52,29 @@ export const getMaxLiquidity = ({
 	const amounts: [bigint, bigint] = [0n, 0n];
 	amounts[side] = spendable[side];
 	amounts[other] = (spendable[side] * reserves[other]) / reserves[side];
-	if (amounts[other] <= spendable[other]) return { amounts, cappedBy: null };
+	if (amounts[other] <= spendable[other])
+		return {
+			amounts,
+			limit: { side, kept: balances[side] - spendable[side], capped: false },
+		};
 
 	amounts[other] = spendable[other];
 	amounts[side] = (spendable[other] * reserves[side]) / reserves[other];
 	return {
 		amounts,
-		cappedBy: { side: other, kept: balances[other] - spendable[other] },
+		limit: {
+			side: other,
+			kept: balances[other] - spendable[other],
+			capped: true,
+		},
 	};
 };
 
-export const getMaxCapHint = (
-	kept: bigint,
+export const getMaxHint = (
+	{ kept, capped }: Pick<MaxLimit, "kept" | "capped">,
 	token: Pick<Token, "decimals" | "symbol">,
-) =>
-	kept > 0n
-		? `Capped, ${formatDecimals(plancksToTokens(kept, token.decimals))} ${token.symbol} kept`
-		: "Capped";
+) => {
+	const keptText = `${formatDecimals(plancksToTokens(kept, token.decimals))} ${token.symbol} kept`;
+	if (capped) return kept > 0n ? `Capped, ${keptText}` : "Capped";
+	return kept > 0n ? keptText : null;
+};

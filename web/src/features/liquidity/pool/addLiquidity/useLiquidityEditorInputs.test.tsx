@@ -23,7 +23,7 @@ vi.mock("../LiquidityPoolPageProvider", () => ({
 }));
 vi.mock("../../../transaction/TransactionProvider", () => ({
 	useTransaction: () => ({
-		feeEstimate: 10n,
+		feeEstimate: 100_000_000n,
 		feeToken: native,
 		insufficientBalances: {},
 	}),
@@ -69,5 +69,16 @@ describe("useLiquidityEditorInputs", () => {
 			1_000_000n,
 		]);
 		expect(result.current.errorMessageAsset).toBeUndefined();
+	});
+
+	it("says what the maxed side keeps when its own balance bounds the max", () => {
+		const { result } = renderHook(useLiquidityEditorInputs, {
+			wrapper: AddLiquidityProvider,
+		});
+
+		act(() => result.current.handleMaxClick(0)());
+
+		expect(result.current.hintNative).toBe("0.02 PAS kept");
+		expect(result.current.hintAsset).toBeNull();
 	});
 });

@@ -7,12 +7,14 @@ import {
 	type LiquidityAmounts,
 	NO_LIQUIDITY_AMOUNTS,
 } from "../../liquidityAmounts";
+import type { MaxLimit } from "../../maxLiquidity";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidityExtrinsic } from "./useAddLiquidityExtrinsic";
 
 const useAddLiquidityProvider = () => {
 	const [amounts, setAmounts] =
 		useState<LiquidityAmounts>(NO_LIQUIDITY_AMOUNTS);
+	const [maxLimit, setMaxLimit] = useState<MaxLimit | null>(null);
 
 	const {
 		assetHub,
@@ -79,6 +81,7 @@ const useAddLiquidityProvider = () => {
 
 	const onReset = useCallback(() => {
 		setAmounts(NO_LIQUIDITY_AMOUNTS);
+		setMaxLimit(null);
 	}, []);
 
 	return {
@@ -86,6 +89,8 @@ const useAddLiquidityProvider = () => {
 		fakeCall,
 		amounts,
 		setAmounts,
+		maxLimit,
+		setMaxLimit,
 		liquidityToAdd,
 		missingSide,
 		nativeExistentialDeposit,

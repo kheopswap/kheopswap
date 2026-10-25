@@ -15,7 +15,7 @@ import { getAddressFromAccountField } from "../../../utils/getAddressFromAccount
 import { isBigInt } from "../../../utils/isBigInt";
 import { provideContext } from "../../../utils/provideContext";
 import { getLiquidityToAdd, type LiquidityAmounts } from "../liquidityAmounts";
-import type { Side } from "../maxLiquidity";
+import type { MaxLimit, Side } from "../maxLiquidity";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 
@@ -124,18 +124,25 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 
 	const onReset = useCallback(() => {
 		setFormData(defaultValues);
+		setMaxLimit(null);
 	}, [defaultValues]);
 
 	const onToken2Change = useCallback((tokenId: TokenId) => {
 		setFormData((prev) => ({ ...prev, token2Id: tokenId }));
 	}, []);
 
-	const onAmountChange = useCallback((side: Side, amount: string) => {
-		setFormData((prev) => ({
-			...prev,
-			[side === 0 ? "token1Amount" : "token2Amount"]: amount,
-		}));
-	}, []);
+	const [maxLimit, setMaxLimit] = useState<MaxLimit | null>(null);
+
+	const onAmountChange = useCallback(
+		(side: Side, amount: string, limit: MaxLimit | null = null) => {
+			setFormData((prev) => ({
+				...prev,
+				[side === 0 ? "token1Amount" : "token2Amount"]: amount,
+			}));
+			setMaxLimit(limit);
+		},
+		[],
+	);
 
 	const onFromChange = useCallback((accountId: string) => {
 		setFormData((prev) => ({ ...prev, from: accountId }));
@@ -177,6 +184,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		onToken2Change,
 		amounts,
 		onAmountChange,
+		maxLimit,
 		liquidityToAdd,
 		accountBalances,
 		isLoadingAccountBalances,

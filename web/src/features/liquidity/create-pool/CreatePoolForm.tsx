@@ -10,6 +10,7 @@ import { useTransaction } from "../../transaction/TransactionProvider";
 import { TransactionSubmitButton } from "../../transaction/TransactionSubmitButton";
 import { getMissingLiquiditySide } from "../liquidityAmounts";
 import {
+	getMaxHint,
 	getSpendableBalance,
 	getSpendingMargin,
 	type Side,
@@ -70,6 +71,7 @@ const AddLiquidityEditor: FC = () => {
 		isLoadingAccountBalances,
 		amounts,
 		onAmountChange,
+		maxLimit,
 		liquidityToAdd,
 		onToken2Change,
 		token1ExistentialDeposit,
@@ -103,10 +105,12 @@ const AddLiquidityEditor: FC = () => {
 			const balance = accountBalances[side];
 			if (!isBigInt(balance) || !isBigInt(margin)) return;
 
-			onAmountChange(
+			const max = getSpendableBalance(balance, margin);
+			onAmountChange(side, plancksToTokens(max, token.decimals), {
 				side,
-				plancksToTokens(getSpendableBalance(balance, margin), token.decimals),
-			);
+				kept: balance - max,
+				capped: false,
+			});
 		},
 		[
 			accountBalances,
@@ -126,6 +130,10 @@ const AddLiquidityEditor: FC = () => {
 			side === missingSide
 				? "Enter both amounts, or neither"
 				: insufficientBalances[token?.id ?? ""],
+	);
+
+	const [hintNative, hintAsset] = [token1, token2].map((token, side) =>
+		token && maxLimit?.side === side ? getMaxHint(maxLimit, token) : null,
 	);
 
 	const nativeTokens = useMemo(() => keyBy([token1], "id"), [token1]);
@@ -148,6 +156,7 @@ const AddLiquidityEditor: FC = () => {
 				isLoading={false}
 				onTokenChange={() => {}}
 				errorMessage={errorMessageNative}
+				hint={hintNative}
 				disableTokenButton
 				balance={accountBalances?.[0]}
 				isLoadingBalance={isLoadingAccountBalances}
@@ -168,6 +177,7 @@ const AddLiquidityEditor: FC = () => {
 				isLoading={isLoadingTokens}
 				onTokenChange={onToken2Change}
 				errorMessage={errorMessageAsset}
+				hint={hintAsset}
 				balance={accountBalances?.[1]}
 				isLoadingBalance={isLoadingAccountBalances}
 				onMaxClick={handleMaxClick(1)}

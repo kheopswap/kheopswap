@@ -1,21 +1,14 @@
 import { keyBy } from "lodash-es";
-import {
-	type FormEventHandler,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
+import { type FormEventHandler, useCallback, useMemo } from "react";
 import type { Token } from "../../../../registry/tokens/types";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { plancksToTokens } from "../../../../utils/plancks";
 import { useTransaction } from "../../../transaction/TransactionProvider";
 import { pairLiquidityAmount } from "../../liquidityAmounts";
 import {
-	getMaxCapHint,
+	getMaxHint,
 	getMaxLiquidity,
 	getSpendingMargin,
-	type MaxLiquidity,
 	type Side,
 } from "../../maxLiquidity";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
@@ -34,6 +27,8 @@ export const useLiquidityEditorInputs = () => {
 	const {
 		amounts,
 		setAmounts,
+		maxLimit,
+		setMaxLimit,
 		liquidityToAdd,
 		missingSide,
 		nativeExistentialDeposit,
@@ -47,13 +42,10 @@ export const useLiquidityEditorInputs = () => {
 		[assetToken, nativeToken],
 	);
 
-	const [maxCappedBy, setMaxCappedBy] =
-		useState<MaxLiquidity["cappedBy"]>(null);
-
 	const handleTokensInput = useCallback(
 		(side: Side): FormEventHandler<HTMLInputElement> =>
 			(e) => {
-				setMaxCappedBy(null);
+				setMaxLimit(null);
 				const text = e.currentTarget.value;
 				if (!nativeToken || !assetToken) return;
 
@@ -73,7 +65,7 @@ export const useLiquidityEditorInputs = () => {
 					}),
 				);
 			},
-		[assetToken, nativeToken, reserves, setAmounts],
+		[assetToken, nativeToken, reserves, setAmounts, setMaxLimit],
 	);
 
 	const handleMaxClick = useCallback(
@@ -103,7 +95,7 @@ export const useLiquidityEditorInputs = () => {
 
 			const {
 				amounts: [maxNative, maxAsset],
-				cappedBy,
+				limit,
 			} = getMaxLiquidity({
 				balances: accountBalances,
 				reserves,
@@ -111,7 +103,7 @@ export const useLiquidityEditorInputs = () => {
 				side,
 			});
 
-			setMaxCappedBy(cappedBy);
+			setMaxLimit(limit);
 			setAmounts([
 				plancksToTokens(maxNative, nativeToken.decimals),
 				plancksToTokens(maxAsset, assetToken.decimals),
@@ -126,22 +118,15 @@ export const useLiquidityEditorInputs = () => {
 			feeEstimate,
 			nativeExistentialDeposit,
 			setAmounts,
+			setMaxLimit,
 			assetExistentialDeposit,
 		],
 	);
 
-	useEffect(() => {
-		if (liquidityToAdd === null) setMaxCappedBy(null);
-	}, [liquidityToAdd]);
-
-	const [hintNative, hintAsset] = useMemo(() => {
-		const hints: [string | null, string | null] = [null, null];
-		const cappingToken =
-			maxCappedBy && [nativeToken, assetToken][maxCappedBy.side];
-		if (maxCappedBy && cappingToken)
-			hints[maxCappedBy.side] = getMaxCapHint(maxCappedBy.kept, cappingToken);
-		return hints;
-	}, [maxCappedBy, nativeToken, assetToken]);
+	const [hintNative, hintAsset] = [nativeToken, assetToken].map(
+		(token, side) =>
+			token && maxLimit?.side === side ? getMaxHint(maxLimit, token) : null,
+	);
 
 	const [errorMessageNative, errorMessageAsset] = useMemo(
 		() =>
