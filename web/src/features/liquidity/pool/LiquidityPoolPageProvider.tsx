@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useParams } from "react-router";
 import { useNativeToken } from "../../../hooks/useNativeToken";
+import { usePersistedFormDraft } from "../../../hooks/usePersistedFormDraft";
 import { usePoolByPoolAssetId } from "../../../hooks/usePoolByPoolAssetId";
 import { usePoolReserves } from "../../../hooks/usePoolReserves";
 import { useResolvedSubstrateAddress } from "../../../hooks/useResolvedSubstrateAddress";
@@ -12,16 +13,21 @@ import { provideContext } from "../../../utils/provideContext";
 import { useAccountBalancesForPool } from "./useAccountBalancesForPool";
 import { usePoolPosition } from "./usePoolPosition";
 
+const POOL_PAGE_DEFAULTS = { from: "" };
+
 // provides informations that are common between add & remove liquidity pages
 const useLiquidityPoolPageProvider = () => {
 	const { poolAssetId } = useParams();
 
 	const { assetHub } = useRelayChains();
-	const [defaultAccountId, setDefaultAccountId] =
-		useSetting("defaultAccountId");
+	const [{ from }, setFormData] = usePersistedFormDraft(POOL_PAGE_DEFAULTS);
+	const onFromChange = useCallback(
+		(accountId: string) => setFormData({ from: accountId }),
+		[setFormData],
+	);
 	const [lpSlippage, setLpSlippage] = useSetting("lpSlippage");
 
-	const account = useWalletAccount({ id: defaultAccountId });
+	const account = useWalletAccount({ id: from });
 	const address = useMemo(() => account?.address ?? null, [account]);
 	const { resolvedAddress: resolvedSubstrateAddress } =
 		useResolvedSubstrateAddress({
@@ -71,8 +77,8 @@ const useLiquidityPoolPageProvider = () => {
 		position,
 		accountBalances,
 		isLoadingAccountBalances,
-		defaultAccountId,
-		setDefaultAccountId,
+		from,
+		onFromChange,
 		lpSlippage,
 		setLpSlippage,
 	};
