@@ -1,4 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import type { FC } from "react";
 import { Shimmer } from "../../components/Shimmer";
 import {
 	Tooltip,
@@ -22,7 +23,7 @@ export type SimulationVerdict = {
 const DRY_RUN_CAVEAT =
 	"Dry runs aren't always reliable as they are unaware of details that are only provided in signatures, such as which asset to use to pay for fees.";
 const FEE_NOT_CHARGED =
-	"The simulation runs the call without charging its fee, so it cannot tell whether the fee can be paid. The amount field and the fee row flag a fee shortfall.";
+	"The simulation runs the call without charging its fee, so it cannot tell whether the fee can be paid. The message under the amount tells whether the fee and the account minimum can be paid.";
 
 export const getSimulationVerdict = ({
 	dryRun,
@@ -63,7 +64,9 @@ export const getSimulationVerdict = ({
 	};
 };
 
-export const TransactionDryRunSummaryValue = () => {
+export const TransactionDryRunSummaryValue: FC<{ isBlocked?: boolean }> = ({
+	isBlocked = false,
+}) => {
 	const {
 		call,
 		chainId,
@@ -76,7 +79,12 @@ export const TransactionDryRunSummaryValue = () => {
 
 	const { data: dryRunErrorMessage } = useDryRunError({ chainId, dryRun });
 
-	if (!call) return <span className="text-muted">Nothing to simulate</span>;
+	if (!call)
+		return (
+			<span className="text-muted">
+				{isBlocked ? "Not run" : "Nothing to simulate"}
+			</span>
+		);
 
 	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
 
