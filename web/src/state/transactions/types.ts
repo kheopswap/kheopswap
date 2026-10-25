@@ -162,3 +162,14 @@ export const getCurrentInclusion = (
 
 export const getIncludedTxEvents = (txEvents: FollowUpTxEvents): TxEvents =>
 	getCurrentInclusion(txEvents)?.events ?? [];
+
+const hasLeftNonceUnused = ({ status, txEvents }: TransactionRecord): boolean =>
+	status === "expired" ||
+	(status === "failed" && getCurrentInclusion(txEvents) === null);
+
+// The chain reports the nonce at best, so an included transaction holds its nonce
+// until the chain has moved past it.
+export const holdsNonce = (
+	tx: TransactionRecord,
+	chainNonce: number,
+): boolean => !hasLeftNonceUnused(tx) && tx.nonce >= chainNonce;

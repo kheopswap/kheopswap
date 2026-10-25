@@ -5,7 +5,7 @@ import type { ChainId } from "../../registry/chains/types";
 import type { Token, TokenId } from "../../registry/tokens/types";
 import { useTransactionRecords } from "../../state/transactions/transactionStore";
 import {
-	isAwaitingInclusion,
+	holdsNonce,
 	type TransactionFollowUp,
 } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
@@ -110,15 +110,17 @@ const useTransactionProvider = ({
 
 	const transactionRecords = useTransactionRecords();
 	const signerAddress = ethereum.account?.address;
-	const hasTransactionAwaitingInclusion = useMemo(
+	const chainNonce = fees.options?.nonce;
+	const isNonceHeld = useMemo(
 		() =>
+			chainNonce === undefined ||
 			transactionRecords.some(
 				(tx) =>
 					tx.account.address === signerAddress &&
 					tx.feeToken.chainId === chainId &&
-					isAwaitingInclusion(tx),
+					holdsNonce(tx, chainNonce),
 			),
-		[transactionRecords, signerAddress, chainId],
+		[transactionRecords, signerAddress, chainId, chainNonce],
 	);
 
 	const error = fees.errorFeeEstimate ?? balanceCheck.errorExistentialDeposits;
@@ -148,7 +150,7 @@ const useTransactionProvider = ({
 		if (submitGate.status !== "open") return false;
 		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
 		if (!call || isLoading || error || hasInsufficientBalance) return false;
-		if (isRejectedByDryRun || hasTransactionAwaitingInclusion) return false;
+		if (isRejectedByDryRun || isNonceHeld) return false;
 		if (!fees.isCallFeeEstimated) return false;
 
 		if (ethereum.account.platform === "ethereum")
@@ -166,7 +168,7 @@ const useTransactionProvider = ({
 		fees.isCallFeeEstimated,
 		fees.feeToken,
 		hasInsufficientBalance,
-		hasTransactionAwaitingInclusion,
+		isNonceHeld,
 		isLoading,
 		ethereum.isEthereumNetworkMismatch,
 		ethereum.isSwitchingEthereumNetwork,

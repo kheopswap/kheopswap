@@ -35,7 +35,10 @@ const ethereum = vi.hoisted(() => ({
 }));
 
 const fees = vi.hoisted(() => ({
-	options: { asset: undefined } as { asset: object | undefined },
+	options: { asset: undefined, nonce: 1 } as {
+		asset: object | undefined;
+		nonce: number;
+	},
 	isCallFeeEstimated: true,
 	feeEstimate: 1n as bigint | null,
 }));
@@ -64,7 +67,7 @@ beforeEach(() => {
 	balanceCheck.isLoadingBalances = false;
 	ethereum.isEthereumNetworkMismatch = false;
 	ethereum.platform = "polkadot";
-	fees.options = { asset: undefined };
+	fees.options = { asset: undefined, nonce: 1 };
 	fees.isCallFeeEstimated = true;
 	fees.feeEstimate = 1n;
 	dryRun.data = successfulDryRun;
@@ -249,7 +252,7 @@ describe("TransactionProvider submit gate", () => {
 	});
 });
 
-describe("TransactionProvider while an earlier transaction awaits inclusion", () => {
+describe("TransactionProvider while an earlier transaction holds the nonce", () => {
 	const recordWith = (
 		status: TransactionStatus,
 		overrides: Partial<TransactionRecord> = {},
@@ -260,6 +263,7 @@ describe("TransactionProvider while an earlier transaction awaits inclusion", ()
 			status,
 			txEvents: [{ type: "pending" }],
 			account: { platform: "polkadot", address: "5Signer" },
+			nonce: 1,
 			feeEstimate: 1n,
 			feeToken: KNOWN_TOKENS_MAP["native::pah"],
 			title: "Transfer",
@@ -268,7 +272,14 @@ describe("TransactionProvider while an earlier transaction awaits inclusion", ()
 		}) as unknown as TransactionRecord;
 
 	afterEach(() => {
-		for (const status of ["pending", "broadcasted", "inBlock"] as const)
+		for (const status of [
+			"pending",
+			"broadcasted",
+			"inBlock",
+			"finalized",
+			"expired",
+			"failed",
+		] as const)
 			dismissTransaction(`earlier-${status}`);
 	});
 
@@ -280,9 +291,33 @@ describe("TransactionProvider while an earlier transaction awaits inclusion", ()
 		},
 	);
 
-	it("opens submit once the earlier transaction is in a block", () => {
+	it("holds submit while the chain still reports the nonce of a transaction in a block", () => {
 		addTransaction(recordWith("inBlock"));
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+	});
+
+	it("opens submit once the chain nonce has moved past the earlier transaction", () => {
+		addTransaction(recordWith("finalized"));
+		fees.options = { asset: undefined, nonce: 2 };
 		expect(renderTransaction(undefined, "pah").canSubmit).toBe(true);
+	});
+
+	it("opens submit after a transaction that expired or was rejected before inclusion", () => {
+		addTransaction(recordWith("expired"));
+		addTransaction(
+			recordWith("failed", {
+				txEvents: [
+					{ type: "pending" },
+					{ type: "error", error: new Error("rejected") },
+				],
+			}),
+		);
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(true);
+	});
+
+	it("holds submit while the chain nonce is unknown", () => {
+		fees.options = undefined as never;
+		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
 	});
 
 	it("ignores pending transactions of other signers and chains", () => {
@@ -389,7 +424,10 @@ describe("TransactionProvider dry run", () => {
 
 	it("blocks submit when the dry run rejects a call whose fee is paid in an asset", () => {
 		dryRun.data = failedDryRun;
-		fees.options = { asset: { parents: 1, interior: { type: "Here" } } };
+		fees.options = {
+			asset: { parents: 1, interior: { type: "Here" } },
+			nonce: 1,
+		};
 		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
 	});
 
@@ -452,7 +490,10 @@ describe("TransactionDryRunSummaryValue", () => {
 	});
 
 	it("reads Succeeds before fees, muted, when the fee is paid in an asset", () => {
-		fees.options = { asset: { parents: 1, interior: { type: "Here" } } };
+		fees.options = {
+			asset: { parents: 1, interior: { type: "Here" } },
+			nonce: 1,
+		};
 		renderDryRun();
 		expect(screen.queryByText("Success")).toBeNull();
 		expect(screen.getByText("Succeeds before fees").parentElement).toHaveClass(
