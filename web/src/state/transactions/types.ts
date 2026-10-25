@@ -117,13 +117,6 @@ export const getStatusFromEvent = (
 	}
 };
 
-export const isTerminalStatus = (status: TransactionStatus): boolean =>
-	status === "finalized" ||
-	status === "failed" ||
-	status === "expired" ||
-	status === "lostTrack" ||
-	status === "unknown";
-
 // An expiry or an outcome the user has to check on the explorer stays until dismissed by hand.
 export const isAutoDismissed = ({ txEvents }: TransactionRecord): boolean =>
 	txEvents.some(({ type }) => type === "finalized" || type === "error");

@@ -3,7 +3,7 @@ import { BehaviorSubject, map } from "rxjs";
 import {
 	type FollowUpTxEvent,
 	getStatusFromEvent,
-	isTerminalStatus,
+	isAutoDismissed,
 	type TransactionId,
 	type TransactionRecord,
 } from "./types";
@@ -40,7 +40,7 @@ const autoPrune = (
 
 	for (const [id, tx] of entries) {
 		if (transactions.size <= MAX_TRANSACTIONS) break;
-		if (isTerminalStatus(tx.status)) {
+		if (isAutoDismissed(tx)) {
 			transactions.delete(id);
 		}
 	}
