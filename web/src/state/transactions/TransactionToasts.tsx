@@ -14,12 +14,14 @@ import {
 import { useTransactions } from "./TransactionsProvider";
 import {
 	getIncludedTxEvents,
+	isAwaitingInclusion,
 	isSettled,
 	type TransactionRecord,
 	type TransactionStatus,
 } from "./types";
 import {
 	getXcmArrivalOutcome,
+	isAwaitingXcmArrival,
 	isXcmArrivalRecord,
 	useXcmArrival,
 	type XcmArrival,
@@ -45,6 +47,8 @@ const getStatusText = (status: TransactionStatus): string => {
 			return "Finalized";
 		case "failed":
 			return "Failed";
+		case "unknown":
+			return "Could not confirm, check the explorer before retrying";
 		default:
 			return "Processing...";
 	}
@@ -57,6 +61,7 @@ const getStatusOutcome = (status: TransactionStatus): ToastOutcome => {
 		case "failed":
 			return "error";
 		case "unconfirmed":
+		case "unknown":
 			return "warning";
 		default:
 			return "loading";
@@ -134,8 +139,17 @@ const shouldShowToast = (status: TransactionStatus): boolean => {
 	return status !== "pending";
 };
 
-export const getToastAutoClose = (tx: TransactionRecord): number | false =>
-	tx.status === "failed" && isSettled(tx) ? 5_000 : false;
+const SETTLED_TOAST_MS = 5_000;
+
+// The open dialog shows the outcome; closing it dismisses the record and its toast.
+export const getToastAutoClose = (
+	tx: TransactionRecord,
+	arrival: XcmArrival | null,
+	isDialogOpen: boolean,
+): number | false =>
+	!isDialogOpen && isSettled(tx) && !isAwaitingXcmArrival(tx, arrival)
+		? SETTLED_TOAST_MS
+		: false;
 
 const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 	if (tx.status !== "failed") return null;
@@ -172,8 +186,9 @@ const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 };
 
 const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
-	const { open, dismiss } = useTransactions();
+	const { open, dismiss, openTransaction } = useTransactions();
 	const arrival = useXcmArrival(tx.id);
+	const isDialogOpen = openTransaction?.id === tx.id;
 	const dismissRef = useRef(dismiss);
 	dismissRef.current = dismiss;
 
@@ -195,7 +210,9 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 		const toastType = view.outcome === "loading" ? "default" : view.outcome;
 		const existingToast = activeToasts.get(tx.id);
 		const showToast = shouldShowToast(tx.status);
-		const autoClose = getToastAutoClose(tx);
+		const autoClose = getToastAutoClose(tx, arrival, isDialogOpen);
+		// Dismissing a record that awaits inclusion would release its nonce hold.
+		const isDismissible = !isAwaitingInclusion(tx);
 
 		if (showToast) {
 			if (existingToast === undefined) {
@@ -206,7 +223,8 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 						type: toastType,
 						autoClose,
 						closeOnClick: false,
-						draggable: true,
+						closeButton: isDismissible,
+						draggable: isDismissible,
 						onClose: handleToastClose,
 						icon: false,
 					},
@@ -217,10 +235,12 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 					render: <ToastContent tx={tx} view={view} onClick={handleClick} />,
 					type: toastType,
 					autoClose,
+					closeButton: isDismissible,
+					draggable: isDismissible,
 				});
 			}
 		}
-	}, [tx, arrival, handleClick, handleToastClose]);
+	}, [tx, arrival, isDialogOpen, handleClick, handleToastClose]);
 
 	useEffect(() => {
 		return () => {

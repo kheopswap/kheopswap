@@ -122,7 +122,7 @@ It exits with one of these codes:
 | Code | Meaning | What to do |
 |---|---|---|
 | 0 | Approved | Continue. |
-| 1 | No popup appeared | The app usually failed before signing. Its follow-up dialog reads `Transaction failed`, but it closes with its toast about 5 s after the failure, so capture it right after the submit click rather than after the helper's 60 s wait. |
+| 1 | No popup appeared | The app usually failed before signing. Its follow-up dialog reads `Transaction failed` and stays until `CLOSE`; the toast closes 5 s after the dialog does. |
 | 2 | Signer mismatch, nothing clicked | Fix the account selection. |
 | 3 | Talisman is locked, and the password file is missing or wrong | Ask the user to fix `~/.kheopswap/talisman.password`. Never guess the password. |
 

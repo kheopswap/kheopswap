@@ -10,6 +10,7 @@ export type FollowUpTxEvent =
 	| TxEvent
 	| { type: "pending" }
 	| { type: "unconfirmed" }
+	| { type: "unknown" }
 	| { type: "error"; error: unknown };
 export type FollowUpTxEvents = FollowUpTxEvent[];
 
@@ -22,7 +23,8 @@ export type TransactionStatus =
 	| "inBlock"
 	| "unconfirmed"
 	| "finalized"
-	| "failed";
+	| "failed"
+	| "unknown";
 
 export type SwapFollowUpData = {
 	swapPlancksOut: bigint;
@@ -95,6 +97,8 @@ export const getStatusFromEvent = (
 			return "broadcasted";
 		case "unconfirmed":
 			return "unconfirmed";
+		case "unknown":
+			return "unknown";
 		case "finalized":
 			return event.ok ? "finalized" : "failed";
 		case "error":
@@ -105,10 +109,13 @@ export const getStatusFromEvent = (
 };
 
 export const isTerminalStatus = (status: TransactionStatus): boolean =>
-	status === "finalized" || status === "failed";
+	status === "finalized" || status === "failed" || status === "unknown";
 
 export const isSettled = ({ txEvents }: TransactionRecord): boolean =>
-	txEvents.some(({ type }) => type === "finalized" || type === "error");
+	txEvents.some(
+		({ type }) =>
+			type === "finalized" || type === "error" || type === "unknown",
+	);
 
 export const isAwaitingInclusion = ({ status }: TransactionRecord): boolean =>
 	status === "pending" ||

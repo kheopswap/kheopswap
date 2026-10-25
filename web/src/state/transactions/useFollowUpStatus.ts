@@ -69,6 +69,13 @@ const getHeadline = (
 		};
 	}
 
+	if (txEvents.some((event) => event.type === "unknown"))
+		return {
+			message: "Could not confirm this transaction",
+			result: "warning",
+			isFinal: true,
+		};
+
 	if (txEvents.some((event) => event.type === "unconfirmed"))
 		return {
 			message: "Not confirmed after 10 minutes",
@@ -158,10 +165,12 @@ export const useFollowUpStatus = (
 	const errorMessage = useMemo(() => {
 		if (error)
 			return (error as Error).message ?? error.toString() ?? "Unknown error";
-		return inclusion && !inclusion.ok
-			? getErrorMessageFromTxEvents(inclusion.events)
+		if (inclusion && !inclusion.ok)
+			return getErrorMessageFromTxEvents(inclusion.events);
+		return txEvents.some((event) => event.type === "unknown")
+			? "The chain did not report this transaction before it expired. Check the block explorer before retrying."
 			: null;
-	}, [inclusion, error]);
+	}, [inclusion, error, txEvents]);
 
 	const effectiveFee = useMemo(
 		() => (inclusion?.ok ? getPaidFee(inclusion) : null),

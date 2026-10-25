@@ -39,6 +39,6 @@ Steps:
 - `Transaction fee` is empty until a sender is selected, then shows a shimmer until the estimate arrives.
 - A self-transfer leaves the balance unchanged except for the fee. Check that the drop matches the fee, not the amount.
 - The amount stays filled after a successful submit (seen 2026-10-24).
-- Signing on Paseo needs the Talisman build from `~/.kheopswap/talisman.zip` (see `../SKILL.md`). On 2026-10-24, with 3.12.0, a 0.1 PAS self-transfer showed the popup `Approve Request ... Transfer 0.1 PAS to <account name>` and ended at `Transaction succeeded` with `Effective fee 0.0009 PAS`. With the Web Store build, the dialog reads `Transaction failed`, `PJS does not support this signed-extension: AsScarcity`, and closes about 5 s later.
+- Signing on Paseo needs the Talisman build from `~/.kheopswap/talisman.zip` (see `../SKILL.md`). On 2026-10-24, with 3.12.0, a 0.1 PAS self-transfer showed the popup `Approve Request ... Transfer 0.1 PAS to <account name>` and ended at `Transaction succeeded` with `Effective fee 0.0009 PAS`. With the Web Store build, the dialog reads `Transaction failed`, `PJS does not support this signed-extension: AsScarcity`, and stays until `CLOSE`.
 - Never send to an address you can't name as a user-owned test account.
 - The follow-up dialog ignores `Escape` in every state. Close it with `agent-browser find role button click --name "CLOSE" --exact`.

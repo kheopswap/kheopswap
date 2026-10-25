@@ -291,11 +291,51 @@ describe("closing the follow-up modal", () => {
 	});
 });
 
+describe("toast dismissal", () => {
+	it("offers no close button while the transaction awaits inclusion, then one once settled", async () => {
+		const record: TransactionRecord = {
+			...getFinalizedRecord("swap", "swap", "Swap DOT/USDC"),
+			status: "broadcasted",
+			txEvents: [
+				{ type: "created", txHash: "0x01" },
+				{ type: "broadcasted", txHash: "0x01" },
+			] as TransactionRecord["txEvents"],
+		};
+		renderApp();
+		act(() => addTransaction(record));
+		const toast = (
+			await screen.findByText("Submitted, waiting for block...")
+		).closest(".Toastify__toast") as HTMLElement;
+		expect(within(toast).queryByRole("button", { name: /close/i })).toBeNull();
+
+		act(() =>
+			addTransaction({
+				...record,
+				status: "finalized",
+				txEvents: [
+					...record.txEvents,
+					{ type: "finalized", ok: true, txHash: "0x01", events: [] },
+				] as TransactionRecord["txEvents"],
+			}),
+		);
+		await screen.findByText("Finalized");
+		expect(
+			within(toast).getByRole("button", { name: /close/i }),
+		).toBeInTheDocument();
+	});
+});
+
 describe("getToastAutoClose", () => {
+	const swap = getFinalizedRecord("swap", "swap", "Swap DOT/USDC");
+	const transfer = getFinalizedRecord(
+		"xcm-transfer",
+		"xcmTransfer",
+		"Transfer DOT to Hydration",
+	);
 	const failedIn = (
 		inclusion: "inBestBlock" | "finalized" | "error",
 	): TransactionRecord => ({
-		...getFinalizedRecord("swap", "swap", "Swap DOT/USDC"),
+		...swap,
 		status: "failed",
 		txEvents: [
 			inclusion === "error"
@@ -305,18 +345,60 @@ describe("getToastAutoClose", () => {
 	});
 
 	it("keeps a failure that a best block may still retract", () => {
-		expect(getToastAutoClose(failedIn("inBestBlock"))).toBe(false);
+		expect(getToastAutoClose(failedIn("inBestBlock"), null, false)).toBe(false);
 	});
 
 	it("auto-closes a failure that is finalized or errored", () => {
-		expect(getToastAutoClose(failedIn("finalized"))).toBe(5_000);
-		expect(getToastAutoClose(failedIn("error"))).toBe(5_000);
+		expect(getToastAutoClose(failedIn("finalized"), null, false)).toBe(5_000);
+		expect(getToastAutoClose(failedIn("error"), null, false)).toBe(5_000);
 	});
 
-	it("keeps a finalized success until the user dismisses it", () => {
+	it("auto-closes a finalized success whose dialog is closed", () => {
+		expect(getToastAutoClose(swap, null, false)).toBe(5_000);
+	});
+
+	it("keeps a settled toast while its dialog is open", () => {
+		expect(getToastAutoClose(swap, null, true)).toBe(false);
+		expect(getToastAutoClose(failedIn("finalized"), null, true)).toBe(false);
+	});
+
+	it("keeps a finalized transfer until its arrival is final", () => {
+		expect(getToastAutoClose(transfer, null, false)).toBe(false);
 		expect(
-			getToastAutoClose(getFinalizedRecord("swap", "swap", "Swap DOT/USDC")),
+			getToastAutoClose(
+				transfer,
+				{ status: "in-transit", messageId: MESSAGE_ID },
+				false,
+			),
 		).toBe(false);
+		expect(
+			getToastAutoClose(
+				transfer,
+				{
+					status: "arrived",
+					messageId: MESSAGE_ID,
+					received: 1n,
+					finalized: true,
+				},
+				false,
+			),
+		).toBe(5_000);
+	});
+
+	it("auto-closes an outcome the chain never confirmed", () => {
+		const unknown: TransactionRecord = {
+			...swap,
+			status: "unknown",
+			txEvents: [
+				{ type: "created", txHash: "0x01" },
+				{ type: "unknown" },
+			] as TransactionRecord["txEvents"],
+		};
+		expect(getToastAutoClose(unknown, null, false)).toBe(5_000);
+		expect(getToastView(unknown, null)).toEqual({
+			outcome: "warning",
+			text: "Could not confirm, check the explorer before retrying",
+		});
 	});
 });
 
