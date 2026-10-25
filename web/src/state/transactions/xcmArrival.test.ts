@@ -586,6 +586,17 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(true);
 	});
 
+	it("ends when the app could not confirm the origin transaction", () => {
+		const { record$, arrivals, isComplete } = track(getRecord("pending"));
+		record$.next(getRecord("unknown", [], [{ type: "unknown" }]));
+
+		expect(arrivals).toEqual([
+			{ status: "awaiting-origin" },
+			{ status: "unconfirmed", messageId: null },
+		]);
+		expect(isComplete()).toBe(true);
+	});
+
 	it("catches an arrival processed many fast Asset Hub blocks before the message id is known", () => {
 		const { record$, finalizedBlockEvents$, arrivals } = track(
 			getRecord("pending"),

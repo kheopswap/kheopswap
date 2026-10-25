@@ -95,7 +95,7 @@ export type SentMessage = { messageId: HexString; finalized: boolean };
 type OriginState =
 	| { status: "pending" }
 	| { status: "failed" }
-	| { status: "finalized-without-message" }
+	| { status: "settled-without-message" }
 	| ({ status: "sent" } & SentMessage);
 
 const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
@@ -281,8 +281,8 @@ const getOriginState = (
 ): OriginState => {
 	const sent = getSentMessage(record.txEvents, destinationParaId);
 	if (sent) return { status: "sent", ...sent };
-	if (record.status === "finalized")
-		return { status: "finalized-without-message" };
+	if (record.status === "finalized" || record.status === "unknown")
+		return { status: "settled-without-message" };
 	if (record.status !== "failed") return { status: "pending" };
 	const lastInclusion = findLast(
 		record.txEvents,
@@ -296,7 +296,7 @@ const getOriginState = (
 
 const isOriginSettled = (origin: OriginState) =>
 	origin.status === "failed" ||
-	origin.status === "finalized-without-message" ||
+	origin.status === "settled-without-message" ||
 	(origin.status === "sent" && origin.finalized);
 
 export type DestinationBlock =
@@ -342,7 +342,7 @@ const toArrival = (
 			return { status: "awaiting-origin" };
 		case "failed":
 			return { status: "origin-failed" };
-		case "finalized-without-message":
+		case "settled-without-message":
 			return { status: "unconfirmed", messageId: null };
 		case "sent": {
 			const { messageId } = origin;
