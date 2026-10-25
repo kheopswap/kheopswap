@@ -80,7 +80,7 @@ export const RemoveLiquiditySlider: FC<{
 			</div>
 			<input
 				type="range"
-				min={1}
+				min={0}
 				max={100}
 				value={step}
 				onChange={(e) => onRatioChange(e.target.valueAsNumber / 100)}
