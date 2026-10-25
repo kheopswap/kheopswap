@@ -175,8 +175,8 @@ const renderDestinationSwap = (
 	);
 };
 
-const FEE_ESTIMATE_FAILED =
-	"Could not estimate the Polkadot Asset Hub fee: Hydration rejected a test withdrawal from your account";
+const WITHDRAW_REFUSED =
+	"Hydration refuses to release this token from your account";
 
 beforeEach(() => {
 	chain.canPriceFee = true;
@@ -361,7 +361,7 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 
 	it.each([
 		[true, null, usdtToPink.hops[1]?.amountOut],
-		[false, "Hydration rejected the withdrawal from your account", undefined],
+		[false, WITHDRAW_REFUSED, undefined],
 	])(
 		"with an amount above the balance (%s), leaves the shortfall to the input field and keeps the swap estimate",
 		async (hasInsufficientBalance, outputErrorMessage, swapPlancksOut) => {
@@ -394,9 +394,9 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 
 	it.each([
 		[true, null],
-		[false, FEE_ESTIMATE_FAILED],
+		[false, "InsufficientBalance"],
 	])(
-		"with an unfunded input (%s), leaves the shortfall to the input field, or says the fee estimate failed",
+		"with an unfunded input (%s), leaves the shortfall to the input field, or reports what Hydration answered",
 		async (hasInsufficientBalance, outputErrorMessage) => {
 			chain.isUnfunded = true;
 			chain.hasInsufficientBalance = hasInsufficientBalance;
@@ -435,12 +435,12 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		},
 	);
 
-	it("reports a fee estimate that Hydration cannot withdraw as a fee estimate failure, not as a shortfall of the amount", async () => {
+	it("says Hydration refuses to release the token when it rejects the fee estimate's withdrawal, not that the amount is short or the fee unknown", async () => {
 		chain.dryRunCall.mockResolvedValue(pinkToAssetHubInsufficient.origin);
 		const { result } = renderDestinationSwap(usdtToPink);
 
 		await waitFor(() =>
-			expect(result.current.outputErrorMessage).toBe(FEE_ESTIMATE_FAILED),
+			expect(result.current.outputErrorMessage).toBe(WITHDRAW_REFUSED),
 		);
 		expect(result.current.plan.submitGate.status).toBe("closed");
 	});
@@ -547,7 +547,7 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		chain.balanceIn = 0n;
 		const { result, rerender } = renderDestinationSwap(usdtToPink);
 		await waitFor(() =>
-			expect(result.current.outputErrorMessage).toBe(FEE_ESTIMATE_FAILED),
+			expect(result.current.outputErrorMessage).toBe("InsufficientBalance"),
 		);
 		const unfundedEstimates = chain.dryRunCall.mock.calls.length;
 		rerender();

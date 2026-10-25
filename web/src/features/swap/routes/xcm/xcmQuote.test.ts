@@ -475,13 +475,6 @@ describe("describeXcmQuoteFailure", () => {
 			{ kind: "call-unavailable" },
 			"Could not prepare the transaction on Polkadot Asset Hub",
 		],
-		[
-			{
-				kind: "fee-estimate-failed",
-				cause: { kind: "origin-withdraw-failed" },
-			},
-			"Could not estimate the Hydration fee: Polkadot Asset Hub rejected a test withdrawal from your account",
-		],
 	] as const)("%o", (failure, expected) => {
 		expect(describeXcmQuoteFailure(failure, toHydration)).toBe(expected);
 	});
@@ -704,13 +697,13 @@ describe("Hydration to Asset Hub", () => {
 		);
 	});
 
-	it("says Hydration could not withdraw what the transfer needs, without guessing why", () => {
+	it("says Hydration refuses to release the token when it rejects a withdrawal the balance covers, without guessing why", () => {
 		expect(
 			describeXcmQuoteFailure(
 				{ kind: "origin-withdraw-failed" },
 				fromHydration,
 			),
-		).toBe("Hydration rejected the withdrawal from your account");
+		).toBe("Hydration refuses to release this token from your account");
 	});
 
 	it("names Hydration when it would reject the transfer", () => {

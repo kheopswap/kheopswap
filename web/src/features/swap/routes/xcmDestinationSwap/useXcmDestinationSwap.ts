@@ -112,14 +112,7 @@ const useDestinationNativeFee = ({
 		if (estimate.error)
 			return { success: false, failure: { kind: "origin-unavailable" } };
 		if (!estimateLeg) return undefined;
-		if (!estimateLeg.success)
-			return {
-				success: false,
-				failure: {
-					kind: "fee-estimate-failed",
-					cause: estimateLeg.failure,
-				},
-			};
+		if (!estimateLeg.success) return estimateLeg;
 		if (fee.error || fee.data === null)
 			return {
 				success: false,
