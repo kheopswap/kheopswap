@@ -39,7 +39,7 @@ describe("TransactionDryRunSummaryValue without a call", () => {
 });
 
 describe("getSimulationVerdict before fees", () => {
-	it("points to the message under the amount for the fee and the account minimum", () => {
+	it("says the fee is checked against the balance outside the simulation", () => {
 		const succeeded = {
 			success: true,
 			value: { execution_result: { success: true } },
@@ -53,7 +53,7 @@ describe("getSimulationVerdict before fees", () => {
 				insufficientBalances: {},
 			}).note,
 		).toBe(
-			"The simulation runs the call without charging its fee, so it cannot tell whether the fee can be paid. The message under the amount tells whether the fee and the account minimum can be paid.",
+			"The call succeeds in the simulation, which does not charge the transaction fee. Your balance is checked against the fee separately, and the transaction stays blocked if you cannot pay it.",
 		);
 	});
 });

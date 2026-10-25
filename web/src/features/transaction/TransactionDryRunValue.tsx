@@ -23,7 +23,7 @@ export type SimulationVerdict = {
 const DRY_RUN_CAVEAT =
 	"Dry runs aren't always reliable as they are unaware of details that are only provided in signatures, such as which asset to use to pay for fees.";
 const FEE_NOT_CHARGED =
-	"The simulation runs the call without charging its fee, so it cannot tell whether the fee can be paid. The message under the amount tells whether the fee and the account minimum can be paid.";
+	"The call succeeds in the simulation, which does not charge the transaction fee. Your balance is checked against the fee separately, and the transaction stays blocked if you cannot pay it.";
 
 export const getSimulationVerdict = ({
 	dryRun,
