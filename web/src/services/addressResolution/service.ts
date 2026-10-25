@@ -3,6 +3,7 @@ import {
 	catchError,
 	concat,
 	distinctUntilChanged,
+	EMPTY,
 	from,
 	map,
 	type Observable,
@@ -13,18 +14,31 @@ import {
 } from "rxjs";
 import { getApi } from "../../papi/getApi";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
-import type { ChainId } from "../../registry/chains/types";
+import type { ChainId, ChainIdAssetHub } from "../../registry/chains/types";
 import {
 	getEthereumAddressSizedHex,
 	getSs58AddressFallback,
 	isEthereumAddress,
 } from "../../utils/ethereumAddress";
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
+import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
 
 type ResolvedSubstrateAddressState = {
 	address: SS58String | undefined;
 	status: LoadingStatus;
+};
+
+const RESOLUTION_POLL_INTERVAL = 30_000;
+
+const readOriginalAccount = async (
+	chainId: ChainIdAssetHub,
+	address: `0x${string}`,
+) => {
+	const api = await getApi(chainId);
+	return api.query.Revive.OriginalAccount.getValue(
+		getEthereumAddressSizedHex(address),
+	);
 };
 
 export const getResolvedSubstrateAddress$ = ({
@@ -53,28 +67,23 @@ export const getResolvedSubstrateAddress$ = ({
 					address: undefined,
 					status: "loading" as const,
 				}),
-				from(getApi(chainId)).pipe(
-					switchMap((api) =>
-						timer(0, 30_000).pipe(
-							switchMap(() =>
-								from(
-									api.query.Revive.OriginalAccount.getValue(
-										getEthereumAddressSizedHex(address),
-									),
-								),
-							),
+				timer(0, RESOLUTION_POLL_INTERVAL).pipe(
+					switchMap(() =>
+						from(readOriginalAccount(chainId, address)).pipe(
+							map((mappedAddress) => ({
+								address: (mappedAddress ??
+									getSs58AddressFallback(address)) as SS58String,
+								status: "loaded" as const,
+							})),
+							catchError((err) => {
+								logger.error("Failed to resolve Ethereum address", {
+									chainId,
+									address,
+									err,
+								});
+								return EMPTY;
+							}),
 						),
-					),
-					map((mappedAddress) => ({
-						address: (mappedAddress ??
-							getSs58AddressFallback(address)) as SS58String,
-						status: "loaded" as const,
-					})),
-					catchError(() =>
-						of({
-							address: undefined,
-							status: "stale" as const,
-						}),
 					),
 				),
 			).pipe(
