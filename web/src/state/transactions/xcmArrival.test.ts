@@ -19,19 +19,20 @@ import {
 } from "./transactionStore";
 import type { FollowUpTxEvent, TransactionRecord } from "./types";
 import {
-	type DestinationBlock,
 	describeFailedArrival,
-	findArrival,
-	getArrivalBufferBlocks,
-	getSentMessage,
 	getTrackedXcmArrival,
-	getXcmArrival$,
-	getXcmBlockEvents,
 	isAwaitingXcmArrival,
 	isXcmArrivalType,
 	trackXcmArrivals,
 	type XcmArrival,
 } from "./xcmArrival";
+import { findArrival, getSentMessage } from "./xcmArrivalEvents";
+import { getXcmArrival$ } from "./xcmArrivalState";
+import {
+	type DestinationBlock,
+	getArrivalBufferBlocks,
+	getXcmBlockEvents,
+} from "./xcmDestinationBlocks";
 
 type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
 type BlockUpdate = {
