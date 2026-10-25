@@ -1,11 +1,14 @@
 import type { FC, ReactNode } from "react";
 import { StableValue } from "../../components/StableValue";
 import { Tokens } from "../../components/Tokens";
+import {
+	getShownValuationStatus,
+	ValuationLabel,
+} from "../../components/ValuationLabel";
 import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import type { BalanceWithStableSummary } from "../../types/balances";
 import { hasValueLine, useIsValuedAsStable } from "../../utils/hasValueLine";
-import { getShownValuationStatus, ValuationLabel } from "./ValuationLabel";
 
 export const TokenDetailsRow: FC<{
 	label: ReactNode;
@@ -37,11 +40,12 @@ export const TokenDetailsRowValue: FC<
 	if (isInitializing) return null;
 
 	const plancks = tokenPlancks ?? 0n;
+	const subject = isPrice ? "price" : "holding";
 	const showValue = hasValueLine(isValuedAsStable, plancks);
 	const labelStatus = getShownValuationStatus({
 		status: valuation.status,
 		tokenPlancks: plancks,
-		isPrice,
+		subject,
 		isLoadingStablePlancks,
 	});
 
@@ -56,7 +60,7 @@ export const TokenDetailsRowValue: FC<
 			{labelStatus && (
 				<ValuationLabel
 					status={labelStatus}
-					isPrice={isPrice}
+					subject={subject}
 					className="text-xs"
 				/>
 			)}

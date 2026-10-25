@@ -2,11 +2,14 @@ import type { FC } from "react";
 import { Shimmer } from "../../components/Shimmer";
 import { StableValue } from "../../components/StableValue";
 import { Tokens } from "../../components/Tokens";
+import {
+	getShownValuationStatus,
+	ValuationLabel,
+} from "../../components/ValuationLabel";
 import type { Token } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
 import { cn } from "../../utils/cn";
 import { hasValueLine, useIsValuedAsStable } from "../../utils/hasValueLine";
-import { getShownValuationStatus, ValuationLabel } from "./ValuationLabel";
 
 const ValueLine: FC<
 	BalanceWithStableSummary & {
@@ -16,15 +19,16 @@ const ValueLine: FC<
 	}
 > = ({ token, stableToken, isPrice, isLoadingStablePlancks, ...valuation }) => {
 	const isValuedAsStable = useIsValuedAsStable(token.id);
+	const subject = isPrice ? "price" : "holding";
 	const showValue = hasValueLine(isValuedAsStable, valuation.tokenPlancks);
 	const labelStatus = getShownValuationStatus({
 		...valuation,
-		isPrice,
+		subject,
 		isLoadingStablePlancks,
 	});
 
 	if (labelStatus)
-		return <ValuationLabel status={labelStatus} isPrice={isPrice} />;
+		return <ValuationLabel status={labelStatus} subject={subject} />;
 
 	const className = cn(
 		(valuation.status !== "priced" || !showValue) && "invisible",
