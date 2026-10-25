@@ -105,6 +105,24 @@ describe("withChainTimeout", () => {
 		await outcome;
 	});
 
+	it("aborts the query once it timed out", async () => {
+		const querySignals: AbortSignal[] = [];
+
+		const run = withChainTimeout(
+			"pah",
+			(signal) => {
+				querySignals.push(signal);
+				return NEVER;
+			},
+			new AbortController().signal,
+		);
+		const outcome = expect(run).rejects.toBeInstanceOf(TimeoutError);
+
+		await vi.advanceTimersByTimeAsync(CHAIN_QUERY_TIMEOUT_MS);
+		await outcome;
+		expect(querySignals.map(({ aborted }) => aborted)).toEqual([true]);
+	});
+
 	it("does not start the query when it was cancelled while connecting", async () => {
 		connection.delayMs = 5_000;
 		const controller = new AbortController();

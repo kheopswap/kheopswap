@@ -102,13 +102,14 @@ const zip = <T>(
 
 const readNativeBalances = async (
 	entries: BalanceEntry<{ type: "native"; chainId: ChainId }>[],
+	signal: AbortSignal,
 ) => {
 	const [first] = entries;
 	if (!first) return [];
 	const api = await getApi(first.token.chainId);
 	const accounts = await getValuesInChunks(
 		entries.map((entry): [SS58String] => [entry.address]),
-		(keys) => api.query.System.Account.getValues(keys, { at: "best" }),
+		(keys) => api.query.System.Account.getValues(keys, { at: "best", signal }),
 	);
 	return zip(entries, accounts, (account) =>
 		nativeSpendableBalance(account.data),
@@ -117,6 +118,7 @@ const readNativeBalances = async (
 
 const readAssetBalances = async (
 	entries: BalanceEntry<Extract<ParsedToken, { type: "asset" }>>[],
+	signal: AbortSignal,
 ) => {
 	const [first] = entries;
 	if (!first) return [];
@@ -126,13 +128,14 @@ const readAssetBalances = async (
 			entry.token.assetId,
 			entry.address,
 		]),
-		(keys) => api.query.Assets.Account.getValues(keys, { at: "best" }),
+		(keys) => api.query.Assets.Account.getValues(keys, { at: "best", signal }),
 	);
 	return zip(entries, accounts, liquidBalance);
 };
 
 const readPoolAssetBalances = async (
 	entries: BalanceEntry<Extract<ParsedToken, { type: "pool-asset" }>>[],
+	signal: AbortSignal,
 ) => {
 	const [first] = entries;
 	if (!first) return [];
@@ -142,13 +145,15 @@ const readPoolAssetBalances = async (
 			entry.token.poolAssetId,
 			entry.address,
 		]),
-		(keys) => api.query.PoolAssets.Account.getValues(keys, { at: "best" }),
+		(keys) =>
+			api.query.PoolAssets.Account.getValues(keys, { at: "best", signal }),
 	);
 	return zip(entries, accounts, liquidBalance);
 };
 
 const readForeignAssetBalances = async (
 	entries: BalanceEntry<Extract<ParsedToken, { type: "foreign-asset" }>>[],
+	signal: AbortSignal,
 ) => {
 	const [first] = entries;
 	if (!first) return [];
@@ -158,13 +163,15 @@ const readForeignAssetBalances = async (
 			entry.token.location,
 			entry.address,
 		]),
-		(keys) => api.query.ForeignAssets.Account.getValues(keys, { at: "best" }),
+		(keys) =>
+			api.query.ForeignAssets.Account.getValues(keys, { at: "best", signal }),
 	);
 	return zip(entries, accounts, liquidBalance);
 };
 
 const readHydrationAssetBalances = async (
 	entries: BalanceEntry<Extract<ParsedToken, { type: "hydration-asset" }>>[],
+	signal: AbortSignal,
 ) => {
 	const [first] = entries;
 	if (!first) return [];
@@ -174,7 +181,7 @@ const readHydrationAssetBalances = async (
 			entry.address,
 			entry.token.assetId,
 		]),
-		(keys) => api.query.Tokens.Accounts.getValues(keys, { at: "best" }),
+		(keys) => api.query.Tokens.Accounts.getValues(keys, { at: "best", signal }),
 	);
 	return zip(entries, accounts, tokensSpendableBalance);
 };
@@ -184,13 +191,14 @@ const palletRead =
 		type: T,
 		read: (
 			entries: BalanceEntry<Extract<ParsedToken, { type: T }>>[],
+			signal: AbortSignal,
 		) => Promise<BalanceUpdate[]>,
 	) =>
 	(entries: BalanceEntry[]) => {
 		const palletEntries = ofType(entries, type);
 		return {
 			balanceIds: palletEntries.map((entry) => entry.balanceId),
-			read: () => read(palletEntries),
+			read: (signal: AbortSignal) => read(palletEntries, signal),
 		};
 	};
 

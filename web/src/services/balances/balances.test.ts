@@ -27,6 +27,7 @@ const mocks = vi.hoisted(() => ({
 	assetAccounts: new Map<string, { balance: bigint }>(),
 	failingPallets: new Set<string>(),
 	stalledPallets: new Set<string>(),
+	systemReadSignals: [] as AbortSignal[],
 	getValuesCalls: [] as GetValuesCall[],
 	getApiChainIds: [] as string[],
 	addedBalanceIds: [] as string[],
@@ -50,11 +51,21 @@ vi.mock("../../utils/withTimeout", async (importOriginal) => {
 		await importOriginal<typeof import("../../utils/withTimeout")>();
 	return {
 		...actual,
-		withChainTimeout: <T>(
+		withChainTimeout: async <T>(
 			_chainId: string,
-			query: () => Promise<T>,
+			query: (signal: AbortSignal) => Promise<T>,
 			signal: AbortSignal,
-		) => actual.withTimeout(query(), { ms: STALLED_READ_TIMEOUT_MS, signal }),
+		) => {
+			const settled = new AbortController();
+			try {
+				return await actual.withTimeout(query(settled.signal), {
+					ms: STALLED_READ_TIMEOUT_MS,
+					signal,
+				});
+			} finally {
+				settled.abort();
+			}
+		},
 	};
 });
 
@@ -78,8 +89,12 @@ vi.mock("../../papi/getApi", async () => {
 					System: {
 						Number: { watchValue: () => getBestBlock$(chainId) },
 						Account: {
-							getValues: async (keys: [string][]) => {
+							getValues: async (
+								keys: [string][],
+								{ signal }: { signal: AbortSignal },
+							) => {
 								mocks.getValuesCalls.push({ chainId, pallet: "System", keys });
+								mocks.systemReadSignals.push(signal);
 								if (mocks.stalledPallets.has("System"))
 									return new Promise<never>(() => {});
 								return keys.map(([address]) => ({
@@ -166,6 +181,7 @@ beforeAll(() => {
 describe("balances service pipeline", () => {
 	afterEach(() => {
 		mocks.stalledPallets.clear();
+		mocks.systemReadSignals = [];
 	});
 
 	it("reads every watched balance of a chain in one storage query per block", async () => {
@@ -312,6 +328,9 @@ describe("balances service pipeline", () => {
 			(s) => s?.status === "stale",
 		);
 		expect(stale?.balance).toBeUndefined();
+		expect(mocks.systemReadSignals.map(({ aborted }) => aborted)).toEqual([
+			true,
+		]);
 
 		mocks.stalledPallets.delete("System");
 		tickBestBlock("pasah", 2);

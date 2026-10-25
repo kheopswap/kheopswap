@@ -31,12 +31,20 @@ export const withTimeout = <T>(
 
 export const withChainTimeout = async <T>(
 	chainId: ChainId,
-	query: () => Promise<T>,
+	query: (signal: AbortSignal) => Promise<T>,
 	signal: AbortSignal,
 ): Promise<T> => {
 	await getApi(chainId);
 	signal.throwIfAborted();
-	return withTimeout(query(), { ms: CHAIN_QUERY_TIMEOUT_MS, signal });
+	const settled = new AbortController();
+	try {
+		return await withTimeout(query(AbortSignal.any([signal, settled.signal])), {
+			ms: CHAIN_QUERY_TIMEOUT_MS,
+			signal,
+		});
+	} finally {
+		settled.abort();
+	}
 };
 
 export const retryOnceUnlessTimedOut = (failureCount: number, error: Error) =>
