@@ -12,9 +12,7 @@ type WithRecovery = {
 
 const require = createRequire(import.meta.url);
 const observableClientDist = require
-	.resolve("@polkadot-api/observable-client", {
-		paths: [require.resolve("polkadot-api")],
-	})
+	.resolve("@polkadot-api/observable-client")
 	.replace(/index\.js$/, "");
 const { getWithRecovery } = (await import(
 	`${observableClientDist}chainHead/enhancers/operationLimitRecovery.js`
