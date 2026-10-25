@@ -7,9 +7,8 @@ import type { AnyTransaction } from "../types/transactions";
 import { logger } from "../utils/logger";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 import {
-	CHAIN_QUERY_TIMEOUT_MS,
 	retryOnceUnlessTimedOut,
-	withTimeout,
+	withChainTimeout,
 } from "../utils/withTimeout";
 
 const XCM_VERSION = 5;
@@ -89,10 +88,11 @@ export function useDryRun({
 		],
 		queryFn: ({ signal }) =>
 			chainId && from && call
-				? withTimeout(queryDryRun(chainId, from, call), {
-						ms: CHAIN_QUERY_TIMEOUT_MS,
+				? withChainTimeout(
+						chainId,
+						() => queryDryRun(chainId, from, call),
 						signal,
-					})
+					)
 				: null,
 		enabled,
 		retry: retryOnceUnlessTimedOut,

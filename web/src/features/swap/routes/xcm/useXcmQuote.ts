@@ -17,9 +17,8 @@ import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import {
-	CHAIN_QUERY_TIMEOUT_MS,
 	retryOnceUnlessTimedOut,
-	withTimeout,
+	withChainTimeout,
 } from "../../../../utils/withTimeout";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
@@ -99,10 +98,11 @@ const useXcmDeliveryFee = (
 		queryFn: async ({ signal }) =>
 			route && message
 				? parseDeliveryFee(
-						await withTimeout(queryDeliveryFees(route, message), {
-							ms: CHAIN_QUERY_TIMEOUT_MS,
+						await withChainTimeout(
+							route.origin,
+							() => queryDeliveryFees(route, message),
 							signal,
-						}),
+						),
 					)
 				: null,
 		retry: retryOnceUnlessTimedOut,
@@ -177,10 +177,11 @@ export const useXcmQuote = ({
 		queryFn: async ({ signal }) =>
 			route && beneficiary && message
 				? parseDestinationDryRun(
-						await withTimeout(queryDestinationDryRun(route, message), {
-							ms: CHAIN_QUERY_TIMEOUT_MS,
+						await withChainTimeout(
+							route.destination,
+							() => queryDestinationDryRun(route, message),
 							signal,
-						}),
+						),
 						{ tokenId: route.tokenIdOut, beneficiary },
 					)
 				: null,

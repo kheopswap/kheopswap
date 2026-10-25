@@ -16,9 +16,8 @@ import { useRelayChains } from "../../../../state/relay";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import {
-	CHAIN_QUERY_TIMEOUT_MS,
 	retryOnceUnlessTimedOut,
-	withTimeout,
+	withChainTimeout,
 } from "../../../../utils/withTimeout";
 import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
@@ -101,10 +100,11 @@ const useDestinationNativeFee = ({
 		enabled: !!route && !!message,
 		queryFn: ({ signal }) =>
 			route && message
-				? withTimeout(queryDestinationNativeFee(route, message), {
-						ms: CHAIN_QUERY_TIMEOUT_MS,
+				? withChainTimeout(
+						route.destination,
+						() => queryDestinationNativeFee(route, message),
 						signal,
-					})
+					)
 				: null,
 		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
