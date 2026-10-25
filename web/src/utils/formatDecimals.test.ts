@@ -32,6 +32,12 @@ describe("formatDecimals", () => {
 		expect(formatDecimals("0.001", 2)).toBe("< 0.01");
 	});
 
+	it("keeps the sign of a negative value", () => {
+		expect(formatDecimals("-1234.5678")).toBe("-1.235K");
+		expect(formatDecimals(-0.5)).toBe("-0.5");
+		expect(formatDecimals("-0.00001")).toBe("> -0.0001");
+	});
+
 	it("formats large numbers with compact notation", () => {
 		const result = formatDecimals("1234567");
 		expect(result).toMatch(/1\.235M/);
