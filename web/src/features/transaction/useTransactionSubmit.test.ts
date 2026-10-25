@@ -10,6 +10,7 @@ import {
 	dismissTransaction,
 	transactions$,
 } from "../../state/transactions/transactionStore";
+import { holdsNonce } from "../../state/transactions/types";
 import { useTransactionSubmit } from "./useTransactionSubmit";
 
 vi.mock("../../utils/notifyError", () => ({ notifyError: vi.fn() }));
@@ -360,18 +361,19 @@ describe("useTransactionSubmit", () => {
 			expect((await getRecord()).status).toBe("lostTrack");
 		});
 
-		it("fails a transaction whose receipt times out while the nonce stands", async () => {
+		it("keeps the nonce of a transaction whose receipt times out while the nonce stands", async () => {
 			const txEvents$ = await submitEthereum();
 			txEvents$.next(broadcasted);
 			txEvents$.error(timeout);
 			await flush();
 
 			const record = await getRecord();
-			expect(record.status).toBe("failed");
+			expect(record.status).toBe("unknown");
 			expect(getToastView(record, null)).toEqual({
-				outcome: "error",
-				text: timeout.message,
+				outcome: "warning",
+				text: "Could not confirm, check the explorer before retrying",
 			});
+			expect(holdsNonce(record, record.nonce)).toBe(true);
 		});
 
 		it("cannot confirm a timed out transaction when the chain cannot be read", async () => {

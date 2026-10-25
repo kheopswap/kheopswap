@@ -103,7 +103,6 @@ const watchExpiry$ = (
 
 const settleTimeout = async (
 	submission: Submission,
-	error: unknown,
 ): Promise<FollowUpTxEvent> => {
 	try {
 		const api = await getApi(submission.chainId);
@@ -111,7 +110,7 @@ const settleTimeout = async (
 			submission.signer,
 			{ at: "finalized" },
 		);
-		return getVerdict(nonce, submission, { type: "error", error });
+		return getVerdict(nonce, submission, { type: "unknown" });
 	} catch (readError) {
 		logger.warn("Could not read the chain for a timed out transaction", {
 			txId: submission.txId,
@@ -166,7 +165,7 @@ export const followTransaction = (
 		const isTimeoutAfterBroadcast = isBroadcast && submission.death === null;
 		if (isTimeoutAfterBroadcast) {
 			clocks.unsubscribe();
-			settleTimeout(submission, error).then(settle);
+			settleTimeout(submission).then(settle);
 			return;
 		}
 
