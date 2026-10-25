@@ -27,7 +27,13 @@ export const getLastDiscovery = (key: string): number | undefined =>
 	loadLog()[key];
 
 export const recordDiscovery = (key: string, at = Date.now()) => {
-	localStorage.setItem(STORAGE_KEY, JSON.stringify({ [key]: at }));
+	const recentRuns = Object.entries(loadLog()).filter(
+		([, lastRunAt]) => at - lastRunAt < DISCOVERY_INTERVAL,
+	);
+	localStorage.setItem(
+		STORAGE_KEY,
+		JSON.stringify({ ...Object.fromEntries(recentRuns), [key]: at }),
+	);
 };
 
 export const getNextDiscoveryDelay = (

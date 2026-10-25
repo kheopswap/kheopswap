@@ -27,11 +27,21 @@ describe("getNextDiscoveryDelay", () => {
 });
 
 describe("recordDiscovery", () => {
-	it("keeps only the latest account set in the log", () => {
-		recordDiscovery("pah,5Alice", 1);
-		recordDiscovery("pah,5Bob", 2);
+	it("remembers each network and account set it ran for", () => {
+		recordDiscovery("pah,5Alice", 1_000);
+		recordDiscovery("pasah,5Alice", 2_000);
+		recordDiscovery("pah,5Bob", 3_000);
 
-		expect(getLastDiscovery("pah,5Alice")).toBeUndefined();
-		expect(getLastDiscovery("pah,5Bob")).toBe(2);
+		expect(getLastDiscovery("pah,5Alice")).toBe(1_000);
+		expect(getLastDiscovery("pasah,5Alice")).toBe(2_000);
+		expect(getLastDiscovery("pah,5Bob")).toBe(3_000);
+	});
+
+	it("forgets runs older than the discovery interval", () => {
+		recordDiscovery("pah,5Carol", 10_000);
+		recordDiscovery("pah,5Dave", 10_000 + DISCOVERY_INTERVAL);
+
+		expect(getLastDiscovery("pah,5Carol")).toBeUndefined();
+		expect(getLastDiscovery("pah,5Dave")).toBe(10_000 + DISCOVERY_INTERVAL);
 	});
 });
