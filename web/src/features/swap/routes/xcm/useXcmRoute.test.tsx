@@ -176,7 +176,7 @@ const renderDestinationSwap = (
 };
 
 const FEE_ESTIMATE_FAILED =
-	"Could not estimate the Polkadot Asset Hub fee: Hydration rejected a test withdrawal of 0.000001 USDT from your account";
+	"Could not estimate the Polkadot Asset Hub fee: Hydration rejected a test withdrawal from your account";
 
 beforeEach(() => {
 	chain.canPriceFee = true;

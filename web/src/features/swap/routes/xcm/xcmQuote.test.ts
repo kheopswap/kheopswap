@@ -479,12 +479,8 @@ describe("describeXcmQuoteFailure", () => {
 			{
 				kind: "fee-estimate-failed",
 				cause: { kind: "origin-withdraw-failed" },
-				probe: {
-					plancks: 20_000_000_000_000n,
-					token: { symbol: "WUD", decimals: 10 },
-				},
 			},
-			"Could not estimate the Hydration fee: Polkadot Asset Hub rejected a test withdrawal of 2000 WUD from your account",
+			"Could not estimate the Hydration fee: Polkadot Asset Hub rejected a test withdrawal from your account",
 		],
 	] as const)("%o", (failure, expected) => {
 		expect(describeXcmQuoteFailure(failure, toHydration)).toBe(expected);

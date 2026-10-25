@@ -61,15 +61,10 @@ export type XcmQuoteFailure =
 	| { kind: "nothing-deposited" }
 	| { kind: "delivery-fee-unavailable" }
 	| { kind: "destination-fee-unavailable" }
-	| { kind: "fee-estimate-failed"; cause: XcmQuoteFailure; probe: FeeProbe }
+	| { kind: "fee-estimate-failed"; cause: XcmQuoteFailure }
 	| { kind: "below-destination-fee" }
 	| { kind: "leftovers-unreceivable" }
 	| { kind: "call-unavailable" };
-
-export type FeeProbe = {
-	plancks: bigint;
-	token: Pick<Token, "symbol" | "decimals">;
-};
 
 export const getFeeProbePlancks = ({
 	existentialDeposit,
@@ -361,10 +356,7 @@ export const describeXcmQuoteFailure = (
 		case "destination-fee-unavailable":
 			return `Could not estimate the ${destination} fee`;
 		case "fee-estimate-failed":
-			return `Could not estimate the ${destination} fee: ${origin} rejected a test withdrawal of ${plancksToTokens(
-				failure.probe.plancks,
-				failure.probe.token.decimals,
-			)} ${failure.probe.token.symbol} from your account`;
+			return `Could not estimate the ${destination} fee: ${origin} rejected a test withdrawal from your account`;
 		case "below-destination-fee":
 			return `Amount too low to cover the ${destination} fee`;
 		case "leftovers-unreceivable":

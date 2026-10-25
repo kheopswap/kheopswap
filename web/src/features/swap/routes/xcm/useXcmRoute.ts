@@ -340,13 +340,6 @@ export const useXcmRoute = ({
 				withdrawals: FAKE_CALL_WITHDRAWALS[route.kind],
 			})
 		: undefined;
-	const feeProbe = useMemo(
-		() =>
-			tokenIn && probePlancks
-				? { plancks: probePlancks, token: tokenIn }
-				: undefined,
-		[tokenIn, probePlancks],
-	);
 	const fakeInputs = useMemo(
 		() =>
 			route &&
@@ -361,7 +354,6 @@ export const useXcmRoute = ({
 		beneficiary,
 		totalIn,
 		fakeCall,
-		feeProbe,
 		slippage,
 		balances: dryRunBalances,
 	});
