@@ -652,15 +652,52 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(true);
 	});
 
-	it("gives up as unconfirmed when the origin is still awaited at the expiry", () => {
+	it("keeps waiting for the origin while the record is unsettled", () => {
 		vi.useFakeTimers();
 		const { arrivals, isComplete } = track(getRecord("pending"), 60_000);
-		vi.advanceTimersByTime(60_000);
+		vi.advanceTimersByTime(11 * 60_000);
 
-		expect(arrivals).toEqual([
-			{ status: "awaiting-origin" },
-			{ status: "unconfirmed", messageId: null },
-		]);
+		expect(arrivals).toEqual([{ status: "awaiting-origin" }]);
+		expect(isComplete()).toBe(false);
+	});
+
+	it("reports the arrival of a transfer whose origin finalized after 11 minutes", () => {
+		vi.useFakeTimers();
+		const { record$, finalizedBlockEvents$, arrivals, isComplete } = track(
+			getRecord("pending"),
+		);
+		vi.advanceTimersByTime(11 * 60_000);
+		record$.next(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
+		expect(arrivals.at(-1)).toEqual({
+			status: "in-transit",
+			messageId: MESSAGE_ID,
+		});
+
+		finalizedBlockEvents$.next(block(ourArrival));
+		expect(arrivals.at(-1)).toMatchObject({
+			status: "arrived",
+			finalized: true,
+		});
+		expect(isComplete()).toBe(true);
+	});
+
+	it("gives up as unconfirmed 10 minutes after the origin sent the message, not after the record was created", () => {
+		vi.useFakeTimers();
+		const { record$, arrivals, isComplete } = track(getRecord("pending"));
+		vi.advanceTimersByTime(5 * 60_000);
+		record$.next(finalizedRecord([sentTo(HYDRATION_PARA_ID)]));
+		vi.advanceTimersByTime(10 * 60_000 - 1);
+		expect(arrivals.at(-1)).toEqual({
+			status: "in-transit",
+			messageId: MESSAGE_ID,
+		});
+		expect(isComplete()).toBe(false);
+
+		vi.advanceTimersByTime(1);
+		expect(arrivals.at(-1)).toEqual({
+			status: "unconfirmed",
+			messageId: MESSAGE_ID,
+		});
 		expect(isComplete()).toBe(true);
 	});
 });

@@ -339,9 +339,7 @@ const toArrival = (
 ): XcmArrival => {
 	switch (origin.status) {
 		case "pending":
-			return isExpired
-				? { status: "unconfirmed", messageId: null }
-				: { status: "awaiting-origin" };
+			return { status: "awaiting-origin" };
 		case "failed":
 			return { status: "origin-failed" };
 		case "finalized-without-message":
@@ -449,7 +447,10 @@ export const getXcmArrival$ = ({
 		keepRecentBlocks(finalizedBlockEvents$, bufferBlocks),
 	]).pipe(map(([best, finalized]): DestinationBlocks => ({ best, finalized })));
 
-	const isExpired$ = timer(timeoutMs).pipe(
+	const isExpired$ = origin$.pipe(
+		filter((origin) => origin.status === "sent"),
+		take(1),
+		switchMap(() => timer(timeoutMs)),
 		map(() => true),
 		startWith(false),
 	);
