@@ -5,9 +5,8 @@ import { Tokens } from "../../components/Tokens";
 import type { Token } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
 import { cn } from "../../utils/cn";
-import { isLowLiquidity } from "../../utils/getHoldingValuation";
-import { hasValueLine } from "../../utils/hasValueLine";
-import { ValuationLabel } from "./ValuationLabel";
+import { hasValueLine, useIsValuedAsStable } from "../../utils/hasValueLine";
+import { getShownValuationStatus, ValuationLabel } from "./ValuationLabel";
 
 const ValueLine: FC<
 	BalanceWithStableSummary & {
@@ -16,18 +15,16 @@ const ValueLine: FC<
 		isPrice: boolean;
 	}
 > = ({ token, stableToken, isPrice, isLoadingStablePlancks, ...valuation }) => {
-	const showValue = hasValueLine(
-		token.id,
-		stableToken.id,
-		valuation.tokenPlancks,
-	);
-	const showLabel =
-		showValue &&
-		valuation.status !== "priced" &&
-		(isLowLiquidity(valuation.status) || (!isPrice && !isLoadingStablePlancks));
+	const isValuedAsStable = useIsValuedAsStable(token.id);
+	const showValue = hasValueLine(isValuedAsStable, valuation.tokenPlancks);
+	const labelStatus = getShownValuationStatus({
+		...valuation,
+		isPrice,
+		isLoadingStablePlancks,
+	});
 
-	if (valuation.status !== "priced" && showLabel)
-		return <ValuationLabel status={valuation.status} isPrice={isPrice} />;
+	if (labelStatus)
+		return <ValuationLabel status={labelStatus} isPrice={isPrice} />;
 
 	const className = cn(
 		(valuation.status !== "priced" || !showValue) && "invisible",

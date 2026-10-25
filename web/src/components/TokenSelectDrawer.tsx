@@ -7,7 +7,7 @@ import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
 import { getTokenDescription } from "../utils/getTokenDescription";
-import { hasValueLine } from "../utils/hasValueLine";
+import { hasValueLine, useIsValuedAsStable } from "../utils/hasValueLine";
 import { isBigInt } from "../utils/isBigInt";
 import { tokenMatchesSearch } from "../utils/tokenMatchesSearch";
 import { Drawer } from "./Drawer";
@@ -28,6 +28,7 @@ const TokenButton = memo<{
 	onSelect: (tokenId: TokenId) => void;
 }>(({ token, balances, selected, onSelect }) => {
 	const { stableToken } = useRelayChains();
+	const isValuedAsStable = useIsValuedAsStable(token.id);
 	const description = useMemo(() => getTokenDescription(token), [token]);
 
 	const handleClick = useCallback(() => {
@@ -73,11 +74,7 @@ const TokenButton = memo<{
 								plancks={balances.stablePlancks ?? 0n}
 								className={cn(
 									(!isBigInt(balances.stablePlancks) ||
-										!hasValueLine(
-											token.id,
-											stableToken.id,
-											balances.tokenPlancks,
-										)) &&
+										!hasValueLine(isValuedAsStable, balances.tokenPlancks)) &&
 										"invisible",
 								)}
 								pulse={balances.isLoadingStablePlancks}

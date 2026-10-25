@@ -4,9 +4,8 @@ import { Tokens } from "../../components/Tokens";
 import type { Token } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import type { BalanceWithStableSummary } from "../../types/balances";
-import { isLowLiquidity } from "../../utils/getHoldingValuation";
-import { hasValueLine } from "../../utils/hasValueLine";
-import { ValuationLabel } from "./ValuationLabel";
+import { hasValueLine, useIsValuedAsStable } from "../../utils/hasValueLine";
+import { getShownValuationStatus, ValuationLabel } from "./ValuationLabel";
 
 export const TokenDetailsRow: FC<{
 	label: ReactNode;
@@ -33,15 +32,18 @@ export const TokenDetailsRowValue: FC<
 	...valuation
 }) => {
 	const { stableToken } = useRelayChains();
+	const isValuedAsStable = useIsValuedAsStable(token.id);
 
 	if (isInitializing) return null;
 
 	const plancks = tokenPlancks ?? 0n;
-	const showValue = hasValueLine(token.id, stableToken.id, plancks);
-	const showLabel =
-		showValue &&
-		valuation.status !== "priced" &&
-		(isLowLiquidity(valuation.status) || (!isPrice && !isLoadingStablePlancks));
+	const showValue = hasValueLine(isValuedAsStable, plancks);
+	const labelStatus = getShownValuationStatus({
+		status: valuation.status,
+		tokenPlancks: plancks,
+		isPrice,
+		isLoadingStablePlancks,
+	});
 
 	return (
 		<div className="flex gap-2 whitespace-nowrap text-text">
@@ -51,9 +53,9 @@ export const TokenDetailsRowValue: FC<
 				pulse={isLoadingTokenPlancks}
 				isPrice={isPrice}
 			/>
-			{valuation.status !== "priced" && showLabel && (
+			{labelStatus && (
 				<ValuationLabel
-					status={valuation.status}
+					status={labelStatus}
 					isPrice={isPrice}
 					className="text-xs"
 				/>

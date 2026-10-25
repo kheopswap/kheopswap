@@ -13,7 +13,7 @@ import type { BalanceWithStable } from "../../types/balances";
 import { cn } from "../../utils/cn";
 import { isEthereumAddress } from "../../utils/ethereumAddress";
 import { getAccountName } from "../../utils/getAccountName";
-import { hasValueLine } from "../../utils/hasValueLine";
+import { hasValueLine, useIsValuedAsStable } from "../../utils/hasValueLine";
 import { isApplicableBalance } from "../../utils/isApplicableBalance";
 import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
@@ -30,6 +30,7 @@ const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
 
 export const TokenDetailsBalances: FC<{ token: Token }> = ({ token }) => {
 	const { stableToken } = useRelayChains();
+	const isValuedAsStable = useIsValuedAsStable(token.id);
 	const { accounts, balances, isLoading } = usePortfolio();
 	const { open, close, isOpen } = useOpenClose();
 
@@ -85,7 +86,7 @@ export const TokenDetailsBalances: FC<{ token: Token }> = ({ token }) => {
 									)}
 								</div>
 
-								{hasValueLine(token.id, stableToken.id, balance.tokenPlancks) &&
+								{hasValueLine(isValuedAsStable, balance.tokenPlancks) &&
 									(isBigInt(balance.stablePlancks) ||
 										balance.isLoadingStablePlancks) && (
 										<div className="text-xs text-muted">

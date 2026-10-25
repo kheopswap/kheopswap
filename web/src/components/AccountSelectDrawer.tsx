@@ -9,7 +9,7 @@ import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
 import { isValidAnyAddress } from "../utils/ethereumAddress";
 import { getAccountName } from "../utils/getAccountName";
-import { hasValueLine } from "../utils/hasValueLine";
+import { hasValueLine, useIsValuedAsStable } from "../utils/hasValueLine";
 import { shortenAddress } from "../utils/shortenAddress";
 import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
@@ -75,6 +75,7 @@ const AccountButton = memo<{
 	onSelect: (accountId: string) => void;
 }>(({ account, selected, balance, token, stableToken, disabled, onSelect }) => {
 	const accountName = useMemo(() => getAccountName(account), [account]);
+	const isValuedAsStable = useIsValuedAsStable(token?.id);
 
 	const handleClick = useCallback(() => {
 		onSelect(account.id);
@@ -123,11 +124,7 @@ const AccountButton = memo<{
 						</div>
 						<div className="text-xs text-muted">
 							{balance.stablePlancks !== null &&
-								hasValueLine(
-									token.id,
-									stableToken.id,
-									balance.tokenPlancks,
-								) && (
+								hasValueLine(isValuedAsStable, balance.tokenPlancks) && (
 									<StableValue
 										stableToken={stableToken}
 										plancks={balance.stablePlancks}

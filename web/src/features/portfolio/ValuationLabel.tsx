@@ -8,9 +8,27 @@ import { LOW_LIQUIDITY_FLOOR_STABLE_UNITS } from "../../state/prices";
 import { useRelayChains } from "../../state/relay";
 import { cn } from "../../utils/cn";
 import {
+	type HoldingValuation,
 	isLowLiquidity,
 	type UnvaluedStatus,
 } from "../../utils/getHoldingValuation";
+
+export const getShownValuationStatus = ({
+	status,
+	tokenPlancks,
+	isPrice,
+	isLoadingStablePlancks,
+}: {
+	status: HoldingValuation["status"];
+	tokenPlancks: bigint | null;
+	isPrice: boolean;
+	isLoadingStablePlancks: boolean;
+}): UnvaluedStatus | null =>
+	status !== "priced" &&
+	tokenPlancks !== 0n &&
+	(isLowLiquidity(status) || (!isPrice && !isLoadingStablePlancks))
+		? status
+		: null;
 
 export const getValuationExplanation = (
 	status: UnvaluedStatus,
