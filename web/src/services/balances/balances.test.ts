@@ -5,7 +5,7 @@ import {
 	map,
 	timeout,
 } from "rxjs";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { getLocalStorageKey } from "../../utils/getLocalStorageKey";
 import { discoverBalances } from "./discovery";
 import { getBalance$, heldTokenIds$ } from "./service";
@@ -26,6 +26,7 @@ const mocks = vi.hoisted(() => ({
 	hydrationAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
 	assetAccounts: new Map<string, { balance: bigint }>(),
 	failingPallets: new Set<string>(),
+	stalledPallets: new Set<string>(),
 	getValuesCalls: [] as GetValuesCall[],
 	getApiChainIds: [] as string[],
 	addedBalanceIds: [] as string[],
@@ -39,6 +40,21 @@ vi.mock("./subscriptions", async (importOriginal) => {
 			mocks.addedBalanceIds.push(balanceId);
 			return actual.addBalanceSubscription(balanceId);
 		},
+	};
+});
+
+const STALLED_READ_TIMEOUT_MS = 200;
+
+vi.mock("../../utils/withTimeout", async (importOriginal) => {
+	const actual =
+		await importOriginal<typeof import("../../utils/withTimeout")>();
+	return {
+		...actual,
+		withChainTimeout: <T>(
+			_chainId: string,
+			query: () => Promise<T>,
+			signal: AbortSignal,
+		) => actual.withTimeout(query(), { ms: STALLED_READ_TIMEOUT_MS, signal }),
 	};
 });
 
@@ -64,6 +80,8 @@ vi.mock("../../papi/getApi", async () => {
 						Account: {
 							getValues: async (keys: [string][]) => {
 								mocks.getValuesCalls.push({ chainId, pallet: "System", keys });
+								if (mocks.stalledPallets.has("System"))
+									return new Promise<never>(() => {});
 								return keys.map(([address]) => ({
 									data: {
 										free: 0n,
@@ -146,6 +164,10 @@ beforeAll(() => {
 });
 
 describe("balances service pipeline", () => {
+	afterEach(() => {
+		mocks.stalledPallets.clear();
+	});
+
 	it("reads every watched balance of a chain in one storage query per block", async () => {
 		const addresses = [
 			"5TestAddressAlice",
@@ -264,6 +286,43 @@ describe("balances service pipeline", () => {
 		expect(recovered?.status).toBe("loaded");
 
 		unsubscribe();
+	});
+
+	it("applies the pallets that answered while one read stalls, then retries it at the next block", async () => {
+		const address = "5TestAddressStalled";
+		mocks.nativeAccounts.set(address, { free: 40n, frozen: 0n });
+		mocks.assetAccounts.set(`1984||${address}`, { balance: 7n });
+		mocks.stalledPallets.add("System");
+		const nativeId = getBalanceId({ address, tokenId: "native::pasah" });
+		const assetId = getBalanceId({ address, tokenId: "asset::pasah::1984" });
+
+		const unsubscribes = [nativeId, assetId].map(addBalanceSubscription);
+
+		const asset = await waitForBalanceState(
+			assetId,
+			(s) => s?.status === "loaded",
+		);
+		expect(asset?.balance).toBe(7n);
+		expect((await firstValueFrom(balancesState$))[nativeId]?.status).toBe(
+			"loading",
+		);
+
+		const stale = await waitForBalanceState(
+			nativeId,
+			(s) => s?.status === "stale",
+		);
+		expect(stale?.balance).toBeUndefined();
+
+		mocks.stalledPallets.delete("System");
+		tickBestBlock("pasah", 2);
+
+		const recovered = await waitForBalanceState(
+			nativeId,
+			(s) => s?.status === "loaded",
+		);
+		expect(recovered?.balance).toBe(40n);
+
+		for (const unsubscribe of unsubscribes) unsubscribe();
 	});
 
 	it("does not re-read a chain whose watched entries did not change", async () => {

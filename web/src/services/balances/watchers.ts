@@ -18,6 +18,7 @@ import { parseTokenId } from "../../registry/tokens/helpers";
 import type { XcmV5Multilocation } from "../../registry/types/xcm";
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import { logger } from "../../utils/logger";
+import { withChainTimeout } from "../../utils/withTimeout";
 import type { LoadingStatus } from "../common";
 import { balancesStore$, flushBalancesStore } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
@@ -178,21 +179,48 @@ const readHydrationAssetBalances = async (
 	return zip(entries, accounts, tokensSpendableBalance);
 };
 
-const readChainBalances = (entries: BalanceEntry[]) =>
+const palletRead =
+	<T extends ParsedToken["type"]>(
+		type: T,
+		read: (
+			entries: BalanceEntry<Extract<ParsedToken, { type: T }>>[],
+		) => Promise<BalanceUpdate[]>,
+	) =>
+	(entries: BalanceEntry[]) => {
+		const palletEntries = ofType(entries, type);
+		return {
+			balanceIds: palletEntries.map((entry) => entry.balanceId),
+			read: () => read(palletEntries),
+		};
+	};
+
+const PALLET_READS = [
+	palletRead("native", readNativeBalances),
+	palletRead("asset", readAssetBalances),
+	palletRead("pool-asset", readPoolAssetBalances),
+	palletRead("foreign-asset", readForeignAssetBalances),
+	palletRead("hydration-asset", readHydrationAssetBalances),
+];
+
+const readChainBalances = (
+	chainId: ChainId,
+	entries: BalanceEntry[],
+	signal: AbortSignal,
+) =>
 	Promise.all(
-		[
-			readNativeBalances(ofType(entries, "native")),
-			readAssetBalances(ofType(entries, "asset")),
-			readPoolAssetBalances(ofType(entries, "pool-asset")),
-			readForeignAssetBalances(ofType(entries, "foreign-asset")),
-			readHydrationAssetBalances(ofType(entries, "hydration-asset")),
-		].map((read) =>
-			read.catch((err): BalanceUpdate[] => {
-				logger.error("Failed to read balances", { err });
-				return [];
-			}),
-		),
-	).then((updates) => updates.flat());
+		PALLET_READS.map(async (select) => {
+			const { balanceIds, read } = select(entries);
+			if (!balanceIds.length) return;
+			try {
+				const updates = await withChainTimeout(chainId, read, signal);
+				if (!signal.aborted) applyUpdates(updates);
+			} catch (err) {
+				if (signal.aborted) return;
+				logger.error("Failed to read balances", { chainId, err });
+				markStale(balanceIds);
+			}
+		}),
+	);
 
 const BLOCK_STREAM_RETRY_DELAY = 1_000;
 
@@ -250,6 +278,18 @@ const applyUpdates = (updates: BalanceUpdate[]) => {
 		});
 };
 
+const markStale = (balanceIds: BalanceId[]) => {
+	const statuses = statusByBalanceId$.value;
+	const watched = balanceIds.filter(
+		(balanceId) => balanceId in statuses && statuses[balanceId] !== "stale",
+	);
+	if (watched.length)
+		statusByBalanceId$.next({
+			...statuses,
+			...Object.fromEntries(watched.map((balanceId) => [balanceId, "stale"])),
+		});
+};
+
 type ChainWatcher = {
 	entries$: BehaviorSubject<BalanceEntry[]>;
 	stop: () => void;
@@ -260,9 +300,9 @@ const watchChainBalances = (
 	entries: BalanceEntry[],
 ): ChainWatcher => {
 	const entries$ = new BehaviorSubject(entries);
+	const controller = new AbortController();
 	let reading = false;
 	let pending: BalanceEntry[] | null = null;
-	let stopped = false;
 
 	const read = async (entries: BalanceEntry[]) => {
 		if (reading) {
@@ -271,11 +311,10 @@ const watchChainBalances = (
 		}
 		reading = true;
 		try {
-			const updates = await readChainBalances(entries);
-			if (!stopped) applyUpdates(updates);
+			await readChainBalances(chainId, entries, controller.signal);
 		} finally {
 			reading = false;
-			if (pending && !stopped) {
+			if (pending && !controller.signal.aborted) {
 				const next = pending;
 				pending = null;
 				read(next);
@@ -294,17 +333,19 @@ const watchChainBalances = (
 	return {
 		entries$,
 		stop: () => {
-			stopped = true;
+			controller.abort();
 			subscription.unsubscribe();
 		},
 	};
 };
 
 export const readBalances = async (balanceIds: BalanceId[]) => {
-	const updates = await Promise.all(
-		[...groupEntriesByChain(balanceIds).values()].map(readChainBalances),
+	const { signal } = new AbortController();
+	await Promise.all(
+		[...groupEntriesByChain(balanceIds)].map(([chainId, entries]) =>
+			readChainBalances(chainId, entries, signal),
+		),
 	);
-	applyUpdates(updates.flat());
 	flushBalancesStore();
 };
 
