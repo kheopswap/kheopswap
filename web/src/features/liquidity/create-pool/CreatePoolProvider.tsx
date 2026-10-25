@@ -14,6 +14,8 @@ import { useRelayChains } from "../../../state/relay";
 import { getAddressFromAccountField } from "../../../utils/getAddressFromAccountField";
 import { isBigInt } from "../../../utils/isBigInt";
 import { provideContext } from "../../../utils/provideContext";
+import { getLiquidityToAdd, type LiquidityAmounts } from "../liquidityAmounts";
+import type { Side } from "../maxLiquidity";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 
@@ -39,10 +41,6 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const [formData, setFormData] = useState<CreatePoolFormInputs>(defaultValues);
 	const [, setDefaultAccountId] = useSetting("defaultAccountId");
 
-	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(
-		null,
-	);
-
 	useEffect(() => {
 		if (formData.from) setDefaultAccountId(formData.from);
 	}, [formData.from, setDefaultAccountId]);
@@ -67,6 +65,19 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const token2 = useMemo(
 		() => tokens[formData.token2Id] ?? null,
 		[formData.token2Id, tokens],
+	);
+
+	const amounts = useMemo<LiquidityAmounts>(
+		() => [formData.token1Amount, formData.token2Amount],
+		[formData.token1Amount, formData.token2Amount],
+	);
+
+	const liquidityToAdd = useMemo(
+		() =>
+			token1 && token2
+				? getLiquidityToAdd(amounts, [token1.decimals, token2.decimals])
+				: null,
+		[amounts, token1, token2],
 	);
 
 	const { data: token1ExistentialDeposit } = useExistentialDeposit({
@@ -113,11 +124,17 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 
 	const onReset = useCallback(() => {
 		setFormData(defaultValues);
-		setLiquidityToAdd(null);
 	}, [defaultValues]);
 
 	const onToken2Change = useCallback((tokenId: TokenId) => {
 		setFormData((prev) => ({ ...prev, token2Id: tokenId }));
+	}, []);
+
+	const onAmountChange = useCallback((side: Side, amount: string) => {
+		setFormData((prev) => ({
+			...prev,
+			[side === 0 ? "token1Amount" : "token2Amount"]: amount,
+		}));
 	}, []);
 
 	const onFromChange = useCallback((accountId: string) => {
@@ -158,8 +175,9 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		onReset,
 		onFromChange,
 		onToken2Change,
+		amounts,
+		onAmountChange,
 		liquidityToAdd,
-		setLiquidityToAdd,
 		accountBalances,
 		isLoadingAccountBalances,
 	};

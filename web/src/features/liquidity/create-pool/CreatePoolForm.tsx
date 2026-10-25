@@ -1,21 +1,18 @@
 import { keyBy } from "lodash-es";
-import {
-	type FC,
-	type FormEventHandler,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-} from "react";
+import { type FC, type FormEventHandler, useCallback, useMemo } from "react";
 import { AccountSelect } from "../../../components/AccountSelect";
 import { FormFieldContainer } from "../../../components/FormFieldContainer";
 import { TokenAmountPicker } from "../../../components/TokenAmountPicker";
 import { useToken } from "../../../hooks/useToken";
 import { isBigInt } from "../../../utils/isBigInt";
-import { inputToPlancks, plancksToTokens } from "../../../utils/plancks";
+import { plancksToTokens } from "../../../utils/plancks";
 import { useTransaction } from "../../transaction/TransactionProvider";
 import { TransactionSubmitButton } from "../../transaction/TransactionSubmitButton";
-import { getSpendableBalance, getSpendingMargin } from "../maxLiquidity";
+import {
+	getSpendableBalance,
+	getSpendingMargin,
+	type Side,
+} from "../maxLiquidity";
 import { useCreatePool } from "./CreatePoolProvider";
 import { CreatePoolSummary } from "./CreatePoolSummary";
 
@@ -70,8 +67,9 @@ const AddLiquidityEditor: FC = () => {
 		isLoadingTokens,
 		accountBalances,
 		isLoadingAccountBalances,
+		amounts,
+		onAmountChange,
 		liquidityToAdd,
-		setLiquidityToAdd,
 		onToken2Change,
 		token1ExistentialDeposit,
 		token2ExistentialDeposit,
@@ -80,56 +78,34 @@ const AddLiquidityEditor: FC = () => {
 
 	const { feeEstimate, feeToken, insufficientBalances } = useTransaction();
 
-	const refInput1 = useRef<HTMLInputElement>(null);
-	const refInput2 = useRef<HTMLInputElement>(null);
-
 	const handleTokensInput = useCallback(
-		(tokenIdx: "token1" | "token2"): FormEventHandler<HTMLInputElement> =>
-			(e) => {
-				if (!token1 || !token2) {
-					if (tokenIdx === "token1" && refInput2.current)
-						refInput2.current.value = "";
-					if (tokenIdx === "token2" && refInput1.current)
-						refInput1.current.value = "";
-					return setLiquidityToAdd(null);
-				}
-
-				let [val1, val2] = liquidityToAdd ?? [0n, 0n];
-
-				if (tokenIdx === "token1")
-					val1 = inputToPlancks(e.currentTarget.value, token1.decimals);
-				else val2 = inputToPlancks(e.currentTarget.value, token2.decimals);
-
-				setLiquidityToAdd(!val1 && !val2 ? null : [val1, val2]);
-			},
-		[token2, liquidityToAdd, token1, setLiquidityToAdd],
+		(side: Side): FormEventHandler<HTMLInputElement> =>
+			(e) =>
+				onAmountChange(side, e.currentTarget.value),
+		[onAmountChange],
 	);
 
 	const handleMaxClick = useCallback(
-		(tokenIdx: "token1" | "token2") => () => {
-			if (!token1 || !token2 || !refInput1.current || !refInput2.current)
-				return;
+		(side: Side) => () => {
+			const token = [token1, token2][side];
+			if (!token) return;
 
-			const [token, balance, existentialDeposit] =
-				tokenIdx === "token1"
-					? [token1, accountBalances[0], token1ExistentialDeposit]
-					: [token2, accountBalances[1], token2ExistentialDeposit];
 			const margin = getSpendingMargin({
 				token,
 				feeToken,
 				feeEstimate,
-				existentialDeposit,
+				existentialDeposit: [
+					token1ExistentialDeposit,
+					token2ExistentialDeposit,
+				][side],
 			});
+			const balance = accountBalances[side];
 			if (!isBigInt(balance) || !isBigInt(margin)) return;
 
-			const [current1, current2] = liquidityToAdd ?? [0n, 0n];
-			const max = getSpendableBalance(balance, margin);
-			const [maxToken1, maxToken2] =
-				tokenIdx === "token1" ? [max, current2] : [current1, max];
-
-			setLiquidityToAdd([maxToken1, maxToken2]);
-			refInput1.current.value = plancksToTokens(maxToken1, token1.decimals);
-			refInput2.current.value = plancksToTokens(maxToken2, token2.decimals);
+			onAmountChange(
+				side,
+				plancksToTokens(getSpendableBalance(balance, margin), token.decimals),
+			);
 		},
 		[
 			accountBalances,
@@ -138,18 +114,10 @@ const AddLiquidityEditor: FC = () => {
 			feeToken,
 			feeEstimate,
 			token1ExistentialDeposit,
-			setLiquidityToAdd,
-			liquidityToAdd,
 			token2ExistentialDeposit,
+			onAmountChange,
 		],
 	);
-
-	useEffect(() => {
-		if (liquidityToAdd === null && refInput1.current && refInput2.current) {
-			refInput1.current.value = "";
-			refInput2.current.value = "";
-		}
-	}, [liquidityToAdd]);
 
 	const errorMessageNative = useMemo(() => {
 		return insufficientBalances[token1?.id ?? ""];
@@ -169,9 +137,8 @@ const AddLiquidityEditor: FC = () => {
 		<div className="relative flex flex-col gap-1.5">
 			<TokenAmountPicker
 				inputProps={{
-					ref: refInput1,
-					inputMode: "decimal",
-					onInput: handleTokensInput("token1"),
+					value: amounts[0],
+					onInput: handleTokensInput(0),
 					formNoValidate: true,
 				}}
 				tokenId={token1?.id}
@@ -183,14 +150,13 @@ const AddLiquidityEditor: FC = () => {
 				disableTokenButton
 				balance={accountBalances?.[0]}
 				isLoadingBalance={isLoadingAccountBalances}
-				onMaxClick={handleMaxClick("token1")}
+				onMaxClick={handleMaxClick(0)}
 				inputLabel="Native token amount"
 			/>
 			<TokenAmountPicker
 				inputProps={{
-					ref: refInput2,
-					inputMode: "decimal",
-					onInput: handleTokensInput("token2"),
+					value: amounts[1],
+					onInput: handleTokensInput(1),
 					formNoValidate: true,
 				}}
 				accounts={accounts}
@@ -203,7 +169,7 @@ const AddLiquidityEditor: FC = () => {
 				errorMessage={errorMessageAsset}
 				balance={accountBalances?.[1]}
 				isLoadingBalance={isLoadingAccountBalances}
-				onMaxClick={handleMaxClick("token2")}
+				onMaxClick={handleMaxClick(1)}
 				inputLabel="Asset token amount"
 			/>
 		</div>

@@ -1,13 +1,17 @@
 import { useCallback, useMemo, useState } from "react";
 import { useExistentialDeposit } from "../../../../hooks/useExistentialDeposit";
 import { provideContext } from "../../../../utils/provideContext";
+import {
+	getLiquidityToAdd,
+	type LiquidityAmounts,
+	NO_LIQUIDITY_AMOUNTS,
+} from "../../liquidityAmounts";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidityExtrinsic } from "./useAddLiquidityExtrinsic";
 
 const useAddLiquidityProvider = () => {
-	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(
-		null,
-	);
+	const [amounts, setAmounts] =
+		useState<LiquidityAmounts>(NO_LIQUIDITY_AMOUNTS);
 
 	const {
 		assetHub,
@@ -17,6 +21,17 @@ const useAddLiquidityProvider = () => {
 		resolvedSubstrateAddress,
 		lpSlippage,
 	} = useLiquidityPoolPage();
+
+	const liquidityToAdd = useMemo(
+		() =>
+			nativeToken && assetToken
+				? getLiquidityToAdd(amounts, [
+						nativeToken.decimals,
+						assetToken.decimals,
+					])
+				: null,
+		[amounts, nativeToken, assetToken],
+	);
 
 	const minLiquidity = useMemo<[bigint, bigint] | null>(() => {
 		if (!liquidityToAdd) return null;
@@ -60,14 +75,15 @@ const useAddLiquidityProvider = () => {
 	});
 
 	const onReset = useCallback(() => {
-		setLiquidityToAdd(null);
+		setAmounts(NO_LIQUIDITY_AMOUNTS);
 	}, []);
 
 	return {
 		call,
 		fakeCall,
+		amounts,
+		setAmounts,
 		liquidityToAdd,
-		setLiquidityToAdd,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 		onReset,

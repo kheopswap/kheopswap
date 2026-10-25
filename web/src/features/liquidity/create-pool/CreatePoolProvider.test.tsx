@@ -19,7 +19,12 @@ vi.mock("../../../hooks/useWalletAccount", () => ({
 	useWalletAccount: () => null,
 }));
 vi.mock("../../../hooks/useAllTokens", () => ({
-	useAllTokens: () => ({ data: {}, isLoading: false }),
+	useAllTokens: () => ({
+		data: {
+			"asset::pasah::50001010": { id: "asset::pasah::50001010", decimals: 6 },
+		},
+		isLoading: false,
+	}),
 }));
 vi.mock("../../../hooks/usePoolsByChainId", () => ({
 	usePoolsByChainId: () => ({ data: [] }),
@@ -38,7 +43,7 @@ vi.mock("../../../hooks/useBalance", () => ({
 }));
 
 describe("CreatePoolProvider", () => {
-	it("clears the initial liquidity and its call once the creation is signed", () => {
+	it("clears the initial liquidity, its amounts and its call once the creation is signed", () => {
 		const { result } = renderHook(useCreatePool, {
 			wrapper: ({ children }) => (
 				<CreatePoolProvider tokenId="asset::pasah::50001010">
@@ -47,11 +52,17 @@ describe("CreatePoolProvider", () => {
 			),
 		});
 
-		act(() => result.current.setLiquidityToAdd([10n, 20n]));
-		expect(result.current.call).toEqual({ liquidityToAdd: [10n, 20n] });
+		act(() => {
+			result.current.onAmountChange(0, "1");
+			result.current.onAmountChange(1, "2");
+		});
+		expect(result.current.call).toEqual({
+			liquidityToAdd: [10_000_000_000n, 2_000_000n],
+		});
 
 		act(() => result.current.onReset());
 
+		expect(result.current.amounts).toEqual(["", ""]);
 		expect(result.current.liquidityToAdd).toBeNull();
 		expect(result.current.call).toBeNull();
 	});

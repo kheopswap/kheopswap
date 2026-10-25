@@ -4,18 +4,19 @@ import {
 	useCallback,
 	useEffect,
 	useMemo,
-	useRef,
 	useState,
 } from "react";
 import type { Token } from "../../../../registry/tokens/types";
 import { isBigInt } from "../../../../utils/isBigInt";
-import { plancksToTokens, tokensToPlancks } from "../../../../utils/plancks";
+import { plancksToTokens } from "../../../../utils/plancks";
 import { useTransaction } from "../../../transaction/TransactionProvider";
+import { pairLiquidityAmount } from "../../liquidityAmounts";
 import {
 	getMaxCapHint,
 	getMaxLiquidity,
 	getSpendingMargin,
 	type MaxLiquidity,
+	type Side,
 } from "../../maxLiquidity";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidity } from "./AddLiquidityProvider";
@@ -31,8 +32,9 @@ export const useLiquidityEditorInputs = () => {
 	} = useLiquidityPoolPage();
 
 	const {
+		amounts,
+		setAmounts,
 		liquidityToAdd,
-		setLiquidityToAdd,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 	} = useAddLiquidity();
@@ -44,90 +46,43 @@ export const useLiquidityEditorInputs = () => {
 		[assetToken, nativeToken],
 	);
 
-	const refInput1 = useRef<HTMLInputElement>(null);
-	const refInput2 = useRef<HTMLInputElement>(null);
-
 	const [maxCappedBy, setMaxCappedBy] =
 		useState<MaxLiquidity["cappedBy"]>(null);
 
 	const handleTokensInput = useCallback(
-		(tokenIdx: "token1" | "token2"): FormEventHandler<HTMLInputElement> =>
+		(side: Side): FormEventHandler<HTMLInputElement> =>
 			(e) => {
 				setMaxCappedBy(null);
-				const val = Number(e.currentTarget.value);
-
-				if (
-					!e.currentTarget.value ||
-					!nativeToken ||
-					!assetToken ||
-					Number.isNaN(val) ||
-					val < 0
-				) {
-					if (tokenIdx === "token1" && refInput2.current)
-						refInput2.current.value = "";
-					if (tokenIdx === "token2" && refInput1.current)
-						refInput1.current.value = "";
-					setLiquidityToAdd(null);
-					return;
-				}
+				const text = e.currentTarget.value;
+				if (!nativeToken || !assetToken) return;
 
 				if (!reserves || reserves.includes(0n)) {
-					if (tokenIdx === "token1")
-						setLiquidityToAdd([
-							tokensToPlancks(e.currentTarget.value, nativeToken.decimals),
-							liquidityToAdd?.[1] ?? 0n,
-						]);
-					else
-						setLiquidityToAdd([
-							liquidityToAdd?.[0] ?? 0n,
-							tokensToPlancks(e.currentTarget.value, assetToken.decimals),
-						]);
+					setAmounts((prev) =>
+						side === 0 ? [text, prev[1]] : [prev[0], text],
+					);
 					return;
 				}
 
-				try {
-					if (tokenIdx === "token1") {
-						const nativePlancks = tokensToPlancks(
-							e.currentTarget.value,
-							nativeToken.decimals,
-						);
-						const assetPlancks = (nativePlancks * reserves[1]) / reserves[0];
-						setLiquidityToAdd([nativePlancks, assetPlancks]);
-						if (refInput2.current)
-							refInput2.current.value = plancksToTokens(
-								assetPlancks,
-								assetToken.decimals,
-							);
-					} else {
-						const assetPlancks = tokensToPlancks(
-							e.currentTarget.value,
-							assetToken.decimals,
-						);
-						const nativePlancks = (assetPlancks * reserves[0]) / reserves[1];
-						setLiquidityToAdd([nativePlancks, assetPlancks]);
-						if (refInput1.current)
-							refInput1.current.value = plancksToTokens(
-								nativePlancks,
-								nativeToken.decimals,
-							);
-					}
-				} catch (err) {
-					console.error("input error", { err });
-				}
+				setAmounts(
+					pairLiquidityAmount({
+						side,
+						text,
+						reserves,
+						decimals: [nativeToken.decimals, assetToken.decimals],
+					}),
+				);
 			},
-		[assetToken, liquidityToAdd, nativeToken, reserves, setLiquidityToAdd],
+		[assetToken, nativeToken, reserves, setAmounts],
 	);
 
 	const handleMaxClick = useCallback(
-		(tokenIdx: "token1" | "token2") => () => {
+		(side: Side) => () => {
 			if (
 				!accountBalances ||
 				!reserves ||
 				reserves.some((val) => val === 0n) ||
 				!nativeToken ||
-				!assetToken ||
-				!refInput1.current ||
-				!refInput2.current
+				!assetToken
 			)
 				return;
 
@@ -152,16 +107,14 @@ export const useLiquidityEditorInputs = () => {
 				balances: accountBalances,
 				reserves,
 				margins: [nativeMargin, assetMargin],
-				side: tokenIdx === "token1" ? 0 : 1,
+				side,
 			});
 
 			setMaxCappedBy(cappedBy);
-			setLiquidityToAdd([maxNative, maxAsset]);
-			refInput1.current.value = plancksToTokens(
-				maxNative,
-				nativeToken.decimals,
-			);
-			refInput2.current.value = plancksToTokens(maxAsset, assetToken.decimals);
+			setAmounts([
+				plancksToTokens(maxNative, nativeToken.decimals),
+				plancksToTokens(maxAsset, assetToken.decimals),
+			]);
 		},
 		[
 			accountBalances,
@@ -171,17 +124,13 @@ export const useLiquidityEditorInputs = () => {
 			feeToken,
 			feeEstimate,
 			nativeExistentialDeposit,
-			setLiquidityToAdd,
+			setAmounts,
 			assetExistentialDeposit,
 		],
 	);
 
 	useEffect(() => {
-		if (liquidityToAdd === null && refInput1.current && refInput2.current) {
-			refInput1.current.value = "";
-			refInput2.current.value = "";
-			setMaxCappedBy(null);
-		}
+		if (liquidityToAdd === null) setMaxCappedBy(null);
 	}, [liquidityToAdd]);
 
 	const [hintNative, hintAsset] = useMemo(() => {
@@ -202,8 +151,7 @@ export const useLiquidityEditorInputs = () => {
 	}, [insufficientBalances, assetToken?.id]);
 
 	return {
-		refInput1,
-		refInput2,
+		amounts,
 		nativeToken,
 		assetToken,
 		tokens,
