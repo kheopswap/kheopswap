@@ -11,7 +11,6 @@ import {
 	type HoldingValuation,
 } from "../utils/getHoldingValuation";
 import { isApplicableBalance } from "../utils/isApplicableBalance";
-import { logger } from "../utils/logger";
 import { useBalancesWithStables } from "./useBalancesWithStables";
 import { type TokenValuations, useTokenValuations } from "./useTokenValuations";
 
@@ -119,16 +118,12 @@ export const useBalancesByTokenSummary = ({
 	tokens,
 	accounts,
 }: UseBalancesByTokenSummaryProps) => {
-	const stop = logger.cumulativeTimer("useBalancesByTokenSummary");
-
 	const { data: balances, isLoading } = useBalancesWithStables({
 		tokens,
 		accounts,
 	});
 
 	const data = useBalancesByTokenSummaryOf(balances);
-
-	stop();
 
 	return { data, isLoading };
 };

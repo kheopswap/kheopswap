@@ -1,5 +1,4 @@
 import type { TokenId } from "../registry/tokens/types";
-import { logger } from "../utils/logger";
 
 type Reserves = [bigint, bigint];
 
@@ -14,29 +13,23 @@ export const getAssetConvertPlancks = (
 	reservesNativeToTokenIn: Reserves,
 	reservesNativeToTokenOut: Reserves,
 ) => {
-	const stop = logger.cumulativeTimer("getAssetConvertPlancks");
+	if (tokenIdIn === tokenIdOut) return plancks;
 
-	try {
-		if (tokenIdIn === tokenIdOut) return plancks;
+	const reservesOut: Reserves | undefined =
+		tokenIdNative === tokenIdOut ? [1n, 1n] : reservesNativeToTokenOut;
+	if (!hasLiquidity(reservesOut)) return undefined;
+	const [nativeToTokenOutReserveIn, nativeToTokenOutReserveOut] = reservesOut;
 
-		const reservesOut: Reserves | undefined =
-			tokenIdNative === tokenIdOut ? [1n, 1n] : reservesNativeToTokenOut;
-		if (!hasLiquidity(reservesOut)) return undefined;
-		const [nativeToTokenOutReserveIn, nativeToTokenOutReserveOut] = reservesOut;
+	if (tokenIdIn === tokenIdNative)
+		return (plancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
 
-		if (tokenIdIn === tokenIdNative)
-			return (plancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
+	if (!hasLiquidity(reservesNativeToTokenIn)) return undefined;
+	const [nativeToTokenInReserveIn, nativeToTokenInReserveOut] =
+		reservesNativeToTokenIn;
 
-		if (!hasLiquidity(reservesNativeToTokenIn)) return undefined;
-		const [nativeToTokenInReserveIn, nativeToTokenInReserveOut] =
-			reservesNativeToTokenIn;
-
-		const nativePlancks =
-			(plancks * nativeToTokenInReserveIn) / nativeToTokenInReserveOut;
-		return (
-			(nativePlancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn
-		);
-	} finally {
-		stop();
-	}
+	const nativePlancks =
+		(plancks * nativeToTokenInReserveIn) / nativeToTokenInReserveOut;
+	return (
+		(nativePlancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn
+	);
 };

@@ -35,8 +35,6 @@ const WalletButton: FC<{
 	wallet: Wallet;
 	onClick: () => void;
 }> = ({ wallet, onClick }) => {
-	// The WalletConnect connector spans platforms (its `platforms` are only known
-	// once connected); injected wallets are bound to a single platform.
 	const platformLabel = isWalletConnectWallet(wallet)
 		? wallet.platforms.map(getPlatformLabel).join(" + ")
 		: getPlatformLabel(wallet.platform);

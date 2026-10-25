@@ -39,17 +39,15 @@ export const PortfolioTokenDrawer: FC<{
 	rows: PortfolioRowData[];
 	onDismiss: () => void;
 }> = memo(function PortfolioTokenDrawer({ tokenId, rows, onDismiss }) {
-	// Derive the row synchronously to avoid double-render on open
 	const currentRow = useMemo(
 		() => (tokenId ? rows.find((row) => row.token.id === tokenId) : undefined),
 		[rows, tokenId],
 	);
 
-	// Keep the last valid row for the close animation
-	const lastRowRef = useRef<PortfolioRowData | undefined>(undefined);
-	if (currentRow) lastRowRef.current = currentRow;
+	const closingRowRef = useRef<PortfolioRowData | undefined>(undefined);
+	if (currentRow) closingRowRef.current = currentRow;
 
-	const displayRow = currentRow ?? lastRowRef.current;
+	const displayRow = currentRow ?? closingRowRef.current;
 
 	return (
 		<Drawer anchor="right" isOpen={!!tokenId} onDismiss={onDismiss}>

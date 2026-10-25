@@ -29,8 +29,6 @@ import { usePortfolioAllocation } from "./usePortfolioAllocation";
 const [useHeldTokenIds] = bind(heldTokenIds$, [] as TokenId[]);
 
 export const usePortfolioProvider = () => {
-	const stop = logger.cumulativeTimer("usePortfolioProvider");
-
 	const { accounts: walletAccounts } = useWallets();
 	const accounts = useMemo(
 		() => uniqByPublicKey(walletAccounts, (account) => account.address),
@@ -124,8 +122,6 @@ export const usePortfolioProvider = () => {
 
 	const { allocation, holdingsByTokenId, lowLiquidityCount, unpricedCount } =
 		usePortfolioAllocation({ tokens, balancesByTokenId });
-
-	stop();
 
 	return {
 		isLoading: isLoadingTokens || isLoadingBalances || isLoadingPrices,

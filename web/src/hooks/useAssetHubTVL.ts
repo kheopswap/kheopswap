@@ -5,7 +5,6 @@ import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { valuationOf } from "../utils/getHoldingValuation";
 import { isBigInt } from "../utils/isBigInt";
-import { logger } from "../utils/logger";
 import { useBalances } from "./useBalances";
 import { usePoolsByChainId } from "./usePoolsByChainId";
 import { useStablePlancksMulti } from "./useStablePlancksMulti";
@@ -54,8 +53,6 @@ export const getTvlRows = ({
 	});
 
 export const useAssetHubTVL = (): UseAssetHubTVLResult => {
-	const stop = logger.cumulativeTimer("useAssetHubTVL");
-
 	const { assetHub } = useRelayChains();
 	const { data: tokens, isLoading: isLoadingTokens } = useTokensByChainIds({
 		chainIds: [assetHub.id],
@@ -123,8 +120,6 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 			tokens,
 		],
 	);
-
-	stop();
 
 	return tvl;
 };

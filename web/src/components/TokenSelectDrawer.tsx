@@ -154,7 +154,6 @@ const TokenSelectDrawerContent: FC<{
 						}
 					}
 				}
-				// Deterministic tiebreaker so order is stable while balances load
 				return t1.symbol.localeCompare(t2.symbol) || t1.id.localeCompare(t2.id);
 			}),
 		[tokens, balances],
