@@ -172,3 +172,41 @@ describe("useFollowUpStatus after a retracted inclusion", () => {
 		});
 	});
 });
+
+describe("useFollowUpStatus on a verdict reached without seeing the inclusion", () => {
+	const renderSettled = (status: "lostTrack" | "expired" | "unknown") =>
+		renderHook(() =>
+			useFollowUpStatus({ ...transferWith([{ type: status }]), status }, null),
+		).result.current;
+
+	it("tells the user the chain executed a transaction the app lost track of", () => {
+		expect(renderSettled("lostTrack")).toMatchObject({
+			message: "Included, but the app lost track of it",
+			result: "warning",
+			isFinal: true,
+			errorMessage:
+				"The chain accepted a transaction from this account. Check the block explorer for its result.",
+			blockExplorerUrl: expect.stringContaining("0x01"),
+		});
+	});
+
+	it("tells the user an expired transaction spent nothing", () => {
+		expect(renderSettled("expired")).toMatchObject({
+			message: "Transaction expired",
+			result: "error",
+			isFinal: true,
+			errorMessage:
+				"Not included before it expired. Nothing was spent, you can retry.",
+		});
+	});
+
+	it("sends the user to the explorer when the chain could not be read", () => {
+		expect(renderSettled("unknown")).toMatchObject({
+			message: "Could not confirm this transaction",
+			result: "warning",
+			isFinal: true,
+			errorMessage:
+				"The chain could not be read when this transaction expired. Check the block explorer before retrying.",
+		});
+	});
+});

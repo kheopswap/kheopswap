@@ -597,6 +597,28 @@ describe("getXcmArrival$", () => {
 		expect(isComplete()).toBe(true);
 	});
 
+	it("ends unconfirmed when the app lost track of an origin transaction the chain executed", () => {
+		const { record$, arrivals, isComplete } = track(getRecord("pending"));
+		record$.next(getRecord("lostTrack", [], [{ type: "lostTrack" }]));
+
+		expect(arrivals).toEqual([
+			{ status: "awaiting-origin" },
+			{ status: "unconfirmed", messageId: null },
+		]);
+		expect(isComplete()).toBe(true);
+	});
+
+	it("stops as origin-failed when the origin transaction expired", () => {
+		const { record$, arrivals, isComplete } = track(getRecord("pending"));
+		record$.next(getRecord("expired", [], [{ type: "expired" }]));
+
+		expect(arrivals).toEqual([
+			{ status: "awaiting-origin" },
+			{ status: "origin-failed" },
+		]);
+		expect(isComplete()).toBe(true);
+	});
+
 	it("catches an arrival processed many fast Asset Hub blocks before the message id is known", () => {
 		const { record$, finalizedBlockEvents$, arrivals } = track(
 			getRecord("pending"),

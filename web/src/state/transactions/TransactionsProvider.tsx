@@ -18,7 +18,11 @@ import {
 	transactions$,
 	useTransactionRecords,
 } from "./transactionStore";
-import { isSettled, type TransactionId, type TransactionRecord } from "./types";
+import {
+	isAutoDismissed,
+	type TransactionId,
+	type TransactionRecord,
+} from "./types";
 import {
 	getTrackedXcmArrival,
 	isAwaitingXcmArrival,
@@ -78,7 +82,7 @@ export const TransactionsProvider: FC<PropsWithChildren> = ({ children }) => {
 			if (!tx) return;
 
 			if (
-				isSettled(tx) &&
+				isAutoDismissed(tx) &&
 				!isAwaitingXcmArrival(tx, getTrackedXcmArrival(id))
 			) {
 				dismissTransaction(id);

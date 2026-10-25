@@ -385,19 +385,41 @@ describe("getToastAutoClose", () => {
 		).toBe(5_000);
 	});
 
-	it("auto-closes an outcome the chain never confirmed", () => {
-		const unknown: TransactionRecord = {
-			...swap,
-			status: "unknown",
-			txEvents: [
-				{ type: "created", txHash: "0x01" },
-				{ type: "unknown" },
-			] as TransactionRecord["txEvents"],
-		};
-		expect(getToastAutoClose(unknown, null, false)).toBe(5_000);
+	const settledAs = (
+		status: "unknown" | "lostTrack" | "expired",
+	): TransactionRecord => ({
+		...swap,
+		status,
+		txEvents: [
+			{ type: "created", txHash: "0x01" },
+			{ type: status },
+		] as TransactionRecord["txEvents"],
+	});
+
+	it("keeps an outcome the chain never confirmed until the user dismisses it", () => {
+		const unknown = settledAs("unknown");
+		expect(getToastAutoClose(unknown, null, false)).toBe(false);
 		expect(getToastView(unknown, null)).toEqual({
 			outcome: "warning",
 			text: "Could not confirm, check the explorer before retrying",
+		});
+	});
+
+	it("keeps a transaction the app lost track of until the user dismisses it", () => {
+		const lost = settledAs("lostTrack");
+		expect(getToastAutoClose(lost, null, false)).toBe(false);
+		expect(getToastView(lost, null)).toEqual({
+			outcome: "warning",
+			text: "Included, but the app lost track of it. Check the explorer",
+		});
+	});
+
+	it("keeps an expired transaction until the user dismisses it", () => {
+		const expired = settledAs("expired");
+		expect(getToastAutoClose(expired, null, false)).toBe(false);
+		expect(getToastView(expired, null)).toEqual({
+			outcome: "error",
+			text: "Expired before it was included",
 		});
 	});
 });

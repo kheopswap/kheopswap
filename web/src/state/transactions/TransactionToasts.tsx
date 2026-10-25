@@ -14,8 +14,8 @@ import {
 import { useTransactions } from "./TransactionsProvider";
 import {
 	getIncludedTxEvents,
+	isAutoDismissed,
 	isAwaitingInclusion,
-	isSettled,
 	type TransactionRecord,
 	type TransactionStatus,
 } from "./types";
@@ -47,6 +47,10 @@ const getStatusText = (status: TransactionStatus): string => {
 			return "Finalized";
 		case "failed":
 			return "Failed";
+		case "expired":
+			return "Expired before it was included";
+		case "lostTrack":
+			return "Included, but the app lost track of it. Check the explorer";
 		case "unknown":
 			return "Could not confirm, check the explorer before retrying";
 		default:
@@ -59,8 +63,10 @@ const getStatusOutcome = (status: TransactionStatus): ToastOutcome => {
 		case "finalized":
 			return "success";
 		case "failed":
+		case "expired":
 			return "error";
 		case "unconfirmed":
+		case "lostTrack":
 		case "unknown":
 			return "warning";
 		default:
@@ -147,7 +153,7 @@ export const getToastAutoClose = (
 	arrival: XcmArrival | null,
 	isDialogOpen: boolean,
 ): number | false =>
-	!isDialogOpen && isSettled(tx) && !isAwaitingXcmArrival(tx, arrival)
+	!isDialogOpen && isAutoDismissed(tx) && !isAwaitingXcmArrival(tx, arrival)
 		? SETTLED_TOAST_MS
 		: false;
 

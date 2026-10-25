@@ -69,6 +69,20 @@ const getHeadline = (
 		};
 	}
 
+	if (txEvents.some((event) => event.type === "lostTrack"))
+		return {
+			message: "Included, but the app lost track of it",
+			result: "warning",
+			isFinal: true,
+		};
+
+	if (txEvents.some((event) => event.type === "expired"))
+		return {
+			message: "Transaction expired",
+			result: "error",
+			isFinal: true,
+		};
+
 	if (txEvents.some((event) => event.type === "unknown"))
 		return {
 			message: "Could not confirm this transaction",
@@ -167,10 +181,17 @@ export const useFollowUpStatus = (
 			return (error as Error).message ?? error.toString() ?? "Unknown error";
 		if (inclusion && !inclusion.ok)
 			return getErrorMessageFromTxEvents(inclusion.events);
-		return txEvents.some((event) => event.type === "unknown")
-			? "The chain did not report this transaction before it expired. Check the block explorer before retrying."
-			: null;
-	}, [inclusion, error, txEvents]);
+		switch (transaction.status) {
+			case "lostTrack":
+				return "The chain accepted a transaction from this account. Check the block explorer for its result.";
+			case "expired":
+				return "Not included before it expired. Nothing was spent, you can retry.";
+			case "unknown":
+				return "The chain could not be read when this transaction expired. Check the block explorer before retrying.";
+			default:
+				return null;
+		}
+	}, [inclusion, error, transaction.status]);
 
 	const effectiveFee = useMemo(
 		() => (inclusion?.ok ? getPaidFee(inclusion) : null),

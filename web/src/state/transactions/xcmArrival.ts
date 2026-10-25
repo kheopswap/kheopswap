@@ -281,17 +281,26 @@ const getOriginState = (
 ): OriginState => {
 	const sent = getSentMessage(record.txEvents, destinationParaId);
 	if (sent) return { status: "sent", ...sent };
-	if (record.status === "finalized" || record.status === "unknown")
-		return { status: "settled-without-message" };
-	if (record.status !== "failed") return { status: "pending" };
-	const lastInclusion = findLast(
-		record.txEvents,
-		({ type }) =>
-			type !== "pending" && type !== "created" && type !== "broadcasted",
-	);
-	return lastInclusion?.type === "inBestBlock"
-		? { status: "pending" }
-		: { status: "failed" };
+	switch (record.status) {
+		case "finalized":
+		case "lostTrack":
+		case "unknown":
+			return { status: "settled-without-message" };
+		case "expired":
+			return { status: "failed" };
+		case "failed": {
+			const lastInclusion = findLast(
+				record.txEvents,
+				({ type }) =>
+					type !== "pending" && type !== "created" && type !== "broadcasted",
+			);
+			return lastInclusion?.type === "inBestBlock"
+				? { status: "pending" }
+				: { status: "failed" };
+		}
+		default:
+			return { status: "pending" };
+	}
 };
 
 const isOriginSettled = (origin: OriginState) =>

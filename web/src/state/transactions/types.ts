@@ -10,6 +10,8 @@ export type FollowUpTxEvent =
 	| TxEvent
 	| { type: "pending" }
 	| { type: "unconfirmed" }
+	| { type: "expired" }
+	| { type: "lostTrack" }
 	| { type: "unknown" }
 	| { type: "error"; error: unknown };
 export type FollowUpTxEvents = FollowUpTxEvent[];
@@ -24,6 +26,8 @@ export type TransactionStatus =
 	| "unconfirmed"
 	| "finalized"
 	| "failed"
+	| "expired"
+	| "lostTrack"
 	| "unknown";
 
 export type SwapFollowUpData = {
@@ -76,6 +80,7 @@ export type TransactionRecord = {
 	txHash?: string;
 	txEvents: FollowUpTxEvents;
 	account: WalletAccount;
+	nonce: number;
 	feeEstimate: bigint;
 	feeToken: Token;
 	title: string;
@@ -97,6 +102,10 @@ export const getStatusFromEvent = (
 			return "broadcasted";
 		case "unconfirmed":
 			return "unconfirmed";
+		case "expired":
+			return "expired";
+		case "lostTrack":
+			return "lostTrack";
 		case "unknown":
 			return "unknown";
 		case "finalized":
@@ -109,13 +118,15 @@ export const getStatusFromEvent = (
 };
 
 export const isTerminalStatus = (status: TransactionStatus): boolean =>
-	status === "finalized" || status === "failed" || status === "unknown";
+	status === "finalized" ||
+	status === "failed" ||
+	status === "expired" ||
+	status === "lostTrack" ||
+	status === "unknown";
 
-export const isSettled = ({ txEvents }: TransactionRecord): boolean =>
-	txEvents.some(
-		({ type }) =>
-			type === "finalized" || type === "error" || type === "unknown",
-	);
+// An expiry or an outcome the user has to check on the explorer stays until dismissed by hand.
+export const isAutoDismissed = ({ txEvents }: TransactionRecord): boolean =>
+	txEvents.some(({ type }) => type === "finalized" || type === "error");
 
 export const isAwaitingInclusion = ({ status }: TransactionRecord): boolean =>
 	status === "pending" ||

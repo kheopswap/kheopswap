@@ -94,6 +94,7 @@ const useTransactionProvider = ({
 
 	const { onSubmit } = useTransactionSubmit({
 		account: ethereum.account,
+		signerAddress: fees.signerSubstrateAddress,
 		call,
 		chainId,
 		feeEstimate: fees.feeEstimate,
