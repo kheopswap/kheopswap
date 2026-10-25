@@ -6,6 +6,7 @@ import { createEthereumTxObservable } from "./createEthereumTxObservable";
 
 const BEST_HASH = "0xbest";
 const FINALIZED_HASH = "0xfinal";
+const ORPHANED_HASH = "0xorphan";
 const TX_HASH = "0xtx";
 
 const chain = vi.hoisted(() => ({
@@ -137,6 +138,29 @@ describe("createEthereumTxObservable", () => {
 		];
 		chain.receipts = [
 			{ blockHash: BEST_HASH, transactionIndex: 2 },
+			{ blockHash: BEST_HASH, transactionIndex: 1 },
+		];
+
+		const events = await track();
+
+		const finalized = events.at(-1) as Extract<TxEvent, { type: "finalized" }>;
+		expect(finalized.block).toEqual({ hash: BEST_HASH, number: 7, index: 1 });
+		expect(finalized.events.map(({ value }) => value)).toEqual([
+			{ type: "Transfer", value: { amount: 1n } },
+			{ type: "ExtrinsicSuccess", value: {} },
+		]);
+	});
+
+	it("re-reads the inclusion when the refreshed receipt still names an orphaned block", async () => {
+		chain.eventsByHash[BEST_HASH] = [
+			inExtrinsic(1, "Balances", { type: "Transfer", value: { amount: 1n } }),
+			successAt(1),
+			inExtrinsic(2, "Balances", { type: "Transfer", value: { amount: 5n } }),
+			successAt(2),
+		];
+		chain.receipts = [
+			{ blockHash: ORPHANED_HASH, transactionIndex: 2 },
+			{ blockHash: ORPHANED_HASH, transactionIndex: 2 },
 			{ blockHash: BEST_HASH, transactionIndex: 1 },
 		];
 

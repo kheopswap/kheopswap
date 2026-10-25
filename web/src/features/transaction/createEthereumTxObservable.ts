@@ -315,6 +315,7 @@ export const createEthereumTxObservable = ({
 					signal,
 				);
 				return (
+					isSameHex(receiptNow.blockHash, finalizedHash) &&
 					Number(receiptNow.blockNumber) === bestBlock.number &&
 					receiptNow.transactionIndex === bestBlock.index &&
 					(receiptNow.status === "success") === isReceiptSuccess
