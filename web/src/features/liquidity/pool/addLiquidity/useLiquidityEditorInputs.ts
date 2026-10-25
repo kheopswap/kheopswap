@@ -35,6 +35,7 @@ export const useLiquidityEditorInputs = () => {
 		amounts,
 		setAmounts,
 		liquidityToAdd,
+		missingSide,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 	} = useAddLiquidity();
@@ -142,13 +143,17 @@ export const useLiquidityEditorInputs = () => {
 		return hints;
 	}, [maxCappedBy, nativeToken, assetToken]);
 
-	const errorMessageNative = useMemo(() => {
-		return insufficientBalances[nativeToken?.id ?? ""];
-	}, [insufficientBalances, nativeToken?.id]);
-
-	const errorMessageAsset = useMemo(() => {
-		return insufficientBalances[assetToken?.id ?? ""];
-	}, [insufficientBalances, assetToken?.id]);
+	const [errorMessageNative, errorMessageAsset] = useMemo(
+		() =>
+			[nativeToken, assetToken].map((token, side) => {
+				if (!token) return undefined;
+				if (side !== missingSide) return insufficientBalances[token.id];
+				return reserves && !reserves.includes(0n)
+					? `Less than ${plancksToTokens(1n, token.decimals)} ${token.symbol}`
+					: "Enter both amounts";
+			}),
+		[nativeToken, assetToken, missingSide, reserves, insufficientBalances],
+	);
 
 	return {
 		amounts,

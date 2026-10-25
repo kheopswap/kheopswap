@@ -8,6 +8,7 @@ import { isBigInt } from "../../../utils/isBigInt";
 import { plancksToTokens } from "../../../utils/plancks";
 import { useTransaction } from "../../transaction/TransactionProvider";
 import { TransactionSubmitButton } from "../../transaction/TransactionSubmitButton";
+import { getMissingLiquiditySide } from "../liquidityAmounts";
 import {
 	getSpendableBalance,
 	getSpendingMargin,
@@ -119,13 +120,13 @@ const AddLiquidityEditor: FC = () => {
 		],
 	);
 
-	const errorMessageNative = useMemo(() => {
-		return insufficientBalances[token1?.id ?? ""];
-	}, [insufficientBalances, token1?.id]);
-
-	const errorMessageAsset = useMemo(() => {
-		return insufficientBalances[token2?.id ?? ""];
-	}, [insufficientBalances, token2?.id]);
+	const missingSide = getMissingLiquiditySide(liquidityToAdd);
+	const [errorMessageNative, errorMessageAsset] = [token1, token2].map(
+		(token, side) =>
+			side === missingSide
+				? "Enter both amounts, or neither"
+				: insufficientBalances[token?.id ?? ""],
+	);
 
 	const nativeTokens = useMemo(() => keyBy([token1], "id"), [token1]);
 

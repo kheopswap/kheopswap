@@ -3,6 +3,7 @@ import { useExistentialDeposit } from "../../../../hooks/useExistentialDeposit";
 import { provideContext } from "../../../../utils/provideContext";
 import {
 	getLiquidityToAdd,
+	getMissingLiquiditySide,
 	type LiquidityAmounts,
 	NO_LIQUIDITY_AMOUNTS,
 } from "../../liquidityAmounts";
@@ -22,7 +23,7 @@ const useAddLiquidityProvider = () => {
 		lpSlippage,
 	} = useLiquidityPoolPage();
 
-	const liquidityToAdd = useMemo(
+	const typedLiquidity = useMemo(
 		() =>
 			nativeToken && assetToken
 				? getLiquidityToAdd(amounts, [
@@ -32,6 +33,8 @@ const useAddLiquidityProvider = () => {
 				: null,
 		[amounts, nativeToken, assetToken],
 	);
+	const missingSide = getMissingLiquiditySide(typedLiquidity);
+	const liquidityToAdd = missingSide === null ? typedLiquidity : null;
 
 	const minLiquidity = useMemo<[bigint, bigint] | null>(() => {
 		if (!liquidityToAdd) return null;
@@ -84,6 +87,7 @@ const useAddLiquidityProvider = () => {
 		amounts,
 		setAmounts,
 		liquidityToAdd,
+		missingSide,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 		onReset,

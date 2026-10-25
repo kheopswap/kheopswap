@@ -38,3 +38,13 @@ export const getLiquidityToAdd = (
 				inputToPlancks(amounts[0], decimals[0]),
 				inputToPlancks(amounts[1], decimals[1]),
 			];
+
+export const getMissingLiquiditySide = (
+	liquidityToAdd: readonly [bigint, bigint] | null,
+): Side | null => {
+	if (!liquidityToAdd) return null;
+	const [first, second] = liquidityToAdd;
+	if (first > 0n && second === 0n) return 1;
+	if (second > 0n && first === 0n) return 0;
+	return null;
+};

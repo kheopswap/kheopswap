@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getLiquidityToAdd, pairLiquidityAmount } from "./liquidityAmounts";
+import {
+	getLiquidityToAdd,
+	getMissingLiquiditySide,
+	pairLiquidityAmount,
+} from "./liquidityAmounts";
 
 const decimals = [10, 6] as const;
 
@@ -37,5 +41,18 @@ describe("getLiquidityToAdd", () => {
 
 	it("adds nothing while both amounts are empty", () => {
 		expect(getLiquidityToAdd(["", ""], decimals)).toBeNull();
+	});
+});
+
+describe("getMissingLiquiditySide", () => {
+	it("names the side left at zero while the other has an amount", () => {
+		expect(getMissingLiquiditySide([1n, 0n])).toBe(1);
+		expect(getMissingLiquiditySide([0n, 1n])).toBe(0);
+	});
+
+	it("names no side when both or neither have an amount", () => {
+		expect(getMissingLiquiditySide([1n, 1n])).toBeNull();
+		expect(getMissingLiquiditySide([0n, 0n])).toBeNull();
+		expect(getMissingLiquiditySide(null)).toBeNull();
 	});
 });
