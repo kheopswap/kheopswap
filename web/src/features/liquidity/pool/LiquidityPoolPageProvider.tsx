@@ -1,7 +1,11 @@
 import { useCallback, useMemo } from "react";
 import { useParams } from "react-router";
 import { useNativeToken } from "../../../hooks/useNativeToken";
-import { usePersistedFormDraft } from "../../../hooks/usePersistedFormDraft";
+import {
+	type DraftFields,
+	isDraftText,
+	usePersistedFormDraft,
+} from "../../../hooks/usePersistedFormDraft";
 import { usePoolByPoolAssetId } from "../../../hooks/usePoolByPoolAssetId";
 import { usePoolReserves } from "../../../hooks/usePoolReserves";
 import { useResolvedSubstrateAddress } from "../../../hooks/useResolvedSubstrateAddress";
@@ -13,14 +17,22 @@ import { provideContext } from "../../../utils/provideContext";
 import { useAccountBalancesForPool } from "./useAccountBalancesForPool";
 import { usePoolPosition } from "./usePoolPosition";
 
-const POOL_PAGE_DEFAULTS = { from: "" };
+type PoolPageDraft = { from: string };
+
+const POOL_PAGE_DEFAULTS: PoolPageDraft = { from: "" };
+const POOL_PAGE_DRAFT_FIELDS: DraftFields<PoolPageDraft> = {
+	from: isDraftText,
+};
 
 // provides informations that are common between add & remove liquidity pages
 const useLiquidityPoolPageProvider = () => {
 	const { poolAssetId } = useParams();
 
 	const { assetHub } = useRelayChains();
-	const [{ from }, setFormData] = usePersistedFormDraft(POOL_PAGE_DEFAULTS);
+	const [{ from }, setFormData] = usePersistedFormDraft(
+		POOL_PAGE_DEFAULTS,
+		POOL_PAGE_DRAFT_FIELDS,
+	);
 	const onFromChange = useCallback(
 		(accountId: string) => setFormData({ from: accountId }),
 		[setFormData],
