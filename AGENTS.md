@@ -31,7 +31,7 @@ Update this file and `README.md` when your change makes them wrong.
 
 Chains upgrade their runtime often, and a daily workflow opens a `Runtime upgrade on <chain>` issue for each one. To handle it, run `pnpm papi update <chain>`. It fetches the new metadata into `.papi/scale/<chain>.scale`, records the new `codeHash` in `.papi/polkadot-api.json` and regenerates the descriptors. Commit every changed file under `.papi/`.
 
-Most upgrades need nothing else. If `pnpm typecheck` still passes, the typed API the app uses did not change.
+Most upgrades need nothing else. If `pnpm typecheck` still passes, the typed API the app uses did not change. If `pnpm test` fails on `ASSET_CONVERSION_LP_FEE`, copy the new `LPFee` into it: the Portfolio values tokens with it before the chain answers.
 
 ## Reactive state
 

@@ -6,11 +6,13 @@ import {
 	type Observable,
 	of,
 	shareReplay,
+	startWith,
 	switchMap,
 	throttleTime,
 } from "rxjs";
 import { parseUnits } from "viem";
 import { isChainIdAssetHub } from "../registry/chains/chains";
+import type { ChainIdAssetHub } from "../registry/chains/types";
 import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId, TokenType } from "../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../types/balances";
@@ -32,6 +34,13 @@ import { assetHub$, relayChains$, stableToken$ } from "./relay";
 import { getAllTokens$ } from "./tokens";
 
 export const LOW_LIQUIDITY_FLOOR_STABLE_UNITS = "100";
+
+export const ASSET_CONVERSION_LP_FEE: Record<ChainIdAssetHub, number> = {
+	pah: 3000,
+	kah: 3000,
+	wah: 3000,
+	pasah: 3000,
+};
 
 export const assetHubMirrorTokenIds$ = combineLatest([
 	relayChains$,
@@ -128,7 +137,10 @@ export const getTokenValuation$ = (
 
 				return combineLatest([
 					getAssetConvertReserves$(mirrorTokenId, stableToken.id),
-					getAssetConversionLpFee$(assetHub.id),
+					getAssetConversionLpFee$(assetHub.id).pipe(
+						startWith(ASSET_CONVERSION_LP_FEE[assetHub.id]),
+						distinctUntilChanged(),
+					),
 				]).pipe(
 					map(([{ reserves, isLoading }, lpFee]) => ({
 						...base,
