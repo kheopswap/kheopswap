@@ -15,7 +15,7 @@ import {
 	type SwapTokensChange,
 } from "./routes/swapRoute";
 import { useXcmRouteMirrors } from "./routes/xcmRouteMirrors";
-import type { SwapFormInputs } from "./schema";
+import { SWAP_DRAFT_FIELDS, type SwapFormInputs } from "./schema";
 import { getDraftOnRelay } from "./swapDraft";
 
 export const useSwapFormState = () => {
@@ -26,24 +26,19 @@ export const useSwapFormState = () => {
 		() => ({
 			from: "",
 			to: "",
-			tokenIdIn: (nativeToken?.id ?? "") as TokenId,
-			tokenIdOut: "" as TokenId,
+			tokenIdIn: nativeToken?.id ?? "",
+			tokenIdOut: "",
 			amountIn: "",
 		}),
 		[nativeToken?.id],
 	);
 
-	const [formData, setFormData] =
-		usePersistedFormDraft<SwapFormInputs>(baseDefaults);
-
-	const { from, tokenIdIn, tokenIdOut } = useMemo(
-		() => ({
-			from: formData.from,
-			tokenIdIn: formData.tokenIdIn as TokenId | undefined,
-			tokenIdOut: formData.tokenIdOut as TokenId | undefined,
-		}),
-		[formData],
+	const [formData, setFormData] = usePersistedFormDraft(
+		baseDefaults,
+		SWAP_DRAFT_FIELDS,
 	);
+
+	const { from, tokenIdIn, tokenIdOut } = formData;
 
 	const account = useWalletAccount({ id: from });
 	const { resolvedAddress: resolvedSubstrateAddress } =

@@ -15,7 +15,7 @@ import { useRelayChains } from "../../state/relay";
 import { getAddressFromAccountField } from "../../utils/getAddressFromAccountField";
 import { tokensToPlancks } from "../../utils/plancks";
 import { provideContext } from "../../utils/provideContext";
-import type { TransferFormInputs } from "./schema";
+import { TRANSFER_DRAFT_FIELDS, type TransferFormInputs } from "./schema";
 import { useTransferExtrinsic } from "./useTransferExtrinsic";
 
 const useTransferProvider = () => {
@@ -25,15 +25,17 @@ const useTransferProvider = () => {
 	const baseDefaults = useMemo<TransferFormInputs>(
 		() => ({
 			from: "",
-			tokenId: (defaultToken?.id ?? "") as TokenId,
+			tokenId: defaultToken?.id ?? "",
 			amount: "",
 			to: "",
 		}),
 		[defaultToken?.id],
 	);
 
-	const [formData, setFormData] =
-		usePersistedFormDraft<TransferFormInputs>(baseDefaults);
+	const [formData, setFormData] = usePersistedFormDraft(
+		baseDefaults,
+		TRANSFER_DRAFT_FIELDS,
+	);
 
 	const { data: assetHubTokens, isLoading: isLoadingTokens } =
 		useTokensByChainId({ chainId: assetHub.id });
@@ -60,7 +62,7 @@ const useTransferProvider = () => {
 		() => tokens[formData.tokenId] ?? null,
 		[formData.tokenId, tokens],
 	);
-	const tokenChain = useTokenChain({ tokenId: formData.tokenId as TokenId });
+	const tokenChain = useTokenChain({ tokenId: formData.tokenId });
 
 	const { resolvedAddress, isLoading: isResolvingRecipient } =
 		useResolvedSubstrateAddress({
