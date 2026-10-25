@@ -1,8 +1,8 @@
 diff --git a/dist/chainHead/enhancers/operationLimitRecovery.js b/dist/chainHead/enhancers/operationLimitRecovery.js
-index 9a7f3286a86704edce3a6f5e4481b7ef75005749..e765e08d3f69f1745e973a87999529d22d425d91 100644
+index 9a7f3286a86704edce3a6f5e4481b7ef75005749..f43a1e80ff0108b70989a36c09420ab62d315e6d 100644
 --- a/dist/chainHead/enhancers/operationLimitRecovery.js
 +++ b/dist/chainHead/enhancers/operationLimitRecovery.js
-@@ -59,8 +59,17 @@ class PendingTaskQueue {
+@@ -59,8 +59,22 @@ class PendingTaskQueue {
      return !this.first;
    }
  }
@@ -10,17 +10,22 @@ index 9a7f3286a86704edce3a6f5e4481b7ef75005749..e765e08d3f69f1745e973a87999529d2
  const getWithRecovery = () => {
    const tearDownOperations = /* @__PURE__ */ new Map();
 +  let limitRetry;
++  let lastLimitAt = 0;
 +  const scheduleLimitRetry = () => {
++    lastLimitAt = Date.now();
 +    if (limitRetry !== void 0) return;
 +    limitRetry = setTimeout(() => {
 +      limitRetry = void 0;
 +      onEmptySlot();
 +    }, LIMIT_RETRY_MS);
 +  };
++  const probeSlot = () => {
++    if (Date.now() - lastLimitAt >= LIMIT_RETRY_MS) onEmptySlot();
++  };
    const setTeardown = (observable, cb) => {
      tearDownOperations.set(observable, () => {
        tearDownOperations.delete(observable);
-@@ -91,7 +100,11 @@ const getWithRecovery = () => {
+@@ -91,9 +105,14 @@ const getWithRecovery = () => {
          observer.next(x);
        },
        error(e) {
@@ -32,4 +37,7 @@ index 9a7f3286a86704edce3a6f5e4481b7ef75005749..e765e08d3f69f1745e973a87999529d2
 +        } else observer.error(e);
        },
        complete() {
++        probeSlot();
          observer.complete();
+       }
+     });
