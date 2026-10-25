@@ -200,13 +200,30 @@ describe("useFollowUpStatus on a verdict reached without seeing the inclusion", 
 		});
 	});
 
+	it.each([
+		["lostTrack", "Included, but the app lost track of it"],
+		["unknown", "Could not confirm this transaction"],
+	] as const)(
+		"reports a %s verdict reached after a best-block inclusion",
+		(status, message) => {
+			expect(
+				renderHook(() =>
+					useFollowUpStatus(
+						{ ...transferWith([okInclusion, { type: status }]), status },
+						null,
+					),
+				).result.current,
+			).toMatchObject({ message, result: "warning", isFinal: true });
+		},
+	);
+
 	it("sends the user to the explorer when the chain could not be read", () => {
 		expect(renderSettled("unknown")).toMatchObject({
 			message: "Could not confirm this transaction",
 			result: "warning",
 			isFinal: true,
 			errorMessage:
-				"The chain could not be read when this transaction expired. Check the block explorer before retrying.",
+				"The app could not confirm this transaction. Check the block explorer before retrying.",
 		});
 	});
 });

@@ -55,20 +55,6 @@ const getHeadline = (
 		};
 	}
 
-	if (inclusion?.type === "inBestBlock") {
-		if (inclusion.ok && xcmOutcome)
-			return {
-				message: xcmOutcome.text,
-				result: xcmOutcome.kind,
-				isFinal: false,
-			};
-		return {
-			message: "Waiting for finalization",
-			result: inclusion.ok ? "success" : "error",
-			isFinal: false,
-		};
-	}
-
 	if (txEvents.some((event) => event.type === "lostTrack"))
 		return {
 			message: "Included, but the app lost track of it",
@@ -89,6 +75,20 @@ const getHeadline = (
 			result: "warning",
 			isFinal: true,
 		};
+
+	if (inclusion?.type === "inBestBlock") {
+		if (inclusion.ok && xcmOutcome)
+			return {
+				message: xcmOutcome.text,
+				result: xcmOutcome.kind,
+				isFinal: false,
+			};
+		return {
+			message: "Waiting for finalization",
+			result: inclusion.ok ? "success" : "error",
+			isFinal: false,
+		};
+	}
 
 	if (txEvents.some((event) => event.type === "unconfirmed"))
 		return {
@@ -187,7 +187,7 @@ export const useFollowUpStatus = (
 			case "expired":
 				return "Not included before it expired. Nothing was spent, you can retry.";
 			case "unknown":
-				return "The chain could not be read when this transaction expired. Check the block explorer before retrying.";
+				return "The app could not confirm this transaction. Check the block explorer before retrying.";
 			default:
 				return null;
 		}
