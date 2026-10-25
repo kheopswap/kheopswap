@@ -1,4 +1,5 @@
-import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
+import type { Token, TokenAmount } from "../../registry/tokens/types";
+import { mergeTokenAmounts } from "../../utils/mergeTokenAmounts";
 import type { SubmitGate } from "../transaction/TransactionProvider";
 
 export type SwapLoss = {
@@ -157,16 +158,13 @@ export const getTransferFees = ({
 		tokenIn.decimals !== tokenOut.decimals
 	)
 		return undefined;
-	const fees = new Map<TokenId, bigint>();
-	for (const { tokenId, plancks } of [
-		{ tokenId: tokenIn.id, plancks: totalIn - received },
-		deliveryFee,
-		transactionFee,
-	].filter((fee) => !!fee))
-		fees.set(tokenId, (fees.get(tokenId) ?? 0n) + plancks);
-	return [...fees]
-		.filter(([, plancks]) => plancks > 0n)
-		.map(([tokenId, plancks]) => ({ tokenId, plancks }));
+	return mergeTokenAmounts(
+		[
+			{ tokenId: tokenIn.id, plancks: totalIn - received },
+			deliveryFee,
+			transactionFee,
+		].filter((fee) => !!fee),
+	);
 };
 
 export const getRiskSubmitGate = (

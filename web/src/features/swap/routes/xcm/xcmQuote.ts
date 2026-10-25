@@ -10,6 +10,7 @@ import type {
 	TokenId,
 } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
+import { mergeTokenAmounts } from "../../../../utils/mergeTokenAmounts";
 import { plancksToTokens } from "../../../../utils/plancks";
 import {
 	getXcmDepositMatcher,
@@ -458,17 +459,13 @@ export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 export const getTotalDebited = (
 	spendings: CallSpendings,
 	transactionFee: TokenAmount | undefined,
-): TokenAmount[] => {
-	const totals = new Map<TokenId, bigint>();
-	const debit = ({ tokenId, plancks }: TokenAmount) =>
-		totals.set(tokenId, (totals.get(tokenId) ?? 0n) + plancks);
-	for (const [tokenId, spent] of Object.entries(spendings))
-		if (spent) debit({ tokenId, plancks: spent.plancks });
-	if (transactionFee) debit(transactionFee);
-	return [...totals]
-		.filter(([, plancks]) => plancks > 0n)
-		.map(([tokenId, plancks]) => ({ tokenId, plancks }));
-};
+): TokenAmount[] =>
+	mergeTokenAmounts([
+		...Object.entries(spendings).flatMap(([tokenId, spent]) =>
+			spent ? [{ tokenId, plancks: spent.plancks }] : [],
+		),
+		...(transactionFee ? [transactionFee] : []),
+	]);
 
 export const getXcmCallSpendings = ({
 	tokenIdIn,
