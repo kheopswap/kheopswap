@@ -50,6 +50,22 @@ export const getAmmOutput = (
 	return { amountOut, protocolCommission };
 };
 
+export const getAmmInput = (
+	amountOut: bigint,
+	reserveIn: bigint,
+	reserveOut: bigint,
+	lpFee: number,
+): bigint | null => {
+	if (amountOut >= reserveOut) return null;
+
+	const feeUnit = getLpFeeUnit(lpFee);
+	return (
+		(reserveIn * amountOut * feeUnit) /
+			((reserveOut - amountOut) * (feeUnit - BigInt(lpFee))) +
+		1n
+	);
+};
+
 /**
  * Compute the price impact of a swap relative to the spot price.
  *

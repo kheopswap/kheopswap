@@ -102,6 +102,7 @@ const arrivalOnHydration: TxEvents = [
 const followUpData: XcmTransferFollowUpData = {
 	origin: "pah",
 	target: { tokenId: DOT_ON_HYDRATION, beneficiary: BENEFICIARY },
+	returnTokenIds: [DOT_ON_HYDRATION],
 	tokenOut: KNOWN_TOKENS_MAP[DOT_ON_HYDRATION] as never,
 	estimatedReceived: 9995190152n,
 };
@@ -226,8 +227,31 @@ describe("getToastView", () => {
 			{ outcome: "success", text: "Arrived on Hydration" },
 		],
 		[
-			{ status: "failed-on-destination", messageId: MESSAGE_ID },
+			{
+				status: "failed-on-destination",
+				messageId: MESSAGE_ID,
+				returned: [],
+				trapped: true,
+			},
 			{ outcome: "error", text: "Failed on Hydration, assets trapped" },
+		],
+		[
+			{
+				status: "failed-on-destination",
+				messageId: MESSAGE_ID,
+				returned: [{ tokenId: DOT_ON_HYDRATION, plancks: 1n }],
+				trapped: false,
+			},
+			{ outcome: "error", text: "Failed on Hydration, funds returned" },
+		],
+		[
+			{
+				status: "failed-on-destination",
+				messageId: MESSAGE_ID,
+				returned: [],
+				trapped: false,
+			},
+			{ outcome: "error", text: "Failed on Hydration" },
 		],
 		[
 			{ status: "unconfirmed", messageId: MESSAGE_ID },

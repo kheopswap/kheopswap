@@ -58,6 +58,7 @@ const followUpContentMap: FollowUpContentMap = {
 	createPool: CreatePoolFollowUpContent,
 	xcmTransfer: XcmTransferFollowUpContent,
 	xcmSwap: XcmSwapFollowUpContent,
+	xcmDestinationSwap: XcmTransferFollowUpContent,
 };
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

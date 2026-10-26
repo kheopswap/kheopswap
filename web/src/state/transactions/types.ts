@@ -23,6 +23,7 @@ export type TransactionType =
 	| "createPool"
 	| "xcmTransfer"
 	| "xcmSwap"
+	| "xcmDestinationSwap"
 	| "unknown";
 
 export type TransactionRecord = {

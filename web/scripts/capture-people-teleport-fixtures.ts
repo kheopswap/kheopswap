@@ -1,5 +1,3 @@
-import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 import {
@@ -26,6 +24,7 @@ import {
 	DESCRIPTORS_ASSET_HUB,
 	DESCRIPTORS_PEOPLE,
 } from "../src/registry/chains/descriptors.ts";
+import { writeFixture } from "./writeFixture.ts";
 
 const FIXTURES_DIR = resolve(
 	import.meta.dirname,
@@ -217,55 +216,12 @@ const fixture = {
 	destinationDryRun,
 };
 
-const PLAIN_KEY = /^[A-Za-z_$][\w$]*$/;
-
-const toLiteral = (value: unknown, indent = ""): string => {
-	const inner = `${indent}\t`;
-	switch (typeof value) {
-		case "undefined":
-			return "undefined";
-		case "bigint":
-			return `${value}n`;
-		case "string":
-			return JSON.stringify(value);
-		case "number":
-		case "boolean":
-			return String(value);
-	}
-	if (value === null) return "null";
-	if (Array.isArray(value))
-		return `[\n${value.map((item) => `${inner}${toLiteral(item, inner)},\n`).join("")}${indent}]`;
-	if (
-		typeof value !== "object" ||
-		Object.getPrototypeOf(value) !== Object.prototype
-	)
-		throw new Error(`Cannot write ${String(value)} as a literal`);
-	return `{\n${Object.entries(value)
-		.map(
-			([key, item]) =>
-				`${inner}${PLAIN_KEY.test(key) ? key : JSON.stringify(key)}: ${toLiteral(item, inner)},\n`,
-		)
-		.join("")}${indent}}`;
-};
-
-const exportBlock = `export const ${name}: PeopleTeleportFixture = ${toLiteral(fixture)};\n`;
-
-const outPath = resolve(out);
-const source = existsSync(outPath)
-	? readFileSync(outPath, "utf8")
-	: FIXTURE_HEADER;
-const existing = new RegExp(
-	`export const ${name}: PeopleTeleportFixture = \\{[\\s\\S]*?\\n\\};\\n`,
-);
-writeFileSync(
-	outPath,
-	existing.test(source)
-		? source.replace(existing, exportBlock)
-		: `${source}\n${exportBlock}`,
-);
-execFileSync("pnpm", ["exec", "biome", "format", "--write", outPath], {
-	cwd: import.meta.dirname,
-	stdio: "inherit",
+writeFixture({
+	out,
+	header: FIXTURE_HEADER,
+	type: "PeopleTeleportFixture",
+	name,
+	value: fixture,
 });
 
 console.log(

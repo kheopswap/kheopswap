@@ -45,7 +45,19 @@ export type XcmSwapRoute = XcmSwapLane & {
 	path: AmmPath;
 };
 
-export type XcmRoute = XcmTransferRoute | XcmSwapRoute;
+type XcmDestinationSwapLane = Extract<XcmLane, { origin: ChainIdHydration }>;
+
+export type XcmDestinationSwapRoute = XcmDestinationSwapLane & {
+	kind: "xcm-destination-swap";
+	tokenIdIn: TokenId;
+	tokenIdOut: TokenId;
+	path: AmmPath;
+};
+
+export type XcmRoute =
+	| XcmTransferRoute
+	| XcmSwapRoute
+	| XcmDestinationSwapRoute;
 
 export type SwapRoute = AmmSwapRoute | XcmRoute;
 
@@ -150,16 +162,44 @@ const getXcmSource = (
 const isXcmSwapLane = (lane: XcmLane): lane is XcmSwapLane =>
 	isChainIdHydration(lane.destination);
 
+const isXcmDestinationSwapLane = (
+	lane: XcmLane,
+): lane is XcmDestinationSwapLane => isChainIdHydration(lane.origin);
+
+const isAssetHubSwapOutput = (
+	tokenId: TokenId,
+	{ assetHubId }: SwapRouteContext,
+) => {
+	const token = tryParseTokenId(tokenId);
+	return (
+		token?.chainId === assetHubId &&
+		(token.type === "native" || token.type === "asset")
+	);
+};
+
 const resolveXcmRoute = (
 	tokenIdIn: TokenId,
 	tokenIdOut: TokenId,
 	context: SwapRouteContext,
 ): XcmRoute | null => {
 	const source = getXcmSource(tokenIdIn, context);
-	if (source)
-		return source.assetHubTokenId === tokenIdOut
-			? { kind: "xcm-transfer", ...source.lane, tokenIdIn, tokenIdOut }
-			: null;
+	if (source) {
+		const { lane, assetHubTokenId } = source;
+		if (assetHubTokenId === tokenIdOut)
+			return { kind: "xcm-transfer", ...lane, tokenIdIn, tokenIdOut };
+		if (
+			!isXcmDestinationSwapLane(lane) ||
+			!isAssetHubSwapOutput(tokenIdOut, context)
+		)
+			return null;
+		return {
+			kind: "xcm-destination-swap",
+			...lane,
+			tokenIdIn,
+			tokenIdOut,
+			path: getAmmPath(assetHubTokenId, tokenIdOut, context.nativeTokenId),
+		};
+	}
 
 	const destination = getXcmDestination(tokenIdOut, context);
 	const tokenIn = tryParseTokenId(tokenIdIn);
