@@ -11,6 +11,7 @@ import { useToken } from "../hooks/useToken";
 import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { isValidAnyAddress } from "../utils/ethereumAddress";
+import { isApplicableBalance } from "../utils/isApplicableBalance";
 import { isBigInt } from "../utils/isBigInt";
 
 export const useAccountDrawerContent = ({
@@ -38,7 +39,7 @@ export const useAccountDrawerContent = ({
 	const balanceByAccount = useMemo(() => {
 		if (!balances) return {};
 		return fromPairs(
-			balances.map((b) => [
+			balances.filter(isApplicableBalance).map((b) => [
 				b.address,
 				{
 					...b,

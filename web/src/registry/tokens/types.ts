@@ -161,8 +161,16 @@ export type TokenInfoNative = {
 	supply: bigint;
 };
 
+export type TokenInfoHydrationAsset = {
+	id: TokenIdHydrationAsset;
+	type: TokenTypeHydrationAsset;
+	minBalance: bigint;
+	supply: bigint;
+};
+
 export type TokenInfo =
 	| TokenInfoNative
 	| TokenInfoAsset
 	| TokenInfoPoolAsset
-	| TokenInfoForeignAsset;
+	| TokenInfoForeignAsset
+	| TokenInfoHydrationAsset;
