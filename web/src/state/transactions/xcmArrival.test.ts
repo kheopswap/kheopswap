@@ -1,5 +1,6 @@
 import { BehaviorSubject, Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { dotFromPeople } from "../../features/swap/routes/xcm/xcmFromPeople.fixtures";
 import { getChainById } from "../../registry/chains/chains";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import type { XcmDepositTarget } from "../../utils/xcmDeposit";
@@ -416,6 +417,225 @@ describe("arrival on People", () => {
 
 	it("keeps 30 blocks of People events", () => {
 		expect(getArrivalBufferBlocks("paspeople")).toBe(30);
+	});
+});
+
+describe("arrival on Asset Hub from People", () => {
+	const PEOPLE_MESSAGE_ID =
+		"0xacee353b26e8d36266e3a0cae2562e9cf8535e467be1a116877514aefa519362";
+	const PEOPLE_BENEFICIARY = "16Jh21ThTh2tW98NuN2gM7Q3KaYiuJLbxCNbuBkFpwcDkRqx";
+	const ASSET_HUB_BLOCK_22023474 = [
+		{
+			phase: { type: "ApplyExtrinsic", value: 0 },
+			event: {
+				type: "System",
+				value: {
+					type: "ExtrinsicSuccess",
+					value: {
+						dispatch_info: {
+							weight: { ref_time: 125000000n, proof_size: 0n },
+							class: { type: "Mandatory" },
+							pays_fee: { type: "Yes" },
+						},
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "ApplyExtrinsic", value: 1 },
+			event: {
+				type: "System",
+				value: {
+					type: "ExtrinsicSuccess",
+					value: {
+						dispatch_info: {
+							weight: { ref_time: 192900000n, proof_size: 1493n },
+							class: { type: "Mandatory" },
+							pays_fee: { type: "Yes" },
+						},
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "ApplyExtrinsic", value: 2 },
+			event: {
+				type: "Balances",
+				value: {
+					type: "Withdraw",
+					value: {
+						who: "148GnWxDeGsoF6yZMEWyk1LDkx25gGDVWfrLEE7wyzsxVJ4U",
+						amount: 9070082n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "ApplyExtrinsic", value: 2 },
+			event: {
+				type: "Balances",
+				value: {
+					type: "Transfer",
+					value: {
+						from: "148GnWxDeGsoF6yZMEWyk1LDkx25gGDVWfrLEE7wyzsxVJ4U",
+						to: "14n8ferDrb3uorc5esxHgt2gePPFDTSn4qvxBywVEosejVFL",
+						amount: 471862587901000n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "ApplyExtrinsic", value: 2 },
+			event: {
+				type: "Balances",
+				value: {
+					type: "Deposit",
+					value: {
+						who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
+						amount: 9070082n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "ApplyExtrinsic", value: 2 },
+			event: {
+				type: "TransactionPayment",
+				value: {
+					type: "TransactionFeePaid",
+					value: {
+						who: "148GnWxDeGsoF6yZMEWyk1LDkx25gGDVWfrLEE7wyzsxVJ4U",
+						actual_fee: 9070082n,
+						tip: 0n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "ApplyExtrinsic", value: 2 },
+			event: {
+				type: "System",
+				value: {
+					type: "ExtrinsicSuccess",
+					value: {
+						dispatch_info: {
+							weight: { ref_time: 588343000n, proof_size: 7717n },
+							class: { type: "Normal" },
+							pays_fee: { type: "Yes" },
+						},
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "Finalization", value: undefined },
+			event: {
+				type: "Balances",
+				value: {
+					type: "Transfer",
+					value: {
+						from: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
+						to: "13UVJyLkAxdQn6zM3GrLGvrFgN9jWneRX2NGvf3u92iunZq1",
+						amount: 9070082n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "Finalization", value: undefined },
+			event: {
+				type: "Dap",
+				value: { type: "StagingDrained", value: { amount: 9070082n } },
+			},
+		},
+		{
+			phase: { type: "Finalization", value: undefined },
+			event: {
+				type: "Balances",
+				value: {
+					type: "Burned",
+					value: {
+						who: "13UVJyLnbVp9x5XDyJv8g8r3UddNwBrdaH7AADCmw9XQWvYW",
+						amount: 7800000000n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "Finalization", value: undefined },
+			event: {
+				type: "Balances",
+				value: { type: "Issued", value: { amount: 7800000000n } },
+			},
+		},
+		{
+			phase: { type: "Finalization", value: undefined },
+			event: {
+				type: "Balances",
+				value: {
+					type: "Deposit",
+					value: {
+						who: "16Jh21ThTh2tW98NuN2gM7Q3KaYiuJLbxCNbuBkFpwcDkRqx",
+						amount: 7791782414n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "Finalization", value: undefined },
+			event: {
+				type: "Balances",
+				value: {
+					type: "Deposit",
+					value: {
+						who: "13UVJyLkAxdQn6zM3Gz49SmCLi8SZW3bdtm7DTY29ScavqW2",
+						amount: 8217586n,
+					},
+				},
+			},
+		},
+		{
+			phase: { type: "Finalization", value: undefined },
+			event: {
+				type: "MessageQueue",
+				value: {
+					type: "Processed",
+					value: {
+						id: "0xacee353b26e8d36266e3a0cae2562e9cf8535e467be1a116877514aefa519362",
+						origin: { type: "Sibling", value: 1004 },
+						weight_used: { ref_time: 368588000n, proof_size: 10861n },
+						success: true,
+					},
+				},
+			},
+		},
+	];
+
+	it("reads the message id People reports when it sends a teleport to Asset Hub", () => {
+		if (!dotFromPeople.originDryRun.success)
+			throw new Error("fixture origin failed");
+		const record = getRecord(
+			"finalized",
+			dotFromPeople.originDryRun.value.emitted_events,
+		);
+		expect(getSentMessageId(record.txEvents, getChainById("pah").paraId)).toBe(
+			"0x683cf77a60b984103a1a86f1dbb9e61e86e4d88453c30d67e7cdda47eb555b85",
+		);
+	});
+
+	it("finds the DOT a People teleport deposited in Polkadot Asset Hub block 22023474", () => {
+		const sent = getRecord("finalized", [
+			sentTo(getChainById("pah").paraId, PEOPLE_MESSAGE_ID),
+		]);
+		expect(getSentMessageId(sent.txEvents, getChainById("pah").paraId)).toBe(
+			PEOPLE_MESSAGE_ID,
+		);
+		expect(
+			findArrival(getXcmBlockEvents(ASSET_HUB_BLOCK_22023474), {
+				messageId: PEOPLE_MESSAGE_ID,
+				target: { tokenId: "native::pah", beneficiary: PEOPLE_BENEFICIARY },
+			}),
+		).toEqual({ success: true, received: 7791782414n });
 	});
 });
 

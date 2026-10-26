@@ -9,6 +9,11 @@ import {
 	usdtToAssetHub,
 } from "../xcm/xcmFromHydration.fixtures";
 import {
+	dotFromPeople,
+	ksmFromPeople,
+	wndFromPeople,
+} from "../xcm/xcmFromPeople.fixtures";
+import {
 	dotToPeople,
 	ksmToPeople,
 	pasToPeople,
@@ -249,4 +254,30 @@ describe("buildXcmTransferArgs to People", () => {
 			value: { parents: 1, interior: { type: "Here", value: undefined } },
 		});
 	});
+});
+
+describe("buildXcmTransferArgs from People", () => {
+	it.each([
+		["DOT", { origin: "ppeople", destination: "pah" }, dotFromPeople],
+		["KSM", { origin: "kpeople", destination: "kah" }, ksmFromPeople],
+		["WND", { origin: "wpeople", destination: "wah" }, wndFromPeople],
+	] as const)(
+		"builds the %s teleport whose dry run the fixture captured",
+		(_, lane, fixture) => {
+			const tokenIdIn = `native::${lane.origin}`;
+			expect(
+				buildXcmTransferArgs({
+					route: {
+						kind: "xcm-transfer",
+						...lane,
+						tokenIdIn,
+						tokenIdOut: `native::${lane.destination}`,
+					},
+					tokenIn: getToken(tokenIdIn),
+					plancks: fixture.amount,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toEqual(fixture.args);
+		},
+	);
 });
