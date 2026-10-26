@@ -1,16 +1,14 @@
 import type { SS58String } from "polkadot-api";
 import { getApi } from "../../../../papi/getApi";
-import { getChainById } from "../../../../registry/chains/chains";
-import {
-	getChainIdFromTokenId,
-	parseTokenId,
-} from "../../../../registry/tokens/helpers";
+import type { ChainIdAssetHub } from "../../../../registry/chains/types";
+import { parseTokenId } from "../../../../registry/tokens/helpers";
 import type { TokenId } from "../../../../registry/tokens/types";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import { getAddressFromAccountField } from "../../../../utils/getAddressFromAccountField";
 import { isBigInt } from "../../../../utils/isBigInt";
 
 export type GetAddLiquidityExtrinsicProps = {
+	chainId: ChainIdAssetHub;
 	tokenIdNative: TokenId;
 	tokenIdAsset: TokenId;
 	amountNative: bigint;
@@ -26,6 +24,7 @@ export const isValidGetAddLiquidityExtrinsicProps = (
 ): props is GetAddLiquidityExtrinsicProps & { dest: SS58String } => {
 	return (
 		!!props &&
+		!!props.chainId &&
 		!!props.tokenIdNative &&
 		!!props.tokenIdAsset &&
 		isBigInt(props.amountNative) &&
@@ -37,6 +36,7 @@ export const isValidGetAddLiquidityExtrinsicProps = (
 };
 
 export const getAddLiquidityExtrinsic = async ({
+	chainId,
 	tokenIdNative,
 	tokenIdAsset,
 	amountNative,
@@ -46,25 +46,19 @@ export const getAddLiquidityExtrinsic = async ({
 	dest,
 	createPool,
 }: GetAddLiquidityExtrinsicProps) => {
-	const chainId = getChainIdFromTokenId(tokenIdNative);
-	if (!chainId) return null;
-
-	const chain = getChainById(chainId);
-	if (!chain) return null;
-
 	const address = getAddressFromAccountField(dest);
 	if (!address) throw new Error("Invalid dest");
 
 	const tokenIn = parseTokenId(tokenIdNative);
-	if (tokenIn.chainId !== chain.id)
+	if (tokenIn.chainId !== chainId)
 		throw new Error(
-			`Token ${tokenIdNative} is not supported on chain ${chain.id}`,
+			`Token ${tokenIdNative} is not supported on chain ${chainId}`,
 		);
 
 	const tokenOut = parseTokenId(tokenIdAsset);
-	if (tokenOut.chainId !== chain.id)
+	if (tokenOut.chainId !== chainId)
 		throw new Error(
-			`Token ${tokenIdAsset} is not supported on chain ${chain.id}`,
+			`Token ${tokenIdAsset} is not supported on chain ${chainId}`,
 		);
 
 	const asset1 = getXcmV5MultilocationFromTokenId(tokenIdNative);
@@ -75,7 +69,7 @@ export const getAddLiquidityExtrinsic = async ({
 	if (!asset2)
 		throw new Error("Failed to convert asset token to multilocation");
 
-	const api = await getApi(chain.id);
+	const api = await getApi(chainId);
 
 	const call = api.tx.AssetConversion.add_liquidity({
 		asset1,

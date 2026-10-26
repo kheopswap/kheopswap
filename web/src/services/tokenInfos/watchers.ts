@@ -1,6 +1,5 @@
 import { BehaviorSubject, type Subscription } from "rxjs";
 import { getApi } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import type {
 	TokenId,
@@ -44,15 +43,12 @@ const updateTokenInfo = (tokenInfo: TokenInfo) => {
 
 const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 	const token = parseTokenId(tokenId);
-	const chain = getChainById(token.chainId);
-	if (!chain) throw new Error(`Chain not found for ${token.chainId}`);
-
-	const api = await getApi(chain.id);
 
 	updateTokenInfoLoadingStatus(tokenId, "loading");
 
 	switch (token.type) {
 		case "native": {
+			const api = await getApi(token.chainId);
 			const [minBalance, supply$] = await Promise.all([
 				api.constants.Balances.ExistentialDeposit(),
 				api.query.Balances.TotalIssuance.watchValue({ at: "best" }),
@@ -69,6 +65,7 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		}
 
 		case "asset": {
+			const api = await getApi(token.chainId);
 			const tokenInfo$ = api.query.Assets.Asset.watchValue(token.assetId, {
 				at: "best",
 			});
@@ -91,6 +88,7 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		}
 
 		case "foreign-asset": {
+			const api = await getApi(token.chainId);
 			const tokenInfo$ = api.query.ForeignAssets.Asset.watchValue(
 				token.location,
 				{ at: "best" },
@@ -114,6 +112,7 @@ const watchTokenInfo = async (tokenId: TokenId): Promise<Subscription> => {
 		}
 
 		case "pool-asset": {
+			const api = await getApi(token.chainId);
 			const tokenInfo$ = api.query.PoolAssets.Asset.watchValue(
 				token.poolAssetId,
 				{ at: "best" },

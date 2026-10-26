@@ -1,4 +1,4 @@
-import type { ChainId } from "../chains/types.ts";
+import type { ChainId, ChainIdAssetHub } from "../chains/types.ts";
 import type { XcmV5Multilocation } from "../types/xcm.ts";
 
 export type TokenTypeNative = "native";
@@ -24,7 +24,7 @@ export type TokenNativeNoId = {
 
 export type TokenAssetNoId = {
 	type: TokenTypeAsset;
-	chainId: ChainId;
+	chainId: ChainIdAssetHub;
 	decimals: number;
 	symbol: string;
 	name: string;
@@ -36,7 +36,7 @@ export type TokenAssetNoId = {
 
 export type TokenPoolAssetNoId = {
 	type: TokenTypePoolAsset;
-	chainId: ChainId;
+	chainId: ChainIdAssetHub;
 	/** Always 0 for pool-asset tokens (LP tokens). */
 	decimals: number;
 	/** Always "" — kept for Token union compatibility. */
@@ -52,7 +52,7 @@ export type TokenPoolAssetNoId = {
 
 export type TokenForeignAssetNoId = {
 	type: TokenTypeForeignAsset;
-	chainId: ChainId;
+	chainId: ChainIdAssetHub;
 	/** Populated from on-chain metadata at runtime. */
 	decimals: number;
 	/** Populated from on-chain metadata at runtime. */

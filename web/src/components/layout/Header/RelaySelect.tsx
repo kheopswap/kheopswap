@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router";
 import { DISABLE_LIGHT_CLIENTS } from "../../../common/constants";
 import { useOpenClose } from "../../../hooks/useOpenClose";
 import { useSetting } from "../../../hooks/useSetting";
-import { getChains } from "../../../registry/chains/chains";
+import { getChains, isChainAssetHub } from "../../../registry/chains/chains";
 import type { RelayId } from "../../../registry/chains/types";
 import { useRelayChains } from "../../../state/relay";
 import { cn } from "../../../utils/cn";
@@ -60,7 +60,7 @@ const DrawerContent: FC<{
 		[onClose, setLightClient],
 	);
 
-	const assetHubs = getChains();
+	const assetHubs = getChains().filter(isChainAssetHub);
 
 	return (
 		<div className="flex flex-col items-start gap-4">

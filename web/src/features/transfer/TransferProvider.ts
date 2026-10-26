@@ -11,6 +11,7 @@ import { useNonce } from "../../hooks/useNonce";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
 import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
 import { useTokenChain } from "../../hooks/useTokenChain";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
 import { TRANSFERABLE_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
@@ -102,13 +103,19 @@ const useTransferProvider = () => {
 		tokenId: token?.id,
 	});
 
+	const transferChainId = isChainIdAssetHub(tokenChain?.id)
+		? tokenChain.id
+		: null;
+
 	const { data: call } = useTransferExtrinsic({
+		chainId: transferChainId,
 		tokenId: token?.id,
 		plancks,
 		recipient: resolvedAddress,
 	});
 
 	const { data: fakeCall } = useTransferExtrinsic({
+		chainId: transferChainId,
 		tokenId: token?.id,
 		plancks: edTokenIn ?? null,
 		recipient: resolvedAddress ?? sender,

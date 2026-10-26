@@ -1,8 +1,8 @@
 import lzs from "lz-string";
 import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
 import { safeParse, safeStringify } from "../../utils/serialization";
-import { getChainById } from "../chains/chains";
-import type { ChainId } from "../chains/types";
+import { getChainById, isChainIdAssetHub } from "../chains/chains";
+import type { ChainId, ChainIdAssetHub } from "../chains/types";
 import {
 	getEvmNetworkById,
 	getEvmNetworkName,
@@ -51,11 +51,11 @@ export const parseTokenId = (
 	tokenId: TokenId,
 ):
 	| { type: "native"; chainId: ChainId }
-	| { type: "asset"; chainId: ChainId; assetId: number }
-	| { type: "pool-asset"; chainId: ChainId; poolAssetId: number }
+	| { type: "asset"; chainId: ChainIdAssetHub; assetId: number }
+	| { type: "pool-asset"; chainId: ChainIdAssetHub; poolAssetId: number }
 	| {
 			type: "foreign-asset";
-			chainId: ChainId;
+			chainId: ChainIdAssetHub;
 			location: XcmV5Multilocation;
 	  } => {
 	try {
@@ -65,9 +65,12 @@ export const parseTokenId = (
 		if (!getChainById(chainId))
 			throw new Error(`Unsupported chain id: ${chainId}`);
 
+		if (parts[0] === "native") return { type: "native", chainId };
+
+		if (!isChainIdAssetHub(chainId))
+			throw new Error(`Unsupported chain id for ${parts[0]}: ${chainId}`);
+
 		switch (parts[0]) {
-			case "native":
-				return { type: "native", chainId };
 			case "asset": {
 				const assetId = Number(parts[2]);
 				if (Number.isNaN(assetId)) throw new Error("Invalid assetId");
@@ -113,9 +116,17 @@ type TokenIdTyped<T extends TokenType> = T extends TokenTypeNative
 export const getTokenId = <Type extends TokenType, Result = TokenIdTyped<Type>>(
 	token:
 		| { type: TokenTypeNative; chainId: ChainId }
-		| { type: TokenTypeAsset; chainId: ChainId; assetId: number }
-		| { type: TokenTypePoolAsset; chainId: ChainId; poolAssetId: number }
-		| { type: TokenTypeForeignAsset; chainId: ChainId; location: unknown },
+		| { type: TokenTypeAsset; chainId: ChainIdAssetHub; assetId: number }
+		| {
+				type: TokenTypePoolAsset;
+				chainId: ChainIdAssetHub;
+				poolAssetId: number;
+		  }
+		| {
+				type: TokenTypeForeignAsset;
+				chainId: ChainIdAssetHub;
+				location: unknown;
+		  },
 ): Result => {
 	switch (token.type) {
 		case "native":
