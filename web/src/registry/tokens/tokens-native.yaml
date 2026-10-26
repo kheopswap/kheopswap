@@ -26,3 +26,10 @@
   name: Paseo
   logo: ./img/tokens/PAS.png
   isSufficient: true
+- type: native
+  chainId: hydration
+  decimals: 12
+  symbol: HDX
+  name: Hydration
+  logo: ./img/tokens/HDX.svg
+  isSufficient: true
