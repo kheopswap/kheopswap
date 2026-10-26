@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
+import { getAmmPath, mapHopPath } from "../ammPath";
 import type { XcmSwapRoute } from "../swapRoute";
-import { getAmmPath, mapHopPath } from "./ammPath";
 import { buildXcmSwapMessage } from "./getXcmSwapCall";
 import { dotToUsdt, dotToUsdtTrapped, usdcToUsdt } from "./xcmSwap.fixtures";
 

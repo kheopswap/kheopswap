@@ -1,11 +1,9 @@
 import { keyBy, values } from "lodash-es";
 import { useMemo } from "react";
 import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "../../common/constants";
-import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
 import { useBalance } from "../../hooks/useBalance";
 import { useCanAccountReceive } from "../../hooks/useCanAccountReceive";
 import { useExistentialDeposit } from "../../hooks/useExistentialDeposit";
-import { usePoolReservesByTokenIds } from "../../hooks/usePoolReservesByTokenIds";
 import { usePoolSupplies } from "../../hooks/usePoolSupplies";
 import { usePoolsByChainId } from "../../hooks/usePoolsByChainId";
 import { useSetting } from "../../hooks/useSetting";
@@ -15,18 +13,14 @@ import { isChainIdAssetHub } from "../../registry/chains/chains";
 import { getChainIdFromTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
-import {
-	getAmmOutput,
-	getMinAmountOut,
-	getPriceImpact,
-	splitAppCommission,
-} from "../../utils/ammMath";
+import { splitAppCommission } from "../../utils/ammMath";
 import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
-import { useAssetConvertionLPFee } from "./useAssetConvertionLPFee";
+import type { AmmSwapRoute } from "./routes/swapRoute";
+import { useAmmPathQuote } from "./routes/useAmmPathQuote";
 
 type UseSwapPricingProps = {
 	tokenIdIn: TokenId | undefined;
-	tokenIdOut: TokenId | undefined;
+	route: AmmSwapRoute | null;
 	amountIn: string;
 	accountAddress: string | undefined;
 };
@@ -83,11 +77,12 @@ const useSwapInputs = ({
 
 export const useSwapPricing = ({
 	tokenIdIn,
-	tokenIdOut,
+	route,
 	amountIn,
 	accountAddress,
 }: UseSwapPricingProps) => {
 	const { assetHub } = useRelayChains();
+	const tokenIdOut = route?.tokenIdOut;
 
 	const { data: allTokens, isLoading: isLoadingAllTokens } = useTokensByChainId(
 		{
@@ -127,16 +122,6 @@ export const useSwapPricing = ({
 
 	const [slippage, setSlippage] = useSetting("slippage");
 
-	const { data: reserves, isLoading: isLoadingReserves } =
-		usePoolReservesByTokenIds({
-			tokenId1: tokenIdIn,
-			tokenId2: tokenIdOut,
-		});
-
-	const { data: lpFee, isLoading: isLoadingLpFee } = useAssetConvertionLPFee({
-		chain: assetHub,
-	});
-
 	const { data: tokenIn } = useToken({ tokenId: tokenIdIn });
 	const { data: tokenOut } = useToken({ tokenId: tokenIdOut });
 
@@ -153,33 +138,17 @@ export const useSwapPricing = ({
 		tokenId: tokenIdIn,
 	});
 
-	const isLoading = useMemo(
-		() => isLoadingReserves || isLoadingLpFee || isLoadingBalanceIn,
-		[isLoadingBalanceIn, isLoadingLpFee, isLoadingReserves],
-	);
-
-	const [reserveIn, reserveOut] = useMemo(
-		() => reserves ?? [undefined, undefined],
-		[reserves],
-	);
-
 	const { swapPlancksIn, appCommission, totalIn, isValidAmountIn } =
 		useSwapInputs({ tokenIdIn, amountIn });
 
-	// AMM output calculation
-	// https://github.com/paritytech/substrate/blob/e076bdad1fefb5a0e2461acf7e2cab1192f3c9f3/frame/asset-conversion/src/lib.rs#L1108
-	const [swapPlancksOut, protocolCommission] = useMemo(() => {
-		if (!lpFee || !reserveIn || !reserveOut || !swapPlancksIn)
-			return [undefined, undefined];
-
-		const { amountOut, protocolCommission } = getAmmOutput(
-			swapPlancksIn,
-			reserveIn,
-			reserveOut,
-			lpFee,
-		);
-		return [amountOut, protocolCommission];
-	}, [lpFee, swapPlancksIn, reserveIn, reserveOut]);
+	const pathQuote = useAmmPathQuote({
+		path: route?.path ?? null,
+		plancksIn: swapPlancksIn,
+		totalIn,
+		slippage,
+	});
+	const swapPlancksOut = pathQuote.quote?.amountOut;
+	const minPlancksOut = pathQuote.quote?.minOut ?? null;
 
 	const amountOut = useMemo(() => {
 		if (!swapPlancksOut || !tokenOut) return "";
@@ -187,38 +156,17 @@ export const useSwapPricing = ({
 	}, [swapPlancksOut, tokenOut]);
 
 	const isLoadingAmountOut =
-		!!swapPlancksIn && !!tokenIn && !!tokenOut && !swapPlancksOut && isLoading;
-
-	const { plancksOut: rawPlancksOut } = useAssetConvertPlancks({
-		tokenIdIn,
-		tokenIdOut,
-		plancks: totalIn,
-	});
-
-	const priceImpact = useMemo(() => {
-		if (!rawPlancksOut || !swapPlancksOut) return undefined;
-		return getPriceImpact(rawPlancksOut, swapPlancksOut);
-	}, [rawPlancksOut, swapPlancksOut]);
-
-	const minPlancksOut = useMemo(() => {
-		if (!swapPlancksOut || slippage === undefined) return null;
-		return getMinAmountOut(swapPlancksOut, slippage);
-	}, [swapPlancksOut, slippage]);
+		!!swapPlancksIn &&
+		!!tokenIn &&
+		!!tokenOut &&
+		!swapPlancksOut &&
+		(pathQuote.isLoading || isLoadingBalanceIn);
 
 	const hasInsufficientBalance = useMemo(() => {
 		return balanceIn === undefined || totalIn === null
 			? false
 			: balanceIn < totalIn;
 	}, [balanceIn, totalIn]);
-
-	const hasInsufficientLiquidity = useMemo(() => {
-		return reserveIn === 0n && reserveOut === 0n;
-	}, [reserveIn, reserveOut]);
-
-	const isPoolNotFound = useMemo(
-		() => tokenIn && tokenOut && !reserves && !isLoadingReserves,
-		[tokenIn, tokenOut, reserves, isLoadingReserves],
-	);
 
 	const { data: checkCanReceive, isLoading: isCheckingRecipient } =
 		useCanAccountReceive({
@@ -227,12 +175,7 @@ export const useSwapPricing = ({
 			plancks: minPlancksOut,
 		});
 
-	const outputErrorMessage = useMemo(() => {
-		if (checkCanReceive?.reason) return checkCanReceive.reason;
-		if (hasInsufficientLiquidity) return "Insufficient liquidity";
-		if (isPoolNotFound) return "Liquidity pool not found";
-		return null;
-	}, [hasInsufficientLiquidity, isPoolNotFound, checkCanReceive?.reason]);
+	const outputErrorMessage = checkCanReceive?.reason || pathQuote.errorMessage;
 
 	return {
 		tokens,
@@ -246,24 +189,17 @@ export const useSwapPricing = ({
 		edTokenIn,
 		slippage,
 		setSlippage,
-		reserveIn,
-		reserveOut,
-		isLoadingReserves,
-		isLoadingLpFee,
-		isLoading,
 		swapPlancksIn,
 		appCommission,
 		totalIn,
 		isValidAmountIn,
+		pathQuote,
 		swapPlancksOut,
-		protocolCommission,
 		amountOut,
 		isLoadingAmountOut,
-		priceImpact,
+		priceImpact: pathQuote.priceImpact,
 		minPlancksOut,
 		hasInsufficientBalance,
-		hasInsufficientLiquidity,
-		isPoolNotFound,
 		isCheckingRecipient,
 		outputErrorMessage,
 	};

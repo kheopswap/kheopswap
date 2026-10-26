@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import type { SS58String } from "polkadot-api";
-import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import { getSwapExtrinsic } from "./getSwapTransaction";
+import type { AmmPath } from "./routes/ammPath";
 import { withAppCommission } from "./withAppCommission";
 
 type UseSwapExtrinsic = {
-	tokenIdIn: TokenId | null | undefined;
-	tokenIdOut: TokenId | null | undefined;
+	path: AmmPath | null | undefined;
 	amountIn: bigint | null | undefined;
 	amountOutMin: bigint | null | undefined;
 	dest: SS58String | null | undefined;
@@ -15,8 +14,7 @@ type UseSwapExtrinsic = {
 };
 
 export const useSwapExtrinsic = ({
-	tokenIdIn,
-	tokenIdOut,
+	path,
 	amountIn,
 	amountOutMin,
 	dest,
@@ -28,8 +26,7 @@ export const useSwapExtrinsic = ({
 		queryKey: [
 			"useSwapExtrinsic",
 			assetHub.id,
-			tokenIdIn,
-			tokenIdOut,
+			path,
 			amountIn?.toString(),
 			amountOutMin?.toString(),
 			dest,
@@ -37,8 +34,7 @@ export const useSwapExtrinsic = ({
 		],
 		queryFn: async () => {
 			if (
-				!tokenIdIn ||
-				!tokenIdOut ||
+				!path ||
 				typeof amountIn !== "bigint" ||
 				typeof amountOutMin !== "bigint" ||
 				!dest
@@ -47,14 +43,18 @@ export const useSwapExtrinsic = ({
 
 			const swapCall = await getSwapExtrinsic(
 				assetHub.id,
-				tokenIdIn,
-				tokenIdOut,
+				path,
 				amountIn,
 				amountOutMin,
 				dest,
 			);
 
-			return withAppCommission(assetHub.id, swapCall, tokenIdIn, appCommission);
+			return withAppCommission(
+				assetHub.id,
+				swapCall,
+				path[0].tokenIdIn,
+				appCommission,
+			);
 		},
 		refetchInterval: false,
 		structuralSharing: false,

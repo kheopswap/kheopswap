@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
-import type { OriginDryRun } from "../xcm/xcmQuote";
 import {
 	type AmmPath,
 	getAmmPath,
 	getPathLiquidity,
+	getPathTokenIds,
 	mapHopPath,
 	quoteAmmPath,
 } from "./ammPath";
-import { dotToUsdt, usdcToUsdt } from "./xcmSwap.fixtures";
+import type { OriginDryRun } from "./xcm/xcmQuote";
+import { dotToUsdt, usdcToUsdt } from "./xcmSwap/xcmSwap.fixtures";
 
 const DOT = "native::pah";
 const USDT = "asset::pah::1984";
@@ -38,6 +39,15 @@ describe("getAmmPath", () => {
 			{ tokenIdIn: USDC, tokenIdOut: DOT },
 			{ tokenIdIn: DOT, tokenIdOut: USDT },
 		]);
+	});
+});
+
+describe("getPathTokenIds", () => {
+	it.each([
+		["one hop", getAmmPath(DOT, USDT, DOT), [DOT, USDT]],
+		["two hops through native", getAmmPath(USDC, USDT, DOT), [USDC, DOT, USDT]],
+	])("lists every token of %s in order", (_, path, tokenIds) => {
+		expect(getPathTokenIds(path)).toEqual(tokenIds);
 	});
 });
 
@@ -109,16 +119,16 @@ describe("getPathLiquidity", () => {
 	});
 
 	it.each([
-		["a missing second pool", loaded(null), "Liquidity pool not found"],
-		["an empty second pool", loaded([0n, 0n]), "Insufficient liquidity"],
-	])("refuses a two-hop path with %s", (_, secondReserves, reason) => {
+		["a missing second pool", loaded(null), "no-pool"],
+		["an empty second pool", loaded([0n, 0n]), "no-liquidity"],
+	] as const)("refuses a two-hop path with %s", (_, secondReserves, status) => {
 		expect(
 			getPathLiquidity(
 				getAmmPath(USDC, USDT, DOT),
 				loaded([1n, 2n]),
 				secondReserves,
 			),
-		).toEqual({ status: "unavailable", reason });
+		).toEqual({ status });
 	});
 
 	it("waits for every pool of the path", () => {

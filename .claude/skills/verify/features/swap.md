@@ -1,11 +1,11 @@
 # Swap
 
-Swap lets a user trade the Asset Hub native token for a pooled asset, or back, through an asset-conversion pool. The user sees a live quote with price impact. Once an account is selected, the summary adds minimum received, a dry-run simulation, and fees. The user then signs and follows the transaction until it finalizes.
+Swap lets a user trade any two pooled Asset Hub tokens. A pair with the native token goes through one asset-conversion pool, and a pair of two assets goes through native in one call, across two pools. The user sees a live quote with price impact. Once an account is selected, the summary adds minimum received, a dry-run simulation, and fees. The user then signs and follows the transaction until it finalizes.
 
 ## Sub-features
 
-- `swap-quote`: entering an amount fills `Amount to receive`, `Pool reserves`, and `Price impact`. With an account selected, the summary also shows `Slippage tolerance`, `Min. received`, `Simulation`, `Transaction fee`, `Service fee`, and `Protocol fee`.
-- `swap-token-select`: the token buttons open the `Select token` drawer, which has a `Search` box. Every pair is native/X: picking a non-native token on one side sets the other side to native.
+- `swap-quote`: entering an amount fills `Amount to receive`, `Pool reserves` (or `Route`, such as `USDC → PAS → USDt`, for two pools), and `Price impact`. With an account selected, the summary also shows `Slippage tolerance`, `Min. received`, `Simulation`, `Transaction fee`, `Service fee`, and `Protocol fee`, which lists one fee per pool.
+- `swap-token-select`: the token buttons open the `Select token` drawer, which has a `Search` box. The side the user picks keeps the token. The other side stays when the pair still routes; otherwise it becomes the first token that routes, in this order: the new token's mirror on the other side's chain, the Asset Hub mirror of the other side, the Asset Hub mirror of the new token, native, then empty. Picking the token already on the other side flips the pair.
 - `swap-direction`: `Swap token direction` swaps the input and output tokens.
 - `swap-max`: `Use maximum balance` (`MAX`, needs an account and a fee estimate) fills the native balance minus 2× fee and the existential deposit, or the full balance of a non-native token.
 - `swap-slippage`: the slippage value button (default `0.5%`, needs an account) opens `Slippage Tolerance` with `0%`, `0.1%`, `0.3%`, `0.5%`, and `1%`. The pool pages keep their own setting.
@@ -32,7 +32,7 @@ Steps:
   - `agent-browser find role button click --name "USDC USDC USD Coin"`, then `scripts/wait-drawer.sh closed`
 
   The output button's accessible name becomes `Selected token: USDC on Paseo AH. Change token`, and the tab title becomes `PAS/USDC Swap | Kheopswap`.
-- **Quote** (no wallet). Run `agent-browser find role textbox fill "1" --name "Amount to swap"`. `Amount to receive` is non-zero: read it with `agent-browser eval "document.querySelector('[aria-label=\"Amount to receive\"]').value"`. `#main-content` lists `Pool reserves` and `Price impact`. On 2026-10-24, 1 PAS quoted 1.137336 USDC at `-0.6%`.
+- **Quote** (no wallet). Run `agent-browser find role textbox fill "1" --name "Amount to swap"`. `Amount to receive` is non-zero: read it with `agent-browser eval "document.querySelector('[aria-label=\"Amount to receive\"]').value"`. `#main-content` lists `Pool reserves` and `Price impact`. On 2026-10-24, 1 PAS quoted 1.137336 USDC at `-0.6%`, and 0.5 USDC quoted 0.498178 USDt along `USDC → PAS → USDt`.
 - **Direction** (no wallet). Click `Swap token direction`: the two `Selected token: ...` buttons swap. Click it again to restore.
 - **Select account.** Run `agent-browser find role button click --name "Account"`, `scripts/wait-drawer.sh open`, `agent-browser find role button click --name "<test account name>"`, and `scripts/wait-drawer.sh closed`. The form's `Account` field reads the account name. The field may already be filled: forms default to the last chosen account.
 - **Full summary.** Wait for a visible `Simulation` `Success` (see `README.md`), then for a positive fee: `agent-browser wait --fn "/Transaction fee\s*0\.\d*[1-9]\d*\s*PAS/.test(document.querySelector('#main-content').innerText)"`. Save `swap-quote.txt` and `swap-quote.png`.

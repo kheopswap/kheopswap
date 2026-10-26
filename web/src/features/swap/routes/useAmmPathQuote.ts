@@ -1,18 +1,25 @@
 import { useMemo } from "react";
-import { useAssetConvertPlancks } from "../../../../hooks/useAssetConvertPlancks";
-import { usePoolReservesByTokenIds } from "../../../../hooks/usePoolReservesByTokenIds";
-import { useRelayChains } from "../../../../state/relay";
-import { getPriceImpact } from "../../../../utils/ammMath";
-import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
+import { useAssetConvertPlancks } from "../../../hooks/useAssetConvertPlancks";
+import { usePoolReservesByTokenIds } from "../../../hooks/usePoolReservesByTokenIds";
+import { useRelayChains } from "../../../state/relay";
+import { getPriceImpact } from "../../../utils/ammMath";
+import { useAssetConvertionLPFee } from "../useAssetConvertionLPFee";
 import {
 	type AmmPath,
 	type AmmPathQuote,
 	getLastHop,
 	getPathLiquidity,
+	type PathLiquidity,
 	quoteAmmPath,
 } from "./ammPath";
 
-type AmmPathQuoteState = {
+const LIQUIDITY_ERRORS: Partial<Record<PathLiquidity["status"], string>> = {
+	"no-pool": "Liquidity pool not found",
+	"no-liquidity": "Insufficient liquidity",
+};
+
+export type AmmPathQuoteState = {
+	liquidity: PathLiquidity | null;
 	quote: AmmPathQuote | undefined;
 	priceImpact: number | undefined;
 	isLoading: boolean;
@@ -70,9 +77,10 @@ export const useAmmPathQuote = ({
 	);
 
 	return {
+		liquidity,
 		quote,
 		priceImpact,
 		isLoading: liquidity?.status === "loading" || isLoadingLpFee,
-		errorMessage: liquidity?.status === "unavailable" ? liquidity.reason : null,
+		errorMessage: (liquidity && LIQUIDITY_ERRORS[liquidity.status]) ?? null,
 	};
 };
