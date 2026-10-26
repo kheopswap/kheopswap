@@ -8,6 +8,11 @@ import {
 	usdcToAssetHub,
 	usdtToAssetHub,
 } from "../xcm/xcmFromHydration.fixtures";
+import {
+	dotToPeople,
+	ksmToPeople,
+	pasToPeople,
+} from "../xcm/xcmToPeople.fixtures";
 import { buildXcmTransferArgs } from "./getXcmTransferCall";
 
 const getToken = (tokenId: TokenId) => {
@@ -183,5 +188,65 @@ describe("buildXcmTransferArgs from Hydration", () => {
 				beneficiary: BENEFICIARY,
 			}),
 		).toThrow();
+	});
+});
+
+describe("buildXcmTransferArgs to People", () => {
+	it.each([
+		["DOT", { origin: "pah", destination: "ppeople" }, dotToPeople],
+		["KSM", { origin: "kah", destination: "kpeople" }, ksmToPeople],
+		["PAS", { origin: "pasah", destination: "paspeople" }, pasToPeople],
+	] as const)(
+		"builds the %s teleport whose dry run the fixture captured",
+		(_, lane, fixture) => {
+			const tokenIdIn = `native::${lane.origin}`;
+			expect(
+				buildXcmTransferArgs({
+					route: {
+						kind: "xcm-transfer",
+						...lane,
+						tokenIdIn,
+						tokenIdOut: `native::${lane.destination}`,
+					},
+					tokenIn: getToken(tokenIdIn),
+					plancks: fixture.amount,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toEqual(fixture.args);
+		},
+	);
+
+	it("teleports the relay token to People and its fee with it", () => {
+		const args = buildXcmTransferArgs({
+			route: {
+				kind: "xcm-transfer",
+				origin: "pah",
+				destination: "ppeople",
+				tokenIdIn: "native::pah",
+				tokenIdOut: "native::ppeople",
+			},
+			tokenIn: getToken("native::pah"),
+			plancks: 10_000_000_000n,
+			beneficiary: BENEFICIARY,
+		});
+		expect(args.dest).toEqual({
+			type: "V5",
+			value: {
+				parents: 1,
+				interior: { type: "X1", value: { type: "Parachain", value: 1004 } },
+			},
+		});
+		expect(args.assets_transfer_type).toEqual({
+			type: "Teleport",
+			value: undefined,
+		});
+		expect(args.fees_transfer_type).toEqual({
+			type: "Teleport",
+			value: undefined,
+		});
+		expect(args.remote_fees_id).toEqual({
+			type: "V5",
+			value: { parents: 1, interior: { type: "Here", value: undefined } },
+		});
 	});
 });
