@@ -223,6 +223,19 @@ describe("getMaxSwapAmount", () => {
 		expect(max).toBe(balance - 2n * fee - ed);
 	});
 
+	it("also deducts an extra native spending once for native tokens", () => {
+		const balance = 10_000_000_000n;
+		const fee = 100_000_000n;
+		const ed = 1_000_000_000n;
+		const deliveryFee = 304_850_000n;
+		expect(getMaxSwapAmount(balance, fee, ed, true, deliveryFee)).toBe(
+			balance - 2n * fee - ed - deliveryFee,
+		);
+		expect(getMaxSwapAmount(balance, fee, ed, false, deliveryFee)).toBe(
+			balance,
+		);
+	});
+
 	it("returns full balance for non-native tokens", () => {
 		const balance = 10_000_000_000n;
 		expect(getMaxSwapAmount(balance, 100_000n, 1_000n, false)).toBe(balance);
