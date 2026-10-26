@@ -2,10 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
 	getChainById,
 	getChains,
-	isChainIdHydration,
+	isChainIdAssetHub,
 } from "../registry/chains/chains";
-import type { Chain, ChainIdHydration } from "../registry/chains/types";
-import { getTokenId } from "../registry/tokens/helpers";
+import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import { KNOWN_TOKENS_MAP } from "../registry/tokens/tokens";
 import type {
 	Token,
@@ -16,10 +15,9 @@ import type { XcmV5Multilocation } from "../registry/types/xcm";
 import { getAssetHubMirrorTokenIds } from "./getAssetHubMirrorTokenId";
 
 const assetHub = getChainById("pah");
-const hydration = getChains().find((chain): chain is Chain<ChainIdHydration> =>
-	isChainIdHydration(chain.id),
+const polkadotChains = getChains().filter(
+	(chain) => chain.relay === "polkadot",
 );
-if (!hydration) throw new Error("Hydration chain not found");
 
 const getPahForeignAssetId = (symbol: string) => {
 	const token = Object.values(KNOWN_TOKENS_MAP).find(
@@ -33,7 +31,7 @@ const getPahForeignAssetId = (symbol: string) => {
 const mirrorTokenIds = getAssetHubMirrorTokenIds(
 	KNOWN_TOKENS_MAP,
 	assetHub,
-	hydration,
+	polkadotChains,
 );
 
 describe("getAssetHubMirrorTokenIds", () => {
@@ -65,12 +63,29 @@ describe("getAssetHubMirrorTokenIds", () => {
 
 	it("does not map asset hub tokens", () => {
 		expect(
-			[...mirrorTokenIds.keys()].every(
-				(tokenId) =>
-					tokenId.startsWith("hydration-asset::") ||
-					tokenId === "native::hydration",
+			[...mirrorTokenIds.keys()].filter((tokenId) =>
+				isChainIdAssetHub(getChainIdFromTokenId(tokenId)),
 			),
-		).toBe(true);
+		).toEqual([]);
+	});
+
+	it.each([
+		["pah", "native::ppeople", "native::pah"],
+		["kah", "native::kpeople", "native::kah"],
+		["wah", "native::wpeople", "native::wah"],
+		["pasah", "native::paspeople", "native::pasah"],
+	] as const)("on %s maps %s to %s", (assetHubId, tokenId, expected) => {
+		const relayAssetHub = getChainById(assetHubId);
+		const relayChains = getChains().filter(
+			(chain) => chain.relay === relayAssetHub.relay,
+		);
+		expect(
+			getAssetHubMirrorTokenIds(
+				KNOWN_TOKENS_MAP,
+				relayAssetHub,
+				relayChains,
+			).get(tokenId),
+		).toBe(expected);
 	});
 
 	describe("hydration local locations", () => {
@@ -89,7 +104,7 @@ describe("getAssetHubMirrorTokenIds", () => {
 			interior: {
 				type: "X3",
 				value: [
-					{ type: "Parachain", value: hydration.paraId },
+					{ type: "Parachain", value: getChainById("hydration").paraId },
 					{ type: "PalletInstance", value: 99 },
 					{ type: "GeneralIndex", value: 7n },
 				],
@@ -133,7 +148,7 @@ describe("getAssetHubMirrorTokenIds", () => {
 			getAssetHubMirrorTokenIds(
 				{ [foreignAsset.id]: foreignAsset, [token.id]: token },
 				assetHub,
-				hydration,
+				polkadotChains,
 			).get(token.id);
 
 		it("re-anchors to the hydration parachain", () => {

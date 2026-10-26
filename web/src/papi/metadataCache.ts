@@ -13,9 +13,9 @@ interface CachedMetadata {
 
 /**
  * Maximum number of cached metadata entries to keep.
- * Entries are keyed by runtime code hash. We support 5 chains (pah, kah, wah, pasah, hydration), so we keep at most 10 entries (each chain's current and previous runtime).
+ * Entries are keyed by runtime code hash. We support 9 chains (pah, kah, wah, pasah, hydration, ppeople, kpeople, wpeople, paspeople), so we keep at most 18 entries (each chain's current and previous runtime).
  */
-const MAX_CACHE_ENTRIES = 10;
+const MAX_CACHE_ENTRIES = 18;
 
 /**
  * Get cached metadata for a given codeHash from IndexedDB.

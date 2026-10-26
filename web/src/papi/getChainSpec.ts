@@ -10,6 +10,10 @@ const KNOWN_CHAIN_SPECS_IDS = [
 	"wah",
 	"pah",
 	"pasah",
+	"ppeople",
+	"kpeople",
+	"wpeople",
+	"paspeople",
 ] as const;
 
 type ChainIdWithChainSpec = (typeof KNOWN_CHAIN_SPECS_IDS)[number];
@@ -40,6 +44,14 @@ const loadChainSpec = async (chainId: ChainIdWithChainSpec) => {
 					.chainSpec;
 			case "pasah":
 				return (await import("polkadot-api/chains/paseo_asset_hub")).chainSpec;
+			case "ppeople":
+				return (await import("polkadot-api/chains/polkadot_people")).chainSpec;
+			case "kpeople":
+				return (await import("polkadot-api/chains/kusama_people")).chainSpec;
+			case "wpeople":
+				return (await import("polkadot-api/chains/westend_people")).chainSpec;
+			case "paspeople":
+				return (await import("polkadot-api/chains/paseo_people")).chainSpec;
 			default:
 				throw new Error(`Unknown chain: ${chainId}`);
 		}

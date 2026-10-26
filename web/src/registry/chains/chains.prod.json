@@ -84,5 +84,58 @@
 		"logo": "./img/chains/hydration.svg",
 		"stableTokenId": null,
 		"blockExplorerUrl": "https://hydration.subscan.io"
+	},
+	{
+		"id": "ppeople",
+		"name": "Polkadot People",
+		"wsUrl": [
+			"wss://polkadot-people-rpc.polkadot.io",
+			"wss://rpc-people-polkadot.luckyfriday.io",
+			"wss://people-polkadot-rpc.n.dwellir.com",
+			"wss://sys.turboflakes.io/people-polkadot"
+		],
+		"relay": "polkadot",
+		"paraId": 1004,
+		"logo": "./img/chains/ppeople.svg",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://people-polkadot.subscan.io"
+	},
+	{
+		"id": "kpeople",
+		"name": "Kusama People",
+		"wsUrl": [
+			"wss://kusama-people-rpc.polkadot.io",
+			"wss://rpc-people-kusama.luckyfriday.io",
+			"wss://people-kusama-rpc.n.dwellir.com",
+			"wss://sys.turboflakes.io/people-kusama"
+		],
+		"relay": "kusama",
+		"paraId": 1004,
+		"logo": "./img/chains/kpeople.svg",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://people-kusama.subscan.io"
+	},
+	{
+		"id": "wpeople",
+		"name": "Westend People",
+		"wsUrl": [
+			"wss://westend-people-rpc.polkadot.io",
+			"wss://people-westend-rpc.n.dwellir.com"
+		],
+		"relay": "westend",
+		"paraId": 1004,
+		"logo": "./img/chains/wpeople.svg",
+		"stableTokenId": null,
+		"blockExplorerUrl": "https://people-westend.subscan.io"
+	},
+	{
+		"id": "paspeople",
+		"name": "Paseo People",
+		"wsUrl": ["wss://sys.turboflakes.io/people-paseo"],
+		"relay": "paseo",
+		"paraId": 1004,
+		"logo": "./img/chains/paspeople.svg",
+		"stableTokenId": null,
+		"blockExplorerUrl": null
 	}
 ]
