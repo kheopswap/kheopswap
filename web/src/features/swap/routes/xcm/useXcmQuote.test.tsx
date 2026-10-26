@@ -1,13 +1,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import type { AnyTransaction } from "../../../../types/transactions";
 import type { XcmRoute } from "../swapRoute";
 import { getAmmPath } from "../xcmSwap/ammPath";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
 import { useXcmQuote } from "./useXcmQuote";
+import { dotToAssetHub } from "./xcmFromHydration.fixtures";
 import type { DestinationDryRun, OriginDryRun } from "./xcmQuote";
 import {
 	dotOriginFailed,
@@ -20,8 +21,11 @@ const chain = vi.hoisted(() => ({
 	destinationDryRun: undefined as unknown,
 	deliveryFees: undefined as unknown,
 	dryRunCall: undefined as unknown as ReturnType<typeof vi.fn>,
-	dryRunXcm: undefined as unknown as ReturnType<typeof vi.fn>,
-	queryDeliveryFees: undefined as unknown as ReturnType<typeof vi.fn>,
+	dryRunXcm: undefined as unknown as Mock<(...args: unknown[]) => unknown>,
+	queryDeliveryFees: undefined as unknown as Mock<
+		(...args: unknown[]) => unknown
+	>,
+	calledChains: [] as [string, string][],
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
@@ -30,9 +34,17 @@ vi.mock("../../../../papi/getApi", () => ({
 		apis: {
 			DryRunApi: {
 				dry_run_call: chain.dryRunCall,
-				dry_run_xcm: chain.dryRunXcm,
+				dry_run_xcm: (...args: unknown[]) => {
+					chain.calledChains.push(["dry_run_xcm", chainId]);
+					return chain.dryRunXcm(...args);
+				},
 			},
-			XcmPaymentApi: { query_delivery_fees: chain.queryDeliveryFees },
+			XcmPaymentApi: {
+				query_delivery_fees: (...args: unknown[]) => {
+					chain.calledChains.push(["query_delivery_fees", chainId]);
+					return chain.queryDeliveryFees(...args);
+				},
+			},
 		},
 	}),
 }));
@@ -43,7 +55,6 @@ const transferRoute: XcmRoute = {
 	destination: "hydration",
 	tokenIdIn: "native::pah",
 	tokenIdOut: "hydration-asset::hydration::5",
-	destinationAssetId: 5,
 };
 
 const swapRoute: XcmRoute = {
@@ -52,7 +63,6 @@ const swapRoute: XcmRoute = {
 	destination: "hydration",
 	tokenIdIn: "asset::pah::1337",
 	tokenIdOut: "hydration-asset::hydration::10",
-	destinationAssetId: 10,
 	path: getAmmPath("asset::pah::1337", "asset::pah::1984", "native::pah"),
 };
 
@@ -118,6 +128,7 @@ const renderQuote = ({
 };
 
 beforeEach(() => {
+	chain.calledChains = [];
 	chain.dryRunCall = vi.fn(async (_origin, decodedCall) =>
 		chain.originDryRuns.get(decodedCall),
 	);
@@ -150,7 +161,7 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: 304850000n,
+			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
 			data: {
 				success: true,
 				quote: { received: 9995190152n, destinationFee: 4809848n },
@@ -191,7 +202,7 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: 305450000n,
+			deliveryFee: { tokenId: "native::pah", plancks: 305450000n },
 			data: {
 				success: true,
 				quote: { received: 98764625n, destinationFee: 574n },
@@ -219,7 +230,9 @@ describe("useXcmQuote", () => {
 		const { result } = renderQuote();
 
 		await waitFor(() => expect(result.current.data).toBeDefined());
-		await waitFor(() => expect(result.current.deliveryFee).toBe(304850000n));
+		await waitFor(() =>
+			expect(result.current.deliveryFee?.plancks).toBe(304850000n),
+		);
 		expect(result.current.data).toEqual({
 			success: false,
 			failure: {
@@ -259,7 +272,7 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toMatchObject({
 			isLoading: false,
-			deliveryFee: 304850000n,
+			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
 			data: { success: false, failure: { kind: "destination-unavailable" } },
 		});
 	});
@@ -279,5 +292,58 @@ describe("useXcmQuote", () => {
 			([, decodedCall]) => decodedCall === call.decodedCall,
 		);
 		expect(realCallDryRuns).toHaveLength(1);
+	});
+
+	it("quotes a transfer back from Hydration, asking Hydration's delivery fee without an asset id", async () => {
+		givenDryRuns({
+			origin: dotToAssetHub.origin,
+			estimate: dotToAssetHub.origin,
+			destination: dotToAssetHub.destination,
+			deliveryFees: dotToAssetHub.deliveryFees,
+		});
+		const { result } = renderQuote({
+			route: {
+				kind: "xcm-transfer",
+				origin: "hydration",
+				destination: "pah",
+				tokenIdIn: "hydration-asset::hydration::5",
+				tokenIdOut: "native::pah",
+			},
+			beneficiary: dotToAssetHub.beneficiary,
+		});
+
+		await waitFor(() => expect(result.current.data).toBeDefined());
+		expect(result.current).toEqual({
+			isLoading: false,
+			deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+			data: {
+				success: true,
+				quote: { received: 9991650007n, destinationFee: 8349993n },
+			},
+		});
+		const message =
+			dotToAssetHub.origin.success &&
+			dotToAssetHub.origin.value.forwarded_xcms[0]?.[1][0];
+		expect(chain.queryDeliveryFees).toHaveBeenCalledWith(
+			{
+				type: "V5",
+				value: {
+					parents: 1,
+					interior: { type: "X1", value: { type: "Parachain", value: 1000 } },
+				},
+			},
+			message,
+			{ at: "best" },
+		);
+		expect(chain.dryRunXcm).toHaveBeenCalledWith(HYDRATION_LOCATION, message, {
+			at: "best",
+		});
+		expect(chain.calledChains).toEqual(
+			expect.arrayContaining([
+				["query_delivery_fees", "hydration"],
+				["dry_run_xcm", "pah"],
+			]),
+		);
+		expect(chain.calledChains).not.toContainEqual(["dry_run_xcm", "hydration"]);
 	});
 });

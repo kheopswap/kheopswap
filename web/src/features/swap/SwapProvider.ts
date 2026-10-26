@@ -124,13 +124,12 @@ const useSwapProvider = () => {
 	const { onMaxClick } = useSwapFees({
 		from: formState.from,
 		accountAddress: formState.account?.address,
-		tokenIdIn: formState.tokenIdIn,
 		tokenIn: pricing.tokenIn,
 		balanceIn: pricing.balanceIn,
 		edTokenIn: pricing.edTokenIn,
 		call: xcmRoute ? xcm.plan.call : callData.call,
 		fakeCall: transaction.fakeCall,
-		extraNativeSpending: xcmRoute ? xcm.quote.deliveryFee : undefined,
+		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
 		setFormData: formState.setFormData,
 	});
 
@@ -140,9 +139,9 @@ const useSwapProvider = () => {
 			getSwapTokenLists({
 				ammTokens: pricing.tokens,
 				allTokens,
-				mirrors: formState.mirrors,
+				context: formState.routeContext,
 			}),
-		[pricing.tokens, allTokens, formState.mirrors],
+		[pricing.tokens, allTokens, formState.routeContext],
 	);
 
 	const details = useMemo<AmmSwapDetails | XcmTransferDetails | XcmSwapDetails>(

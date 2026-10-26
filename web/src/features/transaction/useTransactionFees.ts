@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
+import { useConvertedFee } from "../../hooks/useConvertedFee";
 import { useDryRun } from "../../hooks/useDryRun";
 import { useEstimateFee } from "../../hooks/useEstimateFee";
 import { useFeeToken } from "../../hooks/useFeeToken";
@@ -76,11 +76,11 @@ export const useTransactionFees = ({
 		options,
 	});
 
-	const { isLoading: isLoadingFeeEstimateConvert, plancksOut: feeEstimate } =
-		useAssetConvertPlancks({
-			tokenIdIn: nativeToken?.id,
-			tokenIdOut: feeToken?.id,
-			plancks: feeEstimateNative,
+	const { isLoading: isLoadingFeeEstimateConvert, data: feeEstimate } =
+		useConvertedFee({
+			chainId,
+			feeTokenId: feeToken?.id,
+			nativeFee: feeEstimateNative,
 		});
 
 	const isLoadingFeeEstimate = useMemo(

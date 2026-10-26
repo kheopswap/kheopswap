@@ -4,6 +4,7 @@ import { useNativeToken } from "../../hooks/useNativeToken";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
 import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
 import { useWalletAccount } from "../../hooks/useWalletAccount";
+import type { ChainId } from "../../registry/chains/types";
 import { getTokenId, parseTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
@@ -11,9 +12,10 @@ import {
 	canFlipSwapTokens,
 	getNextSwapTokens,
 	resolveSwapRoute,
+	type SwapRouteContext,
 	type SwapTokensChange,
 } from "./routes/swapRoute";
-import { useXcmTransferMirrorTokenIds } from "./routes/xcmTransferMirrors";
+import { useXcmRouteMirrors } from "./routes/xcmRouteMirrors";
 import type { SwapFormInputs } from "./schema";
 
 export const useSwapFormState = () => {
@@ -50,14 +52,15 @@ export const useSwapFormState = () => {
 			chainId: assetHub.id,
 		});
 
-	const mirrors = useXcmTransferMirrorTokenIds();
-	const routeContext = useMemo(
+	const { mirrors, hydrationFeeAssetIds } = useXcmRouteMirrors();
+	const routeContext = useMemo<SwapRouteContext>(
 		() => ({
 			assetHubId: assetHub.id,
 			mirrors,
+			hydrationFeeAssetIds,
 			nativeTokenId: getTokenId({ type: "native", chainId: assetHub.id }),
 		}),
-		[assetHub.id, mirrors],
+		[assetHub.id, mirrors, hydrationFeeAssetIds],
 	);
 
 	const route = useMemo(
@@ -85,11 +88,10 @@ export const useSwapFormState = () => {
 			? parseTokenId(formData.tokenIdOut as TokenId)
 			: null;
 
-		const isInvalidTokenIn =
-			tokenIn?.chainId && tokenIn.chainId !== assetHub.id;
-		const isInvalidTokenOut =
-			tokenOut?.chainId &&
-			!allChains.some((chain) => chain.id === tokenOut.chainId);
+		const isOnOtherRelay = (chainId: ChainId | undefined) =>
+			chainId && !allChains.some((chain) => chain.id === chainId);
+		const isInvalidTokenIn = isOnOtherRelay(tokenIn?.chainId);
+		const isInvalidTokenOut = isOnOtherRelay(tokenOut?.chainId);
 
 		if (isInvalidTokenIn || isInvalidTokenOut) {
 			const nativeTokenId = getTokenId({
@@ -155,7 +157,7 @@ export const useSwapFormState = () => {
 		tokenIdIn,
 		tokenIdOut,
 		route,
-		mirrors,
+		routeContext,
 		canFlip,
 		account,
 		resolvedSubstrateAddress,
