@@ -1,4 +1,4 @@
-import { groupBy, keys } from "lodash-es";
+import { groupBy, keys, mapValues } from "lodash-es";
 import { useMemo } from "react";
 import type { PolkadotAccount } from "../common/kheopskit";
 import type { Token, TokenId } from "../registry/tokens/types";
@@ -6,13 +6,36 @@ import type {
 	AccountBalanceWithStable,
 	BalanceWithStableSummary,
 } from "../types/balances";
+import {
+	getHoldingValuation,
+	type HoldingValuation,
+} from "../utils/getHoldingValuation";
 import { isApplicableBalance } from "../utils/isApplicableBalance";
-import { logger } from "../utils/logger";
 import { useBalancesWithStables } from "./useBalancesWithStables";
+import { type TokenValuations, useTokenValuations } from "./useTokenValuations";
 
 type UseBalancesByTokenSummaryProps = {
 	tokens: Token[] | TokenId[] | null | undefined;
 	accounts: PolkadotAccount[] | string[] | null | undefined;
+};
+
+const isPriced = (
+	balance: AccountBalanceWithStable,
+): balance is AccountBalanceWithStable & { status: "priced" } =>
+	balance.status === "priced";
+
+const summarizeValuation = (
+	balances: AccountBalanceWithStable[],
+): HoldingValuation => {
+	const known = balances.filter((b) => b.tokenPlancks !== null);
+	const unvalued = known.find((b) => !isPriced(b));
+	if (unvalued) return { status: unvalued.status, stablePlancks: null };
+	return {
+		status: "priced",
+		stablePlancks: known
+			.filter(isPriced)
+			.reduce((acc, { stablePlancks }) => acc + stablePlancks, 0n),
+	};
 };
 
 export const getBalancesByTokenSummary = (
@@ -35,15 +58,6 @@ export const getBalancesByTokenSummary = (
 			const isLoadingTokenPlancks = tokenBalances.some(
 				(b) => b.isLoadingTokenPlancks,
 			);
-			const hasStablePlancks = tokenBalances.some(
-				(b) => b.stablePlancks !== null,
-			);
-			const stablePlancks = hasStablePlancks
-				? tokenBalances.reduce(
-						(acc, { stablePlancks }) => acc + (stablePlancks ?? 0n),
-						0n,
-					)
-				: null;
 			const isLoadingStablePlancks = tokenBalances.some(
 				(b) => b.isLoadingStablePlancks,
 			);
@@ -55,9 +69,9 @@ export const getBalancesByTokenSummary = (
 				tokenId,
 				tokenPlancks,
 				isLoadingTokenPlancks,
-				stablePlancks,
 				isLoadingStablePlancks,
 				isInitializing,
+				...summarizeValuation(tokenBalances),
 			};
 			return acc;
 		},
@@ -65,20 +79,51 @@ export const getBalancesByTokenSummary = (
 	);
 };
 
+export const valueHoldingsTogether = (
+	summary: Record<TokenId, BalanceWithStableSummary>,
+	tokenValuations: TokenValuations,
+): Record<TokenId, BalanceWithStableSummary> =>
+	mapValues(summary, (tokenSummary) => {
+		const tokenValuation = tokenValuations[tokenSummary.tokenId];
+		if (!tokenValuation)
+			return { ...tokenSummary, isLoadingStablePlancks: true };
+		return {
+			...tokenSummary,
+			isLoadingStablePlancks: tokenValuation.isLoading,
+			...getHoldingValuation({
+				...tokenValuation,
+				plancks: tokenSummary.tokenPlancks ?? 0n,
+			}),
+		};
+	});
+
+export const useBalancesByTokenSummaryOf = (
+	balances: AccountBalanceWithStable[],
+) => {
+	const summary = useMemo(
+		() => getBalancesByTokenSummary(balances),
+		[balances],
+	);
+
+	const tokenIds = useMemo(() => keys(summary).sort(), [summary]);
+	const { data: tokenValuations } = useTokenValuations(tokenIds);
+
+	return useMemo(
+		() => valueHoldingsTogether(summary, tokenValuations),
+		[summary, tokenValuations],
+	);
+};
+
 export const useBalancesByTokenSummary = ({
 	tokens,
 	accounts,
 }: UseBalancesByTokenSummaryProps) => {
-	const stop = logger.cumulativeTimer("useBalancesByTokenSummary");
-
 	const { data: balances, isLoading } = useBalancesWithStables({
 		tokens,
 		accounts,
 	});
 
-	const data = useMemo(() => getBalancesByTokenSummary(balances), [balances]);
-
-	stop();
+	const data = useBalancesByTokenSummaryOf(balances);
 
 	return { data, isLoading };
 };

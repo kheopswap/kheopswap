@@ -1,7 +1,10 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
+import type { TransactionFollowUp } from "../../../../state/transactions/types";
 import { TransactionProvider } from "../../../transaction/TransactionProvider";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useRemoveLiquidity } from "./RemoveLiquidityProvider";
+
+const FOLLOW_UP: TransactionFollowUp = { type: "removeLiquidity" };
 
 const getRemoveLiquidityTitle = (
 	token1Symbol: string | undefined,
@@ -31,7 +34,7 @@ export const RemoveLiquidityTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={assetHub.id}
 			signer={account?.id}
 			onReset={onReset}
-			transactionType="removeLiquidity"
+			followUp={FOLLOW_UP}
 			transactionTitle={title}
 		>
 			{children}

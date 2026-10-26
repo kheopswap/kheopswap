@@ -1,4 +1,4 @@
-import { isEqual, merge } from "lodash-es";
+import { isEqual, keys, merge, pick } from "lodash-es";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import { getLocalStorageKey } from "../utils/getLocalStorageKey";
 import { safeParse, safeStringify } from "../utils/serialization";
@@ -23,22 +23,15 @@ const DEFAULT_SETTINGS: Settings = {
 
 const STORAGE_KEY = getLocalStorageKey("settings");
 
-const getPersistedSettings = () => {
+const getPersistedSettings = (): Settings => {
 	try {
 		const strSettings = localStorage.getItem(STORAGE_KEY);
-		const settings = strSettings
-			? safeParse<Settings>(strSettings)
-			: DEFAULT_SETTINGS;
-
-		// clean up old settings
 		if (strSettings)
-			for (const key of Object.keys(settings))
-				if (!(key in DEFAULT_SETTINGS)) {
-					// biome-ignore lint/suspicious/noExplicitAny: legacy
-					delete (settings as any)[key];
-				}
-
-		if (strSettings) return merge(DEFAULT_SETTINGS, settings as Settings);
+			return merge(
+				{},
+				DEFAULT_SETTINGS,
+				pick(safeParse<Partial<Settings>>(strSettings), keys(DEFAULT_SETTINGS)),
+			);
 	} catch (err) {
 		console.error("Error loading settings", { err });
 	}

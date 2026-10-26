@@ -7,13 +7,16 @@ import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
 import { getTokenDescription } from "../utils/getTokenDescription";
+import { hasValueLine, useIsValuedAsStable } from "../utils/hasValueLine";
 import { isBigInt } from "../utils/isBigInt";
+import { tokenMatchesSearch } from "../utils/tokenMatchesSearch";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
 import { ActionRightIcon } from "./icons";
 import { Pulse } from "./Pulse";
 import { SearchInput } from "./SearchInput";
 import { Shimmer } from "./Shimmer";
+import { StableValue } from "./StableValue";
 import { Styles } from "./styles";
 import { TokenLogo } from "./TokenLogo";
 import { Tokens } from "./Tokens";
@@ -25,6 +28,7 @@ const TokenButton = memo<{
 	onSelect: (tokenId: TokenId) => void;
 }>(({ token, balances, selected, onSelect }) => {
 	const { stableToken } = useRelayChains();
+	const isValuedAsStable = useIsValuedAsStable(token.id);
 	const description = useMemo(() => getTokenDescription(token), [token]);
 
 	const handleClick = useCallback(() => {
@@ -65,12 +69,13 @@ const TokenButton = memo<{
 							/>
 						</div>
 						<div className="text-xs text-muted">
-							<Tokens
-								token={stableToken}
+							<StableValue
+								stableToken={stableToken}
 								plancks={balances.stablePlancks ?? 0n}
 								className={cn(
-									!isBigInt(balances.stablePlancks) && "invisible",
-									token.id === stableToken.id && "invisible",
+									(!isBigInt(balances.stablePlancks) ||
+										!hasValueLine(isValuedAsStable, balances.tokenPlancks)) &&
+										"invisible",
 								)}
 								pulse={balances.isLoadingStablePlancks}
 							/>
@@ -146,24 +151,14 @@ const TokenSelectDrawerContent: FC<{
 						}
 					}
 				}
-				// Deterministic tiebreaker so order is stable while balances load
 				return t1.symbol.localeCompare(t2.symbol) || t1.id.localeCompare(t2.id);
 			}),
 		[tokens, balances],
 	);
 
 	const items = useMemo(() => {
-		if (!sortedTokens) return [];
 		if (!search) return sortedTokens;
-
-		const ls = search.toLowerCase().trim();
-
-		return sortedTokens.filter(
-			(t) =>
-				t.symbol.toLowerCase().includes(ls) ||
-				t.name?.toLowerCase().includes(ls) ||
-				(t.type === "asset" && t.assetId.toString() === ls),
-		);
+		return sortedTokens.filter((t) => tokenMatchesSearch(t, search));
 	}, [sortedTokens, search]);
 
 	return (
@@ -182,7 +177,15 @@ const TokenSelectDrawerContent: FC<{
 					selected={t.id === tokenId}
 				/>
 			))}
-			{isLoading && <TokenButtonShimmer />}
+			{isLoading ? (
+				<TokenButtonShimmer />
+			) : (
+				!items.length && (
+					<div className="px-3.5 py-4 text-center text-sm text-muted">
+						No tokens match your search
+					</div>
+				)
+			)}
 		</div>
 	);
 };

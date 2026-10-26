@@ -172,19 +172,19 @@ const PoolPositionValue: FC = () => {
 export const LiquidityPoolForm = () => {
 	const [action, setAction] = useState<"add" | "remove">("add");
 
-	const { isLoadingToken, assetToken, defaultAccountId, setDefaultAccountId } =
+	const { isLoadingToken, assetToken, from, onFromChange } =
 		useLiquidityPoolPage();
 
-	if (!assetToken) return isLoadingToken ? null : <div>Pool not found</div>; // TODO
+	if (!assetToken) return isLoadingToken ? null : <div>Pool not found</div>;
 
 	return (
 		<div className="flex flex-col gap-5">
 			<FormFieldContainer id="from-account" label="Account">
 				<AccountSelect
 					id="from-account"
-					idOrAddress={defaultAccountId}
+					idOrAddress={from}
 					ownedOnly
-					onChange={setDefaultAccountId}
+					onChange={onFromChange}
 				/>
 			</FormFieldContainer>
 			<div className="grid gap-3 sm:grid-cols-2">

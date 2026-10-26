@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAllTokens } from "../../../hooks/useAllTokens";
 import { useBalance } from "../../../hooks/useBalance";
 import { useExistentialDeposit } from "../../../hooks/useExistentialDeposit";
-import { useFeeToken } from "../../../hooks/useFeeToken";
 import { useNativeToken } from "../../../hooks/useNativeToken";
 import { usePoolsByChainId } from "../../../hooks/usePoolsByChainId";
 import { useResolvedSubstrateAddress } from "../../../hooks/useResolvedSubstrateAddress";
@@ -15,16 +14,15 @@ import { useRelayChains } from "../../../state/relay";
 import { getAddressFromAccountField } from "../../../utils/getAddressFromAccountField";
 import { isBigInt } from "../../../utils/isBigInt";
 import { provideContext } from "../../../utils/provideContext";
+import { getLiquidityToAdd, type LiquidityAmounts } from "../liquidityAmounts";
+import type { MaxLimit, Side } from "../maxLiquidity";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
 
 const useDefaultValues = (token2Id: TokenId) => {
 	const [defaultAccountId] = useSetting("defaultAccountId");
 
-	// account won't be available on first render
 	const account = useWalletAccount({ id: defaultAccountId });
-
-	// TODO token id from url for deep links
 
 	return useMemo<CreatePoolFormInputs>(
 		() => ({
@@ -42,11 +40,6 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const defaultValues = useDefaultValues(tokenId);
 	const [formData, setFormData] = useState<CreatePoolFormInputs>(defaultValues);
 	const [, setDefaultAccountId] = useSetting("defaultAccountId");
-
-	// TODO merge in formdata
-	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(
-		null,
-	);
 
 	useEffect(() => {
 		if (formData.from) setDefaultAccountId(formData.from);
@@ -72,6 +65,19 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	const token2 = useMemo(
 		() => tokens[formData.token2Id] ?? null,
 		[formData.token2Id, tokens],
+	);
+
+	const amounts = useMemo<LiquidityAmounts>(
+		() => [formData.token1Amount, formData.token2Amount],
+		[formData.token1Amount, formData.token2Amount],
+	);
+
+	const liquidityToAdd = useMemo(
+		() =>
+			token1 && token2
+				? getLiquidityToAdd(amounts, [token1.decimals, token2.decimals])
+				: null,
+		[amounts, token1, token2],
 	);
 
 	const { data: token1ExistentialDeposit } = useExistentialDeposit({
@@ -116,18 +122,27 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		mintTo: resolvedSender,
 	});
 
-	const { feeToken } = useFeeToken({
-		chainId: assetHub.id,
-		accountId: sender,
-	});
-
 	const onReset = useCallback(() => {
 		setFormData(defaultValues);
+		setMaxLimit(null);
 	}, [defaultValues]);
 
 	const onToken2Change = useCallback((tokenId: TokenId) => {
 		setFormData((prev) => ({ ...prev, token2Id: tokenId }));
 	}, []);
+
+	const [maxLimit, setMaxLimit] = useState<MaxLimit | null>(null);
+
+	const onAmountChange = useCallback(
+		(side: Side, amount: string, limit: MaxLimit | null = null) => {
+			setFormData((prev) => ({
+				...prev,
+				[side === 0 ? "token1Amount" : "token2Amount"]: amount,
+			}));
+			setMaxLimit(limit);
+		},
+		[],
+	);
 
 	const onFromChange = useCallback((accountId: string) => {
 		setFormData((prev) => ({ ...prev, from: accountId }));
@@ -167,11 +182,12 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		onReset,
 		onFromChange,
 		onToken2Change,
+		amounts,
+		onAmountChange,
+		maxLimit,
 		liquidityToAdd,
-		setLiquidityToAdd,
 		accountBalances,
 		isLoadingAccountBalances,
-		feeToken,
 	};
 };
 

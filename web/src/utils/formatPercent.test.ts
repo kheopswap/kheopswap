@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatPercent } from "./formatPercent";
+import { formatFixedPercent, formatPercent } from "./formatPercent";
 
 describe("formatPercent", () => {
 	it("formats zero", () => {
@@ -20,5 +20,16 @@ describe("formatPercent", () => {
 
 	it("formats small ratio", () => {
 		expect(formatPercent(0.001)).toBe("0.1%");
+	});
+});
+
+describe("formatFixedPercent", () => {
+	it.each([
+		[0.53, "53.00%"],
+		[0.53004, "53.00%"],
+		[0.1054, "10.54%"],
+		[-0.001, "-0.10%"],
+	])("formats %s as %s", (ratio, text) => {
+		expect(formatFixedPercent(ratio)).toBe(text);
 	});
 });

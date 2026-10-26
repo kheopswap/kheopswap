@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { plancksToTokens, tokensToPlancks } from "./plancks";
+import { inputToPlancks, plancksToTokens, tokensToPlancks } from "./plancks";
 
 describe("tokensToPlancks", () => {
 	it("converts integer token amount", () => {
@@ -61,5 +61,21 @@ describe("plancksToTokens", () => {
 		const plancks = tokensToPlancks(original, 10);
 		const tokens = plancksToTokens(plancks, 10);
 		expect(tokens).toBe("123.456");
+	});
+});
+
+describe("inputToPlancks", () => {
+	it("keeps every digit of an 18-decimal amount", () => {
+		expect(inputToPlancks("1.123456789012345678", 18)).toBe(
+			1_123_456_789_012_345_678n,
+		);
+	});
+
+	it("converts a tiny amount typed in full", () => {
+		expect(inputToPlancks("0.0000001", 10)).toBe(1_000n);
+	});
+
+	it.each(["", "abc", "-1", "1e-7"])("reads %j as nothing", (input) => {
+		expect(inputToPlancks(input, 10)).toBe(0n);
 	});
 });

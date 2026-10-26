@@ -1,22 +1,34 @@
-import { filter, firstValueFrom, map, type Subject, timeout } from "rxjs";
-import { beforeAll, describe, expect, it, vi } from "vitest";
-import { getBalance$ } from "./service";
-import { balancesState$ } from "./state";
 import {
-	addBalanceSubscription,
-	removeBalancesSubscription,
-} from "./subscriptions";
+	type BehaviorSubject,
+	filter,
+	firstValueFrom,
+	map,
+	timeout,
+} from "rxjs";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { getLocalStorageKey } from "../../utils/getLocalStorageKey";
+import { discoverBalances } from "./discovery";
+import { getBalance$, heldTokenIds$ } from "./service";
+import { balancesState$ } from "./state";
+import { balancesStore$ } from "./store";
+import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceState } from "./types";
 import { getBalanceId } from "./utils";
 
-type AccountValue = { value: { data: { free: bigint; frozen: bigint } } };
-type TokensAccountValue = {
-	value: { free: bigint; reserved: bigint; frozen: bigint };
-};
+type GetValuesCall = { chainId: string; pallet: string; keys: unknown[][] };
 
 const mocks = vi.hoisted(() => ({
-	accountSubjects: new Map<string, unknown>(),
-	watchValueCalls: [] as string[],
+	bestBlocks: new Map<string, unknown>(),
+	nativeAccounts: new Map<
+		string,
+		{ free: bigint; reserved?: bigint; frozen: bigint }
+	>(),
+	hydrationAccounts: new Map<string, { free: bigint; frozen: bigint }>(),
+	assetAccounts: new Map<string, { balance: bigint }>(),
+	failingPallets: new Set<string>(),
+	stalledPallets: new Set<string>(),
+	systemReadSignals: [] as AbortSignal[],
+	getValuesCalls: [] as GetValuesCall[],
 	getApiChainIds: [] as string[],
 	addedBalanceIds: [] as string[],
 }));
@@ -32,14 +44,41 @@ vi.mock("./subscriptions", async (importOriginal) => {
 	};
 });
 
-vi.mock("../../papi/getApi", async () => {
-	const { Subject } = await import("rxjs");
+const STALLED_READ_TIMEOUT_MS = 200;
 
-	const getAccountObservable = (key: string) => {
-		mocks.watchValueCalls.push(key);
-		if (!mocks.accountSubjects.has(key))
-			mocks.accountSubjects.set(key, new Subject());
-		return mocks.accountSubjects.get(key);
+vi.mock("../../utils/withTimeout", async (importOriginal) => {
+	const actual =
+		await importOriginal<typeof import("../../utils/withTimeout")>();
+	return {
+		...actual,
+		withChainTimeout: async <T>(
+			_chainId: string,
+			query: (signal: AbortSignal) => Promise<T>,
+			signal: AbortSignal,
+		) => {
+			const settled = new AbortController();
+			try {
+				return await actual.withTimeout(query(settled.signal), {
+					ms: STALLED_READ_TIMEOUT_MS,
+					signal,
+				});
+			} finally {
+				settled.abort();
+			}
+		},
+	};
+});
+
+vi.mock("../../papi/getApi", async () => {
+	const { BehaviorSubject } = await import("rxjs");
+
+	const getBestBlock$ = (chainId: string) => {
+		const current = mocks.bestBlocks.get(chainId) as
+			| BehaviorSubject<{ value: number }>
+			| undefined;
+		if (!current || current.hasError)
+			mocks.bestBlocks.set(chainId, new BehaviorSubject({ value: 1 }));
+		return mocks.bestBlocks.get(chainId);
 	};
 
 	return {
@@ -48,15 +87,56 @@ vi.mock("../../papi/getApi", async () => {
 			return {
 				query: {
 					System: {
+						Number: { watchValue: () => getBestBlock$(chainId) },
 						Account: {
-							watchValue: (address: string) =>
-								getAccountObservable(`native||${address}`),
+							getValues: async (
+								keys: [string][],
+								{ signal }: { signal: AbortSignal },
+							) => {
+								mocks.getValuesCalls.push({ chainId, pallet: "System", keys });
+								mocks.systemReadSignals.push(signal);
+								if (mocks.stalledPallets.has("System"))
+									return new Promise<never>(() => {});
+								return keys.map(([address]) => ({
+									data: {
+										free: 0n,
+										reserved: 0n,
+										frozen: 0n,
+										...mocks.nativeAccounts.get(address),
+									},
+								}));
+							},
+						},
+					},
+					Assets: {
+						Account: {
+							getValues: async (keys: [number, string][]) => {
+								mocks.getValuesCalls.push({ chainId, pallet: "Assets", keys });
+								if (mocks.failingPallets.has("Assets"))
+									throw new Error("Assets pallet unavailable");
+								return keys.map(([assetId, address]) => {
+									const account = mocks.assetAccounts.get(
+										`${assetId}||${address}`,
+									);
+									return account
+										? { status: { type: "Liquid" }, balance: account.balance }
+										: undefined;
+								});
+							},
 						},
 					},
 					Tokens: {
 						Accounts: {
-							watchValue: (address: string, assetId: number) =>
-								getAccountObservable(`hydration-asset||${assetId}||${address}`),
+							getValues: async (keys: [string, number][]) => {
+								mocks.getValuesCalls.push({ chainId, pallet: "Tokens", keys });
+								return keys.map(
+									([address, assetId]) =>
+										mocks.hydrationAccounts.get(`${assetId}||${address}`) ?? {
+											free: 0n,
+											frozen: 0n,
+										},
+								);
+							},
 						},
 					},
 				},
@@ -65,8 +145,15 @@ vi.mock("../../papi/getApi", async () => {
 	};
 });
 
-const getSubject = <T = AccountValue>(key: string) =>
-	mocks.accountSubjects.get(key) as Subject<T>;
+const tickBestBlock = (chainId: string, block: number) =>
+	(mocks.bestBlocks.get(chainId) as BehaviorSubject<{ value: number }>).next({
+		value: block,
+	});
+
+const nativeCalls = (chainId: string) =>
+	mocks.getValuesCalls.filter(
+		(call) => call.chainId === chainId && call.pallet === "System",
+	);
 
 const waitForBalanceState = (
 	balanceId: string,
@@ -80,8 +167,9 @@ const waitForBalanceState = (
 		),
 	);
 
+const settle = () => new Promise((resolve) => setTimeout(resolve, 250));
+
 beforeAll(() => {
-	// jsdom may not provide crypto.randomUUID, which subscriptions rely on
 	if (!globalThis.crypto?.randomUUID) {
 		Object.defineProperty(globalThis.crypto ?? {}, "randomUUID", {
 			value: () =>
@@ -91,103 +179,297 @@ beforeAll(() => {
 });
 
 describe("balances service pipeline", () => {
-	it("watches, stores, and derives balance state through the full pipeline", async () => {
-		const address = "5TestAddressAlice";
-		const balanceId = getBalanceId({ address, tokenId: "native::pah" });
-		const subjectKey = `native||${address}`;
+	afterEach(() => {
+		mocks.stalledPallets.clear();
+		mocks.systemReadSignals = [];
+	});
 
-		const subId = addBalanceSubscription(balanceId);
+	it("reads every watched balance of a chain in one storage query per block", async () => {
+		const addresses = [
+			"5TestAddressAlice",
+			"5TestAddressBob",
+			"5TestAddressCarol",
+		];
+		mocks.nativeAccounts.set("5TestAddressAlice", { free: 100n, frozen: 10n });
+		mocks.nativeAccounts.set("5TestAddressBob", { free: 50n, frozen: 0n });
+		const balanceIds = addresses.map((address) =>
+			getBalanceId({ address, tokenId: "native::pah" }),
+		);
+		const callsBefore = nativeCalls("pah").length;
 
-		// the watcher opens asynchronously (subscription list debounce + getApi)
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		const unsubscribes = balanceIds.map(addBalanceSubscription);
+
+		const [alice, bob, carol] = await Promise.all(
+			balanceIds.map((balanceId) =>
+				waitForBalanceState(balanceId, (s) => s?.status === "loaded"),
+			),
+		);
+		expect(alice).toMatchObject({ balance: 90n, frozen: 10n });
+		expect(bob).toMatchObject({ balance: 50n, frozen: 0n });
+		expect(carol).toMatchObject({ balance: 0n, frozen: 0n });
+
+		const firstBlockCalls = nativeCalls("pah").slice(callsBefore);
+		expect(firstBlockCalls).toHaveLength(1);
+		expect(firstBlockCalls[0]?.keys).toHaveLength(3);
+
+		mocks.nativeAccounts.set("5TestAddressBob", { free: 75n, frozen: 5n });
+		tickBestBlock("pah", 2);
+
+		const bobAfter = await waitForBalanceState(
+			balanceIds[1] as string,
+			(s) => s?.balance === 70n,
+		);
+		expect(bobAfter?.status).toBe("loaded");
+		expect(nativeCalls("pah").slice(callsBefore)).toHaveLength(2);
+
+		for (const unsubscribe of unsubscribes) unsubscribe();
+	});
+
+	it("splits a chain's keys into storage queries of at most 250", async () => {
+		const addresses = Array.from({ length: 251 }, (_, i) => `5Bulk${i}`);
+		mocks.nativeAccounts.set("5Bulk249", { free: 249n, frozen: 0n });
+		mocks.nativeAccounts.set("5Bulk250", { free: 250n, frozen: 0n });
+		const balanceIds = addresses.map((address) =>
+			getBalanceId({ address, tokenId: "native::wah" }),
+		);
+		const callsBefore = nativeCalls("wah").length;
+
+		const unsubscribes = balanceIds.map(addBalanceSubscription);
+		const last = await waitForBalanceState(
+			balanceIds[250] as string,
+			(s) => s?.status === "loaded",
+		);
+		const beforeBoundary = await waitForBalanceState(
+			balanceIds[249] as string,
+			(s) => s?.status === "loaded",
 		);
 
-		// chain emits an account value -> free - frozen lands in the state
-		getSubject(subjectKey).next({
-			value: { data: { free: 100n, frozen: 10n } },
-		});
+		expect(
+			nativeCalls("wah")
+				.slice(callsBefore)
+				.map((call) => call.keys.length),
+		).toEqual([250, 1]);
+		expect(beforeBoundary?.balance).toBe(249n);
+		expect(last?.balance).toBe(250n);
 
+		for (const unsubscribe of unsubscribes) unsubscribe();
+	});
+
+	it("stops reading a balance once nobody watches it but keeps it cached as stale", async () => {
+		const address = "5TestAddressDave";
+		mocks.nativeAccounts.set(address, { free: 100n, frozen: 10n });
+		const balanceId = getBalanceId({ address, tokenId: "native::kah" });
+
+		const unsubscribe = addBalanceSubscription(balanceId);
 		const loaded = await waitForBalanceState(
 			balanceId,
 			(s) => s?.status === "loaded",
 		);
 		expect(loaded?.balance).toBe(90n);
 
-		// removing the subscription stops the watcher...
-		removeBalancesSubscription(subId);
-		await vi.waitFor(() => expect(getSubject(subjectKey).observed).toBe(false));
-
-		// ...but keeps the cached balance, downgraded to "stale"
+		unsubscribe();
 		const stale = await waitForBalanceState(
 			balanceId,
 			(s) => s?.status === "stale",
 		);
 		expect(stale?.balance).toBe(90n);
+
+		const callsBefore = nativeCalls("kah").length;
+		tickBestBlock("kah", 2);
+		await settle();
+		expect(nativeCalls("kah").slice(callsBefore)).toHaveLength(0);
 	});
 
-	it("opens a single watcher for duplicate subscriptions", async () => {
-		const address = "5TestAddressBob";
-		const balanceId = getBalanceId({ address, tokenId: "native::pah" });
-		const subjectKey = `native||${address}`;
+	it("keeps reading after the best block stream errors", async () => {
+		const address = "5TestAddressFrank";
+		mocks.nativeAccounts.set(address, { free: 10n, frozen: 0n });
+		const balanceId = getBalanceId({ address, tokenId: "native::kah" });
+		const unsubscribe = addBalanceSubscription(balanceId);
+		await waitForBalanceState(balanceId, (s) => s?.balance === 10n);
 
-		addBalanceSubscription(balanceId);
-		addBalanceSubscription(balanceId);
-
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		(mocks.bestBlocks.get("kah") as BehaviorSubject<{ value: number }>).error(
+			new Error("subscription dropped"),
 		);
-		// give the debounced subscription list time to settle
-		await new Promise((resolve) => setTimeout(resolve, 250));
+		await settle();
+		mocks.nativeAccounts.set(address, { free: 20n, frozen: 0n });
+		await new Promise((resolve) => setTimeout(resolve, 1_100));
+		tickBestBlock("kah", 3);
 
-		expect(
-			mocks.watchValueCalls.filter((key) => key === subjectKey),
-		).toHaveLength(1);
+		const recovered = await waitForBalanceState(
+			balanceId,
+			(s) => s?.balance === 20n,
+		);
+		expect(recovered?.status).toBe("loaded");
+
+		unsubscribe();
+	});
+
+	it("applies the pallets that answered while one read stalls, then retries it at the next block", async () => {
+		const address = "5TestAddressStalled";
+		mocks.nativeAccounts.set(address, { free: 40n, frozen: 0n });
+		mocks.assetAccounts.set(`1984||${address}`, { balance: 7n });
+		mocks.stalledPallets.add("System");
+		const nativeId = getBalanceId({ address, tokenId: "native::pasah" });
+		const assetId = getBalanceId({ address, tokenId: "asset::pasah::1984" });
+
+		const unsubscribes = [nativeId, assetId].map(addBalanceSubscription);
+
+		const asset = await waitForBalanceState(
+			assetId,
+			(s) => s?.status === "loaded",
+		);
+		expect(asset?.balance).toBe(7n);
+		expect((await firstValueFrom(balancesState$))[nativeId]?.status).toBe(
+			"loading",
+		);
+
+		const stale = await waitForBalanceState(
+			nativeId,
+			(s) => s?.status === "stale",
+		);
+		expect(stale?.balance).toBeUndefined();
+		expect(mocks.systemReadSignals.map(({ aborted }) => aborted)).toEqual([
+			true,
+		]);
+
+		mocks.stalledPallets.delete("System");
+		tickBestBlock("pasah", 2);
+
+		const recovered = await waitForBalanceState(
+			nativeId,
+			(s) => s?.status === "loaded",
+		);
+		expect(recovered?.balance).toBe(40n);
+
+		for (const unsubscribe of unsubscribes) unsubscribe();
+	});
+
+	it("does not re-read a chain whose watched entries did not change", async () => {
+		const pahId = getBalanceId({
+			address: "5TestAddressGrace",
+			tokenId: "native::pah",
+		});
+		const unsubscribePah = addBalanceSubscription(pahId);
+		await waitForBalanceState(pahId, (s) => s?.status === "loaded");
+		const pahCallsBefore = nativeCalls("pah").length;
+
+		const wahId = getBalanceId({
+			address: "5TestAddressHeidi",
+			tokenId: "native::wah",
+		});
+		const unsubscribeWah = addBalanceSubscription(wahId);
+		await waitForBalanceState(wahId, (s) => s?.status === "loaded");
+		await settle();
+
+		expect(nativeCalls("pah").length).toBe(pahCallsBefore);
+
+		unsubscribePah();
+		unsubscribeWah();
 	});
 
 	it("watches System.Account on the people chain for its native token", async () => {
-		const address = "5TestAddressDave";
+		const address = "5TestAddressEve";
+		mocks.nativeAccounts.set(address, { free: 100n, frozen: 10n });
 		const balanceId = getBalanceId({ address, tokenId: "native::ppeople" });
-		const subjectKey = `native||${address}`;
 		const getApiCallsBefore = mocks.getApiChainIds.length;
 
-		const subId = addBalanceSubscription(balanceId);
-
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
-		);
-		expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual(["ppeople"]);
-
-		getSubject(subjectKey).next({
-			value: { data: { free: 100n, frozen: 10n } },
-		});
+		const unsubscribe = addBalanceSubscription(balanceId);
 
 		const loaded = await waitForBalanceState(
 			balanceId,
 			(s) => s?.status === "loaded",
 		);
 		expect(loaded?.balance).toBe(90n);
+		expect(new Set(mocks.getApiChainIds.slice(getApiCallsBefore))).toEqual(
+			new Set(["ppeople"]),
+		);
 
-		removeBalancesSubscription(subId);
+		unsubscribe();
+	});
+
+	it.each([
+		{ free: 50n, reserved: 1_000n, frozen: 1_000n, balance: 50n, locked: 0n },
+		{ free: 100n, reserved: 30n, frozen: 50n, balance: 80n, locked: 20n },
+		{ free: 10n, reserved: 0n, frozen: 30n, balance: 0n, locked: 30n },
+	])(
+		"lets a native freeze cover reserved funds first (free $free, reserved $reserved, frozen $frozen)",
+		async ({ free, reserved, frozen, balance, locked }) => {
+			const address = `5TestAddressNative${free}-${reserved}-${frozen}`;
+			mocks.nativeAccounts.set(address, { free, reserved, frozen });
+			const balanceId = getBalanceId({ address, tokenId: "native::pah" });
+
+			const unsubscribe = addBalanceSubscription(balanceId);
+
+			await waitForBalanceState(balanceId, (s) => s?.status === "loaded");
+			expect(balancesStore$.value[balanceId]).toMatchObject({
+				balance,
+				frozen: locked,
+			});
+
+			unsubscribe();
+		},
+	);
+
+	it("reports a zero balance it never stored as loaded at zero without storing it", async () => {
+		const address = "5TestAddressEmpty";
+		const balanceId = getBalanceId({ address, tokenId: "native::pah" });
+
+		const unsubscribe = addBalanceSubscription(balanceId);
+
+		const loaded = await waitForBalanceState(
+			balanceId,
+			(s) => s?.status === "loaded",
+		);
+		expect(loaded).toMatchObject({ balance: 0n, frozen: 0n });
+		expect(balancesStore$.value[balanceId]).toBeUndefined();
+
+		unsubscribe();
+	});
+
+	it("keeps storing a balance that drops to zero", async () => {
+		const address = "5TestAddressSpender";
+		mocks.nativeAccounts.set(address, { free: 10n, frozen: 0n });
+		const balanceId = getBalanceId({ address, tokenId: "native::kah" });
+
+		const unsubscribe = addBalanceSubscription(balanceId);
+		await waitForBalanceState(balanceId, (s) => s?.balance === 10n);
+
+		mocks.nativeAccounts.set(address, { free: 0n, frozen: 0n });
+		tickBestBlock("kah", 2);
+
+		await waitForBalanceState(balanceId, (s) => s?.balance === 0n);
+		expect(balancesStore$.value[balanceId]?.balance).toBe(0n);
+
+		unsubscribe();
+	});
+
+	it("counts a fully frozen hydration asset as held", async () => {
+		const address = "5TestAddressFrozen";
+		mocks.hydrationAccounts.set(`9||${address}`, { free: 100n, frozen: 100n });
+		const balanceId = getBalanceId({
+			address,
+			tokenId: "hydration-asset::hydration::9",
+		});
+
+		const unsubscribe = addBalanceSubscription(balanceId);
+		await waitForBalanceState(balanceId, (s) => s?.frozen === 100n);
+
+		expect(await firstValueFrom(heldTokenIds$)).toContain(
+			"hydration-asset::hydration::9",
+		);
+
+		unsubscribe();
 	});
 
 	it("deducts frozen from free for hydration asset balances", async () => {
 		const address = "5TestAddressCharlie";
+		mocks.hydrationAccounts.set(`5||${address}`, { free: 100n, frozen: 10n });
 		const balanceId = getBalanceId({
 			address,
 			tokenId: "hydration-asset::hydration::5",
 		});
-		const subjectKey = `hydration-asset||5||${address}`;
 
-		const subId = addBalanceSubscription(balanceId);
-
-		await vi.waitFor(() =>
-			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
-		);
-
-		getSubject<TokensAccountValue>(subjectKey).next({
-			value: { free: 100n, reserved: 7n, frozen: 10n },
-		});
+		const unsubscribe = addBalanceSubscription(balanceId);
 
 		const loaded = await waitForBalanceState(
 			balanceId,
@@ -195,7 +477,54 @@ describe("balances service pipeline", () => {
 		);
 		expect(loaded?.balance).toBe(90n);
 
-		removeBalancesSubscription(subId);
+		unsubscribe();
+	});
+});
+
+describe("discoverBalances", () => {
+	it("stores a token received by an unwatched account without subscribing to it", async () => {
+		const address = "5TestAddressIvan";
+		mocks.assetAccounts.set(`1984||${address}`, { balance: 5n });
+		const receivedId = getBalanceId({ address, tokenId: "asset::pah::1984" });
+		const emptyId = getBalanceId({ address, tokenId: "asset::pah::1337" });
+
+		await discoverBalances([
+			{ address, tokenId: "asset::pah::1984" },
+			{ address, tokenId: "asset::pah::1337" },
+		]);
+
+		expect(balancesStore$.value[receivedId]?.balance).toBe(5n);
+		expect(balancesStore$.value[emptyId]).toBeUndefined();
+		expect(
+			localStorage.getItem(getLocalStorageKey("balances::v3")) ?? "",
+		).toContain(`"address":"${address}","tokenId":"asset::pah::1984"`);
+		expect(await firstValueFrom(heldTokenIds$)).toContain("asset::pah::1984");
+		expect(mocks.addedBalanceIds).not.toContain(receivedId);
+	});
+
+	it("finishes when a pallet read fails and keeps what the other pallets returned", async () => {
+		const address = "5TestAddressJudy";
+		mocks.nativeAccounts.set(address, { free: 3n, frozen: 0n });
+		mocks.failingPallets.add("Assets");
+		const nativeId = getBalanceId({ address, tokenId: "native::pah" });
+
+		await expect(
+			discoverBalances([
+				{ address, tokenId: "native::pah" },
+				{ address, tokenId: "asset::pah::1984" },
+			]),
+		).resolves.toBeUndefined();
+
+		expect(balancesStore$.value[nativeId]?.balance).toBe(3n);
+		mocks.failingPallets.delete("Assets");
+	});
+
+	it("skips chains an Ethereum account cannot hold balances on", async () => {
+		const getApiCallsBefore = mocks.getApiChainIds.length;
+		await discoverBalances([
+			{ address: `0x${"cd".repeat(20)}`, tokenId: "native::hydration" },
+		]);
+		expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual([]);
 	});
 });
 
@@ -215,8 +544,7 @@ describe("getBalance$ for an Ethereum account outside Asset Hub", () => {
 			);
 			expect(state).toEqual({ status: "loaded", balance: undefined });
 
-			// absence of a watcher can only be observed once the debounced pipeline settles
-			await new Promise((resolve) => setTimeout(resolve, 250));
+			await settle();
 
 			expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual([]);
 			expect(

@@ -12,12 +12,13 @@ export const TransactionSubmitButton: FC<TransactionSubmitButtonProps> = ({
 }) => {
 	const {
 		canSubmit,
+		submitGate,
 		isEthereumNetworkMismatch,
 		isSwitchingEthereumNetwork,
 		onSwitchEthereumNetwork,
 	} = useTransaction();
 
-	if (isEthereumNetworkMismatch) {
+	if (isEthereumNetworkMismatch && submitGate.status !== "closed") {
 		return (
 			<button
 				type="button"

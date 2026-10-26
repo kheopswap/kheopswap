@@ -4,12 +4,18 @@ import {
 	FormSummaryRow,
 	FormSummarySection,
 } from "../../components/FormSummary";
+import { Shimmer } from "../../components/Shimmer";
 import { Tokens } from "../../components/Tokens";
 import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
-import { ProtocolFeeValue, RouteValue } from "./routes/AmmPathValues";
+import { RateValue } from "./RateValue";
+import {
+	getPathSteps,
+	ProtocolFeeValue,
+	RouteValue,
+} from "./routes/AmmPathValues";
 import type { PathLiquidity } from "./routes/ammPath";
 import { XcmSwapSummary } from "./routes/xcmSwap/XcmSwapSummary";
 import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
@@ -43,7 +49,7 @@ const PoolReservesValue: FC<{ liquidity: PathLiquidity | null }> = ({
 };
 
 const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
-	const { tokenIn, tokenOut, transaction } = useSwap();
+	const { tokenIn, tokenOut, transaction, isLoadingCall } = useSwap();
 	const {
 		route,
 		minPlancksOut,
@@ -58,10 +64,11 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 	return (
 		<FormSummary>
 			<FormSummarySection>
+				<FormSummaryRow label="Rate" value={<RateValue />} />
 				{route && route.path.length > 1 ? (
 					<FormSummaryRow
 						label="Route"
-						value={<RouteValue path={route.path} />}
+						value={<RouteValue steps={getPathSteps(route.path)} />}
 					/>
 				) : (
 					<FormSummaryRow
@@ -76,7 +83,7 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 					}
 				/>
 			</FormSummarySection>
-			{!!call && (
+			{(!!call || isLoadingCall) && (
 				<>
 					<FormSummarySection>
 						<FormSummaryRow
@@ -96,22 +103,30 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 					<FormSummarySection>
 						<FormSummaryRow
 							label="Simulation"
-							value={<TransactionDryRunSummaryValue />}
+							value={
+								call ? (
+									<TransactionDryRunSummaryValue />
+								) : (
+									<Shimmer className="h-4">Success</Shimmer>
+								)
+							}
 						/>
 						<FormSummaryRow
 							label="Transaction fee"
 							value={<TransactionFeeSummaryValue />}
 						/>
-						<FormSummaryRow
-							label="Service fee"
-							value={
-								!!tokenIn &&
-								isBigInt(minPlancksOut) &&
-								isBigInt(appCommission) && (
-									<Tokens plancks={appCommission} token={tokenIn} />
-								)
-							}
-						/>
+						{appCommission !== 0n && (
+							<FormSummaryRow
+								label="Service fee"
+								value={
+									!!tokenIn &&
+									isBigInt(minPlancksOut) &&
+									isBigInt(appCommission) && (
+										<Tokens plancks={appCommission} token={tokenIn} />
+									)
+								}
+							/>
+						)}
 						<FormSummaryRow
 							label="Protocol fee"
 							value={

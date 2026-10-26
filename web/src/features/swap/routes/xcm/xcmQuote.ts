@@ -3,8 +3,15 @@ import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
-import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
+import { KNOWN_TOKENS_LIST } from "../../../../registry/tokens/tokens";
+import type {
+	Token,
+	TokenAmount,
+	TokenId,
+} from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
+import { mergeTokenAmounts } from "../../../../utils/mergeTokenAmounts";
+import { plancksToTokens } from "../../../../utils/plancks";
 import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
@@ -40,10 +47,16 @@ export type DestinationDryRun = {
 export type XcmQuoteFailure =
 	| { kind: "origin-unavailable" }
 	| { kind: "origin-failed"; reason: string }
+	| { kind: "origin-withdraw-failed" }
 	| { kind: "origin-rejected"; xcmError: string }
 	| { kind: "message-not-forwarded" }
 	| { kind: "destination-unavailable" }
-	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
+	| {
+			kind: "destination-rejected";
+			reason: string;
+			assetsTrapped: boolean;
+			trappedPlancks: bigint | null;
+	  }
 	| { kind: "destination-price-moved" }
 	| { kind: "nothing-deposited" }
 	| { kind: "delivery-fee-unavailable" }
@@ -51,6 +64,24 @@ export type XcmQuoteFailure =
 	| { kind: "below-destination-fee" }
 	| { kind: "leftovers-unreceivable" }
 	| { kind: "call-unavailable" };
+
+export const getFeeProbePlancks = ({
+	existentialDeposit,
+	spendable,
+	withdrawals,
+}: {
+	existentialDeposit: bigint | null | undefined;
+	spendable: bigint | undefined;
+	withdrawals: bigint;
+}): bigint | undefined => {
+	if (!existentialDeposit) return undefined;
+	const share = spendable === undefined ? undefined : spendable / withdrawals;
+	const probe =
+		share !== undefined && share < existentialDeposit
+			? share
+			: existentialDeposit;
+	return probe > 0n ? probe : 1n;
+};
 
 export type XcmQuote = {
 	received: bigint;
@@ -66,9 +97,6 @@ type OriginLeg = { message: XcmVersionedXcm; sent: bigint };
 export type Parsed<T> =
 	| { success: true; value: T }
 	| { success: false; failure: XcmQuoteFailure };
-
-const INSUFFICIENT_BALANCE =
-	"Insufficient balance to cover the transfer and its fees";
 
 type OriginDispatchError = Extract<
 	Extract<OriginDryRun, { success: true }>["value"]["execution_result"],
@@ -86,7 +114,7 @@ const getOriginFailure = (error: OriginDispatchError): XcmQuoteFailure => {
 	const xcmError = error.value.value.value.error.type;
 	switch (xcmError) {
 		case "FailedToTransactAsset":
-			return { kind: "origin-failed", reason: INSUFFICIENT_BALANCE };
+			return { kind: "origin-withdraw-failed" };
 		case "NoDeal":
 			return {
 				kind: "origin-failed",
@@ -162,6 +190,25 @@ export const parseDeliveryFee = (deliveryFees: DeliveryFees): bigint | null => {
 	return fee;
 };
 
+type DestinationEvent = Extract<
+	DestinationDryRun,
+	{ success: true }
+>["value"]["emitted_events"][number];
+
+const getTrappedPlancks = (events: DestinationEvent[]): bigint | null => {
+	for (const event of events)
+		if (
+			event.type === "PolkadotXcm" &&
+			event.value.type === "AssetsTrapped" &&
+			event.value.value.assets.type === "V5"
+		)
+			return event.value.value.assets.value.reduce(
+				(sum, { fun }) => sum + (fun.type === "Fungible" ? fun.value : 0n),
+				0n,
+			);
+	return null;
+};
+
 export const parseDestinationDryRun = (
 	dryRun: DestinationDryRun,
 	target: XcmDepositTarget,
@@ -189,6 +236,7 @@ export const parseDestinationDryRun = (
 						event.type === "PolkadotXcm" &&
 						event.value.type === "AssetsTrapped",
 				),
+				trappedPlancks: getTrappedPlancks(emitted_events),
 			},
 		};
 
@@ -229,6 +277,50 @@ export const composeXcmQuote = (
 	},
 });
 
+export type XcmReceived = { plancks: bigint; isEstimate: boolean };
+
+export type XcmFee = TokenAmount & { isEstimate: boolean };
+
+const takeFee = (
+	arriving: bigint | undefined,
+	destinationFee: bigint | undefined,
+): bigint | undefined =>
+	arriving !== undefined &&
+	destinationFee !== undefined &&
+	arriving > destinationFee
+		? arriving - destinationFee
+		: undefined;
+
+export const estimateXcmReceived = ({
+	kind,
+	totalIn,
+	pathAmountOut,
+	lastDestinationFee,
+}: {
+	kind: XcmRoute["kind"];
+	totalIn: bigint;
+	pathAmountOut: bigint | undefined;
+	lastDestinationFee: bigint | undefined;
+}): bigint | undefined => {
+	switch (kind) {
+		case "xcm-transfer":
+			return takeFee(totalIn, lastDestinationFee);
+		case "xcm-swap":
+			return takeFee(pathAmountOut, lastDestinationFee ?? 0n);
+		case "xcm-destination-swap":
+			return pathAmountOut;
+	}
+};
+
+const ORIGIN_DISPATCH_FAILURES = new Set<XcmQuoteFailure["kind"]>([
+	"origin-failed",
+	"origin-withdraw-failed",
+	"origin-rejected",
+]);
+
+export const isOriginDispatchFailure = (failure: XcmQuoteFailure): boolean =>
+	ORIGIN_DISPATCH_FAILURES.has(failure.kind);
+
 export const describeXcmQuoteFailure = (
 	failure: XcmQuoteFailure,
 	route: Pick<XcmRoute, "origin" | "destination">,
@@ -240,6 +332,8 @@ export const describeXcmQuoteFailure = (
 			return `Could not simulate the transfer on ${origin}`;
 		case "origin-failed":
 			return failure.reason;
+		case "origin-withdraw-failed":
+			return `${origin} refuses to release this token from your account`;
 		case "origin-rejected":
 			return `${origin} would reject the transfer: ${failure.xcmError}`;
 		case "message-not-forwarded":
@@ -267,6 +361,47 @@ export const describeXcmQuoteFailure = (
 	}
 };
 
+export const getNewAccountMinimum = ({
+	sent,
+	trappedPlancks,
+	existentialDeposit,
+	destinationBalance,
+	isSufficient,
+}: {
+	sent: bigint;
+	trappedPlancks: bigint;
+	existentialDeposit: bigint;
+	destinationBalance: bigint;
+	isSufficient: boolean;
+}): bigint | null => {
+	if (!isSufficient || destinationBalance >= existentialDeposit) return null;
+	const keptFee = sent - trappedPlancks;
+	const isTrappedBelowDeposit = keptFee > 0n || sent < existentialDeposit;
+	return isTrappedBelowDeposit ? existentialDeposit + keptFee : null;
+};
+
+const MINIMUM_DISPLAY_DECIMALS = 4;
+
+const formatPlancksUp = (plancks: bigint, decimals: number) => {
+	const step = 10n ** BigInt(Math.max(decimals - MINIMUM_DISPLAY_DECIMALS, 0));
+	return plancksToTokens(((plancks + step - 1n) / step) * step, decimals);
+};
+
+export const describeNewAccountMinimum = ({
+	minimum,
+	existentialDeposit,
+	token,
+	destination,
+}: {
+	minimum: bigint;
+	existentialDeposit: bigint;
+	token: Pick<Token, "symbol" | "decimals">;
+	destination: XcmDestination;
+}): string =>
+	`Send at least ${formatPlancksUp(minimum, token.decimals)} ${token.symbol}: ${
+		getChainById(destination).name
+	} needs ${formatPlancksUp(existentialDeposit, token.decimals)} ${token.symbol} to open your account`;
+
 export const getXcmSubmitGate = ({
 	errorMessage,
 	isLoading,
@@ -282,7 +417,14 @@ export const getXcmSubmitGate = ({
 	return { status: "closed", reason: "Nothing to send yet" };
 };
 
-const HYDRATION_DOT_ASSET_ID = 5;
+const isRelayTokenOnHydration = (token: Token) =>
+	token.type === "hydration-asset" &&
+	token.location?.parents === 1 &&
+	token.location.interior.type === "Here";
+
+const HYDRATION_RELAY_TOKEN_ID = KNOWN_TOKENS_LIST.find(
+	isRelayTokenOnHydration,
+)?.id;
 
 export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 	switch (origin) {
@@ -295,21 +437,22 @@ export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 		case "wpeople":
 			return getTokenId({ type: "native", chainId: origin });
 		case "hydration":
-			return getTokenId({
-				type: "hydration-asset",
-				chainId: origin,
-				assetId: HYDRATION_DOT_ASSET_ID,
-			});
+			if (!HYDRATION_RELAY_TOKEN_ID)
+				throw new Error("Hydration has no relay token");
+			return HYDRATION_RELAY_TOKEN_ID;
 	}
 };
 
-export const getXcmFeeParts = (
-	deliveryFee: TokenAmount | undefined,
-	quote: XcmQuote | undefined,
+export const getTotalDebited = (
+	spendings: CallSpendings,
+	transactionFee: TokenAmount | undefined,
 ): TokenAmount[] =>
-	[deliveryFee, quote?.destinationFee].filter(
-		(part): part is TokenAmount => !!part?.plancks,
-	);
+	mergeTokenAmounts([
+		...Object.entries(spendings).flatMap(([tokenId, spent]) =>
+			spent ? [{ tokenId, plancks: spent.plancks }] : [],
+		),
+		...(transactionFee ? [transactionFee] : []),
+	]);
 
 export const getXcmCallSpendings = ({
 	tokenIdIn,

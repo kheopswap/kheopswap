@@ -1,6 +1,7 @@
 import type { FC, PropsWithChildren } from "react";
-import { Navigate, Outlet, useParams } from "react-router";
+import { Outlet, useParams } from "react-router";
 import { ChainInitNotification } from "../../components/ChainInitNotification";
+import { NotFoundPage } from "../../components/NotFoundPage";
 import { getRelayIds } from "../../registry/chains/chains";
 
 const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
@@ -10,7 +11,13 @@ const RelayPathCheck: FC<PropsWithChildren> = ({ children }) => {
 	return validRelayIds.includes(relayId as (typeof validRelayIds)[number]) ? (
 		children
 	) : (
-		<Navigate to="/polkadot/swap" replace />
+		<NotFoundPage
+			title="Network not found"
+			backTo={{ to: "/polkadot/swap", label: "Go to Polkadot" }}
+			minimalHeader
+		>
+			{relayId} is not a supported network.
+		</NotFoundPage>
 	);
 };
 

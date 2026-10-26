@@ -19,9 +19,8 @@ const PortfolioTabTitle = () => {
 	const { accounts } = usePortfolio();
 
 	const title = useMemo(
-		() => (accounts?.length ? "Portfolio" : "Tokens"),
-		// accounts can be undefined in dev mode when the app is hot reloaded
-		[accounts?.length],
+		() => (accounts.length ? "Portfolio" : "Tokens"),
+		[accounts.length],
 	);
 
 	return <TabTitle title={title} />;

@@ -3,7 +3,6 @@ import { getChainById } from "../registry/chains/chains";
 import type { ChainId } from "../registry/chains/types";
 import type { TokenId } from "../registry/tokens/types";
 import { getAddressFromAccountField } from "../utils/getAddressFromAccountField";
-import { logger } from "../utils/logger";
 import { useFeeTokens } from "./useFeeTokens";
 import { useNativeToken } from "./useNativeToken";
 import { useSetting } from "./useSetting";
@@ -23,8 +22,6 @@ const getKey = (
 };
 
 export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
-	const stop = logger.cumulativeTimer("useFeeToken");
-
 	const [feeTokensSettings, setFeeTokensSettings] = useSetting("feeTokens");
 
 	const address = useMemo(
@@ -62,8 +59,6 @@ export const useFeeToken = ({ accountId, chainId }: UsePreferredFeeToken) => {
 		);
 		return token ?? feeTokens?.[0] ?? nativeToken;
 	}, [feeTokensSettings, key, feeTokens, nativeToken, chainId]);
-
-	stop();
 
 	return { feeToken, feeTokens, setFeeTokenId, isLoading };
 };

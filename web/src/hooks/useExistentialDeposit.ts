@@ -6,7 +6,6 @@ type UseExistentialDepositProps = {
 	tokenId: TokenId | null | undefined;
 };
 
-// TODO leverage useTokenInfo
 export const useExistentialDeposit = ({
 	tokenId,
 }: UseExistentialDepositProps) => {

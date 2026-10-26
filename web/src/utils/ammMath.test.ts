@@ -4,7 +4,6 @@ import {
 	getLpFeeUnit,
 	getMaxSwapAmount,
 	getMinAmountOut,
-	getPriceImpact,
 	splitAppCommission,
 } from "./ammMath";
 
@@ -139,34 +138,6 @@ describe("getLpFeeUnit", () => {
 	});
 });
 
-describe("getPriceImpact", () => {
-	it("returns zero when spot and actual are equal", () => {
-		expect(getPriceImpact(1000n, 1000n)).toBe(-0);
-	});
-
-	it("returns negative ratio when actual is less than spot", () => {
-		// spot=10000, actual=9800 → impact = -(10000*(10000-9800))/10000 / 10000
-		// = -(10000*200)/10000 / 10000 = -200/10000 = -0.02
-		expect(getPriceImpact(10000n, 9800n)).toBe(-0.02);
-	});
-
-	it("returns positive ratio when actual exceeds spot (edge case)", () => {
-		// If actual > spot, impact should be positive
-		expect(getPriceImpact(10000n, 10200n)).toBeGreaterThan(0);
-	});
-
-	it("returns 0 when spot is 0", () => {
-		expect(getPriceImpact(0n, 100n)).toBe(0);
-	});
-
-	it("handles large values without overflow", () => {
-		const spot = 10n ** 18n;
-		const actual = spot - spot / 100n; // 1% impact
-		const impact = getPriceImpact(spot, actual);
-		expect(impact).toBeCloseTo(-0.01, 2);
-	});
-});
-
 describe("getMinAmountOut", () => {
 	it("reduces output by the slippage tolerance", () => {
 		const plancksOut = 10000n;
@@ -286,6 +257,18 @@ describe("getMaxSwapAmount", () => {
 		).toBe(balance);
 	});
 
+	it("offers nothing when the reserve exceeds the balance", () => {
+		expect(
+			getMaxSwapAmount({
+				balance: ed,
+				tokenIn: DOT,
+				existentialDeposit: ed,
+				fee: { tokenId: DOT.id, plancks: 100_000_000n },
+				deliveryFee: undefined,
+			}),
+		).toBe(0n);
+	});
+
 	it("keeps only the ED of a native token when another token pays the fee", () => {
 		expect(
 			getMaxSwapAmount({
@@ -296,18 +279,6 @@ describe("getMaxSwapAmount", () => {
 				deliveryFee: undefined,
 			}),
 		).toBe(balance - ed);
-	});
-
-	it("returns the full balance when the reserve exceeds it", () => {
-		expect(
-			getMaxSwapAmount({
-				balance: 100n,
-				tokenIn: DOT,
-				existentialDeposit: 500n,
-				fee: { tokenId: DOT.id, plancks: 1000n },
-				deliveryFee: undefined,
-			}),
-		).toBe(100n);
 	});
 
 	it("returns zero when the balance exactly equals the reserve", () => {

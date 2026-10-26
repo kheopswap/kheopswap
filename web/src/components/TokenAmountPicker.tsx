@@ -17,7 +17,6 @@ import { StablePrice } from "./StablePrice";
 import { Styles } from "./styles";
 import { TokenSelectButton } from "./TokenSelectButton";
 import { Tokens } from "./Tokens";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
 
 const TokenInput = forwardRef<
 	HTMLInputElement,
@@ -51,6 +50,13 @@ const TokenInput = forwardRef<
 	return <input ref={ref} {...props} />;
 });
 
+const getAmountTextSize = (value: unknown) => {
+	const length = String(value ?? "").length;
+	if (length <= 8) return "text-[28px]";
+	if (length <= 11) return "text-[22px]";
+	return "text-[18px]";
+};
+
 export type TokenAmountPickerProps = Partial<
 	DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 >;
@@ -63,9 +69,10 @@ export const TokenAmountPicker: FC<{
 	plancks: bigint | null | undefined;
 	isLoading: boolean;
 	errorMessage?: string | null;
+	hint?: string | null;
 	disableTokenButton?: boolean;
 	onTokenChange: (tokenId: TokenId) => void;
-	balance?: bigint | null | undefined; // TODO remove optional
+	balance?: bigint | null | undefined;
 	isLoadingBalance?: boolean;
 	onMaxClick?: () => void;
 	isComputingValue?: boolean;
@@ -78,6 +85,7 @@ export const TokenAmountPicker: FC<{
 	isLoading,
 	plancks,
 	errorMessage,
+	hint,
 	onTokenChange,
 	disableTokenButton,
 
@@ -112,7 +120,8 @@ export const TokenAmountPicker: FC<{
 					autoCorrect="off"
 					aria-label={inputLabel ?? "Token amount"}
 					className={cn(
-						"w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left font-mono text-[28px] font-medium tracking-[-0.02em] text-text placeholder:text-faint focus:border-none focus:outline-hidden focus:ring-0",
+						"h-[42px] w-full min-w-0 grow border-none bg-transparent py-0 pr-2 text-left font-mono font-medium tracking-[-0.02em] text-text placeholder:text-faint focus:border-none focus:outline-hidden focus:ring-0",
+						getAmountTextSize(inputProps.value),
 						isComputingValue && "invisible",
 					)}
 				/>
@@ -134,26 +143,17 @@ export const TokenAmountPicker: FC<{
 					</Shimmer>
 				)}
 			</div>
-			<div className="flex w-full items-center overflow-hidden text-xs">
-				<div
-					className={cn(
-						"grow truncate",
-						!!errorMessage && "text-error",
-						isComputingValue && "invisible",
-					)}
-				>
+			<div className="flex w-full items-start gap-2 text-xs">
+				<div className={cn("min-w-0 grow", isComputingValue && "invisible")}>
 					{errorMessage ? (
-						<Tooltip>
-							<TooltipTrigger className={cn("text-error")}>
-								{errorMessage}
-							</TooltipTrigger>
-							<TooltipContent>{errorMessage}</TooltipContent>
-						</Tooltip>
+						<p className="text-error">{errorMessage}</p>
+					) : hint ? (
+						<p className="text-muted">{hint}</p>
 					) : (
 						<StablePrice
 							plancks={plancks}
 							tokenId={tokenId}
-							className="text-muted"
+							className="block truncate text-muted"
 						/>
 					)}
 				</div>

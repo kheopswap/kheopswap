@@ -78,4 +78,17 @@ describe("matchSwapHops", () => {
 		if (!firstHop) throw new Error("fixture has no swap");
 		expect(matchSwapHops([firstHop], path, usdcToUsdt.swapAmount)).toBeNull();
 	});
+
+	it("skips a credit event whose payload has an unknown shape", () => {
+		const malformed: TxEvents[number] = {
+			type: "AssetConversion",
+			value: {
+				type: "SwapCreditExecuted",
+				value: { amount_in: usdcToUsdt.swapAmount, amount_out: 1n },
+			},
+		};
+		expect(() =>
+			matchSwapHops([malformed, ...originEvents], path, usdcToUsdt.swapAmount),
+		).not.toThrow();
+	});
 });

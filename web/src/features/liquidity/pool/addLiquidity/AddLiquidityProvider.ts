@@ -1,13 +1,20 @@
 import { useCallback, useMemo, useState } from "react";
 import { useExistentialDeposit } from "../../../../hooks/useExistentialDeposit";
 import { provideContext } from "../../../../utils/provideContext";
+import {
+	getLiquidityToAdd,
+	getMissingLiquiditySide,
+	type LiquidityAmounts,
+	NO_LIQUIDITY_AMOUNTS,
+} from "../../liquidityAmounts";
+import type { MaxLimit } from "../../maxLiquidity";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidityExtrinsic } from "./useAddLiquidityExtrinsic";
 
 const useAddLiquidityProvider = () => {
-	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(
-		null,
-	);
+	const [amounts, setAmounts] =
+		useState<LiquidityAmounts>(NO_LIQUIDITY_AMOUNTS);
+	const [maxLimit, setMaxLimit] = useState<MaxLimit | null>(null);
 
 	const {
 		assetHub,
@@ -17,6 +24,19 @@ const useAddLiquidityProvider = () => {
 		resolvedSubstrateAddress,
 		lpSlippage,
 	} = useLiquidityPoolPage();
+
+	const typedLiquidity = useMemo(
+		() =>
+			nativeToken && assetToken
+				? getLiquidityToAdd(amounts, [
+						nativeToken.decimals,
+						assetToken.decimals,
+					])
+				: null,
+		[amounts, nativeToken, assetToken],
+	);
+	const missingSide = getMissingLiquiditySide(typedLiquidity);
+	const liquidityToAdd = missingSide === null ? typedLiquidity : null;
 
 	const minLiquidity = useMemo<[bigint, bigint] | null>(() => {
 		if (!liquidityToAdd) return null;
@@ -47,14 +67,32 @@ const useAddLiquidityProvider = () => {
 		tokenId: assetToken?.id,
 	});
 
+	const { data: fakeCall } = useAddLiquidityExtrinsic({
+		chainId: assetHub.id,
+		tokenIdNative: nativeToken?.id,
+		tokenIdAsset: assetToken?.id,
+		amountNative: nativeExistentialDeposit ?? undefined,
+		amountAsset: assetExistentialDeposit ?? undefined,
+		amountNativeMin: nativeExistentialDeposit ?? undefined,
+		amountAssetMin: assetExistentialDeposit ?? undefined,
+		dest: resolvedSubstrateAddress,
+		createPool: !pool,
+	});
+
 	const onReset = useCallback(() => {
-		setLiquidityToAdd(null);
+		setAmounts(NO_LIQUIDITY_AMOUNTS);
+		setMaxLimit(null);
 	}, []);
 
 	return {
 		call,
+		fakeCall,
+		amounts,
+		setAmounts,
+		maxLimit,
+		setMaxLimit,
 		liquidityToAdd,
-		setLiquidityToAdd,
+		missingSide,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 		onReset,

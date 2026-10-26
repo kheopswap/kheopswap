@@ -40,5 +40,6 @@ export const balancesStore$ = new BehaviorSubject<
 >(load());
 stop();
 
-// save after updates
 balancesStore$.pipe(debounceTime(1_000)).subscribe(save);
+
+export const flushBalancesStore = () => save(balancesStore$.value);

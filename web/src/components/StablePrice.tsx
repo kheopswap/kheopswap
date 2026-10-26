@@ -1,49 +1,71 @@
-import { type FC, type ReactNode, useMemo } from "react";
-import { useStablePrice } from "../hooks/useStablePrice";
+import type { FC } from "react";
+import { of } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
+import { getHoldingStablePlancks$ } from "../state/prices";
+import { useRelayChains } from "../state/relay";
+import { bindSerialized } from "../utils/bindSerialized";
 import { cn } from "../utils/cn";
-import { formatDecimals } from "../utils/formatDecimals";
+import { UNPRICED } from "../utils/getHoldingValuation";
+import { hasValueLine, useIsValuedAsStable } from "../utils/hasValueLine";
+import { isBigInt } from "../utils/isBigInt";
 import { Shimmer } from "./Shimmer";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip/Tooltip";
+import { StableValue } from "./StableValue";
+import { getShownValuationStatus, ValuationLabel } from "./ValuationLabel";
+
+const useAmountValuation = bindSerialized(
+	(tokenId: TokenId | null, plancks: bigint | null) =>
+		tokenId && isBigInt(plancks)
+			? getHoldingStablePlancks$(tokenId, plancks)
+			: of({ ...UNPRICED, isLoadingStablePlancks: false }),
+	(tokenId, plancks) => ({
+		...UNPRICED,
+		isLoadingStablePlancks: !!tokenId && isBigInt(plancks),
+	}),
+);
 
 export const StablePrice: FC<{
 	plancks: bigint | null | undefined;
 	tokenId: TokenId | null | undefined;
-	prefix?: ReactNode;
 	className?: string;
-}> = ({ plancks, tokenId, className, prefix }) => {
-	const { price, isLoading, stableToken, token } = useStablePrice({
-		tokenId,
-		plancks,
-	});
-
-	const hide = useMemo(
-		() => !stableToken || !token || typeof plancks !== "bigint" || !price,
-		[plancks, price, stableToken, token],
+}> = ({ plancks, tokenId, className }) => {
+	const { stableToken } = useRelayChains();
+	const isValuedAsStable = useIsValuedAsStable(tokenId ?? undefined);
+	const { isLoadingStablePlancks, ...valuation } = useAmountValuation(
+		tokenId ?? null,
+		plancks ?? null,
 	);
 
-	if (hide || isLoading)
+	const labelStatus = getShownValuationStatus({
+		status: valuation.status,
+		tokenPlancks: plancks ?? null,
+		subject: "amount",
+		isLoadingStablePlancks,
+	});
+
+	const showsValueLine =
+		isBigInt(plancks) && hasValueLine(isValuedAsStable, plancks);
+
+	if (showsValueLine && labelStatus)
+		return <ValuationLabel status={labelStatus} subject="amount" />;
+
+	if (showsValueLine && valuation.status === "priced")
 		return (
-			<Shimmer
-				className={cn("inline-block font-mono", className, hide && "invisible")}
-			>
-				{`0000 ${stableToken?.symbol ?? "USDC"}`}
-			</Shimmer>
+			<StableValue
+				stableToken={stableToken}
+				plancks={valuation.stablePlancks}
+				className={className}
+			/>
 		);
 
 	return (
-		<Tooltip>
-			<TooltipTrigger render={<span />}>
-				<span className={cn("whitespace-nowrap font-mono", className)}>
-					{prefix}
-					{formatDecimals(price, 2)} {stableToken?.symbol}
-				</span>
-			</TooltipTrigger>
-			{price && (
-				<TooltipContent>
-					{price} {stableToken?.symbol}
-				</TooltipContent>
+		<Shimmer
+			className={cn(
+				"inline-block font-mono",
+				className,
+				!(showsValueLine && isLoadingStablePlancks) && "invisible",
 			)}
-		</Tooltip>
+		>
+			{`0000 ${stableToken.symbol}`}
+		</Shimmer>
 	);
 };

@@ -46,7 +46,7 @@ const SlippageDrawerContent: FC<{ onClose: () => void }> = ({ onClose }) => {
 			<p className="text-sm text-muted">
 				Slippage tolerance setting protects you from sudden price changes by
 				reverting your transaction if price changes unfavorably between the
-				moment you submit your transaction, and the moment it&quot;s actually
+				moment you submit your transaction, and the moment it&apos;s actually
 				executed.
 			</p>
 			<div>

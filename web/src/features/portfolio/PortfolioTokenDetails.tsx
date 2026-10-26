@@ -1,99 +1,31 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router";
-import { AccountIcon } from "../../components/AccountIcon";
-import { AccountSelectDrawer } from "../../components/AccountSelectDrawer";
 import { AddressDisplay } from "../../components/AddressDisplay";
-import { Pulse } from "../../components/Pulse";
 import { Shimmer } from "../../components/Shimmer";
 import { Styles } from "../../components/styles";
-import { Tokens } from "../../components/Tokens";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "../../components/tooltip/Tooltip";
 import { useNativeToken } from "../../hooks/useNativeToken";
-import { useOpenClose } from "../../hooks/useOpenClose";
 import { usePoolByTokenId } from "../../hooks/usePoolByTokenId";
 import { useTokenChain } from "../../hooks/useTokenChain";
-import { useTokenInfo } from "../../hooks/useTokenInfo";
 import type { DisplayProperty } from "../../registry/tokens/helpers";
 import { getTokenDisplayProperties } from "../../registry/tokens/helpers";
 import type {
-	Token,
 	TokenAsset,
 	TokenForeignAsset,
-	TokenInfo,
-	TokenInfoAsset,
-	TokenInfoForeignAsset,
 } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
-import type {
-	BalanceWithStable,
-	BalanceWithStableSummary,
-} from "../../types/balances";
 import { cn } from "../../utils/cn";
-import { getAccountName } from "../../utils/getAccountName";
-import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
 import { getTokenTypeLabel } from "../../utils/getTokenTypeLabel";
-import { isApplicableBalance } from "../../utils/isApplicableBalance";
-import { isBigInt } from "../../utils/isBigInt";
 import { shortenAddress } from "../../utils/shortenAddress";
-import { sortBigInt } from "../../utils/sortBigInt";
-import { usePortfolio } from "./PortfolioProvider";
+import { TokenDetailsBalances } from "./TokenDetailsBalances";
+import { TokenDetailsRow, TokenDetailsRowValue } from "./TokenDetailsRow";
+import { TokenInfoRows } from "./TokenInfoRows";
 import type { PortfolioRowData } from "./types";
-
-const TokenDetailsRow: FC<{ label: ReactNode; children?: ReactNode }> = ({
-	label,
-	children,
-}) => (
-	<div className="flex w-full justify-between gap-4 overflow-hidden items-center h-7">
-		<div className="text-muted">{label}</div>
-		<div className="overflow-hidden">{children}</div>
-	</div>
-);
-
-const TokenDetailsRowValue: FC<
-	BalanceWithStableSummary & {
-		token: Token;
-	}
-> = ({
-	token,
-	tokenPlancks,
-	isLoadingStablePlancks,
-	stablePlancks,
-	isLoadingTokenPlancks,
-	isInitializing,
-}) => {
-	const { stableToken } = useRelayChains();
-
-	if (isInitializing) return null;
-
-	return (
-		<div className="flex gap-2 whitespace-nowrap text-text">
-			<Tokens
-				token={token}
-				plancks={tokenPlancks ?? 0n}
-				pulse={isLoadingTokenPlancks}
-			/>
-			<span
-				className={cn(
-					"text-muted",
-					!isBigInt(stablePlancks) && "hidden",
-					token.id === stableToken.id && "hidden",
-				)}
-			>
-				<Tokens
-					token={stableToken}
-					plancks={stablePlancks ?? 0n}
-					digits={2}
-					pulse={isLoadingStablePlancks}
-				/>
-			</span>
-		</div>
-	);
-};
 
 const DisplayPropertyValue: FC<DisplayProperty> = ({ value, format, url }) => {
 	const formatted = useMemo(() => {
@@ -149,255 +81,6 @@ const LiquidityPoolValue: FC<{ token: TokenAsset | TokenForeignAsset }> = ({
 	);
 };
 
-const TotalSupplyRow: FC<{
-	token: Token;
-	tokenInfo: TokenInfo | undefined;
-	isLoading: boolean;
-}> = ({ token, tokenInfo, isLoading }) => (
-	<TokenDetailsRow label="Total Supply">
-		{tokenInfo ? (
-			<Tokens plancks={tokenInfo.supply} token={token} pulse={isLoading} />
-		) : (
-			<Shimmer>000 TKN</Shimmer>
-		)}
-	</TokenDetailsRow>
-);
-
-type TokenInfoAssetsPallet = TokenInfoAsset | TokenInfoForeignAsset;
-
-const isTokenInfoAssetsPallet = (
-	tokenInfo: TokenInfo | undefined,
-): tokenInfo is TokenInfoAssetsPallet =>
-	tokenInfo?.type === "asset" || tokenInfo?.type === "foreign-asset";
-
-const AssetsPalletInfoRows: FC<{
-	token: TokenAsset | TokenForeignAsset;
-	tokenInfo: TokenInfoAssetsPallet | undefined;
-	isLoading: boolean;
-}> = ({ token, tokenInfo, isLoading }) => {
-	const chain = useTokenChain({ tokenId: token.id });
-
-	return (
-		<>
-			<TotalSupplyRow
-				token={token}
-				tokenInfo={tokenInfo}
-				isLoading={isLoading}
-			/>
-			<TokenDetailsRow label="Holders">
-				{tokenInfo ? (
-					<Pulse as="span" pulse={isLoading} className="font-mono">
-						{tokenInfo.accounts}
-					</Pulse>
-				) : (
-					<Shimmer>00000</Shimmer>
-				)}
-			</TokenDetailsRow>
-			<TokenDetailsRow label="Status">
-				{tokenInfo ? (
-					<Pulse as="span" pulse={isLoading}>
-						{tokenInfo.status}
-					</Pulse>
-				) : (
-					<Shimmer>Live</Shimmer>
-				)}
-			</TokenDetailsRow>
-			<TokenDetailsRow label="Owner">
-				{tokenInfo ? (
-					<AddressDisplay
-						address={tokenInfo.owner}
-						url={getBlockExplorerUrl(
-							chain?.blockExplorerUrl,
-							tokenInfo.owner,
-							"account",
-						)}
-						pulse={isLoading}
-						iconClassName="size-5"
-					/>
-				) : (
-					<Shimmer>0xdeadbeef...deadbeef</Shimmer>
-				)}
-			</TokenDetailsRow>
-			{tokenInfo && tokenInfo.admin !== tokenInfo?.owner && (
-				<TokenDetailsRow label="Admin">
-					<AddressDisplay
-						address={tokenInfo.admin}
-						url={getBlockExplorerUrl(
-							chain?.blockExplorerUrl,
-							tokenInfo.admin,
-							"account",
-						)}
-						iconClassName="size-5"
-						pulse={isLoading}
-					/>
-				</TokenDetailsRow>
-			)}
-			{tokenInfo && tokenInfo.issuer !== tokenInfo?.owner && (
-				<TokenDetailsRow label="Issuer">
-					<AddressDisplay
-						address={tokenInfo.issuer}
-						url={getBlockExplorerUrl(
-							chain?.blockExplorerUrl,
-							tokenInfo.issuer,
-							"account",
-						)}
-						iconClassName="size-5"
-						pulse={isLoading}
-					/>
-				</TokenDetailsRow>
-			)}
-			{tokenInfo && tokenInfo.freezer !== tokenInfo?.owner && (
-				<TokenDetailsRow label="Freezer">
-					<AddressDisplay
-						address={tokenInfo.freezer}
-						url={getBlockExplorerUrl(
-							chain?.blockExplorerUrl,
-							tokenInfo.freezer,
-							"account",
-						)}
-						iconClassName="size-5"
-						pulse={isLoading}
-					/>
-				</TokenDetailsRow>
-			)}
-		</>
-	);
-};
-
-const TokenInfoRows: FC<{ token: Token }> = ({ token }) => {
-	const { data: tokenInfo, isLoading } = useTokenInfo({ tokenId: token.id });
-
-	switch (token.type) {
-		case "native":
-		case "hydration-asset":
-			return (
-				<TotalSupplyRow
-					token={token}
-					tokenInfo={tokenInfo}
-					isLoading={isLoading}
-				/>
-			);
-		case "asset":
-		case "foreign-asset":
-			return (
-				<AssetsPalletInfoRows
-					token={token}
-					tokenInfo={isTokenInfoAssetsPallet(tokenInfo) ? tokenInfo : undefined}
-					isLoading={isLoading}
-				/>
-			);
-		case "pool-asset":
-			return null;
-	}
-};
-
-const sortBalances = (a: BalanceWithStable, b: BalanceWithStable) => {
-	if (isBigInt(a.tokenPlancks) && isBigInt(b.tokenPlancks))
-		return sortBigInt(a.tokenPlancks, b.tokenPlancks, true);
-	if (a.tokenPlancks && !b.tokenPlancks) return -1;
-	if (!a.tokenPlancks && b.tokenPlancks) return 1;
-	return 0;
-};
-
-const Balances: FC<{ token: Token }> = ({ token }) => {
-	const { stableToken } = useRelayChains();
-	const { accounts, balances, isLoading } = usePortfolio();
-	const { open, close, isOpen } = useOpenClose();
-
-	const rows = useMemo(
-		() =>
-			accounts
-				.flatMap((account) => {
-					const balance = balances.find(
-						(b) => b.tokenId === token.id && b.address === account.address,
-					);
-					return balance && isApplicableBalance(balance)
-						? [{ account, accountName: getAccountName(account), balance }]
-						: [];
-				})
-				.sort((a, b) => sortBalances(a.balance, b.balance)),
-		[accounts, balances, token.id],
-	);
-
-	return (
-		<div>
-			{rows.length ? (
-				<div className="flex flex-col gap-1 text-sm">
-					{rows.map(({ account, accountName, balance }) => (
-						<div
-							key={account.id}
-							className={cn(
-								"flex min-h-12 items-center gap-4 rounded-control bg-surface-2 px-3.5 py-2",
-								!balance.tokenPlancks && "opacity-50",
-							)}
-						>
-							<div className="flex grow items-center gap-2">
-								<AccountIcon className="size-6" account={account} />
-								<div className="grow">
-									{accountName ?? shortenAddress(account.address)}
-								</div>
-							</div>
-							<div className="flex shrink-0 flex-col items-end gap-0.5">
-								<div className="text-sm">
-									{isBigInt(balance.tokenPlancks) ? (
-										<Tokens
-											token={token}
-											plancks={balance.tokenPlancks}
-											pulse={balance.isLoadingTokenPlancks}
-										/>
-									) : (
-										<Shimmer>
-											<Tokens token={token} plancks={0n} />
-										</Shimmer>
-									)}
-								</div>
-
-								{stableToken.id !== token.id &&
-									(isBigInt(balance.stablePlancks) ||
-										balance.isLoadingStablePlancks) && (
-										<div className="text-xs text-muted">
-											{isBigInt(balance.stablePlancks) ? (
-												<Tokens
-													token={stableToken}
-													plancks={balance.stablePlancks}
-													pulse={balance.isLoadingStablePlancks}
-													digits={2}
-												/>
-											) : (
-												<Shimmer
-													className={isLoading ? "visible" : "invisible"}
-												>
-													<Tokens token={token} plancks={0n} digits={2} />
-												</Shimmer>
-											)}
-										</div>
-									)}
-							</div>
-						</div>
-					))}
-				</div>
-			) : (
-				<div className="my-4 rounded-control bg-surface-2 p-4 text-muted">
-					<button
-						type="button"
-						onClick={open}
-						className="font-medium text-text hover:text-accent"
-					>
-						Connect your accounts
-					</button>{" "}
-					to browse your balances.
-				</div>
-			)}
-			<AccountSelectDrawer
-				title={"Connect"}
-				isOpen={isOpen}
-				onDismiss={close}
-				ownedOnly
-			/>
-		</div>
-	);
-};
-
 export const TokenDetails: FC<{ row: PortfolioRowData }> = ({ row }) => {
 	const { token, balance, price, tvl } = row;
 	const { assetHub } = useRelayChains();
@@ -438,8 +121,8 @@ export const TokenDetails: FC<{ row: PortfolioRowData }> = ({ row }) => {
 				</TokenDetailsRow>
 			) : null}
 			<TokenDetailsRow label="Price">
-				{price?.stablePlancks ? (
-					<TokenDetailsRowValue {...price} token={nativeToken} />
+				{price?.tokenPlancks ? (
+					<TokenDetailsRowValue {...price} token={nativeToken} isPrice />
 				) : (
 					<span className="opacity-50">N/A</span>
 				)}
@@ -456,7 +139,7 @@ export const TokenDetails: FC<{ row: PortfolioRowData }> = ({ row }) => {
 				</TokenDetailsRow>
 			)}
 
-			<Balances token={token} />
+			<TokenDetailsBalances token={token} />
 		</div>
 	);
 };

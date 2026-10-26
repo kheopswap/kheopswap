@@ -1,13 +1,9 @@
 import { pickBy } from "lodash-es";
 import { useCallback, useEffect, useMemo } from "react";
-import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
 import { useBalance } from "../../hooks/useBalance";
 import { useCanAccountReceive } from "../../hooks/useCanAccountReceive";
-import { useEstimateFee } from "../../hooks/useEstimateFee";
 import { useExistentialDeposit } from "../../hooks/useExistentialDeposit";
-import { useFeeToken } from "../../hooks/useFeeToken";
 import { useNativeToken } from "../../hooks/useNativeToken";
-import { useNonce } from "../../hooks/useNonce";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
 import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
 import { useTokenChain } from "../../hooks/useTokenChain";
@@ -17,12 +13,9 @@ import { TRANSFERABLE_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import { getAddressFromAccountField } from "../../utils/getAddressFromAccountField";
-import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
-import { getTxOptions } from "../../utils/getTxOptions";
-import { isNumber } from "../../utils/isNumber";
-import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
+import { tokensToPlancks } from "../../utils/plancks";
 import { provideContext } from "../../utils/provideContext";
-import type { TransferFormInputs } from "./schema";
+import { TRANSFER_DRAFT_FIELDS, type TransferFormInputs } from "./schema";
 import { useTransferExtrinsic } from "./useTransferExtrinsic";
 
 const useTransferProvider = () => {
@@ -32,15 +25,17 @@ const useTransferProvider = () => {
 	const baseDefaults = useMemo<TransferFormInputs>(
 		() => ({
 			from: "",
-			tokenId: (defaultToken?.id ?? "") as TokenId,
+			tokenId: defaultToken?.id ?? "",
 			amount: "",
 			to: "",
 		}),
 		[defaultToken?.id],
 	);
 
-	const [formData, setFormData] =
-		usePersistedFormDraft<TransferFormInputs>(baseDefaults);
+	const [formData, setFormData] = usePersistedFormDraft(
+		baseDefaults,
+		TRANSFER_DRAFT_FIELDS,
+	);
 
 	const { data: assetHubTokens, isLoading: isLoadingTokens } =
 		useTokensByChainId({ chainId: assetHub.id });
@@ -67,7 +62,7 @@ const useTransferProvider = () => {
 		() => tokens[formData.tokenId] ?? null,
 		[formData.tokenId, tokens],
 	);
-	const tokenChain = useTokenChain({ tokenId: formData.tokenId as TokenId });
+	const tokenChain = useTokenChain({ tokenId: formData.tokenId });
 
 	const { resolvedAddress, isLoading: isResolvingRecipient } =
 		useResolvedSubstrateAddress({
@@ -75,14 +70,6 @@ const useTransferProvider = () => {
 			chainId: tokenChain?.id,
 		});
 
-	const nativeToken = useNativeToken({ chain: tokenChain });
-
-	const { feeToken } = useFeeToken({
-		chainId: tokenChain?.id,
-		accountId: sender,
-	});
-
-	// if asset hub changes, use its native token as default
 	useEffect(() => {
 		if (tokenChain?.id !== assetHub.id && defaultToken) {
 			setFormData((prev) => ({
@@ -92,22 +79,17 @@ const useTransferProvider = () => {
 		}
 	}, [defaultToken, assetHub.id, tokenChain?.id, setFormData]);
 
-	const [
-		plancks,
-		//  isValidAmount
-	] = useMemo(() => {
+	const plancks = useMemo(() => {
 		try {
 			return formData.amount && token
-				? [tokensToPlancks(formData.amount, token.decimals), true]
-				: [null, true];
+				? tokensToPlancks(formData.amount, token.decimals)
+				: null;
 		} catch (_err) {
-			// invalid amount
-			return [null, false];
+			return null;
 		}
 	}, [formData.amount, token]);
 
-	// TODO handle is loading
-	const { data: edTokenIn } = useExistentialDeposit({
+	const { data: existentialDeposit } = useExistentialDeposit({
 		tokenId: token?.id,
 	});
 
@@ -125,34 +107,8 @@ const useTransferProvider = () => {
 	const { data: fakeCall } = useTransferExtrinsic({
 		chainId: transferChainId,
 		tokenId: token?.id,
-		plancks: edTokenIn ?? null,
+		plancks: existentialDeposit ?? null,
 		recipient: resolvedAddress ?? sender,
-	});
-
-	const { data: nonce } = useNonce({
-		account: sender,
-		chainId: tokenChain?.id,
-	});
-
-	const txOptions = useMemo(() => {
-		if (!isNumber(nonce) || !feeToken) return undefined;
-		return getTxOptions({
-			asset: feeToken ? getFeeAssetLocation(feeToken) : undefined,
-			mortality: { mortal: true, period: 64 },
-			nonce,
-		});
-	}, [feeToken, nonce]);
-
-	const { data: feeEstimateNative } = useEstimateFee({
-		from: sender,
-		call: call ?? fakeCall,
-		options: txOptions,
-	});
-
-	const { plancksOut: feeEstimate } = useAssetConvertPlancks({
-		tokenIdIn: nativeToken?.id,
-		tokenIdOut: feeToken?.id,
-		plancks: feeEstimateNative,
 	});
 
 	const { data: balanceSender, isLoading: isLoadingBalanceSender } = useBalance(
@@ -207,24 +163,6 @@ const useTransferProvider = () => {
 		[setFormData],
 	);
 
-	const onMaxClick = useCallback(() => {
-		if (token && balanceSender) {
-			let plancks = balanceSender;
-
-			const nativeMargin =
-				2n * (feeToken?.id === token?.id ? (feeEstimate ?? 0n) : 0n) +
-				(edTokenIn ?? 0n);
-
-			if (token.type === "native" && nativeMargin <= plancks)
-				plancks = plancks - nativeMargin;
-
-			setFormData((prev) => ({
-				...prev,
-				amount: plancksToTokens(plancks, token.decimals),
-			}));
-		}
-	}, [balanceSender, edTokenIn, feeEstimate, feeToken?.id, token, setFormData]);
-
 	const onReset = useCallback(() => {
 		setFormData((prev) => ({ ...prev, amount: "" }));
 	}, [setFormData]);
@@ -238,6 +176,7 @@ const useTransferProvider = () => {
 		resolvedAddress,
 		token,
 		plancks,
+		existentialDeposit,
 		balanceRecipient,
 		balanceSender,
 		isLoadingBalanceSender,
@@ -247,15 +186,11 @@ const useTransferProvider = () => {
 		onTokenChange,
 		onFromChange,
 		onToChange,
-		onMaxClick,
 		onReset,
 
 		call:
 			outputErrorMessage ||
 			isResolvingRecipient ||
-			// Once we've affirmatively confirmed the recipient can receive, don't let
-			// a slow or stuck balance subscription (isCheckingRecipient lingering on
-			// one unresolved sufficient-asset query) keep blocking submission.
 			(isCheckingRecipient && checkCanAccountReceive?.canReceive !== true)
 				? undefined
 				: call,

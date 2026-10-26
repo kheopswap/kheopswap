@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { Token, TokenId } from "../../registry/tokens/types";
 import type { BalanceWithStableSummary } from "../../types/balances";
+import { isLowLiquidity } from "../../utils/getHoldingValuation";
 import { getTokenLogoColor } from "../../utils/tokenLogo";
 import {
 	getAllocation,
@@ -11,6 +12,16 @@ import {
 } from "./getAllocation";
 
 export type PortfolioHolding = { share: number; color: string };
+
+export const countExcludedHoldings = (balances: BalanceWithStableSummary[]) => {
+	const held = balances.filter((balance) => !!balance.tokenPlancks);
+	return {
+		lowLiquidityCount: held.filter((b) => isLowLiquidity(b.status)).length,
+		unpricedCount: held.filter(
+			(b) => b.status === "unpriced" && !b.isLoadingStablePlancks,
+		).length,
+	};
+};
 
 export const usePortfolioAllocation = ({
 	tokens,
@@ -32,6 +43,14 @@ export const usePortfolioAllocation = ({
 
 	const allocation = useMemo(() => getAllocation(holdings), [holdings]);
 
+	const { lowLiquidityCount, unpricedCount } = useMemo(
+		() =>
+			countExcludedHoldings(
+				tokens.flatMap((token) => balancesByTokenId[token.id] ?? []),
+			),
+		[tokens, balancesByTokenId],
+	);
+
 	const holdingsByTokenId = useMemo(() => {
 		const colors = getAllocationColors(
 			holdings.map(({ token }) => getTokenLogoColor(token.logo)),
@@ -47,5 +66,5 @@ export const usePortfolioAllocation = ({
 		) as Record<TokenId, PortfolioHolding>;
 	}, [holdings, allocation.total]);
 
-	return { allocation, holdingsByTokenId };
+	return { allocation, holdingsByTokenId, lowLiquidityCount, unpricedCount };
 };

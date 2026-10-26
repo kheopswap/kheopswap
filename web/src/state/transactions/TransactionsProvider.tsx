@@ -16,9 +16,10 @@ import {
 	openTransactionId$,
 	openTransactionModal,
 	transactions$,
+	useTransactionRecords,
 } from "./transactionStore";
 import {
-	isTerminalStatus,
+	isAutoDismissed,
 	type TransactionId,
 	type TransactionRecord,
 } from "./types";
@@ -27,9 +28,6 @@ import {
 	isAwaitingXcmArrival,
 	trackXcmArrivals,
 } from "./xcmArrival";
-
-// React-rxjs bindings for reactive updates
-const [useAllTransactions] = bind(transactions$, []);
 
 const [useOpenTransaction] = bind(
 	combineLatest([transactions$, openTransactionId$]).pipe(
@@ -55,7 +53,7 @@ const TransactionsContext = createContext<TransactionsContextValue | null>(
 );
 
 export const TransactionsProvider: FC<PropsWithChildren> = ({ children }) => {
-	const transactions = useAllTransactions();
+	const transactions = useTransactionRecords();
 	const openTransaction = useOpenTransaction();
 
 	useEffect(() => {
@@ -84,7 +82,7 @@ export const TransactionsProvider: FC<PropsWithChildren> = ({ children }) => {
 			if (!tx) return;
 
 			if (
-				isTerminalStatus(tx.status) &&
+				isAutoDismissed(tx) &&
 				!isAwaitingXcmArrival(tx, getTrackedXcmArrival(id))
 			) {
 				dismissTransaction(id);

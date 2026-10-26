@@ -1,12 +1,4 @@
 import type { WalletAccount } from "../common/kheopskit";
 
-/**
- * Extracts the display name from a WalletAccount.
- * Polkadot accounts have a `name` property; Ethereum accounts do not.
- */
-export const getAccountName = (
-	account: WalletAccount | null | undefined,
-): string | undefined => {
-	if (!account) return undefined;
-	return "name" in account ? (account.name as string) : undefined;
-};
+export const getAccountName = (account: WalletAccount | null | undefined) =>
+	account && "name" in account ? account.name : undefined;

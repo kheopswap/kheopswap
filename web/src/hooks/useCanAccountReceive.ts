@@ -2,8 +2,9 @@ import { keyBy, values } from "lodash-es";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { getChainIdFromTokenId } from "../registry/tokens/helpers";
-import type { TokenId } from "../registry/tokens/types";
+import type { Token, TokenId } from "../registry/tokens/types";
 import { getNativeToken } from "../utils/getNativeToken";
+import { plancksToTokens } from "../utils/plancks";
 import { useBalances } from "./useBalances";
 import { useExistentialDeposit } from "./useExistentialDeposit";
 import { useTokensByChainId } from "./useTokensByChainId";
@@ -18,6 +19,24 @@ type UseCanAccountReceiveResult = {
 	isLoading?: boolean;
 	data: { canReceive: boolean; reason?: string } | undefined;
 };
+
+const SIGNIFICANT_DIGITS = 4n;
+
+const roundUpToSignificantDigits = (plancks: bigint): bigint => {
+	const droppedDigits = BigInt(plancks.toString().length) - SIGNIFICANT_DIGITS;
+	if (droppedDigits <= 0n) return plancks;
+	const unit = 10n ** droppedDigits;
+	return ((plancks + unit - 1n) / unit) * unit;
+};
+
+export const getRecipientMinimumMessage = (
+	missingPlancks: bigint,
+	{ symbol, decimals }: Pick<Token, "symbol" | "decimals">,
+) =>
+	`The recipient needs at least ${plancksToTokens(
+		roundUpToSignificantDigits(missingPlancks),
+		decimals,
+	)} ${symbol}`;
 
 export const useCanAccountReceive = ({
 	address,
@@ -69,26 +88,22 @@ export const useCanAccountReceive = ({
 		const token = allTokens[tokenId];
 		if (!token) return { canReceive: false };
 
-		// if the token being sent is sufficient, all good
 		if (token.isSufficient && plancks >= existentialDeposit)
 			return { canReceive: true };
 
-		// check if the target has at least one sufficient asset
 		const isSufficientAccount =
 			!!balanceMap[nativeToken.id]?.balance ||
 			sufficientTokens.some((t) => !!balanceMap[t.id]?.balance);
-		if (!isSufficientAccount)
-			return {
-				canReceive: false,
-				reason: token.isSufficient
-					? "Cannot send insufficient amount"
-					: "Account has no sufficient assets",
-			};
+		if (!token.isSufficient && !isSufficientAccount)
+			return { canReceive: false, reason: "Account has no sufficient assets" };
 
-		if ((balanceMap[tokenId]?.balance ?? 0n) + plancks >= existentialDeposit)
-			return { canReceive: true };
+		const held = balanceMap[tokenId]?.balance ?? 0n;
+		if (held + plancks >= existentialDeposit) return { canReceive: true };
 
-		return { canReceive: false, reason: "Cannot send insufficient amount" };
+		return {
+			canReceive: false,
+			reason: getRecipientMinimumMessage(existentialDeposit - held, token),
+		};
 	}, [
 		existentialDeposit,
 		plancks,

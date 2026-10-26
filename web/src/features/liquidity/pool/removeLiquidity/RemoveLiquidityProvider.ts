@@ -73,7 +73,7 @@ const useRemoveLiquidityProvider = () => {
 	});
 
 	const onReset = useCallback(() => {
-		setRatio(1);
+		setRatio(0);
 	}, []);
 
 	return {

@@ -3,7 +3,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
 import { getXcmV5MultilocationFromTokenId } from "../../registry/utils/xcmMultiLocation";
-import type { TransactionRecord } from "../../state/transactions/types";
+import type {
+	FollowUpTxEvent,
+	TransactionRecord,
+} from "../../state/transactions/types";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { SwapFollowUpContent } from "./SwapFollowUpContent";
 
@@ -42,12 +45,17 @@ const swapExecuted = (amounts: [TokenId, bigint][]): TxEvents[number] => {
 	};
 };
 
-const getRecord = (events: TxEvents): TransactionRecord =>
+const getRecord = (
+	events: TxEvents,
+	txEvents: FollowUpTxEvent[] = [
+		{ type: "inBestBlock", ok: true, events } as FollowUpTxEvent,
+	],
+): TransactionRecord =>
 	({
 		id: "swap",
 		type: "swap",
 		status: "inBlock",
-		txEvents: [{ type: "inBestBlock", ok: true, events }],
+		txEvents,
 		followUpData: {
 			slippage: 0.005,
 			tokenOut: getToken(USDT),
@@ -73,5 +81,39 @@ describe("SwapFollowUpContent", () => {
 		expect(screen.getByText("Effective outcome")).toBeVisible();
 		expect(screen.getByText("9.912 USDt")).toBeInTheDocument();
 		expect(screen.getByText("-0.63%")).toBeInTheDocument();
+	});
+
+	it("reports the outcome of the canonical inclusion, not of a retracted block", () => {
+		const retractedSwap = swapExecuted([
+			[DOT, 117_000_000_000n],
+			[USDT, 9_700_000n],
+		]);
+		const canonicalSwap = swapExecuted([
+			[DOT, 117_000_000_000n],
+			[USDT, 9_912_300n],
+		]);
+		render(
+			<SwapFollowUpContent
+				transaction={getRecord(
+					[],
+					[
+						{
+							type: "inBestBlock",
+							ok: true,
+							events: [retractedSwap],
+						} as FollowUpTxEvent,
+						{ type: "notInBestBlock" } as FollowUpTxEvent,
+						{
+							type: "inBestBlock",
+							ok: true,
+							events: [canonicalSwap],
+						} as FollowUpTxEvent,
+					],
+				)}
+			/>,
+		);
+
+		expect(screen.getByText("9.912 USDt")).toBeInTheDocument();
+		expect(screen.queryByText("9.7 USDt")).toBeNull();
 	});
 });

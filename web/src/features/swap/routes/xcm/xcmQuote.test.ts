@@ -34,10 +34,14 @@ import {
 import {
 	composeXcmQuote,
 	type DestinationDryRun,
+	describeNewAccountMinimum,
 	describeXcmQuoteFailure,
+	estimateXcmReceived,
 	getDeliveryFeeTokenId,
+	getFeeProbePlancks,
+	getNewAccountMinimum,
+	getTotalDebited,
 	getXcmCallSpendings,
-	getXcmFeeParts,
 	getXcmSubmitGate,
 	type OriginDryRun,
 	parseDeliveryFee,
@@ -172,10 +176,7 @@ describe("parseOriginDryRun", () => {
 			parseOriginDryRun(dotOriginFailed.origin, HYDRATION_PARA_ID),
 		).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 	});
 
@@ -184,10 +185,7 @@ describe("parseOriginDryRun", () => {
 			parseOriginDryRun(usdcToDotInsufficient.origin, HYDRATION_PARA_ID),
 		).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 	});
 
@@ -319,6 +317,7 @@ describe("parseDestinationDryRun", () => {
 				kind: "destination-rejected",
 				reason: "FailedToTransactAsset",
 				assetsTrapped: true,
+				trappedPlancks: expect.any(BigInt),
 			},
 		});
 	});
@@ -454,11 +453,17 @@ describe("describeXcmQuoteFailure", () => {
 				kind: "destination-rejected",
 				reason: "FailedToTransactAsset",
 				assetsTrapped: true,
+				trappedPlancks: 1n,
 			},
 			"Amount too low for Hydration: the assets would be trapped",
 		],
 		[
-			{ kind: "destination-rejected", reason: "Barrier", assetsTrapped: false },
+			{
+				kind: "destination-rejected",
+				reason: "Barrier",
+				assetsTrapped: false,
+				trappedPlancks: null,
+			},
 			"Hydration would reject the transfer: Barrier",
 		],
 		[{ kind: "nothing-deposited" }, "Hydration would not credit your account"],
@@ -472,6 +477,39 @@ describe("describeXcmQuoteFailure", () => {
 		],
 	] as const)("%o", (failure, expected) => {
 		expect(describeXcmQuoteFailure(failure, toHydration)).toBe(expected);
+	});
+});
+
+describe("getFeeProbePlancks", () => {
+	it.each([
+		["the minimum balance when the account holds more", 50_000n, 1n, 10_000n],
+		["the spendable balance when it is below the minimum", 4_000n, 1n, 4_000n],
+		["a share of the spendable balance per withdrawal", 15_000n, 2n, 7_500n],
+		["one plank when nothing is spendable", 0n, 1n, 1n],
+		[
+			"the minimum balance while the balance is unknown",
+			undefined,
+			1n,
+			10_000n,
+		],
+	])("is %s", (_, spendable, withdrawals, expected) => {
+		expect(
+			getFeeProbePlancks({
+				existentialDeposit: 10_000n,
+				spendable,
+				withdrawals,
+			}),
+		).toBe(expected);
+	});
+
+	it("is unknown while the minimum balance is unknown", () => {
+		expect(
+			getFeeProbePlancks({
+				existentialDeposit: undefined,
+				spendable: 4_000n,
+				withdrawals: 1n,
+			}),
+		).toBeUndefined();
 	});
 });
 
@@ -526,27 +564,52 @@ describe("getXcmCallSpendings", () => {
 	});
 });
 
-describe("getXcmFeeParts", () => {
-	const deliveryFee = { tokenId: DOT, plancks: 304850000n };
-	const quote = {
-		received: 9995190152n,
-		destinationFee: { tokenId: HYDRATION_DOT, plancks: 4809848n },
-	};
+describe("getTotalDebited", () => {
+	const deliveryFee = { tokenId: DOT, plancks: 304_850_000n };
+	const transactionFee = { tokenId: DOT, plancks: 11_000_000n };
 
-	it("adds the destination fee in the output token to the delivery fee", () => {
-		expect(getXcmFeeParts(deliveryFee, quote)).toEqual([
-			deliveryFee,
-			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+	it("adds the delivery and transaction fees to the DOT sent", () => {
+		expect(
+			getTotalDebited(
+				getXcmCallSpendings({
+					tokenIdIn: DOT,
+					totalIn: 1_000_000_000n,
+					deliveryFee,
+				}),
+				transactionFee,
+			),
+		).toEqual([{ tokenId: DOT, plancks: 1_315_850_000n }]);
+	});
+
+	it("lists the asset sent apart from the DOT fees", () => {
+		expect(
+			getTotalDebited(
+				getXcmCallSpendings({
+					tokenIdIn: USDT,
+					totalIn: 10_000_000n,
+					deliveryFee,
+				}),
+				transactionFee,
+			),
+		).toEqual([
+			{ tokenId: USDT, plancks: 10_000_000n },
+			{ tokenId: DOT, plancks: 315_850_000n },
 		]);
 	});
 
-	it("shows the delivery fee alone before a quote", () => {
-		expect(getXcmFeeParts(deliveryFee, undefined)).toEqual([deliveryFee]);
-	});
-
-	it("drops a free delivery", () => {
-		expect(getXcmFeeParts({ tokenId: DOT, plancks: 0n }, quote)).toEqual([
-			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
+	it("adds a transaction fee paid in the asset sent to that asset", () => {
+		expect(
+			getTotalDebited(
+				getXcmCallSpendings({
+					tokenIdIn: USDT,
+					totalIn: 10_000_000n,
+					deliveryFee,
+				}),
+				{ tokenId: USDT, plancks: 20_000n },
+			),
+		).toEqual([
+			{ tokenId: USDT, plancks: 10_020_000n },
+			{ tokenId: DOT, plancks: 304_850_000n },
 		]);
 	});
 });
@@ -578,10 +641,7 @@ describe("Hydration to Asset Hub", () => {
 			parseOriginDryRun(pinkToAssetHubInsufficient.origin, ASSET_HUB_PARA_ID),
 		).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 	});
 
@@ -628,12 +688,22 @@ describe("Hydration to Asset Hub", () => {
 				kind: "destination-rejected",
 				reason: "FailedToTransactAsset",
 				assetsTrapped: true,
+				trappedPlancks: expect.any(BigInt),
 			},
 		});
 		if (parsed.success) throw new Error("expected a failure");
 		expect(describeXcmQuoteFailure(parsed.failure, fromHydration)).toBe(
 			"Amount too low for Polkadot Asset Hub: the assets would be trapped",
 		);
+	});
+
+	it("says Hydration refuses to release the token when it rejects a withdrawal the balance covers, without guessing why", () => {
+		expect(
+			describeXcmQuoteFailure(
+				{ kind: "origin-withdraw-failed" },
+				fromHydration,
+			),
+		).toBe("Hydration refuses to release this token from your account");
 	});
 
 	it("names Hydration when it would reject the transfer", () => {
@@ -648,18 +718,6 @@ describe("Hydration to Asset Hub", () => {
 	it("labels the delivery fee in Hydration DOT", () => {
 		expect(getDeliveryFeeTokenId("hydration")).toBe(HYDRATION_DOT);
 		expect(getDeliveryFeeTokenId("pah")).toBe(DOT_AH);
-	});
-
-	it("shows only the Asset Hub fee when Hydration delivers for free", () => {
-		expect(
-			getXcmFeeParts(
-				{ tokenId: HYDRATION_DOT, plancks: 0n },
-				{
-					received: 9999003n,
-					destinationFee: { tokenId: USDT, plancks: 997n },
-				},
-			),
-		).toEqual([{ tokenId: USDT, plancks: 997n }]);
 	});
 
 	it("spends the Hydration token sent and nothing else", () => {
@@ -741,12 +799,72 @@ describe("Asset Hub to People", () => {
 				kind: "destination-rejected",
 				reason: "FailedToTransactAsset",
 				assetsTrapped: true,
+				trappedPlancks: 494_565_636n,
 			},
 		});
 		if (parsed.success) throw new Error("expected a failure");
 		expect(describeXcmQuoteFailure(parsed.failure, toPeople)).toBe(
 			"Amount too low for Polkadot People: the assets would be trapped",
 		);
+	});
+
+	describe("minimum to open a People account", () => {
+		const PEOPLE_ED = 1_000_000_000n;
+		const TRAPPED = 494_565_636n;
+		const minimum = (
+			destinationBalance: bigint,
+			isSufficient = true,
+			trappedPlancks = TRAPPED,
+		) =>
+			getNewAccountMinimum({
+				sent: dotToPeopleTrapped.amount,
+				trappedPlancks,
+				existentialDeposit: PEOPLE_ED,
+				destinationBalance,
+				isSufficient,
+			});
+
+		it("is the existential deposit plus the fee People kept from what was sent", () => {
+			expect(minimum(0n)).toBe(PEOPLE_ED + dotToPeopleTrapped.amount - TRAPPED);
+		});
+
+		it("does not apply to an account that already exists", () => {
+			expect(minimum(PEOPLE_ED)).toBeNull();
+		});
+
+		it("does not apply to a token that cannot open an account on its own", () => {
+			expect(minimum(0n, false)).toBeNull();
+		});
+
+		it("is the existential deposit when a destination that charges nothing trapped everything sent", () => {
+			expect(dotToPeopleTrapped.amount).toBeLessThan(PEOPLE_ED);
+			expect(minimum(0n, true, dotToPeopleTrapped.amount)).toBe(PEOPLE_ED);
+		});
+
+		it("does not apply when everything sent was trapped although it covered the deposit", () => {
+			expect(
+				getNewAccountMinimum({
+					sent: PEOPLE_ED,
+					trappedPlancks: PEOPLE_ED,
+					existentialDeposit: PEOPLE_ED,
+					destinationBalance: 0n,
+					isSufficient: true,
+				}),
+			).toBeNull();
+		});
+
+		it("is said rounded up, with the deposit it covers", () => {
+			expect(
+				describeNewAccountMinimum({
+					minimum: PEOPLE_ED + 5_434_364n,
+					existentialDeposit: PEOPLE_ED,
+					token: { symbol: "DOT", decimals: 10 },
+					destination: "ppeople",
+				}),
+			).toBe(
+				"Send at least 0.1006 DOT: Polkadot People needs 0.1 DOT to open your account",
+			);
+		});
 	});
 
 	it("labels the delivery fee in the native token of each Asset Hub", () => {
@@ -824,6 +942,7 @@ describe("People to Asset Hub", () => {
 				kind: "destination-rejected",
 				reason: "FailedToTransactAsset",
 				assetsTrapped: true,
+				trappedPlancks: expect.any(BigInt),
 			},
 		});
 		if (parsed.success) throw new Error("expected a failure");
@@ -849,6 +968,7 @@ describe("People to Asset Hub", () => {
 				kind: "destination-rejected",
 				reason: "Overflow",
 				assetsTrapped: false,
+				trappedPlancks: null,
 			},
 		});
 	});
@@ -870,4 +990,69 @@ describe("People to Asset Hub", () => {
 			"native::ppeople": { plancks: 10304850000n, allowDeath: false },
 		});
 	});
+});
+
+describe("estimateXcmReceived", () => {
+	it.each([
+		[
+			"a transfer: the amount minus the last destination fee",
+			"xcm-transfer",
+			1_000n,
+			undefined,
+			10n,
+			990n,
+		],
+		[
+			"a transfer without a fee to replay: nothing",
+			"xcm-transfer",
+			1_000n,
+			undefined,
+			undefined,
+			undefined,
+		],
+		[
+			"a swap then send: the swap output minus the last destination fee",
+			"xcm-swap",
+			1_000n,
+			500n,
+			10n,
+			490n,
+		],
+		[
+			"a swap then send never quoted: the swap output",
+			"xcm-swap",
+			1_000n,
+			500n,
+			undefined,
+			500n,
+		],
+		[
+			"a send then swap: the swap output, which already paid the fee",
+			"xcm-destination-swap",
+			1_000n,
+			500n,
+			10n,
+			500n,
+		],
+		[
+			"an amount the fee would eat: nothing",
+			"xcm-transfer",
+			10n,
+			undefined,
+			10n,
+			undefined,
+		],
+	] as const)(
+		"estimates %s",
+		(_, kind, totalIn, pathAmountOut, lastDestinationFee, expected) => {
+			expect(
+				estimateXcmReceived({
+					kind,
+					totalIn,
+					pathAmountOut,
+					lastDestinationFee,
+				}),
+			).toBe(expected);
+		},
+	);
 });

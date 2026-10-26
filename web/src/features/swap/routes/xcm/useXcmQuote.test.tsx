@@ -1,14 +1,22 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import { useDryRun } from "../../../../hooks/useDryRun";
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	type Mock,
+	vi,
+} from "vitest";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { getAmmPath } from "../ammPath";
 import type { XcmDestinationSwapRoute, XcmRoute } from "../swapRoute";
 import { usdtToPink } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
+import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import { useXcmQuote } from "./useXcmQuote";
 import { dotToAssetHub } from "./xcmFromHydration.fixtures";
 import type { DestinationDryRun, OriginDryRun } from "./xcmQuote";
@@ -118,16 +126,24 @@ const givenDryRuns = ({
 	chain.deliveryFees = deliveryFees;
 };
 
+const LOADED_BALANCES: XcmDryRunBalances = {
+	isLoading: false,
+	origin: { "native::pah": { balance: 10_000_000_000n, frozen: 0n } },
+	destination: { "hydration-asset::hydration::5": { balance: 0n, frozen: 0n } },
+};
+
 const renderQuote = ({
 	route = transferRoute,
 	destinationFee,
 	beneficiary = dotSuccess.beneficiary,
 	extra,
+	balances = LOADED_BALANCES,
 }: {
 	route?: XcmRoute;
 	destinationFee?: TokenAmount;
 	beneficiary?: string;
 	extra?: () => unknown;
+	balances?: XcmDryRunBalances;
 } = {}) => {
 	const queryClient = new QueryClient({
 		defaultOptions: { queries: { retryDelay: 0 } },
@@ -136,7 +152,7 @@ const renderQuote = ({
 		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 	);
 	return renderHook(
-		() => {
+		(props: { balances: XcmDryRunBalances }) => {
 			extra?.();
 			return useXcmQuote({
 				route,
@@ -144,9 +160,10 @@ const renderQuote = ({
 				beneficiary,
 				call,
 				fakeCall,
+				balances: props.balances,
 			});
 		},
-		{ wrapper },
+		{ wrapper, initialProps: { balances } },
 	);
 };
 
@@ -175,6 +192,111 @@ const HYDRATION_LOCATION = {
 };
 
 describe("useXcmQuote", () => {
+	describe("when a balance changes after a successful quote", () => {
+		const quoteThenChange = async (balances: XcmDryRunBalances) => {
+			givenDryRuns({
+				origin: dotSuccess.origin,
+				destination: dotSuccess.destination,
+			});
+			const rendered = renderQuote();
+			await waitFor(() =>
+				expect(rendered.result.current.data).toMatchObject({ success: true }),
+			);
+			const originRuns = chain.dryRunCall.mock.calls.length;
+			const destinationRuns = chain.dryRunXcm.mock.calls.length;
+			rendered.rerender({ balances });
+			return { ...rendered, originRuns, destinationRuns };
+		};
+
+		it("simulates the origin again, staying loading until it answers", async () => {
+			const { result, originRuns } = await quoteThenChange({
+				...LOADED_BALANCES,
+				origin: { "native::pah": { balance: 1_000_000n, frozen: 0n } },
+			});
+
+			expect(result.current.isLoading).toBe(true);
+			await waitFor(() => expect(result.current.isLoading).toBe(false));
+			expect(chain.dryRunCall.mock.calls.length).toBe(originRuns + 2);
+		});
+
+		it("simulates the destination again, staying loading until it answers", async () => {
+			const { result, originRuns, destinationRuns } = await quoteThenChange({
+				...LOADED_BALANCES,
+				destination: {
+					"hydration-asset::hydration::5": {
+						balance: 5_000_000_000n,
+						frozen: 0n,
+					},
+				},
+			});
+
+			expect(result.current.isLoading).toBe(true);
+			await waitFor(() => expect(result.current.isLoading).toBe(false));
+			expect(chain.dryRunXcm.mock.calls.length).toBe(destinationRuns + 1);
+			expect(chain.dryRunCall.mock.calls.length).toBe(originRuns);
+		});
+
+		it.each([
+			{
+				side: "origin",
+				changed: {
+					...LOADED_BALANCES,
+					origin: { "native::pah": { balance: 1_000_000n, frozen: 0n } },
+				},
+			},
+			{
+				side: "destination",
+				changed: {
+					...LOADED_BALANCES,
+					destination: {
+						"hydration-asset::hydration::5": {
+							balance: 5_000_000_000n,
+							frozen: 0n,
+						},
+					},
+				},
+			},
+		])(
+			"stays loading when the $side balance returns to a value simulated before",
+			async ({ changed }) => {
+				const { result, rerender } = await quoteThenChange(changed);
+				await waitFor(() => expect(result.current.isLoading).toBe(false));
+				const runs =
+					chain.dryRunCall.mock.calls.length +
+					chain.dryRunXcm.mock.calls.length;
+
+				rerender({ balances: LOADED_BALANCES });
+
+				expect(result.current.isLoading).toBe(true);
+				await waitFor(() => expect(result.current.isLoading).toBe(false));
+				expect(
+					chain.dryRunCall.mock.calls.length +
+						chain.dryRunXcm.mock.calls.length,
+				).toBeGreaterThan(runs);
+			},
+		);
+	});
+
+	it("waits for the balances before simulating", async () => {
+		givenDryRuns({
+			origin: dotSuccess.origin,
+			destination: dotSuccess.destination,
+		});
+		const { result, rerender } = renderQuote({
+			balances: { isLoading: true, origin: undefined, destination: undefined },
+		});
+
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(result.current.isLoading).toBe(true);
+		expect(chain.dryRunCall).not.toHaveBeenCalled();
+
+		rerender({ balances: LOADED_BALANCES });
+		await waitFor(() =>
+			expect(result.current.data).toMatchObject({ success: true }),
+		);
+		expect(chain.dryRunCall).toHaveBeenCalledTimes(2);
+	});
+
 	it("quotes the amount received on Hydration from both dry runs", async () => {
 		givenDryRuns({
 			origin: dotSuccess.origin,
@@ -185,7 +307,12 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
+			deliveryFee: {
+				tokenId: "native::pah",
+				plancks: 304850000n,
+				isEstimate: false,
+			},
+			sent: expect.any(BigInt),
 			data: {
 				success: true,
 				quote: {
@@ -232,7 +359,12 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: { tokenId: "native::pah", plancks: 305450000n },
+			deliveryFee: {
+				tokenId: "native::pah",
+				plancks: 305450000n,
+				isEstimate: false,
+			},
+			sent: expect.any(BigInt),
 			data: {
 				success: true,
 				quote: {
@@ -267,14 +399,15 @@ describe("useXcmQuote", () => {
 
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		await waitFor(() =>
-			expect(result.current.deliveryFee?.plancks).toBe(304850000n),
+			expect(result.current.deliveryFee).toEqual({
+				tokenId: "native::pah",
+				plancks: 304850000n,
+				isEstimate: true,
+			}),
 		);
 		expect(result.current.data).toEqual({
 			success: false,
-			failure: {
-				kind: "origin-failed",
-				reason: "Insufficient balance to cover the transfer and its fees",
-			},
+			failure: { kind: "origin-withdraw-failed" },
 		});
 		expect(chain.dryRunXcm).not.toHaveBeenCalled();
 	});
@@ -293,6 +426,7 @@ describe("useXcmQuote", () => {
 				kind: "destination-rejected",
 				reason: "FailedToTransactAsset",
 				assetsTrapped: true,
+				trappedPlancks: expect.any(BigInt),
 			},
 		});
 	});
@@ -308,26 +442,67 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toMatchObject({
 			isLoading: false,
-			deliveryFee: { tokenId: "native::pah", plancks: 304850000n },
+			deliveryFee: {
+				tokenId: "native::pah",
+				plancks: 304850000n,
+				isEstimate: false,
+			},
 			data: { success: false, failure: { kind: "destination-unavailable" } },
 		});
 	});
 
-	it("shares the Asset Hub dry run with the transaction layer", async () => {
-		givenDryRuns({
-			origin: dotSuccess.origin,
-			destination: dotSuccess.destination,
+	describe("when a chain never answers", () => {
+		const NEVER = new Promise<never>(() => {});
+
+		beforeEach(() => {
+			vi.useFakeTimers({ shouldAdvanceTime: true });
+			givenDryRuns({
+				origin: dotSuccess.origin,
+				destination: dotSuccess.destination,
+			});
 		});
-		const { result } = renderQuote({
-			extra: () =>
-				useDryRun({ chainId: "pah", from: dotSuccess.beneficiary, call }),
+		afterEach(() => {
+			vi.useRealTimers();
 		});
 
-		await waitFor(() => expect(result.current.data?.success).toBe(true));
-		const realCallDryRuns = chain.dryRunCall.mock.calls.filter(
-			([, decodedCall]) => decodedCall === call.decodedCall,
+		it.each([
+			[
+				"the origin dry run",
+				() => chain.dryRunCall.mockReturnValue(NEVER),
+				"origin-unavailable",
+			],
+			[
+				"the destination dry run",
+				() => chain.dryRunXcm.mockReturnValue(NEVER),
+				"destination-unavailable",
+			],
+			[
+				"the delivery fee",
+				() => chain.queryDeliveryFees.mockReturnValue(NEVER),
+				"delivery-fee-unavailable",
+			],
+		])(
+			"gives up on %s after 30 seconds, without asking again",
+			async (_, hang, kind) => {
+				hang();
+				const { result } = renderQuote();
+
+				await vi.advanceTimersByTimeAsync(29_000);
+				expect(result.current).toMatchObject({
+					isLoading: true,
+					data: undefined,
+				});
+
+				await vi.advanceTimersByTimeAsync(1_000);
+				await waitFor(() =>
+					expect(result.current.data).toEqual({
+						success: false,
+						failure: { kind },
+					}),
+				);
+				expect(result.current.isLoading).toBe(false);
+			},
 		);
-		expect(realCallDryRuns).toHaveLength(1);
 	});
 
 	it("quotes a transfer back from Hydration, asking Hydration's delivery fee without an asset id", async () => {
@@ -351,7 +526,12 @@ describe("useXcmQuote", () => {
 		await waitFor(() => expect(result.current.data).toBeDefined());
 		expect(result.current).toEqual({
 			isLoading: false,
-			deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+			deliveryFee: {
+				tokenId: "hydration-asset::hydration::5",
+				plancks: 0n,
+				isEstimate: false,
+			},
+			sent: expect.any(BigInt),
 			data: {
 				success: true,
 				quote: {
@@ -420,7 +600,12 @@ describe("useXcmQuote", () => {
 			await waitFor(() => expect(result.current.data).toBeDefined());
 			expect(result.current).toEqual({
 				isLoading: false,
-				deliveryFee: { tokenId: "hydration-asset::hydration::5", plancks: 0n },
+				deliveryFee: {
+					tokenId: "hydration-asset::hydration::5",
+					plancks: 0n,
+					isEstimate: false,
+				},
+				sent: expect.any(BigInt),
 				data: {
 					success: true,
 					quote: {

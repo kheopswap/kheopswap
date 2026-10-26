@@ -12,7 +12,7 @@ import type {
 } from "../../../registry/chains/types";
 import { parseTokenId } from "../../../registry/tokens/helpers";
 import type { Token, TokenId } from "../../../registry/tokens/types";
-import type { XcmArrivalType } from "../../../state/transactions/xcmArrival";
+import type { TransactionFollowUp } from "../../../state/transactions/types";
 import type { AnyTransaction } from "../../../types/transactions";
 import { isEthereumAddress } from "../../../utils/ethereumAddress";
 import type {
@@ -66,8 +66,7 @@ export type TransactionPlan = {
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
 	callSpendings: CallSpendings;
-	followUpData: object;
-	transactionType: "swap" | XcmArrivalType;
+	followUp: TransactionFollowUp;
 	title: string;
 	submitGate: SubmitGate;
 };

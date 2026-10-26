@@ -1,14 +1,16 @@
 import { keyBy } from "lodash-es";
-import {
-	type FormEventHandler,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-} from "react";
+import { type FormEventHandler, useCallback, useMemo } from "react";
 import type { Token } from "../../../../registry/tokens/types";
-import { plancksToTokens, tokensToPlancks } from "../../../../utils/plancks";
+import { isBigInt } from "../../../../utils/isBigInt";
+import { plancksToTokens } from "../../../../utils/plancks";
 import { useTransaction } from "../../../transaction/TransactionProvider";
+import { pairLiquidityAmount } from "../../liquidityAmounts";
+import {
+	getMaxHint,
+	getMaxLiquidity,
+	getSpendingMargin,
+	type Side,
+} from "../../maxLiquidity";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidity } from "./AddLiquidityProvider";
 
@@ -23,8 +25,12 @@ export const useLiquidityEditorInputs = () => {
 	} = useLiquidityPoolPage();
 
 	const {
+		amounts,
+		setAmounts,
+		maxLimit,
+		setMaxLimit,
 		liquidityToAdd,
-		setLiquidityToAdd,
+		missingSide,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 	} = useAddLiquidity();
@@ -36,160 +42,106 @@ export const useLiquidityEditorInputs = () => {
 		[assetToken, nativeToken],
 	);
 
-	const refInput1 = useRef<HTMLInputElement>(null);
-	const refInput2 = useRef<HTMLInputElement>(null);
-
 	const handleTokensInput = useCallback(
-		(tokenIdx: "token1" | "token2"): FormEventHandler<HTMLInputElement> =>
+		(side: Side): FormEventHandler<HTMLInputElement> =>
 			(e) => {
-				const val = Number(e.currentTarget.value);
-
-				if (
-					!e.currentTarget.value ||
-					!nativeToken ||
-					!assetToken ||
-					Number.isNaN(val) ||
-					val < 0
-				) {
-					if (tokenIdx === "token1" && refInput2.current)
-						refInput2.current.value = "";
-					if (tokenIdx === "token2" && refInput1.current)
-						refInput1.current.value = "";
-					setLiquidityToAdd(null);
-					return;
-				}
+				setMaxLimit(null);
+				const text = e.currentTarget.value;
+				if (!nativeToken || !assetToken) return;
 
 				if (!reserves || reserves.includes(0n)) {
-					if (tokenIdx === "token1")
-						setLiquidityToAdd([
-							tokensToPlancks(e.currentTarget.value, nativeToken.decimals),
-							liquidityToAdd?.[1] ?? 0n,
-						]);
-					else
-						setLiquidityToAdd([
-							liquidityToAdd?.[0] ?? 0n,
-							tokensToPlancks(e.currentTarget.value, assetToken.decimals),
-						]);
+					setAmounts((prev) =>
+						side === 0 ? [text, prev[1]] : [prev[0], text],
+					);
 					return;
 				}
 
-				try {
-					if (tokenIdx === "token1") {
-						const nativePlancks = tokensToPlancks(
-							e.currentTarget.value,
-							nativeToken.decimals,
-						);
-						const assetPlancks = (nativePlancks * reserves[1]) / reserves[0];
-						setLiquidityToAdd([nativePlancks, assetPlancks]);
-						if (refInput2.current)
-							refInput2.current.value = plancksToTokens(
-								assetPlancks,
-								assetToken.decimals,
-							);
-					} else {
-						const assetPlancks = tokensToPlancks(
-							e.currentTarget.value,
-							assetToken.decimals,
-						);
-						const nativePlancks = (assetPlancks * reserves[0]) / reserves[1];
-						setLiquidityToAdd([nativePlancks, assetPlancks]);
-						if (refInput1.current)
-							refInput1.current.value = plancksToTokens(
-								nativePlancks,
-								nativeToken.decimals,
-							);
-					}
-				} catch (err) {
-					console.error("input error", { err });
-				}
+				setAmounts(
+					pairLiquidityAmount({
+						side,
+						text,
+						reserves,
+						decimals: [nativeToken.decimals, assetToken.decimals],
+					}),
+				);
 			},
-		[assetToken, liquidityToAdd, nativeToken, reserves, setLiquidityToAdd],
+		[assetToken, nativeToken, reserves, setAmounts, setMaxLimit],
 	);
 
 	const handleMaxClick = useCallback(
-		(tokenIdx: "token1" | "token2") => () => {
+		(side: Side) => () => {
 			if (
 				!accountBalances ||
 				!reserves ||
 				reserves.some((val) => val === 0n) ||
 				!nativeToken ||
-				!assetToken ||
-				!refInput1.current ||
-				!refInput2.current
+				!assetToken
 			)
 				return;
 
-			if (tokenIdx === "token1") {
-				const fee = feeToken?.id === nativeToken.id ? (feeEstimate ?? 0n) : 0n;
-				const nativeMargin = 2n * fee + (nativeExistentialDeposit ?? 0n);
-				const maxNative =
-					accountBalances[0] < nativeMargin
-						? accountBalances[0]
-						: accountBalances[0] - nativeMargin;
-				const maxAsset = (maxNative * reserves[1]) / reserves[0];
+			const nativeMargin = getSpendingMargin({
+				token: nativeToken,
+				feeToken,
+				feeEstimate,
+				existentialDeposit: nativeExistentialDeposit,
+			});
+			const assetMargin = getSpendingMargin({
+				token: assetToken,
+				feeToken,
+				feeEstimate,
+				existentialDeposit: assetExistentialDeposit,
+			});
+			if (!isBigInt(nativeMargin) || !isBigInt(assetMargin)) return;
 
-				setLiquidityToAdd([maxNative, maxAsset]);
+			const {
+				amounts: [maxNative, maxAsset],
+				limit,
+			} = getMaxLiquidity({
+				balances: accountBalances,
+				reserves,
+				margins: [nativeMargin, assetMargin],
+				side,
+			});
 
-				refInput1.current.value = plancksToTokens(
-					maxNative,
-					nativeToken.decimals,
-				);
-				refInput2.current.value = plancksToTokens(
-					maxAsset,
-					assetToken.decimals,
-				);
-			} else {
-				const fee = feeToken?.id === assetToken.id ? (feeEstimate ?? 0n) : 0n;
-				const assetMargin = 2n * fee + (assetExistentialDeposit ?? 0n);
-				const maxAsset =
-					accountBalances[1] < assetMargin
-						? accountBalances[1]
-						: accountBalances[1] - assetMargin;
-				const maxNative = (maxAsset * reserves[0]) / reserves[1];
-
-				setLiquidityToAdd([maxNative, maxAsset]);
-
-				refInput1.current.value = plancksToTokens(
-					maxNative,
-					nativeToken.decimals,
-				);
-				refInput2.current.value = plancksToTokens(
-					maxAsset,
-					assetToken.decimals,
-				);
-			}
+			setMaxLimit(limit);
+			setAmounts([
+				plancksToTokens(maxNative, nativeToken.decimals),
+				plancksToTokens(maxAsset, assetToken.decimals),
+			]);
 		},
 		[
 			accountBalances,
 			reserves,
 			nativeToken,
 			assetToken,
-			feeToken?.id,
+			feeToken,
 			feeEstimate,
 			nativeExistentialDeposit,
-			setLiquidityToAdd,
+			setAmounts,
+			setMaxLimit,
 			assetExistentialDeposit,
 		],
 	);
 
-	useEffect(() => {
-		if (liquidityToAdd === null && refInput1.current && refInput2.current) {
-			refInput1.current.value = "";
-			refInput2.current.value = "";
-		}
-	}, [liquidityToAdd]);
+	const [hintNative, hintAsset] = [nativeToken, assetToken].map(
+		(token, side) =>
+			token && maxLimit?.side === side ? getMaxHint(maxLimit, token) : null,
+	);
 
-	const errorMessageNative = useMemo(() => {
-		return insufficientBalances[nativeToken?.id ?? ""];
-	}, [insufficientBalances, nativeToken?.id]);
-
-	const errorMessageAsset = useMemo(() => {
-		return insufficientBalances[assetToken?.id ?? ""];
-	}, [insufficientBalances, assetToken?.id]);
+	const [errorMessageNative, errorMessageAsset] = useMemo(
+		() =>
+			[nativeToken, assetToken].map((token, side) => {
+				if (!token) return undefined;
+				if (side !== missingSide) return insufficientBalances[token.id];
+				return reserves && !reserves.includes(0n)
+					? `Less than ${plancksToTokens(1n, token.decimals)} ${token.symbol}`
+					: "Enter both amounts";
+			}),
+		[nativeToken, assetToken, missingSide, reserves, insufficientBalances],
+	);
 
 	return {
-		refInput1,
-		refInput2,
+		amounts,
 		nativeToken,
 		assetToken,
 		tokens,
@@ -201,5 +153,7 @@ export const useLiquidityEditorInputs = () => {
 		handleMaxClick,
 		errorMessageNative,
 		errorMessageAsset,
+		hintNative,
+		hintAsset,
 	};
 };

@@ -31,7 +31,6 @@ export const RemoveLiquidityForm = () => {
 		[onSubmit],
 	);
 
-	// TODO remove & shimmer
 	if (!nativeToken || !assetToken) return null;
 
 	return (

@@ -6,41 +6,58 @@ import {
 	screen,
 	within,
 } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { ToastContainer } from "react-toastify";
 import { firstValueFrom, type Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getChainById } from "../../registry/chains/chains";
 import { KNOWN_TOKENS_MAP } from "../../registry/tokens/tokens";
+import { clearCachedObservables } from "../../utils/getCachedObservable";
 import type { TxEvents } from "../../utils/getErrorMessageFromTxEvents";
 import { GlobalFollowUpModal } from "./GlobalFollowUpModal";
 import { TransactionsProvider } from "./TransactionsProvider";
-import { getToastView, TransactionToasts } from "./TransactionToasts";
+import {
+	getToastAutoClose,
+	getToastView,
+	TransactionToasts,
+} from "./TransactionToasts";
 import {
 	addTransaction,
 	dismissTransaction,
 	openTransactionModal,
 	transactions$,
 } from "./transactionStore";
-import type { TransactionRecord, TransactionType } from "./types";
-import type { XcmArrival, XcmTransferFollowUpData } from "./xcmArrival";
+import type {
+	TransactionRecord,
+	TransactionType,
+	XcmTransferFollowUpData,
+} from "./types";
+import type { XcmArrival } from "./xcmArrival";
+
+type BlockRecords = { phase: { type: string }; event: TxEvents[number] }[];
 
 const hydration = vi.hoisted(() => ({
-	blocks$: undefined as unknown as Subject<
-		{ phase: { type: string }; event: TxEvents[number] }[]
-	>,
+	best$: undefined as unknown as Subject<BlockRecords>,
+	finalized$: undefined as unknown as Subject<BlockRecords>,
 }));
 
 vi.mock("../../papi/getApi", async () => {
 	const { map, of, Subject } = await import("rxjs");
-	hydration.blocks$ = new Subject();
+	hydration.best$ = new Subject();
+	hydration.finalized$ = new Subject();
 	return {
 		getApi$: () =>
 			of({
 				query: {
 					System: {
 						Events: {
-							watchValue: () =>
-								hydration.blocks$.pipe(map((value) => ({ value }))),
+							watchValue: ({ at }: { at: "best" | "finalized" }) =>
+								hydration[`${at}$`].pipe(
+									map((value, index) => ({
+										block: { number: index, hash: `0x${index}` },
+										value,
+									})),
+								),
 						},
 					},
 				},
@@ -51,6 +68,10 @@ vi.mock("../../papi/getApi", async () => {
 vi.mock("../../components/icons", () => ({
 	SpinnerIcon: () => null,
 	SpinnerBasicIcon: () => null,
+}));
+
+vi.mock("../../components/Pulse", () => ({
+	Pulse: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 
 const MESSAGE_ID =
@@ -163,6 +184,7 @@ const openAndClose = async (record: TransactionRecord) => {
 afterEach(async () => {
 	for (const tx of await firstValueFrom(transactions$))
 		act(() => dismissTransaction(tx.id));
+	clearCachedObservables();
 	cleanup();
 });
 
@@ -177,27 +199,87 @@ describe("closing the follow-up modal", () => {
 
 		expect(screen.queryByRole("dialog")).toBeNull();
 		expect(await isInStore(record.id)).toBe(true);
-		const toast = await screen.findByText("In transit to Hydration...");
+		const toast = await screen.findByText("Sent, awaiting Hydration...");
 
 		fireEvent.click(toast);
+		const modal = await screen.findByRole("dialog");
+		expect(
+			within(modal).getByText("Transfer DOT to Hydration"),
+		).toBeInTheDocument();
+		expect(
+			within(modal).getByText("Sent, awaiting Hydration..."),
+		).toBeInTheDocument();
+
+		const arrivalBlock = arrivalOnHydration.map((event) => ({
+			phase: { type: "Initialization" },
+			event,
+		}));
+		act(() => hydration.best$.next(arrivalBlock));
+		expect(
+			await within(modal).findByText(
+				"Arrived on Hydration, awaiting finalization",
+			),
+		).toBeInTheDocument();
+		closeModal();
+		expect(screen.queryByRole("dialog")).toBeNull();
+		expect(await isInStore(record.id)).toBe(true);
+
+		act(() => hydration.finalized$.next(arrivalBlock));
+		expect(await screen.findByText("Arrived on Hydration")).toBeInTheDocument();
+		fireEvent.click(screen.getByText("Arrived on Hydration"));
 		expect(
 			within(await screen.findByRole("dialog")).getByText(
-				"Transfer DOT to Hydration",
+				"Arrived on Hydration",
 			),
 		).toBeInTheDocument();
 
-		act(() =>
-			hydration.blocks$.next(
-				arrivalOnHydration.map((event) => ({
-					phase: { type: "Initialization" },
-					event,
-				})),
-			),
-		);
-		expect(await screen.findByText("Arrived on Hydration")).toBeInTheDocument();
-
 		closeModal();
 		expect(await isInStore(record.id)).toBe(false);
+	});
+
+	it("headlines the modal with the destination failure of a finalized transfer", async () => {
+		const record = getFinalizedRecord(
+			"xcm-transfer",
+			"xcmTransfer",
+			"Transfer DOT to Hydration",
+		);
+		await openAndClose(record);
+		const failedBlock = [
+			{
+				phase: { type: "Initialization" },
+				event: {
+					type: "MessageQueue",
+					value: {
+						type: "Processed",
+						value: {
+							id: MESSAGE_ID,
+							origin: { type: "Sibling", value: 1000 },
+							success: false,
+						},
+					},
+				},
+			},
+		];
+		act(() => hydration.finalized$.next(failedBlock));
+
+		fireEvent.click(await screen.findByText("Failed on Hydration"));
+		const modal = await screen.findByRole("dialog");
+		expect(within(modal).getByText("Failed on Hydration")).toBeInTheDocument();
+		expect(within(modal).queryByText("Transaction succeeded")).toBeNull();
+	});
+
+	it("minimizes a swap that failed in a best block until the finalized verdict", async () => {
+		const record: TransactionRecord = {
+			...getFinalizedRecord("swap", "swap", "Swap DOT/USDC"),
+			status: "failed",
+			txEvents: [
+				{ type: "inBestBlock", ok: false, txHash: "0x01", events: [] },
+			] as unknown as TransactionRecord["txEvents"],
+		};
+		await openAndClose(record);
+
+		expect(screen.queryByRole("dialog")).toBeNull();
+		expect(await isInStore(record.id)).toBe(true);
 	});
 
 	it("dismisses a finalized swap", async () => {
@@ -209,6 +291,139 @@ describe("closing the follow-up modal", () => {
 	});
 });
 
+describe("toast dismissal", () => {
+	it("offers no close button while the transaction awaits inclusion, then one once settled", async () => {
+		const record: TransactionRecord = {
+			...getFinalizedRecord("swap", "swap", "Swap DOT/USDC"),
+			status: "broadcasted",
+			txEvents: [
+				{ type: "created", txHash: "0x01" },
+				{ type: "broadcasted", txHash: "0x01" },
+			] as TransactionRecord["txEvents"],
+		};
+		renderApp();
+		act(() => addTransaction(record));
+		const toast = (
+			await screen.findByText("Submitted, waiting for block...")
+		).closest(".Toastify__toast") as HTMLElement;
+		expect(within(toast).queryByRole("button", { name: /close/i })).toBeNull();
+
+		act(() =>
+			addTransaction({
+				...record,
+				status: "finalized",
+				txEvents: [
+					...record.txEvents,
+					{ type: "finalized", ok: true, txHash: "0x01", events: [] },
+				] as TransactionRecord["txEvents"],
+			}),
+		);
+		await screen.findByText("Finalized");
+		expect(
+			within(toast).getByRole("button", { name: /close/i }),
+		).toBeInTheDocument();
+	});
+});
+
+describe("getToastAutoClose", () => {
+	const swap = getFinalizedRecord("swap", "swap", "Swap DOT/USDC");
+	const transfer = getFinalizedRecord(
+		"xcm-transfer",
+		"xcmTransfer",
+		"Transfer DOT to Hydration",
+	);
+	const failedIn = (
+		inclusion: "inBestBlock" | "finalized" | "error",
+	): TransactionRecord => ({
+		...swap,
+		status: "failed",
+		txEvents: [
+			inclusion === "error"
+				? { type: "error", error: new Error("rejected") }
+				: { type: inclusion, ok: false, txHash: "0x01", events: [] },
+		] as TransactionRecord["txEvents"],
+	});
+
+	it("keeps a failure that a best block may still retract", () => {
+		expect(getToastAutoClose(failedIn("inBestBlock"), null, false)).toBe(false);
+	});
+
+	it("auto-closes a failure that is finalized or errored", () => {
+		expect(getToastAutoClose(failedIn("finalized"), null, false)).toBe(5_000);
+		expect(getToastAutoClose(failedIn("error"), null, false)).toBe(5_000);
+	});
+
+	it("auto-closes a finalized success whose dialog is closed", () => {
+		expect(getToastAutoClose(swap, null, false)).toBe(5_000);
+	});
+
+	it("keeps a settled toast while its dialog is open", () => {
+		expect(getToastAutoClose(swap, null, true)).toBe(false);
+		expect(getToastAutoClose(failedIn("finalized"), null, true)).toBe(false);
+	});
+
+	it("keeps a finalized transfer until its arrival is final", () => {
+		expect(getToastAutoClose(transfer, null, false)).toBe(false);
+		expect(
+			getToastAutoClose(
+				transfer,
+				{ status: "in-transit", messageId: MESSAGE_ID },
+				false,
+			),
+		).toBe(false);
+		expect(
+			getToastAutoClose(
+				transfer,
+				{
+					status: "arrived",
+					messageId: MESSAGE_ID,
+					received: 1n,
+					finalized: true,
+				},
+				false,
+			),
+		).toBe(5_000);
+	});
+
+	const settledAs = (
+		status: "unknown" | "lostTrack" | "expired",
+	): TransactionRecord => ({
+		...swap,
+		status,
+		txEvents: [
+			{ type: "created", txHash: "0x01" },
+			{ type: status },
+		] as TransactionRecord["txEvents"],
+	});
+
+	it("keeps an outcome the chain never confirmed until the user dismisses it", () => {
+		const unknown = settledAs("unknown");
+		expect(getToastAutoClose(unknown, null, false)).toBe(false);
+		expect(getToastView(unknown, null)).toEqual({
+			outcome: "warning",
+			text: "Could not confirm, check the explorer before retrying",
+		});
+	});
+
+	it("keeps a transaction the app lost track of until the user dismisses it", () => {
+		const lost = settledAs("lostTrack");
+		expect(getToastAutoClose(lost, null, false)).toBe(false);
+		expect(getToastView(lost, null)).toEqual({
+			outcome: "warning",
+			text: "Included, but the app lost track of it. Check the explorer",
+		});
+	});
+
+	it("keeps an expired transaction until the user dismisses it", () => {
+		const expired = settledAs("expired");
+		expect(getToastAutoClose(expired, null, false)).toBe(false);
+		expect(getToastView(expired, null)).toEqual({
+			outcome: "error",
+			text: "Expired before it was included",
+		});
+	});
+});
+
 describe("getToastView", () => {
 	const transfer = getFinalizedRecord(
 		"xcm-transfer",
@@ -217,13 +432,30 @@ describe("getToastView", () => {
 	);
 
 	it.each<[XcmArrival | null, ReturnType<typeof getToastView>]>([
-		[null, { outcome: "loading", text: "In transit to Hydration..." }],
+		[null, { outcome: "loading", text: "Sent, awaiting Hydration..." }],
 		[
 			{ status: "in-transit", messageId: MESSAGE_ID },
-			{ outcome: "loading", text: "In transit to Hydration..." },
+			{ outcome: "loading", text: "Sent, awaiting Hydration..." },
 		],
 		[
-			{ status: "arrived", messageId: MESSAGE_ID, received: 1n },
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 1n,
+				finalized: false,
+			},
+			{
+				outcome: "success",
+				text: "Arrived on Hydration, awaiting finalization",
+			},
+		],
+		[
+			{
+				status: "arrived",
+				messageId: MESSAGE_ID,
+				received: 1n,
+				finalized: true,
+			},
 			{ outcome: "success", text: "Arrived on Hydration" },
 		],
 		[
@@ -232,6 +464,7 @@ describe("getToastView", () => {
 				messageId: MESSAGE_ID,
 				returned: [],
 				trapped: true,
+				finalized: true,
 			},
 			{ outcome: "error", text: "Failed on Hydration, assets trapped" },
 		],
@@ -241,6 +474,7 @@ describe("getToastView", () => {
 				messageId: MESSAGE_ID,
 				returned: [{ tokenId: DOT_ON_HYDRATION, plancks: 1n }],
 				trapped: false,
+				finalized: true,
 			},
 			{ outcome: "error", text: "Failed on Hydration, funds returned" },
 		],
@@ -250,6 +484,7 @@ describe("getToastView", () => {
 				messageId: MESSAGE_ID,
 				returned: [],
 				trapped: false,
+				finalized: true,
 			},
 			{ outcome: "error", text: "Failed on Hydration" },
 		],
@@ -266,6 +501,21 @@ describe("getToastView", () => {
 			outcome: "loading",
 			text: "In block, waiting for finalization...",
 		});
+	});
+
+	it("shows a provisional destination failure while the origin waits for finality", () => {
+		expect(
+			getToastView(
+				{ ...transfer, status: "inBlock" },
+				{
+					status: "failed-on-destination",
+					messageId: MESSAGE_ID,
+					returned: [],
+					trapped: false,
+					finalized: false,
+				},
+			),
+		).toEqual({ outcome: "error", text: "Failed on Hydration" });
 	});
 
 	it("shows other transactions as finalized", () => {

@@ -20,11 +20,12 @@ const combineState = (
 		return fromPairs(
 			allBalanceIds.map((balanceId) => {
 				const status = statuses[balanceId] ?? "stale";
-				const balance = balances[balanceId]
-					? BigInt(balances[balanceId].balance)
-					: undefined;
+				const stored = balances[balanceId];
+				const empty = status === "loaded" ? 0n : undefined;
+				const balance = stored ? BigInt(stored.balance) : empty;
+				const frozen = stored ? BigInt(stored.frozen ?? 0n) : empty;
 
-				return [balanceId, { status, balance }];
+				return [balanceId, { status, balance, frozen }];
 			}),
 		) as Record<string, BalanceState>;
 	} catch (err) {
@@ -36,9 +37,9 @@ const combineState = (
 };
 
 export const balancesState$ = combineLatest([
-	balanceSubscriptions$, // unique subscriptions
-	balanceStatuses$, // status of each subscription
-	balancesStore$, // stored balances
+	balanceSubscriptions$,
+	balanceStatuses$,
+	balancesStore$,
 ]).pipe(
 	throttleTime(100, undefined, { leading: true, trailing: true }),
 	map(([balanceIds, statuses, balances]) =>

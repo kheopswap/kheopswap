@@ -1,42 +1,35 @@
 import type { TokenId } from "../registry/tokens/types";
-import { logger } from "../utils/logger";
+
+type Reserves = [bigint, bigint];
+
+const hasLiquidity = (reserves: Reserves | undefined): reserves is Reserves =>
+	!!reserves && !reserves.includes(0n);
 
 export const getAssetConvertPlancks = (
 	plancks: bigint,
 	tokenIdIn: TokenId,
 	tokenIdNative: TokenId,
 	tokenIdOut: TokenId,
-	reservesNativeToTokenIn: [bigint, bigint],
-	reservesNativeToTokenOut: [bigint, bigint],
+	reservesNativeToTokenIn: Reserves,
+	reservesNativeToTokenOut: Reserves,
 ) => {
-	const stop = logger.cumulativeTimer("getAssetConvertPlancks");
+	if (tokenIdIn === tokenIdOut) return plancks;
 
-	try {
-		if (tokenIdIn === tokenIdOut) return plancks;
+	const reservesOut: Reserves | undefined =
+		tokenIdNative === tokenIdOut ? [1n, 1n] : reservesNativeToTokenOut;
+	if (!hasLiquidity(reservesOut)) return undefined;
+	const [nativeToTokenOutReserveIn, nativeToTokenOutReserveOut] = reservesOut;
 
-		if (tokenIdNative !== tokenIdOut && !reservesNativeToTokenOut)
-			return undefined;
+	if (tokenIdIn === tokenIdNative)
+		return (plancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
 
-		const [nativeToTokenOutReserveIn, nativeToTokenOutReserveOut] =
-			tokenIdNative !== tokenIdOut ? reservesNativeToTokenOut : [1n, 1n];
+	if (!hasLiquidity(reservesNativeToTokenIn)) return undefined;
+	const [nativeToTokenInReserveIn, nativeToTokenInReserveOut] =
+		reservesNativeToTokenIn;
 
-		if (tokenIdIn === tokenIdNative) {
-			const stablePlancks =
-				(plancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
-			return stablePlancks;
-		}
-
-		if (!reservesNativeToTokenIn || reservesNativeToTokenIn?.includes(0n))
-			return undefined;
-		const [nativeToTokenInReserveIn, nativeToTokenInReserveOut] =
-			reservesNativeToTokenIn;
-
-		const nativePlancks =
-			(plancks * nativeToTokenInReserveIn) / nativeToTokenInReserveOut;
-		const outPlancks =
-			(nativePlancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn;
-		return outPlancks;
-	} finally {
-		stop();
-	}
+	const nativePlancks =
+		(plancks * nativeToTokenInReserveIn) / nativeToTokenInReserveOut;
+	return (
+		(nativePlancks * nativeToTokenOutReserveOut) / nativeToTokenOutReserveIn
+	);
 };

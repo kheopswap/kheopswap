@@ -62,6 +62,18 @@ describe("getAssetConvertPlancks", () => {
 		expect(result).toBeUndefined();
 	});
 
+	it("returns undefined, never a fake amount, when the out leg has an empty reserve", () => {
+		expect(
+			getAssetConvertPlancks(100n, native, native, usdc, [1n, 1n], [0n, 2000n]),
+		).toBeUndefined();
+		expect(
+			getAssetConvertPlancks(100n, native, native, usdc, [1n, 1n], [500n, 0n]),
+		).toBeUndefined();
+		expect(
+			getAssetConvertPlancks(100n, usdt, native, usdc, [500n, 1000n], [0n, 0n]),
+		).toBeUndefined();
+	});
+
 	it("handles native-to-native (identity)", () => {
 		const result = getAssetConvertPlancks(
 			1234n,

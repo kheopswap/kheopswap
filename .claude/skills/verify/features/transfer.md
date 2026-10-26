@@ -6,7 +6,7 @@ Transfer lets a user send any Asset Hub token from one of their accounts to an o
 
 - `transfer-from`: the `FROM` field opens `Select account` with the connected accounts. It has no `Address` box.
 - `transfer-to`: the `TO` field opens `Select account` with an `Address` box plus the connected accounts. With no account connected, the drawer heading is `Connect wallet`, and the `Address` box still works. The recipient's balance appears next to the `TO` label. A pasted SS58 address shows in full, an Ethereum address shortened (`0x1111...111111`).
-- `transfer-amount`: the `Transfer amount` box, `Use maximum balance` (`MAX`, needs a sender with a balance), and the token picker (`Selected token: PAS on Paseo AH. Change token`).
+- `transfer-amount`: the `Transfer amount` box, `Use maximum balance` (`MAX`, needs a sender with a balance; it fills the balance minus twice the fee and the existential deposit whenever the sent token pays the fee, and does nothing until the fee is estimated), and the token picker (`Selected token: PAS on Paseo AH. Change token`).
 - `transfer-summary`: `Simulation` and `Transaction fee`. Both need a sender, and the simulation also needs a recipient. The fee value opens `Select fee token`, as in `swap.md`. An amount above the balance shows `Insufficient balance` and `Simulation` `Failed`.
 - `transfer-submit`: `TRANSFER` → follow-up dialog `Transfer <SYMBOL>` reading `Approve in Talisman` → Talisman approval → `Transaction succeeded`.
 
@@ -36,9 +36,9 @@ Steps:
 
 - The nav `TRANSFER` is a link, and the submit `TRANSFER` is a button. Pass `--exact` with `role button` and the uppercase name.
 - The `Address` box and its confirm button have no accessible names, so they need snapshot refs. Take the refs from a fresh snapshot: they change when the page re-renders.
-- `Transaction fee` reads `0 PAS` until a sender is selected and the estimate arrives.
+- `Transaction fee` is empty until a sender is selected, then shows a shimmer until the estimate arrives.
 - A self-transfer leaves the balance unchanged except for the fee. Check that the drop matches the fee, not the amount.
 - The amount stays filled after a successful submit (seen 2026-10-24).
-- Signing on Paseo needs the Talisman build from `~/.kheopswap/talisman.zip` (see `../SKILL.md`). On 2026-10-24, with 3.12.0, a 0.1 PAS self-transfer showed the popup `Approve Request ... Transfer 0.1 PAS to <account name>` and ended at `Transaction succeeded` with `Effective fee 0.0009 PAS`. With the Web Store build, the dialog reads `Transaction failed`, `PJS does not support this signed-extension: AsScarcity`, and closes about 5 s later.
+- Signing on Paseo needs the Talisman build from `~/.kheopswap/talisman.zip` (see `../SKILL.md`). On 2026-10-24, with 3.12.0, a 0.1 PAS self-transfer showed the popup `Approve Request ... Transfer 0.1 PAS to <account name>` and ended at `Transaction succeeded` with `Effective fee 0.0009 PAS`. With the Web Store build, the dialog reads `Transaction failed`, `PJS does not support this signed-extension: AsScarcity`, and stays until `CLOSE`.
 - Never send to an address you can't name as a user-owned test account.
 - The follow-up dialog ignores `Escape` in every state. Close it with `agent-browser find role button click --name "CLOSE" --exact`.

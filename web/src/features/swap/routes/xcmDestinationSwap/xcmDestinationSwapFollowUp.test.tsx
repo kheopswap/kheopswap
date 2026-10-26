@@ -1,11 +1,11 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
-import type { TransactionRecord } from "../../../../state/transactions/types";
 import type {
-	XcmArrival,
+	TransactionRecord,
 	XcmTransferFollowUpData,
-} from "../../../../state/transactions/xcmArrival";
+} from "../../../../state/transactions/types";
+import type { XcmArrival } from "../../../../state/transactions/xcmArrival";
 import { XcmTransferFollowUpContent } from "../xcmTransfer/XcmTransferFollowUpContent";
 import { usdtToPink } from "./xcmDestinationSwap.fixtures";
 
@@ -60,6 +60,7 @@ const failed = (
 	messageId: "0x01",
 	returned,
 	trapped,
+	finalized: true,
 });
 
 describe("follow-up of a swap on Asset Hub of what Hydration sends", () => {
@@ -102,6 +103,7 @@ describe("follow-up of a swap on Asset Hub of what Hydration sends", () => {
 			status: "arrived",
 			messageId: "0x01",
 			received: 497686228859862n,
+			finalized: true,
 		};
 		render(<XcmTransferFollowUpContent transaction={record} />);
 

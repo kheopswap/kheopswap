@@ -4,14 +4,16 @@ import type { FC, PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WalletAccount } from "../../../../common/kheopskit";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
-import { getAmmPath } from "../ammPath";
+import { getAmmPath, mapHopPath } from "../ammPath";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { getDestinationSwapFee } from "../xcmDestinationSwap/destinationSwapFee";
+import { buildXcmDestinationSwapArgs } from "../xcmDestinationSwap/getXcmDestinationSwapCall";
 import {
 	usdtToPink,
 	type XcmDestinationSwapFixture,
 } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { useXcmRoute } from "./useXcmRoute";
+import { pinkToAssetHubInsufficient } from "./xcmFromHydration.fixtures";
 
 const chain = vi.hoisted(() => ({
 	fixture: undefined as unknown as XcmDestinationSwapFixture,
@@ -21,6 +23,7 @@ const chain = vi.hoisted(() => ({
 	firstPoolInflow: 0n,
 	balanceIn: 1n,
 	isUnfunded: false,
+	hasInsufficientBalance: false,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
@@ -59,8 +62,20 @@ vi.mock("../../../../papi/getApi", () => ({
 	}),
 }));
 
-vi.mock("../../../../hooks/useBalance", () => ({
-	useBalance: () => ({ data: chain.balanceIn, isLoading: false }),
+vi.mock("../../../../hooks/useBalances", () => ({
+	useBalances: ({
+		balanceDefs = [],
+	}: {
+		balanceDefs?: { address: string; tokenId: string }[];
+	}) => ({
+		isLoading: false,
+		data: balanceDefs.map((def) => ({
+			...def,
+			balance: chain.balanceIn,
+			frozen: 0n,
+			isLoading: false,
+		})),
+	}),
 }));
 
 vi.mock("../../../../state/relay", () => ({
@@ -99,10 +114,6 @@ vi.mock("../../useAssetConvertionLPFee", () => ({
 	}),
 }));
 
-vi.mock("../../../../hooks/useAssetConvertPlancks", () => ({
-	useAssetConvertPlancks: () => ({ plancksOut: undefined }),
-}));
-
 vi.mock("../../../../hooks/useToken", () => ({
 	useToken: () => ({ data: null, isLoading: false }),
 }));
@@ -120,6 +131,10 @@ const getToken = (tokenId: string) => {
 const renderDestinationSwap = (
 	fixture: XcmDestinationSwapFixture,
 	totalIn = fixture.amount,
+	account: WalletAccount | null = {
+		platform: "polkadot",
+		address: fixture.beneficiary,
+	} as WalletAccount,
 ) => {
 	chain.fixture = fixture;
 	const route: XcmDestinationSwapRoute = {
@@ -141,30 +156,34 @@ const renderDestinationSwap = (
 		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 	);
 	return renderHook(
-		() =>
+		(props?: { totalIn: bigint }) =>
 			useXcmRoute({
 				route,
-				account: {
-					platform: "polkadot",
-					address: fixture.beneficiary,
-				} as WalletAccount,
+				account,
 				tokenIn: getToken(fixture.tokenIdIn),
 				tokenOut: getToken(fixture.tokenIdOut),
-				totalIn,
+				totalIn: props?.totalIn ?? totalIn,
 				swapPlancksIn: null,
 				appCommission: null,
 				slippage: fixture.slippage,
 				edTokenIn: 10_000n,
+				balanceIn: chain.balanceIn,
+				hasInsufficientBalance: chain.hasInsufficientBalance,
+				balanceOut: 0n,
 			}),
-		{ wrapper },
+		{ wrapper, initialProps: { totalIn } },
 	);
 };
+
+const WITHDRAW_REFUSED =
+	"Hydration refuses to release this token from your account";
 
 beforeEach(() => {
 	chain.canPriceFee = true;
 	chain.firstPoolInflow = 0n;
 	chain.balanceIn = 1n;
 	chain.isUnfunded = false;
+	chain.hasInsufficientBalance = false;
 	chain.dryRunCall = vi.fn(async () =>
 		chain.isUnfunded
 			? { success: false, value: { type: "InsufficientBalance" } }
@@ -219,13 +238,34 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		await waitFor(() =>
 			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
 		);
-		expect(result.current.plan.followUpData).toMatchObject({
-			target: {
-				tokenId: usdtToPink.tokenIdOut,
-				beneficiary: usdtToPink.beneficiary,
+		expect(result.current.plan.followUp).toMatchObject({
+			type: "xcmDestinationSwap",
+			followUpData: {
+				target: {
+					tokenId: usdtToPink.tokenIdOut,
+					beneficiary: usdtToPink.beneficiary,
+				},
+				returnTokenIds: ["asset::pah::1984", "native::pah", "asset::pah::23"],
 			},
-			returnTokenIds: ["asset::pah::1984", "native::pah", "asset::pah::23"],
 		});
+	});
+
+	it("asks for an account before quoting", async () => {
+		const { result } = renderDestinationSwap(
+			usdtToPink,
+			usdtToPink.amount,
+			null,
+		);
+
+		expect(result.current.outputErrorMessage).toBeNull();
+		expect(result.current.outputHint).toBe(
+			"Connect a Polkadot account to quote cross-chain routes",
+		);
+		expect(result.current.plan.submitGate).toEqual({
+			status: "closed",
+			reason: "Connect a Polkadot account to quote cross-chain routes",
+		});
+		expect(result.current.plan.followUp).toEqual({ type: "unknown" });
 	});
 
 	it("refuses an amount the Asset Hub fee would eat", async () => {
@@ -281,6 +321,215 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 			}),
 		);
 		expect(chain.queryXcmWeight).toHaveBeenCalledTimes(feeQueries);
+	});
+
+	it("keeps the last quote on screen while a moved pool refreshes it", async () => {
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+		const shownOut = result.current.swapPlancksOut;
+		expect(shownOut).toBe(usdtToPink.hops[1]?.amountOut);
+
+		const pendingDryRuns: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					pendingDryRuns.push(() => resolve(chain.fixture.originDryRun));
+				}),
+		);
+		const [firstPool] = usdtToPink.hops;
+		if (!firstPool) throw new Error("expected a first hop");
+		chain.firstPoolInflow = firstPool.reserveIn / 1000n;
+		rerender();
+
+		await waitFor(() => expect(pendingDryRuns).toHaveLength(1));
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+		expect(result.current.swapPlancksOut).toBe(shownOut);
+		expect(result.current.isLoadingAmountOut).toBe(false);
+		expect(result.current.details).toMatchObject({
+			quote: { isLoading: false, data: { success: true } },
+			received: { plancks: shownOut, isEstimate: true },
+			destinationFee: { isEstimate: true },
+		});
+
+		for (const finish of pendingDryRuns) finish();
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+	});
+
+	it.each([
+		[true, null, usdtToPink.hops[1]?.amountOut],
+		[false, WITHDRAW_REFUSED, undefined],
+	])(
+		"with an amount above the balance (%s), leaves the shortfall to the input field and keeps the swap estimate",
+		async (hasInsufficientBalance, outputErrorMessage, swapPlancksOut) => {
+			chain.hasInsufficientBalance = hasInsufficientBalance;
+			chain.dryRunCall.mockImplementation(
+				async (
+					_origin: unknown,
+					call: {
+						args: { assets: { value: { fun: { value: bigint } }[] } };
+					},
+				) =>
+					call.args.assets.value[0]?.fun.value === usdtToPink.amount
+						? pinkToAssetHubInsufficient.origin
+						: chain.fixture.originDryRun,
+			);
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() =>
+				expect(result.current.quote.data).toMatchObject({ success: false }),
+			);
+			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
+			expect(result.current.swapPlancksOut).toBe(swapPlancksOut);
+			expect(result.current.details?.received).toEqual(
+				swapPlancksOut === undefined
+					? undefined
+					: { plancks: swapPlancksOut, isEstimate: true },
+			);
+		},
+	);
+
+	it.each([
+		[true, null],
+		[false, "InsufficientBalance"],
+	])(
+		"with an unfunded input (%s), leaves the shortfall to the input field, or reports what Hydration answered",
+		async (hasInsufficientBalance, outputErrorMessage) => {
+			chain.isUnfunded = true;
+			chain.hasInsufficientBalance = hasInsufficientBalance;
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() =>
+				expect(result.current.isLoadingAmountOut).toBe(false),
+			);
+			expect(chain.dryRunCall).toHaveBeenCalled();
+			expect(result.current.outputErrorMessage).toBe(outputErrorMessage);
+		},
+	);
+
+	it.each([
+		["the spendable balance when it is below", 4_000n, 4_000n],
+		["the minimum balance when the account holds more than", 50_000n, 10_000n],
+	])(
+		"estimates the fees with %s the minimum balance",
+		async (_, balanceIn, probePlancks) => {
+			chain.balanceIn = balanceIn;
+			const { result } = renderDestinationSwap(usdtToPink);
+
+			await waitFor(() => expect(result.current.plan.fakeCall).toBeTruthy());
+			const route = result.current.details?.route;
+			if (route?.kind !== "xcm-destination-swap")
+				throw new Error("not a destination swap");
+			expect(result.current.plan.fakeCall?.decodedCall).toEqual({
+				args: buildXcmDestinationSwapArgs({
+					route,
+					tokenIn: getToken(usdtToPink.tokenIdIn),
+					plancks: probePlancks,
+					hops: mapHopPath(route.path, (hop) => ({ ...hop, minOut: 0n })),
+					beneficiary: usdtToPink.beneficiary,
+				}),
+			});
+		},
+	);
+
+	it("says Hydration refuses to release the token when it rejects the fee estimate's withdrawal, not that the amount is short or the fee unknown", async () => {
+		chain.dryRunCall.mockResolvedValue(pinkToAssetHubInsufficient.origin);
+		const { result } = renderDestinationSwap(usdtToPink);
+
+		await waitFor(() =>
+			expect(result.current.outputErrorMessage).toBe(WITHDRAW_REFUSED),
+		);
+		expect(result.current.plan.submitGate.status).toBe("closed");
+	});
+
+	it("on an amount edit, shows the local estimate until the dry runs quote the new amount", async () => {
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+
+		const pendingDryRuns: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					pendingDryRuns.push(() => resolve(chain.fixture.originDryRun));
+				}),
+		);
+		rerender({ totalIn: usdtToPink.amount / 2n });
+
+		await waitFor(() =>
+			expect(result.current.details?.received?.isEstimate).toBe(true),
+		);
+		const estimate = result.current.swapPlancksOut;
+		expect(estimate).toBeGreaterThan(0n);
+		expect(estimate).toBeLessThan(usdtToPink.hops[1]?.amountOut ?? 0n);
+		expect(result.current.details?.received?.plancks).toBe(estimate);
+		expect(result.current.isLoadingAmountOut).toBe(false);
+		expect(result.current.details?.quote.isLoading).toBe(true);
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+	});
+
+	it("holds the gate on a balance change until the dry runs answer again", async () => {
+		chain.balanceIn = usdtToPink.amount * 2n;
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+
+		const pendingDryRuns: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					pendingDryRuns.push(() => resolve(chain.fixture.originDryRun));
+				}),
+		);
+		chain.balanceIn = usdtToPink.amount;
+		rerender();
+
+		await waitFor(() => expect(pendingDryRuns.length).toBeGreaterThan(0));
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+
+		await waitFor(() => {
+			for (const finish of pendingDryRuns.splice(0)) finish();
+			expect(result.current.plan.submitGate).toEqual({ status: "open" });
+		});
+	});
+
+	it("holds the gate until the fee estimate answers again when the balance returns to a value estimated before", async () => {
+		chain.balanceIn = usdtToPink.amount * 2n;
+		const { result, rerender } = renderDestinationSwap(usdtToPink);
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+		chain.balanceIn = usdtToPink.amount;
+		rerender();
+		await waitFor(() =>
+			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
+		);
+
+		const estimateCall = result.current.plan.fakeCall?.decodedCall;
+		const pendingEstimates: (() => void)[] = [];
+		chain.dryRunCall.mockImplementation(async (_origin, decodedCall) =>
+			decodedCall === estimateCall
+				? new Promise((resolve) => {
+						pendingEstimates.push(() => resolve(chain.fixture.originDryRun));
+					})
+				: chain.fixture.originDryRun,
+		);
+		chain.balanceIn = usdtToPink.amount * 2n;
+		rerender();
+
+		await waitFor(() => expect(pendingEstimates.length).toBeGreaterThan(0));
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(result.current.plan.submitGate).toEqual({ status: "pending" });
+
+		await waitFor(() => {
+			for (const finish of pendingEstimates.splice(0)) finish();
+			expect(result.current.plan.submitGate).toEqual({ status: "open" });
+		});
 	});
 
 	it("stops estimating when the origin chain keeps failing and the balance stays put", async () => {

@@ -1,5 +1,4 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { compact, keyBy } from "lodash-es";
 import { type FC, Fragment } from "react";
 import { FormSummaryRow } from "../../../../components/FormSummary";
 import { Shimmer } from "../../../../components/Shimmer";
@@ -9,13 +8,21 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "../../../../components/tooltip/Tooltip";
-import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
+import type { TokenAmount } from "../../../../registry/tokens/types";
 import { cn } from "../../../../utils/cn";
+import { isBigInt } from "../../../../utils/isBigInt";
+import { useTransaction } from "../../../transaction/TransactionProvider";
 import { useSwap } from "../../SwapProvider";
+import { TokenAmountValue } from "../AmmPathValues";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
-import { describeXcmQuoteFailure, getXcmFeeParts } from "./xcmQuote";
+import {
+	describeXcmQuoteFailure,
+	getTotalDebited,
+	type XcmFee,
+	type XcmReceived,
+} from "./xcmQuote";
 
 export const XcmSimulationValue: FC<{
 	quote: XcmQuoteState;
@@ -56,57 +63,129 @@ export const XcmSimulationValue: FC<{
 	);
 };
 
-export const XcmQuoteRows: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
+const FeeLabel: FC<{ label: string; explanation: string }> = ({
+	label,
+	explanation,
+}) => (
+	<Tooltip placement="bottom-start">
+		<TooltipTrigger render={<div />}>
+			<div className="flex items-center gap-1">
+				{label}
+				<InformationCircleIcon className="size-4 inline align-text-bottom" />
+			</div>
+		</TooltipTrigger>
+		<TooltipContent>
+			<p className="max-w-72">{explanation}</p>
+		</TooltipContent>
+	</Tooltip>
+);
+
+const TokenAmounts: FC<{ amounts: TokenAmount[] }> = ({ amounts }) => (
+	<div className="flex flex-wrap justify-end">
+		{amounts.map(({ tokenId, plancks }, index) => (
+			<Fragment key={tokenId}>
+				{index > 0 && <span className="mx-1">+</span>}
+				<TokenAmountValue tokenId={tokenId} plancks={plancks} />
+			</Fragment>
+		))}
+	</div>
+);
+
+const feeShimmer = <Shimmer className="h-4">0.0000 AAA</Shimmer>;
+
+const TotalDebitedValue: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
+	const { totalIn, transaction, isLoadingCall } = useSwap();
+	const { feeEstimate, feeToken, isCallFeeEstimated, errorFeeEstimate } =
+		useTransaction();
+	if (!totalIn) return null;
+	const transactionFee =
+		transaction.call && isCallFeeEstimated && feeToken && isBigInt(feeEstimate)
+			? { tokenId: feeToken.id, plancks: feeEstimate }
+			: undefined;
+	const isEstimatingCallFee =
+		!!transaction.call && !isCallFeeEstimated && !errorFeeEstimate;
+	if (!quote.deliveryFee || quote.deliveryFee.isEstimate || !transactionFee)
+		return quote.isLoading || isLoadingCall || isEstimatingCallFee
+			? feeShimmer
+			: null;
+
+	const amounts = getTotalDebited(transaction.callSpendings, transactionFee);
+	return amounts.length ? <TokenAmounts amounts={amounts} /> : null;
+};
+
+const FeeValue: FC<{ fee: XcmFee }> = ({ fee: { isEstimate, ...amount } }) => (
+	<span className={cn(isEstimate && "text-muted")}>
+		<TokenAmountValue {...amount} />
+		{isEstimate && " (est.)"}
+	</span>
+);
+
+const ReceivedValue: FC<{ received: XcmReceived; isLoading: boolean }> = ({
+	received: { plancks, isEstimate },
+	isLoading,
+}) => {
 	const { tokenOut } = useSwap();
-	const { data: deliveryFeeToken } = useToken({
-		tokenId: quote.deliveryFee?.tokenId,
-	});
-	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
-	const { data: destinationFeeToken } = useToken({
-		tokenId: xcmQuote?.destinationFee.tokenId,
-	});
-	const feeTokens = keyBy(
-		compact([deliveryFeeToken, destinationFeeToken]),
-		"id",
+	if (!tokenOut) return null;
+	return (
+		<span className={cn(isEstimate && "text-muted")}>
+			~<Tokens plancks={plancks} token={tokenOut} pulse={isLoading} />
+			{isEstimate && " (est.)"}
+		</span>
 	);
-	const fees = getXcmFeeParts(quote.deliveryFee, xcmQuote).flatMap(
-		({ tokenId, plancks }) => {
-			const token = feeTokens[tokenId];
-			return token ? [{ token, plancks }] : [];
-		},
-	);
+};
+
+export const XcmQuoteRows: FC<{
+	quote: XcmQuoteState;
+	received: XcmReceived | undefined;
+	destinationFee: XcmFee | undefined;
+	route: XcmRoute;
+}> = ({ quote, received, destinationFee, route }) => {
+	const origin = getChainById(route.origin).name;
+	const destination = getChainById(route.destination).name;
+	const loadingShimmer = quote.isLoading && feeShimmer;
 
 	return (
 		<>
 			<FormSummaryRow
 				label="You receive"
 				value={
-					quote.isLoading ? (
-						<Shimmer className="h-4">0.0000 AAA</Shimmer>
+					received ? (
+						<ReceivedValue received={received} isLoading={quote.isLoading} />
 					) : (
-						xcmQuote &&
-						tokenOut && (
-							<span>
-								~<Tokens plancks={xcmQuote.received} token={tokenOut} />
-							</span>
-						)
+						loadingShimmer
 					)
 				}
 			/>
 			<FormSummaryRow
-				label="XCM fee"
+				label={
+					<FeeLabel
+						label="Delivery fee"
+						explanation={`Paid on ${origin} on top of the amount, to deliver it to ${destination}.`}
+					/>
+				}
 				value={
-					!!fees.length && (
-						<div className="flex flex-wrap justify-end">
-							{fees.map(({ token, plancks }, index) => (
-								<Fragment key={token.id}>
-									{index > 0 && <span className="mx-1">+</span>}
-									<Tokens plancks={plancks} token={token} />
-								</Fragment>
-							))}
-						</div>
+					quote.deliveryFee ? (
+						<FeeValue fee={quote.deliveryFee} />
+					) : (
+						loadingShimmer
 					)
 				}
+			/>
+			<FormSummaryRow
+				label={
+					<FeeLabel
+						label={`${destination} fee`}
+						explanation={`Taken by ${destination} from the amount when it arrives.`}
+					/>
+				}
+				value={
+					loadingShimmer ||
+					(destinationFee && <FeeValue fee={destinationFee} />)
+				}
+			/>
+			<FormSummaryRow
+				label="Total debited"
+				value={<TotalDebitedValue quote={quote} />}
 			/>
 		</>
 	);

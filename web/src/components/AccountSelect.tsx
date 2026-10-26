@@ -82,13 +82,11 @@ const AccountSelectButton: FC<{
 		[accounts, idOrAddress],
 	);
 
-	// Check if idOrAddress is a raw address (not an account ID)
 	const isRawAddress = useMemo(
 		() => idOrAddress && isValidAnyAddress(idOrAddress),
 		[idOrAddress],
 	);
 
-	// For raw addresses, extract for display. For account IDs, only show when account is resolved.
 	const displayAddress = useMemo(
 		() => (isRawAddress ? getAddressFromAccountField(idOrAddress) : null),
 		[idOrAddress, isRawAddress],

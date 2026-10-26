@@ -9,18 +9,18 @@ import {
 	switchMap,
 } from "rxjs";
 import { parseTokenId } from "../../registry/tokens/helpers";
+import type { TokenId } from "../../registry/tokens/types";
 import { getCachedObservable$ } from "../../utils/getCachedObservable";
 import { getResolvedSubstrateAddress$ } from "../addressResolution/service";
 import { balancesState$ } from "./state";
-import {
-	addBalanceSubscription,
-	removeBalancesSubscription,
-} from "./subscriptions";
+import { balancesStore$ } from "./store";
+import { addBalanceSubscription } from "./subscriptions";
 import type { BalanceDef, BalanceState } from "./types";
-import { getBalanceId } from "./utils";
+import { getBalanceId, isHeld } from "./utils";
 
 const DEFAULT_BALANCE_STATE: BalanceState = {
 	balance: undefined,
+	frozen: undefined,
 	status: "stale",
 };
 
@@ -32,7 +32,11 @@ export const getBalance$ = (def: BalanceDef) => {
 		getResolvedSubstrateAddress$({ address: def.address, chainId }).pipe(
 			switchMap(({ address: resolvedAddress, status }) => {
 				if (status !== "loaded" || !resolvedAddress) {
-					return of<BalanceState>({ balance: undefined, status });
+					return of<BalanceState>({
+						balance: undefined,
+						frozen: undefined,
+						status,
+					});
 				}
 
 				const resolvedBalanceId = getBalanceId({
@@ -41,7 +45,7 @@ export const getBalance$ = (def: BalanceDef) => {
 				});
 
 				return new Observable<BalanceState>((subscriber) => {
-					const subId = addBalanceSubscription(resolvedBalanceId);
+					const removeSubscription = addBalanceSubscription(resolvedBalanceId);
 
 					const sub = balancesState$
 						.pipe(
@@ -55,7 +59,7 @@ export const getBalance$ = (def: BalanceDef) => {
 
 					return () => {
 						sub.unsubscribe();
-						removeBalancesSubscription(subId);
+						removeSubscription();
 					};
 				});
 			}),
@@ -74,3 +78,17 @@ export const getBalances$ = (defs: BalanceDef[]) => {
 			),
 	);
 };
+
+export const heldTokenIds$: Observable<TokenId[]> = balancesStore$.pipe(
+	map((store) =>
+		[
+			...new Set(
+				Object.values(store)
+					.filter(isHeld)
+					.map(({ tokenId }) => tokenId),
+			),
+		].sort(),
+	),
+	distinctUntilChanged<TokenId[]>(isEqual),
+	shareReplay({ bufferSize: 1, refCount: true }),
+);

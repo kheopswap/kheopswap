@@ -18,7 +18,6 @@ export type TokenProps = {
 };
 
 export const Tokens: FC<TokenProps> = (props) => {
-	// prices use exact/sub notation, normal rounds value below x digits
 	return props.isPrice ? (
 		<TokenPrice {...props} />
 	) : (

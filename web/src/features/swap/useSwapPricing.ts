@@ -25,10 +25,6 @@ type UseSwapPricingProps = {
 	accountAddress: string | undefined;
 };
 
-/**
- * Computes app commission from the input amount.
- * Separates the app fee from the total so the swap extrinsic operates on net plancks.
- */
 const useSwapInputs = ({
 	tokenIdIn,
 	amountIn,
@@ -144,7 +140,6 @@ export const useSwapPricing = ({
 	const pathQuote = useAmmPathQuote({
 		path: route?.path ?? null,
 		plancksIn: swapPlancksIn,
-		totalIn,
 		slippage,
 	});
 	const swapPlancksOut = pathQuote.quote?.amountOut;
@@ -197,7 +192,7 @@ export const useSwapPricing = ({
 		swapPlancksOut,
 		amountOut,
 		isLoadingAmountOut,
-		priceImpact: pathQuote.priceImpact,
+		priceImpact: pathQuote.quote?.priceImpact,
 		minPlancksOut,
 		hasInsufficientBalance,
 		isCheckingRecipient,

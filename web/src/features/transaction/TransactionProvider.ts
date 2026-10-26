@@ -1,8 +1,13 @@
 import { useMemo } from "react";
+import { useDryRun } from "../../hooks/useDryRun";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
-import type { TokenId } from "../../registry/tokens/types";
-import type { TransactionType } from "../../state/transactions/types";
+import type { Token, TokenId } from "../../registry/tokens/types";
+import { useTransactionRecords } from "../../state/transactions/transactionStore";
+import {
+	holdsNonce,
+	type TransactionFollowUp,
+} from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { provideContext } from "../../utils/provideContext";
 import { useTransactionBalanceCheck } from "./useTransactionBalanceCheck";
@@ -14,6 +19,14 @@ export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
 >;
 
+// native transfers and swaps are submitted as keep-alive calls
+export const getTokenSpending = (
+	token: Pick<Token, "id" | "type">,
+	plancks: bigint,
+): CallSpendings => ({
+	[token.id]: { plancks, allowDeath: token.type !== "native" },
+});
+
 export type SubmitGate =
 	| { status: "open" }
 	| { status: "pending" }
@@ -21,19 +34,18 @@ export type SubmitGate =
 
 type UseTransactionProviderProps = {
 	call: AnyTransaction | null | undefined;
-	fakeCall: AnyTransaction | null | undefined; // used as backup for calculating fees without all the inputs
-	signer: string | null | undefined; // accountkey
+	fakeCall: AnyTransaction | null | undefined;
+	signer: string | null | undefined;
 	chainId: ChainId | null | undefined;
-	callSpendings?: CallSpendings; // tokens to be spent as part of the call
-	followUpData?: object;
-	transactionType?: TransactionType;
+	callSpendings?: CallSpendings;
+	followUp?: TransactionFollowUp;
 	transactionTitle?: string;
 	submitGate?: SubmitGate;
 	onReset: () => void;
 };
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
-const DEFAULT_FOLLOW_UP_DATA = {};
+const UNKNOWN_FOLLOW_UP: TransactionFollowUp = { type: "unknown" };
 const OPEN_SUBMIT_GATE: SubmitGate = { status: "open" };
 
 const useTransactionProvider = ({
@@ -43,15 +55,12 @@ const useTransactionProvider = ({
 	chainId,
 	callSpendings = DEFAULT_CALL_SPENDINGS,
 	onReset,
-	followUpData = DEFAULT_FOLLOW_UP_DATA,
-	transactionType = "unknown",
+	followUp = UNKNOWN_FOLLOW_UP,
 	transactionTitle = "Transaction",
 	submitGate = OPEN_SUBMIT_GATE,
 }: UseTransactionProviderProps) => {
-	// 1. Ethereum-specific concerns
 	const ethereum = useTransactionEthereum({ signer, chainId });
 
-	// 2. Fee estimation & dry run
 	const fees = useTransactionFees({
 		signer,
 		signerAddress: ethereum.account?.address,
@@ -62,7 +71,6 @@ const useTransactionProvider = ({
 		nativeToken: ethereum.nativeToken,
 	});
 
-	// 3. Balance sufficiency checks
 	const balanceCheck = useTransactionBalanceCheck({
 		accountAddress: ethereum.account?.address,
 		call,
@@ -71,9 +79,22 @@ const useTransactionProvider = ({
 		feeEstimate: fees.feeEstimate,
 	});
 
-	// 4. Submit lifecycle
+	const {
+		data: dryRun,
+		isFetching: isFetchingDryRun,
+		error: errorDryRun,
+	} = useDryRun({
+		chainId,
+		from: fees.signerSubstrateAddress,
+		call,
+		balances: balanceCheck.balances,
+		enabled: !balanceCheck.isLoadingBalances,
+	});
+	const isLoadingDryRun = isFetchingDryRun || balanceCheck.isLoadingBalances;
+
 	const { onSubmit } = useTransactionSubmit({
 		account: ethereum.account,
+		signerAddress: fees.signerSubstrateAddress,
 		call,
 		chainId,
 		feeEstimate: fees.feeEstimate,
@@ -82,85 +103,82 @@ const useTransactionProvider = ({
 		options: fees.options,
 		isEthereumNetworkMismatch: ethereum.isEthereumNetworkMismatch,
 		targetEvmChainId: ethereum.targetEvmChainId,
-		transactionType,
+		followUp,
 		transactionTitle,
-		followUpData: followUpData as Record<string, unknown>,
+		onReset,
 	});
 
-	// Cross-concern: aggregated error
-	const error = useMemo(() => {
-		return fees.errorFeeEstimate ?? balanceCheck.errorExistentialDeposits;
-	}, [balanceCheck.errorExistentialDeposits, fees.errorFeeEstimate]);
+	const transactionRecords = useTransactionRecords();
+	const signerAddress = ethereum.account?.address;
+	const chainNonce = fees.options?.nonce;
+	const isNonceHeld = useMemo(
+		() =>
+			chainNonce === undefined ||
+			transactionRecords.some(
+				(tx) =>
+					tx.account.address === signerAddress &&
+					tx.feeToken.chainId === chainId &&
+					holdsNonce(tx, chainNonce),
+			),
+		[transactionRecords, signerAddress, chainId, chainNonce],
+	);
 
-	// Cross-concern: aggregated loading
-	const isLoading = useMemo(() => {
-		return (
-			fees.isResolvingSigner ||
-			balanceCheck.isLoadingBalances ||
-			balanceCheck.isLoadingExistentialDeposits ||
-			fees.isLoadingFeeEstimate ||
-			balanceCheck.isLoadingFeeTokenBalance ||
-			fees.isLoadingDryRun ||
-			submitGate.status === "pending"
-		);
-	}, [
-		fees.isResolvingSigner,
-		balanceCheck.isLoadingBalances,
-		balanceCheck.isLoadingExistentialDeposits,
-		fees.isLoadingFeeEstimate,
-		balanceCheck.isLoadingFeeTokenBalance,
-		fees.isLoadingDryRun,
-		submitGate.status,
-	]);
+	const error = fees.errorFeeEstimate ?? balanceCheck.errorExistentialDeposits;
 
-	// Cross-concern: can submit
+	const isLoading =
+		fees.isResolvingSigner ||
+		balanceCheck.isLoadingBalances ||
+		balanceCheck.isLoadingExistentialDeposits ||
+		fees.isLoadingFeeEstimate ||
+		balanceCheck.isLoadingFeeTokenBalance ||
+		isLoadingDryRun ||
+		submitGate.status === "pending";
+
+	const { insufficientBalances } = balanceCheck;
+	const hasInsufficientBalance = Object.keys(insufficientBalances).length > 0;
+
+	// dry_run_call never charges the transaction fee, which Hydration takes in the account's currency
+	const isDryRunConclusive =
+		isChainIdAssetHub(chainId) &&
+		!fees.options?.asset &&
+		dryRun?.success === true &&
+		!(fees.feeToken && insufficientBalances[fees.feeToken.id]);
+	const isRejectedByDryRun =
+		dryRun?.success === true && !dryRun.value.execution_result.success;
+
 	const canSubmit = useMemo(() => {
 		if (submitGate.status !== "open") return false;
 		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
+		if (!call || isLoading || error || hasInsufficientBalance) return false;
+		if (isRejectedByDryRun || isNonceHeld) return false;
+		if (!fees.isCallFeeEstimated) return false;
 
-		if (ethereum.account.platform === "ethereum") {
+		if (ethereum.account.platform === "ethereum")
 			return (
-				!!call &&
-				!isLoading &&
-				!error &&
 				!ethereum.isEthereumNetworkMismatch &&
-				!ethereum.isSwitchingEthereumNetwork &&
-				!Object.keys(balanceCheck.insufficientBalances).length
+				!ethereum.isSwitchingEthereumNetwork
 			);
-		}
 
-		const isDryRunConclusive =
-			isChainIdAssetHub(chainId) && !fees.options?.asset;
-		if (isDryRunConclusive && fees.dryRun?.success)
-			return fees.dryRun.value.execution_result.success;
-
-		// TODO add a flag to allow parent form to force another isLoading state
-		return (
-			!!call &&
-			!!fees.feeEstimate &&
-			!!fees.feeToken &&
-			!!fees.options &&
-			!error &&
-			!isLoading &&
-			!Object.keys(balanceCheck.insufficientBalances).length
-		);
+		return !!fees.feeEstimate && !!fees.feeToken && !!fees.options;
 	}, [
 		ethereum.account,
 		call,
 		error,
 		fees.feeEstimate,
+		fees.isCallFeeEstimated,
 		fees.feeToken,
-		balanceCheck.insufficientBalances,
+		hasInsufficientBalance,
+		isNonceHeld,
 		isLoading,
 		ethereum.isEthereumNetworkMismatch,
 		ethereum.isSwitchingEthereumNetwork,
 		fees.options,
-		fees.dryRun,
+		isRejectedByDryRun,
 		submitGate.status,
-		chainId,
 	]);
 
 	return {
+		call,
 		chainId,
 		account: ethereum.account,
 		isEthereumNetworkMismatch: ethereum.isEthereumNetworkMismatch,
@@ -177,23 +195,26 @@ const useTransactionProvider = ({
 		feeEstimate: fees.feeEstimate,
 		errorFeeEstimate: fees.errorFeeEstimate,
 		isLoadingFeeEstimate: fees.isLoadingFeeEstimate,
+		isCallFeeEstimated: fees.isCallFeeEstimated,
 
 		feeTokenBalance: balanceCheck.feeTokenBalance,
 		isLoadingFeeTokenBalance: balanceCheck.isLoadingFeeTokenBalance,
 
-		insufficientBalances: balanceCheck.insufficientBalances,
+		insufficientBalances,
 
 		onSubmit,
 		canSubmit,
+		submitGate,
 
 		error,
 		isLoading,
 
 		onReset,
 
-		dryRun: fees.dryRun,
-		isLoadingDryRun: fees.isLoadingDryRun,
-		errorDryRun: fees.errorDryRun,
+		dryRun,
+		isDryRunConclusive,
+		isLoadingDryRun,
+		errorDryRun,
 	};
 };
 

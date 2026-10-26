@@ -1,148 +1,47 @@
-import type { TxEvent } from "polkadot-api";
+import type { SS58String, TxEvent } from "polkadot-api";
 import { useCallback } from "react";
-import { catchError, type Observable, of, shareReplay } from "rxjs";
+import { firstValueFrom, type Observable } from "rxjs";
 import { toHex } from "viem";
 import type { WalletAccount } from "../../common/kheopskit";
+import { getApi } from "../../papi/getApi";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import type { Token } from "../../registry/tokens/types";
 import {
 	addTransaction,
-	appendTxEvent,
-	minimizeTransaction,
 	openTransactionModal,
-	updateTransactionStatus,
 } from "../../state/transactions/transactionStore";
-import type { TransactionType } from "../../state/transactions/types";
+import type { TransactionFollowUp } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
-import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
+import { isNumber } from "../../utils/isNumber";
 import { logger } from "../../utils/logger";
 import { notifyError } from "../../utils/notifyError";
+import type { TxOptionsWithChargeAssetTxPayment } from "../../utils/txOptions";
 import { createEthereumTxObservable } from "./createEthereumTxObservable";
+import { followTransaction } from "./followTransaction";
+import { TX_MORTALITY_BLOCKS } from "./useTransactionFees";
 
-const TX_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
-
-const isUserRejectedTxError = (error: unknown): boolean => {
-	if (typeof error !== "object" || error === null) return false;
-
-	if ("code" in error) {
-		const code = (error as { code?: unknown }).code;
-		if (code === 4001 || code === "ACTION_REJECTED") return true;
-	}
-
-	if ("name" in error) {
-		const name = (error as { name?: unknown }).name;
-		if (typeof name === "string" && name.includes("Rejected")) return true;
-	}
-
-	if ("message" in error) {
-		const message = (error as { message?: unknown }).message;
-		if (typeof message === "string") {
-			const normalized = message.toLowerCase();
-			if (
-				normalized.includes("user rejected") ||
-				normalized.includes("user denied") ||
-				normalized.includes("cancelled") ||
-				normalized.includes("canceled")
-			) {
-				return true;
-			}
-		}
-	}
-
-	return false;
-};
-
-/**
- * Subscribes to a transaction Observable and feeds events to the transaction store.
- * Used by both Polkadot and Ethereum transaction flows.
- *
- * The subscription self-terminates when a "finalized" or "error" event is received.
- * A safety timeout (10 minutes) ensures the subscription is cleaned up if neither
- * event arrives (e.g. due to a dropped connection).
- *
- * It is intentionally not tied to component lifecycle so transactions survive navigation.
- */
-const subscribeTxEvents = (
-	txId: string,
-	txEvents$: Observable<TxEvent>,
-): void => {
-	let isSubmitted = false;
-
-	const obs$ = txEvents$.pipe(
-		catchError((error) => of({ type: "error" as const, error })),
-		shareReplay(1),
-	);
-
-	const cleanup = () => {
-		clearTimeout(safetyTimeout);
-		sub.unsubscribe();
-	};
-
-	const safetyTimeout = setTimeout(() => {
-		logger.warn("Transaction timed out without finalized/error event", txId);
-		updateTransactionStatus(txId, "failed");
-		sub.unsubscribe();
-	}, TX_TIMEOUT_MS);
-
-	const sub = obs$.subscribe((x) => {
-		logger.log("Transaction status update", x);
-
-		if (x.type === "broadcasted") isSubmitted = true;
-
-		if (x.type !== "error") {
-			appendTxEvent(txId, x);
-		}
-
-		if (x.type === "finalized") cleanup();
-
-		if (x.type === "error") {
-			logger.error("Transaction error", x.error);
-			const err = x.error;
-			const isUserRejected = isUserRejectedTxError(err);
-			const hasNestedError =
-				typeof err === "object" && err !== null && "error" in err;
-			const errorMessage = hasNestedError
-				? formatTxError((err as { error: unknown }).error)
-				: "";
-
-			if (errorMessage === "Unknown: CannotLookup")
-				console.warn(
-					"It could be that the chain doesn't support CheckMetadataHash",
-				);
-
-			if (!isSubmitted) {
-				appendTxEvent(txId, x);
-				updateTransactionStatus(txId, "failed");
-				if (isUserRejected) {
-					minimizeTransaction(txId);
-				}
-			} else {
-				appendTxEvent(txId, x);
-			}
-
-			cleanup();
-		}
-	});
-};
+type Submitted = { txEvents$: Observable<TxEvent>; death: number | null };
 
 type UseTransactionSubmitProps = {
 	account: WalletAccount | null;
+	signerAddress: SS58String | null | undefined;
 	call: AnyTransaction | null | undefined;
 	chainId: ChainId | null | undefined;
 	feeEstimate: bigint | null | undefined;
 	feeToken: Token | null | undefined;
 	nativeToken: Token | null | undefined;
-	options: object | undefined;
+	options: TxOptionsWithChargeAssetTxPayment | undefined;
 	isEthereumNetworkMismatch: boolean;
 	targetEvmChainId: number | undefined;
-	transactionType: TransactionType;
+	followUp: TransactionFollowUp;
 	transactionTitle: string;
-	followUpData: Record<string, unknown>;
+	onReset: () => void;
 };
 
 export const useTransactionSubmit = ({
 	account,
+	signerAddress,
 	call,
 	chainId,
 	feeEstimate,
@@ -151,83 +50,98 @@ export const useTransactionSubmit = ({
 	options,
 	isEthereumNetworkMismatch,
 	targetEvmChainId,
-	transactionType,
+	followUp,
 	transactionTitle,
-	followUpData,
+	onReset,
 }: UseTransactionSubmitProps) => {
 	const onSubmit = useCallback(async () => {
 		try {
 			logger.log("submit", { call });
 
-			if (!call || !account || account.isPlaceholder) return;
+			if (!call || !account || account.isPlaceholder || !chainId) return;
+			if (!options || !isNumber(options.nonce) || !signerAddress) return;
+			const { nonce } = options;
 
 			const txFeeToken = feeToken ?? nativeToken;
 			if (!txFeeToken) return;
 
-			const txId = crypto.randomUUID();
+			const submit = async (): Promise<Submitted | null> => {
+				if (account.platform !== "ethereum") {
+					if (!feeEstimate) return null;
+					const api = await getApi(chainId);
+					const { block } = await firstValueFrom(
+						api.query.System.Number.watchValue({ at: "finalized" }),
+					);
+					return {
+						txEvents$: call.createSubmitAndWatch(account.txCreator, {
+							...options,
+							mortality: {
+								mortal: true,
+								period: TX_MORTALITY_BLOCKS,
+								at: { hash: block.hash, number: block.number },
+							},
+						}),
+						death: block.number + TX_MORTALITY_BLOCKS,
+					};
+				}
+				if (!isChainIdAssetHub(chainId)) {
+					notifyError(`Ethereum accounts are not supported on ${chainId}`);
+					return null;
+				}
+				if (isEthereumNetworkMismatch) {
+					notifyError(
+						`Wrong network selected. Expected chain ID ${targetEvmChainId}.`,
+					);
+					return null;
+				}
+				return {
+					txEvents$: createEthereumTxObservable({
+						account,
+						chainId,
+						callData: toHex(await call.getEncodedData()),
+					}),
+					death: null,
+				};
+			};
 
+			const submitted = await submit();
+			if (!submitted) return;
+
+			const txId = crypto.randomUUID();
 			addTransaction({
 				id: txId,
 				createdAt: Date.now(),
 				status: "pending",
 				txEvents: [{ type: "pending" }],
 				account,
+				nonce,
 				feeEstimate: feeEstimate ?? 0n,
 				feeToken: txFeeToken,
-				type: transactionType,
 				title: transactionTitle,
-				followUpData,
+				...followUp,
 			});
-
 			openTransactionModal(txId);
-
-			let txEvents$: Observable<TxEvent>;
-
-			if (account.platform === "ethereum") {
-				if (!isChainIdAssetHub(chainId)) {
-					updateTransactionStatus(txId, "failed");
-					notifyError(`Ethereum accounts are not supported on ${chainId}`);
-					return;
-				}
-
-				if (isEthereumNetworkMismatch) {
-					updateTransactionStatus(txId, "failed");
-					notifyError(
-						`Wrong network selected. Expected chain ID ${targetEvmChainId}.`,
-					);
-					return;
-				}
-
-				const encodedCallData = await call.getEncodedData();
-				const callData = toHex(encodedCallData);
-
-				txEvents$ = createEthereumTxObservable({
-					account,
-					chainId,
-					callData,
-				});
-			} else {
-				if (!feeEstimate || !options) return;
-				txEvents$ = call.createSubmitAndWatch(account.txCreator, options);
-			}
-
-			// Fire-and-forget: subscription self-terminates on finalized/error.
-			subscribeTxEvents(txId, txEvents$);
+			followTransaction(
+				{ txId, chainId, signer: signerAddress, nonce, death: submitted.death },
+				submitted.txEvents$,
+				onReset,
+			);
 		} catch (err) {
 			notifyError(err);
 		}
 	}, [
 		account,
+		signerAddress,
 		call,
 		chainId,
 		feeEstimate,
 		feeToken,
-		followUpData,
+		followUp,
 		isEthereumNetworkMismatch,
 		nativeToken,
+		onReset,
 		options,
 		targetEvmChainId,
-		transactionType,
 		transactionTitle,
 	]);
 

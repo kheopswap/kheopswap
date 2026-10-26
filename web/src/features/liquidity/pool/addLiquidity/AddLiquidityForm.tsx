@@ -8,8 +8,7 @@ import { useLiquidityEditorInputs } from "./useLiquidityEditorInputs";
 
 const AddLiquidityEditor: FC = () => {
 	const {
-		refInput1,
-		refInput2,
+		amounts,
 		nativeToken,
 		assetToken,
 		tokens,
@@ -21,15 +20,16 @@ const AddLiquidityEditor: FC = () => {
 		handleMaxClick,
 		errorMessageNative,
 		errorMessageAsset,
+		hintNative,
+		hintAsset,
 	} = useLiquidityEditorInputs();
 
 	return (
 		<div className="relative flex flex-col gap-1.5">
 			<TokenAmountPicker
 				inputProps={{
-					ref: refInput1,
-					inputMode: "decimal",
-					onInput: handleTokensInput("token1"),
+					value: amounts[0],
+					onInput: handleTokensInput(0),
 					formNoValidate: true,
 				}}
 				tokenId={nativeToken?.id}
@@ -38,17 +38,17 @@ const AddLiquidityEditor: FC = () => {
 				isLoading={isLoadingToken}
 				onTokenChange={() => {}}
 				errorMessage={errorMessageNative}
+				hint={hintNative}
 				disableTokenButton
 				balance={accountBalances?.[0]}
 				isLoadingBalance={isLoadingAccountBalances}
-				onMaxClick={handleMaxClick("token1")}
+				onMaxClick={handleMaxClick(0)}
 				inputLabel="Native token amount"
 			/>
 			<TokenAmountPicker
 				inputProps={{
-					ref: refInput2,
-					inputMode: "decimal",
-					onInput: handleTokensInput("token2"),
+					value: amounts[1],
+					onInput: handleTokensInput(1),
 					formNoValidate: true,
 				}}
 				tokenId={assetToken?.id}
@@ -57,10 +57,11 @@ const AddLiquidityEditor: FC = () => {
 				isLoading={isLoadingToken}
 				onTokenChange={() => {}}
 				errorMessage={errorMessageAsset}
+				hint={hintAsset}
 				disableTokenButton
 				balance={accountBalances?.[1]}
 				isLoadingBalance={isLoadingAccountBalances}
-				onMaxClick={handleMaxClick("token2")}
+				onMaxClick={handleMaxClick(1)}
 				inputLabel="Asset token amount"
 			/>
 		</div>

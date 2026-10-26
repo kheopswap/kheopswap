@@ -18,7 +18,7 @@ export const useSwapExtrinsic = ({
 	amountIn,
 	amountOutMin,
 	dest,
-	appCommission, // TODO should be computed by this hook?
+	appCommission,
 }: UseSwapExtrinsic) => {
 	const { assetHub } = useRelayChains();
 

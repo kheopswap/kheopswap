@@ -1,6 +1,8 @@
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import type { Token } from "../../registry/tokens/types";
+import type { TransactionFollowUp } from "../../state/transactions/types";
+import { isBigInt } from "../../utils/isBigInt";
 import type { AmmPath } from "./routes/ammPath";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
@@ -29,7 +31,7 @@ export const useSwapCall = ({
 	tokenOut,
 	swapPlancksOut,
 }: UseSwapCallProps) => {
-	const { data: call } = useSwapExtrinsic({
+	const { data: call, isLoading: isLoadingCall } = useSwapExtrinsic({
 		path,
 		amountIn: swapPlancksIn,
 		amountOutMin: minPlancksOut,
@@ -37,7 +39,6 @@ export const useSwapCall = ({
 		appCommission,
 	});
 
-	// Fake call for fee estimation when the real call isn't ready yet
 	const { data: fakeCall } = useSwapExtrinsic({
 		path,
 		amountIn: tokenIn && edTokenIn,
@@ -46,9 +47,16 @@ export const useSwapCall = ({
 		appCommission: tokenIn && edTokenIn,
 	});
 
-	const followUpData = useMemo(() => {
-		return { slippage, tokenOut, minPlancksOut, swapPlancksOut };
-	}, [minPlancksOut, slippage, swapPlancksOut, tokenOut]);
+	const followUp = useMemo<TransactionFollowUp>(
+		() =>
+			tokenOut && isBigInt(minPlancksOut) && isBigInt(swapPlancksOut)
+				? {
+						type: "swap",
+						followUpData: { slippage, tokenOut, minPlancksOut, swapPlancksOut },
+					}
+				: { type: "unknown" },
+		[minPlancksOut, slippage, swapPlancksOut, tokenOut],
+	);
 
-	return { call, fakeCall, followUpData };
+	return { call, isLoadingCall, fakeCall, followUp };
 };

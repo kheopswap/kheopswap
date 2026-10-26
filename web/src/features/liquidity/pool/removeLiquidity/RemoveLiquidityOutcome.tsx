@@ -34,7 +34,6 @@ export const RemoveLiquidityOutcome: FC<{
 	plancks1: bigint;
 	plancks2: bigint;
 }> = ({ tokenId1, tokenId2, plancks1, plancks2 }) => {
-	// TODO opacity 50 and disabled if no liquidity
 	return (
 		<div className={cn(Styles.field, "flex w-full flex-col gap-2 p-3.5")}>
 			<AssetRow tokenId={tokenId1} plancks={plancks1} />

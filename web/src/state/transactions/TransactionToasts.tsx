@@ -6,22 +6,25 @@ import {
 import { type FC, useCallback, useEffect, useRef } from "react";
 import { type Id as ToastId, toast } from "react-toastify";
 import { SpinnerBasicIcon } from "../../components/icons";
-import { getChainById } from "../../registry/chains/chains";
-import { parseTokenId } from "../../registry/tokens/helpers";
 import { cn } from "../../utils/cn";
 import {
 	formatTxError,
 	getErrorMessageFromTxEvents,
-	type TxEvents,
 } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransactions } from "./TransactionsProvider";
-import type { TransactionRecord, TransactionStatus } from "./types";
 import {
-	describeFailedArrival,
-	isXcmArrivalType,
+	getIncludedTxEvents,
+	isAutoDismissed,
+	isAwaitingInclusion,
+	type TransactionRecord,
+	type TransactionStatus,
+} from "./types";
+import {
+	getXcmArrivalOutcome,
+	isAwaitingXcmArrival,
+	isXcmArrivalRecord,
 	useXcmArrival,
 	type XcmArrival,
-	type XcmTransferFollowUpData,
 } from "./xcmArrival";
 
 type ToastOutcome = "loading" | "success" | "error" | "warning";
@@ -38,10 +41,18 @@ const getStatusText = (status: TransactionStatus): string => {
 			return "Submitted, waiting for block...";
 		case "inBlock":
 			return "In block, waiting for finalization...";
+		case "unconfirmed":
+			return "Not confirmed after 10 minutes, still watching...";
 		case "finalized":
 			return "Finalized";
 		case "failed":
 			return "Failed";
+		case "expired":
+			return "Expired before it was included";
+		case "lostTrack":
+			return "Included, but the app lost track of it. Check the explorer";
+		case "unknown":
+			return "Could not confirm, check the explorer before retrying";
 		default:
 			return "Processing...";
 	}
@@ -52,36 +63,14 @@ const getStatusOutcome = (status: TransactionStatus): ToastOutcome => {
 		case "finalized":
 			return "success";
 		case "failed":
+		case "expired":
 			return "error";
+		case "unconfirmed":
+		case "lostTrack":
+		case "unknown":
+			return "warning";
 		default:
 			return "loading";
-	}
-};
-
-const getArrivalView = (
-	tx: TransactionRecord,
-	arrival: XcmArrival | null,
-): ToastView => {
-	const { target } = tx.followUpData as XcmTransferFollowUpData;
-	const destination = getChainById(parseTokenId(target.tokenId).chainId).name;
-
-	switch (arrival?.status) {
-		case "arrived":
-			return { outcome: "success", text: `Arrived on ${destination}` };
-		case "failed-on-destination":
-			return {
-				outcome: "error",
-				text: [`Failed on ${destination}`, describeFailedArrival(arrival)]
-					.filter(Boolean)
-					.join(", "),
-			};
-		case "unconfirmed":
-			return {
-				outcome: "warning",
-				text: `Arrival on ${destination} not confirmed`,
-			};
-		default:
-			return { outcome: "loading", text: `In transit to ${destination}...` };
 	}
 };
 
@@ -89,8 +78,10 @@ export const getToastView = (
 	tx: TransactionRecord,
 	arrival: XcmArrival | null,
 ): ToastView => {
-	if (tx.status === "finalized" && isXcmArrivalType(tx.type))
-		return getArrivalView(tx, arrival);
+	const xcmOutcome = isXcmArrivalRecord(tx)
+		? getXcmArrivalOutcome(tx, arrival)
+		: null;
+	if (xcmOutcome) return { outcome: xcmOutcome.kind, text: xcmOutcome.text };
 
 	return {
 		outcome: getStatusOutcome(tx.status),
@@ -147,15 +138,24 @@ const ToastContent: FC<{
 	);
 };
 
-// Track all toasts globally to manage their lifecycle
 const activeToasts = new Map<string, ToastId>();
-// Track toasts we're dismissing programmatically (not by user action)
 const programmaticDismissals = new Set<string>();
 
-// Toast should be shown once transaction is signed (not just pending)
 const shouldShowToast = (status: TransactionStatus): boolean => {
 	return status !== "pending";
 };
+
+const SETTLED_TOAST_MS = 5_000;
+
+// The open dialog shows the outcome; closing it dismisses the record and its toast.
+export const getToastAutoClose = (
+	tx: TransactionRecord,
+	arrival: XcmArrival | null,
+	isDialogOpen: boolean,
+): number | false =>
+	!isDialogOpen && isAutoDismissed(tx) && !isAwaitingXcmArrival(tx, arrival)
+		? SETTLED_TOAST_MS
+		: false;
 
 const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 	if (tx.status !== "failed") return null;
@@ -185,33 +185,24 @@ const getTxErrorMessage = (tx: TransactionRecord): string | null => {
 		}
 	}
 
-	const allEvents: TxEvents = tx.txEvents.flatMap((event) =>
-		event.type === "finalized" || event.type === "inBestBlock"
-			? event.events
-			: [],
-	);
+	const includedEvents = getIncludedTxEvents(tx.txEvents);
+	if (includedEvents.length === 0) return null;
 
-	if (allEvents.length === 0) return null;
-
-	const txFailedErrorMessage = getErrorMessageFromTxEvents(allEvents);
-	return txFailedErrorMessage || null;
+	return getErrorMessageFromTxEvents(includedEvents) || null;
 };
 
 const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
-	const { open, dismiss } = useTransactions();
+	const { open, dismiss, openTransaction } = useTransactions();
 	const arrival = useXcmArrival(tx.id);
-	// Use ref to avoid stale closure in onClose
+	const isDialogOpen = openTransaction?.id === tx.id;
 	const dismissRef = useRef(dismiss);
 	dismissRef.current = dismiss;
 
 	const handleClick = useCallback(() => {
-		// Just open the modal, don't dismiss the toast
 		open(tx.id);
 	}, [open, tx.id]);
 
 	const handleToastClose = useCallback(() => {
-		// Only dismiss from store if user manually closed the toast
-		// (not when we programmatically dismissed it)
 		if (programmaticDismissals.has(tx.id)) {
 			programmaticDismissals.delete(tx.id);
 			return;
@@ -220,18 +211,17 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 		dismissRef.current(tx.id);
 	}, [tx.id]);
 
-	// Manage toast based on transaction status (not isMinimized)
-	// Toast appears once signed and stays visible regardless of modal state
 	useEffect(() => {
 		const view = getToastView(tx, arrival);
 		const toastType = view.outcome === "loading" ? "default" : view.outcome;
 		const existingToast = activeToasts.get(tx.id);
 		const showToast = shouldShowToast(tx.status);
-		const autoClose = tx.status === "failed" ? 5_000 : false;
+		const autoClose = getToastAutoClose(tx, arrival, isDialogOpen);
+		// Dismissing a record that awaits inclusion would release its nonce hold.
+		const isDismissible = !isAwaitingInclusion(tx);
 
 		if (showToast) {
 			if (existingToast === undefined) {
-				// Create new toast
 				const toastId = toast(
 					<ToastContent tx={tx} view={view} onClick={handleClick} />,
 					{
@@ -239,29 +229,29 @@ const TransactionToastManager: FC<{ tx: TransactionRecord }> = ({ tx }) => {
 						type: toastType,
 						autoClose,
 						closeOnClick: false,
-						draggable: true,
+						closeButton: isDismissible,
+						draggable: isDismissible,
 						onClose: handleToastClose,
 						icon: false,
 					},
 				);
 				activeToasts.set(tx.id, toastId);
 			} else {
-				// Update existing toast
 				toast.update(existingToast, {
 					render: <ToastContent tx={tx} view={view} onClick={handleClick} />,
 					type: toastType,
 					autoClose,
+					closeButton: isDismissible,
+					draggable: isDismissible,
 				});
 			}
 		}
-	}, [tx, arrival, handleClick, handleToastClose]);
+	}, [tx, arrival, isDialogOpen, handleClick, handleToastClose]);
 
-	// Cleanup when transaction is removed from store
 	useEffect(() => {
 		return () => {
 			const existingToast = activeToasts.get(tx.id);
 			if (existingToast !== undefined) {
-				// Mark as programmatic to prevent double-dismiss
 				programmaticDismissals.add(tx.id);
 				toast.dismiss(existingToast);
 				activeToasts.delete(tx.id);

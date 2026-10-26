@@ -12,11 +12,16 @@ import { useDryRun } from "../../../../hooks/useDryRun";
 import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { ChainId } from "../../../../registry/chains/types";
-import type { TokenAmount } from "../../../../registry/tokens/types";
+import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
+import {
+	retryOnceUnlessTimedOut,
+	withChainTimeout,
+} from "../../../../utils/withTimeout";
 import type { XcmRoute } from "../swapRoute";
+import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import {
 	composeXcmQuote,
 	getDeliveryFeeTokenId,
@@ -24,13 +29,26 @@ import {
 	parseDeliveryFee,
 	parseDestinationDryRun,
 	parseOriginDryRun,
+	type XcmFee,
 	type XcmQuoteResult,
 } from "./xcmQuote";
 
 export type XcmQuoteState = {
 	isLoading: boolean;
 	data: XcmQuoteResult | undefined;
-	deliveryFee: TokenAmount | undefined;
+	deliveryFee: XcmFee | undefined;
+	sent: bigint | undefined;
+};
+
+const getDeliveryFee = (
+	tokenId: TokenId,
+	quoted: bigint | null | undefined,
+	estimated: bigint | null | undefined,
+): XcmFee | undefined => {
+	if (isBigInt(quoted)) return { tokenId, plancks: quoted, isEstimate: false };
+	if (isBigInt(estimated))
+		return { tokenId, plancks: estimated, isEstimate: true };
+	return undefined;
 };
 
 const getParachainLocation = (chainId: ChainId) =>
@@ -89,11 +107,17 @@ const useXcmDeliveryFee = (
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!message,
-		queryFn: async () =>
+		queryFn: async ({ signal }) =>
 			route && message
-				? parseDeliveryFee(await queryDeliveryFees(route, message))
+				? parseDeliveryFee(
+						await withChainTimeout(
+							route.origin,
+							() => queryDeliveryFees(route, message),
+							signal,
+						),
+					)
 				: null,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
@@ -104,6 +128,7 @@ type UseXcmQuoteProps = {
 	beneficiary: SS58String | null;
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
+	balances: XcmDryRunBalances;
 };
 
 export const useXcmQuote = ({
@@ -112,14 +137,23 @@ export const useXcmQuote = ({
 	beneficiary,
 	call,
 	fakeCall,
+	balances,
 }: UseXcmQuoteProps): XcmQuoteState => {
 	const destinationParaId = route && getChainById(route.destination).paraId;
 
-	const origin = useDryRun({ chainId: route?.origin, from: beneficiary, call });
+	const origin = useDryRun({
+		chainId: route?.origin,
+		from: beneficiary,
+		call,
+		balances: balances.origin,
+		enabled: !balances.isLoading,
+	});
 	const originEstimate = useDryRun({
 		chainId: route?.origin,
 		from: beneficiary,
 		call: fakeCall,
+		balances: balances.origin,
+		enabled: !balances.isLoading,
 	});
 
 	const originLeg = useMemo(
@@ -149,16 +183,21 @@ export const useXcmQuote = ({
 			route?.tokenIdOut,
 			beneficiary,
 			safeQueryKeyPart(message),
+			safeQueryKeyPart(balances.destination),
 		],
 		enabled: !!route && !!beneficiary && !!message,
-		queryFn: async () =>
+		queryFn: async ({ signal }) =>
 			route && beneficiary && message
-				? parseDestinationDryRun(await queryDestinationDryRun(route, message), {
-						tokenId: route.tokenIdOut,
-						beneficiary,
-					})
+				? parseDestinationDryRun(
+						await withChainTimeout(
+							route.destination,
+							() => queryDestinationDryRun(route, message),
+							signal,
+						),
+						{ tokenId: route.tokenIdOut, beneficiary },
+					)
 				: null,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
@@ -197,19 +236,19 @@ export const useXcmQuote = ({
 		deliveryFee.data,
 	]);
 
-	const deliveryFeePlancks = deliveryFee.data ?? estimatedDeliveryFee.data;
-
 	return {
 		isLoading:
-			origin.isLoading ||
-			(!!message && (destination.isLoading || deliveryFee.isLoading)),
+			(balances.isLoading && !!call) ||
+			origin.isFetching ||
+			(!!message && (destination.isFetching || deliveryFee.isLoading)),
 		data,
-		deliveryFee:
-			route && isBigInt(deliveryFeePlancks)
-				? {
-						tokenId: getDeliveryFeeTokenId(route.origin),
-						plancks: deliveryFeePlancks,
-					}
-				: undefined,
+		sent: originLeg?.success ? originLeg.value.sent : undefined,
+		deliveryFee: route
+			? getDeliveryFee(
+					getDeliveryFeeTokenId(route.origin),
+					deliveryFee.data,
+					estimatedDeliveryFee.data,
+				)
+			: undefined,
 	};
 };

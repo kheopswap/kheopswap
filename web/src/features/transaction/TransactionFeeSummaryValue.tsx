@@ -5,10 +5,27 @@ import { Shimmer } from "../../components/Shimmer";
 import { TokenSelectDrawer } from "../../components/TokenSelectDrawer";
 import { Tokens } from "../../components/Tokens";
 import { useOpenClose } from "../../hooks/useOpenClose";
-import type { TokenId } from "../../registry/tokens/types";
+import type { Token, TokenId } from "../../registry/tokens/types";
 import { cn } from "../../utils/cn";
 import { isBigInt } from "../../utils/isBigInt";
 import { useTransaction } from "./TransactionProvider";
+import { INSUFFICIENT_FEE_BALANCE } from "./useTransactionBalanceCheck";
+
+const FeeEstimate: FC<{
+	plancks: bigint;
+	token: Token;
+	isEstimate: boolean;
+	isInsufficient: boolean;
+}> = ({ plancks, token, isEstimate, isInsufficient }) => (
+	<span className={cn(isEstimate && "text-muted")}>
+		<Tokens
+			plancks={plancks}
+			token={token}
+			className={cn(isInsufficient && "text-error")}
+		/>
+		{isEstimate && " (est.)"}
+	</span>
+);
 
 export const TransactionFeeSummaryValue: FC = () => {
 	const { isOpen, open, close } = useOpenClose();
@@ -20,15 +37,14 @@ export const TransactionFeeSummaryValue: FC = () => {
 		feeTokens,
 		errorFeeEstimate,
 		isLoadingFeeEstimate,
+		isCallFeeEstimated,
 		isLoadingFeeTokens,
 		onFeeTokenChange,
 		insufficientBalances,
 	} = useTransaction();
 
-	const hasInsufficientBalance = useMemo(
-		() => !!insufficientBalances[feeToken?.id ?? ""],
-		[feeToken?.id, insufficientBalances],
-	);
+	const hasInsufficientBalance =
+		insufficientBalances[feeToken?.id ?? ""] === INSUFFICIENT_FEE_BALANCE;
 
 	const handleTokenChange = useCallback(
 		(tokenId: TokenId) => {
@@ -53,7 +69,7 @@ export const TransactionFeeSummaryValue: FC = () => {
 
 	return (
 		<>
-			{feeToken && isBigInt(feeEstimate) ? (
+			{isBigInt(feeEstimate) ? (
 				account?.platform === "polkadot" &&
 				feeTokens &&
 				feeTokens.length > 1 ? (
@@ -63,19 +79,19 @@ export const TransactionFeeSummaryValue: FC = () => {
 						className="flex items-center gap-2"
 					>
 						<PencilSquareIcon className="size-4 text-muted" />
-						<span>
-							<Tokens
-								plancks={feeEstimate}
-								token={feeToken}
-								className={cn(hasInsufficientBalance && "text-error")}
-							/>
-						</span>
+						<FeeEstimate
+							plancks={feeEstimate}
+							token={feeToken}
+							isEstimate={!isCallFeeEstimated}
+							isInsufficient={hasInsufficientBalance}
+						/>
 					</button>
 				) : (
-					<Tokens
+					<FeeEstimate
 						plancks={feeEstimate}
 						token={feeToken}
-						className={cn(hasInsufficientBalance && "text-error")}
+						isEstimate={!isCallFeeEstimated}
+						isInsufficient={hasInsufficientBalance}
 					/>
 				)
 			) : errorFeeEstimate ? (

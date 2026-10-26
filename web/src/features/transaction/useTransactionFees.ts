@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
 import { useConvertedFee } from "../../hooks/useConvertedFee";
-import { useDryRun } from "../../hooks/useDryRun";
 import { useEstimateFee } from "../../hooks/useEstimateFee";
 import { useFeeToken } from "../../hooks/useFeeToken";
 import { useNonce } from "../../hooks/useNonce";
@@ -9,8 +8,11 @@ import type { ChainId } from "../../registry/chains/types";
 import type { Token, TokenId } from "../../registry/tokens/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
-import { getTxOptions } from "../../utils/getTxOptions";
+import { isBigInt } from "../../utils/isBigInt";
 import { isNumber } from "../../utils/isNumber";
+import type { TxOptionsWithChargeAssetTxPayment } from "../../utils/txOptions";
+
+export const TX_MORTALITY_BLOCKS = 64;
 
 type UseTransactionFeesProps = {
 	signer: string | null | undefined;
@@ -57,53 +59,49 @@ export const useTransactionFees = ({
 		[isEthereumAccount, nativeToken, selectedFeeToken],
 	);
 
-	const options = useMemo(() => {
+	const options = useMemo<TxOptionsWithChargeAssetTxPayment | undefined>(() => {
 		if (!isNumber(nonce) || !feeToken) return undefined;
-		return getTxOptions({
-			asset: feeToken ? getFeeAssetLocation(feeToken) : undefined,
-			mortality: { mortal: true, period: 64 },
+		return {
+			asset: getFeeAssetLocation(feeToken),
+			mortality: { mortal: true, period: TX_MORTALITY_BLOCKS },
 			nonce,
-		});
+		};
 	}, [feeToken, nonce]);
 
-	const {
-		data: feeEstimateNative,
-		isLoading: isLoadingFeeEstimateNative,
-		error: errorFeeEstimate,
-	} = useEstimateFee({
+	const callFee = useEstimateFee({
 		from: signerSubstrateAddress,
-		call: call ?? fakeCall,
+		call,
+		options,
+	});
+	const fakeCallFee = useEstimateFee({
+		from: signerSubstrateAddress,
+		call: fakeCall,
 		options,
 	});
 
-	const { isLoading: isLoadingFeeEstimateConvert, data: feeEstimate } =
+	const activeFee = call ? callFee : fakeCallFee;
+	const errorFeeEstimate = activeFee.error;
+	const feeEstimateNative = errorFeeEstimate
+		? null
+		: (activeFee.data ?? fakeCallFee.data);
+	const isLoadingFeeEstimateNative =
+		!errorFeeEstimate &&
+		!isBigInt(feeEstimateNative) &&
+		(activeFee.isLoading || fakeCallFee.isLoading);
+	const isCallFeeEstimated = !!call && isBigInt(callFee.data);
+
+	const { isLoading: isLoadingFeeEstimateConvert, data: convertedFee } =
 		useConvertedFee({
 			chainId,
 			feeTokenId: feeToken?.id,
 			nativeFee: feeEstimateNative,
 		});
+	const feeEstimate = isBigInt(feeEstimateNative) ? convertedFee : null;
 
-	const isLoadingFeeEstimate = useMemo(
-		() =>
-			isLoadingFeeTokens ||
-			isLoadingFeeEstimateNative ||
-			isLoadingFeeEstimateConvert,
-		[
-			isLoadingFeeEstimateConvert,
-			isLoadingFeeEstimateNative,
-			isLoadingFeeTokens,
-		],
-	);
-
-	const {
-		data: dryRun,
-		isLoading: isLoadingDryRun,
-		error: errorDryRun,
-	} = useDryRun({
-		chainId,
-		from: signerSubstrateAddress,
-		call,
-	});
+	const isLoadingFeeEstimate =
+		isLoadingFeeTokens ||
+		isLoadingFeeEstimateNative ||
+		isLoadingFeeEstimateConvert;
 
 	const onFeeTokenChange = useCallback(
 		(feeTokenId: TokenId) => {
@@ -123,9 +121,7 @@ export const useTransactionFees = ({
 		feeEstimate,
 		errorFeeEstimate,
 		isLoadingFeeEstimate,
+		isCallFeeEstimated,
 		options,
-		dryRun,
-		isLoadingDryRun,
-		errorDryRun,
 	};
 };

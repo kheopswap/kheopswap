@@ -1,9 +1,13 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
+import type { TransactionFollowUp } from "../../state/transactions/types";
 import {
 	type CallSpendings,
+	getTokenSpending,
 	TransactionProvider,
 } from "../transaction/TransactionProvider";
 import { useTransfer } from "./TransferProvider";
+
+const FOLLOW_UP: TransactionFollowUp = { type: "transfer" };
 
 const getTransferTitle = (tokenSymbol: string | undefined): string => {
 	return tokenSymbol ? `Transfer ${tokenSymbol}` : "Transfer";
@@ -17,12 +21,7 @@ export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 	const title = useMemo(() => getTransferTitle(token?.symbol), [token?.symbol]);
 
 	const callSpendings = useMemo<CallSpendings>(
-		() =>
-			token && plancks
-				? {
-						[token.id]: { plancks, allowDeath: true },
-					}
-				: {},
+		() => (token && plancks ? getTokenSpending(token, plancks) : {}),
 		[plancks, token],
 	);
 
@@ -34,7 +33,7 @@ export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 			chainId={token?.chainId}
 			signer={formData.from}
 			onReset={onReset}
-			transactionType="transfer"
+			followUp={FOLLOW_UP}
 			transactionTitle={title}
 		>
 			{children}

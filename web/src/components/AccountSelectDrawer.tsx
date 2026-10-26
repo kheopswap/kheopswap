@@ -9,12 +9,14 @@ import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
 import { isValidAnyAddress } from "../utils/ethereumAddress";
 import { getAccountName } from "../utils/getAccountName";
+import { hasValueLine, useIsValuedAsStable } from "../utils/hasValueLine";
 import { shortenAddress } from "../utils/shortenAddress";
 import { AccountIcon } from "./AccountIcon";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
 import { ActionRightIcon } from "./icons";
 import { Shimmer } from "./Shimmer";
+import { StableValue } from "./StableValue";
 import { Styles } from "./styles";
 import { Tokens } from "./Tokens";
 import { useAccountDrawerContent } from "./useAccountDrawerContent";
@@ -33,8 +35,6 @@ const WalletButton: FC<{
 	wallet: Wallet;
 	onClick: () => void;
 }> = ({ wallet, onClick }) => {
-	// The WalletConnect connector spans platforms (its `platforms` are only known
-	// once connected); injected wallets are bound to a single platform.
 	const platformLabel = isWalletConnectWallet(wallet)
 		? wallet.platforms.map(getPlatformLabel).join(" + ")
 		: getPlatformLabel(wallet.platform);
@@ -75,6 +75,7 @@ const AccountButton = memo<{
 	onSelect: (accountId: string) => void;
 }>(({ account, selected, balance, token, stableToken, disabled, onSelect }) => {
 	const accountName = useMemo(() => getAccountName(account), [account]);
+	const isValuedAsStable = useIsValuedAsStable(token?.id);
 
 	const handleClick = useCallback(() => {
 		onSelect(account.id);
@@ -122,11 +123,14 @@ const AccountButton = memo<{
 							/>
 						</div>
 						<div className="text-xs text-muted">
-							<Tokens
-								token={stableToken}
-								plancks={balance.stablePlancks ?? 0n}
-								pulse={balance.isLoadingStablePlancks}
-							/>
+							{balance.stablePlancks !== null &&
+								hasValueLine(isValuedAsStable, balance.tokenPlancks) && (
+									<StableValue
+										stableToken={stableToken}
+										plancks={balance.stablePlancks}
+										pulse={balance.isLoadingStablePlancks}
+									/>
+								)}
 						</div>
 					</div>
 				)
