@@ -10,6 +10,7 @@ import {
 	getSentMessageId,
 	getXcmArrival$,
 	getXcmBlockEvents,
+	isAwaitingXcmArrival,
 	isXcmArrivalType,
 	type XcmArrival,
 } from "./xcmArrival";
@@ -350,5 +351,30 @@ describe("arrival on Asset Hub", () => {
 	it("keeps about a minute of blocks on each destination", () => {
 		expect(getArrivalBufferBlocks("hydration")).toBe(10);
 		expect(getArrivalBufferBlocks("pah")).toBe(30);
+	});
+});
+
+describe("isAwaitingXcmArrival", () => {
+	const finalized = getRecord("finalized", [sentTo(HYDRATION_PARA_ID)]);
+
+	it.each<[XcmArrival | null, boolean]>([
+		[null, true],
+		[{ status: "awaiting-origin" }, true],
+		[{ status: "in-transit", messageId: MESSAGE_ID }, true],
+		[{ status: "arrived", messageId: MESSAGE_ID, received: 1n }, false],
+		[{ status: "failed-on-destination", messageId: MESSAGE_ID }, false],
+		[{ status: "unconfirmed", messageId: MESSAGE_ID }, false],
+	])("finalized transfer with arrival %o: %s", (arrival, expected) => {
+		expect(isAwaitingXcmArrival(finalized, arrival)).toBe(expected);
+	});
+
+	it("does not hold a transfer that failed on the origin chain", () => {
+		expect(isAwaitingXcmArrival(getRecord("failed"), null)).toBe(false);
+	});
+
+	it("does not hold other transactions", () => {
+		expect(isAwaitingXcmArrival({ ...finalized, type: "swap" }, null)).toBe(
+			false,
+		);
 	});
 });

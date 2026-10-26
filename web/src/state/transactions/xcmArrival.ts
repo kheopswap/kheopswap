@@ -256,6 +256,17 @@ export const trackXcmArrivals = () =>
 			arrivalsSubject.next({ ...arrivalsSubject.getValue(), [id]: arrival });
 		});
 
+export const getTrackedXcmArrival = (id: TransactionId): XcmArrival | null =>
+	arrivalsSubject.getValue()[id] ?? null;
+
+export const isAwaitingXcmArrival = (
+	{ type, status }: TransactionRecord,
+	arrival: XcmArrival | null,
+) =>
+	isXcmArrivalType(type) &&
+	status === "finalized" &&
+	!(arrival && isFinalArrival(arrival));
+
 export const useXcmArrival = bindSerialized(
 	(id: TransactionId) =>
 		arrivalsSubject.pipe(
