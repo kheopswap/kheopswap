@@ -6,19 +6,19 @@
       "wsUrl": "wss://dot-rpc.stakeworld.io/assethub",
       "metadata": ".papi/scale/pah.scale",
       "genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
-      "codeHash": "0x89c40f702dce06869112adb3277db831ddd55ada53c76c96c7d9052bfb892285"
+      "codeHash": "0xd9f622db40b8d4ef54d66223634c3546d2eec77e52d7bf4a3137a86a31589404"
     },
     "kah": {
       "wsUrl": "wss://rpc-asset-hub-kusama.luckyfriday.io",
       "metadata": ".papi/scale/kah.scale",
       "genesis": "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a",
-      "codeHash": "0x929a5d7409e583c593420b33be6cd3e2e7fe27229bb9accee38864452d2d6f03"
+      "codeHash": "0xf760c1f229bfa2d985d193df40fd5124df5a6a59b947292f7da2f1f9199684ba"
     },
     "wah": {
       "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
       "metadata": ".papi/scale/wah.scale",
       "genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
-      "codeHash": "0x57ccdb66df672638e8978d5eecce601930a6e498f6c0360a738a53cac2c2e9d9"
+      "codeHash": "0x985f0daaaeec1ed429c305034a95dd233bdd292bef383e3d6643bb00f1c6a132"
     },
     "pasah": {
       "wsUrl": "wss://sys.turboflakes.io/asset-hub-paseo",
