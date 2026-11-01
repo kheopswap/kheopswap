@@ -6215,6 +6215,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pah::50000550",
+		"type": "asset",
+		"chainId": "pah",
+		"assetId": 50000550,
+		"symbol": "MOG",
+		"decimals": 1,
+		"name": "MOGGED",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pah::51",
 		"type": "asset",
 		"chainId": "pah",
