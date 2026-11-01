@@ -6336,6 +6336,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001042",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001042,
+		"symbol": "TEST6",
+		"decimals": 6,
+		"name": "Disposable transfer test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50001043",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001043,
+		"symbol": "TEST18",
+		"decimals": 18,
+		"name": "Disposable transfer test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
