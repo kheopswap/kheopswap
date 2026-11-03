@@ -4,7 +4,7 @@ This directory is the maintained source for verifying Kheopswap's user-facing be
 
 ## Baseline preconditions
 
-- `launch.sh` succeeded, and `doctor.sh` exits 0. If launch stops on a missing file in `~/.kheopswap`, pass its message on to the user and stop: every run needs the wallet backup.
+- `launch.sh` succeeded, and `doctor.sh` exits 0. If launch stops on a missing file in `~/.config/talisman-dev`, pass its message on to the user and stop: every run needs the wallet backup.
 - The network is Paseo (`#/paseo/...`) unless the feature file says otherwise. Fall back to Polkadot only when Paseo is broken, and use tiny amounts.
 - Talisman is unlocked, and the signing test account is listed under `Connected Accounts` in the `Account` drawer. A fresh container's wallet is connected only to the sites its backup authorized: connect it first (see `network-and-account.md`).
 - No Talisman popup is pending (`node scripts/talisman.mjs list` prints nothing).

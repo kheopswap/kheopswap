@@ -44,6 +44,6 @@ Steps:
 - `http://localhost:5173/` always redirects to `#/polkadot/swap`, which is mainnet. Open `#/paseo/...` explicitly.
 - Clicking a connected wallet disconnects it. Choosing it again reconnects without a popup once Talisman has authorized the site in this launch, and `talisman.mjs connect` then exits 1 with `no Talisman popup`.
 - Clicking a network while the `Select network` drawer is still sliding in does nothing. Run `wait-drawer.sh open` first.
-- `talisman.mjs` unlocks a locked popup with `~/.kheopswap/talisman.password`. Exit 3 means that file is missing or Talisman rejected it. Stop and ask the user.
+- `talisman.mjs` unlocks a locked popup with `~/.config/talisman-dev/password.txt`. Exit 3 means that file is missing or Talisman rejected it. Stop and ask the user.
 - The header wallet button's accessible name deliberately avoids the word "account", so `--name "Account"` still reaches the form's account field. Open the header drawer with `--name "wallet"`, which matches both of its states.
 - On Paseo the header network button is named `Network: Paseo`, so a short case-insensitive name such as `--name "PAS"` hits it before any form control. Use `--exact` or a longer name like `USDC USDC Asset Hub - 1337`.

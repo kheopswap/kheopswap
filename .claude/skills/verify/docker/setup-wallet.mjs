@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // Prepares Talisman in the container's Chromium the way a user would, through its own pages.
 // Usage:
-//   setup-wallet.mjs restore   restore /verify/wallet/talisman.json through support.html → Restore
-//   setup-wallet.mjs unlock    unlock with /verify/wallet/talisman.password through popup.html
+//   setup-wallet.mjs restore   restore /verify/wallet/backup.json through support.html → Restore
+//   setup-wallet.mjs unlock    unlock with /verify/wallet/password.txt through popup.html
 // Never queries the accessibility tree: on support.html that crashes the renderer.
 import { readFileSync, writeFileSync } from "node:fs";
 import { chromium } from "playwright-core";
 
-const BACKUP = "/verify/wallet/talisman.json";
-const PASSWORD = "/verify/wallet/talisman.password";
+const BACKUP = "/verify/wallet/backup.json";
+const PASSWORD = "/verify/wallet/password.txt";
 const TIMEOUT = 60_000;
 
 const browser = await chromium.connectOverCDP("http://127.0.0.1:9223");
@@ -64,7 +64,9 @@ const isUnlocked = (worker) =>
 const restore = async () => {
 	const backup = JSON.parse(readFileSync(BACKUP, "utf8"));
 	if (!backup.isTalismanBackup)
-		throw new Error("~/.kheopswap/talisman.json is not a Talisman backup");
+		throw new Error(
+			"~/.config/talisman-dev/backup.json is not a Talisman backup",
+		);
 	const worker = await talismanWorker();
 	const origin = extensionOrigin(worker);
 	console.log(`extension ${origin}`);
@@ -107,7 +109,9 @@ const unlock = async () => {
 		() => {
 			const text = document.body.innerText;
 			if (text.includes("Talisman access denied"))
-				throw new Error("wrong password in ~/.kheopswap/talisman.password");
+				throw new Error(
+					"wrong password in ~/.config/talisman-dev/password.txt",
+				);
 			return !text.includes("Unlock the Talisman");
 		},
 		null,

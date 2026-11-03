@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Container side of launch.sh: installs the checkout's deps, starts Vite and a Chromium with Talisman restored
-# from ~/.kheopswap (mounted at /verify/wallet), then keeps running. Progress goes to /verify/status:
+# from ~/.config/talisman-dev (mounted at /verify/wallet), then keeps running. Progress goes to /verify/status:
 # installing, starting-vite, installing-talisman, restoring, unlocking, then ready or failed:<step>.
 # Logs go to /verify/logs, the run's artifacts folder on the host.
 set -euo pipefail
@@ -46,11 +46,11 @@ status installing-talisman
 mkdir -p /verify/talisman
 if [[ -f /verify/wallet/talisman.zip ]]; then
 	unzip -qo /verify/wallet/talisman.zip -d /verify/talisman
-	source="~/.kheopswap/talisman.zip"
+	source="~/.config/talisman-dev/talisman.zip"
 elif curl -sfL --max-time 120 -o /verify/talisman.crx "$STORE_URL" && { unzip -qo /verify/talisman.crx -d /verify/talisman || (($? <= 1)); }; then
 	source="Chrome Web Store"
 else
-	echo "~/.kheopswap/talisman.zip does not exist and the Chrome Web Store download failed" >&2
+	echo "~/.config/talisman-dev/talisman.zip does not exist and the Chrome Web Store download failed" >&2
 	false
 fi
 manifest="$(find /verify/talisman -maxdepth 2 -name manifest.json | head -1)"

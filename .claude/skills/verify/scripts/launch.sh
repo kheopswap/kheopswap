@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts this checkout's verify container (Vite, Chromium, and Talisman restored from ~/.kheopswap), opens a pinned
+# Starts this checkout's verify container (Vite, Chromium, and Talisman restored from ~/.config/talisman-dev), opens a pinned
 # app tab over the container's CDP port, and writes the run state that the other scripts read.
 # Usage: launch.sh [route]   e.g. launch.sh '#/paseo/portfolio' (default '#/paseo/swap')
 # Env: VERIFY_CDP_PORT pins the host CDP port (default: the first free port in 9300-9399).
@@ -11,30 +11,30 @@ STATE_DIR="$SKILL_DIR/.run"
 STATE="$STATE_DIR/state.env"
 ROUTE="${1:-#/paseo/swap}"
 APP_URL="http://localhost:5173/$ROUTE"
-WALLET_DIR="$HOME/.kheopswap"
+WALLET_DIR="$HOME/.config/talisman-dev"
 SLUG="$(basename "$ROOT" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9\n' '-')"
 CONTAINER="kheopswap-verify-$SLUG"
 LABEL=kheopswap-verify.checkout
 AGENT_BROWSER_SESSION="kheopswap-verify-$SLUG"
 
-if [[ ! -f "$WALLET_DIR/talisman.json" ]]; then
+if [[ ! -f "$WALLET_DIR/backup.json" ]]; then
 	cat >&2 <<EOF
-FAIL missing $WALLET_DIR/talisman.json, the Talisman backup every verify container restores.
+FAIL missing $WALLET_DIR/backup.json, the Talisman backup every verify container restores.
      Make it once from the Talisman extension in your own browser:
      1. Lock Talisman so its login page shows, then click the version number on that page 10 times.
         The support page opens. You can also open
         chrome-extension://fijngjgcjhjmmpcmkeiomlglpeiijkld/support.html directly.
      2. Click Backup, then Save.
-     3. mkdir -p ~/.kheopswap && chmod 700 ~/.kheopswap
-        mv ~/Downloads/backup.talisman.*.json ~/.kheopswap/talisman.json && chmod 600 ~/.kheopswap/talisman.json
+     3. mkdir -p ~/.config/talisman-dev && chmod 700 ~/.config/talisman-dev
+        mv ~/Downloads/backup.talisman.*.json ~/.config/talisman-dev/backup.json && chmod 600 ~/.config/talisman-dev/backup.json
      Use a wallet that holds only test accounts: every container gets a copy.
-     Then put that wallet's password in ~/.kheopswap/talisman.password (chmod 600).
+     Then put that wallet's password in ~/.config/talisman-dev/password.txt (chmod 600).
 EOF
 	exit 1
 fi
-if [[ ! -f "$WALLET_DIR/talisman.password" ]]; then
+if [[ ! -f "$WALLET_DIR/password.txt" ]]; then
 	cat >&2 <<EOF
-FAIL missing $WALLET_DIR/talisman.password. Write the password of the wallet that $WALLET_DIR/talisman.json
+FAIL missing $WALLET_DIR/password.txt. Write the password of the wallet that $WALLET_DIR/backup.json
      was backed up from into it, then run chmod 600 on it. The container unlocks Talisman with it.
 EOF
 	exit 1

@@ -3,7 +3,7 @@
 // Usage:
 //   talisman.mjs list                                  open Talisman popups, one per line
 //   talisman.mjs status                                print unlocked or locked
-//   talisman.mjs unlock                                unlock with ~/.kheopswap/talisman.password
+//   talisman.mjs unlock                                unlock with ~/.config/talisman-dev/password.txt
 //   talisman.mjs text [--timeout 60]                   wait for a popup and print its text
 //   talisman.mjs connect [--timeout 60]                approve a dapp connection request
 //   talisman.mjs approve --signer <name> [--timeout 60] approve a signing request, only if <name> signs it
@@ -14,7 +14,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 
 const STATE = new URL("../.run/state.env", import.meta.url);
-const PASSWORD = `${homedir()}/.kheopswap/talisman.password`;
+const PASSWORD = `${homedir()}/.config/talisman-dev/password.txt`;
 
 if (!existsSync(STATE)) {
 	console.error("no active run: run launch.sh first");
