@@ -10,7 +10,7 @@
 # To find a token's ID, check the generated tokens.<chainId>.json files
 # or the fetch-tokens console output.
 
-blacklist: 
+blacklist:
   # invalid contracts
   - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyADzEAZgAWCAA2AE50Gsz0H0zMiVqYADMfdAheqwB2eoAOdFH/GFHuoYgfLppwgF1woA===
   - foreign-asset::pasah::N4IgDghgTgpgdgFwM4gFwCYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42oDa5V3EAHE2RAEbsAwkThJ4SDihbsuZEJWq0AoggAWBGBwC2TEK07dQAY10Q8AfRwATWmJwBzPAlQBGPwFZ/Px8QAF9wzH5NVBAAQSsrIg5EAGkYCnQABlNzVVRQAGt02kyAD3R0GB9KpwAWGAA2MSsnRv90CAB2AGZA9CdW7trMgDMrMQBOTsqYEYAOCbDQgF1woA===

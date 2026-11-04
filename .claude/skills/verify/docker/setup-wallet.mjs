@@ -76,6 +76,7 @@ const restore = async () => {
 	await clickButton(page, "Restore", { prefix: true });
 	await page.setInputFiles("input[type=file]", BACKUP);
 	await page.waitForFunction(
+		// biome-ignore lint/performance/useDomNodeTextContent: waits on rendered text, not hidden nodes
 		() => document.body.innerText.includes("Ready to restore"),
 		null,
 		{ timeout: TIMEOUT },
@@ -105,6 +106,7 @@ const unlock = async () => {
 	await clickButton(page, "Unlock");
 	await page.waitForFunction(
 		() => {
+			// biome-ignore lint/performance/useDomNodeTextContent: waits on rendered text, not hidden nodes
 			const text = document.body.innerText;
 			if (text.includes("Talisman access denied"))
 				throw new Error("wrong password in ~/.kheopswap/talisman.password");

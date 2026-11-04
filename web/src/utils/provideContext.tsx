@@ -1,3 +1,4 @@
+// biome-ignore-all lint/correctness/noComponentHookFactories: called once per feature at module scope
 import { createContext, type FC, type ReactNode, useContext } from "react";
 
 // This utility generates a context provider from a react hook passed as argument

@@ -63,6 +63,7 @@ describe("bindSerialized", () => {
 
 	it("evicts entries created by renders that never commit", () => {
 		const { useValue, getDefaultValue } = createBinding();
+		// biome-ignore lint/correctness/noComponentHookFactories: rendered once in this test
 		const Consumer = ({ id }: { id: string }) => <>{useValue(id)}</>;
 
 		vi.spyOn(console, "error").mockImplementation(() => {});

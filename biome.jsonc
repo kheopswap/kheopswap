@@ -47,6 +47,11 @@
 			"indentWidth": 2
 		}
 	},
+	"markdown": {
+		"parser": {
+			"frontmatter": true
+		}
+	},
 	"css": {
 		"formatter": {
 			"enabled": true

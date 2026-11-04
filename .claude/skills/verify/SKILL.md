@@ -15,11 +15,11 @@ All scripts live in `scripts/` next to this file, and the image in `docker/`. Ru
 
 Every launch restores the same Talisman backup into a fresh Chromium profile, so each run starts from a known wallet. The backup lives in `~/.kheopswap`:
 
-| File | Required | Content |
-|---|---|---|
-| `talisman.json` | yes | A Talisman backup (support page → Backup → Save). |
-| `talisman.password` | yes | The password of the wallet the backup came from. |
-| `talisman.zip` | no | A Talisman build. When it exists, it replaces the Chrome Web Store version. |
+| File                | Required | Content                                                                     |
+| ------------------- | -------- | --------------------------------------------------------------------------- |
+| `talisman.json`     | yes      | A Talisman backup (support page → Backup → Save).                           |
+| `talisman.password` | yes      | The password of the wallet the backup came from.                            |
+| `talisman.zip`      | no       | A Talisman build. When it exists, it replaces the Chrome Web Store version. |
 
 `launch.sh` checks both required files before it starts anything, and prints how to make a missing one. To make the backup, lock Talisman in your own browser and click the version number on its login page 10 times: the support page opens. Click Backup, then Save, and move the download to `~/.kheopswap/talisman.json`. Keep the folder at `700` and the files at `600`. Use a wallet that holds only test accounts, because every container gets a copy.
 
@@ -119,12 +119,12 @@ The helper:
 
 It exits with one of these codes:
 
-| Code | Meaning | What to do |
-|---|---|---|
-| 0 | Approved | Continue. |
-| 1 | No popup appeared | The app usually failed before signing. Its follow-up dialog reads `Transaction failed`, but it closes with its toast about 5 s after the failure, so capture it right after the submit click rather than after the helper's 60 s wait. |
-| 2 | Signer mismatch, nothing clicked | Fix the account selection. |
-| 3 | Talisman is locked, and the password file is missing or wrong | Ask the user to fix `~/.kheopswap/talisman.password`. Never guess the password. |
+| Code | Meaning                                                       | What to do                                                                                                                                                                                                                             |
+| ---- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0    | Approved                                                      | Continue.                                                                                                                                                                                                                              |
+| 1    | No popup appeared                                             | The app usually failed before signing. Its follow-up dialog reads `Transaction failed`, but it closes with its toast about 5 s after the failure, so capture it right after the submit click rather than after the helper's 60 s wait. |
+| 2    | Signer mismatch, nothing clicked                              | Fix the account selection.                                                                                                                                                                                                             |
+| 3    | Talisman is locked, and the password file is missing or wrong | Ask the user to fix `~/.kheopswap/talisman.password`. Never guess the password.                                                                                                                                                        |
 
 Other subcommands: `list`, `status`, `unlock`, `text`, `connect`, `reject`. On 2026-10-24, `approve`, `connect`, `list`, `status` and `unlock` ran against the container. `text` and `reject` have not run against a real popup. `connect` exits 1 when no popup opens, which is normal when Talisman already authorized the site.
 

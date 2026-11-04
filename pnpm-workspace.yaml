@@ -2,8 +2,8 @@ packages:
   - web
 
 allowBuilds:
-  '@reown/appkit': false
-  '@swc/core': false
+  "@reown/appkit": false
+  "@swc/core": false
   bufferutil: false
   esbuild: false
   sharp: true
