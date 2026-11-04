@@ -29,7 +29,7 @@
 	"keywords": [],
 	"author": "Kheops",
 	"license": "AGPL",
-	"packageManager": "pnpm@11.20.0+sha512.9a6f330a95b66446ea088faf1521405a8a01f07fde7124cc9958dfed52d4bb436737e65b08f85f37b46fcba375092558ac51262b816844b22f63406ed166bfee",
+	"packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.15",
 		"knip": "^6.39.0",
