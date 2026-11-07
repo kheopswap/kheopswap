@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useParams } from "react-router";
 import { setSetting } from "../../common/settings";
 import { useNativeToken } from "../../hooks/useNativeToken";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
@@ -7,6 +6,7 @@ import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAdd
 import { useWalletAccount } from "../../hooks/useWalletAccount";
 import { getTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
+import { getLocationRelayId } from "../../state/location";
 import { useRelayChains } from "../../state/relay";
 import {
 	canFlipSwapTokens,
@@ -20,7 +20,6 @@ import type { SwapFormInputs } from "./schema";
 import { getDraftOnRelay } from "./swapDraft";
 
 export const useSwapFormState = () => {
-	const { relayId } = useParams();
 	const { assetHub, allChains } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
 
@@ -80,9 +79,9 @@ export const useSwapFormState = () => {
 	);
 
 	useEffect(() => {
-		if (assetHub.relay !== relayId) return;
+		if (assetHub.relay !== getLocationRelayId(window.location)) return;
 		setFormData((prev) => getDraftOnRelay(prev, allChains, assetHub.id));
-	}, [assetHub, allChains, relayId, setFormData]);
+	}, [assetHub, allChains, setFormData]);
 
 	const onFromChange = useCallback(
 		(accountId: string) => {
