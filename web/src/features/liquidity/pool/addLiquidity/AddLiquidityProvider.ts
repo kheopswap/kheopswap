@@ -4,6 +4,16 @@ import { provideContext } from "../../../../utils/provideContext";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidityExtrinsic } from "./useAddLiquidityExtrinsic";
 
+const getMissingLiquiditySide = (
+	liquidity: [bigint, bigint] | null,
+): 0 | 1 | null => {
+	if (!liquidity) return null;
+	const [native, asset] = liquidity;
+	if (native > 0n && asset === 0n) return 1;
+	if (asset > 0n && native === 0n) return 0;
+	return null;
+};
+
 const useAddLiquidityProvider = () => {
 	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(
 		null,
@@ -18,21 +28,26 @@ const useAddLiquidityProvider = () => {
 		lpSlippage,
 	} = useLiquidityPoolPage();
 
+	const missingSide = getMissingLiquiditySide(liquidityToAdd);
+	const completeLiquidity = liquidityToAdd?.every((amount) => amount > 0n)
+		? liquidityToAdd
+		: null;
+
 	const minLiquidity = useMemo<[bigint, bigint] | null>(() => {
-		if (!liquidityToAdd) return null;
+		if (!completeLiquidity) return null;
 
 		return [
-			(liquidityToAdd[0] * BigInt((1 - lpSlippage) * 100000)) / 100000n,
-			(liquidityToAdd[1] * BigInt((1 - lpSlippage) * 100000)) / 100000n,
+			(completeLiquidity[0] * BigInt((1 - lpSlippage) * 100000)) / 100000n,
+			(completeLiquidity[1] * BigInt((1 - lpSlippage) * 100000)) / 100000n,
 		] as [bigint, bigint];
-	}, [liquidityToAdd, lpSlippage]);
+	}, [completeLiquidity, lpSlippage]);
 
 	const { data: call } = useAddLiquidityExtrinsic({
 		chainId: assetHub.id,
 		tokenIdNative: nativeToken?.id,
 		tokenIdAsset: assetToken?.id,
-		amountNative: liquidityToAdd?.[0],
-		amountAsset: liquidityToAdd?.[1],
+		amountNative: completeLiquidity?.[0],
+		amountAsset: completeLiquidity?.[1],
 		amountNativeMin: minLiquidity?.[0],
 		amountAssetMin: minLiquidity?.[1],
 		dest: resolvedSubstrateAddress,
@@ -55,6 +70,7 @@ const useAddLiquidityProvider = () => {
 		call,
 		liquidityToAdd,
 		setLiquidityToAdd,
+		missingSide,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 		onReset,
