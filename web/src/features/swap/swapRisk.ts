@@ -49,7 +49,9 @@ export const getShare = (
 	whole: bigint | null | undefined,
 ): number | undefined => {
 	if (!whole || part === null || part === undefined) return undefined;
-	return Number((part * RATIO_PRECISION) / whole) / Number(RATIO_PRECISION);
+	const scaled = part * RATIO_PRECISION;
+	const roundedUp = scaled / whole + (scaled % whole > 0n ? 1n : 0n);
+	return Number(roundedUp) / Number(RATIO_PRECISION);
 };
 
 export const getValueLoss = (

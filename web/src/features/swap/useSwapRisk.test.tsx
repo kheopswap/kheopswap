@@ -208,10 +208,10 @@ describe("useSwapRisk", () => {
 		});
 
 		it.each([
-			[1_700_000_000n, "confirm", 0.179411],
-			[1_800_000_000n, "confirm", 0.169444],
+			[1_700_000_000n, "confirm", 0.179412],
+			[1_800_000_000n, "confirm", 0.169445],
 			[2_000_000_000n, "confirm", 0.1525],
-			[2_100_000_000n, "warn", 0.145238],
+			[2_100_000_000n, "warn", 0.145239],
 			[10_000_000_000n, "warn", 0.0305],
 		])(
 			"sets the level of a %s plancks transfer from the share its fees take",
@@ -236,7 +236,7 @@ describe("useSwapRisk", () => {
 			});
 			expect(result.current.risk).toMatchObject({
 				level: "confirm",
-				headline: { kind: "fees", ratio: 0.150476 },
+				headline: { kind: "fees", ratio: 0.150477 },
 			});
 			expect(result.current.transferFees?.fees).toEqual([
 				{ tokenId: DOT, plancks: 316_000_000n },

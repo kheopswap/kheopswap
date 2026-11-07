@@ -27,6 +27,21 @@ describe("getValueLoss", () => {
 		expect(getValueLoss(1_000_000n, 784_000n)).toBe(0.216);
 	});
 
+	it("asks for confirmation when the loss is a hair above the confirm threshold", () => {
+		const ratio = getValueLoss(1_000_000_000n, 849_999_999n);
+		expect(ratio).toBeGreaterThan(0.15);
+		expect(
+			getSwapRisk({
+				priceImpact: 0,
+				valueLoss: {
+					kind: "fees",
+					ratio: ratio ?? 0,
+					feeShares: { "delivery-fee": ratio ?? 0, "destination-fee": 0 },
+				},
+			}).level,
+		).toBe("confirm");
+	});
+
 	it.each([
 		["nothing is sent", 0n, 10n],
 		["the received value is unknown", 10n, undefined],
