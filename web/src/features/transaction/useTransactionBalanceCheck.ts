@@ -3,6 +3,8 @@ import { useMemo } from "react";
 import { useBalance } from "../../hooks/useBalance";
 import { useBalances } from "../../hooks/useBalances";
 import { useExistentialDeposits } from "../../hooks/useExistentialDeposits";
+import { isChainIdHydration } from "../../registry/chains/chains";
+import { parseTokenId } from "../../registry/tokens/helpers";
 import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
 import type { BalanceDef } from "../../services/balances/types";
 import type { AnyTransaction } from "../../types/transactions";
@@ -21,6 +23,7 @@ export const getInsufficientBalances = ({
 }): Record<TokenId, string> => {
 	const result: Record<TokenId, string> = {};
 	const tokenIds = uniq([...Object.keys(callSpendings), fee.tokenId]);
+	const feeMayReapPayer = isChainIdHydration(parseTokenId(fee.tokenId).chainId);
 
 	for (const tokenId of tokenIds) {
 		const balance = balances[tokenId] ?? 0n;
@@ -30,7 +33,10 @@ export const getInsufficientBalances = ({
 		const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
 
 		if (balance < spendings) result[tokenId] = "Insufficient balance";
-		else if (balance < spendings + feePlancks)
+		else if (
+			balance < spendings + feePlancks ||
+			(!feeMayReapPayer && balance < feePlancks + ed)
+		)
 			result[tokenId] = "Insufficient balance to pay for fee";
 		else if (!allowDeath && balance < spendings + feePlancks + ed)
 			result[tokenId] = "Insufficient balance to keep account alive";

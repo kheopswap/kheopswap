@@ -1,5 +1,7 @@
 import { BehaviorSubject, type Subscription } from "rxjs";
 import { getApi } from "../../papi/getApi";
+import { isChainIdHydration } from "../../registry/chains/chains";
+import type { ChainId } from "../../registry/chains/types";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
@@ -47,6 +49,18 @@ const updateBalance = (balanceId: BalanceId, balance: bigint) => {
 	stop();
 };
 
+const getNativeSpendable = (
+	chainId: ChainId,
+	{
+		free,
+		frozen,
+		reserved,
+	}: { free: bigint; frozen: bigint; reserved: bigint },
+) => {
+	if (isChainIdHydration(chainId)) return free - frozen;
+	return frozen > reserved ? free - (frozen - reserved) : free;
+};
+
 const watchBalance = async (balanceId: BalanceId) => {
 	const { tokenId, address } = parseBalanceId(balanceId);
 	const token = parseTokenId(tokenId);
@@ -61,9 +75,10 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 
 			return account$.subscribe(({ value: account }) => {
-				const balance = account.data.free - account.data.frozen;
-
-				updateBalance(balanceId, balance);
+				updateBalance(
+					balanceId,
+					getNativeSpendable(token.chainId, account.data),
+				);
 			});
 		}
 		case "asset": {

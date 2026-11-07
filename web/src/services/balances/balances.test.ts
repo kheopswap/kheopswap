@@ -9,7 +9,9 @@ import {
 import type { BalanceState } from "./types";
 import { getBalanceId } from "./utils";
 
-type AccountValue = { value: { data: { free: bigint; frozen: bigint } } };
+type AccountValue = {
+	value: { data: { free: bigint; reserved: bigint; frozen: bigint } };
+};
 type TokensAccountValue = {
 	value: { free: bigint; reserved: bigint; frozen: bigint };
 };
@@ -105,7 +107,7 @@ describe("balances service pipeline", () => {
 
 		// chain emits an account value -> free - frozen lands in the state
 		getSubject(subjectKey).next({
-			value: { data: { free: 100n, frozen: 10n } },
+			value: { data: { free: 100n, reserved: 0n, frozen: 10n } },
 		});
 
 		const loaded = await waitForBalanceState(
@@ -124,6 +126,59 @@ describe("balances service pipeline", () => {
 			(s) => s?.status === "stale",
 		);
 		expect(stale?.balance).toBe(90n);
+	});
+
+	it("counts frozen funds against free only where they exceed reserved funds", async () => {
+		const address = "5TestAddressFrozenVoter";
+		const balanceId = getBalanceId({ address, tokenId: "native::pah" });
+		const subjectKey = `native||${address}`;
+
+		const subId = addBalanceSubscription(balanceId);
+		await vi.waitFor(() =>
+			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		);
+
+		getSubject(subjectKey).next({
+			value: { data: { free: 100n, reserved: 30n, frozen: 40n } },
+		});
+		const partlyOverlapping = await waitForBalanceState(
+			balanceId,
+			(s) => s?.status === "loaded",
+		);
+		expect(partlyOverlapping?.balance).toBe(90n);
+
+		getSubject(subjectKey).next({
+			value: { data: { free: 100n, reserved: 50n, frozen: 40n } },
+		});
+		const fullyOverlapping = await waitForBalanceState(
+			balanceId,
+			(s) => s?.balance === 100n,
+		);
+		expect(fullyOverlapping?.balance).toBe(100n);
+
+		removeBalancesSubscription(subId);
+	});
+
+	it("counts every frozen fund against free on Hydration, whose fee withdrawal ignores reserved funds", async () => {
+		const address = "5TestAddressHydrationStaker";
+		const balanceId = getBalanceId({ address, tokenId: "native::hydration" });
+		const subjectKey = `native||${address}`;
+
+		const subId = addBalanceSubscription(balanceId);
+		await vi.waitFor(() =>
+			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		);
+
+		getSubject(subjectKey).next({
+			value: { data: { free: 100n, reserved: 30n, frozen: 40n } },
+		});
+		const loaded = await waitForBalanceState(
+			balanceId,
+			(s) => s?.status === "loaded",
+		);
+		expect(loaded?.balance).toBe(60n);
+
+		removeBalancesSubscription(subId);
 	});
 
 	it("opens a single watcher for duplicate subscriptions", async () => {
@@ -159,7 +214,7 @@ describe("balances service pipeline", () => {
 		expect(mocks.getApiChainIds.slice(getApiCallsBefore)).toEqual(["ppeople"]);
 
 		getSubject(subjectKey).next({
-			value: { data: { free: 100n, frozen: 10n } },
+			value: { data: { free: 100n, reserved: 0n, frozen: 10n } },
 		});
 
 		const loaded = await waitForBalanceState(
