@@ -93,7 +93,7 @@ describe("useFeeTokens on Asset Hub", () => {
 		const { result } = renderHook(() =>
 			useFeeTokens({ chainId: "pah", address: PAYER }),
 		);
-		expect(result.current).toEqual({ isLoading: true, data: undefined });
+		expect(result.current).toEqual({ isLoading: false, data: [pah] });
 
 		act(() =>
 			pools.next({
@@ -102,5 +102,28 @@ describe("useFeeTokens on Asset Hub", () => {
 			}),
 		);
 		expect(result.current).toEqual({ isLoading: false, data: [pah, usdc] });
+	});
+
+	it("keeps offering the native token when the pools never load", () => {
+		chain.tokensByChain.set(
+			"pah",
+			new BehaviorSubject({
+				status: "loaded",
+				tokens: { [pah.id]: pah, [usdc.id]: usdc },
+			}),
+		);
+		const pools = new BehaviorSubject({
+			status: "stale",
+			pools: [] as unknown[],
+		});
+		chain.poolsByChain.set("pah", pools);
+
+		const { result } = renderHook(() =>
+			useFeeTokens({ chainId: "pah", address: PAYER }),
+		);
+		expect(result.current).toEqual({ isLoading: false, data: [pah] });
+
+		act(() => pools.next({ status: "loading", pools: [] }));
+		expect(result.current).toEqual({ isLoading: false, data: [pah] });
 	});
 });
