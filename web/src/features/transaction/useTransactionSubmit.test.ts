@@ -11,6 +11,14 @@ import { useTransactionSubmit } from "./useTransactionSubmit";
 
 vi.mock("../../utils/notifyError", () => ({ notifyError: vi.fn() }));
 
+const ethereum = vi.hoisted(() => ({
+	txEvents$: undefined as unknown as Subject<TxEvent>,
+}));
+
+vi.mock("./createEthereumTxObservable", () => ({
+	createEthereumTxObservable: () => ethereum.txEvents$,
+}));
+
 const chain = vi.hoisted(() => ({
 	finalizedNonce: 1,
 	isDown: false,
@@ -43,10 +51,17 @@ const polkadotAccount = {
 	isPlaceholder: false,
 	txCreator: {},
 } as never;
+const ethereumAccount = {
+	platform: "ethereum",
+	address: "0xSigner",
+	isPlaceholder: false,
+	client: {},
+} as never;
 const feeToken = { id: "native::pasah" } as never;
 
 const created: TxEvent = { type: "created", txHash: "0x01" };
 const broadcasted: TxEvent = { type: "broadcasted", txHash: "0x01" };
+const notInBestBlock: TxEvent = { type: "notInBestBlock", txHash: "0x01" };
 const inBestBlock = {
 	type: "inBestBlock",
 	txHash: "0x01",
@@ -69,13 +84,17 @@ const finalized = {
 
 const TEN_MINUTES = 10 * 60_000;
 
-const renderSubmit = () => {
+const renderSubmit = (account = polkadotAccount) => {
 	const txEvents$ = new Subject<TxEvent>();
+	ethereum.txEvents$ = txEvents$;
 	const { onSubmit } = renderHook(() =>
 		useTransactionSubmit({
-			account: polkadotAccount,
+			account,
 			signerAddress: "5Signer",
-			call: { createSubmitAndWatch: () => txEvents$ } as never,
+			call: {
+				createSubmitAndWatch: () => txEvents$,
+				getEncodedData: async () => new Uint8Array([1]),
+			} as never,
 			chainId: "pasah",
 			feeEstimate: 1n,
 			feeToken,
@@ -215,6 +234,32 @@ describe("useTransactionSubmit after 10 minutes without a final event", () => {
 		vi.advanceTimersByTime(TEN_MINUTES);
 		await flush();
 		expect((await getRecord()).status).toBe("inBlock");
+	});
+
+	it("restarts the clock when the transaction drops out of a best block", async () => {
+		const { txEvents$ } = await submitAndBroadcast();
+		txEvents$.next(inBestBlock);
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		txEvents$.next(notInBestBlock);
+		vi.advanceTimersByTime(TEN_MINUTES - 1);
+		await flush();
+		expect((await getRecord()).status).toBe("broadcasted");
+
+		vi.advanceTimersByTime(1);
+		await flush();
+		expect((await getRecord()).status).toBe("unconfirmed");
+	});
+
+	it("gives an Ethereum submission no nonce verdict, since the wallet picked the nonce", async () => {
+		chain.finalizedNonce = 2;
+		const { onSubmit, txEvents$ } = renderSubmit(ethereumAccount);
+		await onSubmit();
+		txEvents$.next(broadcasted);
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("unconfirmed");
+		expect(chain.reads).toBe(0);
 	});
 
 	it("lets a block seen during the nonce read win over the nonce verdict", async () => {

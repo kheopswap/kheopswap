@@ -30,7 +30,7 @@ type Submission = {
 	txId: string;
 	chainId: ChainId;
 	signer: SS58String;
-	nonce: number;
+	nonce: number | null;
 };
 
 const isUserRejectedTxError = (error: unknown): boolean => {
@@ -70,6 +70,7 @@ const hasFinalizedNonceMoved = async ({
 	signer,
 	nonce,
 }: Submission): Promise<boolean> => {
+	if (nonce === null) return false;
 	try {
 		const api = await getApi(chainId);
 		const account = await api.query.System.Account.getValue(signer, {
@@ -129,8 +130,9 @@ const subscribeTxEvents = (
 	const sub = obs$.subscribe((x) => {
 		logger.log("Transaction status update", x);
 
-		if (x.type === "broadcasted") {
-			isSubmitted = true;
+		if (x.type === "broadcasted") isSubmitted = true;
+		if (x.type === "broadcasted" || x.type === "notInBestBlock") {
+			clearTimeout(unconfirmedTimeout);
 			startUnconfirmedTimeout();
 		}
 
@@ -208,7 +210,7 @@ export const useTransactionSubmit = ({
 			if (!call || !account || account.isPlaceholder) return;
 			if (!chainId || !signerAddress || !options || !isNumber(options.nonce))
 				return;
-			const { nonce } = options;
+			const nonce = account.platform === "ethereum" ? null : options.nonce;
 
 			const txFeeToken = feeToken ?? nativeToken;
 			if (!txFeeToken) return;
