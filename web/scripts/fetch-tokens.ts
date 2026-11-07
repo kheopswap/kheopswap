@@ -774,6 +774,7 @@ async function fetchCoinGeckoTokenData(
 				continue;
 			}
 
+			if (res.status === 404) return {};
 			if (!res.ok) {
 				pushNonFatalWarning(
 					`[coingecko] ${tokenId} (${contractAddress}): HTTP ${res.status}`,
@@ -1012,21 +1013,23 @@ async function refreshErc20Cache(
 				: undefined;
 
 		const existing = cache[addr];
+		const listing = coingeckoData
+			? { coingeckoId: coingeckoData.id, image }
+			: { coingeckoId: existing?.coingeckoId, image: existing?.image };
 		const dataChanged =
 			!existing ||
 			existing.tokenName !== metadata.tokenName ||
 			existing.symbol !== metadata.symbol ||
 			existing.decimals !== metadata.decimals ||
-			existing.coingeckoId !== coingeckoData?.id ||
-			existing.image !== image;
+			existing.coingeckoId !== listing.coingeckoId ||
+			existing.image !== listing.image;
 
 		cache[addr] = {
 			fetchedAt: dataChanged ? new Date().toISOString() : existing.fetchedAt,
 			tokenName: metadata.tokenName,
 			symbol: metadata.symbol,
 			decimals: metadata.decimals,
-			coingeckoId: coingeckoData?.id,
-			image,
+			...listing,
 		};
 		fetched++;
 
@@ -1034,7 +1037,7 @@ async function refreshErc20Cache(
 			console.log(
 				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (manual logo override, skipped CoinGecko)`,
 			);
-		} else if (image) {
+		} else if (listing.image) {
 			console.log(
 				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (with logo)`,
 			);
