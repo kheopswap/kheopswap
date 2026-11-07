@@ -6,6 +6,7 @@ const wallet = vi.hoisted(() => ({
 	chainId: undefined as number | undefined,
 	reportedChainId: 1,
 	isPlaceholder: false,
+	report: 0,
 	getChainId: vi.fn(async () => wallet.reportedChainId),
 	switchChain: vi.fn(async () => {}),
 }));
@@ -14,7 +15,7 @@ vi.mock("../../hooks/useWalletAccount", () => {
 	const accounts = new Map<string, object>();
 	return {
 		useWalletAccount: () => {
-			const key = `${wallet.chainId}:${wallet.isPlaceholder}`;
+			const key = `${wallet.chainId}:${wallet.isPlaceholder}:${wallet.report}`;
 			if (!accounts.has(key))
 				accounts.set(key, {
 					id: "ethereum:0x1",
@@ -55,6 +56,7 @@ describe("useTransactionEthereum network mismatch", () => {
 		wallet.chainId = undefined;
 		wallet.reportedChainId = 1;
 		wallet.isPlaceholder = false;
+		wallet.report = 0;
 		wallet.getChainId.mockClear();
 		wallet.switchChain.mockClear();
 	});
@@ -74,6 +76,22 @@ describe("useTransactionEthereum network mismatch", () => {
 			expect(result.current.isEthereumNetworkMismatch).toBe(false),
 		);
 		expect(result.current.connectedEvmChainId).toBe(wallet.reportedChainId);
+	});
+
+	it("forgets the read chain when the wallet reports no chain again", async () => {
+		wallet.reportedChainId = targetChainId() as number;
+		const { result, rerender } = renderEthereum();
+		await waitFor(() =>
+			expect(result.current.isEthereumNetworkMismatch).toBe(false),
+		);
+
+		wallet.reportedChainId = 1;
+		wallet.report = 1;
+		rerender();
+		expect(result.current.connectedEvmChainId).toBeUndefined();
+		expect(result.current.isEthereumNetworkMismatch).toBe(true);
+		await waitFor(() => expect(result.current.connectedEvmChainId).toBe(1));
+		expect(result.current.isEthereumNetworkMismatch).toBe(true);
 	});
 
 	it("rereads the chain after a switch", async () => {
