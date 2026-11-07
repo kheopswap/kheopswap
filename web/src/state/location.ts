@@ -49,12 +49,11 @@ export const location$ = new Observable<Location>((subscriber) => {
 
 const RELAY_IDS = getRelayIds();
 
+export const getLocationRelayId = (location: Location): RelayId => {
+	const relayId = location.hash.split("/")[1] as RelayId;
+	return RELAY_IDS.includes(relayId) ? relayId : "polkadot";
+};
+
 export const [, relayId$] = bind(
-	location$.pipe(
-		map((location) => {
-			const relayId = location.hash.split("/")[1] as RelayId;
-			return RELAY_IDS.includes(relayId) ? relayId : "polkadot";
-		}),
-		distinctUntilChanged(),
-	),
+	location$.pipe(map(getLocationRelayId), distinctUntilChanged()),
 );
