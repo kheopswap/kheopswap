@@ -4,8 +4,7 @@ import { useNativeToken } from "../../hooks/useNativeToken";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
 import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
 import { useWalletAccount } from "../../hooks/useWalletAccount";
-import type { ChainId } from "../../registry/chains/types";
-import { getTokenId, parseTokenId } from "../../registry/tokens/helpers";
+import { getTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
 import {
@@ -17,6 +16,7 @@ import {
 } from "./routes/swapRoute";
 import { useXcmRouteMirrors } from "./routes/xcmRouteMirrors";
 import type { SwapFormInputs } from "./schema";
+import { getDraftOnRelay } from "./swapDraft";
 
 export const useSwapFormState = () => {
 	const { assetHub, allChains } = useRelayChains();
@@ -77,34 +77,9 @@ export const useSwapFormState = () => {
 		[formData.tokenIdIn, formData.tokenIdOut, routeContext],
 	);
 
-	// Reset tokens when chain changes
 	useEffect(() => {
-		if (!assetHub) return;
-
-		const tokenIn = formData.tokenIdIn
-			? parseTokenId(formData.tokenIdIn as TokenId)
-			: null;
-		const tokenOut = formData.tokenIdOut
-			? parseTokenId(formData.tokenIdOut as TokenId)
-			: null;
-
-		const isOnOtherRelay = (chainId: ChainId | undefined) =>
-			chainId && !allChains.some((chain) => chain.id === chainId);
-		const isInvalidTokenIn = isOnOtherRelay(tokenIn?.chainId);
-		const isInvalidTokenOut = isOnOtherRelay(tokenOut?.chainId);
-
-		if (isInvalidTokenIn || isInvalidTokenOut) {
-			const nativeTokenId = getTokenId({
-				type: "native",
-				chainId: assetHub.id,
-			});
-			setFormData((prev) => ({
-				...prev,
-				tokenIdIn: nativeTokenId,
-				tokenIdOut: "" as TokenId,
-			}));
-		}
-	}, [assetHub, allChains, formData, setFormData]);
+		setFormData((prev) => getDraftOnRelay(prev, allChains, assetHub.id));
+	}, [assetHub.id, allChains, setFormData]);
 
 	const onFromChange = useCallback(
 		(accountId: string) => {
