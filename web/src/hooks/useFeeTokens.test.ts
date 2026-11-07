@@ -7,6 +7,7 @@ import { useFeeTokens } from "./useFeeTokens";
 
 const HYDRATION_DOT = "hydration-asset::hydration::5";
 const PAYER = "147vNmBXQQYqcj7TTkuEY4eYEAXG58UyVHPiEFBYKAtkVL8w";
+const OTHER_PAYER = "15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5";
 
 const chain = vi.hoisted(() => ({
 	currency: undefined as unknown as BehaviorSubject<string>,
@@ -119,7 +120,7 @@ describe("useFeeTokens on Asset Hub", () => {
 		chain.poolsByChain.set("pah", pools);
 
 		const { result } = renderHook(() =>
-			useFeeTokens({ chainId: "pah", address: PAYER }),
+			useFeeTokens({ chainId: "pah", address: OTHER_PAYER }),
 		);
 		expect(result.current).toEqual({ isLoading: false, data: [pah] });
 
