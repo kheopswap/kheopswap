@@ -17,7 +17,7 @@ export const XcmTransferSummary: FC<{ details: XcmTransferDetails }> = ({
 	return (
 		<FormSummary>
 			<FormSummarySection>
-				<XcmQuoteRows quote={quote} />
+				<XcmQuoteRows quote={quote} route={route} />
 			</FormSummarySection>
 			{!!transaction.call && (
 				<FormSummarySection>

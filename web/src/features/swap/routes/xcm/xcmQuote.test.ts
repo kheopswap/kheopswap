@@ -42,7 +42,6 @@ import {
 	describeXcmQuoteFailure,
 	getDeliveryFeeTokenId,
 	getXcmCallSpendings,
-	getXcmFeeParts,
 	getXcmSubmitGate,
 	type HubDryRun,
 	type OriginDryRun,
@@ -535,31 +534,6 @@ describe("getXcmCallSpendings", () => {
 	});
 });
 
-describe("getXcmFeeParts", () => {
-	const deliveryFee = { tokenId: DOT, plancks: 304850000n };
-	const quote = {
-		received: 9995190152n,
-		destinationFee: { tokenId: HYDRATION_DOT, plancks: 4809848n },
-	};
-
-	it("adds the destination fee in the output token to the delivery fee", () => {
-		expect(getXcmFeeParts(deliveryFee, quote)).toEqual([
-			deliveryFee,
-			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
-		]);
-	});
-
-	it("shows the delivery fee alone before a quote", () => {
-		expect(getXcmFeeParts(deliveryFee, undefined)).toEqual([deliveryFee]);
-	});
-
-	it("drops a free delivery", () => {
-		expect(getXcmFeeParts({ tokenId: DOT, plancks: 0n }, quote)).toEqual([
-			{ tokenId: HYDRATION_DOT, plancks: 4809848n },
-		]);
-	});
-});
-
 describe("Hydration to Asset Hub", () => {
 	const DOT_AH = "native::pah";
 	const fromHydration = { origin: "hydration", destination: "pah" } as const;
@@ -657,18 +631,6 @@ describe("Hydration to Asset Hub", () => {
 	it("labels the delivery fee in Hydration DOT", () => {
 		expect(getDeliveryFeeTokenId("hydration")).toBe(HYDRATION_DOT);
 		expect(getDeliveryFeeTokenId("pah")).toBe(DOT_AH);
-	});
-
-	it("shows only the Asset Hub fee when Hydration delivers for free", () => {
-		expect(
-			getXcmFeeParts(
-				{ tokenId: HYDRATION_DOT, plancks: 0n },
-				{
-					received: 9999003n,
-					destinationFee: { tokenId: USDT, plancks: 997n },
-				},
-			),
-		).toEqual([{ tokenId: USDT, plancks: 997n }]);
 	});
 
 	it("spends the Hydration token sent and nothing else", () => {
