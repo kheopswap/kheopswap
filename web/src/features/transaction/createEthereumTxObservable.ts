@@ -1,7 +1,7 @@
 import type { TxEvent } from "polkadot-api";
 import { Observable } from "rxjs";
 import type { Address, Client, Hex, PublicClient } from "viem";
-import { createPublicClient, fallback, http, toHex } from "viem";
+import { createPublicClient, fallback, hexToNumber, http, toHex } from "viem";
 import { type Api, getApi } from "../../papi/getApi";
 import { getChainById } from "../../registry/chains/chains";
 import type { ChainIdAssetHub } from "../../registry/chains/types";
@@ -268,6 +268,14 @@ export const createEthereumTxObservable = ({
 				publicRpcUrls,
 				api.chainId,
 			);
+
+			const walletChainId = hexToNumber(
+				await account.client.request({ method: "eth_chainId" }),
+			);
+			if (walletChainId !== chain.evmChainId)
+				throw new Error(
+					`Wrong network: the wallet is on chain ${walletChainId}, switch it to ${chain.name} and try again`,
+				);
 
 			const txHash = (await account.client.request({
 				method: "eth_sendTransaction",
