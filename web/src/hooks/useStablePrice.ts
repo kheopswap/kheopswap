@@ -34,11 +34,11 @@ const useStableValue = bindSerialized(
 		]).pipe(
 			map(
 				([
-					{ token, status },
+					{ token },
 					stableToken,
 					{ stablePlancks, isLoadingStablePlancks },
 				]) => ({
-					isLoading: status !== "loaded" || isLoadingStablePlancks,
+					isLoading: isLoadingStablePlancks,
 					token,
 					stableToken,
 					stablePlancks,
