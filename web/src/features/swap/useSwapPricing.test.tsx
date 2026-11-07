@@ -1,11 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Token, TokenId } from "../../registry/tokens/types";
-import {
-	getAmmOutput,
-	getMinAmountOut,
-	getPriceImpact,
-} from "../../utils/ammMath";
+import { getAmmOutput, getMinAmountOut } from "../../utils/ammMath";
 import { plancksToTokens } from "../../utils/plancks";
 import { getAmmPath } from "./routes/ammPath";
 import type { AmmSwapRoute } from "./routes/swapRoute";
@@ -242,17 +238,15 @@ describe("useSwapPricing", () => {
 		expect(fixture.receivingAddresses).not.toContain("5AppFeeAddress");
 	});
 
-	it("derives the price impact from the spot conversion", () => {
-		const spot = 3_400_000n;
-		fixture.rawPlancksOut = spot;
-		const result = renderPricing();
+	it("leaves the service fee and the pool fee out of the price impact", () => {
+		fixture.appFeeCanReceive = { canReceive: true };
+		const totalIn = 1_000_000_000n;
+		fixture.rawPlancksOut = (totalIn * RESERVE_USDC) / RESERVE_DOT;
+		const result = renderPricing("0.1");
 
-		expect(result.priceImpact).toBe(
-			// biome-ignore lint/style/noNonNullAssertion: asserted above
-			getPriceImpact(spot, result.swapPlancksOut!),
-		);
-		// biome-ignore lint/style/noNonNullAssertion: asserted above
-		expect(result.priceImpact!).toBeLessThan(0);
+		expect(result.appCommission).toBeGreaterThan(0n);
+		expect(result.priceImpact).toBeGreaterThan(-0.0002);
+		expect(result.priceImpact).toBeLessThan(-0.0001);
 	});
 
 	it("flags an insufficient balance", () => {
