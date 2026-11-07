@@ -6,7 +6,7 @@ import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
 import type { ChainIdAssetHub } from "../../../../registry/chains/types";
-import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
+import { getTokenId } from "../../../../registry/tokens/helpers";
 import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
 import {
@@ -379,18 +379,15 @@ export const getXcmCallSpendings = ({
 	deliveryFee: TokenAmount | undefined;
 }): CallSpendings => {
 	const spendings: CallSpendings = {};
-	const spend = (tokenId: TokenId, plancks: bigint, allowDeath: boolean) => {
+	const spend = (tokenId: TokenId, plancks: bigint) => {
 		if (!plancks) return;
-		const spent = spendings[tokenId];
-		spendings[tokenId] = spent
-			? {
-					plancks: spent.plancks + plancks,
-					allowDeath: spent.allowDeath && allowDeath,
-				}
-			: { plancks, allowDeath };
+		spendings[tokenId] = {
+			plancks: (spendings[tokenId]?.plancks ?? 0n) + plancks,
+			allowDeath: true,
+		};
 	};
 
-	spend(tokenIdIn, totalIn ?? 0n, parseTokenId(tokenIdIn).type !== "native");
-	if (deliveryFee) spend(deliveryFee.tokenId, deliveryFee.plancks, false);
+	spend(tokenIdIn, totalIn ?? 0n);
+	if (deliveryFee) spend(deliveryFee.tokenId, deliveryFee.plancks);
 	return spendings;
 };
