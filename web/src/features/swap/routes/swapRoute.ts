@@ -30,11 +30,27 @@ export type AmmSwapRoute = {
 	path: AmmPath;
 };
 
-export type XcmTransferRoute = XcmLane & {
+type XcmDirectTransferRoute = XcmLane & {
 	kind: "xcm-transfer";
 	tokenIdIn: TokenId;
 	tokenIdOut: TokenId;
+	viaHub?: undefined;
 };
+
+type XcmLaneToHub = Extract<XcmLane, { destination: ChainIdAssetHub }>;
+
+export type XcmLaneFromHub = Extract<XcmLane, { origin: ChainIdAssetHub }>;
+
+type XcmHubTransferRoute = {
+	kind: "xcm-transfer";
+	origin: XcmLaneToHub["origin"];
+	destination: XcmLaneFromHub["destination"];
+	tokenIdIn: TokenId;
+	tokenIdOut: TokenId;
+	viaHub: { toHub: XcmLaneToHub; fromHub: XcmLaneFromHub };
+};
+
+export type XcmTransferRoute = XcmDirectTransferRoute | XcmHubTransferRoute;
 
 type XcmSwapLane = Extract<XcmLane, { destination: ChainIdHydration }>;
 
@@ -60,6 +76,12 @@ export type XcmRoute =
 	| XcmDestinationSwapRoute;
 
 export type SwapRoute = AmmSwapRoute | XcmRoute;
+
+export const getXcmHub = (route: XcmRoute): ChainIdAssetHub | undefined =>
+	route.kind === "xcm-transfer" ? route.viaHub?.toHub.destination : undefined;
+
+export const getXcmFirstHop = (route: XcmRoute): ChainId =>
+	getXcmHub(route) ?? route.destination;
 
 export type TransactionPlan = {
 	chainId: ChainId | undefined;
@@ -102,7 +124,7 @@ type RemoteMirror = {
 	assetHubTokenId: TokenId;
 };
 
-type XcmMirror = RemoteMirror & { lane: XcmLane };
+type XcmMirror<Lane extends XcmLane> = RemoteMirror & { lane: Lane };
 
 const getRemoteMirror = (
 	remoteTokenId: TokenId,
@@ -136,7 +158,7 @@ const canPayDestinationFee = (
 const getXcmDestination = (
 	tokenIdOut: TokenId,
 	context: SwapRouteContext,
-): XcmMirror | null => {
+): XcmMirror<XcmLaneFromHub> | null => {
 	const mirror = getRemoteMirror(tokenIdOut, context);
 	if (!mirror || !canPayDestinationFee(tokenIdOut, context)) return null;
 	const lane = {
@@ -149,7 +171,7 @@ const getXcmDestination = (
 const getXcmSource = (
 	tokenIdIn: TokenId,
 	context: SwapRouteContext,
-): XcmMirror | null => {
+): XcmMirror<XcmLaneToHub> | null => {
 	const mirror = getRemoteMirror(tokenIdIn, context);
 	if (!mirror) return null;
 	const lane = {
@@ -187,6 +209,19 @@ const resolveXcmRoute = (
 		const { lane, assetHubTokenId } = source;
 		if (assetHubTokenId === tokenIdOut)
 			return { kind: "xcm-transfer", ...lane, tokenIdIn, tokenIdOut };
+		const destination = getXcmDestination(tokenIdOut, context);
+		if (
+			destination?.assetHubTokenId === assetHubTokenId &&
+			destination.remoteChainId !== source.remoteChainId
+		)
+			return {
+				kind: "xcm-transfer",
+				origin: lane.origin,
+				destination: destination.lane.destination,
+				tokenIdIn,
+				tokenIdOut,
+				viaHub: { toHub: lane, fromHub: destination.lane },
+			};
 		if (
 			!isXcmDestinationSwapLane(lane) ||
 			!isAssetHubSwapOutput(tokenIdOut, context)
@@ -368,7 +403,7 @@ export type RouteAccess =
 
 export const getRouteAccess = (
 	account: Pick<WalletAccount, "platform" | "address">,
-	{ origin, destination }: XcmLane,
+	{ origin, destination }: Pick<XcmRoute, "origin" | "destination">,
 ): RouteAccess =>
 	account.platform === "ethereum" || isEthereumAddress(account.address)
 		? {

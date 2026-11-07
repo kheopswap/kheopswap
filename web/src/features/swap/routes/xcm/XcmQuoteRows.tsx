@@ -13,7 +13,7 @@ import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
 import { cn } from "../../../../utils/cn";
 import { useSwap } from "../../SwapProvider";
-import type { XcmRoute } from "../swapRoute";
+import { getXcmHub, type XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
 import { describeXcmQuoteFailure, getXcmFeeParts } from "./xcmQuote";
 
@@ -23,6 +23,11 @@ export const XcmSimulationValue: FC<{
 }> = ({ quote, route }) => {
 	if (quote.isLoading) return <Shimmer className="h-4">Success</Shimmer>;
 	if (!quote.data) return null;
+	const [origin, ...hops] = compact([
+		route.origin,
+		getXcmHub(route),
+		route.destination,
+	]).map((chainId) => getChainById(chainId).name);
 
 	return (
 		<Tooltip placement="bottom-end">
@@ -45,9 +50,8 @@ export const XcmSimulationValue: FC<{
 						</div>
 					)}
 					<p>
-						The transaction is simulated on {getChainById(route.origin).name},
-						then the message it sends is simulated on{" "}
-						{getChainById(route.destination).name}. The amount received can
+						The transaction is simulated on {origin}, then the message it sends
+						is simulated on {hops.join(", then on ")}. The amount received can
 						differ slightly once it arrives.
 					</p>
 				</div>

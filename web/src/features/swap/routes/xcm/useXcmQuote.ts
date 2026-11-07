@@ -11,18 +11,22 @@ import { useMemo } from "react";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import { getApi } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
-import type { ChainId } from "../../../../registry/chains/types";
+import type {
+	ChainId,
+	ChainIdAssetHub,
+} from "../../../../registry/chains/types";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
-import type { XcmRoute } from "../swapRoute";
+import { getXcmFirstHop, getXcmHub, type XcmRoute } from "../swapRoute";
 import {
 	composeXcmQuote,
 	getDeliveryFeeTokenId,
 	getXcmQuoteSubject,
 	parseDeliveryFee,
 	parseDestinationDryRun,
+	parseHubDryRun,
 	parseOriginDryRun,
 	type XcmQuoteResult,
 } from "./xcmQuote";
@@ -41,9 +45,13 @@ const getParachainLocation = (chainId: ChainId) =>
 		),
 	});
 
-const queryDeliveryFees = async (route: XcmRoute, message: XcmVersionedXcm) => {
-	const destination = getParachainLocation(route.destination);
-	switch (route.origin) {
+const queryDeliveryFees = async (
+	origin: XcmRoute["origin"],
+	firstHop: ChainId,
+	message: XcmVersionedXcm,
+) => {
+	const destination = getParachainLocation(firstHop);
+	switch (origin) {
 		case "pah":
 		case "kah":
 		case "wah":
@@ -51,7 +59,7 @@ const queryDeliveryFees = async (route: XcmRoute, message: XcmVersionedXcm) => {
 		case "ppeople":
 		case "kpeople":
 		case "wpeople": {
-			const api = await getApi(route.origin);
+			const api = await getApi(origin);
 			return api.apis.XcmPaymentApi.query_delivery_fees(
 				destination,
 				message,
@@ -60,7 +68,7 @@ const queryDeliveryFees = async (route: XcmRoute, message: XcmVersionedXcm) => {
 			);
 		}
 		case "hydration": {
-			const api = await getApi(route.origin);
+			const api = await getApi(origin);
 			return api.apis.XcmPaymentApi.query_delivery_fees(destination, message, {
 				at: "best",
 			});
@@ -68,13 +76,26 @@ const queryDeliveryFees = async (route: XcmRoute, message: XcmVersionedXcm) => {
 	}
 };
 
-const queryDestinationDryRun = async (
-	route: XcmRoute,
+const queryHubDryRun = async (
+	hub: ChainIdAssetHub,
+	origin: ChainId,
 	message: XcmVersionedXcm,
 ) => {
-	const origin = getParachainLocation(route.origin);
-	const api = await getApi(route.destination);
-	return api.apis.DryRunApi.dry_run_xcm(origin, message, { at: "best" });
+	const api = await getApi(hub);
+	return api.apis.DryRunApi.dry_run_xcm(getParachainLocation(origin), message, {
+		at: "best",
+	});
+};
+
+const queryDestinationDryRun = async (
+	destination: XcmRoute["destination"],
+	sender: ChainId,
+	message: XcmVersionedXcm,
+) => {
+	const api = await getApi(destination);
+	return api.apis.DryRunApi.dry_run_xcm(getParachainLocation(sender), message, {
+		at: "best",
+	});
 };
 
 const useXcmDeliveryFee = (
@@ -85,13 +106,19 @@ const useXcmDeliveryFee = (
 		queryKey: [
 			"xcmDeliveryFee",
 			route?.origin,
-			route?.destination,
+			route && getXcmFirstHop(route),
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!message,
 		queryFn: async () =>
 			route && message
-				? parseDeliveryFee(await queryDeliveryFees(route, message))
+				? parseDeliveryFee(
+						await queryDeliveryFees(
+							route.origin,
+							getXcmFirstHop(route),
+							message,
+						),
+					)
 				: null,
 		retry: 1,
 		refetchInterval: false,
@@ -113,6 +140,8 @@ export const useXcmQuote = ({
 	call,
 	fakeCall,
 }: UseXcmQuoteProps): XcmQuoteState => {
+	const hub = route && getXcmHub(route);
+	const firstHopParaId = route && getChainById(getXcmFirstHop(route)).paraId;
 	const destinationParaId = route && getChainById(route.destination).paraId;
 
 	const origin = useDryRun({ chainId: route?.origin, from: beneficiary, call });
@@ -124,39 +153,72 @@ export const useXcmQuote = ({
 
 	const originLeg = useMemo(
 		() =>
-			origin.data && destinationParaId
-				? parseOriginDryRun(origin.data, destinationParaId)
+			origin.data && firstHopParaId
+				? parseOriginDryRun(origin.data, firstHopParaId)
 				: undefined,
-		[origin.data, destinationParaId],
+		[origin.data, firstHopParaId],
 	);
 
 	const estimateMessage = useMemo(() => {
-		if (!originEstimate.data || !destinationParaId) return null;
-		const leg = parseOriginDryRun(originEstimate.data, destinationParaId);
+		if (!originEstimate.data || !firstHopParaId) return null;
+		const leg = parseOriginDryRun(originEstimate.data, firstHopParaId);
 		return leg.success ? leg.value.message : null;
-	}, [originEstimate.data, destinationParaId]);
+	}, [originEstimate.data, firstHopParaId]);
 
 	const message = originLeg?.success ? originLeg.value.message : null;
 
 	const deliveryFee = useXcmDeliveryFee(route, message);
 	const estimatedDeliveryFee = useXcmDeliveryFee(route, estimateMessage);
 
+	const hubLeg = useQuery({
+		queryKey: [
+			"xcmHubDryRun",
+			route?.origin,
+			hub,
+			route?.destination,
+			safeQueryKeyPart(message),
+		],
+		enabled: !!route && !!hub && !!destinationParaId && !!message,
+		queryFn: async () =>
+			route && hub && destinationParaId && message
+				? parseHubDryRun(
+						await queryHubDryRun(hub, route.origin, message),
+						hub,
+						destinationParaId,
+					)
+				: null,
+		retry: 1,
+		refetchInterval: false,
+		structuralSharing: false,
+	});
+
+	const destinationMessage = hub
+		? hubLeg.data?.success
+			? hubLeg.data.value
+			: null
+		: message;
+
 	const destination = useQuery({
 		queryKey: [
 			"xcmDestinationDryRun",
 			route?.origin,
+			hub,
 			route?.destination,
 			route?.tokenIdOut,
 			beneficiary,
-			safeQueryKeyPart(message),
+			safeQueryKeyPart(destinationMessage),
 		],
-		enabled: !!route && !!beneficiary && !!message,
+		enabled: !!route && !!beneficiary && !!destinationMessage,
 		queryFn: async () =>
-			route && beneficiary && message
-				? parseDestinationDryRun(await queryDestinationDryRun(route, message), {
-						tokenId: route.tokenIdOut,
-						beneficiary,
-					})
+			route && beneficiary && destinationMessage
+				? parseDestinationDryRun(
+						await queryDestinationDryRun(
+							route.destination,
+							hub ?? route.origin,
+							destinationMessage,
+						),
+						{ tokenId: route.tokenIdOut, beneficiary },
+					)
 				: null,
 		retry: 1,
 		refetchInterval: false,
@@ -170,6 +232,10 @@ export const useXcmQuote = ({
 		if (!originLeg) return undefined;
 		if (!originLeg.success)
 			return { success: false, failure: originLeg.failure };
+		if (hub && hubLeg.error)
+			return { success: false, failure: { kind: "hub-unavailable", hub } };
+		if (hubLeg.data && !hubLeg.data.success)
+			return { success: false, failure: hubLeg.data.failure };
 		if (destination.error)
 			return { success: false, failure: { kind: "destination-unavailable" } };
 		if (destination.data && !destination.data.success)
@@ -191,6 +257,9 @@ export const useXcmQuote = ({
 		destinationFee,
 		origin.error,
 		originLeg,
+		hub,
+		hubLeg.error,
+		hubLeg.data,
 		destination.error,
 		destination.data,
 		deliveryFee.error,
@@ -202,7 +271,8 @@ export const useXcmQuote = ({
 	return {
 		isLoading:
 			origin.isLoading ||
-			(!!message && (destination.isLoading || deliveryFee.isLoading)),
+			(!!message &&
+				(hubLeg.isLoading || destination.isLoading || deliveryFee.isLoading)),
 		data,
 		deliveryFee:
 			route && isBigInt(deliveryFeePlancks)

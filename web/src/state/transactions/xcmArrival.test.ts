@@ -1,6 +1,7 @@
 import { BehaviorSubject, Subject } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { dotFromPeople } from "../../features/swap/routes/xcm/xcmFromPeople.fixtures";
+import { dotPeopleToHydration } from "../../features/swap/routes/xcm/xcmHubTransfer.fixtures";
 import {
 	usdtToPinkDust,
 	usdtToPinkPriceMoved,
@@ -218,7 +219,7 @@ describe("getXcmArrival$", () => {
 			blockEvents$,
 			target,
 			returnTokenIds,
-			destinationParaId: HYDRATION_PARA_ID,
+			firstHopParaId: HYDRATION_PARA_ID,
 			bufferBlocks,
 			timeoutMs,
 		}).subscribe({
@@ -658,6 +659,80 @@ describe("arrival on Asset Hub from People", () => {
 				returnTokenIds: ["native::pah"],
 			}),
 		).toEqual({ success: true, received: 7791782414n });
+	});
+});
+
+describe("arrival on Hydration of a transfer from People through Asset Hub", () => {
+	const ASSET_HUB_PARA_ID = getChainById("pah").paraId;
+	const { originDryRun, hubDryRun, destinationDryRun, beneficiary } =
+		dotPeopleToHydration;
+	if (
+		!originDryRun.success ||
+		!hubDryRun.success ||
+		!destinationDryRun?.success
+	)
+		throw new Error("fixture dry run failed");
+
+	const getSentIds = (events: TxEvents) =>
+		events.flatMap(({ type, value }) =>
+			type === "PolkadotXcm" && value.type === "Sent"
+				? [value.value.message_id]
+				: [],
+		);
+	const [forwardedByHub] = hubDryRun.value.forwarded_xcms;
+	const topic =
+		forwardedByHub?.[1][0]?.type === "V5"
+			? forwardedByHub[1][0].value.find(
+					(instruction) => instruction.type === "SetTopic",
+				)?.value
+			: undefined;
+	const peopleRecord = getRecord(
+		"finalized",
+		originDryRun.value.emitted_events,
+	);
+	const messageId = getSentMessageId(peopleRecord.txEvents, ASSET_HUB_PARA_ID);
+
+	it("reads the id of the message People sends to Asset Hub, not to Hydration", () => {
+		expect(messageId).toBe(
+			"0x8f4e29ed4ed675d67f181086cbb1c2c149f3d21886b9787fe3b045970d742686",
+		);
+		expect(
+			getSentMessageId(peopleRecord.txEvents, HYDRATION_PARA_ID),
+		).toBeNull();
+	});
+
+	it("keeps the same id on the message Asset Hub forwards to Hydration", () => {
+		expect(getSentIds(hubDryRun.value.emitted_events)).toEqual([messageId]);
+		expect(topic).toBe(messageId);
+	});
+
+	it("follows the transfer to its arrival on Hydration", () => {
+		if (!messageId) throw new Error("People sent no message to Asset Hub");
+		const record$ = new BehaviorSubject<TransactionRecord | undefined>(
+			getRecord("pending"),
+		);
+		const blockEvents$ = new Subject<TxEvents>();
+		const arrivals: XcmArrival[] = [];
+		getXcmArrival$({
+			record$,
+			blockEvents$,
+			target: { tokenId: "hydration-asset::hydration::5", beneficiary },
+			returnTokenIds: ["hydration-asset::hydration::5"],
+			firstHopParaId: ASSET_HUB_PARA_ID,
+			bufferBlocks: getArrivalBufferBlocks("hydration"),
+		}).subscribe((arrival) => arrivals.push(arrival));
+
+		record$.next(peopleRecord);
+		blockEvents$.next([
+			...destinationDryRun.value.emitted_events,
+			processed(messageId),
+		]);
+
+		expect(arrivals).toEqual([
+			{ status: "awaiting-origin" },
+			{ status: "in-transit", messageId },
+			{ status: "arrived", messageId, received: 9678556145n },
+		]);
 	});
 });
 

@@ -32,6 +32,11 @@ import {
 	wndFromPeople,
 } from "./xcmFromPeople.fixtures";
 import {
+	dotHydrationToPeople,
+	dotPeopleToHydration,
+	dotPeopleToHydrationTrappedOnHub,
+} from "./xcmHubTransfer.fixtures";
+import {
 	composeXcmQuote,
 	type DestinationDryRun,
 	describeXcmQuoteFailure,
@@ -39,9 +44,11 @@ import {
 	getXcmCallSpendings,
 	getXcmFeeParts,
 	getXcmSubmitGate,
+	type HubDryRun,
 	type OriginDryRun,
 	parseDeliveryFee,
 	parseDestinationDryRun,
+	parseHubDryRun,
 	parseOriginDryRun,
 } from "./xcmQuote";
 import {
@@ -78,7 +85,9 @@ const getTransferFee = (tokenIdOut: string, sent: bigint, received: bigint) =>
 		{ sent, received },
 	).destinationFee;
 
-const requireDestination = (destination: DestinationDryRun | undefined) => {
+const requireDestination = (
+	destination: DestinationDryRun | null | undefined,
+) => {
 	if (!destination) throw new Error("fixture has no destination dry run");
 	return destination;
 };
@@ -869,5 +878,147 @@ describe("People to Asset Hub", () => {
 		).toEqual({
 			"native::ppeople": { plancks: 10304850000n, allowDeath: false },
 		});
+	});
+});
+
+describe("transfers through Asset Hub", () => {
+	const HUB_PARA_ID = getChainById("pah").paraId;
+	const PEOPLE_PARA_ID = getChainById("ppeople").paraId;
+	const peopleToHydration = {
+		origin: "ppeople",
+		destination: "hydration",
+	} as const;
+
+	const getForwarded = (dryRun: OriginDryRun | HubDryRun) => {
+		if (!dryRun.success) throw new Error("fixture dry run failed");
+		const [forwarded, ...others] = dryRun.value.forwarded_xcms;
+		if (!forwarded || others.length) throw new Error("expected one message");
+		return forwarded[1][0];
+	};
+
+	it.each([
+		[
+			"People DOT to Hydration",
+			dotPeopleToHydration,
+			HYDRATION_PARA_ID,
+			HYDRATION_DOT,
+			9678556145n,
+		],
+		[
+			"Hydration DOT to People",
+			dotHydrationToPeople,
+			PEOPLE_PARA_ID,
+			"native::ppeople",
+			9678791246n,
+		],
+	])(
+		"quotes %s from the message Asset Hub forwards to the destination",
+		(_, fixture, destinationParaId, tokenIdOut, received) => {
+			const origin = parseOriginDryRun(fixture.originDryRun, HUB_PARA_ID);
+			expect(origin).toEqual({
+				success: true,
+				value: {
+					message: getForwarded(fixture.originDryRun),
+					sent: fixture.amount,
+				},
+			});
+
+			const hub = parseHubDryRun(fixture.hubDryRun, "pah", destinationParaId);
+			expect(hub).toEqual({
+				success: true,
+				value: getForwarded(fixture.hubDryRun),
+			});
+
+			expect(
+				parseDestinationDryRun(requireDestination(fixture.destinationDryRun), {
+					tokenId: tokenIdOut,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toEqual({ success: true, value: received });
+			expect(getTransferFee(tokenIdOut, fixture.amount, received)).toEqual({
+				tokenId: tokenIdOut,
+				plancks: fixture.amount - received,
+			});
+		},
+	);
+
+	it("finds nothing sent by the origin to the destination directly", () => {
+		expect(
+			parseOriginDryRun(dotPeopleToHydration.originDryRun, HYDRATION_PARA_ID),
+		).toEqual({ success: false, failure: { kind: "message-not-forwarded" } });
+	});
+
+	it("reads the delivery fee People charges to reach Asset Hub, and Hydration's free delivery", () => {
+		expect(parseDeliveryFee(dotPeopleToHydration.deliveryFees)).toBe(
+			305900000n,
+		);
+		expect(parseDeliveryFee(dotHydrationToPeople.deliveryFees)).toBe(0n);
+	});
+
+	it("reports assets trapped on Asset Hub when the amount cannot buy its execution", () => {
+		const parsed = parseHubDryRun(
+			dotPeopleToHydrationTrappedOnHub.hubDryRun,
+			"pah",
+			HYDRATION_PARA_ID,
+		);
+		expect(parsed).toEqual({
+			success: false,
+			failure: {
+				kind: "hub-rejected",
+				hub: "pah",
+				reason: "TooExpensive",
+				assetsTrapped: true,
+			},
+		});
+		if (parsed.success) throw new Error("expected a failure");
+		expect(describeXcmQuoteFailure(parsed.failure, peopleToHydration)).toBe(
+			"Amount too low for Polkadot Asset Hub: the assets would be trapped",
+		);
+	});
+
+	it("fails when Asset Hub forwards nothing to the destination", () => {
+		const parsed = parseHubDryRun(
+			dotPeopleToHydration.hubDryRun,
+			"pah",
+			PEOPLE_PARA_ID,
+		);
+		expect(parsed).toEqual({
+			success: false,
+			failure: { kind: "hub-not-forwarded", hub: "pah" },
+		});
+		if (parsed.success) throw new Error("expected a failure");
+		expect(describeXcmQuoteFailure(parsed.failure, peopleToHydration)).toBe(
+			"Polkadot Asset Hub would not forward the transfer to Hydration",
+		);
+	});
+
+	it("treats a runtime API error on Asset Hub as unavailable, never as success", () => {
+		const parsed = parseHubDryRun(
+			{ success: false, value: { type: "Unimplemented", value: undefined } },
+			"pah",
+			HYDRATION_PARA_ID,
+		);
+		expect(parsed).toEqual({
+			success: false,
+			failure: { kind: "hub-unavailable", hub: "pah" },
+		});
+		if (parsed.success) throw new Error("expected a failure");
+		expect(describeXcmQuoteFailure(parsed.failure, peopleToHydration)).toBe(
+			"Could not simulate the transfer on Polkadot Asset Hub",
+		);
+	});
+
+	it("names Asset Hub when it would reject the transfer for another reason", () => {
+		expect(
+			describeXcmQuoteFailure(
+				{
+					kind: "hub-rejected",
+					hub: "pah",
+					reason: "Barrier",
+					assetsTrapped: false,
+				},
+				peopleToHydration,
+			),
+		).toBe("Polkadot Asset Hub would reject the transfer: Barrier");
 	});
 });

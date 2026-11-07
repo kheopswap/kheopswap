@@ -51,6 +51,7 @@ export const isXcmArrivalType = (
 
 export type XcmTransferFollowUpData = {
 	origin: ChainId;
+	firstHop: ChainId;
 	target: XcmDepositTarget;
 	returnTokenIds: TokenId[];
 	tokenOut: Token;
@@ -76,7 +77,7 @@ const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 export const getSentMessageId = (
 	txEvents: TransactionRecord["txEvents"],
-	destinationParaId: number,
+	firstHopParaId: number,
 ): HexString | null => {
 	for (const txEvent of txEvents) {
 		if (txEvent.type !== "inBestBlock" && txEvent.type !== "finalized")
@@ -88,7 +89,7 @@ export const getSentMessageId = (
 				destination.parents === 1 &&
 				destination.interior.type === "X1" &&
 				destination.interior.value.type === "Parachain" &&
-				destination.interior.value.value === destinationParaId
+				destination.interior.value.value === firstHopParaId
 			)
 				return message_id;
 		}
@@ -165,10 +166,10 @@ export const describeFailedArrival = ({ returned, trapped }: FailedArrival) => {
 
 const getOriginState = (
 	record: TransactionRecord,
-	destinationParaId: number,
+	firstHopParaId: number,
 ): OriginState => {
 	if (record.status === "failed") return { status: "failed" };
-	const messageId = getSentMessageId(record.txEvents, destinationParaId);
+	const messageId = getSentMessageId(record.txEvents, firstHopParaId);
 	return messageId ? { status: "sent", messageId } : { status: "pending" };
 };
 
@@ -222,7 +223,7 @@ export const getXcmArrival$ = ({
 	blockEvents$,
 	target,
 	returnTokenIds,
-	destinationParaId,
+	firstHopParaId,
 	bufferBlocks,
 	timeoutMs = ARRIVAL_TIMEOUT_MS,
 }: {
@@ -230,13 +231,13 @@ export const getXcmArrival$ = ({
 	blockEvents$: Observable<TxEvents>;
 	target: XcmDepositTarget;
 	returnTokenIds: TokenId[];
-	destinationParaId: number;
+	firstHopParaId: number;
 	bufferBlocks: number;
 	timeoutMs?: number;
 }): Observable<XcmArrival> => {
 	const origin$ = record$.pipe(
 		filter((record): record is TransactionRecord => !!record),
-		map((record) => getOriginState(record, destinationParaId)),
+		map((record) => getOriginState(record, firstHopParaId)),
 		distinctUntilChanged(isEqual),
 		takeWhile((origin) => origin.status === "pending", true),
 	);
@@ -284,7 +285,7 @@ export const trackXcmArrivals = () =>
 			),
 			distinct(({ id }) => id),
 			mergeMap(({ id, followUpData }) => {
-				const { target, returnTokenIds } =
+				const { firstHop, target, returnTokenIds } =
 					followUpData as XcmTransferFollowUpData;
 				const destination = parseTokenId(target.tokenId).chainId;
 				return getXcmArrival$({
@@ -294,7 +295,7 @@ export const trackXcmArrivals = () =>
 					blockEvents$: getBestBlockEvents$(destination),
 					target,
 					returnTokenIds,
-					destinationParaId: getChainById(destination).paraId,
+					firstHopParaId: getChainById(firstHop).paraId,
 					bufferBlocks: getArrivalBufferBlocks(destination),
 				}).pipe(map((arrival) => [id, arrival] as const));
 			}),

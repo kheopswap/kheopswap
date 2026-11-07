@@ -101,6 +101,7 @@ const arrivalOnHydration: TxEvents = [
 
 const followUpData: XcmTransferFollowUpData = {
 	origin: "pah",
+	firstHop: "hydration",
 	target: { tokenId: DOT_ON_HYDRATION, beneficiary: BENEFICIARY },
 	returnTokenIds: [DOT_ON_HYDRATION],
 	tokenOut: KNOWN_TOKENS_MAP[DOT_ON_HYDRATION] as never,

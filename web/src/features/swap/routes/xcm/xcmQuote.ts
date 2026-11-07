@@ -1,7 +1,11 @@
-import type { XcmVersionedXcm } from "@polkadot-api/descriptors";
+import type {
+	XcmVersionedLocation,
+	XcmVersionedXcm,
+} from "@polkadot-api/descriptors";
 import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
+import type { ChainIdAssetHub } from "../../../../registry/chains/types";
 import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
 import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
@@ -31,6 +35,12 @@ export type DeliveryFees = {
 	>;
 }[XcmOrigin];
 
+export type HubDryRun = {
+	[Id in ChainIdAssetHub]: Awaited<
+		ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_xcm"]>
+	>;
+}[ChainIdAssetHub];
+
 export type DestinationDryRun = {
 	[Id in XcmDestination]: Awaited<
 		ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_xcm"]>
@@ -42,6 +52,14 @@ export type XcmQuoteFailure =
 	| { kind: "origin-failed"; reason: string }
 	| { kind: "origin-rejected"; xcmError: string }
 	| { kind: "message-not-forwarded" }
+	| { kind: "hub-unavailable"; hub: ChainIdAssetHub }
+	| {
+			kind: "hub-rejected";
+			hub: ChainIdAssetHub;
+			reason: string;
+			assetsTrapped: boolean;
+	  }
+	| { kind: "hub-not-forwarded"; hub: ChainIdAssetHub }
 	| { kind: "destination-unavailable" }
 	| { kind: "destination-rejected"; reason: string; assetsTrapped: boolean }
 	| { kind: "destination-price-moved" }
@@ -114,9 +132,22 @@ const getSentAmount = (message: XcmVersionedXcm): bigint | null => {
 	return asset?.fun.type === "Fungible" ? asset.fun.value : null;
 };
 
+const findMessageTo = (
+	forwardedXcms: [XcmVersionedLocation, XcmVersionedXcm[]][],
+	paraId: number,
+) =>
+	forwardedXcms.find(
+		([location]) =>
+			location.type === "V5" &&
+			location.value.parents === 1 &&
+			location.value.interior.type === "X1" &&
+			location.value.interior.value.type === "Parachain" &&
+			location.value.interior.value.value === paraId,
+	)?.[1][0];
+
 export const parseOriginDryRun = (
 	dryRun: OriginDryRun,
-	destinationParaId: number,
+	firstHopParaId: number,
 ): Parsed<OriginLeg> => {
 	if (!dryRun.success)
 		return {
@@ -131,14 +162,7 @@ export const parseOriginDryRun = (
 			failure: getOriginFailure(execution_result.value.error),
 		};
 
-	const message = forwarded_xcms.find(
-		([location]) =>
-			location.type === "V5" &&
-			location.value.parents === 1 &&
-			location.value.interior.type === "X1" &&
-			location.value.interior.value.type === "Parachain" &&
-			location.value.interior.value.value === destinationParaId,
-	)?.[1][0];
+	const message = findMessageTo(forwarded_xcms, firstHopParaId);
 	const sent = message && getSentAmount(message);
 	if (!message || !sent)
 		return { success: false, failure: { kind: "message-not-forwarded" } };
@@ -162,6 +186,50 @@ export const parseDeliveryFee = (deliveryFees: DeliveryFees): bigint | null => {
 	return fee;
 };
 
+type XcmExecution = {
+	execution_result: Extract<
+		DestinationDryRun,
+		{ success: true }
+	>["value"]["execution_result"];
+	emitted_events: { type: string; value: { type: string } }[];
+};
+
+const getXcmRejection = ({ execution_result, emitted_events }: XcmExecution) =>
+	execution_result.type === "Complete"
+		? null
+		: {
+				reason:
+					execution_result.type === "Incomplete"
+						? execution_result.value.error.error.type
+						: execution_result.value.error.type,
+				assetsTrapped: emitted_events.some(
+					(event) =>
+						event.type === "PolkadotXcm" &&
+						event.value.type === "AssetsTrapped",
+				),
+			};
+
+export const parseHubDryRun = (
+	dryRun: HubDryRun,
+	hub: ChainIdAssetHub,
+	destinationParaId: number,
+): Parsed<XcmVersionedXcm> => {
+	if (!dryRun.success)
+		return { success: false, failure: { kind: "hub-unavailable", hub } };
+
+	const rejection = getXcmRejection(dryRun.value);
+	if (rejection)
+		return {
+			success: false,
+			failure: { kind: "hub-rejected", hub, ...rejection },
+		};
+
+	const message = findMessageTo(dryRun.value.forwarded_xcms, destinationParaId);
+	return message
+		? { success: true, value: message }
+		: { success: false, failure: { kind: "hub-not-forwarded", hub } };
+};
+
 export const parseDestinationDryRun = (
 	dryRun: DestinationDryRun,
 	target: XcmDepositTarget,
@@ -175,21 +243,11 @@ export const parseDestinationDryRun = (
 		execution_result.value.error.error.type === "NoDeal"
 	)
 		return { success: false, failure: { kind: "destination-price-moved" } };
-	if (execution_result.type !== "Complete")
+	const rejection = getXcmRejection(dryRun.value);
+	if (rejection)
 		return {
 			success: false,
-			failure: {
-				kind: "destination-rejected",
-				reason:
-					execution_result.type === "Incomplete"
-						? execution_result.value.error.error.type
-						: execution_result.value.error.type,
-				assetsTrapped: emitted_events.some(
-					(event) =>
-						event.type === "PolkadotXcm" &&
-						event.value.type === "AssetsTrapped",
-				),
-			},
+			failure: { kind: "destination-rejected", ...rejection },
 		};
 
 	const getDeposit = getXcmDepositMatcher(target);
@@ -244,6 +302,14 @@ export const describeXcmQuoteFailure = (
 			return `${origin} would reject the transfer: ${failure.xcmError}`;
 		case "message-not-forwarded":
 			return `The transfer would not be sent to ${destination}`;
+		case "hub-unavailable":
+			return `Could not simulate the transfer on ${getChainById(failure.hub).name}`;
+		case "hub-rejected":
+			return failure.assetsTrapped
+				? `Amount too low for ${getChainById(failure.hub).name}: the assets would be trapped`
+				: `${getChainById(failure.hub).name} would reject the transfer: ${failure.reason}`;
+		case "hub-not-forwarded":
+			return `${getChainById(failure.hub).name} would not forward the transfer to ${destination}`;
 		case "destination-unavailable":
 			return `Could not simulate the transfer on ${destination}`;
 		case "destination-price-moved":

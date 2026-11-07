@@ -285,6 +285,64 @@ describe("resolveSwapRoute", () => {
 		},
 	);
 
+	it.each([
+		[
+			"People DOT to Hydration DOT",
+			PEOPLE_DOT,
+			HYDRATION_DOT,
+			"ppeople",
+			"hydration",
+		],
+		[
+			"Hydration DOT to People DOT",
+			HYDRATION_DOT,
+			PEOPLE_DOT,
+			"hydration",
+			"ppeople",
+		],
+	] as const)(
+		"resolves %s as one transfer through Asset Hub",
+		(_, tokenIdIn, tokenIdOut, origin, destination) => {
+			expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toEqual({
+				kind: "xcm-transfer",
+				origin,
+				destination,
+				tokenIdIn,
+				tokenIdOut,
+				viaHub: {
+					toHub: { origin, destination: "pah" },
+					fromHub: { origin: "pah", destination },
+				},
+			});
+		},
+	);
+
+	it.each([
+		[
+			"the People native token to another Hydration token",
+			PEOPLE_DOT,
+			HYDRATION_USDT,
+		],
+		[
+			"a Hydration token to the People native token",
+			HYDRATION_USDT,
+			PEOPLE_DOT,
+		],
+	])("rejects %s through Asset Hub", (_, tokenIdIn, tokenIdOut) => {
+		expect(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut })).toBeNull();
+	});
+
+	it("rejects People DOT to Hydration DOT when Hydration would not take DOT for its fee", () => {
+		expect(
+			resolveSwapRoute({
+				...context,
+				hydrationFeeAssetIds: new Set([10]),
+				tokenIdIn: PEOPLE_DOT,
+				tokenIdOut: HYDRATION_DOT,
+			}),
+		).toBeNull();
+	});
+
 	it("rejects PAS from Paseo People, which Paseo Asset Hub cannot receive by teleport", () => {
 		expect(
 			resolveSwapRoute({
@@ -586,6 +644,43 @@ describe("getNextSwapTokens from People", () => {
 	});
 });
 
+describe("getNextSwapTokens between People and Hydration", () => {
+	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
+		[
+			"a Hydration output keeps the People input",
+			[PEOPLE_DOT, DOT],
+			{ type: "out", tokenId: HYDRATION_DOT },
+			[PEOPLE_DOT, HYDRATION_DOT],
+		],
+		[
+			"a People output keeps the Hydration input",
+			[HYDRATION_DOT, DOT],
+			{ type: "out", tokenId: PEOPLE_DOT },
+			[HYDRATION_DOT, PEOPLE_DOT],
+		],
+		[
+			"a People input keeps the Hydration output",
+			[DOT, HYDRATION_DOT],
+			{ type: "in", tokenId: PEOPLE_DOT },
+			[PEOPLE_DOT, HYDRATION_DOT],
+		],
+		[
+			"flip sends DOT from Hydration to People",
+			[PEOPLE_DOT, HYDRATION_DOT],
+			{ type: "flip" },
+			[HYDRATION_DOT, PEOPLE_DOT],
+		],
+		[
+			"flip sends DOT from People to Hydration",
+			[HYDRATION_DOT, PEOPLE_DOT],
+			{ type: "flip" },
+			[PEOPLE_DOT, HYDRATION_DOT],
+		],
+	])("%s", (_, prev, change, expected) => {
+		expect(next(prev, change)).toEqual(expected);
+	});
+});
+
 describe("getNextSwapTokens from Hydration", () => {
 	it.each<[string, [TokenId, TokenId], SwapTokensChange, [TokenId, TokenId]]>([
 		[
@@ -690,6 +785,8 @@ describe("canFlipSwapTokens", () => {
 		[{ tokenIdIn: DOT, tokenIdOut: HYDRATION_VDOT }, false],
 		[{ tokenIdIn: DOT, tokenIdOut: PEOPLE_DOT }, true],
 		[{ tokenIdIn: PEOPLE_DOT, tokenIdOut: DOT }, true],
+		[{ tokenIdIn: PEOPLE_DOT, tokenIdOut: HYDRATION_DOT }, true],
+		[{ tokenIdIn: HYDRATION_DOT, tokenIdOut: PEOPLE_DOT }, true],
 	])("%o -> %s", (pair, expected) => {
 		expect(canFlipSwapTokens(pair, context)).toBe(expected);
 	});
@@ -765,6 +862,19 @@ describe("getSwapTokenLists", () => {
 		expect(tokensIn).toHaveProperty(PEOPLE_DOT);
 	});
 
+	it("offers DOT on People and on Hydration as input and output of each other", () => {
+		for (const [tokenIdIn, tokenIdOut] of [
+			[PEOPLE_DOT, HYDRATION_DOT],
+			[HYDRATION_DOT, PEOPLE_DOT],
+		] as const) {
+			expect(tokensIn).toHaveProperty(tokenIdIn);
+			expect(tokensOut).toHaveProperty(tokenIdOut);
+			expect(
+				resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut }),
+			).toMatchObject({ kind: "xcm-transfer" });
+		}
+	});
+
 	it("offers PAS on Paseo People as output only", () => {
 		const pas = "native::pasah";
 		const lists = getSwapTokenLists({
@@ -816,6 +926,10 @@ describe("getRouteAccess", () => {
 	const toPeople = { origin: "pah", destination: "ppeople" } as const;
 	const fromHydration = { origin: "hydration", destination: "pah" } as const;
 	const fromPeople = { origin: "kpeople", destination: "kah" } as const;
+	const peopleToHydration = {
+		origin: "ppeople",
+		destination: "hydration",
+	} as const;
 
 	it("lets a substrate account receive on its own address", () => {
 		expect(
@@ -857,6 +971,11 @@ describe("getRouteAccess", () => {
 			allowed: false,
 			reason:
 				"Ethereum accounts cannot send from Kusama People yet: the same address is a different account there",
+		});
+		expect(getRouteAccess({ platform, address }, peopleToHydration)).toEqual({
+			allowed: false,
+			reason:
+				"Ethereum accounts cannot send from Polkadot People yet: the same address is a different account there",
 		});
 	});
 });

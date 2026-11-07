@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
+import { isEqual } from "lodash-es";
 import type { FC, PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
@@ -11,7 +12,12 @@ import { usdtToPink } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
 import { useXcmQuote } from "./useXcmQuote";
 import { dotToAssetHub } from "./xcmFromHydration.fixtures";
-import type { DestinationDryRun, OriginDryRun } from "./xcmQuote";
+import {
+	dotPeopleToHydration,
+	dotPeopleToHydrationTrappedOnHub,
+	type HubTransferFixture,
+} from "./xcmHubTransfer.fixtures";
+import type { DestinationDryRun, HubDryRun, OriginDryRun } from "./xcmQuote";
 import {
 	dotOriginFailed,
 	dotSuccess,
@@ -435,5 +441,123 @@ describe("useXcmQuote", () => {
 			]);
 			expect(chain.queryWeightToAssetFee).not.toHaveBeenCalled();
 		});
+	});
+});
+
+describe("useXcmQuote through Asset Hub", () => {
+	const peopleToHydration: XcmRoute = {
+		kind: "xcm-transfer",
+		origin: "ppeople",
+		destination: "hydration",
+		tokenIdIn: "native::ppeople",
+		tokenIdOut: "hydration-asset::hydration::5",
+		viaHub: {
+			toHub: { origin: "ppeople", destination: "pah" },
+			fromHub: { origin: "pah", destination: "hydration" },
+		},
+	};
+	const siblingLocation = (paraId: number) => ({
+		type: "V5",
+		value: {
+			parents: 1,
+			interior: { type: "X1", value: { type: "Parachain", value: paraId } },
+		},
+	});
+	const firstMessage = (dryRun: OriginDryRun | HubDryRun) =>
+		dryRun.success ? dryRun.value.forwarded_xcms[0]?.[1][0] : undefined;
+
+	const givenHubTransfer = (fixture: HubTransferFixture) => {
+		givenDryRuns({
+			origin: fixture.originDryRun,
+			estimate: fixture.originDryRun,
+			deliveryFees: fixture.deliveryFees,
+		});
+		chain.dryRunXcm.mockImplementation(async (sender) =>
+			isEqual(sender, siblingLocation(1004))
+				? fixture.hubDryRun
+				: fixture.destinationDryRun,
+		);
+	};
+
+	it("quotes People DOT received on Hydration from the dry runs of all three chains", async () => {
+		givenHubTransfer(dotPeopleToHydration);
+		const { result } = renderQuote({
+			route: peopleToHydration,
+			beneficiary: dotPeopleToHydration.beneficiary,
+		});
+
+		await waitFor(() => expect(result.current.data).toBeDefined());
+		expect(result.current).toEqual({
+			isLoading: false,
+			deliveryFee: { tokenId: "native::ppeople", plancks: 305900000n },
+			data: {
+				success: true,
+				quote: {
+					received: 9678556145n,
+					destinationFee: {
+						tokenId: "hydration-asset::hydration::5",
+						plancks: 321443855n,
+					},
+				},
+			},
+		});
+		const toHub = firstMessage(dotPeopleToHydration.originDryRun);
+		expect(chain.queryDeliveryFees).toHaveBeenCalledWith(
+			siblingLocation(1000),
+			toHub,
+			{ type: "V5", value: { parents: 1, interior: { type: "Here" } } },
+			{ at: "best" },
+		);
+		expect(chain.dryRunXcm).toHaveBeenCalledWith(siblingLocation(1004), toHub, {
+			at: "best",
+		});
+		expect(chain.dryRunXcm).toHaveBeenCalledWith(
+			siblingLocation(1000),
+			firstMessage(dotPeopleToHydration.hubDryRun),
+			{ at: "best" },
+		);
+		expect(chain.calledChains).toEqual(
+			expect.arrayContaining([
+				["query_delivery_fees", "ppeople"],
+				["dry_run_xcm", "pah"],
+				["dry_run_xcm", "hydration"],
+			]),
+		);
+	});
+
+	it("refuses an amount Asset Hub would trap, without dry running Hydration", async () => {
+		givenHubTransfer(dotPeopleToHydrationTrappedOnHub);
+		const { result } = renderQuote({
+			route: peopleToHydration,
+			beneficiary: dotPeopleToHydrationTrappedOnHub.beneficiary,
+		});
+
+		await waitFor(() => expect(result.current.data).toBeDefined());
+		expect(result.current.data).toEqual({
+			success: false,
+			failure: {
+				kind: "hub-rejected",
+				hub: "pah",
+				reason: "TooExpensive",
+				assetsTrapped: true,
+			},
+		});
+		expect(chain.calledChains).not.toContainEqual(["dry_run_xcm", "hydration"]);
+	});
+
+	it("reports Asset Hub as unavailable when its dry run errors", async () => {
+		givenHubTransfer(dotPeopleToHydration);
+		chain.dryRunXcm.mockRejectedValue(new Error("rpc down"));
+		const { result } = renderQuote({
+			route: peopleToHydration,
+			beneficiary: dotPeopleToHydration.beneficiary,
+		});
+
+		await waitFor(() => expect(result.current.data).toBeDefined());
+		expect(result.current.data).toEqual({
+			success: false,
+			failure: { kind: "hub-unavailable", hub: "pah" },
+		});
+		expect(chain.calledChains).not.toContainEqual(["dry_run_xcm", "hydration"]);
 	});
 });

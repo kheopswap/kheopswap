@@ -37,12 +37,16 @@ const returnLeftovers = (hops: HopPath<SwapHop>, beneficiary: SS58String) =>
 	]);
 
 export const buildXcmDestinationSwapArgs = ({
+	route,
+	tokenIn,
+	plancks,
 	hops,
 	beneficiary,
-	...props
 }: XcmDestinationSwapCallProps) =>
 	buildReserveTransferArgs({
-		...props,
+		lane: route,
+		tokenIn,
+		plancks,
 		customXcmOnDest: [
 			returnLeftovers(hops, beneficiary),
 			...hops.map(exchangeAsset),

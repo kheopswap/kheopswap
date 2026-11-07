@@ -38,6 +38,7 @@ if (!tokenOut) throw new Error(`unknown token ${usdtToPink.tokenIdOut}`);
 
 const followUpData: XcmTransferFollowUpData = {
 	origin: "hydration",
+	firstHop: "pah",
 	target: { tokenId: usdtToPink.tokenIdOut, beneficiary: usdtToPink.sender },
 	returnTokenIds: [USDT, DOT, usdtToPink.tokenIdOut],
 	tokenOut,

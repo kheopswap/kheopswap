@@ -19,6 +19,7 @@ import {
 } from "../ammPath";
 import {
 	getRouteAccess,
+	getXcmFirstHop,
 	type TransactionPlan,
 	type XcmDestinationSwapRoute,
 	type XcmRoute,
@@ -380,6 +381,7 @@ export const useXcmRoute = ({
 			route && beneficiary && tokenOut
 				? {
 						origin: route.origin,
+						firstHop: getXcmFirstHop(route),
 						target: { tokenId: route.tokenIdOut, beneficiary },
 						returnTokenIds: getReturnTokenIds(route),
 						tokenOut,

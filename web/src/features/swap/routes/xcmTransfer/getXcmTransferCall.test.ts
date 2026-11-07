@@ -14,6 +14,10 @@ import {
 	wndFromPeople,
 } from "../xcm/xcmFromPeople.fixtures";
 import {
+	dotHydrationToPeople,
+	dotPeopleToHydration,
+} from "../xcm/xcmHubTransfer.fixtures";
+import {
 	dotToPeople,
 	ksmToPeople,
 	pasToPeople,
@@ -272,6 +276,49 @@ describe("buildXcmTransferArgs from People", () => {
 						...lane,
 						tokenIdIn,
 						tokenIdOut: `native::${lane.destination}`,
+					},
+					tokenIn: getToken(tokenIdIn),
+					plancks: fixture.amount,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toEqual(fixture.args);
+		},
+	);
+});
+
+describe("buildXcmTransferArgs through Asset Hub", () => {
+	it.each([
+		[
+			"People DOT to Hydration",
+			"ppeople",
+			"hydration",
+			"native::ppeople",
+			"hydration-asset::hydration::5",
+			dotPeopleToHydration,
+		],
+		[
+			"Hydration DOT to People",
+			"hydration",
+			"ppeople",
+			"hydration-asset::hydration::5",
+			"native::ppeople",
+			dotHydrationToPeople,
+		],
+	] as const)(
+		"builds the %s transfer whose dry runs the fixture captured on all three chains",
+		(_, origin, destination, tokenIdIn, tokenIdOut, fixture) => {
+			expect(
+				buildXcmTransferArgs({
+					route: {
+						kind: "xcm-transfer",
+						origin,
+						destination,
+						tokenIdIn,
+						tokenIdOut,
+						viaHub: {
+							toHub: { origin, destination: "pah" },
+							fromHub: { origin: "pah", destination },
+						},
 					},
 					tokenIn: getToken(tokenIdIn),
 					plancks: fixture.amount,
