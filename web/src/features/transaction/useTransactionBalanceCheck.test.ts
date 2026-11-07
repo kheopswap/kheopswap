@@ -58,6 +58,17 @@ describe("getInsufficientBalances", () => {
 		).toEqual(expected);
 	});
 
+	it("lets a Hydration fee payer spend down to the fee, which may reap the fee currency", () => {
+		expect(
+			getInsufficientBalances({
+				callSpendings: { [HYDRATION_DOT]: { plancks: 1n, allowDeath: true } },
+				balances: { [HYDRATION_DOT]: FEE_IN_DOT + 1n },
+				existentialDeposits: { [HYDRATION_DOT]: DOT_ED },
+				fee: { tokenId: HYDRATION_DOT, plancks: FEE_IN_DOT },
+			}),
+		).toEqual({});
+	});
+
 	it("keeps the fee payer alive through the fee even when the call may reap it", () => {
 		expect(
 			getInsufficientBalances({
