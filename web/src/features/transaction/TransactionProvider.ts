@@ -113,51 +113,45 @@ const useTransactionProvider = ({
 		submitGate.status,
 	]);
 
+	const hasInsufficientBalance =
+		Object.keys(balanceCheck.insufficientBalances).length > 0;
+
+	const isRejectedByDryRun =
+		fees.dryRun?.success === true &&
+		!fees.dryRun.value.execution_result.success;
+
+	const isDryRunConclusive =
+		isChainIdAssetHub(chainId) &&
+		!fees.options?.asset &&
+		!(fees.feeToken && balanceCheck.insufficientBalances[fees.feeToken.id]);
+
 	// Cross-concern: can submit
 	const canSubmit = useMemo(() => {
 		if (submitGate.status !== "open") return false;
 		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
+		if (!call || isLoading || error) return false;
+		if (hasInsufficientBalance || isRejectedByDryRun) return false;
 
-		if (ethereum.account.platform === "ethereum") {
+		if (ethereum.account.platform === "ethereum")
 			return (
-				!!call &&
-				!isLoading &&
-				!error &&
 				!ethereum.isEthereumNetworkMismatch &&
-				!ethereum.isSwitchingEthereumNetwork &&
-				!Object.keys(balanceCheck.insufficientBalances).length
+				!ethereum.isSwitchingEthereumNetwork
 			);
-		}
 
-		const isDryRunConclusive =
-			isChainIdAssetHub(chainId) && !fees.options?.asset;
-		if (isDryRunConclusive && fees.dryRun?.success)
-			return fees.dryRun.value.execution_result.success;
-
-		// TODO add a flag to allow parent form to force another isLoading state
-		return (
-			!!call &&
-			!!fees.feeEstimate &&
-			!!fees.feeToken &&
-			!!fees.options &&
-			!error &&
-			!isLoading &&
-			!Object.keys(balanceCheck.insufficientBalances).length
-		);
+		return !!fees.feeEstimate && !!fees.feeToken && !!fees.options;
 	}, [
 		ethereum.account,
 		call,
 		error,
 		fees.feeEstimate,
 		fees.feeToken,
-		balanceCheck.insufficientBalances,
+		fees.options,
+		hasInsufficientBalance,
+		isRejectedByDryRun,
 		isLoading,
 		ethereum.isEthereumNetworkMismatch,
 		ethereum.isSwitchingEthereumNetwork,
-		fees.options,
-		fees.dryRun,
 		submitGate.status,
-		chainId,
 	]);
 
 	return {
@@ -192,6 +186,7 @@ const useTransactionProvider = ({
 		onReset,
 
 		dryRun: fees.dryRun,
+		isDryRunConclusive,
 		isLoadingDryRun: fees.isLoadingDryRun,
 		errorDryRun: fees.errorDryRun,
 	};
