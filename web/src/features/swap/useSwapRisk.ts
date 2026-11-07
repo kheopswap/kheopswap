@@ -58,6 +58,7 @@ const useTransferFees = ({
 	totalIn,
 	received,
 	deliveryFee,
+	transactionFee,
 }: {
 	route: SwapRoute | null;
 	tokenIn: TransferToken;
@@ -65,13 +66,29 @@ const useTransferFees = ({
 	totalIn: bigint | null | undefined;
 	received: bigint | null | undefined;
 	deliveryFee: TokenAmount | undefined;
+	transactionFee: TokenAmount | undefined;
 }) => {
 	const fees = useMemo(
 		() =>
 			route?.kind === "xcm-transfer"
-				? getTransferFees({ tokenIn, tokenOut, totalIn, received, deliveryFee })
+				? getTransferFees({
+						tokenIn,
+						tokenOut,
+						totalIn,
+						received,
+						deliveryFee,
+						transactionFee,
+					})
 				: undefined,
-		[route?.kind, tokenIn, tokenOut, totalIn, received, deliveryFee],
+		[
+			route?.kind,
+			tokenIn,
+			tokenOut,
+			totalIn,
+			received,
+			deliveryFee,
+			transactionFee,
+		],
 	);
 	const amounts = useMemo(
 		() =>
@@ -105,6 +122,7 @@ export const useSwapRisk = ({
 	plancksOut,
 	deliveryFee,
 	destinationFee,
+	transactionFee,
 	priceImpact,
 }: {
 	signer: string | undefined;
@@ -115,6 +133,7 @@ export const useSwapRisk = ({
 	plancksOut: bigint | null | undefined;
 	deliveryFee: TokenAmount | undefined;
 	destinationFee: TokenAmount | undefined;
+	transactionFee: TokenAmount | undefined;
 	priceImpact: number | undefined;
 }) => {
 	const sent = useSentValue(route?.tokenIdIn, totalIn, deliveryFee);
@@ -131,6 +150,7 @@ export const useSwapRisk = ({
 		totalIn,
 		received: plancksOut,
 		deliveryFee,
+		transactionFee,
 	});
 
 	const valueLoss = useMemo((): ValueLoss | undefined => {

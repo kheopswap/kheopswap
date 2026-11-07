@@ -5,6 +5,7 @@ import { formatPercent } from "../../utils/formatPercent";
 import { TokenAmountValue } from "./routes/AmmPathValues";
 import { getXcmChainNames } from "./routes/xcm/XcmQuoteRows";
 import { useSwap } from "./SwapProvider";
+import { useSwapRiskContext } from "./SwapRiskProvider";
 import { isTransferRisk, type LossCause, type SwapLoss } from "./swapRisk";
 
 const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
@@ -40,7 +41,8 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 	ratio,
 	cause,
 }) => {
-	const { tokenOut, swapPlancksOut, transferFees } = useSwap();
+	const { tokenOut, swapPlancksOut } = useSwap();
+	const { transferFees } = useSwapRiskContext();
 	if (!transferFees?.fees.length || !tokenOut || !swapPlancksOut)
 		return (
 			<>
@@ -84,7 +86,7 @@ const LossText: FC<{ loss: SwapLoss; cause: LossCause | null }> = ({
 };
 
 export const SwapRiskWarning = () => {
-	const { risk, isRiskAcknowledged, onRiskAcknowledgeChange } = useSwap();
+	const { risk, isAcknowledged, onAcknowledgeChange } = useSwapRiskContext();
 	if (risk.level === "none") return null;
 
 	const needsConfirmation = risk.level === "confirm";
@@ -110,8 +112,8 @@ export const SwapRiskWarning = () => {
 					<input
 						type="checkbox"
 						className="size-4 accent-error"
-						checked={isRiskAcknowledged}
-						onChange={(e) => onRiskAcknowledgeChange(e.currentTarget.checked)}
+						checked={isAcknowledged}
+						onChange={(e) => onAcknowledgeChange(e.currentTarget.checked)}
 					/>
 					{isTransferRisk(risk)
 						? "I accept these fees and want to transfer anyway"

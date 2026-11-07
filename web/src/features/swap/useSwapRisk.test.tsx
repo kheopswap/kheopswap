@@ -71,6 +71,7 @@ const severeSwap = (totalIn: bigint, signer = "account-1"): Props => ({
 	plancksOut: totalIn / 2n,
 	deliveryFee: undefined,
 	destinationFee: undefined,
+	transactionFee: undefined,
 	priceImpact: -0.5,
 });
 
@@ -184,6 +185,7 @@ describe("useSwapRisk", () => {
 			plancksOut: received,
 			deliveryFee: { tokenId: DOT, plancks: 305_000_000n },
 			destinationFee: undefined,
+			transactionFee: undefined,
 			priceImpact: undefined,
 		});
 
@@ -224,6 +226,22 @@ describe("useSwapRisk", () => {
 				expect(result.current.transferFees?.share).toBe(share);
 			},
 		);
+
+		it("counts the transaction fee among the fees of a transfer", () => {
+			const { result } = renderHook(useSwapRisk, {
+				initialProps: {
+					...transfer(2_100_000_000n, 2_100_000_000n),
+					transactionFee: { tokenId: DOT, plancks: 11_000_000n },
+				},
+			});
+			expect(result.current.risk).toMatchObject({
+				level: "confirm",
+				headline: { kind: "fees", ratio: 0.150476 },
+			});
+			expect(result.current.transferFees?.fees).toEqual([
+				{ tokenId: DOT, plancks: 316_000_000n },
+			]);
+		});
 
 		it("asks to confirm a costly transfer of a token without a price", () => {
 			valuation.stableValue = () => undefined;
@@ -292,6 +310,7 @@ describe("useSwapRisk", () => {
 				plancksOut: 82_610_000n,
 				deliveryFee: { tokenId: HYDRATION_DOT, plancks: 0n },
 				destinationFee: { tokenId: DOT, plancks: 17_000_000n },
+				transactionFee: undefined,
 				priceImpact: -0.0001,
 			},
 		});

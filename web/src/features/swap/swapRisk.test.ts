@@ -295,8 +295,9 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000_000n,
 				received: 995_000_000n,
 				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
+				transactionFee: { tokenId: DOT.id, plancks: 11_000_000n },
 			}),
-		).toEqual([{ tokenId: DOT.id, plancks: 310_000_000n }]);
+		).toEqual([{ tokenId: DOT.id, plancks: 321_000_000n }]);
 	});
 
 	it("lists the fees paid in another token on their own", () => {
@@ -307,10 +308,11 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000n,
 				received: 980_000n,
 				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
+				transactionFee: { tokenId: DOT.id, plancks: 11_000_000n },
 			}),
 		).toEqual([
 			{ tokenId: USDC.id, plancks: 20_000n },
-			{ tokenId: DOT.id, plancks: 305_000_000n },
+			{ tokenId: DOT.id, plancks: 316_000_000n },
 		]);
 	});
 
@@ -322,6 +324,7 @@ describe("getTransferFees", () => {
 				totalIn: 100_000_000n,
 				received: 83_000_000n,
 				deliveryFee: { tokenId: HYDRATION_DOT.id, plancks: 0n },
+				transactionFee: undefined,
 			}),
 		).toEqual([{ tokenId: HYDRATION_DOT.id, plancks: 17_000_000n }]);
 	});
@@ -334,6 +337,7 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000_000n,
 				received: 995_000n,
 				deliveryFee: undefined,
+				transactionFee: undefined,
 			}),
 		).toBeUndefined();
 	});

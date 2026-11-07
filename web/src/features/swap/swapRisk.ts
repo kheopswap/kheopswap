@@ -139,12 +139,14 @@ export const getTransferFees = ({
 	totalIn,
 	received,
 	deliveryFee,
+	transactionFee,
 }: {
 	tokenIn: Pick<Token, "id" | "decimals"> | null | undefined;
 	tokenOut: Pick<Token, "decimals"> | null | undefined;
 	totalIn: bigint | null | undefined;
 	received: bigint | null | undefined;
 	deliveryFee: TokenAmount | undefined;
+	transactionFee: TokenAmount | undefined;
 }): TokenAmount[] | undefined => {
 	if (
 		!tokenIn ||
@@ -157,9 +159,11 @@ export const getTransferFees = ({
 	)
 		return undefined;
 	return mergeTokenAmounts(
-		[{ tokenId: tokenIn.id, plancks: totalIn - received }, deliveryFee].filter(
-			(fee) => !!fee,
-		),
+		[
+			{ tokenId: tokenIn.id, plancks: totalIn - received },
+			deliveryFee,
+			transactionFee,
+		].filter((fee) => !!fee),
 	);
 };
 

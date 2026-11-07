@@ -2,13 +2,16 @@ import { useMemo } from "react";
 import { TabTitle } from "../../components/TabTitle";
 import { SwapForm } from "./SwapForm";
 import { SwapProvider, useSwap } from "./SwapProvider";
+import { SwapRiskProvider } from "./SwapRiskProvider";
 import { SwapTransactionProvider } from "./SwapTransactionProvider";
 
 export const Swap = () => {
 	return (
 		<SwapProvider>
 			<SwapTransactionProvider>
-				<SwapForm />
+				<SwapRiskProvider>
+					<SwapForm />
+				</SwapRiskProvider>
 			</SwapTransactionProvider>
 			<SwapTabTitle />
 		</SwapProvider>

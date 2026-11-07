@@ -22,14 +22,19 @@ const swap = vi.hoisted(() => ({
 		| undefined,
 }));
 
+vi.mock("./SwapRiskProvider", () => ({
+	useSwapRiskContext: () => ({
+		risk: swap.risk,
+		isAcknowledged: false,
+		onAcknowledgeChange: () => {},
+		transferFees: swap.transferFees,
+	}),
+}));
+
 vi.mock("./SwapProvider", () => ({
 	useSwap: () => ({
-		risk: swap.risk,
-		isRiskAcknowledged: false,
-		onRiskAcknowledgeChange: () => {},
 		tokenOut: KNOWN_TOKENS_MAP["native::pah"],
 		swapPlancksOut: swap.received,
-		transferFees: swap.transferFees,
 		details: {
 			kind: swap.route.kind,
 			route: swap.route,
