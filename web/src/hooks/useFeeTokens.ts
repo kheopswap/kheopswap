@@ -90,9 +90,7 @@ const getFeeTokens$ = (
 			const feeTokens$ = isChainIdAssetHub(chainId)
 				? combineLatest([
 						sufficientTokens$,
-						getPoolsByChain$(chainId).pipe(
-							map(({ status, pools }) => (status === "loaded" ? pools : [])),
-						),
+						getPoolsByChain$(chainId).pipe(map(({ pools }) => pools)),
 					]).pipe(
 						map(([tokens, pools]) =>
 							tokens.filter(
