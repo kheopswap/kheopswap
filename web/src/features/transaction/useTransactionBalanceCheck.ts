@@ -30,7 +30,7 @@ export const getInsufficientBalances = ({
 		const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
 
 		if (balance < spendings) result[tokenId] = "Insufficient balance";
-		else if (balance < spendings + feePlancks)
+		else if (balance < spendings + feePlancks || balance < feePlancks + ed)
 			result[tokenId] = "Insufficient balance to pay for fee";
 		else if (!allowDeath && balance < spendings + feePlancks + ed)
 			result[tokenId] = "Insufficient balance to keep account alive";

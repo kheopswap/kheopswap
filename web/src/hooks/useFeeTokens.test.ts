@@ -11,6 +11,12 @@ const PAYER = "147vNmBXQQYqcj7TTkuEY4eYEAXG58UyVHPiEFBYKAtkVL8w";
 const chain = vi.hoisted(() => ({
 	currency: undefined as unknown as BehaviorSubject<string>,
 	tokenStates: new Map<string, unknown>(),
+	tokensByChain: new Map<string, unknown>(),
+	poolsByChain: new Map<string, unknown>(),
+}));
+
+vi.mock("../services/pools/service", () => ({
+	getPoolsByChain$: (chainId: string) => chain.poolsByChain.get(chainId),
 }));
 
 vi.mock("../state/hydrationFees", () => ({
@@ -19,8 +25,11 @@ vi.mock("../state/hydrationFees", () => ({
 
 vi.mock("../services/tokens/service", () => ({
 	getTokenById$: (tokenId: TokenId) => chain.tokenStates.get(tokenId),
-	getTokensByChain$: () => {
-		throw new Error("Hydration fee tokens must not list the chain's tokens");
+	getTokensByChain$: (chainId: string) => {
+		const tokens = chain.tokensByChain.get(chainId);
+		if (!tokens)
+			throw new Error("Hydration fee tokens must not list the chain's tokens");
+		return tokens;
 	},
 }));
 
@@ -43,5 +52,55 @@ describe("useFeeTokens on Hydration", () => {
 
 		act(() => dotState.next({ status: "loaded", token: hydrationDot }));
 		expect(result.current).toEqual({ isLoading: false, data: [hydrationDot] });
+	});
+});
+
+describe("useFeeTokens on Asset Hub", () => {
+	const pah = KNOWN_TOKENS_MAP["native::pah"];
+	const usdc = KNOWN_TOKENS_MAP["asset::pah::1337"];
+	if (!pah || !usdc) throw new Error("Polkadot Asset Hub tokens not found");
+	const unpooled = {
+		...usdc,
+		id: "asset::pah::9999",
+		symbol: "NOPOOL",
+	} as Token;
+	const unsufficient = {
+		...usdc,
+		id: "asset::pah::9998",
+		symbol: "DUST",
+		isSufficient: false,
+	} as Token;
+
+	it("offers the native token and the sufficient tokens the chain can convert into it", () => {
+		chain.tokensByChain.set(
+			"pah",
+			new BehaviorSubject({
+				status: "loaded",
+				tokens: {
+					[pah.id]: pah,
+					[usdc.id]: usdc,
+					[unpooled.id]: unpooled,
+					[unsufficient.id]: unsufficient,
+				},
+			}),
+		);
+		const pools = new BehaviorSubject({
+			status: "loading",
+			pools: [] as unknown[],
+		});
+		chain.poolsByChain.set("pah", pools);
+
+		const { result } = renderHook(() =>
+			useFeeTokens({ chainId: "pah", address: PAYER }),
+		);
+		expect(result.current).toEqual({ isLoading: true, data: undefined });
+
+		act(() =>
+			pools.next({
+				status: "loaded",
+				pools: [{ tokenIds: [pah.id, usdc.id] }],
+			}),
+		);
+		expect(result.current).toEqual({ isLoading: false, data: [pah, usdc] });
 	});
 });

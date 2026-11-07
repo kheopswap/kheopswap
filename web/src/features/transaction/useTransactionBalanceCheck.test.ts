@@ -58,6 +58,19 @@ describe("getInsufficientBalances", () => {
 		).toEqual(expected);
 	});
 
+	it("keeps the fee payer alive through the fee even when the call may reap it", () => {
+		expect(
+			getInsufficientBalances({
+				callSpendings: {
+					"asset::pah::1337": { plancks: 1n, allowDeath: true },
+				},
+				balances: { "asset::pah::1337": 153n },
+				existentialDeposits: { "asset::pah::1337": 150n },
+				fee: { tokenId: "asset::pah::1337", plancks: 7n },
+			}),
+		).toEqual({ "asset::pah::1337": "Insufficient balance to pay for fee" });
+	});
+
 	it("keeps the fee payer alive when the call must not reap it", () => {
 		expect(
 			getInsufficientBalances({
