@@ -374,12 +374,24 @@ describe("getFeeShare", () => {
 	});
 
 	it("adds the fees paid in another token by their value", () => {
-		const { share, isPartial } = getFeeShare(sent, [
-			{ tokenId: sent.tokenId, plancks: 20_000n, value: undefined },
-			{ tokenId: "native::pah", plancks: 316_000_000n, value: 130_000n },
-		]);
-		expect(share).toBeCloseTo(0.15);
-		expect(isPartial).toBe(false);
+		expect(
+			getFeeShare(sent, [
+				{ tokenId: sent.tokenId, plancks: 20_000n, value: undefined },
+				{ tokenId: "native::pah", plancks: 316_000_000n, value: 130_000n },
+			]),
+		).toEqual({ share: 0.15, isPartial: false });
+	});
+
+	it("keeps fees that add up to exactly 15% at 15%", () => {
+		expect(
+			getFeeShare(
+				{ tokenId: sent.tokenId, plancks: 300_000_000n, value: 300_000_000n },
+				[
+					{ tokenId: sent.tokenId, plancks: 10_000_000n, value: undefined },
+					{ tokenId: "native::pah", plancks: 1n, value: 35_000_000n },
+				],
+			),
+		).toEqual({ share: 0.15, isPartial: false });
 	});
 
 	it("counts what it can measure when a fee in another token has no value", () => {

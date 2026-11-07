@@ -179,17 +179,22 @@ export const getFeeShare = (
 	sent: ValuedAmount,
 	fees: ValuedAmount[],
 ): FeeShare => {
-	let share = 0;
+	let numerator = 0n;
+	let denominator = 1n;
 	let isPartial = false;
 	for (const fee of fees) {
-		const feeShare =
+		const [part, whole] =
 			fee.tokenId === sent.tokenId
-				? getShare(fee.plancks, sent.plancks)
-				: getShare(fee.value, sent.value);
-		if (feeShare === undefined) isPartial = true;
-		else share += feeShare;
+				? [fee.plancks, sent.plancks]
+				: [fee.value, sent.value];
+		if (!whole || part === null || part === undefined) {
+			isPartial = true;
+			continue;
+		}
+		numerator = numerator * whole + part * denominator;
+		denominator *= whole;
 	}
-	return { share, isPartial };
+	return { share: getShare(numerator, denominator) ?? 0, isPartial };
 };
 
 export const getRiskSubmitGate = (
