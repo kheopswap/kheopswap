@@ -1,5 +1,5 @@
 import type { AppKit } from "@reown/appkit";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	getEvmAppKitNetwork,
 	isWalletConnectWallet,
@@ -54,6 +54,10 @@ export const useTransactionEthereum = ({
 	const { wallets } = useWallets();
 	const [isSwitchingEthereumNetwork, setIsSwitchingEthereumNetwork] =
 		useState(false);
+	const [walletChain, setWalletChain] = useState<{
+		account: object;
+		chainId: number;
+	} | null>(null);
 
 	const chain = useMemo(
 		() => (chainId ? getChainById(chainId) : null),
@@ -64,10 +68,31 @@ export const useTransactionEthereum = ({
 	const nativeToken = useNativeToken({ chain });
 
 	const targetEvmChainId = chain?.evmChainId;
-	const connectedEvmChainId = useMemo(
-		() => (account?.platform === "ethereum" ? account.chainId : undefined),
-		[account],
-	);
+
+	const readWalletChainId = useCallback(async () => {
+		if (account?.platform !== "ethereum" || account.isPlaceholder) return;
+		const chainId = await account.client.getChainId();
+		setWalletChain((previous) =>
+			previous?.account === account && previous.chainId === chainId
+				? previous
+				: { account, chainId },
+		);
+	}, [account]);
+
+	useEffect(() => {
+		setWalletChain((previous) =>
+			previous?.account === account ? previous : null,
+		);
+		if (account?.platform !== "ethereum" || account.chainId !== undefined)
+			return;
+		readWalletChainId().catch(() => {});
+	}, [account, readWalletChainId]);
+
+	const connectedEvmChainId = useMemo(() => {
+		if (account?.platform !== "ethereum") return undefined;
+		if (account.chainId !== undefined) return account.chainId;
+		return walletChain?.account === account ? walletChain.chainId : undefined;
+	}, [account, walletChain]);
 
 	// AppKit instance backing this account when it's connected over
 	// WalletConnect — the escape hatch kheopskit exposes on the WC connector.
@@ -80,10 +105,10 @@ export const useTransactionEthereum = ({
 	}, [wallets, account]);
 
 	const isEthereumNetworkMismatch = useMemo(() => {
-		if (!isEthereumAccount) return false;
-		if (!targetEvmChainId || !connectedEvmChainId) return false;
+		if (!isEthereumAccount || account.isPlaceholder || !targetEvmChainId)
+			return false;
 		return targetEvmChainId !== connectedEvmChainId;
-	}, [connectedEvmChainId, isEthereumAccount, targetEvmChainId]);
+	}, [account, connectedEvmChainId, isEthereumAccount, targetEvmChainId]);
 
 	const onSwitchEthereumNetwork = useCallback(async () => {
 		if (
@@ -153,10 +178,12 @@ export const useTransactionEthereum = ({
 				notifyError(error);
 			}
 		} finally {
+			await readWalletChainId().catch(() => {});
 			setIsSwitchingEthereumNetwork(false);
 		}
 	}, [
 		account,
+		readWalletChainId,
 		walletConnectAppKit,
 		chain?.evmBlockExplorers,
 		chain?.evmRpcUrl,
