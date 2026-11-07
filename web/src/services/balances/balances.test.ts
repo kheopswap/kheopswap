@@ -159,6 +159,28 @@ describe("balances service pipeline", () => {
 		removeBalancesSubscription(subId);
 	});
 
+	it("counts every frozen fund against free on Hydration, whose fee withdrawal ignores reserved funds", async () => {
+		const address = "5TestAddressHydrationStaker";
+		const balanceId = getBalanceId({ address, tokenId: "native::hydration" });
+		const subjectKey = `native||${address}`;
+
+		const subId = addBalanceSubscription(balanceId);
+		await vi.waitFor(() =>
+			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		);
+
+		getSubject(subjectKey).next({
+			value: { data: { free: 100n, reserved: 30n, frozen: 40n } },
+		});
+		const loaded = await waitForBalanceState(
+			balanceId,
+			(s) => s?.status === "loaded",
+		);
+		expect(loaded?.balance).toBe(60n);
+
+		removeBalancesSubscription(subId);
+	});
+
 	it("opens a single watcher for duplicate subscriptions", async () => {
 		const address = "5TestAddressBob";
 		const balanceId = getBalanceId({ address, tokenId: "native::pah" });

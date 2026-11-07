@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { getXcmCallSpendings } from "../swap/routes/xcm/xcmQuote";
 import { getInsufficientBalances } from "./useTransactionBalanceCheck";
 
 const HYDRATION_DOT = "hydration-asset::hydration::5";
@@ -80,6 +81,24 @@ describe("getInsufficientBalances", () => {
 				fee: { tokenId: "asset::pah::1337", plancks: 7n },
 			}),
 		).toEqual({ "asset::pah::1337": "Insufficient balance to pay for fee" });
+	});
+
+	it("lets a native teleport empty the sender, as the chain does", () => {
+		const free = 40_844_677_641n;
+		const transactionFee = 2_000_000n;
+		const deliveryFee = { tokenId: "native::pasah", plancks: 304_850_000n };
+		expect(
+			getInsufficientBalances({
+				callSpendings: getXcmCallSpendings({
+					tokenIdIn: "native::pasah",
+					totalIn: free - transactionFee - deliveryFee.plancks,
+					deliveryFee,
+				}),
+				balances: { "native::pasah": free },
+				existentialDeposits: { "native::pasah": 100_000_000n },
+				fee: { tokenId: "native::pasah", plancks: transactionFee },
+			}),
+		).toEqual({});
 	});
 
 	it("keeps the fee payer alive when the call must not reap it", () => {

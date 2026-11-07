@@ -8,6 +8,7 @@ import { useFeeTokens } from "./useFeeTokens";
 const HYDRATION_DOT = "hydration-asset::hydration::5";
 const PAYER = "147vNmBXQQYqcj7TTkuEY4eYEAXG58UyVHPiEFBYKAtkVL8w";
 const OTHER_PAYER = "15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5";
+const REFRESHING_PAYER = "14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3";
 
 const chain = vi.hoisted(() => ({
 	currency: undefined as unknown as BehaviorSubject<string>,
@@ -103,6 +104,35 @@ describe("useFeeTokens on Asset Hub", () => {
 			}),
 		);
 		expect(result.current).toEqual({ isLoading: false, data: [pah, usdc] });
+	});
+
+	it("keeps offering the pooled tokens while the pools refresh", () => {
+		chain.tokensByChain.set(
+			"pah",
+			new BehaviorSubject({
+				status: "loaded",
+				tokens: { [pah.id]: pah, [usdc.id]: usdc },
+			}),
+		);
+		const loadedPools = [{ tokenIds: [pah.id, usdc.id] }];
+		const pools = new BehaviorSubject({
+			status: "loaded",
+			pools: loadedPools as unknown[],
+		});
+		chain.poolsByChain.set("pah", pools);
+
+		const { result } = renderHook(() =>
+			useFeeTokens({ chainId: "pah", address: REFRESHING_PAYER }),
+		);
+		expect(result.current).toEqual({ isLoading: false, data: [pah, usdc] });
+
+		for (const status of ["stale", "loading", "loaded"]) {
+			act(() => pools.next({ status, pools: loadedPools }));
+			expect(result.current, status).toEqual({
+				isLoading: false,
+				data: [pah, usdc],
+			});
+		}
 	});
 
 	it("keeps offering the native token when the pools never load", () => {
