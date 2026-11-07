@@ -83,23 +83,42 @@ describe("getInsufficientBalances", () => {
 		).toEqual({ "asset::pah::1337": "Insufficient balance to pay for fee" });
 	});
 
-	it("lets a native teleport empty the sender, as the chain does", () => {
-		const free = 40_844_677_641n;
-		const transactionFee = 2_000_000n;
-		const deliveryFee = { tokenId: "native::pasah", plancks: 304_850_000n };
-		expect(
-			getInsufficientBalances({
-				callSpendings: getXcmCallSpendings({
-					tokenIdIn: "native::pasah",
-					totalIn: free - transactionFee - deliveryFee.plancks,
-					deliveryFee,
+	it.each([
+		[
+			"a Paseo Asset Hub sender",
+			"native::pasah",
+			45_766_345_714_553n,
+			100_000_000n,
+			11_056_171n,
+			304_950_000n,
+			45_765_935_236_468n,
+		],
+		[
+			"a Polkadot People sender",
+			"native::ppeople",
+			174_618_608_715n,
+			1_000_000_000n,
+			10_123_336n,
+			304_850_000n,
+			173_613_547_047n,
+		],
+	])(
+		"blocks a native cross-chain send that leaves %s less than the deposit and the fee",
+		(_, tokenId, free, ed, transactionFee, deliveryFee, amount) => {
+			expect(
+				getInsufficientBalances({
+					callSpendings: getXcmCallSpendings({
+						tokenIdIn: tokenId,
+						totalIn: amount,
+						deliveryFee: { tokenId, plancks: deliveryFee },
+					}),
+					balances: { [tokenId]: free },
+					existentialDeposits: { [tokenId]: ed },
+					fee: { tokenId, plancks: transactionFee },
 				}),
-				balances: { "native::pasah": free },
-				existentialDeposits: { "native::pasah": 100_000_000n },
-				fee: { tokenId: "native::pasah", plancks: transactionFee },
-			}),
-		).toEqual({});
-	});
+			).toEqual({ [tokenId]: "Insufficient balance to keep account alive" });
+		},
+	);
 
 	it("keeps the fee payer alive when the call must not reap it", () => {
 		expect(

@@ -484,14 +484,14 @@ describe("describeXcmQuoteFailure", () => {
 });
 
 describe("getXcmCallSpendings", () => {
-	it("adds the delivery fee to the DOT sent, and lets both empty the account", () => {
+	it("adds the delivery fee to the DOT sent, keeping the account alive", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: DOT,
 				totalIn: 10_000_000_000n,
 				deliveryFee: { tokenId: DOT, plancks: 304850000n },
 			}),
-		).toEqual({ [DOT]: { plancks: 10_304_850_000n, allowDeath: true } });
+		).toEqual({ [DOT]: { plancks: 10_304_850_000n, allowDeath: false } });
 	});
 
 	it("spends the asset sent and the DOT delivery fee separately", () => {
@@ -503,12 +503,12 @@ describe("getXcmCallSpendings", () => {
 			}),
 		).toEqual({
 			[USDT]: { plancks: 10_000_000n, allowDeath: true },
-			[DOT]: { plancks: 305450000n, allowDeath: true },
+			[DOT]: { plancks: 305450000n, allowDeath: false },
 		});
 	});
 
 	it.each([
-		[DOT, { [DOT]: { plancks: 10_000_000_000n, allowDeath: true } }],
+		[DOT, { [DOT]: { plancks: 10_000_000_000n, allowDeath: false } }],
 		[USDT, { [USDT]: { plancks: 10_000_000_000n, allowDeath: true } }],
 	])(
 		"spends only the amount of %s while the delivery fee is unknown",
@@ -830,7 +830,7 @@ describe("People to Asset Hub", () => {
 		expect(getDeliveryFeeTokenId("wpeople")).toBe("native::wpeople");
 	});
 
-	it("spends the amount and the delivery fee from the People balance, which may empty it", () => {
+	it("spends the amount and the delivery fee from the People balance, keeping the account alive", () => {
 		expect(
 			getXcmCallSpendings({
 				tokenIdIn: "native::ppeople",
@@ -838,7 +838,7 @@ describe("People to Asset Hub", () => {
 				deliveryFee: { tokenId: "native::ppeople", plancks: 304850000n },
 			}),
 		).toEqual({
-			"native::ppeople": { plancks: 10304850000n, allowDeath: true },
+			"native::ppeople": { plancks: 10304850000n, allowDeath: false },
 		});
 	});
 });
