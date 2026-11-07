@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChainId } from "../../registry/chains/types";
 import { TransactionDryRunSummaryValue } from "./TransactionDryRunValue";
 import {
+	getTokenSpending,
 	type SubmitGate,
 	TransactionProvider,
 	useTransaction,
@@ -34,7 +35,9 @@ const ethereum = vi.hoisted(() => ({
 }));
 
 const fees = vi.hoisted(() => ({
-	options: { asset: undefined } as { asset: object | undefined },
+	options: { asset: undefined } as { asset: object | undefined } | undefined,
+	feeEstimate: 1n as bigint | null,
+	errorFeeEstimate: undefined as Error | undefined,
 	dryRun: undefined as unknown,
 }));
 
@@ -43,10 +46,15 @@ beforeEach(() => {
 	balanceCheck.isLoadingBalances = false;
 	ethereum.platform = "polkadot";
 	fees.options = { asset: undefined };
+	fees.feeEstimate = 1n;
+	fees.errorFeeEstimate = undefined;
 	fees.dryRun = successfulDryRun;
 });
 
 afterEach(cleanup);
+
+Element.prototype.animate ??= () =>
+	({ play() {}, effect: { updateTiming() {} } }) as unknown as Animation;
 
 vi.mock("../../hooks/useDryRunError", () => ({
 	useDryRunError: () => ({ data: null }),
@@ -67,7 +75,8 @@ vi.mock("./useTransactionFees", () => ({
 		isResolvingSigner: false,
 		isLoadingFeeEstimate: false,
 		isLoadingDryRun: false,
-		feeEstimate: 1n,
+		feeEstimate: fees.feeEstimate,
+		errorFeeEstimate: fees.errorFeeEstimate,
 		feeToken: { id: "native::pah" },
 		options: fees.options,
 		dryRun: fees.dryRun,
@@ -185,6 +194,46 @@ describe("TransactionProvider failed dry run", () => {
 	});
 });
 
+describe("TransactionProvider simulation certainty", () => {
+	it("is conclusive on Asset Hub once the native fee is known payable", () => {
+		expect(renderTransaction(undefined, "pah").isDryRunConclusive).toBe(true);
+	});
+
+	it("is not conclusive while balances load", () => {
+		balanceCheck.isLoadingBalances = true;
+		expect(renderTransaction(undefined, "pah").isDryRunConclusive).toBe(false);
+	});
+
+	it("is not conclusive when the fee estimate failed", () => {
+		fees.errorFeeEstimate = new Error("fee estimate failed");
+		expect(renderTransaction(undefined, "pah").isDryRunConclusive).toBe(false);
+	});
+
+	it("is not conclusive before the nonce makes the fee options available", () => {
+		fees.options = undefined;
+		expect(renderTransaction(undefined, "pah").isDryRunConclusive).toBe(false);
+	});
+
+	it("is not conclusive without a converted fee estimate", () => {
+		fees.feeEstimate = null;
+		expect(renderTransaction(undefined, "pah").isDryRunConclusive).toBe(false);
+	});
+});
+
+describe("getTokenSpending", () => {
+	it("keeps a native sender alive, as its transfer and swap calls do", () => {
+		expect(getTokenSpending({ id: "native::pah", type: "native" }, 5n)).toEqual(
+			{ "native::pah": { plancks: 5n, allowDeath: false } },
+		);
+	});
+
+	it("lets an asset sender spend its whole balance", () => {
+		expect(
+			getTokenSpending({ id: "asset::pah::1984", type: "asset" }, 5n),
+		).toEqual({ "asset::pah::1984": { plancks: 5n, allowDeath: true } });
+	});
+});
+
 describe("TransactionDryRunSummaryValue", () => {
 	const renderDryRun = (chainId: ChainId = "pah") => {
 		const Wrapper = getWrapper(undefined, chainId);
@@ -218,6 +267,13 @@ describe("TransactionDryRunSummaryValue", () => {
 	it("reads Succeeds before fees on Hydration, which charges the fee outside the simulation", () => {
 		renderDryRun("hydration");
 		expect(screen.getByText("Succeeds before fees")).toBeInTheDocument();
+	});
+
+	it("shows only the placeholder while balances load, despite a successful dry run", () => {
+		balanceCheck.isLoadingBalances = true;
+		renderDryRun();
+		expect(screen.getByText("Success")).toHaveAttribute("aria-hidden", "true");
+		expect(screen.queryByText("Succeeds before fees")).toBeNull();
 	});
 
 	it("reads Failed when the dry run rejects the call", () => {

@@ -18,6 +18,12 @@ export const getFeeAssetLocation = (feeToken: Token) => {
 					XcmV5Junction.GeneralIndex(BigInt(feeToken.assetId)),
 				]),
 			};
+		case "foreign-asset":
+			if (!feeToken.isSufficient)
+				throw new Error(
+					`Token ${feeToken.symbol} (${feeToken.id}) is not sufficient`,
+				);
+			return feeToken.location;
 		default:
 			return undefined;
 	}

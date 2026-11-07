@@ -1,6 +1,7 @@
 import { type FC, type PropsWithChildren, useMemo } from "react";
 import {
 	type CallSpendings,
+	getTokenSpending,
 	TransactionProvider,
 } from "../transaction/TransactionProvider";
 import { useTransfer } from "./TransferProvider";
@@ -17,12 +18,7 @@ export const TransferTransactionProvider: FC<PropsWithChildren> = ({
 	const title = useMemo(() => getTransferTitle(token?.symbol), [token?.symbol]);
 
 	const callSpendings = useMemo<CallSpendings>(
-		() =>
-			token && plancks
-				? {
-						[token.id]: { plancks, allowDeath: true },
-					}
-				: {},
+		() => (token && plancks ? getTokenSpending(token, plancks) : {}),
 		[plancks, token],
 	);
 
