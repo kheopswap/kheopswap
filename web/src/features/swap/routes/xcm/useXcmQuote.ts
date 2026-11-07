@@ -270,9 +270,11 @@ export const useXcmQuote = ({
 
 	return {
 		isLoading:
-			origin.isLoading ||
+			origin.isFetching ||
 			(!!message &&
-				(hubLeg.isLoading || destination.isLoading || deliveryFee.isLoading)),
+				(hubLeg.isFetching ||
+					destination.isFetching ||
+					deliveryFee.isFetching)),
 		data,
 		deliveryFee:
 			route && isBigInt(deliveryFeePlancks)

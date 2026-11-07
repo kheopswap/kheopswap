@@ -442,6 +442,41 @@ describe("useXcmQuote", () => {
 			expect(chain.queryWeightToAssetFee).not.toHaveBeenCalled();
 		});
 	});
+	it("stays loading while it revalidates a cached quote", async () => {
+		givenDryRuns({
+			origin: dotSuccess.origin,
+			destination: dotSuccess.destination,
+		});
+		const queryClient = new QueryClient();
+		const wrapper: FC<PropsWithChildren> = ({ children }) => (
+			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		);
+		const quote = () =>
+			useXcmQuote({
+				route: transferRoute,
+				beneficiary: dotSuccess.beneficiary,
+				call,
+				fakeCall,
+			});
+		const first = renderHook(quote, { wrapper });
+		await waitFor(() => expect(first.result.current.data?.success).toBe(true));
+		first.unmount();
+
+		let resolveDestination: (value: unknown) => void = () => {};
+		chain.dryRunXcm.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					resolveDestination = resolve;
+				}),
+		);
+		const second = renderHook(quote, { wrapper });
+		await waitFor(() => expect(chain.dryRunXcm).toHaveBeenCalledTimes(2));
+		expect(second.result.current.isLoading).toBe(true);
+
+		resolveDestination(dotTrapped.destination);
+		await waitFor(() => expect(second.result.current.isLoading).toBe(false));
+		expect(second.result.current.data?.success).toBe(false);
+	});
 });
 
 describe("useXcmQuote through Asset Hub", () => {
