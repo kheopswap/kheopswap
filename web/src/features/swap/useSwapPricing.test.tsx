@@ -27,7 +27,6 @@ const fixture = vi.hoisted(() => ({
 		canReceive: boolean;
 		reason?: string;
 	},
-	rawPlancksOut: undefined as bigint | undefined,
 	slippage: 0.01,
 	receivingAddresses: [] as (string | undefined)[],
 }));
@@ -122,10 +121,6 @@ vi.mock("../../hooks/useCanAccountReceive", () => ({
 	},
 }));
 
-vi.mock("../../hooks/useAssetConvertPlancks", () => ({
-	useAssetConvertPlancks: () => ({ plancksOut: fixture.rawPlancksOut }),
-}));
-
 // real pool numbers from the Permill LPFee bug report (#79)
 const RESERVE_DOT = 7_842_000_000_000n; // 784.2 DOT (10 decimals)
 const RESERVE_USDC = 663_200_000n; // 663.2 USDC (6 decimals)
@@ -167,7 +162,6 @@ beforeEach(() => {
 	fixture.balances = { [DOT]: 1_000_000_000_000n, [USDC]: 0n };
 	fixture.appFeeCanReceive = { canReceive: false };
 	fixture.recipientCanReceive = { canReceive: true };
-	fixture.rawPlancksOut = undefined;
 	fixture.slippage = 0.01;
 	fixture.receivingAddresses = [];
 });
@@ -240,8 +234,6 @@ describe("useSwapPricing", () => {
 
 	it("leaves the service fee and the pool fee out of the price impact", () => {
 		fixture.appFeeCanReceive = { canReceive: true };
-		const totalIn = 1_000_000_000n;
-		fixture.rawPlancksOut = (totalIn * RESERVE_USDC) / RESERVE_DOT;
 		const result = renderPricing("0.1");
 
 		expect(result.appCommission).toBeGreaterThan(0n);

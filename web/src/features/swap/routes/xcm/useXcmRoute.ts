@@ -301,7 +301,6 @@ export const useXcmRoute = ({
 	const swapPathQuote = useAmmPathQuote({
 		path: swapRoute?.path ?? null,
 		plancksIn: swapPlancksIn,
-		totalIn,
 		slippage,
 	});
 	const pathQuote = destinationSwapRoute
@@ -455,7 +454,7 @@ export const useXcmRoute = ({
 					route,
 					quote,
 					pathQuote: pathQuote.quote,
-					priceImpact: pathQuote.priceImpact,
+					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
 					minReceived:
 						minReceived && minReceived > 0n ? minReceived : undefined,
@@ -468,7 +467,7 @@ export const useXcmRoute = ({
 					route,
 					quote,
 					pathQuote: pathQuote.quote,
-					priceImpact: pathQuote.priceImpact,
+					priceImpact: pathQuote.quote?.priceImpact,
 					slippage,
 					minReceived: pathQuote.quote?.minOut,
 				};
@@ -478,7 +477,6 @@ export const useXcmRoute = ({
 		quote,
 		xcmQuote,
 		pathQuote.quote,
-		pathQuote.priceImpact,
 		mirrorToken?.decimals,
 		tokenOut?.decimals,
 		slippage,

@@ -80,6 +80,43 @@ describe("quoteAmmPath", () => {
 	);
 });
 
+describe("quoteAmmPath price impact", () => {
+	const RESERVE = 1_000_000_000_000n;
+	const quote = (path: AmmPath, plancksIn: bigint, lpFee = 3000) =>
+		quoteAmmPath({
+			hops: mapHopPath(path, (hop) => ({
+				...hop,
+				reserveIn: RESERVE,
+				reserveOut: RESERVE,
+			})),
+			lpFee,
+			plancksIn,
+			slippage: 0,
+		});
+
+	it.each([
+		["one pool", getAmmPath(DOT, USDT, DOT)],
+		["two pools", getAmmPath(USDC, USDT, DOT)],
+	])(
+		"is near zero for a small trade through %s, pool fees aside",
+		(_, path) => {
+			expect(quote(path, RESERVE / 1_000_000n).priceImpact).toBeCloseTo(0, 5);
+		},
+	);
+
+	it("measures how far the trade moves along the curve", () => {
+		expect(quote(getAmmPath(DOT, USDT, DOT), RESERVE, 0).priceImpact).toBe(
+			-0.5,
+		);
+	});
+
+	it("reads a legacy per-mille pool fee", () => {
+		expect(
+			quote(getAmmPath(DOT, USDT, DOT), RESERVE / 1_000_000n, 3).priceImpact,
+		).toBeCloseTo(0, 5);
+	});
+});
+
 describe("getPathLiquidity", () => {
 	const loaded = (data: readonly [bigint, bigint] | null) => ({
 		data,

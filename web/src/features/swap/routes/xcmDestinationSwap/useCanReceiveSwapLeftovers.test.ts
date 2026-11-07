@@ -69,7 +69,7 @@ const getRoute = (tokenIdIn: string, tokenIdOut: string) => {
 		protocolCommission: 0n,
 	}));
 	const { amountOut, minOut } = getLastHop(hops);
-	const pathQuote: AmmPathQuote = { hops, amountOut, minOut };
+	const pathQuote: AmmPathQuote = { hops, amountOut, minOut, priceImpact: 0 };
 	return { route, pathQuote };
 };
 

@@ -67,24 +67,6 @@ export const getAmmInput = (
 };
 
 /**
- * Compute the price impact of a swap relative to the spot price.
- *
- * @param spotPlancksOut  Output at the current spot price (no-fee AMM cross-rate).
- * @param actualPlancksOut  Output after AMM + fee computation.
- * @returns Negative ratio (e.g. -0.012 means 1.2% worse than spot).
- */
-export const getPriceImpact = (
-	spotPlancksOut: bigint,
-	actualPlancksOut: bigint,
-): number => {
-	if (spotPlancksOut === 0n) return 0;
-	return (
-		-Number((10000n * (spotPlancksOut - actualPlancksOut)) / spotPlancksOut) /
-		10000
-	);
-};
-
-/**
  * Compute the minimum acceptable output after applying the user's slippage tolerance.
  *
  * @param plancksOut  Expected output.
