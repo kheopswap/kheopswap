@@ -369,14 +369,6 @@ export const getDeliveryFeeTokenId = (origin: XcmOrigin): TokenId => {
 	}
 };
 
-export const getXcmFeeParts = (
-	deliveryFee: TokenAmount | undefined,
-	quote: XcmQuote | undefined,
-): TokenAmount[] =>
-	[deliveryFee, quote?.destinationFee].filter(
-		(part): part is TokenAmount => !!part?.plancks,
-	);
-
 export const getXcmCallSpendings = ({
 	tokenIdIn,
 	totalIn,

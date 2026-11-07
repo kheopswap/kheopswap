@@ -1,6 +1,6 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { compact, keyBy } from "lodash-es";
-import { type FC, Fragment } from "react";
+import { compact } from "lodash-es";
+import type { FC } from "react";
 import { FormSummaryRow } from "../../../../components/FormSummary";
 import { Shimmer } from "../../../../components/Shimmer";
 import { Tokens } from "../../../../components/Tokens";
@@ -9,13 +9,18 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "../../../../components/tooltip/Tooltip";
-import { useToken } from "../../../../hooks/useToken";
 import { getChainById } from "../../../../registry/chains/chains";
 import { cn } from "../../../../utils/cn";
 import { useSwap } from "../../SwapProvider";
+import { TokenAmountValue } from "../AmmPathValues";
 import { getXcmHub, type XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
-import { describeXcmQuoteFailure, getXcmFeeParts } from "./xcmQuote";
+import { describeXcmQuoteFailure } from "./xcmQuote";
+
+const getXcmChainNames = (route: XcmRoute) =>
+	compact([route.origin, getXcmHub(route), route.destination]).map(
+		(chainId) => getChainById(chainId).name,
+	);
 
 export const XcmSimulationValue: FC<{
 	quote: XcmQuoteState;
@@ -23,11 +28,7 @@ export const XcmSimulationValue: FC<{
 }> = ({ quote, route }) => {
 	if (quote.isLoading) return <Shimmer className="h-4">Success</Shimmer>;
 	if (!quote.data) return null;
-	const [origin, ...hops] = compact([
-		route.origin,
-		getXcmHub(route),
-		route.destination,
-	]).map((chainId) => getChainById(chainId).name);
+	const [origin, ...hops] = getXcmChainNames(route);
 
 	return (
 		<Tooltip placement="bottom-end">
@@ -60,25 +61,32 @@ export const XcmSimulationValue: FC<{
 	);
 };
 
-export const XcmQuoteRows: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
+const FeeLabel: FC<{ label: string; explanation: string }> = ({
+	label,
+	explanation,
+}) => (
+	<Tooltip placement="bottom-start">
+		<TooltipTrigger render={<div />}>
+			<div className="flex items-center gap-1">
+				{label}
+				<InformationCircleIcon className="size-4 inline align-text-bottom" />
+			</div>
+		</TooltipTrigger>
+		<TooltipContent>
+			<p className="max-w-72">{explanation}</p>
+		</TooltipContent>
+	</Tooltip>
+);
+
+const feeShimmer = <Shimmer className="h-4">0.0000 AAA</Shimmer>;
+
+export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
+	quote,
+	route,
+}) => {
 	const { tokenOut } = useSwap();
-	const { data: deliveryFeeToken } = useToken({
-		tokenId: quote.deliveryFee?.tokenId,
-	});
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
-	const { data: destinationFeeToken } = useToken({
-		tokenId: xcmQuote?.destinationFee.tokenId,
-	});
-	const feeTokens = keyBy(
-		compact([deliveryFeeToken, destinationFeeToken]),
-		"id",
-	);
-	const fees = getXcmFeeParts(quote.deliveryFee, xcmQuote).flatMap(
-		({ tokenId, plancks }) => {
-			const token = feeTokens[tokenId];
-			return token ? [{ token, plancks }] : [];
-		},
-	);
+	const [origin, ...hops] = getXcmChainNames(route);
 
 	return (
 		<>
@@ -98,18 +106,31 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState }> = ({ quote }) => {
 				}
 			/>
 			<FormSummaryRow
-				label="XCM fee"
+				label={
+					<FeeLabel
+						label="Delivery fee"
+						explanation={`Paid on ${origin} on top of the amount, to send it to ${hops[0]}.`}
+					/>
+				}
 				value={
-					!!fees.length && (
-						<div className="flex flex-wrap justify-end">
-							{fees.map(({ token, plancks }, index) => (
-								<Fragment key={token.id}>
-									{index > 0 && <span className="mx-1">+</span>}
-									<Tokens plancks={plancks} token={token} />
-								</Fragment>
-							))}
-						</div>
+					quote.deliveryFee ? (
+						<TokenAmountValue {...quote.deliveryFee} />
+					) : (
+						quote.isLoading && feeShimmer
 					)
+				}
+			/>
+			<FormSummaryRow
+				label={
+					<FeeLabel
+						label="Destination fee"
+						explanation={`Taken from the transferred amount on ${hops.join(" and ")} as it arrives.`}
+					/>
+				}
+				value={
+					quote.isLoading
+						? feeShimmer
+						: xcmQuote && <TokenAmountValue {...xcmQuote.destinationFee} />
 				}
 			/>
 		</>
