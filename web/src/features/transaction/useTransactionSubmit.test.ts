@@ -164,7 +164,7 @@ describe("useTransactionSubmit after 10 minutes without a final event", () => {
 		});
 	});
 
-	it("reports a transaction the chain included after the app lost track of it", async () => {
+	it("sends the user to the explorer once the finalized nonce has moved past the submitted one", async () => {
 		chain.finalizedNonce = 2;
 		await submitAndBroadcast();
 		vi.advanceTimersByTime(TEN_MINUTES);
@@ -174,8 +174,25 @@ describe("useTransactionSubmit after 10 minutes without a final event", () => {
 		expect(record.status).toBe("lostTrack");
 		expect(getToastView(record, null)).toEqual({
 			outcome: "warning",
-			text: "Included, but the app lost track of it. Check the explorer",
+			text: "Could not confirm, check the explorer first",
 		});
+	});
+
+	it("does not claim inclusion when another transaction with the same nonce landed instead", async () => {
+		await submitAndBroadcast();
+		const second = renderSubmit();
+		await second.onSubmit();
+		second.txEvents$.next({ type: "broadcasted", txHash: "0x02" });
+		second.txEvents$.next({ ...finalized, txHash: "0x02" } as TxEvent);
+		chain.finalizedNonce = 2;
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+
+		const records = await firstValueFrom(transactions$);
+		const lost = records.find((record) => record.status === "lostTrack");
+		if (!lost) throw new Error("no lostTrack record");
+		expect(lost.txEvents).toContainEqual(broadcasted);
+		expect(getToastView(lost, null).text).not.toMatch(/includ/i);
 	});
 
 	it("stays unconfirmed while the finalized nonce has not moved", async () => {

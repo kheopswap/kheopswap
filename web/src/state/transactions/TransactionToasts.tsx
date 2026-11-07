@@ -41,7 +41,7 @@ const getStatusText = (status: TransactionStatus): string => {
 		case "unconfirmed":
 			return "Not confirmed after 10 minutes, still watching...";
 		case "lostTrack":
-			return "Included, but the app lost track of it. Check the explorer";
+			return "Could not confirm, check the explorer first";
 		case "finalized":
 			return "Finalized";
 		case "failed":

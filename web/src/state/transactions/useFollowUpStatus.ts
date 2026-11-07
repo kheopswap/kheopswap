@@ -61,7 +61,7 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 
 		const latest = followUp.txEvents.at(-1);
 		if (latest?.type === "lostTrack")
-			return ["Included, but the app lost track of it", true, "warning"];
+			return ["Could not confirm, check the explorer", true, "warning"];
 		if (latest?.type === "unconfirmed")
 			return ["Not confirmed after 10 minutes", true, "warning"];
 
