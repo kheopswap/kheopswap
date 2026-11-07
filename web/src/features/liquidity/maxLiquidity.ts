@@ -12,10 +12,10 @@ export const getSpendingMargin = ({
 	feeEstimate: bigint | null | undefined;
 	existentialDeposit: bigint | null | undefined;
 }): bigint | null => {
-	if (!feeToken) return null;
-	if (feeToken.id !== token.id) return existentialDeposit ?? 0n;
+	if (!isBigInt(existentialDeposit) || !feeToken) return null;
+	if (feeToken.id !== token.id) return existentialDeposit;
 	if (!isBigInt(feeEstimate)) return null;
-	return 2n * feeEstimate + (existentialDeposit ?? 0n);
+	return 2n * feeEstimate + existentialDeposit;
 };
 
 export const getSpendableBalance = (balance: bigint, margin: bigint) =>

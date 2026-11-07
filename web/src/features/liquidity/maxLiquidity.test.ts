@@ -31,6 +31,25 @@ describe("getSpendingMargin", () => {
 		).toBe(7n);
 	});
 
+	it("is unknown while the existential deposit is unknown", () => {
+		expect(
+			getSpendingMargin({
+				token: USDC,
+				feeToken: PAS,
+				feeEstimate: 10n,
+				existentialDeposit: undefined,
+			}),
+		).toBeNull();
+		expect(
+			getSpendingMargin({
+				token: USDC,
+				feeToken: PAS,
+				feeEstimate: 10n,
+				existentialDeposit: null,
+			}),
+		).toBeNull();
+	});
+
 	it("is unknown while the fee of the paying token is still being estimated", () => {
 		expect(
 			getSpendingMargin({

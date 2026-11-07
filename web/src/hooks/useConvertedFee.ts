@@ -9,6 +9,7 @@ import {
 	getHydrationFeePrice$,
 } from "../state/hydrationFees";
 import { bindSerialized } from "../utils/bindSerialized";
+import { isBigInt } from "../utils/isBigInt";
 import { useAssetConvertPlancks } from "./useAssetConvertPlancks";
 
 type ConvertedFee = {
@@ -75,5 +76,8 @@ export const useConvertedFee = ({
 
 	return isHydration
 		? hydrationFee
-		: { isLoading: assetHubFee.isLoading, data: assetHubFee.plancksOut };
+		: {
+				isLoading: assetHubFee.isLoading,
+				data: isBigInt(nativeFee) ? assetHubFee.plancksOut : null,
+			};
 };

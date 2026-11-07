@@ -11,13 +11,15 @@ const asset = { id: "asset::pasah::1984", symbol: "USDT", decimals: 6 };
 const page = vi.hoisted(() => ({
 	reserves: [100n * 10n ** 10n, 50_000_000n] as [bigint, bigint] | null,
 	accountBalances: [10n ** 12n, 10n ** 9n] as [bigint, bigint],
-	feeEstimate: 10n as bigint | undefined,
+	feeEstimate: 10n as bigint | null,
+	assetExistentialDeposit: 1n as bigint | undefined,
 }));
 
 beforeEach(() => {
 	page.reserves = [100n * 10n ** 10n, 50_000_000n];
 	page.accountBalances = [10n ** 12n, 10n ** 9n];
 	page.feeEstimate = 10n;
+	page.assetExistentialDeposit = 1n;
 	vi.mocked(useAddLiquidityExtrinsic).mockClear();
 });
 
@@ -46,7 +48,9 @@ vi.mock("./useAddLiquidityExtrinsic", () => ({
 	useAddLiquidityExtrinsic: vi.fn(() => ({ data: null })),
 }));
 vi.mock("../../../../hooks/useExistentialDeposit", () => ({
-	useExistentialDeposit: () => ({ data: 1n }),
+	useExistentialDeposit: ({ tokenId }: { tokenId: string }) => ({
+		data: tokenId === asset.id ? page.assetExistentialDeposit : 1n,
+	}),
 }));
 
 const typeAmount = (
@@ -190,13 +194,24 @@ describe("useLiquidityEditorInputs", () => {
 	});
 
 	it("offers no max while the fee is unknown", () => {
-		page.feeEstimate = undefined;
+		page.feeEstimate = null;
 		const { result } = renderWithInputs();
 
 		clickMax(result, "token1");
 
 		expect(result.current.liquidityToAdd).toBeNull();
 		expect(result.current.refInput1.current?.value).toBe("");
+	});
+
+	it("offers no max while the other side's existential deposit is unknown", () => {
+		page.assetExistentialDeposit = undefined;
+		page.accountBalances = [10n ** 12n, 1_000_000n];
+		const { result } = renderWithInputs();
+
+		clickMax(result, "token1");
+		clickMax(result, "token2");
+
+		expect(result.current.liquidityToAdd).toBeNull();
 	});
 
 	it("keeps twice the fee and the existential deposit out of the native max", () => {
