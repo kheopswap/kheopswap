@@ -115,7 +115,7 @@ export const quoteAmmPath = ({
 	};
 };
 
-const PRICE_IMPACT_PRECISION = 1_000_000n;
+const PRICE_IMPACT_PRECISION = 1_000_000_000n;
 
 const getPriceImpact = (
 	hops: HopPath<PoolHop>,

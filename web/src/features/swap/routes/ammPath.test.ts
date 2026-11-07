@@ -139,6 +139,12 @@ describe("quoteAmmPath price impact", () => {
 		expect(priceImpact).toBeCloseTo(0, 5);
 	});
 
+	it("keeps an impact just under 0.01% above the display floor", () => {
+		expect(
+			quote(getAmmPath(DOT, USDT, DOT), 100_000_000n).priceImpact,
+		).toBeGreaterThan(-0.0001);
+	});
+
 	it("reads a legacy per-mille pool fee", () => {
 		expect(
 			quote(getAmmPath(DOT, USDT, DOT), RESERVE / 1_000_000n, 3).priceImpact,
