@@ -1,7 +1,7 @@
 import type { TxEvent } from "polkadot-api";
 import { Observable } from "rxjs";
 import type { Address, Client, Hex, PublicClient } from "viem";
-import { createPublicClient, fallback, http } from "viem";
+import { createPublicClient, fallback, http, toHex } from "viem";
 import { type Api, getApi } from "../../papi/getApi";
 import { getChainById } from "../../registry/chains/chains";
 import type { ChainIdAssetHub } from "../../registry/chains/types";
@@ -277,6 +277,7 @@ export const createEthereumTxObservable = ({
 						to: RUNTIME_PALLETS_ADDR as Address,
 						data: callData,
 						value: "0x0",
+						chainId: toHex(chain.evmChainId),
 					},
 				],
 			})) as Hex;
