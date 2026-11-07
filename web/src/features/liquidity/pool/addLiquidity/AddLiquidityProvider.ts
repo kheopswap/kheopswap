@@ -42,6 +42,26 @@ const useAddLiquidityProvider = () => {
 		] as [bigint, bigint];
 	}, [completeLiquidity, lpSlippage]);
 
+	const { data: nativeExistentialDeposit } = useExistentialDeposit({
+		tokenId: nativeToken?.id,
+	});
+
+	const { data: assetExistentialDeposit } = useExistentialDeposit({
+		tokenId: assetToken?.id,
+	});
+
+	const { data: fakeCall } = useAddLiquidityExtrinsic({
+		chainId: assetHub.id,
+		tokenIdNative: nativeToken?.id,
+		tokenIdAsset: assetToken?.id,
+		amountNative: nativeExistentialDeposit ?? undefined,
+		amountAsset: assetExistentialDeposit ?? undefined,
+		amountNativeMin: nativeExistentialDeposit ?? undefined,
+		amountAssetMin: assetExistentialDeposit ?? undefined,
+		dest: resolvedSubstrateAddress,
+		createPool: !pool,
+	});
+
 	const { data: call } = useAddLiquidityExtrinsic({
 		chainId: assetHub.id,
 		tokenIdNative: nativeToken?.id,
@@ -54,20 +74,13 @@ const useAddLiquidityProvider = () => {
 		createPool: !pool,
 	});
 
-	const { data: nativeExistentialDeposit } = useExistentialDeposit({
-		tokenId: nativeToken?.id,
-	});
-
-	const { data: assetExistentialDeposit } = useExistentialDeposit({
-		tokenId: assetToken?.id,
-	});
-
 	const onReset = useCallback(() => {
 		setLiquidityToAdd(null);
 	}, []);
 
 	return {
 		call,
+		fakeCall,
 		liquidityToAdd,
 		setLiquidityToAdd,
 		missingSide,
