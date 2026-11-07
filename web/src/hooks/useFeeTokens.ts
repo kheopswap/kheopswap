@@ -1,16 +1,21 @@
 import { isEqual, values } from "lodash-es";
 import {
+	combineLatest,
 	distinctUntilChanged,
 	filter,
 	map,
-	Observable,
+	type Observable,
 	of,
 	shareReplay,
 	switchMap,
 } from "rxjs";
-import { isChainIdHydration } from "../registry/chains/chains";
+import {
+	isChainIdAssetHub,
+	isChainIdHydration,
+} from "../registry/chains/chains";
 import type { ChainId, ChainIdHydration } from "../registry/chains/types";
 import type { Token } from "../registry/tokens/types";
+import { getPoolsByChain$ } from "../services/pools/service";
 import { getTokenById$, getTokensByChain$ } from "../services/tokens/service";
 import { getHydrationFeeCurrencyTokenId$ } from "../state/hydrationFees";
 import { bindSerialized } from "../utils/bindSerialized";
@@ -68,29 +73,41 @@ const getFeeTokens$ = (
 				),
 		);
 
-	return getCachedObservable$("getFeeToken$", `::${chainId}::${address}`, () =>
-		new Observable<Token[]>((subscriber) => {
-			if (!chainId || !address) {
-				subscriber.next([]);
-				subscriber.complete();
-				return () => {};
-			}
+	return getCachedObservable$(
+		"getFeeToken$",
+		`::${chainId}::${address}`,
+		() => {
+			if (!chainId || !address) return of([]);
 
-			const sub = getTokensByChain$(chainId)
-				.pipe(
-					map((tokensByChainState) => tokensByChainState.tokens ?? {}),
-					distinctUntilChanged<Record<string, Token>>(isEqual),
-					switchMap((tokens) => {
-						return of(values(tokens).filter((token) => token.isSufficient));
-					}),
-					distinctUntilChanged<Token[]>(isEqual),
-					shareReplay({ refCount: true, bufferSize: 1 }),
-				)
-				.subscribe(subscriber);
+			const sufficientTokens$ = getTokensByChain$(chainId).pipe(
+				map((tokensByChainState) =>
+					values(tokensByChainState.tokens ?? {}).filter(
+						(token) => token.isSufficient,
+					),
+				),
+			);
 
-			return () => {
-				sub.unsubscribe();
-			};
-		}).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+			const feeTokens$ = isChainIdAssetHub(chainId)
+				? combineLatest([
+						sufficientTokens$,
+						getPoolsByChain$(chainId).pipe(
+							map(({ status, pools }) => (status === "loaded" ? pools : [])),
+						),
+					]).pipe(
+						map(([tokens, pools]) =>
+							tokens.filter(
+								(token) =>
+									token.type === "native" ||
+									pools.some((pool) => pool.tokenIds.includes(token.id)),
+							),
+						),
+					)
+				: sufficientTokens$;
+
+			return feeTokens$.pipe(
+				distinctUntilChanged<Token[]>(isEqual),
+				shareReplay({ refCount: true, bufferSize: 1 }),
+			);
+		},
 	);
 };

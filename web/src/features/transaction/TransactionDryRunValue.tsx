@@ -12,7 +12,8 @@ import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransaction } from "./TransactionProvider";
 
 export const TransactionDryRunSummaryValue = () => {
-	const { chainId, dryRun, errorDryRun, isLoadingDryRun } = useTransaction();
+	const { chainId, dryRun, errorDryRun, isLoading, isDryRunConclusive } =
+		useTransaction();
 
 	const { data: errorMessage } = useDryRunError({ chainId, dryRun });
 
@@ -24,12 +25,14 @@ export const TransactionDryRunSummaryValue = () => {
 		return formatTxError(dryRun.value.execution_result.value.error);
 	}, [dryRun, errorMessage]);
 
-	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
+	if (isLoading) return <Shimmer className="h-4">Success</Shimmer>;
 
 	if (errorDryRun || (dryRun && !dryRun.success))
 		return <span className="text-muted">Unavailable</span>;
 
 	if (!dryRun) return null;
+
+	const isSuccess = dryRun.value.execution_result.success;
 
 	return (
 		<Tooltip placement="bottom-end">
@@ -37,20 +40,18 @@ export const TransactionDryRunSummaryValue = () => {
 				<div
 					className={cn(
 						"flex gap-1 items-center",
-						!dryRun.value.execution_result.success && "text-warn",
+						!isSuccess && "text-warn",
+						isSuccess && !isDryRunConclusive && "text-muted",
 					)}
 				>
-					{dryRun.value.execution_result.success ? (
-						<>
-							<span>Success</span>
-							<InformationCircleIcon className="size-5 inline align-text-bottom" />
-						</>
-					) : (
-						<>
-							<span>Failed</span>
-							<InformationCircleIcon className="size-5 inline align-text-bottom" />
-						</>
-					)}
+					<span>
+						{!isSuccess
+							? "Failed"
+							: isDryRunConclusive
+								? "Success"
+								: "Succeeds before fees"}
+					</span>
+					<InformationCircleIcon className="size-5 inline align-text-bottom" />
 				</div>
 			</TooltipTrigger>
 			<TooltipContent>
@@ -59,9 +60,9 @@ export const TransactionDryRunSummaryValue = () => {
 						<div className="mb-2 text-error">{formattedError}</div>
 					)}
 					<p>
-						Dry runs aren't always reliable as they are unaware of details that
-						are only provided in signatures, such as which asset to use to pay
-						for fees.
+						{isSuccess && !isDryRunConclusive
+							? "The simulation runs the call without charging its fee, so it cannot tell whether the fee can be paid."
+							: "Dry runs aren't always reliable as they are unaware of details that are only provided in signatures, such as which asset to use to pay for fees."}
 					</p>
 				</div>
 			</TooltipContent>
