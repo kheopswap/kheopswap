@@ -45,15 +45,11 @@ export const TransactionFeeSummaryValue: FC = () => {
 		[account?.address],
 	);
 
-	if (
-		!feeToken ||
-		(!isBigInt(feeEstimate) && !errorFeeEstimate && !isLoadingFeeEstimate)
-	)
-		return null;
+	if (!feeToken) return null;
 
 	return (
 		<>
-			{feeToken && isBigInt(feeEstimate) ? (
+			{isBigInt(feeEstimate) ? (
 				account?.platform === "polkadot" &&
 				feeTokens &&
 				feeTokens.length > 1 ? (
@@ -82,7 +78,9 @@ export const TransactionFeeSummaryValue: FC = () => {
 				<span className="text-warn">Failed to estimate</span>
 			) : isLoadingFeeEstimate ? (
 				<Shimmer>0.0000 AAA</Shimmer>
-			) : null}
+			) : (
+				<span className="opacity-50">N/A</span>
+			)}
 
 			<TokenSelectDrawer
 				isOpen={isOpen}
