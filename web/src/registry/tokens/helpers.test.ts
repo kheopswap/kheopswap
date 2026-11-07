@@ -34,7 +34,17 @@ describe("parseTokenId", () => {
 	});
 
 	it("parses native token id for all supported chains", () => {
-		for (const chainId of ["pah", "kah", "wah", "pasah"]) {
+		for (const chainId of [
+			"pah",
+			"kah",
+			"wah",
+			"pasah",
+			"hydration",
+			"ppeople",
+			"kpeople",
+			"wpeople",
+			"paspeople",
+		]) {
 			const result = parseTokenId(`native::${chainId}` as TokenId);
 			expect(result).toEqual({ type: "native", chainId });
 		}
@@ -42,6 +52,30 @@ describe("parseTokenId", () => {
 
 	it("throws for unsupported chain id", () => {
 		expect(() => parseTokenId("native::unknown" as TokenId)).toThrow(
+			"Failed to parse token id",
+		);
+	});
+
+	it("throws for asset hub token types on a non asset hub chain", () => {
+		for (const tokenId of [
+			"asset::hydration::1",
+			"pool-asset::hydration::1",
+			"foreign-asset::hydration::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABIE0C+TQA==",
+		])
+			expect(() => parseTokenId(tokenId)).toThrow("Failed to parse token id");
+	});
+
+	it("parses hydration-asset token id", () => {
+		const result = parseTokenId("hydration-asset::hydration::10");
+		expect(result).toEqual({
+			type: "hydration-asset",
+			chainId: "hydration",
+			assetId: 10,
+		});
+	});
+
+	it("throws for hydration-asset on an asset hub chain", () => {
+		expect(() => parseTokenId("hydration-asset::pah::10")).toThrow(
 			"Failed to parse token id",
 		);
 	});
@@ -68,6 +102,15 @@ describe("getTokenId", () => {
 	it("creates asset token id", () => {
 		const id = getTokenId({ type: "asset", chainId: "pah", assetId: 1984 });
 		expect(id).toBe("asset::pah::1984");
+	});
+
+	it("creates hydration-asset token id", () => {
+		const id = getTokenId({
+			type: "hydration-asset",
+			chainId: "hydration",
+			assetId: 10,
+		});
+		expect(id).toBe("hydration-asset::hydration::10");
 	});
 
 	it("creates pool-asset token id", () => {

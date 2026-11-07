@@ -1,6 +1,6 @@
 import { isEqual } from "lodash-es";
 import { distinctUntilChanged, map, tap } from "rxjs";
-import type { ChainId } from "../../registry/chains/types";
+import type { ChainIdAssetHub } from "../../registry/chains/types";
 import type { LoadingStatus } from "../common";
 import { poolsByChainState$ } from "./state";
 import {
@@ -17,7 +17,7 @@ type PoolsByChainState = {
 
 const DEFAULT_VALUE: PoolsByChainState = { status: "stale", pools: [] };
 
-export const getPoolsByChain$ = (chainId: ChainId | null) => {
+export const getPoolsByChain$ = (chainId: ChainIdAssetHub | null) => {
 	let subId = "";
 
 	return poolsByChainState$.pipe(
@@ -30,12 +30,13 @@ export const getPoolsByChain$ = (chainId: ChainId | null) => {
 			},
 		}),
 		map(
-			(statusAndTokens) => statusAndTokens[chainId as ChainId] ?? DEFAULT_VALUE,
+			(statusAndTokens) =>
+				statusAndTokens[chainId as ChainIdAssetHub] ?? DEFAULT_VALUE,
 		),
 		distinctUntilChanged<PoolsByChainState>(isEqual),
 	);
 };
 
-export const refreshPools = (chainId: ChainId) => {
+export const refreshPools = (chainId: ChainIdAssetHub) => {
 	setLoadingStatus(chainId, "stale");
 };

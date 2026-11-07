@@ -93,6 +93,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	});
 
 	const { data: call } = useCreatePoolExtrinsic({
+		chainId: assetHub.id,
 		tokenId1: token1?.id,
 		tokenId2: token2?.id,
 		liquidityToAdd,
@@ -108,6 +109,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	);
 
 	const { data: fakeCall } = useCreatePoolExtrinsic({
+		chainId: assetHub.id,
 		tokenId1: token1?.id,
 		tokenId2: token2?.id,
 		liquidityToAdd: fakeLiquidityToAdd,

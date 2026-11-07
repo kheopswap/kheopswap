@@ -6,6 +6,7 @@ import type {
 	AccountBalanceWithStable,
 	BalanceWithStableSummary,
 } from "../types/balances";
+import { isApplicableBalance } from "../utils/isApplicableBalance";
 import { logger } from "../utils/logger";
 import { useBalancesWithStables } from "./useBalancesWithStables";
 
@@ -17,7 +18,10 @@ type UseBalancesByTokenSummaryProps = {
 export const getBalancesByTokenSummary = (
 	balances: AccountBalanceWithStable[],
 ) => {
-	const balancesByTokenId = groupBy(balances, "tokenId");
+	const balancesByTokenId = groupBy(
+		balances.filter(isApplicableBalance),
+		"tokenId",
+	);
 
 	return keys(balancesByTokenId).reduce(
 		(acc, tokenId) => {

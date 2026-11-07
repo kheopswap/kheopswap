@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import {
 	FormSummary,
 	FormSummaryRow,
@@ -8,45 +9,66 @@ import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
 import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
 import { PriceImpact } from "./PriceImpact";
+import { ProtocolFeeValue, RouteValue } from "./routes/AmmPathValues";
+import type { PathLiquidity } from "./routes/ammPath";
+import { XcmSwapSummary } from "./routes/xcmSwap/XcmSwapSummary";
+import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
 import { Slippage } from "./Slippage";
-import { useSwap } from "./SwapProvider";
+import { type AmmSwapDetails, useSwap } from "./SwapProvider";
 
-export const SwapSummary = () => {
+const PoolReservesValue: FC<{ liquidity: PathLiquidity | null }> = ({
+	liquidity,
+}) => {
+	const { tokenIn, tokenOut } = useSwap();
+	if (!tokenIn || !tokenOut) return null;
+
+	switch (liquidity?.status) {
+		case "no-pool":
+			return <div className="text-error">Pool not found</div>;
+		case "no-liquidity":
+			return <div className="text-error">No liquidity</div>;
+		case "available": {
+			const [{ reserveIn, reserveOut }] = liquidity.hops;
+			return (
+				<div className="flex flex-wrap justify-end">
+					<Tokens plancks={reserveIn} token={tokenIn} />
+					<span className="mx-1">/</span>
+					<Tokens plancks={reserveOut} token={tokenOut} />
+				</div>
+			);
+		}
+		default:
+			return null;
+	}
+};
+
+const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
+	const { tokenIn, tokenOut, transaction } = useSwap();
 	const {
+		route,
 		minPlancksOut,
-		tokenIn,
-		tokenOut,
 		priceImpact,
-		reserveIn,
-		reserveOut,
-		isPoolNotFound,
+		liquidity,
+		quote,
 		appCommission,
-		protocolCommission,
 		slippage,
-		call,
-	} = useSwap();
+	} = details;
+	const { call } = transaction;
 
 	return (
 		<FormSummary>
 			<FormSummarySection>
-				<FormSummaryRow
-					label="Pool reserves"
-					value={
-						isPoolNotFound ? (
-							<div className="text-error">Pool not found</div>
-						) : reserveIn && reserveOut && tokenIn && tokenOut ? (
-							<div className="flex flex-wrap justify-end">
-								<Tokens plancks={reserveIn} token={tokenIn} />
-								<span className="mx-1">/</span>
-								<Tokens plancks={reserveOut} token={tokenOut} />
-							</div>
-						) : tokenIn &&
-							tokenOut &&
-							(reserveIn === 0n || reserveOut === 0n) ? (
-							<div className="text-error">No liquidity</div>
-						) : null
-					}
-				/>
+				{route && route.path.length > 1 ? (
+					<FormSummaryRow
+						label="Route"
+						value={<RouteValue path={route.path} />}
+					/>
+				) : (
+					<FormSummaryRow
+						label="Pool reserves"
+						value={<PoolReservesValue liquidity={liquidity} />}
+					/>
+				)}
 				<FormSummaryRow
 					label="Price impact"
 					value={
@@ -93,11 +115,8 @@ export const SwapSummary = () => {
 						<FormSummaryRow
 							label="Protocol fee"
 							value={
-								!!tokenIn &&
 								isBigInt(minPlancksOut) &&
-								isBigInt(protocolCommission) && (
-									<Tokens plancks={protocolCommission} token={tokenIn} />
-								)
+								!!quote && <ProtocolFeeValue quote={quote} />
 							}
 						/>
 					</FormSummarySection>
@@ -105,4 +124,18 @@ export const SwapSummary = () => {
 			)}
 		</FormSummary>
 	);
+};
+
+export const SwapSummary = () => {
+	const { details } = useSwap();
+
+	switch (details.kind) {
+		case "amm-swap":
+			return <AmmSwapSummary details={details} />;
+		case "xcm-transfer":
+			return <XcmTransferSummary details={details} />;
+		case "xcm-swap":
+		case "xcm-destination-swap":
+			return <XcmSwapSummary details={details} />;
+	}
 };

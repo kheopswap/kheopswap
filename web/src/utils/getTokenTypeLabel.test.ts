@@ -19,4 +19,8 @@ describe("getTokenTypeLabel", () => {
 			"Foreign Asset (Asset Hub)",
 		);
 	});
+
+	it("returns label for hydration-asset", () => {
+		expect(getTokenTypeLabel("hydration-asset")).toBe("Hydration Asset");
+	});
 });

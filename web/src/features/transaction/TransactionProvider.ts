@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import type { TokenId } from "../../registry/tokens/types";
 import type { TransactionType } from "../../state/transactions/types";
@@ -13,6 +14,11 @@ export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
 >;
 
+export type SubmitGate =
+	| { status: "open" }
+	| { status: "pending" }
+	| { status: "closed"; reason: string };
+
 type UseTransactionProviderProps = {
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined; // used as backup for calculating fees without all the inputs
@@ -22,11 +28,13 @@ type UseTransactionProviderProps = {
 	followUpData?: object;
 	transactionType?: TransactionType;
 	transactionTitle?: string;
+	submitGate?: SubmitGate;
 	onReset: () => void;
 };
 
 const DEFAULT_CALL_SPENDINGS: CallSpendings = {};
 const DEFAULT_FOLLOW_UP_DATA = {};
+const OPEN_SUBMIT_GATE: SubmitGate = { status: "open" };
 
 const useTransactionProvider = ({
 	call,
@@ -38,6 +46,7 @@ const useTransactionProvider = ({
 	followUpData = DEFAULT_FOLLOW_UP_DATA,
 	transactionType = "unknown",
 	transactionTitle = "Transaction",
+	submitGate = OPEN_SUBMIT_GATE,
 }: UseTransactionProviderProps) => {
 	// 1. Ethereum-specific concerns
 	const ethereum = useTransactionEthereum({ signer, chainId });
@@ -91,7 +100,8 @@ const useTransactionProvider = ({
 			balanceCheck.isLoadingExistentialDeposits ||
 			fees.isLoadingFeeEstimate ||
 			balanceCheck.isLoadingFeeTokenBalance ||
-			fees.isLoadingDryRun
+			fees.isLoadingDryRun ||
+			submitGate.status === "pending"
 		);
 	}, [
 		fees.isResolvingSigner,
@@ -100,10 +110,12 @@ const useTransactionProvider = ({
 		fees.isLoadingFeeEstimate,
 		balanceCheck.isLoadingFeeTokenBalance,
 		fees.isLoadingDryRun,
+		submitGate.status,
 	]);
 
 	// Cross-concern: can submit
 	const canSubmit = useMemo(() => {
+		if (submitGate.status !== "open") return false;
 		if (!ethereum.account || ethereum.account.isPlaceholder) return false;
 
 		if (ethereum.account.platform === "ethereum") {
@@ -117,8 +129,9 @@ const useTransactionProvider = ({
 			);
 		}
 
-		// if available and there is no specific fee asset, dryRun is the truth
-		if (!fees.options?.asset && fees.dryRun?.success)
+		const isDryRunConclusive =
+			isChainIdAssetHub(chainId) && !fees.options?.asset;
+		if (isDryRunConclusive && fees.dryRun?.success)
 			return fees.dryRun.value.execution_result.success;
 
 		// TODO add a flag to allow parent form to force another isLoading state
@@ -143,6 +156,8 @@ const useTransactionProvider = ({
 		ethereum.isSwitchingEthereumNetwork,
 		fees.options,
 		fees.dryRun,
+		submitGate.status,
+		chainId,
 	]);
 
 	return {

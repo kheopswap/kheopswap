@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { Enum, type SS58String } from "polkadot-api";
 import { type Api, getApi } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
@@ -6,8 +6,10 @@ import type { AnyTransaction } from "../types/transactions";
 import { logger } from "../utils/logger";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 
-type UseDryRunProps = {
-	chainId: ChainId | null | undefined;
+const XCM_VERSION = 5;
+
+type UseDryRunProps<Id extends ChainId = ChainId> = {
+	chainId: Id | null | undefined;
 	from: SS58String | null | undefined;
 	call: AnyTransaction | null | undefined;
 };
@@ -16,19 +18,17 @@ export type DryRun<Id extends ChainId> = Awaited<
 	ReturnType<Api<Id>["apis"]["DryRunApi"]["dry_run_call"]>
 >;
 
-export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
+export function useDryRun<Id extends ChainId>(
+	props: UseDryRunProps<Id>,
+): UseQueryResult<DryRun<Id> | null>;
+export function useDryRun({ chainId, from, call }: UseDryRunProps) {
 	return useQuery({
 		queryKey: ["useDryRun", chainId, from, safeQueryKeyPart(call?.decodedCall)],
-		queryFn: async ({ signal }) => {
+		queryFn: async () => {
 			if (!chainId || !from || !call) return null;
 
 			try {
 				const api = await getApi(chainId);
-				const resultXcmsVersion =
-					await api.query.PolkadotXcm.SafeXcmVersion.getValue({
-						at: "best",
-						signal,
-					});
 
 				const origin = Enum("system", Enum("Signed", from));
 
@@ -36,14 +36,13 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 				const dryRun = (await api.apis.DryRunApi.dry_run_call(
 					origin,
 					call.decodedCall,
-					resultXcmsVersion ?? 4,
+					XCM_VERSION,
 					{ at: "best" },
 				)) as DryRun<ChainId>;
 
 				logger.debug("[dry run]", {
 					dryRun,
 					call: call.decodedCall,
-					resultXcmsVersion,
 					chainId: api.chainId,
 				});
 
@@ -57,4 +56,4 @@ export const useDryRun = ({ chainId, from, call }: UseDryRunProps) => {
 		refetchInterval: false,
 		structuralSharing: false,
 	});
-};
+}

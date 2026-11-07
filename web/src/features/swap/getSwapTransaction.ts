@@ -1,50 +1,33 @@
 import type { SS58String } from "polkadot-api";
 import { getApi } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
-import {
-	getChainIdFromTokenId,
-	parseTokenId,
-} from "../../registry/tokens/helpers";
-import type { TokenId } from "../../registry/tokens/types";
+import type { ChainIdAssetHub } from "../../registry/chains/types";
+import { parseTokenId } from "../../registry/tokens/helpers";
 import { getXcmV5MultilocationFromTokenId } from "../../registry/utils/xcmMultiLocation";
 import { getAddressFromAccountField } from "../../utils/getAddressFromAccountField";
+import { type AmmPath, getPathTokenIds } from "./routes/ammPath";
 
 export const getSwapExtrinsic = async (
-	tokenIdIn: TokenId,
-	tokenIdOut: TokenId,
+	chainId: ChainIdAssetHub,
+	path: AmmPath,
 	amountIn: bigint,
 	amountOutMin: bigint,
 	dest: SS58String,
 ) => {
-	const chainId = getChainIdFromTokenId(tokenIdIn);
-	if (!chainId) return null;
-
-	const chain = getChainById(chainId);
-	if (!chain) return null;
-
 	const address = getAddressFromAccountField(dest);
 	if (!address) throw new Error("Invalid dest");
 
-	const tokenIn = parseTokenId(tokenIdIn);
-	if (tokenIn.chainId !== chain.id)
-		throw new Error(`Token ${tokenIdIn} is not supported on chain ${chain.id}`);
+	const tokenIds = getPathTokenIds(path);
+	for (const tokenId of tokenIds)
+		if (parseTokenId(tokenId).chainId !== chainId)
+			throw new Error(`Token ${tokenId} is not supported on chain ${chainId}`);
 
-	const tokenOut = parseTokenId(tokenIdOut);
-	if (tokenOut.chainId !== chain.id)
-		throw new Error(
-			`Token ${tokenIdOut} is not supported on chain ${chain.id}`,
-		);
-
-	const api = await getApi(chain.id);
+	const api = await getApi(chainId);
 
 	return api.tx.AssetConversion.swap_exact_tokens_for_tokens({
-		path: [
-			getXcmV5MultilocationFromTokenId(tokenIdIn),
-			getXcmV5MultilocationFromTokenId(tokenIdOut),
-		],
+		path: tokenIds.map(getXcmV5MultilocationFromTokenId),
 		amount_in: amountIn,
 		amount_out_min: amountOutMin,
 		send_to: address,
-		keep_alive: tokenIn.type === "native",
+		keep_alive: parseTokenId(path[0].tokenIdIn).type === "native",
 	});
 };

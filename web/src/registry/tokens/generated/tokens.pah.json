@@ -293,7 +293,7 @@
 		"symbol": "USDC",
 		"decimals": 6,
 		"name": "USD Coin",
-		"verified": false,
+		"verified": true,
 		"isSufficient": true
 	},
 	{
@@ -3857,7 +3857,8 @@
 		"symbol": "MPC",
 		"decimals": 12,
 		"name": "My Pacman Coin",
-		"verified": false,
+		"logo": "/img/tokens/coingecko/my-paqman-coin.webp",
+		"verified": true,
 		"isSufficient": false
 	},
 	{
@@ -7480,7 +7481,7 @@
 				]
 			}
 		},
-		"verified": false,
+		"verified": true,
 		"isSufficient": false
 	},
 	{
@@ -7514,7 +7515,7 @@
 				]
 			}
 		},
-		"verified": false,
+		"verified": true,
 		"isSufficient": false
 	},
 	{
@@ -7845,7 +7846,7 @@
 				]
 			}
 		},
-		"verified": false,
+		"verified": true,
 		"isSufficient": false
 	},
 	{
@@ -8110,7 +8111,7 @@
 				]
 			}
 		},
-		"verified": false,
+		"verified": true,
 		"isSufficient": false
 	},
 	{
@@ -8177,7 +8178,7 @@
 				]
 			}
 		},
-		"verified": false,
+		"verified": true,
 		"isSufficient": false
 	},
 	{
@@ -8244,7 +8245,7 @@
 				]
 			}
 		},
-		"verified": false,
+		"verified": true,
 		"isSufficient": false
 	},
 	{

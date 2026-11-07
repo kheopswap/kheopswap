@@ -21,8 +21,11 @@ Update this file and `README.md` when your change makes them wrong.
 
 - Get an API with `getApi(chainId)` from `web/src/papi/getApi.ts`. It picks light client or RPC and caches the connection.
 - Read and write through the typed surface: `api.query`, `api.tx`, `api.event`, `api.constants`. Keep `api.client` and `getUnsafeApi()` out of app code. When no typed API covers the need, say so in the PR before adding a lower-level workaround.
-- When a runtime call's signature differs between chains, write one explicit case per chain with `switch (api.chainId)`.
-- Every supported chain is an Asset Hub: `pah`, `kah`, `wah`, `pasah`.
+- Call a runtime API once on `await getApi(chainId)` when that call typechecks for every chain in the union. When its arguments differ between chains, so the union call does not typecheck, switch on the chain id literal and call `getApi` inside each case, as in `case "hydration": { const api = await getApi("hydration"); ... }`. `switch (api.chainId)` does not narrow `Api<ChainId>`.
+- Chain ids come in three kinds: the Asset Hubs `pah`, `kah`, `wah`, `pasah` (`ChainIdAssetHub`), Hydration `hydration` (`ChainIdHydration`) and the People chains `ppeople`, `kpeople`, `wpeople`, `paspeople` (`ChainIdPeople`). `ChainId` is their union. People chains carry only their native token, priced as the Asset Hub native token it mirrors.
+- Code that uses Asset Hub pallets (Assets, PoolAssets, ForeignAssets, AssetConversion, Revive) takes `ChainIdAssetHub` or `ChainAssetHub`. Narrow the parameter so `getApi` returns the Asset Hub API, and guard with `isChainIdAssetHub` / `isChainAssetHub` where a value can be any chain.
+- Hydration has no `ChargeAssetTxPayment`. It charges the transaction fee in the account's currency, `MultiTransactionPayment.AccountCurrencyMap` or HDX, so on Hydration the fee token list holds that one token and `useConvertedFee` prices the fee with `XcmPaymentApi.query_weight_to_asset_fee`. `dry_run_call` never charges the fee, so `TransactionProvider` trusts a successful dry run only on Asset Hub and checks balances on Hydration and the People chains, which charge the fee in their native token.
+- An Ethereum address maps to different accounts on Asset Hub and on the other chains. `getResolvedSubstrateAddress$` resolves it to no address outside Asset Hub, so its balances on Hydration and the People chains load as `undefined`, and `isApplicableBalance` hides them.
 
 ## Runtime upgrades
 
@@ -45,7 +48,7 @@ Feature state lives in a provider hook exposed through `provideContext`: `export
 
 ## Tokens
 
-Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build and parse them with `getTokenId` and `parseTokenId`. Types are `native`, `asset`, `pool-asset` and `foreign-asset`.
+Token ids encode type, chain and on-chain id, as in `asset::pah::1984`. Build and parse them with `getTokenId` and `parseTokenId`. Types are `native`, `asset`, `pool-asset`, `foreign-asset` and `hydration-asset`. Only `native` exists on every chain. `asset`, `pool-asset` and `foreign-asset` are Asset Hub only, so their `chainId` is a `ChainIdAssetHub`. `hydration-asset` is Hydration only, so its `chainId` is a `ChainIdHydration`. `parseTokenId` rejects each type on chains of the other kind.
 
 The `tokens.<network>.json` snapshots are generated. Before touching token data, read the token registry section of `README.md`.
 

@@ -7,6 +7,9 @@
 		},
 		"web": {
 			"entry": [
+				"scripts/capture-hub-transfer-fixtures.ts",
+				"scripts/capture-hydration-swap-fixtures.ts",
+				"scripts/capture-people-teleport-fixtures.ts",
 				"scripts/fetch-tokens.ts",
 				"scripts/generate-brand-assets.ts",
 				"src/**/*.test.{ts,tsx}"

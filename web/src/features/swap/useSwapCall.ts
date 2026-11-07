@@ -1,11 +1,11 @@
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
-import type { Token, TokenId } from "../../registry/tokens/types";
+import type { Token } from "../../registry/tokens/types";
+import type { AmmPath } from "./routes/ammPath";
 import { useSwapExtrinsic } from "./useSwapExtrinsic";
 
 type UseSwapCallProps = {
-	tokenIdIn: TokenId | undefined;
-	tokenIdOut: TokenId | undefined;
+	path: AmmPath | undefined;
 	swapPlancksIn: bigint | null | undefined;
 	minPlancksOut: bigint | null | undefined;
 	dest: SS58String | null | undefined;
@@ -18,8 +18,7 @@ type UseSwapCallProps = {
 };
 
 export const useSwapCall = ({
-	tokenIdIn,
-	tokenIdOut,
+	path,
 	swapPlancksIn,
 	minPlancksOut,
 	dest,
@@ -31,8 +30,7 @@ export const useSwapCall = ({
 	swapPlancksOut,
 }: UseSwapCallProps) => {
 	const { data: call } = useSwapExtrinsic({
-		tokenIdIn,
-		tokenIdOut,
+		path,
 		amountIn: swapPlancksIn,
 		amountOutMin: minPlancksOut,
 		dest,
@@ -41,8 +39,7 @@ export const useSwapCall = ({
 
 	// Fake call for fee estimation when the real call isn't ready yet
 	const { data: fakeCall } = useSwapExtrinsic({
-		tokenIdIn,
-		tokenIdOut,
+		path,
 		amountIn: tokenIn && edTokenIn,
 		amountOutMin: 0n,
 		dest,

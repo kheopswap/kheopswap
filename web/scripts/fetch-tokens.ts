@@ -1,6 +1,7 @@
 /**
- * Standalone Node.js script to fetch all tokens from Asset Hub chains via RPC
- * and write one JSON file per chain to src/registry/tokens/generated/.
+ * Standalone Node.js script to fetch all tokens from Asset Hub and Hydration
+ * chains via RPC and write one JSON file per chain to
+ * src/registry/tokens/generated/.
  *
  * Each output file is a flat token array with deterministic `id` fields,
  * sorted lexicographically by `id`.
@@ -20,7 +21,7 @@
  *   node --run fetch-tokens -- --timeout 60000
  *
  * Or directly from the web/ folder:
- *   node --experimental-transform-types scripts/fetch-tokens.ts
+ *   node scripts/fetch-tokens.ts
  */
 
 import { createHash } from "node:crypto";
@@ -40,12 +41,27 @@ import { getWsProvider } from "polkadot-api/ws";
 import { firstValueFrom } from "rxjs";
 import sharp from "sharp";
 import YAML from "yaml";
-import { DESCRIPTORS_ASSET_HUB } from "../src/registry/chains/descriptors.ts";
+import {
+	DESCRIPTORS_ASSET_HUB,
+	DESCRIPTORS_HYDRATION,
+	type DescriptorsAssetHub,
+	type DescriptorsHydration,
+} from "../src/registry/chains/descriptors.ts";
+import type {
+	ChainIdAssetHub,
+	ChainIdHydration,
+} from "../src/registry/chains/types.ts";
 import { buildToken } from "../src/registry/tokens/buildToken.ts";
 import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
+import {
+	type CoingeckoCoin,
+	getCoingeckoAssetIds,
+	getCoingeckoAssetPlatform,
+} from "../src/registry/tokens/mappers/getCoingeckoAssetIds.ts";
 import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
 import { mapAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapAssetTokensFromEntries.ts";
 import { mapForeignAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapForeignAssetTokensFromEntries.ts";
+import { mapHydrationAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapHydrationAssetTokensFromEntries.ts";
 import { mapPoolAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapPoolAssetTokensFromEntries.ts";
 import type {
 	ForeignAssetEntry,
@@ -58,21 +74,35 @@ import { sleep } from "../src/utils/sleep.ts";
 // Chain & descriptor config
 // ---------------------------------------------------------------------------
 
-/** Matches the app's ChainId — derived from the shared descriptors object. */
-type ChainId = keyof typeof DESCRIPTORS_ASSET_HUB;
-
 type RegistryChain = {
 	id: string;
 	name: string;
 	wsUrl: string[];
 };
 
-type ChainConfig = {
-	id: ChainId;
+type AssetHubChainConfig = {
+	kind: "asset-hub";
+	id: ChainIdAssetHub;
 	name: string;
 	wsUrl: string[];
-	descriptors: (typeof DESCRIPTORS_ASSET_HUB)[ChainId];
+	descriptors: DescriptorsAssetHub[ChainIdAssetHub];
 };
+
+type HydrationChainConfig = {
+	kind: "hydration";
+	id: ChainIdHydration;
+	name: string;
+	wsUrl: string[];
+	descriptors: DescriptorsHydration[ChainIdHydration];
+};
+
+type ChainConfig = AssetHubChainConfig | HydrationChainConfig;
+
+const isAssetHubChainId = (id: string): id is ChainIdAssetHub =>
+	id in DESCRIPTORS_ASSET_HUB;
+
+const isHydrationChainId = (id: string): id is ChainIdHydration =>
+	id in DESCRIPTORS_HYDRATION;
 
 const CHAINS = (
 	JSON.parse(
@@ -81,17 +111,29 @@ const CHAINS = (
 			"utf-8",
 		),
 	) as RegistryChain[]
-)
-	.filter(
-		(chain): chain is RegistryChain & { id: ChainId } =>
-			chain.id in DESCRIPTORS_ASSET_HUB,
-	)
-	.map((chain) => ({
-		id: chain.id,
-		name: chain.name,
-		wsUrl: chain.wsUrl,
-		descriptors: DESCRIPTORS_ASSET_HUB[chain.id],
-	}));
+).flatMap(({ id, name, wsUrl }): ChainConfig[] => {
+	if (isAssetHubChainId(id))
+		return [
+			{
+				kind: "asset-hub",
+				id,
+				name,
+				wsUrl,
+				descriptors: DESCRIPTORS_ASSET_HUB[id],
+			},
+		];
+	if (isHydrationChainId(id))
+		return [
+			{
+				kind: "hydration",
+				id,
+				name,
+				wsUrl,
+				descriptors: DESCRIPTORS_HYDRATION[id],
+			},
+		];
+	return [];
+});
 
 /** Output directory – tokens land next to the registry source files. */
 const OUTPUT_DIR = resolve(
@@ -398,6 +440,8 @@ function getTokenId(token: TokenNoId): string {
 			return `pool-asset::${token.chainId}::${token.poolAssetId}`;
 		case "foreign-asset":
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(safeStringify(token.location))}`;
+		case "hydration-asset":
+			return `hydration-asset::${token.chainId}::${token.assetId}`;
 		default:
 			throw new Error(`Unsupported token type: ${String(token.type)}`);
 	}
@@ -540,12 +584,14 @@ async function migrateCachedImagesToLocal(
 	}
 }
 
-function cleanupUnusedCoinGeckoLogos(cache: Erc20Cache): void {
+function cleanupUnusedCoinGeckoLogos(
+	cache: Erc20Cache,
+	otherLogos: string[],
+): void {
 	if (!existsSync(COINGECKO_LOGO_DIR_ABS)) return;
 
 	const usedFiles = new Set(
-		Object.values(cache)
-			.map((entry) => entry.image)
+		[...Object.values(cache).map((entry) => entry.image), ...otherLogos]
 			.filter((image): image is string =>
 				Boolean(image?.startsWith(`${COINGECKO_LOGO_DIR_REL}/`)),
 			)
@@ -728,6 +774,7 @@ async function fetchCoinGeckoTokenData(
 				continue;
 			}
 
+			if (res.status === 404) return {};
 			if (!res.ok) {
 				pushNonFatalWarning(
 					`[coingecko] ${tokenId} (${contractAddress}): HTTP ${res.status}`,
@@ -752,6 +799,130 @@ async function fetchCoinGeckoTokenData(
 		}
 	}
 	return undefined;
+}
+
+async function fetchCoinGeckoJson<T>(
+	path: string,
+	apiKey: string | undefined,
+): Promise<T | undefined> {
+	if (coingeckoCalls >= COINGECKO_BUDGET_PER_RUN) {
+		pushNonFatalWarning(`[coingecko] ${path}: budget exhausted`);
+		return undefined;
+	}
+	if (coingeckoCalls > 0)
+		await sleep(
+			apiKey ? COINGECKO_DELAY_WITH_KEY_MS : COINGECKO_DELAY_NO_KEY_MS,
+		);
+	coingeckoCalls++;
+
+	const headers: Record<string, string> = { Accept: "application/json" };
+	if (apiKey) headers["x-cg-demo-api-key"] = apiKey;
+
+	try {
+		const res = await fetch(`https://api.coingecko.com/api/v3${path}`, {
+			headers,
+		});
+		if (!res.ok) {
+			pushNonFatalWarning(`[coingecko] ${path}: HTTP ${res.status}`);
+			return undefined;
+		}
+		return (await res.json()) as T;
+	} catch (err) {
+		pushNonFatalWarning(
+			`[coingecko] ${path}: ${err instanceof Error ? err.message : String(err)}`,
+		);
+		return undefined;
+	}
+}
+
+type SnapshotListing = { logo?: string; verified?: boolean };
+
+function readSnapshotListings(chainId: string): Map<string, SnapshotListing> {
+	const filePath = resolve(OUTPUT_DIR, `tokens.${chainId}.json`);
+	if (!existsSync(filePath)) return new Map();
+	const tokens = JSON.parse(readFileSync(filePath, "utf-8")) as ({
+		id: string;
+	} & SnapshotListing)[];
+	return new Map(
+		tokens.map(({ id, logo, verified }) => [id, { logo, verified }]),
+	);
+}
+
+function readSnapshotLogos(chainIds: string[]): string[] {
+	return chainIds.flatMap((chainId) =>
+		[...readSnapshotListings(chainId).values()].flatMap(
+			({ logo }) => logo ?? [],
+		),
+	);
+}
+
+function keepSnapshotListings(tokens: TokenNoId[]): void {
+	const snapshots = new Map<string, Map<string, SnapshotListing>>();
+	for (const token of tokens) {
+		if (!snapshots.has(token.chainId))
+			snapshots.set(token.chainId, readSnapshotListings(token.chainId));
+		const previous = snapshots.get(token.chainId)?.get(getTokenId(token));
+		if (previous?.logo && !token.logo) token.logo = previous.logo;
+		if (previous?.verified) token.verified = true;
+	}
+}
+
+async function applyCoinGeckoListings(
+	tokens: TokenNoId[],
+	apiKey: string | undefined,
+	overrideLogoIds: Set<string>,
+): Promise<string[]> {
+	const listable = tokens.filter((token) => getCoingeckoAssetPlatform(token));
+	if (listable.length === 0) return [];
+
+	const coins = await fetchCoinGeckoJson<CoingeckoCoin[]>(
+		"/coins/list?include_platform=true",
+		apiKey,
+	);
+
+	if (!coins) {
+		keepSnapshotListings(listable);
+		return listable.flatMap((token) => token.logo ?? []);
+	}
+
+	const assetIdsByPlatform = {
+		hydration: getCoingeckoAssetIds(coins, "hydration"),
+		polkadot: getCoingeckoAssetIds(coins, "polkadot"),
+	};
+	const listings = listable.flatMap((token) => {
+		const platform = getCoingeckoAssetPlatform(token);
+		const coingeckoId =
+			platform && assetIdsByPlatform[platform].get(token.assetId);
+		return coingeckoId ? [{ token, coingeckoId }] : [];
+	});
+	for (const { token } of listings) token.verified = true;
+
+	const logoListings = listings.filter(
+		({ token }) => !overrideLogoIds.has(getTokenId(token)),
+	);
+	const missingLogoIds = [
+		...new Set(logoListings.map(({ coingeckoId }) => coingeckoId)),
+	].filter((coingeckoId) => !existsSync(getCoinGeckoLogoFilePath(coingeckoId)));
+
+	if (missingLogoIds.length > 0) {
+		const markets = await fetchCoinGeckoJson<{ id: string; image?: string }[]>(
+			`/coins/markets?vs_currency=usd&per_page=250&ids=${missingLogoIds.join(",")}`,
+			apiKey,
+		);
+		for (const { id, image } of markets ?? [])
+			if (image) await downloadCoinGeckoLogoAsWebp(id, image);
+	}
+
+	const logos: string[] = [];
+	for (const { token, coingeckoId } of logoListings) {
+		if (!existsSync(getCoinGeckoLogoFilePath(coingeckoId))) continue;
+		token.logo = getCoinGeckoLogoRelativePath(coingeckoId);
+		logos.push(token.logo);
+	}
+	console.log(
+		`  [coingecko] ${listings.length} listed token(s) verified, ${logos.length} with a CoinGecko logo`,
+	);
+	return logos;
 }
 
 // ---------------------------------------------------------------------------
@@ -842,21 +1013,23 @@ async function refreshErc20Cache(
 				: undefined;
 
 		const existing = cache[addr];
+		const listing = coingeckoData
+			? { coingeckoId: coingeckoData.id, image }
+			: { coingeckoId: existing?.coingeckoId, image: existing?.image };
 		const dataChanged =
 			!existing ||
 			existing.tokenName !== metadata.tokenName ||
 			existing.symbol !== metadata.symbol ||
 			existing.decimals !== metadata.decimals ||
-			existing.coingeckoId !== coingeckoData?.id ||
-			existing.image !== image;
+			existing.coingeckoId !== listing.coingeckoId ||
+			existing.image !== listing.image;
 
 		cache[addr] = {
 			fetchedAt: dataChanged ? new Date().toISOString() : existing.fetchedAt,
 			tokenName: metadata.tokenName,
 			symbol: metadata.symbol,
 			decimals: metadata.decimals,
-			coingeckoId: coingeckoData?.id,
-			image,
+			...listing,
 		};
 		fetched++;
 
@@ -864,7 +1037,7 @@ async function refreshErc20Cache(
 			console.log(
 				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (manual logo override, skipped CoinGecko)`,
 			);
-		} else if (image) {
+		} else if (listing.image) {
 			console.log(
 				`  [erc20] ${tokenId} (${addr}) → ${metadata.symbol} (with logo)`,
 			);
@@ -903,6 +1076,7 @@ function enrichFromErc20Cache(tokens: TokenNoId[], cache: Erc20Cache): void {
 		if (!token.name && cached.tokenName) token.name = cached.tokenName;
 		if (!token.decimals && cached.decimals) token.decimals = cached.decimals;
 		if (!token.logo && cached.image) token.logo = cached.image;
+		if (cached.coingeckoId) token.verified = true;
 	}
 }
 
@@ -911,8 +1085,8 @@ function enrichFromErc20Cache(tokens: TokenNoId[], cache: Erc20Cache): void {
 // ---------------------------------------------------------------------------
 
 async function fetchAssetTokens(
-	chain: ChainConfig,
-	api: TypedApi<ChainConfig["descriptors"]>,
+	chain: AssetHubChainConfig,
+	api: TypedApi<AssetHubChainConfig["descriptors"]>,
 	signal: AbortSignal,
 ): Promise<TokenNoId[]> {
 	console.log(`  [${chain.id}] Fetching asset metadata + asset info...`);
@@ -933,8 +1107,8 @@ async function fetchAssetTokens(
 }
 
 async function fetchPoolAssetTokens(
-	chain: ChainConfig,
-	api: TypedApi<ChainConfig["descriptors"]>,
+	chain: AssetHubChainConfig,
+	api: TypedApi<AssetHubChainConfig["descriptors"]>,
 	signal: AbortSignal,
 ): Promise<TokenNoId[]> {
 	console.log(`  [${chain.id}] Fetching pool assets...`);
@@ -948,8 +1122,8 @@ async function fetchPoolAssetTokens(
 }
 
 async function fetchForeignAssetTokens(
-	chain: ChainConfig,
-	api: TypedApi<ChainConfig["descriptors"]>,
+	chain: AssetHubChainConfig,
+	api: TypedApi<AssetHubChainConfig["descriptors"]>,
 	signal: AbortSignal,
 ): Promise<TokenNoId[]> {
 	console.log(`  [${chain.id}] Fetching foreign assets...`);
@@ -988,9 +1162,67 @@ async function fetchForeignAssetTokens(
 	});
 }
 
+async function fetchHydrationAssetTokens(
+	chain: HydrationChainConfig,
+	api: TypedApi<HydrationChainConfig["descriptors"]>,
+	signal: AbortSignal,
+): Promise<TokenNoId[]> {
+	console.log(`  [${chain.id}] Fetching asset registry + asset locations...`);
+
+	const [assets, locations] = await Promise.all([
+		api.query.AssetRegistry.Assets.getEntries({ at: "best", signal }),
+		api.query.AssetRegistry.AssetLocations.getEntries({ at: "best", signal }),
+	]);
+	const tokens = mapHydrationAssetTokensFromEntries(
+		chain.id,
+		assets,
+		locations,
+	);
+	console.log(
+		`  [${chain.id}] Found ${assets.length} registry assets and ${locations.length} locations, kept ${tokens.length} tokens`,
+	);
+
+	return tokens;
+}
+
 // ---------------------------------------------------------------------------
 // Per-chain orchestration
 // ---------------------------------------------------------------------------
+
+type TokenFetcher = [label: string, fetch: () => Promise<TokenNoId[]>];
+
+function getTokenFetchers(
+	client: PolkadotClient,
+	chain: ChainConfig,
+	signal: AbortSignal,
+): TokenFetcher[] {
+	switch (chain.kind) {
+		case "asset-hub": {
+			const api = client.getTypedApi(chain.descriptors);
+			return [
+				["assets", () => fetchAssetTokens(chain, api, signal)],
+				["pool assets", () => fetchPoolAssetTokens(chain, api, signal)],
+				["foreign assets", () => fetchForeignAssetTokens(chain, api, signal)],
+			];
+		}
+		case "hydration": {
+			const api = client.getTypedApi(chain.descriptors);
+			return [
+				[
+					"hydration assets",
+					() => fetchHydrationAssetTokens(chain, api, signal),
+				],
+			];
+		}
+	}
+}
+
+function formatTokenCountsByType(tokens: TokenNoId[]): string {
+	const counts = new Map<string, number>();
+	for (const token of tokens)
+		counts.set(token.type, (counts.get(token.type) ?? 0) + 1);
+	return [...counts].map(([type, count]) => `${count} ${type}`).join(" + ");
+}
 
 async function fetchTokensForChain(
 	chain: ChainConfig,
@@ -1005,7 +1237,6 @@ async function fetchTokensForChain(
 
 	try {
 		client = createClient(getWsProvider(chain.wsUrl));
-		const api = client.getTypedApi(chain.descriptors);
 
 		// Wait for the chain to be reachable
 		console.log(`  [${chain.id}] Waiting for first block...`);
@@ -1029,13 +1260,9 @@ async function fetchTokensForChain(
 		const tokens: TokenNoId[] = [];
 
 		// Fetch each type independently so a failure in one doesn't lose the others
-		for (const [label, fetcher] of [
-			["assets", () => fetchAssetTokens(chain, api, signal)],
-			["pool assets", () => fetchPoolAssetTokens(chain, api, signal)],
-			["foreign assets", () => fetchForeignAssetTokens(chain, api, signal)],
-		] as const) {
+		for (const [label, fetcher] of getTokenFetchers(client, chain, signal)) {
 			try {
-				const result = await (fetcher as () => Promise<TokenNoId[]>)();
+				const result = await fetcher();
 				tokens.push(...result);
 			} catch (err) {
 				const message = err instanceof Error ? err.message : String(err);
@@ -1046,13 +1273,8 @@ async function fetchTokensForChain(
 			}
 		}
 
-		const assetCount = tokens.filter((t) => t.type === "asset").length;
-		const poolCount = tokens.filter((t) => t.type === "pool-asset").length;
-		const foreignCount = tokens.filter(
-			(t) => t.type === "foreign-asset",
-		).length;
 		console.log(
-			`  [${chain.id}] Total: ${tokens.length} tokens (${assetCount} assets + ${poolCount} pool assets + ${foreignCount} foreign assets)`,
+			`  [${chain.id}] Total: ${tokens.length} tokens (${formatTokenCountsByType(tokens)})`,
 		);
 		return tokens;
 	} catch (err) {
@@ -1089,7 +1311,7 @@ function parseArgs() {
 
 Options:
   --chains <chain1,chain2> Comma-separated chain IDs to fetch (default: all)
-                           Available: pah, kah, wah, pasah
+                           Available: ${CHAINS.map((c) => c.id).join(", ")}
   --timeout <ms>           Per-chain timeout in ms (default: 120000)
   --help                   Show this help
 
@@ -1172,7 +1394,17 @@ async function main() {
 		overrideLogoIds,
 	);
 	await migrateCachedImagesToLocal(erc20Cache, allTokens, coingeckoApiKey);
-	cleanupUnusedCoinGeckoLogos(erc20Cache);
+	const listedLogos = await applyCoinGeckoListings(
+		allTokens,
+		coingeckoApiKey,
+		overrideLogoIds,
+	);
+	cleanupUnusedCoinGeckoLogos(erc20Cache, [
+		...listedLogos,
+		...readSnapshotLogos(
+			CHAINS.map(({ id }) => id).filter((id) => !tokensByChain.has(id)),
+		),
+	]);
 	saveErc20Cache(erc20Cache);
 
 	// Apply cached data (even without fresh fetches, the cache may have data from prior runs)

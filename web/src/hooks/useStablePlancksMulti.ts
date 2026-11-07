@@ -1,9 +1,9 @@
-import { map, type Observable, switchMap } from "rxjs";
+import { combineLatest, map, type Observable, switchMap } from "rxjs";
 import type { TokenId } from "../registry/tokens/types";
 import { getAssetConvertMulti$ } from "../state/convert";
+import { getAssetHubMirrorTokenId$ } from "../state/prices";
 import { stableToken$ } from "../state/relay";
 import { bindSerialized } from "../utils/bindSerialized";
-import { getAssetHubMirrorTokenId } from "../utils/getAssetHubMirrorTokenId";
 
 type UseStablePlancksProps = {
 	inputs: { tokenId: TokenId; plancks: bigint | undefined }[];
@@ -18,12 +18,18 @@ const getStablePlancksMulti$ = (
 	inputs: { tokenId: TokenId; plancks: bigint | undefined }[],
 ): Observable<UseStablePlancksResult> => {
 	return stableToken$.pipe(
-		map((stableToken) =>
-			inputs.map(({ tokenId, plancks }) => ({
-				tokenIdIn: getAssetHubMirrorTokenId(tokenId),
-				plancksIn: plancks ?? 0n,
-				tokenIdOut: stableToken.id,
-			})),
+		switchMap((stableToken) =>
+			combineLatest(
+				inputs.map(({ tokenId, plancks }) =>
+					getAssetHubMirrorTokenId$(tokenId).pipe(
+						map((tokenIdIn) => ({
+							tokenIdIn,
+							plancksIn: plancks ?? 0n,
+							tokenIdOut: stableToken.id,
+						})),
+					),
+				),
+			),
 		),
 		switchMap(getAssetConvertMulti$), // includes throttling
 		map((outputs) => ({

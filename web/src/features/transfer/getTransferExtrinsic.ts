@@ -1,29 +1,21 @@
 import { MultiAddress } from "@polkadot-api/descriptors";
 import type { SS58String } from "polkadot-api";
 import { getApi } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
-import {
-	getChainIdFromTokenId,
-	parseTokenId,
-} from "../../registry/tokens/helpers";
+import type { ChainIdAssetHub } from "../../registry/chains/types";
+import { parseTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
 
 export const getTransferExtrinsic = async (
+	chainId: ChainIdAssetHub,
 	tokenId: TokenId,
 	plancks: bigint,
 	dest: SS58String,
 ) => {
-	const chainId = getChainIdFromTokenId(tokenId);
-	if (!chainId) return null;
-
-	const chain = getChainById(chainId);
-	if (!chain) return null;
-
-	const api = await getApi(chain.id);
+	const api = await getApi(chainId);
 
 	const token = parseTokenId(tokenId);
-	if (chain.id !== token.chainId)
-		throw new Error(`Token ${tokenId} is not supported on chain ${chain.name}`);
+	if (chainId !== token.chainId)
+		throw new Error(`Token ${tokenId} is not supported on chain ${chainId}`);
 
 	switch (token.type) {
 		case "asset": {

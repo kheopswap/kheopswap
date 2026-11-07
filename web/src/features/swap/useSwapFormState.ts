@@ -4,13 +4,22 @@ import { useNativeToken } from "../../hooks/useNativeToken";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
 import { useResolvedSubstrateAddress } from "../../hooks/useResolvedSubstrateAddress";
 import { useWalletAccount } from "../../hooks/useWalletAccount";
+import type { ChainId } from "../../registry/chains/types";
 import { getTokenId, parseTokenId } from "../../registry/tokens/helpers";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
+import {
+	canFlipSwapTokens,
+	getNextSwapTokens,
+	resolveSwapRoute,
+	type SwapRouteContext,
+	type SwapTokensChange,
+} from "./routes/swapRoute";
+import { useXcmRouteMirrors } from "./routes/xcmRouteMirrors";
 import type { SwapFormInputs } from "./schema";
 
 export const useSwapFormState = () => {
-	const { assetHub } = useRelayChains();
+	const { assetHub, allChains } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
 
 	const baseDefaults = useMemo<SwapFormInputs>(
@@ -43,6 +52,31 @@ export const useSwapFormState = () => {
 			chainId: assetHub.id,
 		});
 
+	const { mirrors, hydrationFeeAssetIds } = useXcmRouteMirrors();
+	const routeContext = useMemo<SwapRouteContext>(
+		() => ({
+			assetHubId: assetHub.id,
+			mirrors,
+			hydrationFeeAssetIds,
+			nativeTokenId: getTokenId({ type: "native", chainId: assetHub.id }),
+		}),
+		[assetHub.id, mirrors, hydrationFeeAssetIds],
+	);
+
+	const route = useMemo(
+		() => resolveSwapRoute({ ...routeContext, tokenIdIn, tokenIdOut }),
+		[routeContext, tokenIdIn, tokenIdOut],
+	);
+
+	const canFlip = useMemo(
+		() =>
+			canFlipSwapTokens(
+				{ tokenIdIn: formData.tokenIdIn, tokenIdOut: formData.tokenIdOut },
+				routeContext,
+			),
+		[formData.tokenIdIn, formData.tokenIdOut, routeContext],
+	);
+
 	// Reset tokens when chain changes
 	useEffect(() => {
 		if (!assetHub) return;
@@ -54,10 +88,10 @@ export const useSwapFormState = () => {
 			? parseTokenId(formData.tokenIdOut as TokenId)
 			: null;
 
-		const isInvalidTokenIn =
-			tokenIn?.chainId && tokenIn.chainId !== assetHub.id;
-		const isInvalidTokenOut =
-			tokenOut?.chainId && tokenOut.chainId !== assetHub.id;
+		const isOnOtherRelay = (chainId: ChainId | undefined) =>
+			chainId && !allChains.some((chain) => chain.id === chainId);
+		const isInvalidTokenIn = isOnOtherRelay(tokenIn?.chainId);
+		const isInvalidTokenOut = isOnOtherRelay(tokenOut?.chainId);
 
 		if (isInvalidTokenIn || isInvalidTokenOut) {
 			const nativeTokenId = getTokenId({
@@ -70,7 +104,7 @@ export const useSwapFormState = () => {
 				tokenIdOut: "" as TokenId,
 			}));
 		}
-	}, [assetHub, formData, setFormData]);
+	}, [assetHub, allChains, formData, setFormData]);
 
 	const onFromChange = useCallback(
 		(accountId: string) => {
@@ -87,69 +121,30 @@ export const useSwapFormState = () => {
 		[setFormData],
 	);
 
-	const onTokenInChange = useCallback(
-		(tokenId: TokenId) => {
-			const nativeTokenId = getTokenId({
-				type: "native",
-				chainId: assetHub.id,
-			});
-
-			if (tokenId !== nativeTokenId)
-				setFormData((prev) => ({
-					...prev,
-					tokenIdIn: tokenId,
-					tokenIdOut: nativeTokenId,
-				}));
-			else if (tokenIdOut === nativeTokenId)
-				setFormData((prev) => ({
-					...prev,
-					tokenIdIn: tokenId,
-					tokenIdOut: prev.tokenIdIn,
-				}));
-			else
-				setFormData((prev) => ({
-					...prev,
-					tokenIdIn: tokenId,
-				}));
+	const changeTokens = useCallback(
+		(change: SwapTokensChange) => {
+			setFormData((prev) => ({
+				...prev,
+				...getNextSwapTokens(prev, change, routeContext),
+			}));
 		},
-		[assetHub.id, tokenIdOut, setFormData],
+		[routeContext, setFormData],
+	);
+
+	const onTokenInChange = useCallback(
+		(tokenId: TokenId) => changeTokens({ type: "in", tokenId }),
+		[changeTokens],
 	);
 
 	const onTokenOutChange = useCallback(
-		(tokenId: TokenId) => {
-			const nativeTokenId = getTokenId({
-				type: "native",
-				chainId: assetHub.id,
-			});
-
-			if (tokenId !== nativeTokenId)
-				setFormData((prev) => ({
-					...prev,
-					tokenIdIn: nativeTokenId,
-					tokenIdOut: tokenId,
-				}));
-			else if (tokenIdIn === nativeTokenId)
-				setFormData((prev) => ({
-					...prev,
-					tokenIdIn: prev.tokenIdOut,
-					tokenIdOut: tokenId,
-				}));
-			else
-				setFormData((prev) => ({
-					...prev,
-					tokenIdOut: tokenId,
-				}));
-		},
-		[assetHub.id, tokenIdIn, setFormData],
+		(tokenId: TokenId) => changeTokens({ type: "out", tokenId }),
+		[changeTokens],
 	);
 
-	const onSwapTokens = useCallback(() => {
-		setFormData((prev) => ({
-			...prev,
-			tokenIdIn: prev.tokenIdOut,
-			tokenIdOut: prev.tokenIdIn,
-		}));
-	}, [setFormData]);
+	const onSwapTokens = useCallback(
+		() => changeTokens({ type: "flip" }),
+		[changeTokens],
+	);
 
 	const onReset = useCallback(() => {
 		setFormData((prev) => ({ ...prev, amountIn: "" }));
@@ -161,6 +156,9 @@ export const useSwapFormState = () => {
 		from,
 		tokenIdIn,
 		tokenIdOut,
+		route,
+		routeContext,
+		canFlip,
 		account,
 		resolvedSubstrateAddress,
 		onFromChange,

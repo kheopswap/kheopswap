@@ -12,6 +12,7 @@ import {
 	timer,
 } from "rxjs";
 import { getApi } from "../../papi/getApi";
+import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import {
 	getEthereumAddressSizedHex,
@@ -39,6 +40,9 @@ export const getResolvedSubstrateAddress$ = ({
 			status: "loaded" as const,
 		});
 	}
+
+	if (!isChainIdAssetHub(chainId))
+		return of({ address: undefined, status: "loaded" as const });
 
 	return getCachedObservable$(
 		"getResolvedSubstrateAddress$",

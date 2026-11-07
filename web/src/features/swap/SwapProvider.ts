@@ -1,26 +1,60 @@
 import { useMemo } from "react";
+import { useAllTokens } from "../../hooks/useAllTokens";
+import { useBalance } from "../../hooks/useBalance";
+import { useToken } from "../../hooks/useToken";
 import { provideContext } from "../../utils/provideContext";
+import type { AmmPathQuote, PathLiquidity } from "./routes/ammPath";
+import {
+	type AmmSwapRoute,
+	getSwapTokenLists,
+	type TransactionPlan,
+} from "./routes/swapRoute";
+import { useXcmRoute, type XcmRouteDetails } from "./routes/xcm/useXcmRoute";
 import { useSwapCall } from "./useSwapCall";
 import { useSwapFees } from "./useSwapFees";
 import { useSwapFormState } from "./useSwapFormState";
 import { useSwapPricing } from "./useSwapPricing";
 
-const useSwapProvider = () => {
-	// 1. Form state & persistence
-	const formState = useSwapFormState();
+export type AmmSwapDetails = {
+	kind: "amm-swap";
+	route: AmmSwapRoute | null;
+	liquidity: PathLiquidity | null;
+	quote: AmmPathQuote | undefined;
+	priceImpact: number | undefined;
+	minPlancksOut: bigint | null;
+	slippage: number;
+	appCommission: bigint | null | undefined;
+};
 
-	// 2. Pricing, AMM math & validation
+const getSwapTitle = (
+	tokenInSymbol: string | undefined,
+	tokenOutSymbol: string | undefined,
+): string => {
+	if (tokenInSymbol && tokenOutSymbol) {
+		return `Swap ${tokenInSymbol}/${tokenOutSymbol}`;
+	}
+	return "Swap";
+};
+
+const OPEN_SUBMIT_GATE = { status: "open" } as const;
+
+const useSwapProvider = () => {
+	const formState = useSwapFormState();
+	const { route } = formState;
+	const ammRoute = route?.kind === "amm-swap" ? route : null;
+	const xcmRoute = route && route.kind !== "amm-swap" ? route : null;
+	const isTokenIdOutAmm =
+		!!ammRoute || !formState.tokenIdIn || !formState.tokenIdOut;
+
 	const pricing = useSwapPricing({
 		tokenIdIn: formState.tokenIdIn,
-		tokenIdOut: formState.tokenIdOut,
+		route: ammRoute,
 		amountIn: formState.formData.amountIn,
 		accountAddress: formState.account?.address,
 	});
 
-	// 3. Transaction payload assembly
 	const callData = useSwapCall({
-		tokenIdIn: formState.tokenIdIn,
-		tokenIdOut: formState.tokenIdOut,
+		path: ammRoute?.path,
 		swapPlancksIn: pricing.swapPlancksIn,
 		minPlancksOut: pricing.minPlancksOut,
 		dest: formState.resolvedSubstrateAddress,
@@ -32,91 +66,142 @@ const useSwapProvider = () => {
 		swapPlancksOut: pricing.swapPlancksOut,
 	});
 
-	// 4. Fee estimation & max click
-	const fees = useSwapFees({
+	const { data: tokenOut } = useToken({ tokenId: formState.tokenIdOut });
+	const { data: balanceOut, isLoading: isLoadingBalanceOut } = useBalance({
+		address: formState.account?.address,
+		tokenId: formState.tokenIdOut,
+	});
+
+	const xcm = useXcmRoute({
+		route: xcmRoute,
+		account: formState.account,
+		tokenIn: pricing.tokenIn,
+		tokenOut,
+		totalIn: pricing.totalIn,
+		swapPlancksIn: pricing.swapPlancksIn,
+		appCommission: pricing.appCommission,
+		slippage: pricing.slippage,
+		edTokenIn: pricing.edTokenIn,
+	});
+
+	const ammTransaction = useMemo<TransactionPlan>(
+		() => ({
+			chainId: pricing.tokenIn?.chainId,
+			call:
+				pricing.outputErrorMessage || pricing.isCheckingRecipient
+					? undefined
+					: callData.call,
+			fakeCall: callData.fakeCall,
+			callSpendings:
+				pricing.tokenIn && pricing.totalIn
+					? {
+							[pricing.tokenIn.id]: {
+								plancks: pricing.totalIn,
+								allowDeath: true,
+							},
+						}
+					: {},
+			followUpData: callData.followUpData,
+			transactionType: "swap",
+			title: getSwapTitle(pricing.tokenIn?.symbol, pricing.tokenOut?.symbol),
+			submitGate: OPEN_SUBMIT_GATE,
+		}),
+		[
+			pricing.tokenIn,
+			pricing.tokenOut?.symbol,
+			pricing.totalIn,
+			pricing.outputErrorMessage,
+			pricing.isCheckingRecipient,
+			callData.call,
+			callData.fakeCall,
+			callData.followUpData,
+		],
+	);
+
+	const transaction = xcmRoute ? xcm.plan : ammTransaction;
+
+	const { onMaxClick } = useSwapFees({
 		from: formState.from,
 		accountAddress: formState.account?.address,
-		tokenIdIn: formState.tokenIdIn,
 		tokenIn: pricing.tokenIn,
 		balanceIn: pricing.balanceIn,
 		edTokenIn: pricing.edTokenIn,
-		call: callData.call,
-		fakeCall: callData.fakeCall,
+		call: xcmRoute ? xcm.plan.call : callData.call,
+		fakeCall: transaction.fakeCall,
+		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
 		setFormData: formState.setFormData,
 	});
 
-	// Cross-concern: validity depends on form + pricing
-	const isValidInput = useMemo(() => {
-		return (
-			formState.account &&
-			pricing.tokenIn &&
-			pricing.tokenOut &&
-			!!pricing.totalIn
-		);
-	}, [formState.account, pricing.tokenIn, pricing.tokenOut, pricing.totalIn]);
+	const { data: allTokens, isLoading: isLoadingAllTokens } = useAllTokens({});
+	const { tokensIn, tokensOut } = useMemo(
+		() =>
+			getSwapTokenLists({
+				ammTokens: pricing.tokens,
+				allTokens,
+				context: formState.routeContext,
+			}),
+		[pricing.tokens, allTokens, formState.routeContext],
+	);
 
-	const isValid = useMemo(() => {
-		return (
-			isValidInput &&
-			!pricing.hasInsufficientBalance &&
-			!pricing.hasInsufficientLiquidity &&
-			!!pricing.swapPlancksOut
-		);
-	}, [
-		isValidInput,
-		pricing.hasInsufficientBalance,
-		pricing.hasInsufficientLiquidity,
-		pricing.swapPlancksOut,
-	]);
+	const details = useMemo<AmmSwapDetails | XcmRouteDetails>(
+		() =>
+			xcm.details ?? {
+				kind: "amm-swap",
+				route: ammRoute,
+				liquidity: pricing.pathQuote.liquidity,
+				quote: pricing.pathQuote.quote,
+				priceImpact: pricing.priceImpact,
+				minPlancksOut: pricing.minPlancksOut,
+				slippage: pricing.slippage,
+				appCommission: pricing.appCommission,
+			},
+		[
+			xcm.details,
+			ammRoute,
+			pricing.pathQuote.liquidity,
+			pricing.pathQuote.quote,
+			pricing.priceImpact,
+			pricing.minPlancksOut,
+			pricing.slippage,
+			pricing.appCommission,
+		],
+	);
+
+	const outputErrorMessage = isTokenIdOutAmm
+		? pricing.outputErrorMessage
+		: xcmRoute
+			? xcm.outputErrorMessage
+			: "Route not available";
 
 	return {
 		formData: formState.formData,
 		from: formState.from,
-		sender: formState.account?.address,
-		recipient: formState.account?.address, // TODO
-		amountOut: pricing.amountOut,
-		isLoadingLpFee: pricing.isLoadingLpFee,
-		isLoadingReserves: pricing.isLoadingReserves,
-		isLoading: pricing.isLoading,
-		swapPlancksOut: pricing.swapPlancksOut,
-		totalIn: pricing.totalIn,
-		minPlancksOut: pricing.minPlancksOut,
-		tokens: pricing.tokens,
-		isLoadingTokens: pricing.isLoadingTokens,
-		isLoadingBalanceIn: pricing.isLoadingBalanceIn,
-		isLoadingBalanceOut: pricing.isLoadingBalanceOut,
-		isLoadingAmountOut: pricing.isLoadingAmountOut,
+		route,
+		canFlip: formState.canFlip,
+		tokensIn,
+		tokensOut,
+		isLoadingTokens: pricing.isLoadingTokens || isLoadingAllTokens,
 		tokenIn: pricing.tokenIn,
-		tokenOut: pricing.tokenOut,
-		slippage: pricing.slippage,
+		tokenOut,
+		totalIn: pricing.totalIn,
 		balanceIn: pricing.balanceIn,
-		balanceOut: pricing.balanceOut,
-		isValid,
-		isValidAmountIn: pricing.isValidAmountIn,
-		hasInsufficientBalance: pricing.hasInsufficientBalance,
-		hasInsufficientLiquidity: pricing.hasInsufficientLiquidity,
-		call:
-			pricing.outputErrorMessage || pricing.isCheckingRecipient
-				? undefined
-				: callData.call,
-		fakeCall: callData.fakeCall,
-		isLoadingFeeToken: fees.isLoadingFeeToken,
-		isLoadingFeeEstimate: fees.isLoadingFeeEstimate,
-		isPoolNotFound: pricing.isPoolNotFound,
-		priceImpact: pricing.priceImpact,
-		reserveIn: pricing.reserveIn,
-		reserveOut: pricing.reserveOut,
-		appCommission: pricing.appCommission,
-		protocolCommission: pricing.protocolCommission,
-		outputErrorMessage: pricing.outputErrorMessage,
-		followUpData: callData.followUpData,
+		balanceOut,
+		isLoadingBalanceIn: pricing.isLoadingBalanceIn,
+		isLoadingBalanceOut,
+		swapPlancksOut: xcmRoute ? xcm.swapPlancksOut : pricing.swapPlancksOut,
+		amountOut: xcmRoute ? xcm.amountOut : pricing.amountOut,
+		isLoadingAmountOut: xcmRoute
+			? xcm.isLoadingAmountOut
+			: pricing.isLoadingAmountOut,
+		outputErrorMessage,
+		details,
+		transaction,
 
-		setSlippage: pricing.setSlippage,
 		onFromChange: formState.onFromChange,
 		onTokenInChange: formState.onTokenInChange,
 		onTokenOutChange: formState.onTokenOutChange,
 		onSwapTokens: formState.onSwapTokens,
-		onMaxClick: fees.onMaxClick,
+		onMaxClick,
 		onAmountInChange: formState.onAmountInChange,
 		onReset: formState.onReset,
 	};

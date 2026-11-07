@@ -1,0 +1,142 @@
+import { describe, expect, it } from "vitest";
+import {
+	type AmmPath,
+	getAmmPath,
+	getPathLiquidity,
+	getPathTokenIds,
+	mapHopPath,
+	quoteAmmPath,
+} from "./ammPath";
+import type { OriginDryRun } from "./xcm/xcmQuote";
+import { dotToUsdt, usdcToUsdt } from "./xcmSwap/xcmSwap.fixtures";
+
+const DOT = "native::pah";
+const USDT = "asset::pah::1984";
+const USDC = "asset::pah::1337";
+
+const getSwapAmountsOut = (origin: OriginDryRun) =>
+	origin.success
+		? origin.value.emitted_events.flatMap((event) =>
+				event.type === "AssetConversion" &&
+				event.value.type === "SwapCreditExecuted"
+					? [event.value.value.amount_out]
+					: [],
+			)
+		: [];
+
+describe("getAmmPath", () => {
+	it.each([
+		["from native", DOT, USDT],
+		["to native", USDT, DOT],
+	])("swaps %s in one hop", (_, tokenIdIn, tokenIdOut) => {
+		expect(getAmmPath(tokenIdIn, tokenIdOut, DOT)).toEqual([
+			{ tokenIdIn, tokenIdOut },
+		]);
+	});
+
+	it("swaps two assets through native", () => {
+		expect(getAmmPath(USDC, USDT, DOT)).toEqual([
+			{ tokenIdIn: USDC, tokenIdOut: DOT },
+			{ tokenIdIn: DOT, tokenIdOut: USDT },
+		]);
+	});
+});
+
+describe("getPathTokenIds", () => {
+	it.each([
+		["one hop", getAmmPath(DOT, USDT, DOT), [DOT, USDT]],
+		["two hops through native", getAmmPath(USDC, USDT, DOT), [USDC, DOT, USDT]],
+	])("lists every token of %s in order", (_, path, tokenIds) => {
+		expect(getPathTokenIds(path)).toEqual(tokenIds);
+	});
+});
+
+describe("quoteAmmPath", () => {
+	it.each([
+		["USDC to USDT through DOT", usdcToUsdt, getAmmPath(USDC, USDT, DOT)],
+		["DOT to USDT", dotToUsdt, getAmmPath(DOT, USDT, DOT)],
+	] as const)(
+		"matches what Asset Hub swapped and the probe's minimums for %s",
+		(_, fixture, path: AmmPath) => {
+			const quote = quoteAmmPath({
+				hops: mapHopPath(path, (hop, index) => {
+					const reserves = fixture.reserves[index];
+					if (!reserves) throw new Error("fixture lacks reserves for a hop");
+					return { ...hop, reserveIn: reserves[0], reserveOut: reserves[1] };
+				}),
+				lpFee: fixture.lpFee,
+				plancksIn: fixture.swapAmount,
+				slippage: Number(fixture.slippageBps) / 10_000,
+			});
+
+			expect(quote.hops.map(({ amountOut }) => amountOut)).toEqual(
+				getSwapAmountsOut(fixture.origin),
+			);
+			expect(quote.hops.map(({ minOut }) => minOut)).toEqual(fixture.mins);
+			expect(quote.hops[0].amountIn).toBe(fixture.swapAmount);
+			expect(quote.amountOut).toBe(quote.hops.at(-1)?.amountOut);
+			expect(quote.minOut).toBe(fixture.mins.at(-1));
+		},
+	);
+});
+
+describe("getPathLiquidity", () => {
+	const loaded = (data: readonly [bigint, bigint] | null) => ({
+		data,
+		isLoading: false,
+	});
+	const NO_SECOND_HOP = loaded(null);
+
+	it("ignores the absent second pool of a one-hop path", () => {
+		expect(
+			getPathLiquidity(
+				getAmmPath(DOT, USDT, DOT),
+				loaded([5n, 7n]),
+				NO_SECOND_HOP,
+			),
+		).toEqual({
+			status: "available",
+			hops: [
+				{ tokenIdIn: DOT, tokenIdOut: USDT, reserveIn: 5n, reserveOut: 7n },
+			],
+		});
+	});
+
+	it("orients each pool along its hop", () => {
+		expect(
+			getPathLiquidity(
+				getAmmPath(USDC, USDT, DOT),
+				loaded([1n, 2n]),
+				loaded([3n, 4n]),
+			),
+		).toMatchObject({
+			status: "available",
+			hops: [
+				{ tokenIdIn: USDC, reserveIn: 1n, reserveOut: 2n },
+				{ tokenIdOut: USDT, reserveIn: 3n, reserveOut: 4n },
+			],
+		});
+	});
+
+	it.each([
+		["a missing second pool", loaded(null), "no-pool"],
+		["an empty second pool", loaded([0n, 0n]), "no-liquidity"],
+	] as const)("refuses a two-hop path with %s", (_, secondReserves, status) => {
+		expect(
+			getPathLiquidity(
+				getAmmPath(USDC, USDT, DOT),
+				loaded([1n, 2n]),
+				secondReserves,
+			),
+		).toEqual({ status });
+	});
+
+	it("waits for every pool of the path", () => {
+		expect(
+			getPathLiquidity(getAmmPath(USDC, USDT, DOT), loaded([1n, 2n]), {
+				data: undefined,
+				isLoading: true,
+			}),
+		).toEqual({ status: "loading" });
+	});
+});

@@ -34,7 +34,8 @@ export const SwapTokensEditor = () => {
 		tokenOut,
 		swapPlancksOut,
 		amountOut,
-		tokens,
+		tokensIn,
+		tokensOut,
 		isLoadingTokens,
 		outputErrorMessage,
 
@@ -49,6 +50,7 @@ export const SwapTokensEditor = () => {
 		onTokenOutChange,
 		onSwapTokens,
 		onMaxClick,
+		canFlip,
 	} = useSwap();
 
 	const { insufficientBalances } = useTransaction();
@@ -84,7 +86,7 @@ export const SwapTokensEditor = () => {
 				}}
 				tokenId={tokenIn?.id}
 				plancks={totalIn}
-				tokens={tokens}
+				tokens={tokensIn}
 				accounts={tokenPickerAccounts}
 				isLoading={isLoadingTokens}
 				onTokenChange={onTokenInChange}
@@ -94,12 +96,12 @@ export const SwapTokensEditor = () => {
 				onMaxClick={onMaxClick}
 				inputLabel="Amount to swap"
 			/>
-			<SwapTokensButton onClick={onSwapTokens} />
+			{canFlip && <SwapTokensButton onClick={onSwapTokens} />}
 			<TokenAmountPicker
 				inputProps={{ value: amountOut, readOnly: true }}
 				tokenId={tokenOut?.id}
 				plancks={swapPlancksOut}
-				tokens={tokens}
+				tokens={tokensOut}
 				accounts={tokenPickerAccounts}
 				isLoading={isLoadingTokens}
 				onTokenChange={onTokenOutChange}

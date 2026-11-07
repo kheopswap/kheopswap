@@ -1,21 +1,44 @@
 import { values } from "lodash-es";
 import {
 	combineLatest,
+	distinctUntilChanged,
 	map,
+	type Observable,
 	of,
 	shareReplay,
 	switchMap,
 	throttleTime,
 } from "rxjs";
 import { parseUnits } from "viem";
-import { getTokenId } from "../registry/tokens/helpers";
+import { isChainIdAssetHub } from "../registry/chains/chains";
+import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId, TokenType } from "../registry/tokens/types";
-import { getAssetHubMirrorTokenId } from "../utils/getAssetHubMirrorTokenId";
+import { getAssetHubMirrorTokenIds } from "../utils/getAssetHubMirrorTokenId";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 import { isBigInt } from "../utils/isBigInt";
 import { getAssetConvert$ } from "./convert";
-import { assetHub$, stableToken$ } from "./relay";
+import { assetHub$, relayChains$, stableToken$ } from "./relay";
 import { getAllTokens$ } from "./tokens";
+
+export const assetHubMirrorTokenIds$ = combineLatest([
+	relayChains$,
+	getAllTokens$(),
+]).pipe(
+	map(([{ assetHub, allChains }, { data: tokens }]) =>
+		getAssetHubMirrorTokenIds(tokens, assetHub, allChains),
+	),
+	shareReplay({ bufferSize: 1, refCount: true }),
+);
+
+export const getAssetHubMirrorTokenId$ = (
+	tokenId: TokenId,
+): Observable<TokenId> =>
+	isChainIdAssetHub(getChainIdFromTokenId(tokenId))
+		? of(tokenId)
+		: assetHubMirrorTokenIds$.pipe(
+				map((mirrorTokenIds) => mirrorTokenIds.get(tokenId) ?? tokenId),
+				distinctUntilChanged(),
+			);
 
 export const getStablePlancks$ = (
 	tokenId: TokenId,
@@ -24,9 +47,9 @@ export const getStablePlancks$ = (
 	if (plancks === 0n)
 		return of({ stablePlancks: 0n, isLoadingStablePlancks: false });
 
-	return stableToken$.pipe(
-		map((stableToken) => ({
-			tokenIdIn: getAssetHubMirrorTokenId(tokenId),
+	return combineLatest([stableToken$, getAssetHubMirrorTokenId$(tokenId)]).pipe(
+		map(([stableToken, tokenIdIn]) => ({
+			tokenIdIn,
 			plancksIn: plancks ?? 0n,
 			tokenIdOut: stableToken.id,
 		})),
@@ -44,21 +67,25 @@ const getTokenPrice$ = (token: Token) => {
 		"getTokenPrice$",
 		[token.id, token.decimals].join(","),
 		() => {
-			return combineLatest([assetHub$, stableToken$]).pipe(
-				switchMap(([assetHub, stableToken]) => {
+			return combineLatest([
+				assetHub$,
+				stableToken$,
+				getAssetHubMirrorTokenId$(token.id),
+			]).pipe(
+				switchMap(([assetHub, stableToken, mirrorTokenId]) => {
 					const nativeTokenId = getTokenId({
 						type: "native",
 						chainId: assetHub.id,
 					});
 
 					const nativePrice$ = getAssetConvert$({
-						tokenIdIn: token.id,
+						tokenIdIn: mirrorTokenId,
 						plancksIn: parseUnits("1", token.decimals),
 						tokenIdOut: nativeTokenId,
 					});
 
 					const stablePrice$ = getAssetConvert$({
-						tokenIdIn: getAssetHubMirrorTokenId(token.id),
+						tokenIdIn: mirrorTokenId,
 						plancksIn: parseUnits("1", token.decimals),
 						tokenIdOut: stableToken.id,
 					});

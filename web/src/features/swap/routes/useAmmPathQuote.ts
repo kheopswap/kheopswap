@@ -1,0 +1,97 @@
+import { useMemo } from "react";
+import { useAssetConvertPlancks } from "../../../hooks/useAssetConvertPlancks";
+import { usePoolReservesByTokenIds } from "../../../hooks/usePoolReservesByTokenIds";
+import { useRelayChains } from "../../../state/relay";
+import { getPriceImpact } from "../../../utils/ammMath";
+import { useAssetConvertionLPFee } from "../useAssetConvertionLPFee";
+import {
+	type AmmPath,
+	type AmmPathQuote,
+	afterFirstPoolSwap,
+	getLastHop,
+	getPathLiquidity,
+	type PathLiquidity,
+	type PoolSwap,
+	quoteAmmPath,
+} from "./ammPath";
+
+const LIQUIDITY_ERRORS: Partial<Record<PathLiquidity["status"], string>> = {
+	"no-pool": "Liquidity pool not found",
+	"no-liquidity": "Insufficient liquidity",
+};
+
+export type AmmPathQuoteState = {
+	liquidity: PathLiquidity | null;
+	quote: AmmPathQuote | undefined;
+	priceImpact: number | undefined;
+	isLoading: boolean;
+	errorMessage: string | null;
+};
+
+export const useAmmPathQuote = ({
+	path,
+	plancksIn,
+	totalIn,
+	slippage,
+	firstPoolSwap = null,
+}: {
+	path: AmmPath | null;
+	plancksIn: bigint | null | undefined;
+	totalIn: bigint | null | undefined;
+	slippage: number;
+	firstPoolSwap?: PoolSwap | null;
+}): AmmPathQuoteState => {
+	const { assetHub } = useRelayChains();
+	const firstReserves = usePoolReservesByTokenIds({
+		tokenId1: path?.[0].tokenIdIn,
+		tokenId2: path?.[0].tokenIdOut,
+	});
+	const secondReserves = usePoolReservesByTokenIds({
+		tokenId1: path?.[1]?.tokenIdIn,
+		tokenId2: path?.[1]?.tokenIdOut,
+	});
+	const { data: lpFee, isLoading: isLoadingLpFee } = useAssetConvertionLPFee({
+		chain: assetHub,
+	});
+	const { plancksOut: spotPlancksOut } = useAssetConvertPlancks({
+		tokenIdIn: path?.[0].tokenIdIn,
+		tokenIdOut: path && getLastHop(path).tokenIdOut,
+		plancks: totalIn,
+	});
+
+	const liquidity = useMemo(
+		() => path && getPathLiquidity(path, firstReserves, secondReserves),
+		[path, firstReserves, secondReserves],
+	);
+
+	const quote = useMemo(
+		() =>
+			liquidity?.status === "available" && lpFee !== undefined && plancksIn
+				? quoteAmmPath({
+						hops: firstPoolSwap
+							? afterFirstPoolSwap(liquidity.hops, firstPoolSwap)
+							: liquidity.hops,
+						lpFee,
+						plancksIn,
+						slippage,
+					})
+				: undefined,
+		[liquidity, lpFee, plancksIn, slippage, firstPoolSwap],
+	);
+
+	const priceImpact = useMemo(
+		() =>
+			spotPlancksOut && quote
+				? getPriceImpact(spotPlancksOut, quote.amountOut)
+				: undefined,
+		[spotPlancksOut, quote],
+	);
+
+	return {
+		liquidity,
+		quote,
+		priceImpact,
+		isLoading: liquidity?.status === "loading" || isLoadingLpFee,
+		errorMessage: (liquidity && LIQUIDITY_ERRORS[liquidity.status]) ?? null,
+	};
+};

@@ -3,6 +3,7 @@ import type {
 	Token,
 	TokenAssetNoId,
 	TokenForeignAssetNoId,
+	TokenHydrationAssetNoId,
 	TokenNativeNoId,
 	TokenPoolAssetNoId,
 } from "./types.ts";
@@ -11,7 +12,8 @@ type BuildTokenInput =
 	| TokenNativeNoId
 	| TokenAssetNoId
 	| TokenPoolAssetNoId
-	| TokenForeignAssetNoId;
+	| TokenForeignAssetNoId
+	| TokenHydrationAssetNoId;
 
 /** JSON.stringify with bigint support (matches safeStringify semantics). */
 const stringify = (value: unknown): string =>
@@ -27,6 +29,8 @@ function computeId(token: BuildTokenInput): string {
 			return `pool-asset::${token.chainId}::${token.poolAssetId}`;
 		case "foreign-asset":
 			return `foreign-asset::${token.chainId}::${lzs.compressToBase64(stringify(token.location))}`;
+		case "hydration-asset":
+			return `hydration-asset::${token.chainId}::${token.assetId}`;
 	}
 }
 
@@ -97,6 +101,21 @@ export function buildToken(token: BuildTokenInput): Token {
 				name: token.name,
 				...(token.logo ? { logo: token.logo } : {}),
 				location: token.location,
+				verified: token.verified,
+				isSufficient: token.isSufficient,
+			};
+
+		case "hydration-asset":
+			return {
+				id,
+				type: token.type,
+				chainId: token.chainId,
+				assetId: token.assetId,
+				symbol: token.symbol,
+				decimals: token.decimals,
+				name: token.name,
+				...(token.logo ? { logo: token.logo } : {}),
+				...(token.location ? { location: token.location } : {}),
 				verified: token.verified,
 				isSufficient: token.isSufficient,
 			};

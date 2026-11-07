@@ -5,14 +5,24 @@ import {
 	TOKENS_CACHE_DURATION,
 } from "../../common/constants";
 import { getApi } from "../../papi/getApi";
-import { getChainById } from "../../registry/chains/chains";
-import type { Chain, ChainId } from "../../registry/chains/types";
+import {
+	getChainById,
+	isChainAssetHub,
+	isChainIdHydration,
+} from "../../registry/chains/chains";
+import type {
+	Chain,
+	ChainAssetHub,
+	ChainId,
+	ChainIdHydration,
+} from "../../registry/chains/types";
 import { TOKENS_BLACKLIST } from "../../registry/tokens/blacklist";
 import { buildToken } from "../../registry/tokens/buildToken";
 import {
 	createSufficientMap,
 	mapAssetTokensFromEntries,
 	mapForeignAssetTokensFromEntries,
+	mapHydrationAssetTokensFromEntries,
 	mapPoolAssetTokensFromEntries,
 } from "../../registry/tokens/mappers";
 import {
@@ -33,7 +43,10 @@ const { getLoadingStatus$, loadingStatusByChain$, setLoadingStatus } =
 
 const WATCHERS = new Map<ChainId, () => void>();
 
-const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
+const fetchForeignAssetTokens = async (
+	chain: ChainAssetHub,
+	signal: AbortSignal,
+) => {
 	const api = await getApi(chain.id);
 	if (signal.aborted) return;
 
@@ -64,7 +77,6 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 		.map((tokenNoId) => {
 			const token = buildToken({
 				...tokenNoId,
-				chainId: chain.id,
 				logo: "./img/tokens/asset.svg",
 			});
 			return Object.assign(
@@ -112,7 +124,10 @@ const fetchForeignAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	updateTokensStore(chain.id, "foreign-asset", foreignAssetTokens);
 };
 
-const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
+const fetchPoolAssetTokens = async (
+	chain: ChainAssetHub,
+	signal: AbortSignal,
+) => {
 	const api = await getApi(chain.id);
 	if (signal.aborted) return;
 
@@ -132,7 +147,6 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 		(tokenNoId) => {
 			const token = buildToken({
 				...tokenNoId,
-				chainId: chain.id,
 				verified: undefined,
 			});
 			return Object.assign(token, TOKENS_OVERRIDES_MAP[token.id]) as Token;
@@ -146,7 +160,7 @@ const fetchPoolAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	);
 };
 
-const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
+const fetchAssetTokens = async (chain: ChainAssetHub, signal: AbortSignal) => {
 	const api = await getApi(chain.id);
 	if (signal.aborted) return;
 
@@ -169,7 +183,6 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	).map((tokenNoId) => {
 		const token = buildToken({
 			...tokenNoId,
-			chainId: chain.id,
 			logo: "./img/tokens/asset.svg",
 			verified: false,
 			isSufficient: false, // all sufficient assets need to be defined in KNOWN_TOKENS_MAP, otherwise we'd need to do an additional huge query on startup
@@ -188,6 +201,57 @@ const fetchAssetTokens = async (chain: Chain, signal: AbortSignal) => {
 	);
 };
 
+const fetchHydrationAssetTokens = async (
+	chainId: ChainIdHydration,
+	signal: AbortSignal,
+) => {
+	const api = await getApi(chainId);
+	if (signal.aborted) return;
+
+	await api.waitReady;
+	if (signal.aborted) return;
+
+	const stop = logger.timer(`fetch hydration assets - ${chainId}`);
+	const [assets, locations] = await Promise.all([
+		api.query.AssetRegistry.Assets.getEntries({ at: "best", signal }),
+		api.query.AssetRegistry.AssetLocations.getEntries({ at: "best", signal }),
+	]);
+	stop();
+
+	const hydrationAssetTokens = mapHydrationAssetTokensFromEntries(
+		chainId,
+		assets,
+		locations,
+	).map((tokenNoId) => {
+		const token = buildToken({
+			...tokenNoId,
+			logo: "./img/tokens/asset.svg",
+		});
+		return Object.assign(
+			token,
+			KNOWN_TOKENS_MAP[token.id],
+			TOKENS_OVERRIDES_MAP[token.id],
+		);
+	});
+
+	updateTokensStore(
+		chainId,
+		"hydration-asset",
+		hydrationAssetTokens.filter((t) => !TOKENS_BLACKLIST.has(t.id)),
+	);
+};
+
+const fetchTokensByChain = async (chain: Chain, signal: AbortSignal) => {
+	if (isChainAssetHub(chain))
+		await Promise.all([
+			fetchAssetTokens(chain, signal),
+			fetchPoolAssetTokens(chain, signal),
+			fetchForeignAssetTokens(chain, signal),
+		]);
+	else if (isChainIdHydration(chain.id))
+		await fetchHydrationAssetTokens(chain.id, signal);
+};
+
 const watchTokensByChain = (chainId: ChainId) => {
 	const watchController = new AbortController();
 	let retryTimeout = 3_000;
@@ -202,15 +266,8 @@ const watchTokensByChain = (chainId: ChainId) => {
 		try {
 			setLoadingStatus(chainId, "loading");
 
-			const chain = getChainById(chainId);
-			if (!chain) throw new Error(`Could not find chain ${chainId}`);
-
 			await Promise.race([
-				Promise.all([
-					fetchAssetTokens(chain, refreshController.signal),
-					fetchPoolAssetTokens(chain, refreshController.signal),
-					fetchForeignAssetTokens(chain, refreshController.signal),
-				]),
+				fetchTokensByChain(getChainById(chainId), refreshController.signal),
 				throwAfter(STORAGE_QUERY_TIMEOUT, "Failed to fetch tokens (timeout)"),
 			]);
 
