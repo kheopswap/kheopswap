@@ -25,6 +25,7 @@ export const useLiquidityEditorInputs = () => {
 	const {
 		liquidityToAdd,
 		setLiquidityToAdd,
+		missingSide,
 		nativeExistentialDeposit,
 		assetExistentialDeposit,
 	} = useAddLiquidity();
@@ -179,13 +180,58 @@ export const useLiquidityEditorInputs = () => {
 		}
 	}, [liquidityToAdd]);
 
-	const errorMessageNative = useMemo(() => {
-		return insufficientBalances[nativeToken?.id ?? ""];
-	}, [insufficientBalances, nativeToken?.id]);
+	useEffect(() => {
+		if (missingSide === null || !liquidityToAdd || !nativeToken || !assetToken)
+			return;
+		if (!reserves || reserves.includes(0n)) return;
 
-	const errorMessageAsset = useMemo(() => {
-		return insufficientBalances[assetToken?.id ?? ""];
-	}, [insufficientBalances, assetToken?.id]);
+		const typedSide = missingSide === 0 ? 1 : 0;
+		const paired =
+			(liquidityToAdd[typedSide] * reserves[missingSide]) / reserves[typedSide];
+		if (paired === 0n) return;
+
+		setLiquidityToAdd(
+			missingSide === 0
+				? [paired, liquidityToAdd[1]]
+				: [liquidityToAdd[0], paired],
+		);
+		const input = missingSide === 0 ? refInput1.current : refInput2.current;
+		const token = missingSide === 0 ? nativeToken : assetToken;
+		if (input) input.value = plancksToTokens(paired, token.decimals);
+	}, [
+		missingSide,
+		liquidityToAdd,
+		reserves,
+		nativeToken,
+		assetToken,
+		setLiquidityToAdd,
+	]);
+
+	const [errorMessageNative, errorMessageAsset] = useMemo(
+		() =>
+			[nativeToken, assetToken].map((token, side) => {
+				if (!token) return undefined;
+				if (missingSide === null) return insufficientBalances[token.id];
+				if (side === missingSide)
+					return reserves && !reserves.includes(0n)
+						? `Less than ${plancksToTokens(1n, token.decimals)} ${token.symbol}`
+						: "Enter both amounts";
+				const amount = liquidityToAdd?.[side];
+				const balance = accountBalances?.[side];
+				return amount !== undefined && balance !== undefined && amount > balance
+					? "Insufficient balance"
+					: undefined;
+			}),
+		[
+			nativeToken,
+			assetToken,
+			missingSide,
+			reserves,
+			insufficientBalances,
+			accountBalances,
+			liquidityToAdd,
+		],
+	);
 
 	return {
 		refInput1,
