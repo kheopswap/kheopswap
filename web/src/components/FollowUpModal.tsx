@@ -7,6 +7,8 @@ import { cn } from "../utils/cn";
 export type FollowUpTxEvent =
 	| TxEvent
 	| { type: "pending" }
+	| { type: "unconfirmed" }
+	| { type: "lostTrack" }
 	| { type: "error"; error: unknown };
 export type FollowUpTxEvents = FollowUpTxEvent[];
 

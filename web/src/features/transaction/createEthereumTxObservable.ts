@@ -29,12 +29,10 @@ const FINALIZATION_POLL_INTERVAL_MS = 1000;
  * Computes timeouts for each phase of the Ethereum→Substrate transaction tracking
  * pipeline, scaled from the chain's expected block duration.
  *
- * - Receipt:       ~20 blocks — enough time for the Ethereum RPC to index the receipt.
  * - Block hash:    ~10 blocks — time for the Substrate RPC to sync to the block.
  * - Finalization:  ~20 blocks — time for the block to be finalized on the relay chain.
  */
 const getTimeouts = (blockDurationMs: number) => ({
-	receiptMs: blockDurationMs * 20,
 	blockHashMs: blockDurationMs * 10,
 	finalizationMs: blockDurationMs * 20,
 });
@@ -90,16 +88,12 @@ const createEthereumPublicClient = (
 const waitForReceipt = async (
 	publicClient: PublicClient,
 	txHash: Hex,
-	timeoutMs: number,
-	signal?: AbortSignal,
+	signal: AbortSignal,
 ) => {
 	let delay = 1000;
 	const maxDelay = 5000;
-	const deadline = Date.now() + timeoutMs;
 
-	while (Date.now() < deadline) {
-		if (signal?.aborted) throw new Error("Transaction was cancelled");
-
+	while (!signal.aborted) {
 		try {
 			const receipt = await publicClient.getTransactionReceipt({
 				hash: txHash,
@@ -113,7 +107,7 @@ const waitForReceipt = async (
 		delay = Math.min(delay * 1.5, maxDelay);
 	}
 
-	throw new Error("Timed out while waiting for Ethereum transaction receipt");
+	throw new Error("Transaction was cancelled");
 };
 
 const waitForSubstrateBlockHash = async (
@@ -295,7 +289,6 @@ export const createEthereumTxObservable = ({
 			const receipt = await waitForReceipt(
 				publicClient,
 				txHash,
-				timeouts.receiptMs,
 				abortController.signal,
 			);
 			if (abortController.signal.aborted) return;

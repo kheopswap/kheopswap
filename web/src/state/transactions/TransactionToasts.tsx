@@ -38,6 +38,10 @@ const getStatusText = (status: TransactionStatus): string => {
 			return "Submitted, waiting for block...";
 		case "inBlock":
 			return "In block, waiting for finalization...";
+		case "unconfirmed":
+			return "Not confirmed after 10 minutes, still watching...";
+		case "lostTrack":
+			return "Included, but the app lost track of it. Check the explorer";
 		case "finalized":
 			return "Finalized";
 		case "failed":
@@ -53,6 +57,9 @@ const getStatusOutcome = (status: TransactionStatus): ToastOutcome => {
 			return "success";
 		case "failed":
 			return "error";
+		case "unconfirmed":
+		case "lostTrack":
+			return "warning";
 		default:
 			return "loading";
 	}

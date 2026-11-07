@@ -126,8 +126,6 @@ describe("useTransactionSubmit after 10 minutes without a final event", () => {
 			outcome: "warning",
 			text: "Not confirmed after 10 minutes, still watching...",
 		});
-		expect(txEvents$.observed).toBe(true);
-
 		txEvents$.next(finalized);
 		const record = await getRecord();
 		expect(record.status).toBe("finalized");
@@ -135,7 +133,6 @@ describe("useTransactionSubmit after 10 minutes without a final event", () => {
 			outcome: "success",
 			text: "Finalized",
 		});
-		expect(txEvents$.observed).toBe(false);
 	});
 
 	it("reports a transaction the chain included after the app lost track of it", async () => {

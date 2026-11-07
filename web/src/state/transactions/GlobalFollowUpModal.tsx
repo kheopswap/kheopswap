@@ -1,4 +1,8 @@
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+	CheckIcon,
+	ExclamationTriangleIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/solid";
 import type { FC, ReactNode } from "react";
 import { type FollowUpData, FollowUpRow } from "../../components/FollowUpModal";
 import { SpinnerIcon } from "../../components/icons";
@@ -52,6 +56,14 @@ const FollowUpResultIcon: FC<{
 			)}
 		>
 			<XMarkIcon className="size-12 text-error" />
+		</div>
+		<div
+			className={cn(
+				"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-warn/20 p-2 transition-opacity duration-500",
+				result === "warning" ? "opacity-100" : "opacity-0",
+			)}
+		>
+			<ExclamationTriangleIcon className="size-12 text-warn" />
 		</div>
 	</div>
 );

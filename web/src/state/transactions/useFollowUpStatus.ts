@@ -7,7 +7,7 @@ import {
 	type TxEvents,
 } from "../../utils/getErrorMessageFromTxEvents";
 
-export type FollowUpResult = "loading" | "success" | "error";
+export type FollowUpResult = "loading" | "success" | "error" | "warning";
 
 export const useFollowUpStatus = (followUp: FollowUpData) => {
 	const blockExplorerUrl = useMemo(() => {
@@ -59,6 +59,12 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 				: ["Transaction failed", true, "error"];
 		}
 
+		const latest = followUp.txEvents.at(-1);
+		if (latest?.type === "lostTrack")
+			return ["Included, but the app lost track of it", true, "warning"];
+		if (latest?.type === "unconfirmed")
+			return ["Not confirmed after 10 minutes", true, "warning"];
+
 		const best = followUp.txEvents.find(
 			(event) => event.type === "inBestBlock",
 		);
@@ -104,7 +110,7 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 
 		return [
 			errorMsg ?? txFailedErrorMessage ?? null,
-			result !== "loading" &&
+			(result === "success" || result === "error") &&
 				!followUp.txEvents.some((e) => e.type === "finalized"),
 			followUp.txEvents.some((e) => e.type === "finalized"),
 		];
