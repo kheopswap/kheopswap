@@ -14,6 +14,7 @@ vi.mock("../../utils/notifyError", () => ({ notifyError: vi.fn() }));
 const chain = vi.hoisted(() => ({
 	finalizedNonce: 1,
 	isDown: false,
+	reads: 0,
 	readNonce: undefined as (() => Promise<{ nonce: number }>) | undefined,
 }));
 
@@ -24,6 +25,7 @@ vi.mock("../../papi/getApi", async () => {
 			System: {
 				Account: {
 					getValue: () => {
+						chain.reads += 1;
 						if (chain.readNonce) return chain.readNonce();
 						if (chain.isDown) return Promise.reject(new Error("chain down"));
 						return Promise.resolve({ nonce: chain.finalizedNonce });
@@ -50,6 +52,13 @@ const inBestBlock = {
 	txHash: "0x01",
 	ok: true,
 	events: [],
+} as unknown as TxEvent;
+const failedInBestBlock = {
+	type: "inBestBlock",
+	txHash: "0x01",
+	ok: false,
+	events: [],
+	dispatchError: { type: "Token", value: { type: "FundsUnavailable" } },
 } as unknown as TxEvent;
 const finalized = {
 	type: "finalized",
@@ -105,6 +114,7 @@ beforeEach(() => {
 	vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
 	chain.finalizedNonce = 1;
 	chain.isDown = false;
+	chain.reads = 0;
 	chain.readNonce = undefined;
 });
 
@@ -162,6 +172,49 @@ describe("useTransactionSubmit after 10 minutes without a final event", () => {
 		vi.advanceTimersByTime(TEN_MINUTES);
 		await flush();
 		expect((await getRecord()).status).toBe("unconfirmed");
+	});
+
+	it("keeps waiting for the signature and reads no nonce while the wallet has not signed", async () => {
+		chain.finalizedNonce = 2;
+		const { onSubmit } = renderSubmit();
+		await onSubmit();
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("pending");
+		expect(chain.reads).toBe(0);
+	});
+
+	it("counts the 10 minutes from the broadcast, not from the submit click", async () => {
+		const { onSubmit, txEvents$ } = renderSubmit();
+		await onSubmit();
+		txEvents$.next(created);
+		vi.advanceTimersByTime(TEN_MINUTES - 60_000);
+		txEvents$.next(broadcasted);
+		vi.advanceTimersByTime(2 * 60_000);
+		await flush();
+		expect((await getRecord()).status).toBe("broadcasted");
+
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("unconfirmed");
+	});
+
+	it("keeps a failure already seen in a best block", async () => {
+		chain.finalizedNonce = 2;
+		const { txEvents$ } = await submitAndBroadcast();
+		txEvents$.next(failedInBestBlock);
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("failed");
+		expect(chain.reads).toBe(0);
+	});
+
+	it("keeps a transaction seen in a best block waiting for finalization", async () => {
+		const { txEvents$ } = await submitAndBroadcast();
+		txEvents$.next(inBestBlock);
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("inBlock");
 	});
 
 	it("lets a block seen during the nonce read win over the nonce verdict", async () => {

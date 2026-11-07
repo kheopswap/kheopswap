@@ -147,6 +147,7 @@ const useTransactionProvider = ({
 
 		if (ethereum.account.platform === "ethereum")
 			return (
+				!!fees.options &&
 				!ethereum.isEthereumNetworkMismatch &&
 				!ethereum.isSwitchingEthereumNetwork
 			);

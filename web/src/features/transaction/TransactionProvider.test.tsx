@@ -129,6 +129,14 @@ describe("TransactionProvider submit gate", () => {
 		expect(renderTransaction({ status: "open" }).canSubmit).toBe(true);
 	});
 
+	it("keeps an Ethereum submit disabled until the transaction options are ready", () => {
+		ethereum.platform = "ethereum";
+		fees.options = undefined;
+		expect(renderTransaction().canSubmit).toBe(false);
+		fees.options = { asset: undefined };
+		expect(renderTransaction().canSubmit).toBe(true);
+	});
+
 	it("keeps submit disabled behind a closed gate despite a successful dry run", () => {
 		expect(
 			renderTransaction({ status: "closed", reason: "assets trapped" })

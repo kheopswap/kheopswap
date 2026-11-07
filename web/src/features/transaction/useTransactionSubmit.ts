@@ -103,22 +103,36 @@ const subscribeTxEvents = (
 		appendTxEvent(txId, event);
 	};
 
+	let unconfirmedTimeout: ReturnType<typeof setTimeout> | undefined;
+
 	const cleanup = () => {
 		clearTimeout(unconfirmedTimeout);
 		sub.unsubscribe();
 	};
 
-	const unconfirmedTimeout = setTimeout(async () => {
-		logger.warn("Transaction not confirmed after 10 minutes", txId);
-		record({ type: "unconfirmed" });
-		if ((await hasFinalizedNonceMoved(submission)) && latest === "unconfirmed")
-			record({ type: "lostTrack" });
-	}, TX_UNCONFIRMED_MS);
+	const isAwaitingInclusion = () =>
+		latest === "broadcasted" || latest === "notInBestBlock";
+
+	const startUnconfirmedTimeout = () => {
+		unconfirmedTimeout = setTimeout(async () => {
+			if (!isAwaitingInclusion()) return;
+			logger.warn("Transaction not confirmed after 10 minutes", txId);
+			record({ type: "unconfirmed" });
+			if (
+				(await hasFinalizedNonceMoved(submission)) &&
+				latest === "unconfirmed"
+			)
+				record({ type: "lostTrack" });
+		}, TX_UNCONFIRMED_MS);
+	};
 
 	const sub = obs$.subscribe((x) => {
 		logger.log("Transaction status update", x);
 
-		if (x.type === "broadcasted") isSubmitted = true;
+		if (x.type === "broadcasted") {
+			isSubmitted = true;
+			startUnconfirmedTimeout();
+		}
 
 		if (x.type !== "error") {
 			record(x);
