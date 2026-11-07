@@ -111,7 +111,7 @@ export const quoteAmmPath = ({
 		hops: quoted,
 		amountOut,
 		minOut,
-		priceImpact: getPriceImpact(hops, lpFee, plancksIn, amountOut),
+		priceImpact: getPriceImpact(hops, lpFee, plancksIn),
 	};
 };
 
@@ -121,19 +121,18 @@ const getPriceImpact = (
 	hops: HopPath<PoolHop>,
 	lpFee: number,
 	plancksIn: bigint,
-	amountOut: bigint,
 ): number => {
 	const feeUnit = getLpFeeUnit(lpFee);
 	const afterFee = feeUnit - BigInt(lpFee);
-	const [idealOut, idealScale] = hops.reduce(
-		([out, scale], { reserveIn, reserveOut }) => [
-			out * afterFee * reserveOut,
-			scale * feeUnit * reserveIn,
+	const [spot, execution] = hops.reduce(
+		([spot, execution, amountIn], { reserveIn, reserveOut }) => [
+			spot * reserveIn * feeUnit,
+			execution * (reserveIn * feeUnit + amountIn * afterFee),
+			getAmmOutput(amountIn, reserveIn, reserveOut, lpFee).amountOut,
 		],
-		[plancksIn, 1n],
+		[1n, 1n, plancksIn],
 	);
-	if (!idealOut) return 0;
-	const ratio = (amountOut * idealScale * PRICE_IMPACT_PRECISION) / idealOut;
+	const ratio = (spot * PRICE_IMPACT_PRECISION) / execution;
 	return (
 		Number(ratio - PRICE_IMPACT_PRECISION) / Number(PRICE_IMPACT_PRECISION)
 	);

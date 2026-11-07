@@ -110,6 +110,35 @@ describe("quoteAmmPath price impact", () => {
 		);
 	});
 
+	it("ignores the output rounding down to a whole planck", () => {
+		const tenThousandDot = 100_000_000_000_000n;
+		const fiveHundredZeroDecimalTokens = 500n;
+		const thirtyDot = 300_000_000_000n;
+		const { amountOut, priceImpact } = quoteAmmPath({
+			hops: [
+				{
+					tokenIdIn: DOT,
+					tokenIdOut: USDT,
+					reserveIn: tenThousandDot,
+					reserveOut: fiveHundredZeroDecimalTokens,
+				},
+			],
+			lpFee: 3000,
+			plancksIn: thirtyDot,
+			slippage: 0,
+		});
+
+		expect(amountOut).toBe(1n);
+		expect(priceImpact).toBeCloseTo(-0.00298, 5);
+	});
+
+	it("is near zero for a dust trade whose output rounds to nothing", () => {
+		const { amountOut, priceImpact } = quote(getAmmPath(DOT, USDT, DOT), 1n);
+
+		expect(amountOut).toBe(0n);
+		expect(priceImpact).toBeCloseTo(0, 5);
+	});
+
 	it("reads a legacy per-mille pool fee", () => {
 		expect(
 			quote(getAmmPath(DOT, USDT, DOT), RESERVE / 1_000_000n, 3).priceImpact,
