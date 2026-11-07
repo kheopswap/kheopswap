@@ -48,6 +48,7 @@ Token snapshots are maintained by `pnpm fetch-tokens` (locally) and by the sched
 - `web/src/registry/tokens/generated/tokens.[chainId].json` files are **automatically generated**, one per Asset Hub and one for Hydration.
 - These generated files should **never be modified manually**.
 - Manual token edits belong only in `web/src/registry/tokens/tokens-overrides.yaml`.
+- Tokens listed on CoinGecko are marked verified and get their CoinGecko logo: Hydration and Polkadot Asset Hub assets by asset id, Ethereum-bridged assets by contract address.
 
 ### Override rules
 

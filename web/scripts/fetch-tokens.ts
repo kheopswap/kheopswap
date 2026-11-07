@@ -53,6 +53,11 @@ import type {
 } from "../src/registry/chains/types.ts";
 import { buildToken } from "../src/registry/tokens/buildToken.ts";
 import { createSufficientMap } from "../src/registry/tokens/mappers/createSufficientMap.ts";
+import {
+	type CoingeckoCoin,
+	getCoingeckoAssetIds,
+	getCoingeckoAssetPlatform,
+} from "../src/registry/tokens/mappers/getCoingeckoAssetIds.ts";
 import { isEthereumOriginLocation } from "../src/registry/tokens/mappers/isEthereumOriginLocation.ts";
 import { mapAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapAssetTokensFromEntries.ts";
 import { mapForeignAssetTokensFromEntries } from "../src/registry/tokens/mappers/mapForeignAssetTokensFromEntries.ts";
@@ -579,12 +584,14 @@ async function migrateCachedImagesToLocal(
 	}
 }
 
-function cleanupUnusedCoinGeckoLogos(cache: Erc20Cache): void {
+function cleanupUnusedCoinGeckoLogos(
+	cache: Erc20Cache,
+	otherLogos: string[],
+): void {
 	if (!existsSync(COINGECKO_LOGO_DIR_ABS)) return;
 
 	const usedFiles = new Set(
-		Object.values(cache)
-			.map((entry) => entry.image)
+		[...Object.values(cache).map((entry) => entry.image), ...otherLogos]
 			.filter((image): image is string =>
 				Boolean(image?.startsWith(`${COINGECKO_LOGO_DIR_REL}/`)),
 			)
@@ -793,6 +800,130 @@ async function fetchCoinGeckoTokenData(
 	return undefined;
 }
 
+async function fetchCoinGeckoJson<T>(
+	path: string,
+	apiKey: string | undefined,
+): Promise<T | undefined> {
+	if (coingeckoCalls >= COINGECKO_BUDGET_PER_RUN) {
+		pushNonFatalWarning(`[coingecko] ${path}: budget exhausted`);
+		return undefined;
+	}
+	if (coingeckoCalls > 0)
+		await sleep(
+			apiKey ? COINGECKO_DELAY_WITH_KEY_MS : COINGECKO_DELAY_NO_KEY_MS,
+		);
+	coingeckoCalls++;
+
+	const headers: Record<string, string> = { Accept: "application/json" };
+	if (apiKey) headers["x-cg-demo-api-key"] = apiKey;
+
+	try {
+		const res = await fetch(`https://api.coingecko.com/api/v3${path}`, {
+			headers,
+		});
+		if (!res.ok) {
+			pushNonFatalWarning(`[coingecko] ${path}: HTTP ${res.status}`);
+			return undefined;
+		}
+		return (await res.json()) as T;
+	} catch (err) {
+		pushNonFatalWarning(
+			`[coingecko] ${path}: ${err instanceof Error ? err.message : String(err)}`,
+		);
+		return undefined;
+	}
+}
+
+type SnapshotListing = { logo?: string; verified?: boolean };
+
+function readSnapshotListings(chainId: string): Map<string, SnapshotListing> {
+	const filePath = resolve(OUTPUT_DIR, `tokens.${chainId}.json`);
+	if (!existsSync(filePath)) return new Map();
+	const tokens = JSON.parse(readFileSync(filePath, "utf-8")) as ({
+		id: string;
+	} & SnapshotListing)[];
+	return new Map(
+		tokens.map(({ id, logo, verified }) => [id, { logo, verified }]),
+	);
+}
+
+function readSnapshotLogos(chainIds: string[]): string[] {
+	return chainIds.flatMap((chainId) =>
+		[...readSnapshotListings(chainId).values()].flatMap(
+			({ logo }) => logo ?? [],
+		),
+	);
+}
+
+function keepSnapshotListings(tokens: TokenNoId[]): void {
+	const snapshots = new Map<string, Map<string, SnapshotListing>>();
+	for (const token of tokens) {
+		if (!snapshots.has(token.chainId))
+			snapshots.set(token.chainId, readSnapshotListings(token.chainId));
+		const previous = snapshots.get(token.chainId)?.get(getTokenId(token));
+		if (previous?.logo && !token.logo) token.logo = previous.logo;
+		if (previous?.verified) token.verified = true;
+	}
+}
+
+async function applyCoinGeckoListings(
+	tokens: TokenNoId[],
+	apiKey: string | undefined,
+	overrideLogoIds: Set<string>,
+): Promise<string[]> {
+	const listable = tokens.filter((token) => getCoingeckoAssetPlatform(token));
+	if (listable.length === 0) return [];
+
+	const coins = await fetchCoinGeckoJson<CoingeckoCoin[]>(
+		"/coins/list?include_platform=true",
+		apiKey,
+	);
+
+	if (!coins) {
+		keepSnapshotListings(listable);
+		return listable.flatMap((token) => token.logo ?? []);
+	}
+
+	const assetIdsByPlatform = {
+		hydration: getCoingeckoAssetIds(coins, "hydration"),
+		polkadot: getCoingeckoAssetIds(coins, "polkadot"),
+	};
+	const listings = listable.flatMap((token) => {
+		const platform = getCoingeckoAssetPlatform(token);
+		const coingeckoId =
+			platform && assetIdsByPlatform[platform].get(token.assetId);
+		return coingeckoId ? [{ token, coingeckoId }] : [];
+	});
+	for (const { token } of listings) token.verified = true;
+
+	const logoListings = listings.filter(
+		({ token }) => !overrideLogoIds.has(getTokenId(token)),
+	);
+	const missingLogoIds = [
+		...new Set(logoListings.map(({ coingeckoId }) => coingeckoId)),
+	].filter((coingeckoId) => !existsSync(getCoinGeckoLogoFilePath(coingeckoId)));
+
+	if (missingLogoIds.length > 0) {
+		const markets = await fetchCoinGeckoJson<{ id: string; image?: string }[]>(
+			`/coins/markets?vs_currency=usd&per_page=250&ids=${missingLogoIds.join(",")}`,
+			apiKey,
+		);
+		for (const { id, image } of markets ?? [])
+			if (image) await downloadCoinGeckoLogoAsWebp(id, image);
+	}
+
+	const logos: string[] = [];
+	for (const { token, coingeckoId } of logoListings) {
+		if (!existsSync(getCoinGeckoLogoFilePath(coingeckoId))) continue;
+		token.logo = getCoinGeckoLogoRelativePath(coingeckoId);
+		logos.push(token.logo);
+	}
+	console.log(
+		`  [coingecko] ${listings.length} listed token(s) verified, ${logos.length} with a CoinGecko logo`,
+	);
+	return logos;
+}
+
 // ---------------------------------------------------------------------------
 // Cache refresh — combines ERC20 RPC + CoinGecko
 // ---------------------------------------------------------------------------
@@ -942,6 +1073,7 @@ function enrichFromErc20Cache(tokens: TokenNoId[], cache: Erc20Cache): void {
 		if (!token.name && cached.tokenName) token.name = cached.tokenName;
 		if (!token.decimals && cached.decimals) token.decimals = cached.decimals;
 		if (!token.logo && cached.image) token.logo = cached.image;
+		if (cached.coingeckoId) token.verified = true;
 	}
 }
 
@@ -1259,7 +1391,17 @@ async function main() {
 		overrideLogoIds,
 	);
 	await migrateCachedImagesToLocal(erc20Cache, allTokens, coingeckoApiKey);
-	cleanupUnusedCoinGeckoLogos(erc20Cache);
+	const listedLogos = await applyCoinGeckoListings(
+		allTokens,
+		coingeckoApiKey,
+		overrideLogoIds,
+	);
+	cleanupUnusedCoinGeckoLogos(erc20Cache, [
+		...listedLogos,
+		...readSnapshotLogos(
+			CHAINS.map(({ id }) => id).filter((id) => !tokensByChain.has(id)),
+		),
+	]);
 	saveErc20Cache(erc20Cache);
 
 	// Apply cached data (even without fresh fetches, the cache may have data from prior runs)
