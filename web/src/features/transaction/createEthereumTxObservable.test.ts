@@ -1,6 +1,7 @@
+import type { TxEvent } from "polkadot-api";
 import { firstValueFrom } from "rxjs";
 import { toHex } from "viem";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getChainById } from "../../registry/chains/chains";
 import { createEthereumTxObservable } from "./createEthereumTxObservable";
 
@@ -10,6 +11,15 @@ vi.mock("../../papi/getApi", () => ({
 
 vi.mock("../../utils/getBlockDurationMs", () => ({
 	getBlockDurationMs: async () => 6_000,
+}));
+
+const receipts = vi.hoisted(() => ({
+	getTransactionReceipt: vi.fn(async () => null),
+}));
+
+vi.mock("viem", async (importOriginal) => ({
+	...(await importOriginal<typeof import("viem")>()),
+	createPublicClient: () => receipts,
 }));
 
 const targetChainId = getChainById("pah").evmChainId;
@@ -22,22 +32,27 @@ const request = vi.fn(async ({ method }: { method: string }) =>
 
 const sentMethods = () => request.mock.calls.map(([{ method }]) => method);
 
-const broadcast = () =>
-	firstValueFrom(
-		createEthereumTxObservable({
-			account: {
-				platform: "ethereum",
-				address: "0x1111111111111111111111111111111111111111",
-				client: { request: request as never },
-			},
-			chainId: "pah",
-			callData: "0xcall",
-		}),
-	);
+const txEvents$ = () =>
+	createEthereumTxObservable({
+		account: {
+			platform: "ethereum",
+			address: "0x1111111111111111111111111111111111111111",
+			client: { request: request as never },
+		},
+		chainId: "pah",
+		callData: "0xcall",
+	});
+
+const broadcast = () => firstValueFrom(txEvents$());
 
 beforeEach(() => {
 	wallet.chainId = targetChainId;
 	request.mockClear();
+	receipts.getTransactionReceipt.mockClear();
+});
+
+afterEach(() => {
+	vi.useRealTimers();
 });
 
 describe("createEthereumTxObservable", () => {
@@ -58,5 +73,28 @@ describe("createEthereumTxObservable", () => {
 		wallet.chainId = 1;
 		await expect(broadcast()).rejects.toThrow("Wrong network");
 		expect(sentMethods()).toEqual(["eth_chainId"]);
+	});
+
+	it("keeps polling for a receipt long after the receipt window", async () => {
+		vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "Date"] });
+		const events: TxEvent[] = [];
+		let failure: unknown;
+		const subscription = txEvents$().subscribe({
+			next: (event) => events.push(event),
+			error: (error) => {
+				failure = error;
+			},
+		});
+
+		await vi.advanceTimersByTimeAsync(10 * 60_000);
+		expect(events.map(({ type }) => type)).toEqual(["broadcasted"]);
+		expect(failure).toBeUndefined();
+
+		const polls = receipts.getTransactionReceipt.mock.calls.length;
+		await vi.advanceTimersByTimeAsync(60_000);
+		expect(receipts.getTransactionReceipt.mock.calls.length).toBeGreaterThan(
+			polls,
+		);
+		subscription.unsubscribe();
 	});
 });

@@ -1,0 +1,186 @@
+import { renderHook } from "@testing-library/react";
+import type { TxEvent } from "polkadot-api";
+import { firstValueFrom, Subject } from "rxjs";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getToastView } from "../../state/transactions/TransactionToasts";
+import {
+	dismissTransaction,
+	transactions$,
+} from "../../state/transactions/transactionStore";
+import { useTransactionSubmit } from "./useTransactionSubmit";
+
+vi.mock("../../utils/notifyError", () => ({ notifyError: vi.fn() }));
+
+const chain = vi.hoisted(() => ({
+	finalizedNonce: 1,
+	isDown: false,
+	readNonce: undefined as (() => Promise<{ nonce: number }>) | undefined,
+}));
+
+vi.mock("../../papi/getApi", async () => {
+	const { of } = await import("rxjs");
+	const api = {
+		query: {
+			System: {
+				Account: {
+					getValue: () => {
+						if (chain.readNonce) return chain.readNonce();
+						if (chain.isDown) return Promise.reject(new Error("chain down"));
+						return Promise.resolve({ nonce: chain.finalizedNonce });
+					},
+				},
+			},
+		},
+	};
+	return { getApi: async () => api, getApi$: () => of(api) };
+});
+
+const polkadotAccount = {
+	platform: "polkadot",
+	address: "5Signer",
+	isPlaceholder: false,
+	txCreator: {},
+} as never;
+const feeToken = { id: "native::pasah" } as never;
+
+const created: TxEvent = { type: "created", txHash: "0x01" };
+const broadcasted: TxEvent = { type: "broadcasted", txHash: "0x01" };
+const inBestBlock = {
+	type: "inBestBlock",
+	txHash: "0x01",
+	ok: true,
+	events: [],
+} as unknown as TxEvent;
+const finalized = {
+	type: "finalized",
+	txHash: "0x01",
+	ok: true,
+	events: [],
+} as unknown as TxEvent;
+
+const TEN_MINUTES = 10 * 60_000;
+
+const renderSubmit = () => {
+	const txEvents$ = new Subject<TxEvent>();
+	const { onSubmit } = renderHook(() =>
+		useTransactionSubmit({
+			account: polkadotAccount,
+			signerAddress: "5Signer",
+			call: { createSubmitAndWatch: () => txEvents$ } as never,
+			chainId: "pasah",
+			feeEstimate: 1n,
+			feeToken,
+			nativeToken: feeToken,
+			options: { nonce: 1 },
+			isEthereumNetworkMismatch: false,
+			targetEvmChainId: undefined,
+			transactionType: "transfer",
+			transactionTitle: "Transfer",
+			followUpData: {},
+		}),
+	).result.current;
+	return { onSubmit, txEvents$ };
+};
+
+const getRecord = async () => {
+	const [record] = await firstValueFrom(transactions$);
+	if (!record) throw new Error("no record");
+	return record;
+};
+
+const flush = async () => {
+	for (let i = 0; i < 5; i++)
+		await new Promise<void>((resolve) => setImmediate(resolve));
+};
+
+const submitAndBroadcast = async () => {
+	const submitted = renderSubmit();
+	await submitted.onSubmit();
+	submitted.txEvents$.next(created);
+	submitted.txEvents$.next(broadcasted);
+	return submitted;
+};
+
+beforeEach(() => {
+	vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+	chain.finalizedNonce = 1;
+	chain.isDown = false;
+	chain.readNonce = undefined;
+});
+
+afterEach(async () => {
+	for (const tx of await firstValueFrom(transactions$))
+		dismissTransaction(tx.id);
+	vi.useRealTimers();
+});
+
+describe("useTransactionSubmit after 10 minutes without a final event", () => {
+	it("marks the transaction unconfirmed and still records a later finalization", async () => {
+		const { txEvents$ } = await submitAndBroadcast();
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+
+		const unconfirmed = await getRecord();
+		expect(unconfirmed.status).toBe("unconfirmed");
+		expect(getToastView(unconfirmed, null)).toEqual({
+			outcome: "warning",
+			text: "Not confirmed after 10 minutes, still watching...",
+		});
+		expect(txEvents$.observed).toBe(true);
+
+		txEvents$.next(finalized);
+		const record = await getRecord();
+		expect(record.status).toBe("finalized");
+		expect(getToastView(record, null)).toEqual({
+			outcome: "success",
+			text: "Finalized",
+		});
+		expect(txEvents$.observed).toBe(false);
+	});
+
+	it("reports a transaction the chain included after the app lost track of it", async () => {
+		chain.finalizedNonce = 2;
+		await submitAndBroadcast();
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+
+		const record = await getRecord();
+		expect(record.status).toBe("lostTrack");
+		expect(getToastView(record, null)).toEqual({
+			outcome: "warning",
+			text: "Included, but the app lost track of it. Check the explorer",
+		});
+	});
+
+	it("stays unconfirmed while the finalized nonce has not moved", async () => {
+		await submitAndBroadcast();
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("unconfirmed");
+	});
+
+	it("stays unconfirmed when the chain cannot be read", async () => {
+		chain.isDown = true;
+		await submitAndBroadcast();
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("unconfirmed");
+	});
+
+	it("lets a block seen during the nonce read win over the nonce verdict", async () => {
+		let resolveRead = (_value: { nonce: number }) => {};
+		chain.readNonce = () =>
+			new Promise((resolve) => {
+				resolveRead = resolve;
+			});
+		const { txEvents$ } = await submitAndBroadcast();
+		vi.advanceTimersByTime(TEN_MINUTES);
+		await flush();
+		expect((await getRecord()).status).toBe("unconfirmed");
+
+		txEvents$.next(inBestBlock);
+		resolveRead({ nonce: 2 });
+		await flush();
+		expect((await getRecord()).status).toBe("inBlock");
+	});
+});
