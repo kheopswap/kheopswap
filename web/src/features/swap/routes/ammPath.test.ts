@@ -80,6 +80,78 @@ describe("quoteAmmPath", () => {
 	);
 });
 
+describe("quoteAmmPath price impact", () => {
+	const RESERVE = 1_000_000_000_000n;
+	const quote = (path: AmmPath, plancksIn: bigint, lpFee = 3000) =>
+		quoteAmmPath({
+			hops: mapHopPath(path, (hop) => ({
+				...hop,
+				reserveIn: RESERVE,
+				reserveOut: RESERVE,
+			})),
+			lpFee,
+			plancksIn,
+			slippage: 0,
+		});
+
+	it.each([
+		["one pool", getAmmPath(DOT, USDT, DOT)],
+		["two pools", getAmmPath(USDC, USDT, DOT)],
+	])(
+		"is near zero for a small trade through %s, pool fees aside",
+		(_, path) => {
+			expect(quote(path, RESERVE / 1_000_000n).priceImpact).toBeCloseTo(0, 5);
+		},
+	);
+
+	it("measures how far the trade moves along the curve", () => {
+		expect(quote(getAmmPath(DOT, USDT, DOT), RESERVE, 0).priceImpact).toBe(
+			-0.5,
+		);
+	});
+
+	it("ignores the output rounding down to a whole planck", () => {
+		const tenThousandDot = 100_000_000_000_000n;
+		const fiveHundredZeroDecimalTokens = 500n;
+		const thirtyDot = 300_000_000_000n;
+		const { amountOut, priceImpact } = quoteAmmPath({
+			hops: [
+				{
+					tokenIdIn: DOT,
+					tokenIdOut: USDT,
+					reserveIn: tenThousandDot,
+					reserveOut: fiveHundredZeroDecimalTokens,
+				},
+			],
+			lpFee: 3000,
+			plancksIn: thirtyDot,
+			slippage: 0,
+		});
+
+		expect(amountOut).toBe(1n);
+		expect(priceImpact).toBeCloseTo(-0.00298, 5);
+	});
+
+	it("is near zero for a dust trade whose output rounds to nothing", () => {
+		const { amountOut, priceImpact } = quote(getAmmPath(DOT, USDT, DOT), 1n);
+
+		expect(amountOut).toBe(0n);
+		expect(priceImpact).toBeCloseTo(0, 5);
+	});
+
+	it("keeps an impact just under 0.01% above the display floor", () => {
+		expect(
+			quote(getAmmPath(DOT, USDT, DOT), 100_000_000n).priceImpact,
+		).toBeGreaterThan(-0.0001);
+	});
+
+	it("reads a legacy per-mille pool fee", () => {
+		expect(
+			quote(getAmmPath(DOT, USDT, DOT), RESERVE / 1_000_000n, 3).priceImpact,
+		).toBeCloseTo(0, 5);
+	});
+});
+
 describe("getPathLiquidity", () => {
 	const loaded = (data: readonly [bigint, bigint] | null) => ({
 		data,

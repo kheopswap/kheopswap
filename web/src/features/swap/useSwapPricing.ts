@@ -144,7 +144,6 @@ export const useSwapPricing = ({
 	const pathQuote = useAmmPathQuote({
 		path: route?.path ?? null,
 		plancksIn: swapPlancksIn,
-		totalIn,
 		slippage,
 	});
 	const swapPlancksOut = pathQuote.quote?.amountOut;
@@ -197,7 +196,7 @@ export const useSwapPricing = ({
 		swapPlancksOut,
 		amountOut,
 		isLoadingAmountOut,
-		priceImpact: pathQuote.priceImpact,
+		priceImpact: pathQuote.quote?.priceImpact,
 		minPlancksOut,
 		hasInsufficientBalance,
 		isCheckingRecipient,

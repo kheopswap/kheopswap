@@ -4,7 +4,6 @@ import {
 	getLpFeeUnit,
 	getMaxSwapAmount,
 	getMinAmountOut,
-	getPriceImpact,
 	splitAppCommission,
 } from "./ammMath";
 
@@ -136,34 +135,6 @@ describe("getLpFeeUnit", () => {
 		expect(getLpFeeUnit(3)).toBe(1_000n);
 		expect(getLpFeeUnit(0)).toBe(1_000n);
 		expect(getLpFeeUnit(999)).toBe(1_000n);
-	});
-});
-
-describe("getPriceImpact", () => {
-	it("returns zero when spot and actual are equal", () => {
-		expect(getPriceImpact(1000n, 1000n)).toBe(-0);
-	});
-
-	it("returns negative ratio when actual is less than spot", () => {
-		// spot=10000, actual=9800 → impact = -(10000*(10000-9800))/10000 / 10000
-		// = -(10000*200)/10000 / 10000 = -200/10000 = -0.02
-		expect(getPriceImpact(10000n, 9800n)).toBe(-0.02);
-	});
-
-	it("returns positive ratio when actual exceeds spot (edge case)", () => {
-		// If actual > spot, impact should be positive
-		expect(getPriceImpact(10000n, 10200n)).toBeGreaterThan(0);
-	});
-
-	it("returns 0 when spot is 0", () => {
-		expect(getPriceImpact(0n, 100n)).toBe(0);
-	});
-
-	it("handles large values without overflow", () => {
-		const spot = 10n ** 18n;
-		const actual = spot - spot / 100n; // 1% impact
-		const impact = getPriceImpact(spot, actual);
-		expect(impact).toBeCloseTo(-0.01, 2);
 	});
 });
 

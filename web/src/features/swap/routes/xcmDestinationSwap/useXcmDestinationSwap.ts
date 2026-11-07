@@ -181,7 +181,6 @@ export const useXcmDestinationSwap = ({
 	const pathQuote = useAmmPathQuote({
 		path: route?.path ?? null,
 		plancksIn: swapPlancksIn,
-		totalIn: swapPlancksIn,
 		slippage,
 		firstPoolSwap,
 	});

@@ -99,10 +99,6 @@ vi.mock("../../useAssetConvertionLPFee", () => ({
 	}),
 }));
 
-vi.mock("../../../../hooks/useAssetConvertPlancks", () => ({
-	useAssetConvertPlancks: () => ({ plancksOut: undefined }),
-}));
-
 vi.mock("../../../../hooks/useToken", () => ({
 	useToken: () => ({ data: null, isLoading: false }),
 }));

@@ -2,6 +2,11 @@ import type { FC } from "react";
 import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
 
+const SMALLEST_SHOWN_IMPACT = -0.0001;
+
+const formatPriceImpact = (value: number) =>
+	value < 0 && value > SMALLEST_SHOWN_IMPACT ? "< 0.01%" : formatPercent(value);
+
 export const PriceImpact: FC<{ value: number; className?: string }> = ({
 	value,
 	className,
@@ -15,7 +20,7 @@ export const PriceImpact: FC<{ value: number; className?: string }> = ({
 				className,
 			)}
 		>
-			{formatPercent(value)}
+			{formatPriceImpact(value)}
 		</span>
 	);
 };
