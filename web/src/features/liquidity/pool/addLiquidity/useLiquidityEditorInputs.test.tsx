@@ -110,4 +110,56 @@ describe("useLiquidityEditorInputs", () => {
 		expect(lastExtrinsicAmounts()).toEqual([10_000_000_000n, 5_000_000n]);
 		expect(result.current.errorMessageNative).toBeUndefined();
 	});
+
+	it("pairs an amount typed before the reserves load once they arrive", () => {
+		page.reserves = null;
+		const { result, rerender } = renderHook(useLiquidityEditorInputs, {
+			wrapper: AddLiquidityProvider,
+		});
+
+		typeAmount(result.current.handleTokensInput("token1"), "5");
+
+		expect(result.current.liquidityToAdd).toEqual([50_000_000_000n, 0n]);
+		expect(result.current.errorMessageAsset).toBe("Enter both amounts");
+
+		page.reserves = [100n * 10n ** 10n, 50_000_000n];
+		rerender();
+
+		expect(result.current.liquidityToAdd).toEqual([
+			50_000_000_000n,
+			2_500_000n,
+		]);
+		expect(lastExtrinsicAmounts()).toEqual([50_000_000_000n, 2_500_000n]);
+		expect(result.current.errorMessageAsset).toBeUndefined();
+	});
+
+	it("keeps a sub-unit pair flagged after the reserves load", () => {
+		page.reserves = null;
+		const { result, rerender } = renderHook(useLiquidityEditorInputs, {
+			wrapper: AddLiquidityProvider,
+		});
+
+		typeAmount(result.current.handleTokensInput("token1"), "0.0000000001");
+
+		page.reserves = [100n * 10n ** 10n, 50_000_000n];
+		rerender();
+
+		expect(result.current.liquidityToAdd).toEqual([1n, 0n]);
+		expect(lastExtrinsicAmounts()).toEqual([undefined, undefined]);
+		expect(result.current.errorMessageAsset).toBe("Less than 0.000001 USDT");
+	});
+
+	it("reports a one-sided amount above the balance", () => {
+		page.reserves = [0n, 0n];
+		const { result } = renderHook(useLiquidityEditorInputs, {
+			wrapper: AddLiquidityProvider,
+		});
+
+		typeAmount(result.current.handleTokensInput("token1"), "20000");
+
+		expect(result.current.liquidityToAdd).toEqual([200_000_000_000_000n, 0n]);
+		expect(lastExtrinsicAmounts()).toEqual([undefined, undefined]);
+		expect(result.current.errorMessageNative).toBe("Insufficient balance");
+		expect(result.current.errorMessageAsset).toBe("Enter both amounts");
+	});
 });
