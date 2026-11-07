@@ -54,9 +54,9 @@ Token snapshots are maintained by `pnpm fetch-tokens` (locally) and by the sched
 - Every override entry must target a token by exact `id`.
 - The `id` must match an existing generated token id.
 - Typical maintenance flow:
-	1. Find/copy the token `id` from `tokens.[chainId].json`.
-	2. Add/update the corresponding entry in `tokens-overrides.yaml`.
-	3. Regenerate snapshots with `pnpm fetch-tokens` when needed.
+  1. Find/copy the token `id` from `tokens.[chainId].json`.
+  2. Add/update the corresponding entry in `tokens-overrides.yaml`.
+  3. Regenerate snapshots with `pnpm fetch-tokens` when needed.
 
 ### Environment variables used by `pnpm fetch-tokens`
 
