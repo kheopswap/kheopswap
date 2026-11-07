@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
+import { useParams } from "react-router";
 import { setSetting } from "../../common/settings";
 import { useNativeToken } from "../../hooks/useNativeToken";
 import { usePersistedFormDraft } from "../../hooks/usePersistedFormDraft";
@@ -19,6 +20,7 @@ import type { SwapFormInputs } from "./schema";
 import { getDraftOnRelay } from "./swapDraft";
 
 export const useSwapFormState = () => {
+	const { relayId } = useParams();
 	const { assetHub, allChains } = useRelayChains();
 	const nativeToken = useNativeToken({ chain: assetHub });
 
@@ -78,8 +80,9 @@ export const useSwapFormState = () => {
 	);
 
 	useEffect(() => {
+		if (assetHub.relay !== relayId) return;
 		setFormData((prev) => getDraftOnRelay(prev, allChains, assetHub.id));
-	}, [assetHub.id, allChains, setFormData]);
+	}, [assetHub, allChains, relayId, setFormData]);
 
 	const onFromChange = useCallback(
 		(accountId: string) => {
