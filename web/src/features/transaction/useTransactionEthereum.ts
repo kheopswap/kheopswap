@@ -55,7 +55,7 @@ export const useTransactionEthereum = ({
 	const [isSwitchingEthereumNetwork, setIsSwitchingEthereumNetwork] =
 		useState(false);
 	const [walletChain, setWalletChain] = useState<{
-		accountId: string;
+		account: object;
 		chainId: number;
 	} | null>(null);
 
@@ -73,13 +73,16 @@ export const useTransactionEthereum = ({
 		if (account?.platform !== "ethereum" || account.isPlaceholder) return;
 		const chainId = await account.client.getChainId();
 		setWalletChain((previous) =>
-			previous?.accountId === account.id && previous.chainId === chainId
+			previous?.account === account && previous.chainId === chainId
 				? previous
-				: { accountId: account.id, chainId },
+				: { account, chainId },
 		);
 	}, [account]);
 
 	useEffect(() => {
+		setWalletChain((previous) =>
+			previous?.account === account ? previous : null,
+		);
 		if (account?.platform !== "ethereum" || account.chainId !== undefined)
 			return;
 		readWalletChainId().catch(() => {});
@@ -88,9 +91,7 @@ export const useTransactionEthereum = ({
 	const connectedEvmChainId = useMemo(() => {
 		if (account?.platform !== "ethereum") return undefined;
 		if (account.chainId !== undefined) return account.chainId;
-		return walletChain?.accountId === account.id
-			? walletChain.chainId
-			: undefined;
+		return walletChain?.account === account ? walletChain.chainId : undefined;
 	}, [account, walletChain]);
 
 	// AppKit instance backing this account when it's connected over
