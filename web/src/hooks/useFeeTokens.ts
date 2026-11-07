@@ -91,8 +91,7 @@ const getFeeTokens$ = (
 				? combineLatest([
 						sufficientTokens$,
 						getPoolsByChain$(chainId).pipe(
-							filter(({ status }) => status === "loaded"),
-							map(({ pools }) => pools),
+							map(({ status, pools }) => (status === "loaded" ? pools : [])),
 						),
 					]).pipe(
 						map(([tokens, pools]) =>
