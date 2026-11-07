@@ -170,6 +170,8 @@ const useSwapProvider = () => {
 	const risk = useSwapRisk({
 		signer: formState.from,
 		route,
+		tokenIn: pricing.tokenIn,
+		tokenOut,
 		totalIn: pricing.totalIn,
 		plancksOut: swapPlancksOut,
 		deliveryFee: xcmRoute ? xcm.quote.deliveryFee : undefined,
@@ -220,6 +222,7 @@ const useSwapProvider = () => {
 		details,
 		transaction,
 		risk: risk.risk,
+		transferFees: risk.transferFees,
 		isRiskAcknowledged: risk.isAcknowledged,
 		onRiskAcknowledgeChange: risk.onAcknowledgeChange,
 

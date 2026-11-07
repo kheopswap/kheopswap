@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useStablePlancksMulti } from "../../hooks/useStablePlancksMulti";
 import { useStablePlancks } from "../../hooks/useStablePrice";
-import type { TokenAmount, TokenId } from "../../registry/tokens/types";
+import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
 import { isBigInt } from "../../utils/isBigInt";
 import type { SwapRoute } from "./routes/swapRoute";
 import {
+	getFeeShare,
 	getShare,
 	getSwapRisk,
+	getTransferFees,
 	getValueLoss,
 	isAcknowledgementStale,
 	isRiskAcknowledged,
 	type RiskAcknowledgement,
+	type TransferFees,
 	type ValueLoss,
 } from "./swapRisk";
 
@@ -43,9 +47,60 @@ const useSentValue = (
 	};
 };
 
+type TransferToken = Pick<Token, "id" | "decimals"> | null | undefined;
+
+const NO_AMOUNTS: TokenAmount[] = [];
+
+const useTransferFees = ({
+	route,
+	tokenIn,
+	tokenOut,
+	totalIn,
+	received,
+	deliveryFee,
+}: {
+	route: SwapRoute | null;
+	tokenIn: TransferToken;
+	tokenOut: TransferToken;
+	totalIn: bigint | null | undefined;
+	received: bigint | null | undefined;
+	deliveryFee: TokenAmount | undefined;
+}) => {
+	const fees = useMemo(
+		() =>
+			route?.kind === "xcm-transfer"
+				? getTransferFees({ tokenIn, tokenOut, totalIn, received, deliveryFee })
+				: undefined,
+		[route?.kind, tokenIn, tokenOut, totalIn, received, deliveryFee],
+	);
+	const amounts = useMemo(
+		() =>
+			fees && tokenIn && totalIn
+				? [{ tokenId: tokenIn.id, plancks: totalIn }, ...fees]
+				: NO_AMOUNTS,
+		[fees, tokenIn, totalIn],
+	);
+	const values = useStablePlancksMulti({ inputs: amounts });
+	const transferFees = useMemo((): TransferFees | undefined => {
+		const [sent, ...valuedFees] = amounts.map((amount, index) => ({
+			...amount,
+			value: values.data[index]?.stablePlancks,
+		}));
+		return fees && sent
+			? { fees, ...getFeeShare(sent, valuedFees) }
+			: undefined;
+	}, [fees, amounts, values.data]);
+	return {
+		transferFees,
+		isLoading: amounts.length > 0 && values.isLoading,
+	};
+};
+
 export const useSwapRisk = ({
 	signer,
 	route,
+	tokenIn,
+	tokenOut,
 	totalIn,
 	plancksOut,
 	deliveryFee,
@@ -54,6 +109,8 @@ export const useSwapRisk = ({
 }: {
 	signer: string | undefined;
 	route: SwapRoute | null;
+	tokenIn: TransferToken;
+	tokenOut: TransferToken;
 	totalIn: bigint | null | undefined;
 	plancksOut: bigint | null | undefined;
 	deliveryFee: TokenAmount | undefined;
@@ -67,20 +124,37 @@ export const useSwapRisk = ({
 	});
 	const destinationFeeValue = useFeeValue(destinationFee);
 
+	const transfer = useTransferFees({
+		route,
+		tokenIn,
+		tokenOut,
+		totalIn,
+		received: plancksOut,
+		deliveryFee,
+	});
+
 	const valueLoss = useMemo((): ValueLoss | undefined => {
+		const feeShares = {
+			"delivery-fee": getShare(sent.deliveryFeeValue, sent.sentValue) ?? 0,
+			"destination-fee":
+				getShare(destinationFeeValue.value, sent.sentValue) ?? 0,
+		};
+		if (transfer.transferFees)
+			return {
+				kind: "fees",
+				ratio: transfer.transferFees.share,
+				feeShares,
+			};
 		const ratio = getValueLoss(sent.sentValue, received.stablePlancks);
 		if (ratio === undefined) return undefined;
 		return {
 			kind: route?.kind === "xcm-transfer" ? "fees" : "value-loss",
 			ratio,
-			feeShares: {
-				"delivery-fee": getShare(sent.deliveryFeeValue, sent.sentValue) ?? 0,
-				"destination-fee":
-					getShare(destinationFeeValue.value, sent.sentValue) ?? 0,
-			},
+			feeShares,
 		};
 	}, [
 		route?.kind,
+		transfer.transferFees,
 		sent.sentValue,
 		sent.deliveryFeeValue,
 		destinationFeeValue.value,
@@ -112,7 +186,16 @@ export const useSwapRisk = ({
 	const isAssessing =
 		!!route &&
 		isBigInt(totalIn) &&
-		(sent.isLoading || received.isLoading || destinationFeeValue.isLoading);
+		(sent.isLoading ||
+			received.isLoading ||
+			destinationFeeValue.isLoading ||
+			transfer.isLoading);
 
-	return { risk, isAcknowledged, isAssessing, onAcknowledgeChange };
+	return {
+		risk,
+		transferFees: transfer.transferFees,
+		isAcknowledged,
+		isAssessing,
+		onAcknowledgeChange,
+	};
 };

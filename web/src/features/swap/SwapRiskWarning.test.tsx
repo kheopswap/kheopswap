@@ -16,8 +16,10 @@ const swap = vi.hoisted(() => ({
 	},
 	deliveryFee: undefined as Amount | undefined,
 	destinationFee: undefined as Amount | undefined,
-	totalIn: undefined as bigint | undefined,
 	received: undefined as bigint | undefined,
+	transferFees: undefined as
+		| { fees: Amount[]; share: number; isPartial: boolean }
+		| undefined,
 }));
 
 vi.mock("./SwapProvider", () => ({
@@ -25,10 +27,9 @@ vi.mock("./SwapProvider", () => ({
 		risk: swap.risk,
 		isRiskAcknowledged: false,
 		onRiskAcknowledgeChange: () => {},
-		tokenIn: KNOWN_TOKENS_MAP["native::pah"],
 		tokenOut: KNOWN_TOKENS_MAP["native::pah"],
-		totalIn: swap.totalIn,
 		swapPlancksOut: swap.received,
+		transferFees: swap.transferFees,
 		details: {
 			kind: swap.route.kind,
 			route: swap.route,
@@ -44,17 +45,6 @@ vi.mock("./SwapProvider", () => ({
 	}),
 }));
 
-vi.mock("../transaction/TransactionProvider", () => ({
-	useTransaction: () => ({
-		feeToken: KNOWN_TOKENS_MAP["native::pah"],
-		feeEstimate: 11_000_000n,
-	}),
-}));
-
-vi.mock("../../hooks/useStablePlancksMulti", () => ({
-	useStablePlancksMulti: () => ({ isLoading: true, data: [] }),
-}));
-
 vi.mock("../../hooks/useToken", () => ({
 	useToken: ({ tokenId }: { tokenId: string }) => ({
 		data: KNOWN_TOKENS_MAP[tokenId],
@@ -66,41 +56,72 @@ afterEach(cleanup);
 
 describe("SwapRiskWarning", () => {
 	it("states the share of what a transfer sends that its fees take, below the confirmation threshold too", () => {
-		swap.deliveryFee = { tokenId: "native::pah", plancks: 30_000_000n };
-		swap.totalIn = 1_000_000_000n;
 		swap.received = 995_000_000n;
+		swap.transferFees = {
+			fees: [{ tokenId: "native::pah", plancks: 35_000_000n }],
+			share: 0.035,
+			isPartial: false,
+		};
 		swap.risk = {
 			level: "warn",
-			losses: [{ kind: "fees", ratio: 0.034 }],
-			headline: { kind: "fees", ratio: 0.034 },
+			losses: [{ kind: "fees", ratio: 0.035 }],
+			headline: { kind: "fees", ratio: 0.035 },
 			cause: "delivery-fee",
 		};
 		render(<SwapRiskWarning />);
 
 		expect(screen.getByRole("alert").textContent).toContain(
-			"You pay 0.0046 DOT in fees (4.6% of what you send) to deliver 0.0995 DOT.",
+			"You pay 0.0035 DOT in fees (3.5% of what you send) to deliver 0.0995 DOT.",
 		);
 		expect(screen.queryByRole("checkbox")).toBeNull();
 	});
 
-	it("says what a transfer pays in fees, transaction fee included, and what it delivers", () => {
+	it("says what a transfer pays in fees and what it delivers, and asks to accept them", () => {
 		swap.deliveryFee = { tokenId: "native::pah", plancks: 305_000_000n };
-		swap.totalIn = 1_000_000_000n;
-		swap.received = 995_000_000n;
+		swap.transferFees = {
+			fees: [
+				{ tokenId: "native::pah", plancks: 310_000_000n },
+				{ tokenId: "native::hydration", plancks: 1_000_000_000_000n },
+			],
+			share: 0.31,
+			isPartial: false,
+		};
 		swap.risk = {
 			level: "confirm",
-			losses: [{ kind: "fees", ratio: 0.2375 }],
-			headline: { kind: "fees", ratio: 0.2375 },
+			losses: [{ kind: "fees", ratio: 0.31 }],
+			headline: { kind: "fees", ratio: 0.31 },
 			cause: "delivery-fee",
 		};
 		render(<SwapRiskWarning />);
 
 		expect(screen.getByRole("alert").textContent).toContain(
-			"You pay 0.0321 DOT in fees (32.1% of what you send) to deliver 0.0995 DOT.",
+			"You pay 0.031 DOT + 1 HDX in fees (31% of what you send) to deliver 0.0995 DOT.",
 		);
 		expect(
 			screen.getByLabelText("I accept these fees and want to transfer anyway"),
 		).toBeTruthy();
+	});
+
+	it("gives a lower bound when a fee cannot be valued", () => {
+		swap.transferFees = {
+			fees: [
+				{ tokenId: "native::pah", plancks: 500_000_000n },
+				{ tokenId: "native::hydration", plancks: 1_000_000_000_000n },
+			],
+			share: 0.5,
+			isPartial: true,
+		};
+		swap.risk = {
+			level: "confirm",
+			losses: [{ kind: "fees", ratio: 0.5 }],
+			headline: { kind: "fees", ratio: 0.5 },
+			cause: null,
+		};
+		render(<SwapRiskWarning />);
+
+		expect(screen.getByRole("alert").textContent).toContain(
+			"in fees (at least 50% of what you send)",
+		);
 	});
 
 	it("names the destination chain fee when it makes most of a swap's loss", () => {
@@ -134,7 +155,7 @@ describe("SwapRiskWarning", () => {
 			destination: "hydration",
 			viaHub: { toHub: { destination: "pah" } },
 		};
-		swap.totalIn = undefined;
+		swap.transferFees = undefined;
 		swap.destinationFee = { tokenId: "native::pah", plancks: 17_000_000n };
 		swap.risk = {
 			level: "confirm",

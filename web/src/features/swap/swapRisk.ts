@@ -139,14 +139,12 @@ export const getTransferFees = ({
 	totalIn,
 	received,
 	deliveryFee,
-	transactionFee,
 }: {
 	tokenIn: Pick<Token, "id" | "decimals"> | null | undefined;
 	tokenOut: Pick<Token, "decimals"> | null | undefined;
 	totalIn: bigint | null | undefined;
 	received: bigint | null | undefined;
 	deliveryFee: TokenAmount | undefined;
-	transactionFee: TokenAmount | undefined;
 }): TokenAmount[] | undefined => {
 	if (
 		!tokenIn ||
@@ -159,30 +157,33 @@ export const getTransferFees = ({
 	)
 		return undefined;
 	return mergeTokenAmounts(
-		[
-			{ tokenId: tokenIn.id, plancks: totalIn - received },
-			deliveryFee,
-			transactionFee,
-		].filter((fee) => !!fee),
+		[{ tokenId: tokenIn.id, plancks: totalIn - received }, deliveryFee].filter(
+			(fee) => !!fee,
+		),
 	);
 };
 
-export type ValuedAmount = TokenAmount & { value: bigint | null | undefined };
+type ValuedAmount = TokenAmount & { value: bigint | null | undefined };
+
+type FeeShare = { share: number; isPartial: boolean };
+
+export type TransferFees = FeeShare & { fees: TokenAmount[] };
 
 export const getFeeShare = (
 	sent: ValuedAmount,
 	fees: ValuedAmount[],
-): number | undefined => {
+): FeeShare => {
 	let share = 0;
+	let isPartial = false;
 	for (const fee of fees) {
 		const feeShare =
 			fee.tokenId === sent.tokenId
 				? getShare(fee.plancks, sent.plancks)
 				: getShare(fee.value, sent.value);
-		if (feeShare === undefined) return undefined;
-		share += feeShare;
+		if (feeShare === undefined) isPartial = true;
+		else share += feeShare;
 	}
-	return share;
+	return { share, isPartial };
 };
 
 export const getRiskSubmitGate = (

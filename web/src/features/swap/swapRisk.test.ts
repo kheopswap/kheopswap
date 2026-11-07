@@ -286,7 +286,6 @@ describe("getTransferFees", () => {
 		id: "hydration-asset::hydration::22",
 		decimals: 6,
 	} as const;
-	const HDX = "native::hydration";
 
 	it("adds the fees paid in the sent token to what does not arrive", () => {
 		expect(
@@ -296,9 +295,8 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000_000n,
 				received: 995_000_000n,
 				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
-				transactionFee: { tokenId: DOT.id, plancks: 11_000_000n },
 			}),
-		).toEqual([{ tokenId: DOT.id, plancks: 321_000_000n }]);
+		).toEqual([{ tokenId: DOT.id, plancks: 310_000_000n }]);
 	});
 
 	it("lists the fees paid in another token on their own", () => {
@@ -309,11 +307,10 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000n,
 				received: 980_000n,
 				deliveryFee: { tokenId: DOT.id, plancks: 305_000_000n },
-				transactionFee: { tokenId: DOT.id, plancks: 11_000_000n },
 			}),
 		).toEqual([
 			{ tokenId: USDC.id, plancks: 20_000n },
-			{ tokenId: DOT.id, plancks: 316_000_000n },
+			{ tokenId: DOT.id, plancks: 305_000_000n },
 		]);
 	});
 
@@ -325,12 +322,8 @@ describe("getTransferFees", () => {
 				totalIn: 100_000_000n,
 				received: 83_000_000n,
 				deliveryFee: { tokenId: HYDRATION_DOT.id, plancks: 0n },
-				transactionFee: { tokenId: HDX, plancks: 573_200_000_000n },
 			}),
-		).toEqual([
-			{ tokenId: HYDRATION_DOT.id, plancks: 17_000_000n },
-			{ tokenId: HDX, plancks: 573_200_000_000n },
-		]);
+		).toEqual([{ tokenId: HYDRATION_DOT.id, plancks: 17_000_000n }]);
 	});
 
 	it("is unknown when the tokens do not share decimals", () => {
@@ -341,7 +334,6 @@ describe("getTransferFees", () => {
 				totalIn: 1_000_000_000n,
 				received: 995_000n,
 				deliveryFee: undefined,
-				transactionFee: undefined,
 			}),
 		).toBeUndefined();
 	});
@@ -359,23 +351,24 @@ describe("getFeeShare", () => {
 			getFeeShare(sent, [
 				{ tokenId: sent.tokenId, plancks: 20_000n, value: undefined },
 			]),
-		).toBe(0.02);
+		).toEqual({ share: 0.02, isPartial: false });
 	});
 
 	it("adds the fees paid in another token by their value", () => {
-		expect(
-			getFeeShare(sent, [
-				{ tokenId: sent.tokenId, plancks: 20_000n, value: undefined },
-				{ tokenId: "native::pah", plancks: 316_000_000n, value: 130_000n },
-			]),
-		).toBeCloseTo(0.15);
+		const { share, isPartial } = getFeeShare(sent, [
+			{ tokenId: sent.tokenId, plancks: 20_000n, value: undefined },
+			{ tokenId: "native::pah", plancks: 316_000_000n, value: 130_000n },
+		]);
+		expect(share).toBeCloseTo(0.15);
+		expect(isPartial).toBe(false);
 	});
 
-	it("is unknown while a fee in another token has no value", () => {
+	it("counts what it can measure when a fee in another token has no value", () => {
 		expect(
-			getFeeShare(sent, [
+			getFeeShare({ ...sent, value: null }, [
+				{ tokenId: sent.tokenId, plancks: 500_000n, value: undefined },
 				{ tokenId: "native::pah", plancks: 316_000_000n, value: undefined },
 			]),
-		).toBeUndefined();
+		).toEqual({ share: 0.5, isPartial: true });
 	});
 });

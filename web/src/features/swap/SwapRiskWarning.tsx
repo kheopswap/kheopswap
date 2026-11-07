@@ -1,21 +1,11 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { type FC, Fragment } from "react";
-import { useStablePlancksMulti } from "../../hooks/useStablePlancksMulti";
-import type { TokenAmount } from "../../registry/tokens/types";
 import { cn } from "../../utils/cn";
 import { formatPercent } from "../../utils/formatPercent";
-import { isBigInt } from "../../utils/isBigInt";
-import { useTransaction } from "../transaction/TransactionProvider";
 import { TokenAmountValue } from "./routes/AmmPathValues";
 import { getXcmChainNames } from "./routes/xcm/XcmQuoteRows";
 import { useSwap } from "./SwapProvider";
-import {
-	getFeeShare,
-	getTransferFees,
-	isTransferRisk,
-	type LossCause,
-	type SwapLoss,
-} from "./swapRisk";
+import { isTransferRisk, type LossCause, type SwapLoss } from "./swapRisk";
 
 const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	const { details } = useSwap();
@@ -46,44 +36,12 @@ const LossCauseText: FC<{ cause: LossCause | null }> = ({ cause }) => {
 	}
 };
 
-const NO_FEES: TokenAmount[] = [];
-
-const useFeeShare = (
-	sent: TokenAmount | undefined,
-	fees: TokenAmount[] | undefined = NO_FEES,
-) => {
-	const amounts = sent ? [sent, ...fees] : NO_FEES;
-	const { data: values } = useStablePlancksMulti({ inputs: amounts });
-	const [sentValue, ...feeValues] = amounts.map((amount, index) => ({
-		...amount,
-		value: values[index]?.stablePlancks,
-	}));
-	return sentValue && getFeeShare(sentValue, feeValues);
-};
-
 const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 	ratio,
 	cause,
 }) => {
-	const { tokenIn, tokenOut, totalIn, swapPlancksOut, details } = useSwap();
-	const { feeEstimate, feeToken } = useTransaction();
-	const fees = getTransferFees({
-		tokenIn,
-		tokenOut,
-		totalIn,
-		received: swapPlancksOut,
-		deliveryFee:
-			details.kind === "amm-swap" ? undefined : details.quote.deliveryFee,
-		transactionFee:
-			feeToken && isBigInt(feeEstimate)
-				? { tokenId: feeToken.id, plancks: feeEstimate }
-				: undefined,
-	});
-	const share = useFeeShare(
-		tokenIn && totalIn ? { tokenId: tokenIn.id, plancks: totalIn } : undefined,
-		fees,
-	);
-	if (!fees?.length || !tokenOut || !swapPlancksOut)
+	const { tokenOut, swapPlancksOut, transferFees } = useSwap();
+	if (!transferFees?.fees.length || !tokenOut || !swapPlancksOut)
 		return (
 			<>
 				Fees take {formatPercent(ratio)} of what you send
@@ -93,15 +51,14 @@ const TransferFeesText: FC<{ ratio: number; cause: LossCause | null }> = ({
 	return (
 		<>
 			You pay{" "}
-			{fees.map((fee, index) => (
+			{transferFees.fees.map((fee, index) => (
 				<Fragment key={fee.tokenId}>
 					{index > 0 && " + "}
 					<TokenAmountValue {...fee} />
 				</Fragment>
 			))}{" "}
-			in fees
-			{share !== undefined && ` (${formatPercent(share)} of what you send)`} to
-			deliver{" "}
+			in fees ({transferFees.isPartial && "at least "}
+			{formatPercent(ratio)} of what you send) to deliver{" "}
 			<TokenAmountValue tokenId={tokenOut.id} plancks={swapPlancksOut} />.
 		</>
 	);
