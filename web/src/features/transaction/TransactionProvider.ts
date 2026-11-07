@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
-import type { TokenId } from "../../registry/tokens/types";
+import type { Token, TokenId } from "../../registry/tokens/types";
 import type { TransactionType } from "../../state/transactions/types";
 import type { AnyTransaction } from "../../types/transactions";
 import { provideContext } from "../../utils/provideContext";
@@ -13,6 +13,13 @@ import { useTransactionSubmit } from "./useTransactionSubmit";
 export type CallSpendings = Partial<
 	Record<TokenId, { plancks: bigint; allowDeath: boolean }>
 >;
+
+export const getTokenSpending = (
+	token: Pick<Token, "id" | "type">,
+	plancks: bigint,
+): CallSpendings => ({
+	[token.id]: { plancks, allowDeath: token.type !== "native" },
+});
 
 export type SubmitGate =
 	| { status: "open" }
@@ -122,8 +129,13 @@ const useTransactionProvider = ({
 
 	const isDryRunConclusive =
 		isChainIdAssetHub(chainId) &&
-		!fees.options?.asset &&
-		!(fees.feeToken && balanceCheck.insufficientBalances[fees.feeToken.id]);
+		!isLoading &&
+		!error &&
+		!!fees.options &&
+		!fees.options.asset &&
+		!!fees.feeEstimate &&
+		!!fees.feeToken &&
+		!balanceCheck.insufficientBalances[fees.feeToken.id];
 
 	// Cross-concern: can submit
 	const canSubmit = useMemo(() => {

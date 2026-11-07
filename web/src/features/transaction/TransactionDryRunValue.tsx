@@ -12,7 +12,7 @@ import { formatTxError } from "../../utils/getErrorMessageFromTxEvents";
 import { useTransaction } from "./TransactionProvider";
 
 export const TransactionDryRunSummaryValue = () => {
-	const { chainId, dryRun, errorDryRun, isLoadingDryRun, isDryRunConclusive } =
+	const { chainId, dryRun, errorDryRun, isLoading, isDryRunConclusive } =
 		useTransaction();
 
 	const { data: errorMessage } = useDryRunError({ chainId, dryRun });
@@ -25,7 +25,7 @@ export const TransactionDryRunSummaryValue = () => {
 		return formatTxError(dryRun.value.execution_result.value.error);
 	}, [dryRun, errorMessage]);
 
-	if (isLoadingDryRun) return <Shimmer className="h-4">Success</Shimmer>;
+	if (isLoading) return <Shimmer className="h-4">Success</Shimmer>;
 
 	if (errorDryRun || (dryRun && !dryRun.success))
 		return <span className="text-muted">Unavailable</span>;

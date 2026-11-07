@@ -61,7 +61,8 @@ const watchBalance = async (balanceId: BalanceId) => {
 			});
 
 			return account$.subscribe(({ value: account }) => {
-				const balance = account.data.free - account.data.frozen;
+				const { free, frozen, reserved } = account.data;
+				const balance = frozen > reserved ? free - (frozen - reserved) : free;
 
 				updateBalance(balanceId, balance);
 			});
