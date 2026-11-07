@@ -1,7 +1,9 @@
 import YAML from "yaml";
+import { getAssetHubMirrorTokenIds } from "../../utils/getAssetHubMirrorTokenId";
 import { logger } from "../../utils/logger";
 import { safeParse, safeStringify } from "../../utils/serialization";
 import { getValidTokenLogo } from "../../utils/tokenLogo";
+import { getChains, isChainAssetHub } from "../chains/chains";
 import type { XcmV5Multilocation } from "../types/xcm";
 import { TOKENS_BLACKLIST } from "./blacklist";
 import { buildToken } from "./buildToken";
@@ -43,14 +45,6 @@ const generatedTokens = (
 	] as Token[]
 ).map(normalizeTokenLocation);
 
-export const KNOWN_TOKENS_LIST = [...nativeTokens, ...generatedTokens]
-	.map(normalizeTokenLogo)
-	.filter((token) => !TOKENS_BLACKLIST.has(token.id));
-
-export const KNOWN_TOKENS_MAP = Object.fromEntries(
-	KNOWN_TOKENS_LIST.map((a) => [a.id, a]),
-) as Record<TokenId, Token>;
-
 // Token overrides (manually curated YAML — keyed by id)
 const tokensOverrides = YAML.parse(tokensOverridesYaml) as ({
 	id: TokenId;
@@ -59,6 +53,46 @@ const tokensOverrides = YAML.parse(tokensOverridesYaml) as ({
 export const TOKENS_OVERRIDES_MAP = Object.fromEntries(
 	tokensOverrides.map((a) => [a.id, normalizeTokenLogo(a)]),
 ) as Record<TokenId, Partial<Token>>;
+
+const withAssetHubMirrorListings = (tokens: Token[]): Token[] => {
+	const overriddenTokens = Object.fromEntries(
+		tokens.map((token) => [
+			token.id,
+			{ ...token, ...TOKENS_OVERRIDES_MAP[token.id] },
+		]),
+	) as Record<TokenId, Token>;
+	const chains = getChains();
+	const mirrorTokenIds = new Map(
+		chains.filter(isChainAssetHub).flatMap((assetHub) => [
+			...getAssetHubMirrorTokenIds(
+				overriddenTokens,
+				assetHub,
+				chains.filter((chain) => chain.relay === assetHub.relay),
+			),
+		]),
+	);
+
+	return tokens.map((token) => {
+		const mirrorTokenId = mirrorTokenIds.get(token.id);
+		const mirror = mirrorTokenId && overriddenTokens[mirrorTokenId];
+		if (token.type !== "hydration-asset" || !mirror) return token;
+		return {
+			...token,
+			logo: mirror.logo ?? token.logo,
+			verified: token.verified || !!mirror.verified || mirror.type === "native",
+		};
+	});
+};
+
+export const KNOWN_TOKENS_LIST = withAssetHubMirrorListings(
+	[...nativeTokens, ...generatedTokens]
+		.map(normalizeTokenLogo)
+		.filter((token) => !TOKENS_BLACKLIST.has(token.id)),
+);
+
+export const KNOWN_TOKENS_MAP = Object.fromEntries(
+	KNOWN_TOKENS_LIST.map((a) => [a.id, a]),
+) as Record<TokenId, Token>;
 
 // Validate that every override id references an existing token
 for (const override of tokensOverrides) {

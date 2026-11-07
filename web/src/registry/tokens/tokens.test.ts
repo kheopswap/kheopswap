@@ -17,4 +17,19 @@ describe("KNOWN_TOKENS_MAP", () => {
 			},
 		});
 	});
+
+	it("shows Hydration assets with the logo of their Asset Hub counterpart", () => {
+		expect(KNOWN_TOKENS_MAP["hydration-asset::hydration::5"]).toMatchObject({
+			logo: "./img/tokens/DOT.svg",
+			verified: true,
+		});
+		expect(KNOWN_TOKENS_MAP["hydration-asset::hydration::10"]).toMatchObject({
+			logo: "./img/tokens/USDT.webp",
+			verified: true,
+		});
+		expect(KNOWN_TOKENS_MAP["hydration-asset::hydration::22"]).toMatchObject({
+			logo: "./img/tokens/USDC.webp",
+			verified: true,
+		});
+	});
 });
