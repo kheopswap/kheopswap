@@ -4,11 +4,12 @@ import { FormFieldContainer } from "../../components/FormFieldContainer";
 import { useTransaction } from "../transaction/TransactionProvider";
 import { TransactionSubmitButton } from "../transaction/TransactionSubmitButton";
 import { useSwap } from "./SwapProvider";
+import { SwapRiskWarning } from "./SwapRiskWarning";
 import { SwapSummary } from "./SwapSummary";
 import { SwapTokensEditor } from "./SwapTokensEditor";
 
 export const SwapForm = () => {
-	const { from, onFromChange, tokenIn, route } = useSwap();
+	const { from, onFromChange, tokenIn, route, risk } = useSwap();
 	const { onSubmit } = useTransaction();
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
@@ -37,8 +38,14 @@ export const SwapForm = () => {
 					<SwapTokensEditor />
 				</FormFieldContainer>
 
+				<SwapRiskWarning />
+
 				<TransactionSubmitButton>
-					{route?.kind === "xcm-transfer" ? "Transfer" : "Swap"}
+					{route?.kind === "xcm-transfer"
+						? "Transfer"
+						: risk.level === "confirm"
+							? "Swap anyway"
+							: "Swap"}
 				</TransactionSubmitButton>
 
 				<SwapSummary />
