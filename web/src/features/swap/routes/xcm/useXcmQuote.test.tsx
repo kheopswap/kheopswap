@@ -363,7 +363,12 @@ describe("useXcmQuote", () => {
 		});
 		const { result } = renderQuote({
 			extra: () =>
-				useDryRun({ chainId: "pah", from: dotSuccess.beneficiary, call }),
+				useDryRun({
+					chainId: "pah",
+					from: dotSuccess.beneficiary,
+					call,
+					balances: fundedOrigin.origin,
+				}),
 		});
 
 		await waitFor(() => expect(result.current.data?.success).toBe(true));
@@ -494,6 +499,7 @@ describe("useXcmQuote", () => {
 				beneficiary: dotSuccess.beneficiary,
 				call,
 				fakeCall,
+				balances: fundedOrigin,
 			});
 		const first = renderHook(quote, { wrapper });
 		await waitFor(() => expect(first.result.current.data?.success).toBe(true));

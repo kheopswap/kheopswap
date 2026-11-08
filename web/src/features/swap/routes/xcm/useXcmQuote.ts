@@ -20,6 +20,7 @@ import type { AnyTransaction } from "../../../../types/transactions";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import { getXcmFirstHop, getXcmHub, type XcmRoute } from "../swapRoute";
+import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import {
 	composeXcmQuote,
 	getDeliveryFeeTokenId,
@@ -131,6 +132,7 @@ type UseXcmQuoteProps = {
 	beneficiary: SS58String | null;
 	call: AnyTransaction | null | undefined;
 	fakeCall: AnyTransaction | null | undefined;
+	balances: XcmDryRunBalances;
 };
 
 export const useXcmQuote = ({
@@ -139,16 +141,25 @@ export const useXcmQuote = ({
 	beneficiary,
 	call,
 	fakeCall,
+	balances,
 }: UseXcmQuoteProps): XcmQuoteState => {
 	const hub = route && getXcmHub(route);
 	const firstHopParaId = route && getChainById(getXcmFirstHop(route)).paraId;
 	const destinationParaId = route && getChainById(route.destination).paraId;
 
-	const origin = useDryRun({ chainId: route?.origin, from: beneficiary, call });
+	const origin = useDryRun({
+		chainId: route?.origin,
+		from: beneficiary,
+		call,
+		balances: balances.origin,
+		enabled: !balances.isLoading,
+	});
 	const originEstimate = useDryRun({
 		chainId: route?.origin,
 		from: beneficiary,
 		call: fakeCall,
+		balances: balances.origin,
+		enabled: !balances.isLoading,
 	});
 
 	const originLeg = useMemo(
@@ -270,6 +281,7 @@ export const useXcmQuote = ({
 
 	return {
 		isLoading:
+			(balances.isLoading && !!call) ||
 			origin.isFetching ||
 			(!!message &&
 				(hubLeg.isFetching ||

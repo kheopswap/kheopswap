@@ -59,8 +59,19 @@ vi.mock("../../../../papi/getApi", () => ({
 	}),
 }));
 
-vi.mock("../../../../hooks/useBalance", () => ({
-	useBalance: () => ({ data: chain.balanceIn, isLoading: false }),
+vi.mock("../../../../hooks/useBalances", () => ({
+	useBalances: ({
+		balanceDefs = [],
+	}: {
+		balanceDefs?: { address: string; tokenId: string }[];
+	}) => ({
+		isLoading: false,
+		data: balanceDefs.map((def) => ({
+			...def,
+			balance: chain.balanceIn,
+			isLoading: false,
+		})),
+	}),
 }));
 
 vi.mock("../../../../state/relay", () => ({

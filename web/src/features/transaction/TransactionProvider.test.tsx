@@ -34,6 +34,8 @@ const ethereum = vi.hoisted(() => ({
 	platform: "polkadot" as "polkadot" | "ethereum",
 }));
 
+const dryRunQuery = vi.hoisted(() => ({ isFetching: false }));
+
 const fees = vi.hoisted(() => ({
 	options: { asset: undefined } as { asset: object | undefined } | undefined,
 	feeEstimate: 1n as bigint | null,
@@ -49,6 +51,7 @@ beforeEach(() => {
 	fees.feeEstimate = 1n;
 	fees.errorFeeEstimate = undefined;
 	fees.dryRun = successfulDryRun;
+	dryRunQuery.isFetching = false;
 });
 
 afterEach(cleanup);
@@ -58,6 +61,14 @@ Element.prototype.animate ??= () =>
 
 vi.mock("../../hooks/useDryRunError", () => ({
 	useDryRunError: () => ({ data: null }),
+}));
+
+vi.mock("../../hooks/useDryRun", () => ({
+	useDryRun: () => ({
+		data: fees.dryRun,
+		isFetching: dryRunQuery.isFetching,
+		error: undefined,
+	}),
 }));
 
 vi.mock("./useTransactionEthereum", () => ({
@@ -74,17 +85,16 @@ vi.mock("./useTransactionFees", () => ({
 	useTransactionFees: () => ({
 		isResolvingSigner: false,
 		isLoadingFeeEstimate: false,
-		isLoadingDryRun: false,
 		feeEstimate: fees.feeEstimate,
 		errorFeeEstimate: fees.errorFeeEstimate,
 		feeToken: { id: "native::pah" },
 		options: fees.options,
-		dryRun: fees.dryRun,
 	}),
 }));
 
 vi.mock("./useTransactionBalanceCheck", () => ({
 	useTransactionBalanceCheck: () => ({
+		balances: {},
 		insufficientBalances: balanceCheck.insufficientBalances,
 		isLoadingBalances: balanceCheck.isLoadingBalances,
 		isLoadingExistentialDeposits: false,
@@ -168,6 +178,14 @@ describe("TransactionProvider fee shortfall", () => {
 	it("keeps submit disabled on Asset Hub when the native fee falls short, despite a successful dry run", () => {
 		balanceCheck.insufficientBalances = nativeFeeShortfall;
 		expect(renderTransaction(undefined, "pah").canSubmit).toBe(false);
+	});
+
+	it("reports loading and keeps submit disabled while the dry run reruns", () => {
+		dryRunQuery.isFetching = true;
+		const transaction = renderTransaction();
+		expect(transaction.isLoading).toBe(true);
+		expect(transaction.isLoadingDryRun).toBe(true);
+		expect(transaction.canSubmit).toBe(false);
 	});
 
 	it("keeps submit disabled on Asset Hub while balances load, despite a successful dry run", () => {

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useDryRun } from "../../hooks/useDryRun";
 import { isChainIdAssetHub } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import type { Token, TokenId } from "../../registry/tokens/types";
@@ -55,10 +56,8 @@ const useTransactionProvider = ({
 	transactionTitle = "Transaction",
 	submitGate = OPEN_SUBMIT_GATE,
 }: UseTransactionProviderProps) => {
-	// 1. Ethereum-specific concerns
 	const ethereum = useTransactionEthereum({ signer, chainId });
 
-	// 2. Fee estimation & dry run
 	const fees = useTransactionFees({
 		signer,
 		signerAddress: ethereum.account?.address,
@@ -69,7 +68,6 @@ const useTransactionProvider = ({
 		nativeToken: ethereum.nativeToken,
 	});
 
-	// 3. Balance sufficiency checks
 	const balanceCheck = useTransactionBalanceCheck({
 		accountAddress: ethereum.account?.address,
 		call,
@@ -78,7 +76,19 @@ const useTransactionProvider = ({
 		feeEstimate: fees.feeEstimate,
 	});
 
-	// 4. Submit lifecycle
+	const {
+		data: dryRun,
+		isFetching: isFetchingDryRun,
+		error: errorDryRun,
+	} = useDryRun({
+		chainId,
+		from: fees.signerSubstrateAddress,
+		call,
+		balances: balanceCheck.balances,
+		enabled: !balanceCheck.isLoadingBalances,
+	});
+	const isLoadingDryRun = isFetchingDryRun || balanceCheck.isLoadingBalances;
+
 	const { onSubmit } = useTransactionSubmit({
 		account: ethereum.account,
 		signerAddress: fees.signerSubstrateAddress,
@@ -108,7 +118,7 @@ const useTransactionProvider = ({
 			balanceCheck.isLoadingExistentialDeposits ||
 			fees.isLoadingFeeEstimate ||
 			balanceCheck.isLoadingFeeTokenBalance ||
-			fees.isLoadingDryRun ||
+			isLoadingDryRun ||
 			submitGate.status === "pending"
 		);
 	}, [
@@ -117,7 +127,7 @@ const useTransactionProvider = ({
 		balanceCheck.isLoadingExistentialDeposits,
 		fees.isLoadingFeeEstimate,
 		balanceCheck.isLoadingFeeTokenBalance,
-		fees.isLoadingDryRun,
+		isLoadingDryRun,
 		submitGate.status,
 	]);
 
@@ -125,8 +135,7 @@ const useTransactionProvider = ({
 		Object.keys(balanceCheck.insufficientBalances).length > 0;
 
 	const isRejectedByDryRun =
-		fees.dryRun?.success === true &&
-		!fees.dryRun.value.execution_result.success;
+		dryRun?.success === true && !dryRun.value.execution_result.success;
 
 	const isDryRunConclusive =
 		isChainIdAssetHub(chainId) &&
@@ -199,10 +208,10 @@ const useTransactionProvider = ({
 
 		onReset,
 
-		dryRun: fees.dryRun,
+		dryRun,
 		isDryRunConclusive,
-		isLoadingDryRun: fees.isLoadingDryRun,
-		errorDryRun: fees.errorDryRun,
+		isLoadingDryRun,
+		errorDryRun,
 	};
 };
 
