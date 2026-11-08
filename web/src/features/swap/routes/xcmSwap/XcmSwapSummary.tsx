@@ -18,6 +18,7 @@ import { TransactionFeeSummaryRow } from "../../../transaction/TransactionFeeSum
 import { PriceImpact } from "../../PriceImpact";
 import { Slippage } from "../../Slippage";
 import { useSwap } from "../../SwapProvider";
+import { SwapRate } from "../../SwapRate";
 import { ProtocolFeeValue, RouteValue } from "../AmmPathValues";
 import type {
 	XcmDestinationSwapDetails,
@@ -74,6 +75,7 @@ export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 						value={<RouteValue path={route.path} />}
 					/>
 				)}
+				<FormSummaryRow label="Rate" value={<SwapRate />} />
 				<FormSummaryRow
 					label="Price impact"
 					value={

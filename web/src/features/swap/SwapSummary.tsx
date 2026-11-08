@@ -15,6 +15,7 @@ import { XcmSwapSummary } from "./routes/xcmSwap/XcmSwapSummary";
 import { XcmTransferSummary } from "./routes/xcmTransfer/XcmTransferSummary";
 import { Slippage } from "./Slippage";
 import { type AmmSwapDetails, useSwap } from "./SwapProvider";
+import { SwapRate } from "./SwapRate";
 
 const PoolReservesValue: FC<{ liquidity: PathLiquidity | null }> = ({
 	liquidity,
@@ -69,6 +70,7 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 						value={<PoolReservesValue liquidity={liquidity} />}
 					/>
 				)}
+				<FormSummaryRow label="Rate" value={<SwapRate />} />
 				<FormSummaryRow
 					label="Price impact"
 					value={
