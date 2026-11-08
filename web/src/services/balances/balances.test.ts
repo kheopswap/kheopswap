@@ -146,6 +146,7 @@ describe("balances service pipeline", () => {
 			(s) => s?.status === "loaded",
 		);
 		expect(partlyOverlapping?.balance).toBe(90n);
+		expect(partlyOverlapping?.frozen).toBe(10n);
 
 		getSubject(subjectKey).next({
 			value: { data: { free: 100n, reserved: 50n, frozen: 40n } },
@@ -155,6 +156,34 @@ describe("balances service pipeline", () => {
 			(s) => s?.balance === 100n,
 		);
 		expect(fullyOverlapping?.balance).toBe(100n);
+		expect(fullyOverlapping?.frozen).toBe(0n);
+
+		removeBalancesSubscription(subId);
+	});
+
+	it("updates the state when a lock changes the frozen funds but not the spendable balance", async () => {
+		const address = "5TestAddressVestingTarget";
+		const balanceId = getBalanceId({ address, tokenId: "native::pasah" });
+		const subjectKey = `native||${address}`;
+
+		const subId = addBalanceSubscription(balanceId);
+		await vi.waitFor(() =>
+			expect(mocks.accountSubjects.has(subjectKey)).toBe(true),
+		);
+
+		getSubject(subjectKey).next({
+			value: { data: { free: 100n, reserved: 0n, frozen: 0n } },
+		});
+		await waitForBalanceState(balanceId, (s) => s?.status === "loaded");
+
+		getSubject(subjectKey).next({
+			value: { data: { free: 150n, reserved: 0n, frozen: 50n } },
+		});
+		const locked = await waitForBalanceState(
+			balanceId,
+			(s) => s?.frozen === 50n,
+		);
+		expect(locked?.balance).toBe(100n);
 
 		removeBalancesSubscription(subId);
 	});
@@ -177,6 +206,7 @@ describe("balances service pipeline", () => {
 			(s) => s?.status === "loaded",
 		);
 		expect(loaded?.balance).toBe(60n);
+		expect(loaded?.frozen).toBe(40n);
 
 		removeBalancesSubscription(subId);
 	});

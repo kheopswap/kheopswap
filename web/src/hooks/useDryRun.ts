@@ -3,6 +3,7 @@ import { Enum, type SS58String } from "polkadot-api";
 import { type Api, getApi } from "../papi/getApi";
 import type { ChainId } from "../registry/chains/types";
 import type { TokenId } from "../registry/tokens/types";
+import type { SpendableBalance } from "../services/balances/types";
 import type { AnyTransaction } from "../types/transactions";
 import { logger } from "../utils/logger";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
@@ -13,7 +14,7 @@ type UseDryRunProps<Id extends ChainId = ChainId> = {
 	chainId: Id | null | undefined;
 	from: SS58String | null | undefined;
 	call: AnyTransaction | null | undefined;
-	balances?: Partial<Record<TokenId, bigint | undefined>>;
+	balances?: Partial<Record<TokenId, SpendableBalance | undefined>>;
 	enabled?: boolean;
 };
 

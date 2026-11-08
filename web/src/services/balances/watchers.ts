@@ -7,7 +7,7 @@ import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
 import { balancesStore$ } from "./store";
 import { balanceSubscriptions$ } from "./subscriptions";
-import type { BalanceId } from "./types";
+import type { BalanceId, SpendableBalance } from "./types";
 import { parseBalanceId } from "./utils";
 
 const statusByBalanceId$ = new BehaviorSubject<Record<string, LoadingStatus>>(
@@ -31,16 +31,19 @@ const updateBalanceLoadingStatus = (
 	stop();
 };
 
-const updateBalance = (balanceId: BalanceId, balance: bigint) => {
+const updateBalance = (
+	balanceId: BalanceId,
+	{ balance, frozen }: SpendableBalance,
+) => {
 	const stop = logger.cumulativeTimer("updateBalance");
 
 	const { tokenId, address } = parseBalanceId(balanceId);
+	const stored = balancesStore$.value[balanceId];
 
-	// update balances store if necessary
-	if (balancesStore$.value[balanceId]?.balance !== balance)
+	if (stored?.balance !== balance || stored.frozen !== frozen)
 		balancesStore$.next({
 			...balancesStore$.value,
-			[balanceId]: { address, tokenId, balance },
+			[balanceId]: { address, tokenId, balance, frozen },
 		});
 
 	// indicate it's loaded
@@ -56,10 +59,18 @@ const getNativeSpendable = (
 		frozen,
 		reserved,
 	}: { free: bigint; frozen: bigint; reserved: bigint },
-) => {
-	if (isChainIdHydration(chainId)) return free - frozen;
-	return frozen > reserved ? free - (frozen - reserved) : free;
+): SpendableBalance => {
+	if (isChainIdHydration(chainId)) return { balance: free - frozen, frozen };
+	const withheld = frozen > reserved ? frozen - reserved : 0n;
+	return { balance: free - withheld, frozen: withheld };
 };
+
+const getLiquidSpendable = (
+	account: { status: { type: string }; balance: bigint } | undefined,
+): SpendableBalance => ({
+	balance: account?.status.type === "Liquid" ? account.balance : 0n,
+	frozen: 0n,
+});
 
 const watchBalance = async (balanceId: BalanceId) => {
 	const { tokenId, address } = parseBalanceId(balanceId);
@@ -90,9 +101,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 			);
 
 			return account$.subscribe(({ value: account }) => {
-				const balance =
-					account?.status.type === "Liquid" ? account.balance : 0n;
-				updateBalance(balanceId, balance);
+				updateBalance(balanceId, getLiquidSpendable(account));
 			});
 		}
 		case "pool-asset": {
@@ -104,9 +113,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 			);
 
 			return account$.subscribe(({ value: account }) => {
-				const balance =
-					account?.status.type === "Liquid" ? account.balance : 0n;
-				updateBalance(balanceId, balance);
+				updateBalance(balanceId, getLiquidSpendable(account));
 			});
 		}
 		case "foreign-asset": {
@@ -118,9 +125,7 @@ const watchBalance = async (balanceId: BalanceId) => {
 			);
 
 			return account$.subscribe(({ value: account }) => {
-				const balance =
-					account?.status.type === "Liquid" ? account.balance : 0n;
-				updateBalance(balanceId, balance);
+				updateBalance(balanceId, getLiquidSpendable(account));
 			});
 		}
 		case "hydration-asset": {
@@ -132,8 +137,10 @@ const watchBalance = async (balanceId: BalanceId) => {
 			);
 
 			return account$.subscribe(({ value: account }) => {
-				const balance = account.free - account.frozen;
-				updateBalance(balanceId, balance);
+				updateBalance(balanceId, {
+					balance: account.free - account.frozen,
+					frozen: account.frozen,
+				});
 			});
 		}
 		default:
