@@ -346,7 +346,7 @@ describe("useXcmDestinationSwap fee estimate", () => {
 		);
 		const funded: XcmDryRunBalances = {
 			isLoading: false,
-			origin: { [usdtToPink.tokenIdIn]: 10n },
+			origin: { [usdtToPink.tokenIdIn]: { balance: 10n, frozen: 0n } },
 		};
 		const { result, rerender } = renderHook(
 			(props: { balances: XcmDryRunBalances }) =>
@@ -363,7 +363,10 @@ describe("useXcmDestinationSwap fee estimate", () => {
 		await waitFor(() => expect(result.current.fee).toBeDefined());
 
 		rerender({
-			balances: { isLoading: false, origin: { [usdtToPink.tokenIdIn]: 5n } },
+			balances: {
+				isLoading: false,
+				origin: { [usdtToPink.tokenIdIn]: { balance: 5n, frozen: 0n } },
+			},
 		});
 		await waitFor(() => expect(chain.dryRunCall).toHaveBeenCalledTimes(2));
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
