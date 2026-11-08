@@ -70,6 +70,7 @@ export function useDryRun({
 		},
 		retry: 1,
 		refetchInterval: false,
+		refetchOnWindowFocus: false,
 		structuralSharing: false,
 	});
 }
