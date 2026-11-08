@@ -1,6 +1,36 @@
-import { describe, expect, it } from "vitest";
+import { renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import type { AnyTransaction } from "../../types/transactions";
 import { getXcmCallSpendings } from "../swap/routes/xcm/xcmQuote";
-import { getInsufficientBalances } from "./useTransactionBalanceCheck";
+import {
+	getInsufficientBalances,
+	useTransactionBalanceCheck,
+} from "./useTransactionBalanceCheck";
+
+vi.mock("../../hooks/useBalances", () => ({
+	useBalances: () => ({
+		isLoading: true,
+		data: [
+			{
+				address: "5Signer",
+				tokenId: "native::pah",
+				balance: undefined,
+				frozen: undefined,
+				isLoading: true,
+			},
+		],
+	}),
+}));
+vi.mock("../../hooks/useBalance", () => ({
+	useBalance: () => ({ isLoading: true, data: undefined }),
+}));
+vi.mock("../../hooks/useExistentialDeposits", () => ({
+	useExistentialDeposits: () => ({
+		isLoading: false,
+		error: undefined,
+		data: { "native::pah": 10n },
+	}),
+}));
 
 const HYDRATION_DOT = "hydration-asset::hydration::5";
 const HDX = "native::hydration";
@@ -186,5 +216,22 @@ describe("getInsufficientBalances", () => {
 				fee: { tokenId: "native::pah", plancks: 10n },
 			}),
 		).toEqual({});
+	});
+});
+
+describe("useTransactionBalanceCheck", () => {
+	it("reports no shortfall while the fee token balance is loading", () => {
+		const { result } = renderHook(() =>
+			useTransactionBalanceCheck({
+				accountAddress: "5Signer",
+				call: {} as AnyTransaction,
+				callSpendings: {},
+				feeToken: { id: "native::pah" } as never,
+				feeEstimate: 100n,
+			}),
+		);
+
+		expect(result.current.isLoadingBalances).toBe(true);
+		expect(result.current.insufficientBalances).toEqual({});
 	});
 });

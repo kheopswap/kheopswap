@@ -4,7 +4,7 @@ import {
 	FormSummarySection,
 } from "../../components/FormSummary";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
-import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
+import { TransactionFeeSummaryRow } from "../transaction/TransactionFeeSummaryRow";
 
 export const TransferSummary = () => {
 	return (
@@ -14,10 +14,7 @@ export const TransferSummary = () => {
 					label="Simulation"
 					value={<TransactionDryRunSummaryValue />}
 				/>
-				<FormSummaryRow
-					label="Transaction fee"
-					value={<TransactionFeeSummaryValue />}
-				/>
+				<TransactionFeeSummaryRow />
 			</FormSummarySection>
 		</FormSummary>
 	);

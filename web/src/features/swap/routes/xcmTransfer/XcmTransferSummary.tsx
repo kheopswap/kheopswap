@@ -4,7 +4,7 @@ import {
 	FormSummaryRow,
 	FormSummarySection,
 } from "../../../../components/FormSummary";
-import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
+import { TransactionFeeSummaryRow } from "../../../transaction/TransactionFeeSummaryRow";
 import { useSwap } from "../../SwapProvider";
 import type { XcmTransferDetails } from "../xcm/useXcmRoute";
 import { XcmQuoteRows, XcmSimulationValue } from "../xcm/XcmQuoteRows";
@@ -25,10 +25,7 @@ export const XcmTransferSummary: FC<{ details: XcmTransferDetails }> = ({
 						label="Simulation"
 						value={<XcmSimulationValue quote={quote} route={route} />}
 					/>
-					<FormSummaryRow
-						label="Transaction fee"
-						value={<TransactionFeeSummaryValue />}
-					/>
+					<TransactionFeeSummaryRow />
 				</FormSummarySection>
 			)}
 		</FormSummary>

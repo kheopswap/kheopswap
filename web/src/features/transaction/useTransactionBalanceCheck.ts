@@ -14,6 +14,9 @@ import { getSpendableBalancesByTokenId } from "../../services/balances/utils";
 import type { AnyTransaction } from "../../types/transactions";
 import type { CallSpendings } from "./TransactionProvider";
 
+export const INSUFFICIENT_BALANCE_FOR_FEE =
+	"Insufficient balance to pay for fee";
+
 export const getInsufficientBalances = ({
 	callSpendings,
 	balances,
@@ -42,7 +45,7 @@ export const getInsufficientBalances = ({
 			balance < spendings + feePlancks ||
 			(!feeMayReapPayer && balance < feePlancks + depositToKeep)
 		)
-			result[tokenId] = "Insufficient balance to pay for fee";
+			result[tokenId] = INSUFFICIENT_BALANCE_FOR_FEE;
 		else if (!allowDeath && balance < spendings + feePlancks + depositToKeep)
 			result[tokenId] = "Insufficient balance to keep account alive";
 	}
@@ -106,7 +109,11 @@ export const useTransactionBalanceCheck = ({
 
 	const insufficientBalances = useMemo(
 		() =>
-			call && existentialDeposits && feeEstimate && feeToken
+			call &&
+			!isLoadingBalances &&
+			existentialDeposits &&
+			feeEstimate &&
+			feeToken
 				? getInsufficientBalances({
 						callSpendings,
 						balances: balancesByTokenId,
@@ -116,6 +123,7 @@ export const useTransactionBalanceCheck = ({
 				: {},
 		[
 			call,
+			isLoadingBalances,
 			balancesByTokenId,
 			existentialDeposits,
 			feeEstimate,
