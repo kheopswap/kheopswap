@@ -202,7 +202,16 @@ beforeEach(() => {
 	});
 });
 
-const NEVER = new Promise<never>(() => {});
+type RequestOptions = { at: string; signal: AbortSignal };
+
+const stallUntilAborted = (...args: unknown[]) => {
+	const { signal } = args.at(-1) as RequestOptions;
+	return new Promise<never>((_, reject) =>
+		signal.addEventListener("abort", () =>
+			reject(new DOMException("Abort Error", "AbortError")),
+		),
+	);
+};
 
 const runOnFakeTimers = () => {
 	beforeEach(() => {
@@ -294,7 +303,7 @@ describe("useXcmQuote", () => {
 			dotSuccess.origin.success &&
 				dotSuccess.origin.value.forwarded_xcms[0]?.[1][0],
 			{ type: "V5", value: { parents: 1, interior: { type: "Here" } } },
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(
 			{
@@ -306,7 +315,7 @@ describe("useXcmQuote", () => {
 			},
 			dotSuccess.origin.success &&
 				dotSuccess.origin.value.forwarded_xcms[0]?.[1][0],
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 	});
 
@@ -469,10 +478,11 @@ describe("useXcmQuote", () => {
 				},
 			},
 			message,
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(HYDRATION_LOCATION, message, {
 			at: "best",
+			signal: expect.any(AbortSignal),
 		});
 		expect(chain.calledChains).toEqual(
 			expect.arrayContaining([
@@ -584,17 +594,17 @@ describe("useXcmQuote on a stalled chain", () => {
 	it.each([
 		[
 			"Asset Hub dry run",
-			() => chain.dryRunCall.mockReturnValue(NEVER),
+			() => chain.dryRunCall.mockImplementation(stallUntilAborted),
 			{ kind: "origin-unavailable" },
 		],
 		[
 			"delivery fee",
-			() => chain.queryDeliveryFees.mockReturnValue(NEVER),
+			() => chain.queryDeliveryFees.mockImplementation(stallUntilAborted),
 			{ kind: "delivery-fee-unavailable" },
 		],
 		[
 			"Hydration dry run",
-			() => chain.dryRunXcm.mockReturnValue(NEVER),
+			() => chain.dryRunXcm.mockImplementation(stallUntilAborted),
 			{ kind: "destination-unavailable" },
 		],
 	] as const)(
@@ -613,6 +623,25 @@ describe("useXcmQuote on a stalled chain", () => {
 
 		await vi.advanceTimersByTimeAsync(3 * 31_000);
 		await waitFor(() => expect(result.current.data?.success).toBe(true));
+		const signalsSent = [
+			chain.dryRunCall,
+			chain.queryDeliveryFees,
+			chain.dryRunXcm,
+		].flatMap((query) =>
+			query.mock.calls.map((call) => (call.at(-1) as RequestOptions).signal),
+		);
+		expect(signalsSent.map((signal) => signal.aborted)).not.toContain(true);
+	});
+
+	it("skips the chain query when the quote is dropped while connecting", async () => {
+		chain.connectionDelayMs = 10_000;
+		const { unmount } = renderQuote();
+
+		await vi.advanceTimersByTimeAsync(5_000);
+		unmount();
+		await vi.advanceTimersByTimeAsync(10_000);
+
+		expect(chain.dryRunCall).not.toHaveBeenCalled();
 	});
 });
 
@@ -678,15 +707,16 @@ describe("useXcmQuote through Asset Hub", () => {
 			siblingLocation(1000),
 			toHub,
 			{ type: "V5", value: { parents: 1, interior: { type: "Here" } } },
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(siblingLocation(1004), toHub, {
 			at: "best",
+			signal: expect.any(AbortSignal),
 		});
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(
 			siblingLocation(1000),
 			firstMessage(dotPeopleToHydration.hubDryRun),
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.calledChains).toEqual(
 			expect.arrayContaining([
@@ -722,7 +752,7 @@ describe("useXcmQuote through Asset Hub", () => {
 
 		it("gives up on its dry run after 30 seconds", async () => {
 			givenHubTransfer(dotPeopleToHydration);
-			chain.dryRunXcm.mockReturnValue(NEVER);
+			chain.dryRunXcm.mockImplementation(stallUntilAborted);
 			const { result } = renderQuote({
 				route: peopleToHydration,
 				beneficiary: dotPeopleToHydration.beneficiary,

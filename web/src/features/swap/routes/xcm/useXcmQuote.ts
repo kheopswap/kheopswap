@@ -18,7 +18,7 @@ import type {
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
 import {
-	retryOnceUnlessTimedOut,
+	retryOnceUnlessAborted,
 	withChainQueryTimeout,
 } from "../../../../utils/chainQueryTimeout";
 import { isBigInt } from "../../../../utils/isBigInt";
@@ -54,6 +54,7 @@ const queryDeliveryFees = async (
 	origin: XcmRoute["origin"],
 	firstHop: ChainId,
 	message: XcmVersionedXcm,
+	querySignal: AbortSignal,
 ) => {
 	const destination = getParachainLocation(firstHop);
 	switch (origin) {
@@ -65,7 +66,7 @@ const queryDeliveryFees = async (
 		case "kpeople":
 		case "wpeople": {
 			const api = await getApi(origin);
-			return withChainQueryTimeout(
+			return withChainQueryTimeout(querySignal, (signal) =>
 				api.apis.XcmPaymentApi.query_delivery_fees(
 					destination,
 					message,
@@ -73,15 +74,16 @@ const queryDeliveryFees = async (
 						parents: 1,
 						interior: XcmV5Junctions.Here(),
 					}),
-					{ at: "best" },
+					{ at: "best", signal },
 				),
 			);
 		}
 		case "hydration": {
 			const api = await getApi(origin);
-			return withChainQueryTimeout(
+			return withChainQueryTimeout(querySignal, (signal) =>
 				api.apis.XcmPaymentApi.query_delivery_fees(destination, message, {
 					at: "best",
+					signal,
 				}),
 			);
 		}
@@ -92,11 +94,13 @@ const queryHubDryRun = async (
 	hub: ChainIdAssetHub,
 	origin: ChainId,
 	message: XcmVersionedXcm,
+	querySignal: AbortSignal,
 ) => {
 	const api = await getApi(hub);
-	return withChainQueryTimeout(
+	return withChainQueryTimeout(querySignal, (signal) =>
 		api.apis.DryRunApi.dry_run_xcm(getParachainLocation(origin), message, {
 			at: "best",
+			signal,
 		}),
 	);
 };
@@ -105,11 +109,13 @@ const queryDestinationDryRun = async (
 	destination: XcmRoute["destination"],
 	sender: ChainId,
 	message: XcmVersionedXcm,
+	querySignal: AbortSignal,
 ) => {
 	const api = await getApi(destination);
-	return withChainQueryTimeout(
+	return withChainQueryTimeout(querySignal, (signal) =>
 		api.apis.DryRunApi.dry_run_xcm(getParachainLocation(sender), message, {
 			at: "best",
+			signal,
 		}),
 	);
 };
@@ -126,17 +132,18 @@ const useXcmDeliveryFee = (
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!message,
-		queryFn: async () =>
+		queryFn: async ({ signal }) =>
 			route && message
 				? parseDeliveryFee(
 						await queryDeliveryFees(
 							route.origin,
 							getXcmFirstHop(route),
 							message,
+							signal,
 						),
 					)
 				: null,
-		retry: retryOnceUnlessTimedOut,
+		retry: retryOnceUnlessAborted,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
@@ -205,15 +212,15 @@ export const useXcmQuote = ({
 			safeQueryKeyPart(message),
 		],
 		enabled: !!route && !!hub && !!destinationParaId && !!message,
-		queryFn: async () =>
+		queryFn: async ({ signal }) =>
 			route && hub && destinationParaId && message
 				? parseHubDryRun(
-						await queryHubDryRun(hub, route.origin, message),
+						await queryHubDryRun(hub, route.origin, message, signal),
 						hub,
 						destinationParaId,
 					)
 				: null,
-		retry: retryOnceUnlessTimedOut,
+		retry: retryOnceUnlessAborted,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
@@ -235,18 +242,19 @@ export const useXcmQuote = ({
 			safeQueryKeyPart(destinationMessage),
 		],
 		enabled: !!route && !!beneficiary && !!destinationMessage,
-		queryFn: async () =>
+		queryFn: async ({ signal }) =>
 			route && beneficiary && destinationMessage
 				? parseDestinationDryRun(
 						await queryDestinationDryRun(
 							route.destination,
 							hub ?? route.origin,
 							destinationMessage,
+							signal,
 						),
 						{ tokenId: route.tokenIdOut, beneficiary },
 					)
 				: null,
-		retry: retryOnceUnlessTimedOut,
+		retry: retryOnceUnlessAborted,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
