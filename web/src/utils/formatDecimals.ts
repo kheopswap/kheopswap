@@ -8,8 +8,9 @@ export const formatDecimals = (
 		const value = Number(num);
 		if (value === 0) return "0";
 
-		const minDisplayable = 1 / 10 ** digits;
-		if (value < minDisplayable) return `< ${minDisplayable.toFixed(digits)}`;
+		const minDisplayable = (1 / 10 ** digits).toFixed(digits);
+		if (Math.abs(value) < Number(minDisplayable))
+			return value > 0 ? `< ${minDisplayable}` : `> -${minDisplayable}`;
 
 		const format = Intl.NumberFormat("en-US", {
 			notation: "compact",
