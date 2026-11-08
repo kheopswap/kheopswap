@@ -7,10 +7,12 @@ import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
 import { getAmmPath } from "../ammPath";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { getDestinationSwapFee } from "../xcmDestinationSwap/destinationSwapFee";
+import { useXcmDestinationSwap } from "../xcmDestinationSwap/useXcmDestinationSwap";
 import {
 	usdtToPink,
 	type XcmDestinationSwapFixture,
 } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
+import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import { useXcmRoute } from "./useXcmRoute";
 
 const chain = vi.hoisted(() => ({
@@ -318,5 +320,63 @@ describe("useXcmRoute on a swap on Asset Hub of what Hydration sends", () => {
 		await waitFor(() =>
 			expect(result.current.plan.submitGate).toEqual({ status: "open" }),
 		);
+	});
+});
+
+describe("useXcmDestinationSwap fee estimate", () => {
+	it("loads while it simulates again against a balance it already simulated", async () => {
+		chain.fixture = usdtToPink;
+		const route: XcmDestinationSwapRoute = {
+			kind: "xcm-destination-swap",
+			origin: "hydration",
+			destination: "pah",
+			tokenIdIn: usdtToPink.tokenIdIn,
+			tokenIdOut: usdtToPink.tokenIdOut,
+			path: getAmmPath(
+				usdtToPink.hops[0]?.tokenIdIn ?? "",
+				usdtToPink.tokenIdOut,
+				"native::pah",
+			),
+		};
+		const queryClient = new QueryClient({
+			defaultOptions: { queries: { retryDelay: 0 } },
+		});
+		const wrapper: FC<PropsWithChildren> = ({ children }) => (
+			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		);
+		const funded: XcmDryRunBalances = {
+			isLoading: false,
+			origin: { [usdtToPink.tokenIdIn]: 10n },
+		};
+		const { result, rerender } = renderHook(
+			(props: { balances: XcmDryRunBalances }) =>
+				useXcmDestinationSwap({
+					route,
+					beneficiary: usdtToPink.beneficiary,
+					totalIn: usdtToPink.amount,
+					fakeCall: { decodedCall: { name: "estimate" } } as never,
+					slippage: usdtToPink.slippage,
+					balances: props.balances,
+				}),
+			{ wrapper, initialProps: { balances: funded } },
+		);
+		await waitFor(() => expect(result.current.fee).toBeDefined());
+
+		rerender({
+			balances: { isLoading: false, origin: { [usdtToPink.tokenIdIn]: 5n } },
+		});
+		await waitFor(() => expect(chain.dryRunCall).toHaveBeenCalledTimes(2));
+		await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+		chain.dryRunCall.mockImplementation(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			return chain.fixture.originDryRun;
+		});
+		rerender({ balances: funded });
+		await waitFor(() => expect(result.current.isLoading).toBe(true));
+		await waitFor(() => expect(result.current.isLoading).toBe(false), {
+			timeout: 2000,
+		});
+		expect(chain.dryRunCall).toHaveBeenCalledTimes(3);
 	});
 });

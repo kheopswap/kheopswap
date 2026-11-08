@@ -1,5 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor } from "@testing-library/react";
+import {
+	focusManager,
+	QueryClient,
+	QueryClientProvider,
+} from "@tanstack/react-query";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import type { FC, PropsWithChildren } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { TokenId } from "../registry/tokens/types";
@@ -50,6 +54,20 @@ describe("useDryRun", () => {
 
 		rerender({ balances: { "native::pah": 5n } });
 		await waitFor(() => expect(dryRunCall).toHaveBeenCalledTimes(2));
+	});
+
+	it("does not run again when the window regains focus", async () => {
+		dryRunCall.mockClear();
+		const { result } = renderDryRun({ balances: { "native::pah": 10n } });
+		await waitFor(() => expect(result.current.data).toEqual({ success: true }));
+
+		act(() => {
+			focusManager.setFocused(false);
+			focusManager.setFocused(true);
+		});
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(result.current.isFetching).toBe(false);
+		expect(dryRunCall).toHaveBeenCalledTimes(1);
 	});
 
 	it("waits until it is enabled, then runs once", async () => {
