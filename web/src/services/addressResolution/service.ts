@@ -3,6 +3,7 @@ import {
 	catchError,
 	concat,
 	distinctUntilChanged,
+	EMPTY,
 	from,
 	map,
 	type Observable,
@@ -53,16 +54,15 @@ export const getResolvedSubstrateAddress$ = ({
 					address: undefined,
 					status: "loading" as const,
 				}),
-				from(getApi(chainId)).pipe(
-					switchMap((api) =>
-						timer(0, 30_000).pipe(
-							switchMap(() =>
-								from(
-									api.query.Revive.OriginalAccount.getValue(
-										getEthereumAddressSizedHex(address),
-									),
+				timer(0, 30_000).pipe(
+					switchMap(() =>
+						from(getApi(chainId)).pipe(
+							switchMap((api) =>
+								api.query.Revive.OriginalAccount.getValue(
+									getEthereumAddressSizedHex(address),
 								),
 							),
+							catchError(() => EMPTY),
 						),
 					),
 					map((mappedAddress) => ({
@@ -70,12 +70,6 @@ export const getResolvedSubstrateAddress$ = ({
 							getSs58AddressFallback(address)) as SS58String,
 						status: "loaded" as const,
 					})),
-					catchError(() =>
-						of({
-							address: undefined,
-							status: "stale" as const,
-						}),
-					),
 				),
 			).pipe(
 				distinctUntilChanged(
