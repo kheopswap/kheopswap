@@ -1,10 +1,10 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
 import type { TokenId } from "../../../../registry/tokens/types";
 import type { XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
-import { XcmQuoteRows } from "./XcmQuoteRows";
+import { XcmQuoteRows, XcmSimulationValue } from "./XcmQuoteRows";
 
 const DOT_ID = "native::pah" as TokenId;
 const HYDRATION_DOT_ID = "hydration-asset::hydration::5" as TokenId;
@@ -13,6 +13,12 @@ vi.mock("../../SwapProvider", () => ({
 	useSwap: () => ({
 		tokenOut: KNOWN_TOKENS_MAP["hydration-asset::hydration::5"],
 	}),
+}));
+
+const transaction = { isLoading: false, isDryRunConclusive: true };
+
+vi.mock("../../../transaction/TransactionProvider", () => ({
+	useTransaction: () => transaction,
 }));
 
 vi.mock("../../../../components/Shimmer", () => ({
@@ -70,5 +76,43 @@ describe("XcmQuoteRows fees", () => {
 		expect(
 			rowValue("Destination fee")?.querySelector("[data-testid=shimmer]"),
 		).toBeTruthy();
+	});
+});
+
+describe("XcmSimulationValue", () => {
+	beforeEach(() => {
+		transaction.isLoading = false;
+		transaction.isDryRunConclusive = true;
+	});
+
+	it("reads Success when the fee is known payable", () => {
+		render(
+			<XcmSimulationValue quote={settledQuote(305_000_000n)} route={ROUTE} />,
+		);
+
+		expect(screen.getByText("Success")).toBeInTheDocument();
+	});
+
+	it("reads Succeeds before fees, muted, when the fee is not known payable", () => {
+		transaction.isDryRunConclusive = false;
+		render(
+			<XcmSimulationValue quote={settledQuote(305_000_000n)} route={ROUTE} />,
+		);
+
+		expect(screen.queryByText("Success")).toBeNull();
+		expect(screen.getByText("Succeeds before fees").parentElement).toHaveClass(
+			"text-muted",
+		);
+	});
+
+	it("shimmers while the transaction loads, despite a settled quote", () => {
+		transaction.isLoading = true;
+		transaction.isDryRunConclusive = false;
+		render(
+			<XcmSimulationValue quote={settledQuote(305_000_000n)} route={ROUTE} />,
+		);
+
+		expect(screen.getByTestId("shimmer")).toBeInTheDocument();
+		expect(screen.queryByText("Succeeds before fees")).toBeNull();
 	});
 });
