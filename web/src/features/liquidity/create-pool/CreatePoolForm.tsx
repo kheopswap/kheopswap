@@ -75,6 +75,7 @@ const AddLiquidityEditor: FC = () => {
 		onToken2Change,
 		token1ExistentialDeposit,
 		token2ExistentialDeposit,
+		poolSetupCost,
 		sender,
 	} = useCreatePool();
 
@@ -120,16 +121,18 @@ const AddLiquidityEditor: FC = () => {
 				tokenIdx === "token1"
 					? [token1, accountBalances[0], token1ExistentialDeposit]
 					: [token2, accountBalances[1], token2ExistentialDeposit];
+			const setupCost = tokenIdx === "token1" ? poolSetupCost : 0n;
 			const margin = getSpendingMargin({
 				token,
 				feeToken,
 				feeEstimate,
 				existentialDeposit,
 			});
-			if (!isBigInt(balance) || !isBigInt(margin)) return;
+			if (!isBigInt(balance) || !isBigInt(margin) || !isBigInt(setupCost))
+				return;
 
 			const [current1, current2] = liquidityToAdd ?? [0n, 0n];
-			const max = getSpendableBalance(balance, margin);
+			const max = getSpendableBalance(balance, margin + setupCost);
 			const [maxToken1, maxToken2] =
 				tokenIdx === "token1" ? [max, current2] : [current1, max];
 
@@ -144,6 +147,7 @@ const AddLiquidityEditor: FC = () => {
 			feeToken,
 			feeEstimate,
 			token1ExistentialDeposit,
+			poolSetupCost,
 			setLiquidityToAdd,
 			liquidityToAdd,
 			token2ExistentialDeposit,
