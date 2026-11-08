@@ -17,7 +17,7 @@ import { getXcmHub, type XcmRoute } from "../swapRoute";
 import type { XcmQuoteState } from "./useXcmQuote";
 import { describeXcmQuoteFailure } from "./xcmQuote";
 
-const getXcmChainNames = (route: XcmRoute) =>
+export const getXcmChainNames = (route: XcmRoute) =>
 	compact([route.origin, getXcmHub(route), route.destination]).map(
 		(chainId) => getChainById(chainId).name,
 	);
