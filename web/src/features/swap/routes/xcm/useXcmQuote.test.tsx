@@ -2,7 +2,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { isEqual } from "lodash-es";
 import type { FC, PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	type Mock,
+	vi,
+} from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
@@ -11,14 +19,19 @@ import type { XcmDestinationSwapRoute, XcmRoute } from "../swapRoute";
 import { usdtToPink } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
 import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
-import { useXcmQuote } from "./useXcmQuote";
+import { useXcmQuote, type XcmQuoteState } from "./useXcmQuote";
 import { dotToAssetHub } from "./xcmFromHydration.fixtures";
 import {
 	dotPeopleToHydration,
 	dotPeopleToHydrationTrappedOnHub,
 	type HubTransferFixture,
 } from "./xcmHubTransfer.fixtures";
-import type { DestinationDryRun, HubDryRun, OriginDryRun } from "./xcmQuote";
+import type {
+	DestinationDryRun,
+	HubDryRun,
+	OriginDryRun,
+	XcmQuoteFailure,
+} from "./xcmQuote";
 import {
 	dotOriginFailed,
 	dotSuccess,
@@ -40,35 +53,42 @@ const chain = vi.hoisted(() => ({
 		(...args: unknown[]) => unknown
 	>,
 	calledChains: [] as [string, string][],
+	connectionDelayMs: 0,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
-	getApi: async (chainId: string) => ({
-		chainId,
-		apis: {
-			DryRunApi: {
-				dry_run_call: chain.dryRunCall,
-				dry_run_xcm: (...args: unknown[]) => {
-					chain.calledChains.push(["dry_run_xcm", chainId]);
-					return chain.dryRunXcm(...args);
+	getApi: async (chainId: string) => {
+		if (chain.connectionDelayMs)
+			await new Promise((resolve) =>
+				setTimeout(resolve, chain.connectionDelayMs),
+			);
+		return {
+			chainId,
+			apis: {
+				DryRunApi: {
+					dry_run_call: chain.dryRunCall,
+					dry_run_xcm: (...args: unknown[]) => {
+						chain.calledChains.push(["dry_run_xcm", chainId]);
+						return chain.dryRunXcm(...args);
+					},
+				},
+				XcmPaymentApi: {
+					query_delivery_fees: (...args: unknown[]) => {
+						chain.calledChains.push(["query_delivery_fees", chainId]);
+						return chain.queryDeliveryFees(...args);
+					},
+					query_xcm_weight: async () => {
+						chain.calledChains.push(["query_xcm_weight", chainId]);
+						return chain.destinationWeight;
+					},
+					query_weight_to_asset_fee: (...args: unknown[]) => {
+						chain.calledChains.push(["query_weight_to_asset_fee", chainId]);
+						return chain.queryWeightToAssetFee(...args);
+					},
 				},
 			},
-			XcmPaymentApi: {
-				query_delivery_fees: (...args: unknown[]) => {
-					chain.calledChains.push(["query_delivery_fees", chainId]);
-					return chain.queryDeliveryFees(...args);
-				},
-				query_xcm_weight: async () => {
-					chain.calledChains.push(["query_xcm_weight", chainId]);
-					return chain.destinationWeight;
-				},
-				query_weight_to_asset_fee: (...args: unknown[]) => {
-					chain.calledChains.push(["query_weight_to_asset_fee", chainId]);
-					return chain.queryWeightToAssetFee(...args);
-				},
-			},
-		},
-	}),
+		};
+	},
 }));
 
 const transferRoute: XcmRoute = {
@@ -167,6 +187,7 @@ const renderQuote = ({
 
 beforeEach(() => {
 	chain.calledChains = [];
+	chain.connectionDelayMs = 0;
 	chain.dryRunCall = vi.fn(async (_origin, decodedCall) =>
 		chain.originDryRuns.get(decodedCall),
 	);
@@ -180,6 +201,40 @@ beforeEach(() => {
 		return chain.deliveryFees;
 	});
 });
+
+type RequestOptions = { at: string; signal: AbortSignal };
+
+const stallUntilAborted = (...args: unknown[]) => {
+	const { signal } = args.at(-1) as RequestOptions;
+	return new Promise<never>((_, reject) =>
+		signal.addEventListener("abort", () =>
+			reject(new DOMException("Abort Error", "AbortError")),
+		),
+	);
+};
+
+const runOnFakeTimers = () => {
+	beforeEach(() => {
+		vi.useFakeTimers({ shouldAdvanceTime: true });
+	});
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+};
+
+const expectToGiveUpAfter30Seconds = async (
+	result: { current: XcmQuoteState },
+	failure: XcmQuoteFailure,
+) => {
+	await vi.advanceTimersByTimeAsync(29_000);
+	expect(result.current).toMatchObject({ isLoading: true, data: undefined });
+
+	await vi.advanceTimersByTimeAsync(1_000);
+	await waitFor(() =>
+		expect(result.current.data).toEqual({ success: false, failure }),
+	);
+	expect(result.current.isLoading).toBe(false);
+};
 
 const HYDRATION_LOCATION = {
 	type: "V5",
@@ -248,7 +303,7 @@ describe("useXcmQuote", () => {
 			dotSuccess.origin.success &&
 				dotSuccess.origin.value.forwarded_xcms[0]?.[1][0],
 			{ type: "V5", value: { parents: 1, interior: { type: "Here" } } },
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(
 			{
@@ -260,7 +315,7 @@ describe("useXcmQuote", () => {
 			},
 			dotSuccess.origin.success &&
 				dotSuccess.origin.value.forwarded_xcms[0]?.[1][0],
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 	});
 
@@ -423,10 +478,11 @@ describe("useXcmQuote", () => {
 				},
 			},
 			message,
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(HYDRATION_LOCATION, message, {
 			at: "best",
+			signal: expect.any(AbortSignal),
 		});
 		expect(chain.calledChains).toEqual(
 			expect.arrayContaining([
@@ -525,6 +581,70 @@ describe("useXcmQuote", () => {
 	});
 });
 
+describe("useXcmQuote on a stalled chain", () => {
+	runOnFakeTimers();
+
+	beforeEach(() => {
+		givenDryRuns({
+			origin: dotSuccess.origin,
+			destination: dotSuccess.destination,
+		});
+	});
+
+	it.each([
+		[
+			"Asset Hub dry run",
+			() => chain.dryRunCall.mockImplementation(stallUntilAborted),
+			{ kind: "origin-unavailable" },
+		],
+		[
+			"delivery fee",
+			() => chain.queryDeliveryFees.mockImplementation(stallUntilAborted),
+			{ kind: "delivery-fee-unavailable" },
+		],
+		[
+			"Hydration dry run",
+			() => chain.dryRunXcm.mockImplementation(stallUntilAborted),
+			{ kind: "destination-unavailable" },
+		],
+	] as const)(
+		"gives up on the %s after 30 seconds",
+		async (_, stall, failure) => {
+			stall();
+			const { result } = renderQuote();
+
+			await expectToGiveUpAfter30Seconds(result, failure);
+		},
+	);
+
+	it("leaves the time spent connecting out of the 30 seconds", async () => {
+		chain.connectionDelayMs = 31_000;
+		const { result } = renderQuote();
+
+		await vi.advanceTimersByTimeAsync(3 * 31_000);
+		await waitFor(() => expect(result.current.data?.success).toBe(true));
+		const signalsSent = [
+			chain.dryRunCall,
+			chain.queryDeliveryFees,
+			chain.dryRunXcm,
+		].flatMap((query) =>
+			query.mock.calls.map((call) => (call.at(-1) as RequestOptions).signal),
+		);
+		expect(signalsSent.map((signal) => signal.aborted)).not.toContain(true);
+	});
+
+	it("skips the chain query when the quote is dropped while connecting", async () => {
+		chain.connectionDelayMs = 10_000;
+		const { unmount } = renderQuote();
+
+		await vi.advanceTimersByTimeAsync(5_000);
+		unmount();
+		await vi.advanceTimersByTimeAsync(10_000);
+
+		expect(chain.dryRunCall).not.toHaveBeenCalled();
+	});
+});
+
 describe("useXcmQuote through Asset Hub", () => {
 	const peopleToHydration: XcmRoute = {
 		kind: "xcm-transfer",
@@ -587,15 +707,16 @@ describe("useXcmQuote through Asset Hub", () => {
 			siblingLocation(1000),
 			toHub,
 			{ type: "V5", value: { parents: 1, interior: { type: "Here" } } },
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(siblingLocation(1004), toHub, {
 			at: "best",
+			signal: expect.any(AbortSignal),
 		});
 		expect(chain.dryRunXcm).toHaveBeenCalledWith(
 			siblingLocation(1000),
 			firstMessage(dotPeopleToHydration.hubDryRun),
-			{ at: "best" },
+			{ at: "best", signal: expect.any(AbortSignal) },
 		);
 		expect(chain.calledChains).toEqual(
 			expect.arrayContaining([
@@ -624,6 +745,24 @@ describe("useXcmQuote through Asset Hub", () => {
 			},
 		});
 		expect(chain.calledChains).not.toContainEqual(["dry_run_xcm", "hydration"]);
+	});
+
+	describe("when Asset Hub stalls", () => {
+		runOnFakeTimers();
+
+		it("gives up on its dry run after 30 seconds", async () => {
+			givenHubTransfer(dotPeopleToHydration);
+			chain.dryRunXcm.mockImplementation(stallUntilAborted);
+			const { result } = renderQuote({
+				route: peopleToHydration,
+				beneficiary: dotPeopleToHydration.beneficiary,
+			});
+
+			await expectToGiveUpAfter30Seconds(result, {
+				kind: "hub-unavailable",
+				hub: "pah",
+			});
+		});
 	});
 
 	it("reports Asset Hub as unavailable when its dry run errors", async () => {

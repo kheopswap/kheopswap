@@ -5,6 +5,10 @@ import type { ChainId } from "../registry/chains/types";
 import type { TokenId } from "../registry/tokens/types";
 import type { SpendableBalance } from "../services/balances/types";
 import type { AnyTransaction } from "../types/transactions";
+import {
+	retryOnceUnlessAborted,
+	withChainQueryTimeout,
+} from "../utils/chainQueryTimeout";
 import { logger } from "../utils/logger";
 import { safeQueryKeyPart } from "../utils/safeQueryKeyPart";
 
@@ -41,7 +45,7 @@ export function useDryRun({
 			safeQueryKeyPart(balances),
 		],
 		enabled,
-		queryFn: async () => {
+		queryFn: async ({ signal: querySignal }) => {
 			if (!chainId || !from || !call) return null;
 
 			try {
@@ -49,12 +53,14 @@ export function useDryRun({
 
 				const origin = Enum("system", Enum("Signed", from));
 
-				// @ts-expect-error
-				const dryRun = (await api.apis.DryRunApi.dry_run_call(
-					origin,
-					call.decodedCall,
-					XCM_VERSION,
-					{ at: "best" },
+				const dryRun = (await withChainQueryTimeout(querySignal, (signal) =>
+					// @ts-expect-error
+					api.apis.DryRunApi.dry_run_call(
+						origin,
+						call.decodedCall,
+						XCM_VERSION,
+						{ at: "best", signal },
+					),
 				)) as DryRun<ChainId>;
 
 				logger.debug("[dry run]", {
@@ -69,7 +75,7 @@ export function useDryRun({
 				throw err;
 			}
 		},
-		retry: 1,
+		retry: retryOnceUnlessAborted,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
 		structuralSharing: false,
