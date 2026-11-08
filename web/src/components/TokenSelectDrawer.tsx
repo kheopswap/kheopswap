@@ -8,6 +8,7 @@ import type { BalanceWithStableSummary } from "../types/balances";
 import { cn } from "../utils/cn";
 import { getTokenDescription } from "../utils/getTokenDescription";
 import { isBigInt } from "../utils/isBigInt";
+import { tokenMatchesSearch } from "../utils/tokenMatchesSearch";
 import { Drawer } from "./Drawer";
 import { DrawerContainer } from "./DrawerContainer";
 import { ActionRightIcon } from "./icons";
@@ -153,17 +154,8 @@ const TokenSelectDrawerContent: FC<{
 	);
 
 	const items = useMemo(() => {
-		if (!sortedTokens) return [];
 		if (!search) return sortedTokens;
-
-		const ls = search.toLowerCase().trim();
-
-		return sortedTokens.filter(
-			(t) =>
-				t.symbol.toLowerCase().includes(ls) ||
-				t.name?.toLowerCase().includes(ls) ||
-				(t.type === "asset" && t.assetId.toString() === ls),
-		);
+		return sortedTokens.filter((t) => tokenMatchesSearch(t, search));
 	}, [sortedTokens, search]);
 
 	return (
@@ -182,7 +174,14 @@ const TokenSelectDrawerContent: FC<{
 					selected={t.id === tokenId}
 				/>
 			))}
-			{isLoading && <TokenButtonShimmer />}
+			{isLoading ? (
+				<TokenButtonShimmer />
+			) : (
+				!!search &&
+				!items.length && (
+					<div className="text-muted">No tokens match your search</div>
+				)
+			)}
 		</div>
 	);
 };
