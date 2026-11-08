@@ -10,6 +10,7 @@ import { getAmmPath } from "../ammPath";
 import type { XcmDestinationSwapRoute, XcmRoute } from "../swapRoute";
 import { usdtToPink } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
+import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import { useXcmQuote } from "./useXcmQuote";
 import { dotToAssetHub } from "./xcmFromHydration.fixtures";
 import {
@@ -124,15 +125,22 @@ const givenDryRuns = ({
 	chain.deliveryFees = deliveryFees;
 };
 
+const fundedOrigin: XcmDryRunBalances = {
+	isLoading: false,
+	origin: { "native::pah": 20_000_000_000n },
+};
+
 const renderQuote = ({
 	route = transferRoute,
 	destinationFee,
 	beneficiary = dotSuccess.beneficiary,
+	balances = fundedOrigin,
 	extra,
 }: {
 	route?: XcmRoute;
 	destinationFee?: TokenAmount;
 	beneficiary?: string;
+	balances?: XcmDryRunBalances;
 	extra?: () => unknown;
 } = {}) => {
 	const queryClient = new QueryClient({
@@ -142,7 +150,7 @@ const renderQuote = ({
 		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 	);
 	return renderHook(
-		() => {
+		(props: { balances: XcmDryRunBalances }) => {
 			extra?.();
 			return useXcmQuote({
 				route,
@@ -150,9 +158,10 @@ const renderQuote = ({
 				beneficiary,
 				call,
 				fakeCall,
+				balances: props.balances,
 			});
 		},
-		{ wrapper },
+		{ wrapper, initialProps: { balances } },
 	);
 };
 
@@ -181,6 +190,34 @@ const HYDRATION_LOCATION = {
 };
 
 describe("useXcmQuote", () => {
+	it("simulates the origin again when a balance it spends changes, and loads meanwhile", async () => {
+		givenDryRuns({
+			origin: dotSuccess.origin,
+			destination: dotSuccess.destination,
+		});
+		const { result, rerender } = renderQuote({
+			balances: { isLoading: true, origin: undefined },
+		});
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(result.current.isLoading).toBe(true);
+		expect(chain.dryRunCall).not.toHaveBeenCalled();
+
+		rerender({ balances: fundedOrigin });
+		await waitFor(() => expect(result.current.data).toBeDefined());
+		const originRuns = chain.dryRunCall.mock.calls.length;
+		expect(originRuns).toBeGreaterThan(0);
+
+		rerender({ balances: fundedOrigin });
+		expect(chain.dryRunCall).toHaveBeenCalledTimes(originRuns);
+
+		rerender({
+			balances: { isLoading: false, origin: { "native::pah": 5n } },
+		});
+		await waitFor(() =>
+			expect(chain.dryRunCall.mock.calls.length).toBeGreaterThan(originRuns),
+		);
+	});
+
 	it("quotes the amount received on Hydration from both dry runs", async () => {
 		givenDryRuns({
 			origin: dotSuccess.origin,
@@ -326,7 +363,12 @@ describe("useXcmQuote", () => {
 		});
 		const { result } = renderQuote({
 			extra: () =>
-				useDryRun({ chainId: "pah", from: dotSuccess.beneficiary, call }),
+				useDryRun({
+					chainId: "pah",
+					from: dotSuccess.beneficiary,
+					call,
+					balances: fundedOrigin.origin,
+				}),
 		});
 
 		await waitFor(() => expect(result.current.data?.success).toBe(true));
@@ -457,6 +499,7 @@ describe("useXcmQuote", () => {
 				beneficiary: dotSuccess.beneficiary,
 				call,
 				fakeCall,
+				balances: fundedOrigin,
 			});
 		const first = renderHook(quote, { wrapper });
 		await waitFor(() => expect(first.result.current.data?.success).toBe(true));
