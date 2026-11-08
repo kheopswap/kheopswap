@@ -2,7 +2,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { isEqual } from "lodash-es";
 import type { FC, PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	type Mock,
+	vi,
+} from "vitest";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
@@ -11,14 +19,19 @@ import type { XcmDestinationSwapRoute, XcmRoute } from "../swapRoute";
 import { usdtToPink } from "../xcmDestinationSwap/xcmDestinationSwap.fixtures";
 import { usdcToUsdt } from "../xcmSwap/xcmSwap.fixtures";
 import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
-import { useXcmQuote } from "./useXcmQuote";
+import { useXcmQuote, type XcmQuoteState } from "./useXcmQuote";
 import { dotToAssetHub } from "./xcmFromHydration.fixtures";
 import {
 	dotPeopleToHydration,
 	dotPeopleToHydrationTrappedOnHub,
 	type HubTransferFixture,
 } from "./xcmHubTransfer.fixtures";
-import type { DestinationDryRun, HubDryRun, OriginDryRun } from "./xcmQuote";
+import type {
+	DestinationDryRun,
+	HubDryRun,
+	OriginDryRun,
+	XcmQuoteFailure,
+} from "./xcmQuote";
 import {
 	dotOriginFailed,
 	dotSuccess,
@@ -40,35 +53,42 @@ const chain = vi.hoisted(() => ({
 		(...args: unknown[]) => unknown
 	>,
 	calledChains: [] as [string, string][],
+	connectionDelayMs: 0,
 }));
 
 vi.mock("../../../../papi/getApi", () => ({
-	getApi: async (chainId: string) => ({
-		chainId,
-		apis: {
-			DryRunApi: {
-				dry_run_call: chain.dryRunCall,
-				dry_run_xcm: (...args: unknown[]) => {
-					chain.calledChains.push(["dry_run_xcm", chainId]);
-					return chain.dryRunXcm(...args);
+	getApi: async (chainId: string) => {
+		if (chain.connectionDelayMs)
+			await new Promise((resolve) =>
+				setTimeout(resolve, chain.connectionDelayMs),
+			);
+		return {
+			chainId,
+			apis: {
+				DryRunApi: {
+					dry_run_call: chain.dryRunCall,
+					dry_run_xcm: (...args: unknown[]) => {
+						chain.calledChains.push(["dry_run_xcm", chainId]);
+						return chain.dryRunXcm(...args);
+					},
+				},
+				XcmPaymentApi: {
+					query_delivery_fees: (...args: unknown[]) => {
+						chain.calledChains.push(["query_delivery_fees", chainId]);
+						return chain.queryDeliveryFees(...args);
+					},
+					query_xcm_weight: async () => {
+						chain.calledChains.push(["query_xcm_weight", chainId]);
+						return chain.destinationWeight;
+					},
+					query_weight_to_asset_fee: (...args: unknown[]) => {
+						chain.calledChains.push(["query_weight_to_asset_fee", chainId]);
+						return chain.queryWeightToAssetFee(...args);
+					},
 				},
 			},
-			XcmPaymentApi: {
-				query_delivery_fees: (...args: unknown[]) => {
-					chain.calledChains.push(["query_delivery_fees", chainId]);
-					return chain.queryDeliveryFees(...args);
-				},
-				query_xcm_weight: async () => {
-					chain.calledChains.push(["query_xcm_weight", chainId]);
-					return chain.destinationWeight;
-				},
-				query_weight_to_asset_fee: (...args: unknown[]) => {
-					chain.calledChains.push(["query_weight_to_asset_fee", chainId]);
-					return chain.queryWeightToAssetFee(...args);
-				},
-			},
-		},
-	}),
+		};
+	},
 }));
 
 const transferRoute: XcmRoute = {
@@ -167,6 +187,7 @@ const renderQuote = ({
 
 beforeEach(() => {
 	chain.calledChains = [];
+	chain.connectionDelayMs = 0;
 	chain.dryRunCall = vi.fn(async (_origin, decodedCall) =>
 		chain.originDryRuns.get(decodedCall),
 	);
@@ -180,6 +201,31 @@ beforeEach(() => {
 		return chain.deliveryFees;
 	});
 });
+
+const NEVER = new Promise<never>(() => {});
+
+const runOnFakeTimers = () => {
+	beforeEach(() => {
+		vi.useFakeTimers({ shouldAdvanceTime: true });
+	});
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+};
+
+const expectToGiveUpAfter30Seconds = async (
+	result: { current: XcmQuoteState },
+	failure: XcmQuoteFailure,
+) => {
+	await vi.advanceTimersByTimeAsync(29_000);
+	expect(result.current).toMatchObject({ isLoading: true, data: undefined });
+
+	await vi.advanceTimersByTimeAsync(1_000);
+	await waitFor(() =>
+		expect(result.current.data).toEqual({ success: false, failure }),
+	);
+	expect(result.current.isLoading).toBe(false);
+};
 
 const HYDRATION_LOCATION = {
 	type: "V5",
@@ -525,6 +571,51 @@ describe("useXcmQuote", () => {
 	});
 });
 
+describe("useXcmQuote on a stalled chain", () => {
+	runOnFakeTimers();
+
+	beforeEach(() => {
+		givenDryRuns({
+			origin: dotSuccess.origin,
+			destination: dotSuccess.destination,
+		});
+	});
+
+	it.each([
+		[
+			"Asset Hub dry run",
+			() => chain.dryRunCall.mockReturnValue(NEVER),
+			{ kind: "origin-unavailable" },
+		],
+		[
+			"delivery fee",
+			() => chain.queryDeliveryFees.mockReturnValue(NEVER),
+			{ kind: "delivery-fee-unavailable" },
+		],
+		[
+			"Hydration dry run",
+			() => chain.dryRunXcm.mockReturnValue(NEVER),
+			{ kind: "destination-unavailable" },
+		],
+	] as const)(
+		"gives up on the %s after 30 seconds",
+		async (_, stall, failure) => {
+			stall();
+			const { result } = renderQuote();
+
+			await expectToGiveUpAfter30Seconds(result, failure);
+		},
+	);
+
+	it("leaves the time spent connecting out of the 30 seconds", async () => {
+		chain.connectionDelayMs = 31_000;
+		const { result } = renderQuote();
+
+		await vi.advanceTimersByTimeAsync(3 * 31_000);
+		await waitFor(() => expect(result.current.data?.success).toBe(true));
+	});
+});
+
 describe("useXcmQuote through Asset Hub", () => {
 	const peopleToHydration: XcmRoute = {
 		kind: "xcm-transfer",
@@ -624,6 +715,24 @@ describe("useXcmQuote through Asset Hub", () => {
 			},
 		});
 		expect(chain.calledChains).not.toContainEqual(["dry_run_xcm", "hydration"]);
+	});
+
+	describe("when Asset Hub stalls", () => {
+		runOnFakeTimers();
+
+		it("gives up on its dry run after 30 seconds", async () => {
+			givenHubTransfer(dotPeopleToHydration);
+			chain.dryRunXcm.mockReturnValue(NEVER);
+			const { result } = renderQuote({
+				route: peopleToHydration,
+				beneficiary: dotPeopleToHydration.beneficiary,
+			});
+
+			await expectToGiveUpAfter30Seconds(result, {
+				kind: "hub-unavailable",
+				hub: "pah",
+			});
+		});
 	});
 
 	it("reports Asset Hub as unavailable when its dry run errors", async () => {
