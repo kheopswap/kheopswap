@@ -89,7 +89,7 @@ export const TransactionFeeSummaryRow: FC = () => {
 
 			{feeTokenShortfall === INSUFFICIENT_BALANCE_FOR_FEE && (
 				<p className="pb-1.25 text-error text-sm">
-					Not enough {feeToken.symbol} to pay the fee.{" "}
+					Insufficient {feeToken.symbol} to pay the fee.{" "}
 					{canChangeFeeToken && (
 						<button type="button" onClick={open} className="underline">
 							Pay with another token

@@ -62,7 +62,7 @@ describe("TransactionFeeSummaryRow", () => {
 		};
 		render(<TransactionFeeSummaryRow />);
 
-		expect(screen.getByText(/Not enough PAS to pay the fee/)).toBeTruthy();
+		expect(screen.getByText(/Insufficient PAS to pay the fee/)).toBeTruthy();
 		fireEvent.click(screen.getByText("Pay with another token"));
 		expect(screen.getByText("Select fee token")).toBeTruthy();
 	});
@@ -75,7 +75,7 @@ describe("TransactionFeeSummaryRow", () => {
 		};
 		render(<TransactionFeeSummaryRow />);
 
-		expect(screen.getByText(/Not enough PAS to pay the fee/)).toBeTruthy();
+		expect(screen.getByText(/Insufficient PAS to pay the fee/)).toBeTruthy();
 		expect(screen.queryByText("Pay with another token")).toBeNull();
 	});
 
