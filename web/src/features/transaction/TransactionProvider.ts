@@ -81,6 +81,7 @@ const useTransactionProvider = ({
 	// 4. Submit lifecycle
 	const { onSubmit } = useTransactionSubmit({
 		account: ethereum.account,
+		signerAddress: fees.signerSubstrateAddress,
 		call,
 		chainId,
 		feeEstimate: fees.feeEstimate,
@@ -146,6 +147,7 @@ const useTransactionProvider = ({
 
 		if (ethereum.account.platform === "ethereum")
 			return (
+				!!fees.options &&
 				!ethereum.isEthereumNetworkMismatch &&
 				!ethereum.isSwitchingEthereumNetwork
 			);

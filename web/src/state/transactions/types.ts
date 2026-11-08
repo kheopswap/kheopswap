@@ -12,6 +12,8 @@ export type TransactionStatus =
 	| "signed"
 	| "broadcasted"
 	| "inBlock"
+	| "unconfirmed"
+	| "lostTrack"
 	| "finalized"
 	| "failed";
 
@@ -57,6 +59,10 @@ export const getStatusFromEvent = (
 			return event.ok ? "inBlock" : "failed";
 		case "notInBestBlock":
 			return "broadcasted";
+		case "unconfirmed":
+			return "unconfirmed";
+		case "lostTrack":
+			return "lostTrack";
 		case "finalized":
 			return event.ok ? "finalized" : "failed";
 		case "error":
