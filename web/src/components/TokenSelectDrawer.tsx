@@ -177,6 +177,7 @@ const TokenSelectDrawerContent: FC<{
 			{isLoading ? (
 				<TokenButtonShimmer />
 			) : (
+				!!search &&
 				!items.length && (
 					<div className="text-muted">No tokens match your search</div>
 				)
