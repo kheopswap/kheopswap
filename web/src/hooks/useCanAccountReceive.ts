@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { getChainIdFromTokenId } from "../registry/tokens/helpers";
 import type { TokenId } from "../registry/tokens/types";
 import { getNativeToken } from "../utils/getNativeToken";
+import { plancksToTokens } from "../utils/plancks";
 import { useBalances } from "./useBalances";
 import { useExistentialDeposit } from "./useExistentialDeposit";
 import { useTokensByChainId } from "./useTokensByChainId";
@@ -73,6 +74,9 @@ export const useCanAccountReceive = ({
 		if (token.isSufficient && plancks >= existentialDeposit)
 			return { canReceive: true };
 
+		const held = balanceMap[tokenId]?.balance ?? 0n;
+		const recipientMinimumReason = `The recipient needs at least ${plancksToTokens(existentialDeposit - held, token.decimals)} ${token.symbol}`;
+
 		// check if the target has at least one sufficient asset
 		const isSufficientAccount =
 			!!balanceMap[nativeToken.id]?.balance ||
@@ -81,14 +85,13 @@ export const useCanAccountReceive = ({
 			return {
 				canReceive: false,
 				reason: token.isSufficient
-					? "Cannot send insufficient amount"
+					? recipientMinimumReason
 					: "Account has no sufficient assets",
 			};
 
-		if ((balanceMap[tokenId]?.balance ?? 0n) + plancks >= existentialDeposit)
-			return { canReceive: true };
+		if (held + plancks >= existentialDeposit) return { canReceive: true };
 
-		return { canReceive: false, reason: "Cannot send insufficient amount" };
+		return { canReceive: false, reason: recipientMinimumReason };
 	}, [
 		existentialDeposit,
 		plancks,
