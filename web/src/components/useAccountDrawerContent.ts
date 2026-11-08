@@ -10,6 +10,7 @@ import { useBalancesWithStables } from "../hooks/useBalancesWithStables";
 import { useToken } from "../hooks/useToken";
 import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
+import { getAccountPublicKey } from "../utils/accountPublicKey";
 import { isValidAnyAddress } from "../utils/ethereumAddress";
 import { isApplicableBalance } from "../utils/isApplicableBalance";
 import { isBigInt } from "../utils/isBigInt";
@@ -37,17 +38,23 @@ export const useAccountDrawerContent = ({
 	const { data: balances, isLoading } = useBalancesWithStables(summaryInputs);
 
 	const balanceByAccount = useMemo(() => {
-		if (!balances) return {};
-		return fromPairs(
+		const balanceByPublicKey = fromPairs(
 			balances.filter(isApplicableBalance).map((b) => [
-				b.address,
+				getAccountPublicKey(b.address),
 				{
 					...b,
 					isInitializing: !isBigInt(b.tokenPlancks) && isLoading,
 				} as BalanceWithStableSummary,
 			]),
 		);
-	}, [balances, isLoading]);
+		return fromPairs(
+			accounts.flatMap((account) => {
+				const balance =
+					balanceByPublicKey[getAccountPublicKey(account.address)];
+				return balance ? [[account.address, balance]] : [];
+			}),
+		);
+	}, [accounts, balances, isLoading]);
 
 	const handleWalletClick = useCallback(
 		(walletId: string, isConnected: boolean) => async () => {

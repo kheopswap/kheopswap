@@ -7,6 +7,7 @@ import { getBalancesByTokenSummary } from "../../hooks/useBalancesByTokenSummary
 import { useBalancesWithStables } from "../../hooks/useBalancesWithStables";
 import { useTokenPrices } from "../../hooks/useTokenPrices";
 import { PORTFOLIO_TOKEN_TYPES } from "../../registry/tokens/tokens";
+import { uniqByPublicKey } from "../../utils/accountPublicKey";
 import { logger } from "../../utils/logger";
 import { provideContext } from "../../utils/provideContext";
 import { usePortfolioAllocation } from "./usePortfolioAllocation";
@@ -14,7 +15,11 @@ import { usePortfolioAllocation } from "./usePortfolioAllocation";
 export const usePortfolioProvider = () => {
 	const stop = logger.cumulativeTimer("usePortfolioProvicer");
 
-	const { accounts } = useWallets();
+	const { accounts: walletAccounts } = useWallets();
+	const accounts = useMemo(
+		() => uniqByPublicKey(walletAccounts, (account) => account.address),
+		[walletAccounts],
+	);
 
 	const { data: tokensMap, isLoading: isLoadingTokens } = useAllTokens({
 		types: PORTFOLIO_TOKEN_TYPES,
