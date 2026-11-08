@@ -9,6 +9,7 @@ type UseBalancesProps = {
 
 export type BalanceState = BalanceDef & {
 	balance: bigint | undefined;
+	frozen: bigint | undefined;
 	isLoading: boolean;
 };
 
@@ -28,6 +29,7 @@ const useBalancesByDefs = bindSerialized(
 							address: bd.address,
 							tokenId: bd.tokenId,
 							balance: bs?.balance ?? undefined,
+							frozen: bs?.frozen ?? undefined,
 							isLoading: bs?.status !== "loaded",
 						};
 					}),
@@ -40,6 +42,7 @@ const useBalancesByDefs = bindSerialized(
 			address: bd.address,
 			tokenId: bd.tokenId,
 			balance: undefined,
+			frozen: undefined,
 			isLoading: true,
 		})),
 		isLoading: !!balanceDefs.length,

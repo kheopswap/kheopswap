@@ -6,7 +6,11 @@ import { useExistentialDeposits } from "../../hooks/useExistentialDeposits";
 import { isChainIdHydration } from "../../registry/chains/chains";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
-import type { BalanceDef } from "../../services/balances/types";
+import type {
+	BalanceDef,
+	SpendableBalance,
+} from "../../services/balances/types";
+import { getSpendableBalancesByTokenId } from "../../services/balances/utils";
 import type { AnyTransaction } from "../../types/transactions";
 import type { CallSpendings } from "./TransactionProvider";
 
@@ -17,7 +21,7 @@ export const getInsufficientBalances = ({
 	fee,
 }: {
 	callSpendings: CallSpendings;
-	balances: Partial<Record<TokenId, bigint>>;
+	balances: Partial<Record<TokenId, SpendableBalance>>;
 	existentialDeposits: Partial<Record<TokenId, bigint | null>>;
 	fee: TokenAmount;
 }): Record<TokenId, string> => {
@@ -26,8 +30,9 @@ export const getInsufficientBalances = ({
 	const feeMayReapPayer = isChainIdHydration(parseTokenId(fee.tokenId).chainId);
 
 	for (const tokenId of tokenIds) {
-		const balance = balances[tokenId] ?? 0n;
+		const { balance = 0n, frozen = 0n } = balances[tokenId] ?? {};
 		const ed = existentialDeposits[tokenId] ?? 0n;
+		const depositToKeep = ed > frozen ? ed - frozen : 0n;
 		const feePlancks = tokenId === fee.tokenId ? fee.plancks : 0n;
 		const spendings = callSpendings[tokenId]?.plancks ?? 0n;
 		const allowDeath = callSpendings[tokenId]?.allowDeath ?? false;
@@ -35,10 +40,10 @@ export const getInsufficientBalances = ({
 		if (balance < spendings) result[tokenId] = "Insufficient balance";
 		else if (
 			balance < spendings + feePlancks ||
-			(!feeMayReapPayer && balance < feePlancks + ed)
+			(!feeMayReapPayer && balance < feePlancks + depositToKeep)
 		)
 			result[tokenId] = "Insufficient balance to pay for fee";
-		else if (!allowDeath && balance < spendings + feePlancks + ed)
+		else if (!allowDeath && balance < spendings + feePlancks + depositToKeep)
 			result[tokenId] = "Insufficient balance to keep account alive";
 	}
 
@@ -94,13 +99,8 @@ export const useTransactionBalanceCheck = ({
 			tokenId: feeToken?.id,
 		});
 
-	const balancesByTokenId = useMemo<
-		Partial<Record<TokenId, bigint | undefined>>
-	>(
-		() =>
-			Object.fromEntries(
-				balances.map(({ tokenId, balance }) => [tokenId, balance]),
-			),
+	const balancesByTokenId = useMemo(
+		() => getSpendableBalancesByTokenId(balances),
 		[balances],
 	);
 

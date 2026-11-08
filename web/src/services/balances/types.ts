@@ -4,11 +4,12 @@ import type { LoadingStatus } from "../common";
 
 export type Address = SS58String | `0x${string}`;
 
-export type StoredBalance = {
-	tokenId: TokenId;
-	address: Address;
+export type SpendableBalance = {
 	balance: bigint;
+	frozen: bigint;
 };
+
+export type StoredBalance = BalanceDef & SpendableBalance;
 
 export type BalanceId = string; // `${Address}||${TokenId}`;
 
@@ -19,5 +20,6 @@ export type BalanceDef = {
 
 export type BalanceState = {
 	balance: bigint | undefined;
+	frozen: bigint | undefined;
 	status: LoadingStatus;
 };

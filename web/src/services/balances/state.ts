@@ -20,11 +20,16 @@ const combineState = (
 		return fromPairs(
 			allBalanceIds.map((balanceId) => {
 				const status = statuses[balanceId] ?? "stale";
-				const balance = balances[balanceId]
-					? BigInt(balances[balanceId].balance)
-					: undefined;
+				const stored = balances[balanceId];
 
-				return [balanceId, { status, balance }];
+				return [
+					balanceId,
+					{
+						status,
+						balance: stored ? BigInt(stored.balance) : undefined,
+						frozen: stored ? BigInt(stored.frozen) : undefined,
+					},
+				];
 			}),
 		) as Record<string, BalanceState>;
 	} catch (err) {

@@ -127,7 +127,7 @@ const givenDryRuns = ({
 
 const fundedOrigin: XcmDryRunBalances = {
 	isLoading: false,
-	origin: { "native::pah": 20_000_000_000n },
+	origin: { "native::pah": { balance: 20_000_000_000n, frozen: 0n } },
 };
 
 const renderQuote = ({
@@ -211,7 +211,10 @@ describe("useXcmQuote", () => {
 		expect(chain.dryRunCall).toHaveBeenCalledTimes(originRuns);
 
 		rerender({
-			balances: { isLoading: false, origin: { "native::pah": 5n } },
+			balances: {
+				isLoading: false,
+				origin: { "native::pah": { balance: 5n, frozen: 0n } },
+			},
 		});
 		await waitFor(() =>
 			expect(chain.dryRunCall.mock.calls.length).toBeGreaterThan(originRuns),

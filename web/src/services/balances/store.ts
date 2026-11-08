@@ -10,16 +10,17 @@ import { getBalanceId } from "./utils";
 // cleanup old keys
 localStorage.removeItem(getLocalStorageKey("balances"));
 localStorage.removeItem(getLocalStorageKey("balances::v2"));
+localStorage.removeItem(getLocalStorageKey("balances::v3"));
 
-const STORAGE_KEY = getLocalStorageKey("balances::v3");
+const STORAGE_KEY = getLocalStorageKey("balances::v4");
 
 const load = (): Record<string, StoredBalance> => {
 	try {
 		if (DEV_IGNORE_STORAGE) return {};
 
 		const strPools = localStorage.getItem(STORAGE_KEY);
-		const pools: StoredBalance[] = strPools ? safeParse(strPools) : [];
-		return keyBy(pools, getBalanceId);
+		const stored: StoredBalance[] = strPools ? safeParse(strPools) : [];
+		return keyBy(stored, getBalanceId);
 	} catch (err) {
 		logger.error("Failed to load balances", err);
 		return {};
