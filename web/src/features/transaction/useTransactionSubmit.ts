@@ -236,7 +236,6 @@ export const useTransactionSubmit = ({
 				type: transactionType,
 				title: transactionTitle,
 				followUpData,
-				nonce,
 			});
 
 			openTransactionModal(txId);
