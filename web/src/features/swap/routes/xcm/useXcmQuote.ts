@@ -17,6 +17,10 @@ import type {
 } from "../../../../registry/chains/types";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import type { AnyTransaction } from "../../../../types/transactions";
+import {
+	retryOnceUnlessTimedOut,
+	withChainQueryTimeout,
+} from "../../../../utils/chainQueryTimeout";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
 import { getXcmFirstHop, getXcmHub, type XcmRoute } from "../swapRoute";
@@ -61,18 +65,25 @@ const queryDeliveryFees = async (
 		case "kpeople":
 		case "wpeople": {
 			const api = await getApi(origin);
-			return api.apis.XcmPaymentApi.query_delivery_fees(
-				destination,
-				message,
-				XcmVersionedAssetId.V5({ parents: 1, interior: XcmV5Junctions.Here() }),
-				{ at: "best" },
+			return withChainQueryTimeout(
+				api.apis.XcmPaymentApi.query_delivery_fees(
+					destination,
+					message,
+					XcmVersionedAssetId.V5({
+						parents: 1,
+						interior: XcmV5Junctions.Here(),
+					}),
+					{ at: "best" },
+				),
 			);
 		}
 		case "hydration": {
 			const api = await getApi(origin);
-			return api.apis.XcmPaymentApi.query_delivery_fees(destination, message, {
-				at: "best",
-			});
+			return withChainQueryTimeout(
+				api.apis.XcmPaymentApi.query_delivery_fees(destination, message, {
+					at: "best",
+				}),
+			);
 		}
 	}
 };
@@ -83,9 +94,11 @@ const queryHubDryRun = async (
 	message: XcmVersionedXcm,
 ) => {
 	const api = await getApi(hub);
-	return api.apis.DryRunApi.dry_run_xcm(getParachainLocation(origin), message, {
-		at: "best",
-	});
+	return withChainQueryTimeout(
+		api.apis.DryRunApi.dry_run_xcm(getParachainLocation(origin), message, {
+			at: "best",
+		}),
+	);
 };
 
 const queryDestinationDryRun = async (
@@ -94,9 +107,11 @@ const queryDestinationDryRun = async (
 	message: XcmVersionedXcm,
 ) => {
 	const api = await getApi(destination);
-	return api.apis.DryRunApi.dry_run_xcm(getParachainLocation(sender), message, {
-		at: "best",
-	});
+	return withChainQueryTimeout(
+		api.apis.DryRunApi.dry_run_xcm(getParachainLocation(sender), message, {
+			at: "best",
+		}),
+	);
 };
 
 const useXcmDeliveryFee = (
@@ -121,7 +136,7 @@ const useXcmDeliveryFee = (
 						),
 					)
 				: null,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
@@ -198,7 +213,7 @@ export const useXcmQuote = ({
 						destinationParaId,
 					)
 				: null,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
@@ -231,7 +246,7 @@ export const useXcmQuote = ({
 						{ tokenId: route.tokenIdOut, beneficiary },
 					)
 				: null,
-		retry: 1,
+		retry: retryOnceUnlessTimedOut,
 		refetchInterval: false,
 		structuralSharing: false,
 	});
