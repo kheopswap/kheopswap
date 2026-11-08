@@ -5,7 +5,7 @@ import {
 	FormSummaryRow,
 } from "../../../../components/FormSummary";
 import { TransactionDryRunSummaryValue } from "../../../transaction/TransactionDryRunValue";
-import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
+import { TransactionFeeSummaryRow } from "../../../transaction/TransactionFeeSummaryRow";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { LiquidityPoolSlippage } from "../LiquidityPoolSlippage";
 
@@ -22,10 +22,7 @@ export const AddLiquiditySummary: FC = () => {
 				label="Simulation"
 				value={<TransactionDryRunSummaryValue />}
 			/>
-			<FormSummaryRow
-				label="Transaction fee"
-				value={<TransactionFeeSummaryValue />}
-			/>
+			<TransactionFeeSummaryRow />
 		</FormSummary>
 	);
 };

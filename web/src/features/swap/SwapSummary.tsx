@@ -7,7 +7,7 @@ import {
 import { Tokens } from "../../components/Tokens";
 import { isBigInt } from "../../utils/isBigInt";
 import { TransactionDryRunSummaryValue } from "../transaction/TransactionDryRunValue";
-import { TransactionFeeSummaryValue } from "../transaction/TransactionFeeSummaryValue";
+import { TransactionFeeSummaryRow } from "../transaction/TransactionFeeSummaryRow";
 import { PriceImpact } from "./PriceImpact";
 import { ProtocolFeeValue, RouteValue } from "./routes/AmmPathValues";
 import type { PathLiquidity } from "./routes/ammPath";
@@ -98,10 +98,7 @@ const AmmSwapSummary: FC<{ details: AmmSwapDetails }> = ({ details }) => {
 							label="Simulation"
 							value={<TransactionDryRunSummaryValue />}
 						/>
-						<FormSummaryRow
-							label="Transaction fee"
-							value={<TransactionFeeSummaryValue />}
-						/>
+						<TransactionFeeSummaryRow />
 						<FormSummaryRow
 							label="Service fee"
 							value={

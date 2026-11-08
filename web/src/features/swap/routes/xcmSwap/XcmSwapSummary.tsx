@@ -14,7 +14,7 @@ import {
 } from "../../../../components/tooltip/Tooltip";
 import { getChainById } from "../../../../registry/chains/chains";
 import { isBigInt } from "../../../../utils/isBigInt";
-import { TransactionFeeSummaryValue } from "../../../transaction/TransactionFeeSummaryValue";
+import { TransactionFeeSummaryRow } from "../../../transaction/TransactionFeeSummaryRow";
 import { PriceImpact } from "../../PriceImpact";
 import { Slippage } from "../../Slippage";
 import { useSwap } from "../../SwapProvider";
@@ -96,10 +96,7 @@ export const XcmSwapSummary: FC<{ details: XcmPathSwapDetails }> = ({
 						label="Simulation"
 						value={<XcmSimulationValue quote={quote} route={route} />}
 					/>
-					<FormSummaryRow
-						label="Transaction fee"
-						value={<TransactionFeeSummaryValue />}
-					/>
+					<TransactionFeeSummaryRow />
 					{details.kind === "xcm-swap" && (
 						<FormSummaryRow
 							label="Service fee"

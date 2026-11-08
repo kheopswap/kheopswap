@@ -1,18 +1,14 @@
 import {
 	FormSummary,
-	FormSummaryRow,
 	FormSummarySection,
 } from "../../../components/FormSummary";
-import { TransactionFeeSummaryValue } from "../../transaction/TransactionFeeSummaryValue";
+import { TransactionFeeSummaryRow } from "../../transaction/TransactionFeeSummaryRow";
 
 export const CreatePoolSummary = () => {
 	return (
 		<FormSummary>
 			<FormSummarySection>
-				<FormSummaryRow
-					label="Transaction fee"
-					value={<TransactionFeeSummaryValue />}
-				/>
+				<TransactionFeeSummaryRow />
 			</FormSummarySection>
 		</FormSummary>
 	);
