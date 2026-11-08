@@ -87,6 +87,7 @@ const TEN_MINUTES = 10 * 60_000;
 const renderSubmit = (account = polkadotAccount) => {
 	const txEvents$ = new Subject<TxEvent>();
 	ethereum.txEvents$ = txEvents$;
+	const onReset = vi.fn();
 	const { onSubmit } = renderHook(() =>
 		useTransactionSubmit({
 			account,
@@ -105,9 +106,10 @@ const renderSubmit = (account = polkadotAccount) => {
 			transactionType: "transfer",
 			transactionTitle: "Transfer",
 			followUpData: {},
+			onReset,
 		}),
 	).result.current;
-	return { onSubmit, txEvents$ };
+	return { onSubmit, txEvents$, onReset };
 };
 
 const getRecord = async () => {
@@ -141,6 +143,34 @@ afterEach(async () => {
 	for (const tx of await firstValueFrom(transactions$))
 		dismissTransaction(tx.id);
 	vi.useRealTimers();
+});
+
+describe("useTransactionSubmit once the wallet signs", () => {
+	it("clears the form once the transaction is signed, and only once", async () => {
+		const { onSubmit, txEvents$, onReset } = renderSubmit();
+		await onSubmit();
+		expect(onReset).not.toHaveBeenCalled();
+		txEvents$.next(created);
+		expect(onReset).toHaveBeenCalledTimes(1);
+		txEvents$.next(broadcasted);
+		txEvents$.next(finalized);
+		expect(onReset).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps the form when the wallet rejects the signature", async () => {
+		const { onSubmit, txEvents$, onReset } = renderSubmit();
+		await onSubmit();
+		txEvents$.error({ code: 4001, message: "User rejected the request" });
+		expect(onReset).not.toHaveBeenCalled();
+		expect((await getRecord()).status).toBe("failed");
+	});
+
+	it("clears the form on the first broadcast of an Ethereum submission, which emits no created event", async () => {
+		const { onSubmit, txEvents$, onReset } = renderSubmit(ethereumAccount);
+		await onSubmit();
+		txEvents$.next(broadcasted);
+		expect(onReset).toHaveBeenCalledTimes(1);
+	});
 });
 
 describe("useTransactionSubmit after 10 minutes without a final event", () => {

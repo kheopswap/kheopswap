@@ -123,6 +123,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 
 	const onReset = useCallback(() => {
 		setFormData(defaultValues);
+		setLiquidityToAdd(null);
 	}, [defaultValues]);
 
 	const onToken2Change = useCallback((tokenId: TokenId) => {

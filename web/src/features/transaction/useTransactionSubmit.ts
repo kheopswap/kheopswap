@@ -89,8 +89,10 @@ const hasFinalizedNonceMoved = async ({
 const subscribeTxEvents = (
 	submission: Submission,
 	txEvents$: Observable<TxEvent>,
+	onSigned: () => void,
 ): void => {
 	const { txId } = submission;
+	let isSigned = false;
 	let isSubmitted = false;
 	let latest: FollowUpTxEvent["type"] = "pending";
 
@@ -137,6 +139,10 @@ const subscribeTxEvents = (
 		}
 
 		if (x.type !== "error") {
+			if (!isSigned) {
+				isSigned = true;
+				onSigned();
+			}
 			record(x);
 		}
 
@@ -186,6 +192,7 @@ type UseTransactionSubmitProps = {
 	transactionType: TransactionType;
 	transactionTitle: string;
 	followUpData: Record<string, unknown>;
+	onReset: () => void;
 };
 
 export const useTransactionSubmit = ({
@@ -202,6 +209,7 @@ export const useTransactionSubmit = ({
 	transactionType,
 	transactionTitle,
 	followUpData,
+	onReset,
 }: UseTransactionSubmitProps) => {
 	const onSubmit = useCallback(async () => {
 		try {
@@ -265,6 +273,7 @@ export const useTransactionSubmit = ({
 			subscribeTxEvents(
 				{ txId, chainId, signer: signerAddress, nonce },
 				txEvents$,
+				onReset,
 			);
 		} catch (err) {
 			notifyError(err);
@@ -279,6 +288,7 @@ export const useTransactionSubmit = ({
 		followUpData,
 		isEthereumNetworkMismatch,
 		nativeToken,
+		onReset,
 		options,
 		targetEvmChainId,
 		transactionType,

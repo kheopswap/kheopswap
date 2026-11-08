@@ -103,6 +103,7 @@ const useTransactionProvider = ({
 		transactionType,
 		transactionTitle,
 		followUpData: followUpData as Record<string, unknown>,
+		onReset,
 	});
 
 	// Cross-concern: aggregated error
