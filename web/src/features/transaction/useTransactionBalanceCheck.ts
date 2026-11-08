@@ -109,7 +109,11 @@ export const useTransactionBalanceCheck = ({
 
 	const insufficientBalances = useMemo(
 		() =>
-			call && existentialDeposits && feeEstimate && feeToken
+			call &&
+			!isLoadingBalances &&
+			existentialDeposits &&
+			feeEstimate &&
+			feeToken
 				? getInsufficientBalances({
 						callSpendings,
 						balances: balancesByTokenId,
@@ -119,6 +123,7 @@ export const useTransactionBalanceCheck = ({
 				: {},
 		[
 			call,
+			isLoadingBalances,
 			balancesByTokenId,
 			existentialDeposits,
 			feeEstimate,
