@@ -17,6 +17,7 @@ import { isBigInt } from "../../../utils/isBigInt";
 import { provideContext } from "../../../utils/provideContext";
 import type { CreatePoolFormInputs } from "./schema";
 import { useCreatePoolExtrinsic } from "./useCreatePoolExtrinsic";
+import { usePoolSetupCost } from "./usePoolSetupCost";
 
 const useDefaultValues = (token2Id: TokenId) => {
 	const [defaultAccountId] = useSetting("defaultAccountId");
@@ -79,6 +80,11 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 	});
 
 	const { data: token2ExistentialDeposit } = useExistentialDeposit({
+		tokenId: token2?.id,
+	});
+
+	const { data: poolSetupCost } = usePoolSetupCost({
+		chainId: assetHub.id,
 		tokenId: token2?.id,
 	});
 
@@ -163,6 +169,7 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		token2,
 		token1ExistentialDeposit,
 		token2ExistentialDeposit,
+		poolSetupCost,
 		tokensWithoutPool,
 		isLoadingTokens,
 		onReset,
