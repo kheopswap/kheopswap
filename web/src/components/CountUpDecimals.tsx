@@ -17,10 +17,11 @@ export const CountUpDecimals = memo<{ value: number }>(({ value }) => {
 
 	useEffect(() => {
 		if (countUpRef.current) countUpRef.current.update(value);
-		else if (ref.current) {
-			countUpRef.current = new CountUp(ref.current, value, OPTIONS);
-			countUpRef.current.start();
-		}
+		else if (ref.current)
+			countUpRef.current = new CountUp(ref.current, value, {
+				...OPTIONS,
+				startVal: value,
+			});
 	}, [value]);
 
 	useEffect(
