@@ -11,6 +11,7 @@ import {
 } from "../../../../components/tooltip/Tooltip";
 import { getChainById } from "../../../../registry/chains/chains";
 import { cn } from "../../../../utils/cn";
+import { useTransaction } from "../../../transaction/TransactionProvider";
 import { useSwap } from "../../SwapProvider";
 import { TokenAmountValue } from "../AmmPathValues";
 import { getXcmHub, type XcmRoute } from "../swapRoute";
@@ -26,9 +27,12 @@ export const XcmSimulationValue: FC<{
 	quote: XcmQuoteState;
 	route: XcmRoute;
 }> = ({ quote, route }) => {
-	if (quote.isLoading) return <Shimmer className="h-4">Success</Shimmer>;
+	const { isLoading, isDryRunConclusive } = useTransaction();
+	if (quote.isLoading || isLoading)
+		return <Shimmer className="h-4">Success</Shimmer>;
 	if (!quote.data) return null;
 	const [origin, ...hops] = getXcmChainNames(route);
+	const isSuccess = quote.data.success;
 
 	return (
 		<Tooltip placement="bottom-end">
@@ -36,10 +40,17 @@ export const XcmSimulationValue: FC<{
 				<div
 					className={cn(
 						"flex gap-1 items-center",
-						!quote.data.success && "text-warn",
+						!isSuccess && "text-warn",
+						isSuccess && !isDryRunConclusive && "text-muted",
 					)}
 				>
-					<span>{quote.data.success ? "Success" : "Failed"}</span>
+					<span>
+						{!isSuccess
+							? "Failed"
+							: isDryRunConclusive
+								? "Success"
+								: "Succeeds before fees"}
+					</span>
 					<InformationCircleIcon className="size-5 inline align-text-bottom" />
 				</div>
 			</TooltipTrigger>
@@ -49,6 +60,12 @@ export const XcmSimulationValue: FC<{
 						<div className="mb-2 text-error">
 							{describeXcmQuoteFailure(quote.data.failure, route)}
 						</div>
+					)}
+					{isSuccess && !isDryRunConclusive && (
+						<p className="mb-2">
+							The simulation runs the call without charging its fee, so it
+							cannot tell whether the fee can be paid.
+						</p>
 					)}
 					<p>
 						The transaction is simulated on {origin}, then the message it sends
