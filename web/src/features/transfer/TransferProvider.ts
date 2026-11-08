@@ -16,9 +16,11 @@ import { isChainIdAssetHub } from "../../registry/chains/chains";
 import { TRANSFERABLE_TOKEN_TYPES } from "../../registry/tokens/tokens";
 import type { TokenId } from "../../registry/tokens/types";
 import { useRelayChains } from "../../state/relay";
+import { getMaxSwapAmount } from "../../utils/ammMath";
 import { getAddressFromAccountField } from "../../utils/getAddressFromAccountField";
 import { getFeeAssetLocation } from "../../utils/getFeeAssetLocation";
 import { getTxOptions } from "../../utils/getTxOptions";
+import { isBigInt } from "../../utils/isBigInt";
 import { isNumber } from "../../utils/isNumber";
 import { plancksToTokens, tokensToPlancks } from "../../utils/plancks";
 import { provideContext } from "../../utils/provideContext";
@@ -208,22 +210,36 @@ const useTransferProvider = () => {
 	);
 
 	const onMaxClick = useCallback(() => {
-		if (token && balanceSender) {
-			let plancks = balanceSender;
-
-			const nativeMargin =
-				2n * (feeToken?.id === token?.id ? (feeEstimate ?? 0n) : 0n) +
-				(edTokenIn ?? 0n);
-
-			if (token.type === "native" && nativeMargin <= plancks)
-				plancks = plancks - nativeMargin;
+		if (
+			token &&
+			feeToken &&
+			balanceSender &&
+			isBigInt(edTokenIn) &&
+			isBigInt(feeEstimateNative) &&
+			isBigInt(feeEstimate)
+		) {
+			const plancks = getMaxSwapAmount({
+				balance: balanceSender,
+				tokenIn: token,
+				existentialDeposit: edTokenIn,
+				fee: { tokenId: feeToken.id, plancks: feeEstimate },
+				deliveryFee: undefined,
+			});
 
 			setFormData((prev) => ({
 				...prev,
 				amount: plancksToTokens(plancks, token.decimals),
 			}));
 		}
-	}, [balanceSender, edTokenIn, feeEstimate, feeToken?.id, token, setFormData]);
+	}, [
+		balanceSender,
+		edTokenIn,
+		feeEstimateNative,
+		feeEstimate,
+		feeToken,
+		token,
+		setFormData,
+	]);
 
 	const onReset = useCallback(() => {
 		setFormData((prev) => ({ ...prev, amount: "" }));
