@@ -24,6 +24,12 @@
 - id: asset::wah::20120608
   logo: ./img/tokens/KTT.webp
   verified: true
+- id: asset::pasah::1984
+  logo: ./img/tokens/USDT.webp
+  verified: true
+- id: asset::pasah::1337
+  logo: ./img/tokens/USDC.webp
+  verified: true
 - id: foreign-asset::pah::N4IgDghgTgpgdgFwM4gFwEYA0ICWiZQ4D2UaoCAnmDGiABrojYBuEANgK42rlXcgAFaBADGACwh4mIVp24AmAAwBWdAF8NQA
   logo: ./img/tokens/AJUN.svg
   verified: true
