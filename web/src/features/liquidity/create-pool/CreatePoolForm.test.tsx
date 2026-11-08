@@ -12,9 +12,13 @@ const existentialDeposit = 10n ** 8n;
 const poolSetupCost = 8n * 10n ** 9n;
 
 const setLiquidityToAdd = vi.fn();
+const form = vi.hoisted(() => ({
+	liquidityToAdd: null as [bigint, bigint] | null,
+}));
 
 beforeEach(() => {
 	setLiquidityToAdd.mockClear();
+	form.liquidityToAdd = null;
 });
 afterEach(cleanup);
 
@@ -28,7 +32,7 @@ vi.mock("./CreatePoolProvider", () => ({
 		isLoadingTokens: false,
 		accountBalances: balances,
 		isLoadingAccountBalances: false,
-		liquidityToAdd: null,
+		liquidityToAdd: form.liquidityToAdd,
 		setLiquidityToAdd,
 		onToken2Change: () => {},
 		token1ExistentialDeposit: existentialDeposit,
@@ -62,15 +66,21 @@ vi.mock("../../../components/TokenAmountPicker", () => ({
 		inputProps,
 		inputLabel,
 		onMaxClick,
+		errorMessage,
 	}: {
 		inputProps: InputHTMLAttributes<HTMLInputElement> & {
 			ref: Ref<HTMLInputElement>;
 		};
 		inputLabel: string;
 		onMaxClick: () => void;
+		errorMessage?: string;
 	}) => (
 		<>
-			<input {...inputProps} aria-label={inputLabel} />
+			<input
+				{...inputProps}
+				aria-label={inputLabel}
+				aria-description={errorMessage}
+			/>
 			<button type="button" onClick={onMaxClick}>
 				MAX {inputLabel}
 			</button>
@@ -94,5 +104,37 @@ describe("CreatePoolForm MAX", () => {
 		fireEvent.click(screen.getByText("MAX Asset token amount"));
 
 		expect(setLiquidityToAdd).toHaveBeenCalledWith([0n, balances[1] - 1n]);
+	});
+});
+
+describe("CreatePoolForm initial liquidity", () => {
+	const errorOf = (label: string) =>
+		screen.getByLabelText(label).getAttribute("aria-description");
+
+	it("asks for the asset amount when only the native amount is set", () => {
+		form.liquidityToAdd = [10n ** 10n, 0n];
+		render(<CreatePoolForm />);
+
+		expect(errorOf("Asset token amount")).toBe("Enter both amounts");
+		expect(errorOf("Native token amount")).toBeNull();
+	});
+
+	it("asks for the native amount when only the asset amount is set", () => {
+		form.liquidityToAdd = [0n, 10n ** 6n];
+		render(<CreatePoolForm />);
+
+		expect(errorOf("Native token amount")).toBe("Enter both amounts");
+		expect(errorOf("Asset token amount")).toBeNull();
+	});
+
+	it.each([
+		["no liquidity", null],
+		["both amounts", [10n ** 10n, 10n ** 6n]],
+	] as const)("flags nothing with %s", (_, liquidityToAdd) => {
+		form.liquidityToAdd = liquidityToAdd && [...liquidityToAdd];
+		render(<CreatePoolForm />);
+
+		expect(errorOf("Native token amount")).toBeNull();
+		expect(errorOf("Asset token amount")).toBeNull();
 	});
 });

@@ -1,18 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 import { useExistentialDeposit } from "../../../../hooks/useExistentialDeposit";
 import { provideContext } from "../../../../utils/provideContext";
+import { getMissingLiquiditySide } from "../../getMissingLiquiditySide";
 import { useLiquidityPoolPage } from "../LiquidityPoolPageProvider";
 import { useAddLiquidityExtrinsic } from "./useAddLiquidityExtrinsic";
-
-const getMissingLiquiditySide = (
-	liquidity: [bigint, bigint] | null,
-): 0 | 1 | null => {
-	if (!liquidity) return null;
-	const [native, asset] = liquidity;
-	if (native > 0n && asset === 0n) return 1;
-	if (asset > 0n && native === 0n) return 0;
-	return null;
-};
 
 const useAddLiquidityProvider = () => {
 	const [liquidityToAdd, setLiquidityToAdd] = useState<[bigint, bigint] | null>(
