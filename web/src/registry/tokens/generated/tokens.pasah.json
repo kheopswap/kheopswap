@@ -6380,6 +6380,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001046",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001046,
+		"symbol": "TUSD",
+		"decimals": 6,
+		"name": "Test USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
