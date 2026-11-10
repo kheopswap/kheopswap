@@ -6358,6 +6358,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001044",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001044,
+		"symbol": "TUSD",
+		"decimals": 6,
+		"name": "Test USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50001045",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001045,
+		"symbol": "TUSD",
+		"decimals": 6,
+		"name": "Test USD",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
