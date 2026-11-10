@@ -4,7 +4,6 @@ packages:
 allowBuilds:
   "@reown/appkit": false
   esbuild: false
-  sharp: true
   simple-git-hooks: true
 
 # don't install NPM dependencies which were published less than 3 days ago
