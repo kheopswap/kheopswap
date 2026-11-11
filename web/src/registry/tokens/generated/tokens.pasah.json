@@ -6391,6 +6391,17 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001047",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001047,
+		"symbol": "tDOTUSD",
+		"decimals": 6,
+		"name": "Shielded dotUSD Test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
