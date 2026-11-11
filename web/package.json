@@ -30,7 +30,7 @@
 		"@reown/appkit": "^1.8.24",
 		"@substrate/connect": "^2.1.8",
 		"@talismn/orb": "1.0.4",
-		"@tanstack/react-query": "^5.106.1",
+		"@tanstack/react-query": "^5.107.1",
 		"@tanstack/react-virtual": "^3.14.26",
 		"@w3f/polkadot-icons": "^1.0.0",
 		"clsx": "^2.1.1",
@@ -52,7 +52,7 @@
 		"yaml": "^2.9.1"
 	},
 	"devDependencies": {
-		"@tailwindcss/vite": "^4.3.4",
+		"@tailwindcss/vite": "^4.3.5",
 		"@testing-library/jest-dom": "^7.0.1",
 		"@testing-library/react": "^16.3.3",
 		"@types/jsdom": "^30.0.0",
@@ -64,7 +64,7 @@
 		"@vitejs/plugin-react": "^6.2.1",
 		"jsdom": "^31.0.0",
 		"sharp": "^0.35.5",
-		"tailwindcss": "^4.3.4",
+		"tailwindcss": "^4.3.5",
 		"typescript": "^7.0.2",
 		"vite": "^8.3.6",
 		"vite-plugin-checker": "^0.14.5",
