@@ -6,7 +6,7 @@
       "wsUrl": "wss://dot-rpc.stakeworld.io/assethub",
       "metadata": ".papi/scale/pah.scale",
       "genesis": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
-      "codeHash": "0xd9f622db40b8d4ef54d66223634c3546d2eec77e52d7bf4a3137a86a31589404"
+      "codeHash": "0xedf03c44b8452754a18a7b68405d65178da06a5a1994604c7420343d9b044325"
     },
     "kah": {
       "wsUrl": "wss://rpc-asset-hub-kusama.luckyfriday.io",
