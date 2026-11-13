@@ -36,7 +36,7 @@
       "wsUrl": "wss://polkadot-people-rpc.polkadot.io",
       "metadata": ".papi/scale/ppeople.scale",
       "genesis": "0x67fa177a097bfa18f77ea95ab56e9bcdfeb0e5b8a40e46298bb93e16b6fc5008",
-      "codeHash": "0x0a58f5da6309ff6cfbf01ffda018e9ea7180ee682e4ed6e4dc2d5f9e2659d38a"
+      "codeHash": "0x3421766bff1055dbc70814183bb5b3b7d6ceb21ca7b8e1dd05d93b212910d017"
     },
     "kpeople": {
       "wsUrl": "wss://kusama-people-rpc.polkadot.io",
