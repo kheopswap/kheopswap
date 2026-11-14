@@ -48,7 +48,7 @@ export const usePortfolioProvider = () => {
 	);
 
 	const lastBalances = useRef(liveBalances);
-	if (liveBalances.length || !accounts.length)
+	if (relayBalances.length || !accounts.length)
 		lastBalances.current = liveBalances;
 	const balances = lastBalances.current;
 
