@@ -107,6 +107,8 @@ type HubId = keyof typeof HUBS;
 const KUSAMA_TREASURY = "F3opxRbN5ZbjJNU511Kj2TLuzFcDq9BGduA9TgiECafpg29";
 const HYDRATION_ON_POLKADOT_ASSET_HUB =
 	"13cKp89Uh2yWgTG28JA1QEvPUMjEPKejqkjHKf9zqLiFKjH6";
+const BRIDGED_KSM_HOLDER_WITHOUT_DOT =
+	"1Yq6hbshHAmK8Snc2BpSKotySbW1EJY7mwVDgyxfT3v3p2p";
 const KSM_PLANCKS = 100_000_000_000n;
 const DOT_PLANCKS = 10_000_000_000n;
 
@@ -152,6 +154,15 @@ const LEGS: Leg[] = [
 		token: "bridged",
 		sender: KUSAMA_TREASURY,
 		amount: DOT_PLANCKS,
+	},
+	{
+		name: "ksmPolkadotToKusamaWithoutDot",
+		from: "pah",
+		to: "kah",
+		token: "bridged",
+		sender: BRIDGED_KSM_HOLDER_WITHOUT_DOT,
+		amount: KSM_PLANCKS,
+		originError: "FeesNotMet",
 	},
 ];
 
