@@ -2,6 +2,7 @@ import { getChainById } from "../registry/chains/chains";
 import { getEvmNetworkName } from "../registry/evmNetworks/evmNetworks";
 import { getParachainName } from "../registry/parachains/parachains";
 import type { Token, TokenForeignAsset } from "../registry/tokens/types";
+import { getNetworkRelayId } from "../registry/utils/chainLocation";
 import { logger } from "../utils/logger";
 
 const getForeignTokenOrigin = (token: TokenForeignAsset) => {
@@ -35,6 +36,14 @@ const getForeignTokenOrigin = (token: TokenForeignAsset) => {
 	return "Unknown";
 };
 
+const isBridgedRelayToken = ({
+	location: { parents, interior },
+}: TokenForeignAsset) =>
+	parents === 2 &&
+	interior.type === "X1" &&
+	interior.value.type === "GlobalConsensus" &&
+	!!getNetworkRelayId(interior.value.value);
+
 export const getTokenDescription = (token: Token) => {
 	const chain = getChainById(token.chainId);
 
@@ -44,7 +53,9 @@ export const getTokenDescription = (token: Token) => {
 		case "native":
 			return chain.name;
 		case "foreign-asset":
-			return `Foreign - ${getForeignTokenOrigin(token)}`;
+			return isBridgedRelayToken(token)
+				? `Bridged to ${chain.name}`
+				: `Foreign - ${getForeignTokenOrigin(token)}`;
 		case "hydration-asset":
 			return `Hydration - ${token.assetId}`;
 		default:
