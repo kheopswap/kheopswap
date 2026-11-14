@@ -8,7 +8,6 @@ import { useMemo } from "react";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import { usePoolReservesByTokenIds } from "../../../../hooks/usePoolReservesByTokenIds";
 import { getApi } from "../../../../papi/getApi";
-import { getChainById } from "../../../../registry/chains/chains";
 import { getTokenId } from "../../../../registry/tokens/helpers";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
@@ -74,10 +73,10 @@ const useDestinationNativeFee = ({
 	const estimateLeg = useMemo(
 		() =>
 			route && estimate.data
-				? parseOriginDryRun(
-						estimate.data,
-						getChainById(route.destination).paraId,
-					)
+				? parseOriginDryRun(estimate.data, {
+						from: route.origin,
+						to: route.destination,
+					})
 				: undefined,
 		[route, estimate.data],
 	);

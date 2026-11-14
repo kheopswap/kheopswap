@@ -30,7 +30,7 @@ import {
 	type XcmDestinationSwapFixture,
 } from "./xcmDestinationSwap.fixtures";
 
-const ASSET_HUB_PARA_ID = 1000;
+const HYDRATION_TO_AH = { from: "hydration", to: "pah" } as const;
 const DOT = "native::pah";
 const USDT = "asset::pah::1984";
 
@@ -138,7 +138,7 @@ describe("quoting a swap on Asset Hub of what Hydration sends", () => {
 	it.each(successes)(
 		"sends the whole amount of %s from Hydration",
 		(_, fixture) => {
-			const origin = parseOriginDryRun(fixture.originDryRun, ASSET_HUB_PARA_ID);
+			const origin = parseOriginDryRun(fixture.originDryRun, HYDRATION_TO_AH);
 			if (!origin.success) throw new Error("expected the message to leave");
 
 			expect(origin.value.sent).toBe(fixture.amount);
