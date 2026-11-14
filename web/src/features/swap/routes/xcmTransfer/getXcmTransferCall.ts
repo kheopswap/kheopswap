@@ -60,7 +60,7 @@ export const buildReserveTransferArgs = ({
 	customXcmOnDest: XcmV5Instruction[];
 }): XcmTransferArgs => {
 	const id = getOriginAssetLocation(lane.origin, tokenIn);
-	const transferType = Enum(getXcmTransferType(lane));
+	const transferType = Enum(getXcmTransferType(lane, tokenIn.id));
 
 	return {
 		dest: XcmVersionedLocation.V5(
