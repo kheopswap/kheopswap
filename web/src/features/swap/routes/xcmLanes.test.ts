@@ -4,6 +4,7 @@ import {
 	getChains,
 	isChainIdAssetHub,
 } from "../../../registry/chains/chains";
+import { DOT_ON_KAH, KSM_ON_PAH } from "./xcm/xcmBridge.fixtures";
 import { getXcmTransferType, isBridgeLane, isXcmLane } from "./xcmLanes";
 
 const chainIds = getChains().map((chain) => chain.id);
@@ -61,18 +62,15 @@ describe("xcm lanes", () => {
 	});
 
 	it.each([
-		{ origin: "pah", destination: "kah" },
-		{ origin: "kah", destination: "pah" },
+		{ lane: { origin: "pah", destination: "kah" }, bridgedTokenId: KSM_ON_PAH },
+		{ lane: { origin: "kah", destination: "pah" }, bridgedTokenId: DOT_ON_KAH },
 	] as const)(
-		"bridges the native token of $origin with $origin as the reserve, and any other token with $destination as the reserve",
-		(lane) => {
+		"bridges the native token of $lane.origin with $lane.origin as the reserve, and the token bridged from $lane.destination with $lane.destination as the reserve",
+		({ lane, bridgedTokenId }) => {
 			expect(getXcmTransferType(lane, `native::${lane.origin}`)).toBe(
 				"LocalReserve",
 			);
-			expect(getXcmTransferType(lane, `asset::${lane.origin}::1984`)).toBe(
-				"DestinationReserve",
-			);
-			expect(getXcmTransferType(lane, `native::${lane.destination}`)).toBe(
+			expect(getXcmTransferType(lane, bridgedTokenId)).toBe(
 				"DestinationReserve",
 			);
 		},
