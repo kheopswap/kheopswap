@@ -919,6 +919,69 @@ describe("getSwapTokenLists", () => {
 	});
 });
 
+describe("bridged hub tokens", () => {
+	const pah = getChainById("pah");
+	const bridgedMirrors = getAssetHubMirrorTokenIds(KNOWN_TOKENS_MAP, pah, [
+		...getChains().filter((chain) => chain.relay === pah.relay),
+		getChainById("kah"),
+	]);
+	const bridgedContext: SwapRouteContext = {
+		...context,
+		mirrors: bridgedMirrors,
+	};
+	const KSM = "native::kah";
+	const KSM_ON_PAH = bridgedMirrors.get(KSM) as TokenId;
+	const DOT_ON_KAH = [...bridgedMirrors].find(
+		([tokenId, mirrorTokenId]) =>
+			tokenId.startsWith("foreign-asset::kah::") && mirrorTokenId === DOT,
+	)?.[0] as TokenId;
+
+	it("holds both bridged pairs in the mirrors", () => {
+		expect(KNOWN_TOKENS_MAP[KSM_ON_PAH]?.symbol).toBe("KSM");
+		expect(KNOWN_TOKENS_MAP[DOT_ON_KAH]?.symbol).toBe("DOT");
+	});
+
+	it.each([
+		[KSM, DOT],
+		[DOT, KSM],
+		[KSM, KSM_ON_PAH],
+		[KSM_ON_PAH, KSM],
+		[KSM, USDT],
+		[DOT_ON_KAH, DOT],
+		[DOT, DOT_ON_KAH],
+		[DOT_ON_KAH, USDT],
+		[USDT, DOT_ON_KAH],
+		[DOT_ON_KAH, KSM],
+		[KSM, DOT_ON_KAH],
+		[DOT_ON_KAH, HYDRATION_DOT],
+		[HYDRATION_DOT, DOT_ON_KAH],
+		[DOT_ON_KAH, PEOPLE_DOT],
+		[PEOPLE_DOT, DOT_ON_KAH],
+		[KSM, HYDRATION_DOT],
+		[PEOPLE_DOT, KSM],
+	])("resolves no route from %s to %s", (tokenIdIn, tokenIdOut) => {
+		expect(
+			resolveSwapRoute({ ...bridgedContext, tokenIdIn, tokenIdOut }),
+		).toBeNull();
+	});
+
+	it("keeps the token lists of the view", () => {
+		const ammTokens = pick(KNOWN_TOKENS_MAP, [DOT, USDT, WUD, KSM_ON_PAH]);
+		const lists = getSwapTokenLists({
+			ammTokens,
+			allTokens: KNOWN_TOKENS_MAP,
+			context: bridgedContext,
+		});
+		expect(lists).toEqual(
+			getSwapTokenLists({ ammTokens, allTokens: KNOWN_TOKENS_MAP, context }),
+		);
+		expect(lists.tokensIn).not.toHaveProperty(KSM);
+		expect(lists.tokensOut).not.toHaveProperty(KSM);
+		expect(lists.tokensIn).not.toHaveProperty(DOT_ON_KAH);
+		expect(lists.tokensOut).not.toHaveProperty(DOT_ON_KAH);
+	});
+});
+
 describe("getRouteAccess", () => {
 	const substrate = "16xrRcxrBT6NfiukMzxeHGHPuJtHa9ypdgvvPJVw5zV8hwo";
 

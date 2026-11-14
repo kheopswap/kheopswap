@@ -10,35 +10,32 @@ import {
 	throttleTime,
 } from "rxjs";
 import { parseUnits } from "viem";
-import { isChainIdAssetHub } from "../registry/chains/chains";
 import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId, TokenType } from "../registry/tokens/types";
-import { getAssetHubMirrorTokenIds } from "../utils/getAssetHubMirrorTokenId";
 import { getCachedObservable$ } from "../utils/getCachedObservable";
 import { isBigInt } from "../utils/isBigInt";
 import { getAssetConvert$ } from "./convert";
-import { assetHub$, relayChains$, stableToken$ } from "./relay";
-import { getAllTokens$ } from "./tokens";
+import { assetHub$, stableToken$ } from "./relay";
+import { getAllTokens$, viewTokens$ } from "./tokens";
 
-export const assetHubMirrorTokenIds$ = combineLatest([
-	relayChains$,
-	getAllTokens$(),
-]).pipe(
-	map(([{ assetHub, allChains }, { data: tokens }]) =>
-		getAssetHubMirrorTokenIds(tokens, assetHub, allChains),
-	),
+export const assetHubMirrorTokenIds$ = viewTokens$.pipe(
+	map(({ mirrorTokenIds }) => mirrorTokenIds),
 	shareReplay({ bufferSize: 1, refCount: true }),
 );
 
 export const getAssetHubMirrorTokenId$ = (
 	tokenId: TokenId,
 ): Observable<TokenId> =>
-	isChainIdAssetHub(getChainIdFromTokenId(tokenId))
-		? of(tokenId)
-		: assetHubMirrorTokenIds$.pipe(
-				map((mirrorTokenIds) => mirrorTokenIds.get(tokenId) ?? tokenId),
-				distinctUntilChanged(),
-			);
+	assetHub$.pipe(
+		switchMap((assetHub) =>
+			getChainIdFromTokenId(tokenId) === assetHub.id
+				? of(tokenId)
+				: assetHubMirrorTokenIds$.pipe(
+						map((mirrorTokenIds) => mirrorTokenIds.get(tokenId) ?? tokenId),
+					),
+		),
+		distinctUntilChanged(),
+	);
 
 export const getStablePlancks$ = (
 	tokenId: TokenId,
