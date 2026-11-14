@@ -1052,16 +1052,31 @@ describe("between the Polkadot and Kusama Asset Hubs", () => {
 		},
 	);
 
+	const getFeesPaid = ({ originDryRun }: BridgeTransferFixture) => {
+		if (!originDryRun.success) throw new Error("fixture origin dry run failed");
+		return originDryRun.value.emitted_events
+			.flatMap((event) =>
+				event.type === "PolkadotXcm" && event.value.type === "FeesPaid"
+					? event.value.value.fees
+					: [],
+			)
+			.reduce(
+				(sum, { fun }) => (fun.type === "Fungible" ? sum + fun.value : sum),
+				0n,
+			);
+	};
+
 	it.each([
 		["Kusama", ksmKusamaToPolkadot, 3496641411n],
 		["Polkadot", ksmPolkadotToKusama, 376780428n],
 		["Polkadot", dotPolkadotToKusama, 377047092n],
 		["Kusama", dotKusamaToPolkadot, 3491308079n],
 	])(
-		"reads the bridge fee %s Asset Hub charges in its native token",
+		"reads the bridge fee %s Asset Hub charges in its native token, equal to the fees its dry run paid",
 		(_, fixture, expected) => {
 			if (!fixture.deliveryFees) throw new Error("fixture has no bridge fee");
 			expect(parseDeliveryFee(fixture.deliveryFees)).toBe(expected);
+			expect(getFeesPaid(fixture)).toBe(expected);
 			expect(getDeliveryFeeTokenId(fixture.origin)).toBe(
 				`native::${fixture.origin}`,
 			);
