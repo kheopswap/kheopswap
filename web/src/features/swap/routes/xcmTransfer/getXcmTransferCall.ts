@@ -2,8 +2,6 @@ import {
 	XcmV3MultiassetFungibility,
 	XcmV3WeightLimit,
 	XcmV5Instruction,
-	XcmV5Junction,
-	XcmV5Junctions,
 	XcmVersionedAssetId,
 	XcmVersionedAssets,
 	XcmVersionedLocation,
@@ -11,12 +9,11 @@ import {
 } from "@polkadot-api/descriptors";
 import { Enum, type SS58String } from "polkadot-api";
 import { type Api, getApi } from "../../../../papi/getApi";
-import { getChainById } from "../../../../registry/chains/chains";
-import type { ChainId } from "../../../../registry/chains/types";
 import type { Token } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { XcmLaneFromHub, XcmTransferRoute } from "../swapRoute";
+import { getHopDestination } from "../xcm/xcmHop";
 import { anyOneAsset, depositAsset, toFungible } from "../xcm/xcmInstructions";
 import { getXcmTransferType, type XcmLane } from "../xcmLanes";
 
@@ -51,13 +48,6 @@ const getOriginAssetLocation = (
 	}
 };
 
-const getSiblingLocation = (chainId: ChainId) => ({
-	parents: 1,
-	interior: XcmV5Junctions.X1(
-		XcmV5Junction.Parachain(getChainById(chainId).paraId),
-	),
-});
-
 export const buildReserveTransferArgs = ({
 	lane,
 	tokenIn,
@@ -73,7 +63,9 @@ export const buildReserveTransferArgs = ({
 	const transferType = Enum(getXcmTransferType(lane));
 
 	return {
-		dest: XcmVersionedLocation.V5(getSiblingLocation(lane.destination)),
+		dest: XcmVersionedLocation.V5(
+			getHopDestination({ from: lane.origin, to: lane.destination }),
+		),
 		assets: XcmVersionedAssets.V5([
 			{ id, fun: XcmV3MultiassetFungibility.Fungible(plancks) },
 		]),
@@ -91,7 +83,10 @@ const forwardFromHub = (
 	plancks: bigint,
 	beneficiary: SS58String,
 ) => {
-	const dest = getSiblingLocation(fromHub.destination);
+	const dest = getHopDestination({
+		from: fromHub.origin,
+		to: fromHub.destination,
+	});
 	const lastHopMaxFee = plancks / 2n;
 	const xcm = [
 		XcmV5Instruction.BuyExecution({
