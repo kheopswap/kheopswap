@@ -216,6 +216,17 @@ describe("reanchorLocation", () => {
 		});
 	});
 
+	it("rejects a consensus named below the global level", () => {
+		const consensus = XcmV5Junction.GlobalConsensus(XcmV5NetworkId.Kusama());
+		for (const parents of [0, 1])
+			expect(
+				reanchorLocation(
+					{ parents, interior: XcmV5Junctions.X1(consensus) },
+					{ from: pah, to: kah },
+				),
+			).toBeUndefined();
+	});
+
 	it("rejects a location above the global consensus", () => {
 		expect(
 			reanchorLocation(
