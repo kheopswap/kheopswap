@@ -35,17 +35,34 @@ export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 
 export const getChains = () => CHAINS;
 
-const BRIDGED_ASSET_HUB_IDS: Partial<Record<ChainIdAssetHub, ChainIdAssetHub>> =
-	{
-		pah: "kah",
-		kah: "pah",
-	};
+type AssetHubBridge = {
+	bridgedAssetHubId: ChainIdAssetHub;
+	bridgeHubParaId: number;
+	bridgeMessagesPalletInstance: number;
+};
+
+const ASSET_HUB_BRIDGES: Partial<Record<ChainIdAssetHub, AssetHubBridge>> = {
+	pah: {
+		bridgedAssetHubId: "kah",
+		bridgeHubParaId: 1002,
+		bridgeMessagesPalletInstance: 53,
+	},
+	kah: {
+		bridgedAssetHubId: "pah",
+		bridgeHubParaId: 1002,
+		bridgeMessagesPalletInstance: 53,
+	},
+};
+
+export const getAssetHubBridge = (
+	assetHubId: ChainIdAssetHub,
+): AssetHubBridge | undefined => ASSET_HUB_BRIDGES[assetHubId];
 
 export const getBridgedAssetHub = (
 	assetHubId: ChainIdAssetHub,
 ): ChainAssetHub | undefined => {
-	const bridgedAssetHubId = BRIDGED_ASSET_HUB_IDS[assetHubId];
-	return bridgedAssetHubId && getChainById(bridgedAssetHubId);
+	const bridge = getAssetHubBridge(assetHubId);
+	return bridge && getChainById(bridge.bridgedAssetHubId);
 };
 
 export function getChainById(id: ChainIdAssetHub): ChainAssetHub;

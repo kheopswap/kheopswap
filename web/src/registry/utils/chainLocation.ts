@@ -15,6 +15,9 @@ const RELAY_NETWORKS: Partial<Record<RelayId, XcmV5NetworkId>> = {
 	kusama: XcmV5NetworkId.Kusama(),
 };
 
+export const getRelayNetwork = (relay: RelayId): XcmV5NetworkId | undefined =>
+	RELAY_NETWORKS[relay];
+
 export const getNetworkRelayId = (
 	network: XcmV5NetworkId,
 ): RelayId | undefined =>
@@ -88,7 +91,7 @@ const viewRelayLocation = (
 	to: ChainPosition,
 ): XcmV5Multilocation | undefined => {
 	if (relay !== to.relay) {
-		const network = RELAY_NETWORKS[relay];
+		const network = getRelayNetwork(relay);
 		return (
 			network &&
 			toLocation(2, [XcmV5Junction.GlobalConsensus(network), ...junctions])
