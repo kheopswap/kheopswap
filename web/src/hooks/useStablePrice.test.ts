@@ -30,9 +30,24 @@ vi.mock("../state/relay", () => ({
 	useRelayChains: () => paseo.relayChains,
 }));
 
-vi.mock("../state/tokens", () => ({
-	getAllTokens$: () => of({ isLoading: false, data: paseo.tokens }),
-}));
+vi.mock("../state/tokens", async () => {
+	const { getAssetHubMirrorTokenIds } = await import(
+		"../utils/getAssetHubMirrorTokenId"
+	);
+	const { assetHub, allChains } = paseo.relayChains;
+	return {
+		getAllTokens$: () => of({ isLoading: false, data: paseo.tokens }),
+		viewTokens$: of({
+			isLoading: false,
+			tokens: paseo.tokens,
+			mirrorTokenIds: getAssetHubMirrorTokenIds(
+				paseo.tokens,
+				assetHub,
+				allChains,
+			),
+		}),
+	};
+});
 
 vi.mock("../services/tokens/service", () => ({
 	getTokenById$: (tokenId: TokenId) =>

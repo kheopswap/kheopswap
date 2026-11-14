@@ -1,9 +1,15 @@
+import {
+	XcmV5Junction,
+	XcmV5Junctions,
+	XcmV5NetworkId,
+} from "@polkadot-api/descriptors";
 import { describe, expect, it } from "vitest";
 import {
 	getChainById,
 	getChains,
 	isChainIdAssetHub,
 } from "../registry/chains/chains";
+import type { ChainIdAssetHub } from "../registry/chains/types";
 import { getChainIdFromTokenId, getTokenId } from "../registry/tokens/helpers";
 import { KNOWN_TOKENS_MAP } from "../registry/tokens/tokens";
 import type {
@@ -86,6 +92,57 @@ describe("getAssetHubMirrorTokenIds", () => {
 				relayChains,
 			).get(tokenId),
 		).toBe(expected);
+	});
+
+	describe("bridged hub", () => {
+		const getBridgedMirrors = (
+			assetHubId: ChainIdAssetHub,
+			bridgedAssetHubId: ChainIdAssetHub,
+		) => {
+			const relayAssetHub = getChainById(assetHubId);
+			return [
+				...getAssetHubMirrorTokenIds(KNOWN_TOKENS_MAP, relayAssetHub, [
+					...getChains().filter((chain) => chain.relay === relayAssetHub.relay),
+					getChainById(bridgedAssetHubId),
+				]),
+			].filter(
+				([tokenId]) => getChainIdFromTokenId(tokenId) === bridgedAssetHubId,
+			);
+		};
+
+		const relayTokenId = (chainId: ChainIdAssetHub, network: XcmV5NetworkId) =>
+			getTokenId({
+				type: "foreign-asset",
+				chainId,
+				location: {
+					parents: 2,
+					interior: XcmV5Junctions.X1(XcmV5Junction.GlobalConsensus(network)),
+				},
+			});
+
+		it("maps only the relay tokens of kah into the polkadot view", () => {
+			expect(getBridgedMirrors("pah", "kah")).toEqual([
+				["native::kah", relayTokenId("pah", XcmV5NetworkId.Kusama())],
+				[relayTokenId("kah", XcmV5NetworkId.Polkadot()), "native::pah"],
+			]);
+		});
+
+		it("maps only the relay tokens of pah into the kusama view", () => {
+			expect(getBridgedMirrors("kah", "pah")).toEqual([
+				["native::pah", relayTokenId("kah", XcmV5NetworkId.Polkadot())],
+				[relayTokenId("pah", XcmV5NetworkId.Kusama()), "native::kah"],
+			]);
+		});
+
+		it("knows the bridged relay tokens", () => {
+			expect(
+				KNOWN_TOKENS_MAP[relayTokenId("pah", XcmV5NetworkId.Kusama())]?.symbol,
+			).toBe("KSM");
+			expect(
+				KNOWN_TOKENS_MAP[relayTokenId("kah", XcmV5NetworkId.Polkadot())]
+					?.symbol,
+			).toBe("DOT");
+		});
 	});
 
 	describe("hydration local locations", () => {
