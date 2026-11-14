@@ -18,6 +18,7 @@ import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { type AmmPathQuoteState, useAmmPathQuote } from "../useAmmPathQuote";
 import type { XcmDryRunBalances } from "../xcm/useXcmDryRunBalances";
+import { getHopInbound } from "../xcm/xcmHop";
 import {
 	describeXcmQuoteFailure,
 	type Parsed,
@@ -36,9 +37,14 @@ const queryDestinationNativeFee = async (
 	message: XcmVersionedXcm,
 ): Promise<bigint | null> => {
 	const api = await getApi(route.destination);
-	const weight = await api.apis.XcmPaymentApi.query_xcm_weight(message, {
-		at: "best",
-	});
+	const inbound = getHopInbound(
+		{ from: route.origin, to: route.destination },
+		message,
+	);
+	const weight = await api.apis.XcmPaymentApi.query_xcm_weight(
+		inbound.message,
+		{ at: "best" },
+	);
 	if (!weight.success) return null;
 	const fee = await api.apis.XcmPaymentApi.query_weight_to_asset_fee(
 		weight.value,
