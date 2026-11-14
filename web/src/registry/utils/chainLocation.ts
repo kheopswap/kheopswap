@@ -50,6 +50,9 @@ const toLocation = (
 	};
 };
 
+const isRelayInterior = (junctions: XcmV5Junction[]) =>
+	junctions.every((junction) => junction.type !== "GlobalConsensus");
+
 const toRelayLocation = (
 	{ parents, interior }: XcmV5Multilocation,
 	from: ChainPosition,
@@ -57,12 +60,16 @@ const toRelayLocation = (
 	const junctions = getJunctions(interior);
 	switch (parents) {
 		case 0:
-			return {
-				relay: from.relay,
-				junctions: [XcmV5Junction.Parachain(from.paraId), ...junctions],
-			};
+			return isRelayInterior(junctions)
+				? {
+						relay: from.relay,
+						junctions: [XcmV5Junction.Parachain(from.paraId), ...junctions],
+					}
+				: undefined;
 		case 1:
-			return { relay: from.relay, junctions };
+			return isRelayInterior(junctions)
+				? { relay: from.relay, junctions }
+				: undefined;
 		case 2: {
 			const [consensus, ...rest] = junctions;
 			const relay =
