@@ -65,6 +65,26 @@ const sentTo = (paraId: number, message_id = MESSAGE_ID) => ({
 	},
 });
 
+const sentToKusamaAssetHub = {
+	type: "PolkadotXcm",
+	value: {
+		type: "Sent",
+		value: {
+			destination: {
+				parents: 2,
+				interior: {
+					type: "X2",
+					value: [
+						{ type: "GlobalConsensus", value: { type: "Kusama" } },
+						{ type: "Parachain", value: 1000 },
+					],
+				},
+			},
+			message_id: MESSAGE_ID,
+		},
+	},
+};
+
 const ourArrival: TxEvents = [
 	deposited(BENEFICIARY, 9995190152n),
 	deposited(FEE_RECEIVER, 4809848n),
@@ -203,6 +223,24 @@ describe("getSentMessageId", () => {
 			getSentMessageId(getRecord("broadcasted").txEvents, AH_TO_HYDRATION),
 		).toBeNull();
 	});
+
+	it("reads the id of the message sent over the bridge, from its sender only", () => {
+		const { txEvents } = getRecord("inBlock", [sentToKusamaAssetHub]);
+		expect(getSentMessageId(txEvents, { from: "pah", to: "kah" })).toBe(
+			MESSAGE_ID,
+		);
+		expect(getSentMessageId(txEvents, { from: "kah", to: "pah" })).toBeNull();
+		expect(
+			getSentMessageId(txEvents, { from: "pah", to: "ppeople" }),
+		).toBeNull();
+	});
+
+	it("reads the id of a message from the hop's own sender only", () => {
+		const { txEvents } = getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]);
+		expect(
+			getSentMessageId(txEvents, { from: "hydration", to: "pah" }),
+		).toBeNull();
+	});
 });
 
 describe("getXcmArrival$", () => {
@@ -314,6 +352,32 @@ describe("getXcmArrival$", () => {
 
 		expect(arrivals.at(-1)?.status).toBe("arrived");
 	});
+
+	it.each([
+		["a transfer on one relay", AH_TO_HYDRATION, sentTo(HYDRATION_PARA_ID), 10],
+		["a bridge transfer", { from: "pah", to: "kah" }, sentToKusamaAssetHub, 30],
+	] as const)(
+		"waits for %s before giving up as unconfirmed: %o",
+		(_, firstHop, sent, minutes) => {
+			vi.useFakeTimers();
+			const arrivals: XcmArrival[] = [];
+			getXcmArrival$({
+				record$: new BehaviorSubject<TransactionRecord | undefined>(
+					getRecord("inBlock", [sent]),
+				),
+				blockEvents$: new Subject<TxEvents>(),
+				target,
+				returnTokenIds,
+				firstHop,
+				bufferBlocks: 30,
+			}).subscribe((arrival) => arrivals.push(arrival));
+
+			vi.advanceTimersByTime(minutes * 60_000 - 1);
+			expect(arrivals.at(-1)?.status).toBe("in-transit");
+			vi.advanceTimersByTime(1);
+			expect(arrivals.at(-1)?.status).toBe("unconfirmed");
+		},
+	);
 
 	it("gives up as unconfirmed when nothing arrives before the timeout", () => {
 		vi.useFakeTimers();
