@@ -1,4 +1,3 @@
-import type { XcmV5Junction, XcmV5Junctions } from "@polkadot-api/descriptors";
 import {
 	isChainIdAssetHub,
 	isChainIdHydration,
@@ -7,31 +6,13 @@ import type { Chain, ChainAssetHub } from "../registry/chains/types";
 import { getTokenId } from "../registry/tokens/helpers";
 import type { Token, TokenId } from "../registry/tokens/types";
 import type { XcmV5Multilocation } from "../registry/types/xcm";
+import { reanchorLocation } from "../registry/utils/chainLocation";
 
 const ASSETS_PALLET_INSTANCE = 50;
 
 export const HDX_LOCAL_LOCATION: XcmV5Multilocation = {
 	parents: 0,
 	interior: { type: "X1", value: { type: "GeneralIndex", value: 0n } },
-};
-
-const getJunctions = (interior: XcmV5Junctions): XcmV5Junction[] => {
-	switch (interior.type) {
-		case "Here":
-			return [];
-		case "X1":
-			return [interior.value];
-		default:
-			return interior.value;
-	}
-};
-
-const toInterior = (junctions: XcmV5Junction[]): XcmV5Junctions | undefined => {
-	const [first, ...rest] = junctions;
-	if (!first) return { type: "Here", value: undefined };
-	if (!rest.length) return { type: "X1", value: first };
-	if (junctions.length > 8) return undefined;
-	return { type: `X${junctions.length}`, value: junctions } as XcmV5Junctions;
 };
 
 const RELAY_TOKEN_LOCATION: XcmV5Multilocation = {
@@ -52,18 +33,6 @@ const getLocalLocation = (token: Token): XcmV5Multilocation | undefined => {
 	}
 };
 
-const toSiblingLocation = (
-	location: XcmV5Multilocation,
-	paraId: number,
-): XcmV5Multilocation | undefined => {
-	if (location.parents > 0) return location;
-	const interior = toInterior([
-		{ type: "Parachain", value: paraId },
-		...getJunctions(location.interior),
-	]);
-	return interior && { parents: 1, interior };
-};
-
 const getAssetHubTokenId = (
 	location: XcmV5Multilocation,
 	assetHub: ChainAssetHub,
@@ -72,11 +41,9 @@ const getAssetHubTokenId = (
 	if (parents === 1 && interior.type === "Here")
 		return getTokenId({ type: "native", chainId: assetHub.id });
 
-	if (parents === 1 && interior.type === "X3") {
-		const [parachain, pallet, index] = interior.value;
+	if (parents === 0 && interior.type === "X2") {
+		const [pallet, index] = interior.value;
 		if (
-			parachain?.type === "Parachain" &&
-			parachain.value === assetHub.paraId &&
 			pallet?.type === "PalletInstance" &&
 			pallet.value === ASSETS_PALLET_INSTANCE &&
 			index?.type === "GeneralIndex"
@@ -97,18 +64,20 @@ export const getAssetHubMirrorTokenIds = (
 	chains: Chain[],
 ): ReadonlyMap<TokenId, TokenId> => {
 	const mirrorTokenIds = new Map<TokenId, TokenId>();
-	const paraIds = new Map(
+	const remoteChains = new Map(
 		chains
 			.filter((chain) => !isChainIdAssetHub(chain.id))
-			.map((chain) => [chain.id, chain.paraId]),
+			.map((chain) => [chain.id, chain]),
 	);
 
 	for (const token of Object.values(tokens)) {
-		const paraId = paraIds.get(token.chainId);
-		if (paraId === undefined) continue;
+		const chain = remoteChains.get(token.chainId);
+		if (!chain) continue;
 
 		const localLocation = getLocalLocation(token);
-		const location = localLocation && toSiblingLocation(localLocation, paraId);
+		const location =
+			localLocation &&
+			reanchorLocation(localLocation, { from: chain, to: assetHub });
 		if (!location) continue;
 
 		const mirrorTokenId = getAssetHubTokenId(location, assetHub);
