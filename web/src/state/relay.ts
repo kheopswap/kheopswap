@@ -6,7 +6,11 @@ import {
 	map,
 	switchMap,
 } from "rxjs";
-import { getChains, isChainAssetHub } from "../registry/chains/chains";
+import {
+	getBridgedAssetHub,
+	getChains,
+	isChainAssetHub,
+} from "../registry/chains/chains";
 import { getTokenById$ } from "../services/tokens/service";
 import { relayId$ } from "./location";
 
@@ -18,9 +22,14 @@ export const [useRelayChains, relayChains$] = bind(
 			const assetHub = allChains.find(isChainAssetHub);
 			if (!assetHub) throw new Error("Asset hub not found for relay");
 
-			return { relayId, assetHub, allChains };
+			return {
+				relayId,
+				assetHub,
+				bridgedAssetHub: getBridgedAssetHub(assetHub.id),
+				allChains,
+			};
 		}),
-		switchMap(({ relayId, assetHub, allChains }) => {
+		switchMap(({ relayId, assetHub, bridgedAssetHub, allChains }) => {
 			if (!assetHub.stableTokenId) throw new Error("Stable token not found");
 			return getTokenById$(assetHub.stableTokenId).pipe(
 				distinctUntilKeyChanged("token", isEqual),
@@ -32,6 +41,7 @@ export const [useRelayChains, relayChains$] = bind(
 					return {
 						relayId,
 						assetHub,
+						bridgedAssetHub,
 						allChains,
 						stableToken, //always defined by config
 					};

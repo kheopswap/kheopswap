@@ -35,6 +35,19 @@ export const getDescriptors = (id: ChainId): Descriptors<ChainId> =>
 
 export const getChains = () => CHAINS;
 
+const BRIDGED_ASSET_HUB_IDS: Partial<Record<ChainIdAssetHub, ChainIdAssetHub>> =
+	{
+		pah: "kah",
+		kah: "pah",
+	};
+
+export const getBridgedAssetHub = (
+	assetHubId: ChainIdAssetHub,
+): ChainAssetHub | undefined => {
+	const bridgedAssetHubId = BRIDGED_ASSET_HUB_IDS[assetHubId];
+	return bridgedAssetHubId && getChainById(bridgedAssetHubId);
+};
+
 export function getChainById(id: ChainIdAssetHub): ChainAssetHub;
 export function getChainById(id: ChainId): Chain;
 export function getChainById(id: ChainId): Chain {
