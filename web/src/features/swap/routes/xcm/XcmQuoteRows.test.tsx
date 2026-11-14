@@ -59,6 +59,25 @@ describe("XcmQuoteRows fees", () => {
 		expect(screen.queryByText(/XCM fee/)).toBeNull();
 	});
 
+	it("reads the fee as a bridge fee and tells how long the bridge takes", () => {
+		render(
+			<XcmQuoteRows
+				quote={settledQuote(377_047_092n)}
+				route={{ ...ROUTE, destination: "kah" }}
+			/>,
+		);
+
+		expect(rowValue("Bridge fee")?.textContent).toBe("0.0377 DOT");
+		expect(screen.queryByText("Delivery fee")).toBeNull();
+		expect(rowValue("Arrival time")?.textContent).toBe("A few minutes");
+	});
+
+	it("tells no arrival time on one relay", () => {
+		render(<XcmQuoteRows quote={settledQuote(305_000_000n)} route={ROUTE} />);
+
+		expect(screen.queryByText("Arrival time")).toBeNull();
+	});
+
 	it("keeps the delivery fee row when the fee is zero", () => {
 		render(<XcmQuoteRows quote={settledQuote(0n)} route={ROUTE} />);
 

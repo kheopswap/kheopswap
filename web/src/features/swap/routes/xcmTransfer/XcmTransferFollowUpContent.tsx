@@ -12,12 +12,14 @@ import {
 	type XcmArrival,
 	type XcmTransferFollowUpData,
 } from "../../../../state/transactions/xcmArrival";
+import { isBridgeHop } from "../../../../utils/xcmHop";
 import { TokenAmountValue } from "../AmmPathValues";
 
 const ArrivalStatus: FC<{
 	arrival: XcmArrival;
 	origin: ChainId;
-}> = ({ arrival, origin }) => {
+	firstHop: ChainId;
+}> = ({ arrival, origin, firstHop }) => {
 	switch (arrival.status) {
 		case "awaiting-origin":
 			return (
@@ -26,7 +28,13 @@ const ArrivalStatus: FC<{
 				</span>
 			);
 		case "in-transit":
-			return <Pulse pulse>In transit</Pulse>;
+			return (
+				<Pulse pulse>
+					{isBridgeHop({ from: origin, to: firstHop })
+						? "Crossing the bridge, takes a few minutes"
+						: "In transit"}
+				</Pulse>
+			);
 		case "arrived":
 			return <span className="text-success">Arrived</span>;
 		case "failed-on-destination":
@@ -47,12 +55,13 @@ const ArrivalStatus: FC<{
 export const XcmTransferFollowUpContent: FC<{
 	transaction: TransactionRecord;
 }> = ({ transaction }) => {
-	const { origin, target, tokenOut, estimatedReceived } =
+	const { origin, firstHop, target, tokenOut, estimatedReceived } =
 		transaction.followUpData as Partial<XcmTransferFollowUpData>;
 	const arrival = useXcmArrival(transaction.id);
 
 	if (
 		!origin ||
+		!firstHop ||
 		!target ||
 		!tokenOut ||
 		!arrival ||
@@ -69,7 +78,7 @@ export const XcmTransferFollowUpContent: FC<{
 			<FollowUpRow
 				label={`Arrival on ${getChainById(parseTokenId(target.tokenId).chainId).name}`}
 			>
-				<ArrivalStatus arrival={arrival} origin={origin} />
+				<ArrivalStatus arrival={arrival} origin={origin} firstHop={firstHop} />
 			</FollowUpRow>
 			{estimatedReceived !== undefined && (
 				<FollowUpRow label="Estimated received" className="text-muted">
