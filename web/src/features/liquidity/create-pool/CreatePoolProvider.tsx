@@ -1,4 +1,4 @@
-import { fromPairs, toPairs } from "lodash-es";
+import { fromPairs, pickBy, toPairs } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAllTokens } from "../../../hooks/useAllTokens";
 import { useBalance } from "../../../hooks/useBalance";
@@ -53,9 +53,13 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		if (formData.from) setDefaultAccountId(formData.from);
 	}, [formData.from, setDefaultAccountId]);
 
-	const { data: tokens, isLoading: isLoadingTokens } = useAllTokens({
+	const { data: allTokens, isLoading: isLoadingTokens } = useAllTokens({
 		types: POOL_TOKEN2_TOKEN_TYPES,
 	});
+	const tokens = useMemo(
+		() => pickBy(allTokens, (token) => token.chainId === assetHub.id),
+		[allTokens, assetHub.id],
+	);
 
 	const { data: pools } = usePoolsByChainId({ chainId: assetHub.id });
 
