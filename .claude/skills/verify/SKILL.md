@@ -38,8 +38,9 @@ Parallel runs share the wallet's accounts. Two sends from one account on one net
 ## Networks
 
 - **Paseo (`#/paseo/...`) is the default for everything.** It is a testnet with deep PAS/USDC and PAS/USDt pools. Check the test account's balance in the `Account` drawer before you rely on it.
-- **Polkadot (`#/polkadot/...`) is the fallback when Paseo is broken.** Paseo breaks from time to time: RPC down, or a runtime upgrade the app can't sign for yet. Use mainnet only for that, with tiny amounts (≤ 0.01 DOT), and say in the report that mainnet was used and why.
-- Kusama and Westend: read-only checks only.
+- **Polkadot (`#/polkadot/...`) is the fallback when Paseo is broken.** Paseo breaks from time to time: RPC down, or a runtime upgrade the app can't sign for yet. Use mainnet only for that and for the bridge, with tiny amounts (≤ 0.01 DOT outside the bridge), and say in the report that mainnet was used and why.
+- **The bridge exists only between Polkadot and Kusama**, so `features/bridge.md` runs on mainnet, on `#/polkadot/...` and `#/kusama/...`. Its quotes are read-only. A signed bridge transfer costs more than the 0.01 DOT cap: the bridge fee alone is about 0.04 DOT from Polkadot Asset Hub or 0.0035 KSM from Kusama Asset Hub, on top of the amount. Send 0.01 of the token and report the fees paid.
+- Kusama outside the bridge, and Westend: read-only checks only.
 
 Signing on Paseo needs a Talisman build whose signer has `createTransaction` (TalismanSociety/talisman#2670). polkadot-api's `pjs-signer` rejects signed extensions it does not know, such as Paseo's `AsScarcity`, and since #154 the app lets a wallet with `createTransaction` build the transaction instead. Talisman 3.11.0 from the Chrome Web Store lacks it, so put a build that has it in `~/.kheopswap/talisman.zip`. On 2026-10-24, with 3.12.0 from the zip, a PAS self-transfer and a PAS → USDC swap signed and reached `Transaction succeeded` on Paseo. Without such a build, every Paseo submit fails before Talisman opens: the follow-up dialog reads `Transaction failed` and `PJS does not support this signed-extension: AsScarcity`. `launch.sh` and the doctor print the Talisman version and source.
 
