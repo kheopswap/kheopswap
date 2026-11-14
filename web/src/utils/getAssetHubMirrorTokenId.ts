@@ -26,6 +26,7 @@ const getLocalLocation = (token: Token): XcmV5Multilocation | undefined => {
 			return isChainIdHydration(token.chainId)
 				? HDX_LOCAL_LOCATION
 				: RELAY_TOKEN_LOCATION;
+		case "foreign-asset":
 		case "hydration-asset":
 			return token.location;
 		default:
@@ -58,6 +59,12 @@ const getAssetHubTokenId = (
 	return getTokenId({ type: "foreign-asset", chainId: assetHub.id, location });
 };
 
+const isMirrorPair = (token: Token, mirror: Token | undefined) =>
+	mirror?.decimals === token.decimals &&
+	(!isChainIdAssetHub(token.chainId) ||
+		token.type === "native" ||
+		mirror.type === "native");
+
 export const getAssetHubMirrorTokenIds = (
 	tokens: Record<TokenId, Token>,
 	assetHub: ChainAssetHub,
@@ -66,7 +73,7 @@ export const getAssetHubMirrorTokenIds = (
 	const mirrorTokenIds = new Map<TokenId, TokenId>();
 	const remoteChains = new Map(
 		chains
-			.filter((chain) => !isChainIdAssetHub(chain.id))
+			.filter((chain) => chain.id !== assetHub.id)
 			.map((chain) => [chain.id, chain]),
 	);
 
@@ -81,7 +88,7 @@ export const getAssetHubMirrorTokenIds = (
 		if (!location) continue;
 
 		const mirrorTokenId = getAssetHubTokenId(location, assetHub);
-		if (tokens[mirrorTokenId]?.decimals === token.decimals)
+		if (isMirrorPair(token, tokens[mirrorTokenId]))
 			mirrorTokenIds.set(token.id, mirrorTokenId);
 	}
 
