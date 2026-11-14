@@ -6402,6 +6402,28 @@
 		"isSufficient": false
 	},
 	{
+		"id": "asset::pasah::50001048",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001048,
+		"symbol": "US\u0000DT",
+		"decimals": 6,
+		"name": "OpenShore audit NUL symbol test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
+		"id": "asset::pasah::50001050",
+		"type": "asset",
+		"chainId": "pasah",
+		"assetId": 50001050,
+		"symbol": "USDT",
+		"decimals": 6,
+		"name": "OpenShore audit look-alike test",
+		"verified": false,
+		"isSufficient": false
+	},
+	{
 		"id": "asset::pasah::6",
 		"type": "asset",
 		"chainId": "pasah",
