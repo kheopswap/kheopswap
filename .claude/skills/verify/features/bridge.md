@@ -31,7 +31,7 @@ Steps:
 - **Reverse.** Click `Swap token direction` and fill `0.01` again. On 2026-11-15, 0.01 KSM from Kusama Asset Hub showed `You receive ~0.0096 KSM`, `Bridge fee 0.0035 KSM`, `Destination fee 0.0004 KSM` and `Transaction fee < 0.0001 KSM`.
 - **DOT.** Pick `DOT DOT Polkadot Polkadot Asset Hub` as input and `DOT DOT Polkadot Bridged to Kusama Asset Hub` as output. On 2026-11-15, 0.01 DOT showed `You receive ~0.0097 DOT`, `Bridge fee 0.0377 DOT` and `Destination fee 0.0003 DOT`.
 - **Other view.** Open `http://localhost:5173/#/kusama/swap`. The pair and the amount are kept, and the summary quotes the same transfer.
-- **Submit.** The signed steps had not run when this recipe was written on 2026-11-15. Click `TRANSFER`, run `talisman.mjs approve --signer "<test account name>"`, then wait for `Arrived` in the follow-up dialog. Four transfers measured on 2026-11-14 took 2 to 3 minutes. The app reports `Not confirmed` after 30 minutes.
+- **Submit.** Click `TRANSFER`, run `talisman.mjs approve --signer "<test account name>"`, then wait for `Arrived` in the follow-up dialog, which stays open. Until then the arrival row reads `Crossing the bridge, takes a few minutes`. On 2026-11-15 a 0.01 KSM round trip was signed on mainnet. Kusama Asset Hub to Polkadot Asset Hub arrived 2 min 51 s after its block with `Received 0.0096 KSM`, and the way back arrived after 2 min 27 s with `Received 0.0099 KSM`. Each amount equalled its quote. The app reports `Not confirmed` after 30 minutes.
 - **Second view.** After `Arrived`, the output token's balance on the destination hub has grown by `Received`. Portfolio on either view lists it.
 - **Proof.** Save `bridge-quote.txt` and `bridge-quote.png` per pair, and for a signed run `talisman-approve.txt`, the follow-up dialog at `Arrived`, and `balances-after.txt`.
 
@@ -43,4 +43,6 @@ Steps:
 - A pair that would swap and bridge, such as DOT on Polkadot Asset Hub to KSM on Kusama Asset Hub, does not route: picking the second token replaces the first with its mirror.
 - Ethereum accounts cannot bridge: the form reads `Ethereum accounts cannot use the bridge yet`.
 - On 2026-11-15 the first page load after launch once failed with `Failed to fetch tokens {chainId: "pah" ...}` in the console, and Portfolio showed a total of `0.0000`. `agent-browser reload` fixed it.
-- Before signing a real transfer, rerun `cd web && node scripts/capture-bridge-transfer-fixtures.ts`: it fails when a Bridge Hub no longer accepts the exported message, which the app's own simulation cannot see.
+- Before signing a real transfer, rerun `cd web && node scripts/capture-bridge-transfer-fixtures.ts`: it fails when a Bridge Hub no longer accepts the exported message, which the app's own simulation cannot see. It rewrites the tracked fixtures, so restore them with `git checkout` afterwards unless you mean to recapture. `--out` takes only a path inside the repo that git does not ignore, because the script formats its output with Biome.
+- The follow-up dialog's `Estimated fee` and `Effective fee` rows hold the transaction fee only. The bridge fee shows in the form's summary, not in the dialog.
+- Talisman can lock itself between the two legs of a round trip. Run `talisman.mjs unlock` before the second submit.
