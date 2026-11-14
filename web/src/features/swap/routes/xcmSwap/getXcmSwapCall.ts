@@ -8,10 +8,10 @@ import { getApi } from "../../../../papi/getApi";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { AnyTransaction } from "../../../../types/transactions";
+import { getHopDestination } from "../../../../utils/xcmHop";
 import { withAppCommission } from "../../withAppCommission";
 import { getLastHop, type HopPath } from "../ammPath";
 import type { XcmSwapRoute } from "../swapRoute";
-import { getHopDestination } from "../xcm/xcmHop";
 import {
 	allOf,
 	anyOneAsset,

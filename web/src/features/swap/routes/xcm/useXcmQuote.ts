@@ -21,14 +21,14 @@ import {
 } from "../../../../utils/chainQueryTimeout";
 import { isBigInt } from "../../../../utils/isBigInt";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
-import { getXcmFirstHop, getXcmHub, type XcmRoute } from "../swapRoute";
-import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import {
 	getHopDestination,
 	getHopInbound,
 	type XcmHop,
 	type XcmHopInbound,
-} from "./xcmHop";
+} from "../../../../utils/xcmHop";
+import { getXcmFirstHop, getXcmHub, type XcmRoute } from "../swapRoute";
+import type { XcmDryRunBalances } from "./useXcmDryRunBalances";
 import {
 	composeXcmQuote,
 	getDeliveryFeeTokenId,

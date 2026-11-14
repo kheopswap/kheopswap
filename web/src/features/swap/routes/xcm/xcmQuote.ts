@@ -10,6 +10,7 @@ import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
 } from "../../../../utils/xcmDeposit";
+import { findHopMessage, type XcmHop } from "../../../../utils/xcmHop";
 import type {
 	CallSpendings,
 	SubmitGate,
@@ -20,7 +21,6 @@ import type {
 	XcmSwapRoute,
 	XcmTransferRoute,
 } from "../swapRoute";
-import { findHopMessage, type XcmHop } from "./xcmHop";
 
 type XcmOrigin = XcmRoute["origin"];
 type XcmDestination = XcmRoute["destination"];

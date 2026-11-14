@@ -14,11 +14,11 @@ import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcm
 import { useRelayChains } from "../../../../state/relay";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
+import { getHopInbound } from "../../../../utils/xcmHop";
 import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { type AmmPathQuoteState, useAmmPathQuote } from "../useAmmPathQuote";
 import type { XcmDryRunBalances } from "../xcm/useXcmDryRunBalances";
-import { getHopInbound } from "../xcm/xcmHop";
 import {
 	describeXcmQuoteFailure,
 	type Parsed,

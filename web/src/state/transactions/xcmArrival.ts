@@ -16,10 +16,6 @@ import {
 	takeWhile,
 	timer,
 } from "rxjs";
-import {
-	isHopDestination,
-	type XcmHop,
-} from "../../features/swap/routes/xcm/xcmHop";
 import { getApi$ } from "../../papi/getApi";
 import { isChainIdHydration } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
@@ -31,6 +27,7 @@ import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
 } from "../../utils/xcmDeposit";
+import { isHopDestination, type XcmHop } from "../../utils/xcmHop";
 import { transactions$ } from "./transactionStore";
 import type {
 	TransactionId,

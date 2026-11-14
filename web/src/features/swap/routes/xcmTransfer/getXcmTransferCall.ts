@@ -12,8 +12,8 @@ import { type Api, getApi } from "../../../../papi/getApi";
 import type { Token } from "../../../../registry/tokens/types";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
+import { getHopDestination } from "../../../../utils/xcmHop";
 import type { XcmLaneFromHub, XcmTransferRoute } from "../swapRoute";
-import { getHopDestination } from "../xcm/xcmHop";
 import { anyOneAsset, depositAsset, toFungible } from "../xcm/xcmInstructions";
 import { getXcmTransferType, type XcmLane } from "../xcmLanes";
 

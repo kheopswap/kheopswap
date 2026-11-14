@@ -4,9 +4,9 @@ import {
 	XcmVersionedLocation,
 	type XcmVersionedXcm,
 } from "@polkadot-api/descriptors";
-import { getChainById } from "../../../../registry/chains/chains";
-import type { ChainId } from "../../../../registry/chains/types";
-import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
+import { getChainById } from "../registry/chains/chains";
+import type { ChainId } from "../registry/chains/types";
+import type { XcmV5Multilocation } from "../registry/types/xcm";
 
 export type XcmHop<From extends ChainId = ChainId> = {
 	from: From;

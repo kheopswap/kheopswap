@@ -4,14 +4,14 @@ import {
 	XcmVersionedLocation,
 } from "@polkadot-api/descriptors";
 import { describe, expect, it } from "vitest";
-import type { TxEvents } from "../../../../utils/getErrorMessageFromTxEvents";
+import { dotPeopleToHydration } from "../features/swap/routes/xcm/xcmHubTransfer.fixtures";
+import type { TxEvents } from "./getErrorMessageFromTxEvents";
 import {
 	findHopMessage,
 	getHopDestination,
 	getHopInbound,
 	isHopDestination,
 } from "./xcmHop";
-import { dotPeopleToHydration } from "./xcmHubTransfer.fixtures";
 
 const { originDryRun, hubDryRun } = dotPeopleToHydration;
 if (!originDryRun.success || !hubDryRun.success)
