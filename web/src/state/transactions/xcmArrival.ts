@@ -16,8 +16,12 @@ import {
 	takeWhile,
 	timer,
 } from "rxjs";
+import {
+	isHopDestination,
+	type XcmHop,
+} from "../../features/swap/routes/xcm/xcmHop";
 import { getApi$ } from "../../papi/getApi";
-import { getChainById, isChainIdHydration } from "../../registry/chains/chains";
+import { isChainIdHydration } from "../../registry/chains/chains";
 import type { ChainId } from "../../registry/chains/types";
 import { parseTokenId } from "../../registry/tokens/helpers";
 import type { Token, TokenAmount, TokenId } from "../../registry/tokens/types";
@@ -77,7 +81,7 @@ const isSameHex = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 export const getSentMessageId = (
 	txEvents: TransactionRecord["txEvents"],
-	firstHopParaId: number,
+	firstHop: XcmHop,
 ): HexString | null => {
 	for (const txEvent of txEvents) {
 		if (txEvent.type !== "inBestBlock" && txEvent.type !== "finalized")
@@ -85,13 +89,7 @@ export const getSentMessageId = (
 		for (const { type, value } of txEvent.events) {
 			if (type !== "PolkadotXcm" || value.type !== "Sent") continue;
 			const { destination, message_id } = value.value;
-			if (
-				destination.parents === 1 &&
-				destination.interior.type === "X1" &&
-				destination.interior.value.type === "Parachain" &&
-				destination.interior.value.value === firstHopParaId
-			)
-				return message_id;
+			if (isHopDestination(destination, firstHop)) return message_id;
 		}
 	}
 	return null;
@@ -166,10 +164,10 @@ export const describeFailedArrival = ({ returned, trapped }: FailedArrival) => {
 
 const getOriginState = (
 	record: TransactionRecord,
-	firstHopParaId: number,
+	firstHop: XcmHop,
 ): OriginState => {
 	if (record.status === "failed") return { status: "failed" };
-	const messageId = getSentMessageId(record.txEvents, firstHopParaId);
+	const messageId = getSentMessageId(record.txEvents, firstHop);
 	return messageId ? { status: "sent", messageId } : { status: "pending" };
 };
 
@@ -223,7 +221,7 @@ export const getXcmArrival$ = ({
 	blockEvents$,
 	target,
 	returnTokenIds,
-	firstHopParaId,
+	firstHop,
 	bufferBlocks,
 	timeoutMs = ARRIVAL_TIMEOUT_MS,
 }: {
@@ -231,13 +229,13 @@ export const getXcmArrival$ = ({
 	blockEvents$: Observable<TxEvents>;
 	target: XcmDepositTarget;
 	returnTokenIds: TokenId[];
-	firstHopParaId: number;
+	firstHop: XcmHop;
 	bufferBlocks: number;
 	timeoutMs?: number;
 }): Observable<XcmArrival> => {
 	const origin$ = record$.pipe(
 		filter((record): record is TransactionRecord => !!record),
-		map((record) => getOriginState(record, firstHopParaId)),
+		map((record) => getOriginState(record, firstHop)),
 		distinctUntilChanged(isEqual),
 		takeWhile((origin) => origin.status === "pending", true),
 	);
@@ -285,7 +283,7 @@ export const trackXcmArrivals = () =>
 			),
 			distinct(({ id }) => id),
 			mergeMap(({ id, followUpData }) => {
-				const { firstHop, target, returnTokenIds } =
+				const { origin, firstHop, target, returnTokenIds } =
 					followUpData as XcmTransferFollowUpData;
 				const destination = parseTokenId(target.tokenId).chainId;
 				return getXcmArrival$({
@@ -295,7 +293,7 @@ export const trackXcmArrivals = () =>
 					blockEvents$: getBestBlockEvents$(destination),
 					target,
 					returnTokenIds,
-					firstHopParaId: getChainById(firstHop).paraId,
+					firstHop: { from: origin, to: firstHop },
 					bufferBlocks: getArrivalBufferBlocks(destination),
 				}).pipe(map((arrival) => [id, arrival] as const));
 			}),
