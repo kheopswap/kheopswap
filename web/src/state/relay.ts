@@ -43,7 +43,7 @@ export const [useRelayChains, relayChains$] = bind(
 						assetHub,
 						bridgedAssetHub,
 						allChains,
-						stableToken, //always defined by config
+						stableToken,
 					};
 				}),
 			);
