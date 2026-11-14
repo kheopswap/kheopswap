@@ -1,6 +1,14 @@
 import { AccountId } from "polkadot-api";
 import { describe, expect, it } from "vitest";
 import {
+	DOT_ON_KAH,
+	dotKusamaToPolkadot,
+	dotPolkadotToKusama,
+	KSM_ON_PAH,
+	ksmKusamaToPolkadot,
+	ksmPolkadotToKusama,
+} from "../features/swap/routes/xcm/xcmBridge.fixtures";
+import {
 	dotToAssetHub,
 	dotToAssetHubDotFeePayer,
 	usdcToAssetHub,
@@ -12,7 +20,8 @@ import { getXcmDepositMatcher, type XcmDepositTarget } from "./xcmDeposit";
 
 type DestinationDryRun =
 	| typeof dotToAssetHub.destination
-	| typeof dotSuccess.destination;
+	| typeof dotSuccess.destination
+	| typeof ksmKusamaToPolkadot.destinationDryRun;
 
 const getEvents = (dryRun: DestinationDryRun): TxEvents => {
 	if (!dryRun?.success) throw new Error("fixture has no destination events");
@@ -84,5 +93,49 @@ describe("getXcmDepositMatcher", () => {
 				beneficiary: dotSuccess.beneficiary,
 			}),
 		).toBe(9995190152n);
+	});
+
+	it.each([
+		[
+			"KSM on Polkadot Asset Hub",
+			ksmKusamaToPolkadot,
+			KSM_ON_PAH,
+			99628419408n,
+		],
+		["DOT on Kusama Asset Hub", dotPolkadotToKusama, DOT_ON_KAH, 9997354620n],
+	])(
+		"counts the bridged %s deposited to the beneficiary, not the part swapped for the fee",
+		(_, fixture, tokenId, expected) => {
+			expect(
+				sumDeposits(getEvents(fixture.destinationDryRun), {
+					tokenId,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toBe(expected);
+		},
+	);
+
+	it.each([
+		["KSM", ksmPolkadotToKusama, "native::kah", 99936618505n],
+		["DOT", dotKusamaToPolkadot, "native::pah", 9990523408n],
+	])(
+		"counts the %s released to the beneficiary on its own Asset Hub",
+		(_, fixture, tokenId, expected) => {
+			expect(
+				sumDeposits(getEvents(fixture.destinationDryRun), {
+					tokenId,
+					beneficiary: fixture.beneficiary,
+				}),
+			).toBe(expected);
+		},
+	);
+
+	it("ignores deposits of another foreign asset", () => {
+		expect(
+			sumDeposits(getEvents(ksmKusamaToPolkadot.destinationDryRun), {
+				tokenId: DOT_ON_KAH,
+				beneficiary: ksmKusamaToPolkadot.beneficiary,
+			}),
+		).toBe(0n);
 	});
 });

@@ -39,6 +39,7 @@ Each feature file starts with an H1 title and one paragraph on the user-visible 
 ## Features
 
 - [Swap](./swap.md) covers the quote, token selection, direction flip, max, slippage, fee token, and a signed swap.
+- [Bridge](./bridge.md) covers the KSM and DOT quotes between the Polkadot and Kusama Asset Hubs on both views, and a signed bridge transfer with its arrival.
 - [Transfer](./transfer.md) covers sender selection, owned and pasted recipients, the amount and token, and a signed transfer.
 - [Portfolio](./portfolio.md) covers aggregated balances, the wallet-less `Tokens` mode, token search, sorting, and the token details drawer.
 - [Liquidity pools](./liquidity-pools.md) covers the pool list, search, pool detail, slippage, add/remove liquidity, and the create-pool page.

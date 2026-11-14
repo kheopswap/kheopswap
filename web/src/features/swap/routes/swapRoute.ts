@@ -20,7 +20,13 @@ import type {
 	SubmitGate,
 } from "../../transaction/TransactionProvider";
 import { type AmmPath, getAmmPath } from "./ammPath";
-import { isXcmLane, type XcmLane } from "./xcmLanes";
+import {
+	isBridgeLane,
+	isXcmLane,
+	type XcmBridgeLane,
+	type XcmLane,
+	type XcmRelayLane,
+} from "./xcmLanes";
 
 export type AmmSwapRoute = {
 	kind: "amm-swap";
@@ -37,9 +43,9 @@ type XcmDirectTransferRoute = XcmLane & {
 	viaHub?: undefined;
 };
 
-type XcmLaneToHub = Extract<XcmLane, { destination: ChainIdAssetHub }>;
+type XcmLaneToHub = Extract<XcmRelayLane, { destination: ChainIdAssetHub }>;
 
-export type XcmLaneFromHub = Extract<XcmLane, { origin: ChainIdAssetHub }>;
+export type XcmLaneFromHub = Extract<XcmRelayLane, { origin: ChainIdAssetHub }>;
 
 type XcmHubTransferRoute = {
 	kind: "xcm-transfer";
@@ -52,7 +58,7 @@ type XcmHubTransferRoute = {
 
 export type XcmTransferRoute = XcmDirectTransferRoute | XcmHubTransferRoute;
 
-type XcmSwapLane = Extract<XcmLane, { destination: ChainIdHydration }>;
+type XcmSwapLane = Extract<XcmRelayLane, { destination: ChainIdHydration }>;
 
 export type XcmSwapRoute = XcmSwapLane & {
 	kind: "xcm-swap";
@@ -61,7 +67,10 @@ export type XcmSwapRoute = XcmSwapLane & {
 	path: AmmPath;
 };
 
-type XcmDestinationSwapLane = Extract<XcmLane, { origin: ChainIdHydration }>;
+type XcmDestinationSwapLane = Extract<
+	XcmRelayLane,
+	{ origin: ChainIdHydration }
+>;
 
 export type XcmDestinationSwapRoute = XcmDestinationSwapLane & {
 	kind: "xcm-destination-swap";
@@ -122,6 +131,7 @@ type RemoteMirror = {
 	remoteTokenId: TokenId;
 	remoteChainId: ChainId;
 	assetHubTokenId: TokenId;
+	isForeignAsset: boolean;
 };
 
 type XcmMirror<Lane extends XcmLane> = RemoteMirror & { lane: Lane };
@@ -138,12 +148,25 @@ const getRemoteMirror = (
 		!mirror ||
 		!token ||
 		mirror.chainId !== assetHubId ||
-		(mirror.type !== "native" && mirror.type !== "asset")
+		(mirror.type !== "native" &&
+			mirror.type !== "asset" &&
+			mirror.type !== "foreign-asset")
 	)
 		return null;
 
-	return { remoteTokenId, remoteChainId: token.chainId, assetHubTokenId };
+	return {
+		remoteTokenId,
+		remoteChainId: token.chainId,
+		assetHubTokenId,
+		isForeignAsset: mirror.type === "foreign-asset",
+	};
 };
+
+const getMirrorLane = <Pair extends { origin: ChainId; destination: ChainId }>(
+	{ isForeignAsset }: RemoteMirror,
+	pair: Pair,
+): (Pair & XcmLane) | null =>
+	isXcmLane(pair) && (!isForeignAsset || isBridgeLane(pair)) ? pair : null;
 
 const canPayDestinationFee = (
 	remoteTokenId: TokenId,
@@ -158,27 +181,27 @@ const canPayDestinationFee = (
 const getXcmDestination = (
 	tokenIdOut: TokenId,
 	context: SwapRouteContext,
-): XcmMirror<XcmLaneFromHub> | null => {
+): XcmMirror<XcmLaneFromHub | XcmBridgeLane> | null => {
 	const mirror = getRemoteMirror(tokenIdOut, context);
 	if (!mirror || !canPayDestinationFee(tokenIdOut, context)) return null;
-	const lane = {
+	const lane = getMirrorLane(mirror, {
 		origin: context.assetHubId,
 		destination: mirror.remoteChainId,
-	};
-	return isXcmLane(lane) ? { ...mirror, lane } : null;
+	});
+	return lane && { ...mirror, lane };
 };
 
 const getXcmSource = (
 	tokenIdIn: TokenId,
 	context: SwapRouteContext,
-): XcmMirror<XcmLaneToHub> | null => {
+): XcmMirror<XcmLaneToHub | XcmBridgeLane> | null => {
 	const mirror = getRemoteMirror(tokenIdIn, context);
 	if (!mirror) return null;
-	const lane = {
+	const lane = getMirrorLane(mirror, {
 		origin: mirror.remoteChainId,
 		destination: context.assetHubId,
-	};
-	return isXcmLane(lane) ? { ...mirror, lane } : null;
+	});
+	return lane && { ...mirror, lane };
 };
 
 const isXcmSwapLane = (lane: XcmLane): lane is XcmSwapLane =>
@@ -209,10 +232,12 @@ const resolveXcmRoute = (
 		const { lane, assetHubTokenId } = source;
 		if (assetHubTokenId === tokenIdOut)
 			return { kind: "xcm-transfer", ...lane, tokenIdIn, tokenIdOut };
+		if (isBridgeLane(lane)) return null;
 		const destination = getXcmDestination(tokenIdOut, context);
 		if (
 			destination?.assetHubTokenId === assetHubTokenId &&
-			destination.remoteChainId !== source.remoteChainId
+			destination.remoteChainId !== source.remoteChainId &&
+			!isBridgeLane(destination.lane)
 		)
 			return {
 				kind: "xcm-transfer",
@@ -401,17 +426,18 @@ export type RouteAccess =
 	| { allowed: true; beneficiary: SS58String }
 	| { allowed: false; reason: string };
 
+const getEthereumRefusal = (pair: Pick<XcmRoute, "origin" | "destination">) => {
+	if (isBridgeLane(pair)) return "Ethereum accounts cannot use the bridge yet";
+	const chains = isChainIdAssetHub(pair.origin)
+		? `to ${getChainById(pair.destination).name}`
+		: `from ${getChainById(pair.origin).name}`;
+	return `Ethereum accounts cannot send ${chains} yet: the same address is a different account there`;
+};
+
 export const getRouteAccess = (
 	account: Pick<WalletAccount, "platform" | "address">,
-	{ origin, destination }: Pick<XcmRoute, "origin" | "destination">,
+	route: Pick<XcmRoute, "origin" | "destination">,
 ): RouteAccess =>
 	account.platform === "ethereum" || isEthereumAddress(account.address)
-		? {
-				allowed: false,
-				reason: `Ethereum accounts cannot send ${
-					isChainIdAssetHub(origin)
-						? `to ${getChainById(destination).name}`
-						: `from ${getChainById(origin).name}`
-				} yet: the same address is a different account there`,
-			}
+		? { allowed: false, reason: getEthereumRefusal(route) }
 		: { allowed: true, beneficiary: account.address };

@@ -27,7 +27,7 @@ import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
 } from "../../utils/xcmDeposit";
-import { isHopDestination, type XcmHop } from "../../utils/xcmHop";
+import { isBridgeHop, isHopDestination, type XcmHop } from "../../utils/xcmHop";
 import { transactions$ } from "./transactionStore";
 import type {
 	TransactionId,
@@ -36,6 +36,10 @@ import type {
 } from "./types";
 
 const ARRIVAL_TIMEOUT_MS = 10 * 60_000;
+const BRIDGE_ARRIVAL_TIMEOUT_MS = 30 * 60_000;
+
+const getArrivalTimeoutMs = (firstHop: XcmHop) =>
+	isBridgeHop(firstHop) ? BRIDGE_ARRIVAL_TIMEOUT_MS : ARRIVAL_TIMEOUT_MS;
 
 const XCM_ARRIVAL_TYPES = [
 	"xcmTransfer",
@@ -220,7 +224,7 @@ export const getXcmArrival$ = ({
 	returnTokenIds,
 	firstHop,
 	bufferBlocks,
-	timeoutMs = ARRIVAL_TIMEOUT_MS,
+	timeoutMs = getArrivalTimeoutMs(firstHop),
 }: {
 	record$: Observable<TransactionRecord | undefined>;
 	blockEvents$: Observable<TxEvents>;

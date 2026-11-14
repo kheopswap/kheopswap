@@ -6,6 +6,7 @@ import type { ChainIdAssetHub } from "../../../../registry/chains/types";
 import { getTokenId, parseTokenId } from "../../../../registry/tokens/helpers";
 import type { TokenAmount, TokenId } from "../../../../registry/tokens/types";
 import { formatTxError } from "../../../../utils/getErrorMessageFromTxEvents";
+import { getNativeToken } from "../../../../utils/getNativeToken";
 import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
@@ -21,6 +22,7 @@ import type {
 	XcmSwapRoute,
 	XcmTransferRoute,
 } from "../swapRoute";
+import { isBridgeLane } from "../xcmLanes";
 
 type XcmOrigin = XcmRoute["origin"];
 type XcmDestination = XcmRoute["destination"];
@@ -49,6 +51,7 @@ export type XcmQuoteFailure =
 	| { kind: "origin-unavailable" }
 	| { kind: "origin-failed"; reason: string }
 	| { kind: "origin-rejected"; xcmError: string }
+	| { kind: "origin-fees-not-met"; reason: string }
 	| { kind: "message-not-forwarded" }
 	| { kind: "hub-unavailable"; hub: ChainIdAssetHub }
 	| {
@@ -92,14 +95,16 @@ type OriginDispatchError = Extract<
 >["value"]["error"];
 
 const getOriginFailure = (error: OriginDispatchError): XcmQuoteFailure => {
-	if (
-		error.type !== "Module" ||
-		error.value.type !== "PolkadotXcm" ||
-		error.value.value.type !== "LocalExecutionIncompleteWithError"
-	)
+	const xcmPalletError =
+		error.type === "Module" && error.value.type === "PolkadotXcm"
+			? error.value.value
+			: undefined;
+	if (xcmPalletError?.type === "FeesNotMet")
+		return { kind: "origin-fees-not-met", reason: formatTxError(error) };
+	if (xcmPalletError?.type !== "LocalExecutionIncompleteWithError")
 		return { kind: "origin-failed", reason: formatTxError(error) };
 
-	const xcmError = error.value.value.value.error.type;
+	const xcmError = xcmPalletError.value.error.type;
 	switch (xcmError) {
 		case "FailedToTransactAsset":
 			return { kind: "origin-failed", reason: INSUFFICIENT_BALANCE };
@@ -285,6 +290,10 @@ export const describeXcmQuoteFailure = (
 			return failure.reason;
 		case "origin-rejected":
 			return `${origin} would reject the transfer: ${failure.xcmError}`;
+		case "origin-fees-not-met":
+			return isBridgeLane(route)
+				? `You need ${getNativeToken(route.origin).symbol} on ${origin} to pay the bridge fee`
+				: failure.reason;
 		case "message-not-forwarded":
 			return `The transfer would not be sent to ${destination}`;
 		case "hub-unavailable":
