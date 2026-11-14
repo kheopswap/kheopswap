@@ -2,14 +2,23 @@ import {
 	XcmV5Junction,
 	XcmV5Junctions,
 	XcmVersionedLocation,
+	XcmVersionedXcm,
 } from "@polkadot-api/descriptors";
 import { describe, expect, it } from "vitest";
+import {
+	type BridgeTransferFixture,
+	dotKusamaToPolkadot,
+	dotPolkadotToKusama,
+	ksmKusamaToPolkadot,
+	ksmPolkadotToKusama,
+} from "../features/swap/routes/xcm/xcmBridge.fixtures";
 import { dotPeopleToHydration } from "../features/swap/routes/xcm/xcmHubTransfer.fixtures";
 import type { TxEvents } from "./getErrorMessageFromTxEvents";
 import {
 	findHopMessage,
 	getHopDestination,
 	getHopInbound,
+	isBridgeHop,
 	isHopDestination,
 } from "./xcmHop";
 
@@ -109,5 +118,74 @@ describe("isHopDestination", () => {
 
 	it("rejects a Sent event to another chain", () => {
 		expect(isHopDestination(peopleSentTo, PEOPLE_TO_HYDRATION)).toBe(false);
+	});
+});
+
+const getBridgeLeg = ({
+	origin,
+	destination,
+	originDryRun,
+	inbound,
+}: BridgeTransferFixture) => {
+	if (!originDryRun.success || inbound?.message.type !== "V5")
+		throw new Error("fixture has no bridge message");
+	const { forwarded_xcms, emitted_events } = originDryRun.value;
+	const [sentTo] = getSentDestinations(emitted_events);
+	const [forwarded] = forwarded_xcms;
+	if (!sentTo || !forwarded) throw new Error("fixture sent no message");
+
+	return {
+		hop: { from: origin, to: destination },
+		back: { from: destination, to: origin },
+		forwarded_xcms,
+		forwardedTo: forwarded[0],
+		sentTo,
+		inbound,
+		exported: XcmVersionedXcm.V5(inbound.message.value.slice(3)),
+	};
+};
+
+const BRIDGE_LEGS = [
+	["KSM from Kusama to Polkadot", getBridgeLeg(ksmKusamaToPolkadot)],
+	["KSM from Polkadot to Kusama", getBridgeLeg(ksmPolkadotToKusama)],
+	["DOT from Polkadot to Kusama", getBridgeLeg(dotPolkadotToKusama)],
+	["DOT from Kusama to Polkadot", getBridgeLeg(dotKusamaToPolkadot)],
+] as const;
+
+describe("isBridgeHop", () => {
+	it.each([
+		[{ from: "pah", to: "kah" }, true],
+		[{ from: "kah", to: "pah" }, true],
+		[{ from: "pah", to: "hydration" }, false],
+		[{ from: "kpeople", to: "kah" }, false],
+		[{ from: "pah", to: "wah" }, false],
+		[{ from: "pah", to: "kpeople" }, false],
+	] as const)("tells whether %o crosses the bridge: %s", (hop, expected) => {
+		expect(isBridgeHop(hop)).toBe(expected);
+	});
+});
+
+describe.each(BRIDGE_LEGS)("a bridge hop carrying %s", (_, leg) => {
+	it("addresses the other Asset Hub through its consensus, as the origin recorded it", () => {
+		expect(getHopDestination(leg.hop)).toEqual(leg.sentTo);
+		expect(isHopDestination(leg.sentTo, leg.hop)).toBe(true);
+	});
+
+	it("does not take its own Asset Hub or the Bridge Hub for the destination", () => {
+		expect(isHopDestination(leg.sentTo, leg.back)).toBe(false);
+		expect(isHopDestination(leg.forwardedTo.value, leg.hop)).toBe(false);
+	});
+
+	it("unwraps the message the origin exported through its Bridge Hub", () => {
+		expect(leg.forwardedTo).toEqual(sibling(1002));
+		expect(findHopMessage(leg.forwarded_xcms, leg.hop)).toEqual(leg.exported);
+	});
+
+	it("finds nothing in an export addressed to another consensus", () => {
+		expect(findHopMessage(leg.forwarded_xcms, leg.back)).toBeUndefined();
+	});
+
+	it("rebuilds the message the destination executed from its Bridge Hub", () => {
+		expect(getHopInbound(leg.hop, leg.exported)).toEqual(leg.inbound);
 	});
 });
