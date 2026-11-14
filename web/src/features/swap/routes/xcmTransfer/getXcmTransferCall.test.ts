@@ -4,6 +4,15 @@ import { KNOWN_TOKENS_MAP } from "../../../../registry/tokens/tokens";
 import type { TokenId } from "../../../../registry/tokens/types";
 import type { XcmTransferRoute } from "../swapRoute";
 import {
+	type BridgeTransferFixture,
+	DOT_ON_KAH,
+	dotKusamaToPolkadot,
+	dotPolkadotToKusama,
+	KSM_ON_PAH,
+	ksmKusamaToPolkadot,
+	ksmPolkadotToKusama,
+} from "../xcm/xcmBridge.fixtures";
+import {
 	dotToAssetHub,
 	usdcToAssetHub,
 	usdtToAssetHub,
@@ -325,6 +334,52 @@ describe("buildXcmTransferArgs through Asset Hub", () => {
 					beneficiary: fixture.beneficiary,
 				}),
 			).toEqual(fixture.args);
+		},
+	);
+});
+
+describe("buildXcmTransferArgs over the bridge", () => {
+	const buildArgs = (
+		fixture: BridgeTransferFixture,
+		tokenIdIn: TokenId,
+		tokenIdOut: TokenId,
+	) =>
+		buildXcmTransferArgs({
+			route: { ...fixture, kind: "xcm-transfer", tokenIdIn, tokenIdOut },
+			tokenIn: getToken(tokenIdIn),
+			plancks: fixture.amount,
+			beneficiary: fixture.beneficiary,
+		});
+
+	it.each([
+		[
+			"KSM from Kusama, its reserve",
+			ksmKusamaToPolkadot,
+			"native::kah",
+			KSM_ON_PAH,
+		],
+		[
+			"KSM back to Kusama, its reserve",
+			ksmPolkadotToKusama,
+			KSM_ON_PAH,
+			"native::kah",
+		],
+		[
+			"DOT from Polkadot, its reserve",
+			dotPolkadotToKusama,
+			"native::pah",
+			DOT_ON_KAH,
+		],
+		[
+			"DOT back to Polkadot, its reserve",
+			dotKusamaToPolkadot,
+			DOT_ON_KAH,
+			"native::pah",
+		],
+	])(
+		"sends %s, as the call the live hub accepted",
+		(_, fixture, tokenIdIn, tokenIdOut) => {
+			expect(buildArgs(fixture, tokenIdIn, tokenIdOut)).toEqual(fixture.args);
 		},
 	);
 });
