@@ -2981,3 +2981,150 @@ export const dotKusamaToPolkadot: BridgeTransferFixture = {
 		},
 	},
 };
+
+export const ksmPolkadotToKusamaWithoutDot: BridgeTransferFixture = {
+	origin: "pah",
+	destination: "kah",
+	sender: "1Yq6hbshHAmK8Snc2BpSKotySbW1EJY7mwVDgyxfT3v3p2p",
+	beneficiary: "1Yq6hbshHAmK8Snc2BpSKotySbW1EJY7mwVDgyxfT3v3p2p",
+	amount: 100000000000n,
+	args: {
+		dest: {
+			type: "V5",
+			value: {
+				parents: 2,
+				interior: {
+					type: "X2",
+					value: [
+						{
+							type: "GlobalConsensus",
+							value: {
+								type: "Kusama",
+								value: undefined,
+							},
+						},
+						{
+							type: "Parachain",
+							value: 1000,
+						},
+					],
+				},
+			},
+		},
+		assets: {
+			type: "V5",
+			value: [
+				{
+					id: {
+						parents: 2,
+						interior: {
+							type: "X1",
+							value: {
+								type: "GlobalConsensus",
+								value: {
+									type: "Kusama",
+									value: undefined,
+								},
+							},
+						},
+					},
+					fun: {
+						type: "Fungible",
+						value: 100000000000n,
+					},
+				},
+			],
+		},
+		assets_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		remote_fees_id: {
+			type: "V5",
+			value: {
+				parents: 2,
+				interior: {
+					type: "X1",
+					value: {
+						type: "GlobalConsensus",
+						value: {
+							type: "Kusama",
+							value: undefined,
+						},
+					},
+				},
+			},
+		},
+		fees_transfer_type: {
+			type: "DestinationReserve",
+			value: undefined,
+		},
+		custom_xcm_on_dest: {
+			type: "V5",
+			value: [
+				{
+					type: "DepositAsset",
+					value: {
+						assets: {
+							type: "Wild",
+							value: {
+								type: "AllCounted",
+								value: 1,
+							},
+						},
+						beneficiary: {
+							parents: 0,
+							interior: {
+								type: "X1",
+								value: {
+									type: "AccountId32",
+									value: {
+										network: undefined,
+										id: "0x18468550ee0db19062306c5b55522cc43210f16996f06192f86d13f4cc8b0347",
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+		weight_limit: {
+			type: "Unlimited",
+			value: undefined,
+		},
+	},
+	originDryRun: {
+		success: true,
+		value: {
+			execution_result: {
+				success: false,
+				value: {
+					post_info: {
+						actual_weight: undefined,
+						pays_fee: {
+							type: "Yes",
+							value: undefined,
+						},
+					},
+					error: {
+						type: "Module",
+						value: {
+							type: "PolkadotXcm",
+							value: {
+								type: "FeesNotMet",
+								value: undefined,
+							},
+						},
+					},
+				},
+			},
+			emitted_events: [],
+			local_xcm: undefined,
+			forwarded_xcms: [],
+		},
+	},
+	deliveryFees: null,
+	inbound: null,
+	destinationDryRun: null,
+};
