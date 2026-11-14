@@ -1,16 +1,14 @@
 import {
 	XcmV3WeightLimit,
 	XcmV5Instruction,
-	XcmV5Junction,
-	XcmV5Junctions,
 	XcmVersionedXcm,
 } from "@polkadot-api/descriptors";
 import type { SS58String } from "polkadot-api";
 import { getApi } from "../../../../papi/getApi";
-import { getChainById } from "../../../../registry/chains/chains";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { AnyTransaction } from "../../../../types/transactions";
+import { getHopDestination } from "../../../../utils/xcmHop";
 import { withAppCommission } from "../../withAppCommission";
 import { getLastHop, type HopPath } from "../ammPath";
 import type { XcmSwapRoute } from "../swapRoute";
@@ -55,12 +53,7 @@ export const buildXcmSwapMessage = ({
 		...hops.map(exchangeAsset),
 		XcmV5Instruction.DepositReserveAsset({
 			assets: allOf(lastHop.tokenIdOut),
-			dest: {
-				parents: 1,
-				interior: XcmV5Junctions.X1(
-					XcmV5Junction.Parachain(getChainById(route.destination).paraId),
-				),
-			},
+			dest: getHopDestination({ from: route.origin, to: route.destination }),
 			xcm: [
 				XcmV5Instruction.BuyExecution({
 					fees: { id: remoteFeeLocation, fun: toFungible(lastHop.minOut) },

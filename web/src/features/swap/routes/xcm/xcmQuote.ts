@@ -1,7 +1,4 @@
-import type {
-	XcmVersionedLocation,
-	XcmVersionedXcm,
-} from "@polkadot-api/descriptors";
+import type { XcmVersionedXcm } from "@polkadot-api/descriptors";
 import type { DryRun } from "../../../../hooks/useDryRun";
 import type { Api } from "../../../../papi/getApi";
 import { getChainById } from "../../../../registry/chains/chains";
@@ -13,6 +10,7 @@ import {
 	getXcmDepositMatcher,
 	type XcmDepositTarget,
 } from "../../../../utils/xcmDeposit";
+import { findHopMessage, type XcmHop } from "../../../../utils/xcmHop";
 import type {
 	CallSpendings,
 	SubmitGate,
@@ -132,22 +130,9 @@ const getSentAmount = (message: XcmVersionedXcm): bigint | null => {
 	return asset?.fun.type === "Fungible" ? asset.fun.value : null;
 };
 
-const findMessageTo = (
-	forwardedXcms: [XcmVersionedLocation, XcmVersionedXcm[]][],
-	paraId: number,
-) =>
-	forwardedXcms.find(
-		([location]) =>
-			location.type === "V5" &&
-			location.value.parents === 1 &&
-			location.value.interior.type === "X1" &&
-			location.value.interior.value.type === "Parachain" &&
-			location.value.interior.value.value === paraId,
-	)?.[1][0];
-
 export const parseOriginDryRun = (
 	dryRun: OriginDryRun,
-	firstHopParaId: number,
+	firstHop: XcmHop,
 ): Parsed<OriginLeg> => {
 	if (!dryRun.success)
 		return {
@@ -162,7 +147,7 @@ export const parseOriginDryRun = (
 			failure: getOriginFailure(execution_result.value.error),
 		};
 
-	const message = findMessageTo(forwarded_xcms, firstHopParaId);
+	const message = findHopMessage(forwarded_xcms, firstHop);
 	const sent = message && getSentAmount(message);
 	if (!message || !sent)
 		return { success: false, failure: { kind: "message-not-forwarded" } };
@@ -211,9 +196,9 @@ const getXcmRejection = ({ execution_result, emitted_events }: XcmExecution) =>
 
 export const parseHubDryRun = (
 	dryRun: HubDryRun,
-	hub: ChainIdAssetHub,
-	destinationParaId: number,
+	fromHub: XcmHop<ChainIdAssetHub>,
 ): Parsed<XcmVersionedXcm> => {
+	const hub = fromHub.from;
 	if (!dryRun.success)
 		return { success: false, failure: { kind: "hub-unavailable", hub } };
 
@@ -224,7 +209,7 @@ export const parseHubDryRun = (
 			failure: { kind: "hub-rejected", hub, ...rejection },
 		};
 
-	const message = findMessageTo(dryRun.value.forwarded_xcms, destinationParaId);
+	const message = findHopMessage(dryRun.value.forwarded_xcms, fromHub);
 	return message
 		? { success: true, value: message }
 		: { success: false, failure: { kind: "hub-not-forwarded", hub } };
