@@ -15,6 +15,7 @@ import { useTransaction } from "../../../transaction/TransactionProvider";
 import { useSwap } from "../../SwapProvider";
 import { TokenAmountValue } from "../AmmPathValues";
 import { getXcmHub, type XcmRoute } from "../swapRoute";
+import { isBridgeLane } from "../xcmLanes";
 import type { XcmQuoteState } from "./useXcmQuote";
 import { describeXcmQuoteFailure } from "./xcmQuote";
 
@@ -104,6 +105,7 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
 	const { tokenOut } = useSwap();
 	const xcmQuote = quote.data?.success ? quote.data.quote : undefined;
 	const [origin, ...hops] = getXcmChainNames(route);
+	const isBridge = isBridgeLane(route);
 
 	return (
 		<>
@@ -125,8 +127,8 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
 			<FormSummaryRow
 				label={
 					<FeeLabel
-						label="Delivery fee"
-						explanation={`Paid on ${origin} on top of the amount, to send it to ${hops[0]}.`}
+						label={isBridge ? "Bridge fee" : "Delivery fee"}
+						explanation={`Paid on ${origin} on top of the amount, to send it ${isBridge ? "over the bridge " : ""}to ${hops[0]}.`}
 					/>
 				}
 				value={
@@ -150,6 +152,9 @@ export const XcmQuoteRows: FC<{ quote: XcmQuoteState; route: XcmRoute }> = ({
 						: xcmQuote && <TokenAmountValue {...xcmQuote.destinationFee} />
 				}
 			/>
+			{isBridge && (
+				<FormSummaryRow label="Arrival time" value="A few minutes" />
+			)}
 		</>
 	);
 };

@@ -11,6 +11,7 @@ import type { XcmV5Multilocation } from "../types/xcm";
 import {
 	getChainLocation,
 	getNetworkRelayId,
+	getRelayNetwork,
 	reanchorLocation,
 } from "./chainLocation";
 
@@ -244,5 +245,16 @@ describe("getNetworkRelayId", () => {
 		[XcmV5NetworkId.Ethereum({ chain_id: 1n }), undefined],
 	])("maps %o to %s", (network, relayId) => {
 		expect(getNetworkRelayId(network)).toBe(relayId);
+	});
+});
+
+describe("getRelayNetwork", () => {
+	it.each([
+		["polkadot", XcmV5NetworkId.Polkadot()],
+		["kusama", XcmV5NetworkId.Kusama()],
+		["westend", undefined],
+		["paseo", undefined],
+	] as const)("names the consensus of %s", (relayId, network) => {
+		expect(getRelayNetwork(relayId)).toEqual(network);
 	});
 });

@@ -1,5 +1,5 @@
 import { AccountId, Binary, type SS58String } from "polkadot-api";
-import { parseTokenId } from "../registry/tokens/helpers";
+import { getTokenId, parseTokenId } from "../registry/tokens/helpers";
 import type { TokenId } from "../registry/tokens/types";
 import type { TxEvents } from "./getErrorMessageFromTxEvents";
 
@@ -34,8 +34,14 @@ const getDepositReader = (
 				value.value.currency_id === token.assetId
 					? value.value
 					: null;
-		case "pool-asset":
 		case "foreign-asset":
+			return ({ type, value }) =>
+				type === "ForeignAssets" &&
+				value.type === "Deposited" &&
+				getTokenId({ ...token, location: value.value.asset_id }) === tokenId
+					? value.value
+					: null;
+		case "pool-asset":
 			return () => null;
 	}
 };

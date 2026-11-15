@@ -919,7 +919,134 @@ describe("getSwapTokenLists", () => {
 	});
 });
 
-describe("bridged hub tokens", () => {
+describe.each([
+	["Polkadot", "pah", "kah", "ppeople"],
+	["Kusama", "kah", "pah", "kpeople"],
+] as const)(
+	"the bridge on the %s view",
+	(_, assetHubId, bridgedAssetHubId, peopleId) => {
+		const assetHub = getChainById(assetHubId);
+		const bridgedMirrors = getAssetHubMirrorTokenIds(
+			KNOWN_TOKENS_MAP,
+			assetHub,
+			[
+				...getChains().filter((chain) => chain.relay === assetHub.relay),
+				getChainById(bridgedAssetHubId),
+			],
+		);
+		const HOME: TokenId = `native::${assetHubId}`;
+		const AWAY: TokenId = `native::${bridgedAssetHubId}`;
+		const PEOPLE: TokenId = `native::${peopleId}`;
+		const AWAY_ON_HUB = bridgedMirrors.get(AWAY) as TokenId;
+		const HOME_ON_BRIDGED_HUB = [...bridgedMirrors].find(
+			([tokenId, mirrorTokenId]) =>
+				tokenId.startsWith(`foreign-asset::${bridgedAssetHubId}::`) &&
+				mirrorTokenId === HOME,
+		)?.[0] as TokenId;
+		const bridgedContext: SwapRouteContext = {
+			...context,
+			assetHubId,
+			mirrors: bridgedMirrors,
+			nativeTokenId: HOME,
+		};
+		const ammTokens = pick(KNOWN_TOKENS_MAP, [HOME, AWAY_ON_HUB]);
+
+		it("holds both relay tokens of the bridged hub in the mirrors", () => {
+			expect(KNOWN_TOKENS_MAP[AWAY_ON_HUB]?.symbol).toBe(
+				KNOWN_TOKENS_MAP[AWAY]?.symbol,
+			);
+			expect(KNOWN_TOKENS_MAP[HOME_ON_BRIDGED_HUB]?.symbol).toBe(
+				KNOWN_TOKENS_MAP[HOME]?.symbol,
+			);
+		});
+
+		it.each([
+			[AWAY_ON_HUB, AWAY, assetHubId, bridgedAssetHubId],
+			[AWAY, AWAY_ON_HUB, bridgedAssetHubId, assetHubId],
+			[HOME, HOME_ON_BRIDGED_HUB, assetHubId, bridgedAssetHubId],
+			[HOME_ON_BRIDGED_HUB, HOME, bridgedAssetHubId, assetHubId],
+		])(
+			"bridges %s to %s in one transfer from %s to %s",
+			(tokenIdIn, tokenIdOut, origin, destination) => {
+				expect(
+					resolveSwapRoute({ ...bridgedContext, tokenIdIn, tokenIdOut }),
+				).toEqual({
+					kind: "xcm-transfer",
+					origin,
+					destination,
+					tokenIdIn,
+					tokenIdOut,
+				});
+			},
+		);
+
+		it.each([
+			[HOME, AWAY],
+			[AWAY, HOME],
+			[HOME_ON_BRIDGED_HUB, AWAY],
+			[AWAY, HOME_ON_BRIDGED_HUB],
+			[HOME_ON_BRIDGED_HUB, AWAY_ON_HUB],
+			[AWAY_ON_HUB, HOME_ON_BRIDGED_HUB],
+			[HOME_ON_BRIDGED_HUB, PEOPLE],
+			[PEOPLE, HOME_ON_BRIDGED_HUB],
+			[AWAY, PEOPLE],
+			[PEOPLE, AWAY],
+		])(
+			"resolves no route from %s to %s, which would swap or hop beside the bridge",
+			(tokenIdIn, tokenIdOut) => {
+				expect(
+					resolveSwapRoute({ ...bridgedContext, tokenIdIn, tokenIdOut }),
+				).toBeNull();
+			},
+		);
+
+		it("offers the four bridge tokens as input and output, beside the tokens of the view", () => {
+			const lists = getSwapTokenLists({
+				ammTokens,
+				allTokens: KNOWN_TOKENS_MAP,
+				context: bridgedContext,
+			});
+			const viewLists = getSwapTokenLists({
+				ammTokens,
+				allTokens: KNOWN_TOKENS_MAP,
+				context: { ...bridgedContext, mirrors: getRelayMirrors(assetHubId) },
+			});
+			const bridgedHubTokens = pick(KNOWN_TOKENS_MAP, [
+				AWAY,
+				HOME_ON_BRIDGED_HUB,
+			]);
+			expect(lists).toEqual({
+				tokensIn: { ...viewLists.tokensIn, ...bridgedHubTokens },
+				tokensOut: { ...viewLists.tokensOut, ...bridgedHubTokens },
+			});
+		});
+
+		it("does not take a token from the bridged hub when Asset Hub has no pool to swap it for its fee", () => {
+			const { tokensIn, tokensOut } = getSwapTokenLists({
+				ammTokens: pick(KNOWN_TOKENS_MAP, [HOME]),
+				allTokens: KNOWN_TOKENS_MAP,
+				context: bridgedContext,
+			});
+			expect(tokensIn).not.toHaveProperty(AWAY);
+			expect(tokensOut).toHaveProperty(AWAY);
+			expect(tokensIn).toHaveProperty(HOME_ON_BRIDGED_HUB);
+		});
+
+		it("pairs a token picked on the bridged hub with its mirror, and flips the pair", () => {
+			expect(
+				next([HOME, PEOPLE], { type: "out", tokenId: AWAY }, bridgedContext),
+			).toEqual([AWAY_ON_HUB, AWAY]);
+			expect(
+				next([HOME, PEOPLE], { type: "in", tokenId: AWAY }, bridgedContext),
+			).toEqual([AWAY, AWAY_ON_HUB]);
+			expect(
+				next([AWAY_ON_HUB, AWAY], { type: "flip" }, bridgedContext),
+			).toEqual([AWAY, AWAY_ON_HUB]);
+		});
+	},
+);
+
+describe("the bridge beside Hydration", () => {
 	const pah = getChainById("pah");
 	const bridgedMirrors = getAssetHubMirrorTokenIds(KNOWN_TOKENS_MAP, pah, [
 		...getChains().filter((chain) => chain.relay === pah.relay),
@@ -936,50 +1063,38 @@ describe("bridged hub tokens", () => {
 			tokenId.startsWith("foreign-asset::kah::") && mirrorTokenId === DOT,
 	)?.[0] as TokenId;
 
-	it("holds both bridged pairs in the mirrors", () => {
-		expect(KNOWN_TOKENS_MAP[KSM_ON_PAH]?.symbol).toBe("KSM");
-		expect(KNOWN_TOKENS_MAP[DOT_ON_KAH]?.symbol).toBe("DOT");
-	});
-
 	it.each([
-		[KSM, DOT],
-		[DOT, KSM],
-		[KSM, KSM_ON_PAH],
-		[KSM_ON_PAH, KSM],
 		[KSM, USDT],
-		[DOT_ON_KAH, DOT],
-		[DOT, DOT_ON_KAH],
+		[USDT, KSM],
 		[DOT_ON_KAH, USDT],
 		[USDT, DOT_ON_KAH],
-		[DOT_ON_KAH, KSM],
-		[KSM, DOT_ON_KAH],
 		[DOT_ON_KAH, HYDRATION_DOT],
 		[HYDRATION_DOT, DOT_ON_KAH],
-		[DOT_ON_KAH, PEOPLE_DOT],
-		[PEOPLE_DOT, DOT_ON_KAH],
 		[KSM, HYDRATION_DOT],
-		[PEOPLE_DOT, KSM],
+		[HYDRATION_DOT, KSM],
 	])("resolves no route from %s to %s", (tokenIdIn, tokenIdOut) => {
 		expect(
 			resolveSwapRoute({ ...bridgedContext, tokenIdIn, tokenIdOut }),
 		).toBeNull();
 	});
 
-	it("keeps the token lists of the view", () => {
-		const ammTokens = pick(KNOWN_TOKENS_MAP, [DOT, USDT, WUD, KSM_ON_PAH]);
-		const lists = getSwapTokenLists({
-			ammTokens,
-			allTokens: KNOWN_TOKENS_MAP,
-			context: bridgedContext,
-		});
-		expect(lists).toEqual(
-			getSwapTokenLists({ ammTokens, allTokens: KNOWN_TOKENS_MAP, context }),
-		);
-		expect(lists.tokensIn).not.toHaveProperty(KSM);
-		expect(lists.tokensOut).not.toHaveProperty(KSM);
-		expect(lists.tokensIn).not.toHaveProperty(DOT_ON_KAH);
-		expect(lists.tokensOut).not.toHaveProperty(DOT_ON_KAH);
-	});
+	it.each([
+		[DOT, HYDRATION_DOT],
+		[HYDRATION_DOT, DOT],
+		[HYDRATION_USDT, DOT],
+		[USDC, HYDRATION_USDT],
+		[PEOPLE_DOT, DOT],
+		[PEOPLE_DOT, HYDRATION_DOT],
+		[HYDRATION_DOT, PEOPLE_DOT],
+		[DOT, KSM_ON_PAH],
+	])(
+		"resolves %s to %s as it does without the bridged hub",
+		(tokenIdIn, tokenIdOut) => {
+			expect(
+				resolveSwapRoute({ ...bridgedContext, tokenIdIn, tokenIdOut }),
+			).toEqual(resolveSwapRoute({ ...context, tokenIdIn, tokenIdOut }));
+		},
+	);
 });
 
 describe("getRouteAccess", () => {
@@ -993,6 +1108,7 @@ describe("getRouteAccess", () => {
 		origin: "ppeople",
 		destination: "hydration",
 	} as const;
+	const overTheBridge = { origin: "pah", destination: "kah" } as const;
 
 	it("lets a substrate account receive on its own address", () => {
 		expect(
@@ -1039,6 +1155,10 @@ describe("getRouteAccess", () => {
 			allowed: false,
 			reason:
 				"Ethereum accounts cannot send from Polkadot People yet: the same address is a different account there",
+		});
+		expect(getRouteAccess({ platform, address }, overTheBridge)).toEqual({
+			allowed: false,
+			reason: "Ethereum accounts cannot use the bridge yet",
 		});
 	});
 });

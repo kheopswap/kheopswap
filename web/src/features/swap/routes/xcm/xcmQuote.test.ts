@@ -16,6 +16,16 @@ import {
 	usdcToUsdt,
 } from "../xcmSwap/xcmSwap.fixtures";
 import {
+	type BridgeTransferFixture,
+	DOT_ON_KAH,
+	dotKusamaToPolkadot,
+	dotPolkadotToKusama,
+	KSM_ON_PAH,
+	ksmKusamaToPolkadot,
+	ksmPolkadotToKusama,
+	ksmPolkadotToKusamaWithoutDot,
+} from "./xcmBridge.fixtures";
+import {
 	dotToAssetHub,
 	dotToAssetHubDotFeePayer,
 	dotToAssetHubTrapped,
@@ -972,5 +982,136 @@ describe("transfers through Asset Hub", () => {
 				peopleToHydration,
 			),
 		).toBe("Polkadot Asset Hub would reject the transfer: Barrier");
+	});
+});
+
+describe("between the Polkadot and Kusama Asset Hubs", () => {
+	const getQuote = (
+		fixture: BridgeTransferFixture,
+		tokenIdIn: string,
+		tokenIdOut: string,
+	) => {
+		const { origin, destination, originDryRun, destinationDryRun } = fixture;
+		const leg = parseOriginDryRun(originDryRun, {
+			from: origin,
+			to: destination,
+		});
+		const received =
+			destinationDryRun &&
+			parseDestinationDryRun(destinationDryRun, {
+				tokenId: tokenIdOut,
+				beneficiary: fixture.beneficiary,
+			});
+		if (!leg.success || !received?.success)
+			throw new Error("fixture does not quote");
+		return composeXcmQuote(
+			{ route: { ...fixture, kind: "xcm-transfer", tokenIdIn, tokenIdOut } },
+			{ sent: leg.value.sent, received: received.value },
+		);
+	};
+
+	it.each([
+		[
+			"KSM to Polkadot",
+			ksmKusamaToPolkadot,
+			"native::kah",
+			KSM_ON_PAH,
+			99628419408n,
+		],
+		[
+			"KSM to Kusama",
+			ksmPolkadotToKusama,
+			KSM_ON_PAH,
+			"native::kah",
+			99936618505n,
+		],
+		[
+			"DOT to Kusama",
+			dotPolkadotToKusama,
+			"native::pah",
+			DOT_ON_KAH,
+			9997354620n,
+		],
+		[
+			"DOT to Polkadot",
+			dotKusamaToPolkadot,
+			DOT_ON_KAH,
+			"native::pah",
+			9990523408n,
+		],
+	])(
+		"quotes %s from what its Asset Hub exported and the other one deposited",
+		(_, fixture, tokenIdIn, tokenIdOut, received) => {
+			expect(getQuote(fixture, tokenIdIn, tokenIdOut)).toEqual({
+				received,
+				destinationFee: {
+					tokenId: tokenIdOut,
+					plancks: fixture.amount - received,
+				},
+			});
+		},
+	);
+
+	const getFeesPaid = ({ originDryRun }: BridgeTransferFixture) => {
+		if (!originDryRun.success) throw new Error("fixture origin dry run failed");
+		return originDryRun.value.emitted_events
+			.flatMap((event) =>
+				event.type === "PolkadotXcm" && event.value.type === "FeesPaid"
+					? event.value.value.fees
+					: [],
+			)
+			.reduce(
+				(sum, { fun }) => (fun.type === "Fungible" ? sum + fun.value : sum),
+				0n,
+			);
+	};
+
+	it.each([
+		["Kusama", ksmKusamaToPolkadot, 3496641411n],
+		["Polkadot", ksmPolkadotToKusama, 376780428n],
+		["Polkadot", dotPolkadotToKusama, 377047092n],
+		["Kusama", dotKusamaToPolkadot, 3491308079n],
+	])(
+		"reads the bridge fee %s Asset Hub charges in its native token, equal to the fees its dry run paid",
+		(_, fixture, expected) => {
+			if (!fixture.deliveryFees) throw new Error("fixture has no bridge fee");
+			expect(parseDeliveryFee(fixture.deliveryFees)).toBe(expected);
+			expect(getFeesPaid(fixture)).toBe(expected);
+			expect(getDeliveryFeeTokenId(fixture.origin)).toBe(
+				`native::${fixture.origin}`,
+			);
+		},
+	);
+
+	it("names the token an account lacks to pay the bridge fee", () => {
+		const { origin, destination, originDryRun } = ksmPolkadotToKusamaWithoutDot;
+		const leg = parseOriginDryRun(originDryRun, {
+			from: origin,
+			to: destination,
+		});
+		if (leg.success) throw new Error("fixture origin succeeded");
+
+		expect(leg.failure).toEqual({
+			kind: "origin-fees-not-met",
+			reason: "PolkadotXcm: FeesNotMet",
+		});
+		expect(
+			describeXcmQuoteFailure(leg.failure, ksmPolkadotToKusamaWithoutDot),
+		).toBe("You need DOT on Polkadot Asset Hub to pay the bridge fee");
+		expect(
+			describeXcmQuoteFailure(leg.failure, {
+				origin: "kah",
+				destination: "pah",
+			}),
+		).toBe("You need KSM on Kusama Asset Hub to pay the bridge fee");
+	});
+
+	it("keeps the dispatch error of unmet fees off the bridge", () => {
+		expect(
+			describeXcmQuoteFailure(
+				{ kind: "origin-fees-not-met", reason: "PolkadotXcm: FeesNotMet" },
+				{ origin: "pah", destination: "hydration" },
+			),
+		).toBe("PolkadotXcm: FeesNotMet");
 	});
 });
