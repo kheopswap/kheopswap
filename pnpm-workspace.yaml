@@ -10,6 +10,7 @@ allowBuilds:
 # provides some buffer time for the package maintainer / wider community to detect and publicise malicious package versions
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  # first-party: published by this repo's owner, so the buffer against a compromised third-party publisher does not apply
   - "@kheopskit/*"
 
 overrides:
@@ -19,8 +20,11 @@ overrides:
   # package.json objects).
   deepmerge-ts: "^8.0.0"
   # GHSA-mrhx-c7xc-m3w5: zod memory exhaustion on large arrays (high), patched >=4.6.6 with no 3.x
-  # backport. @reown/appkit-wallet pins zod 3.22.4 and @coinbase/cdp-sdk (via @reown/appkit >
-  # @base-org/account) declares ^3.25.76 in their latest releases. Neither ships in the web bundle.
+  # backport. The latest @reown/appkit-wallet pins zod 3.22.4 and the latest @coinbase/cdp-sdk (via
+  # @reown/appkit > @reown/appkit-utils > @base-org/account) declares ^3.25.76. Their zod schemas
+  # are tree-shaken out of the web bundle. Under zod 4 a z.any() key is required, so appkit-wallet's
+  # frame schema would reject messages it accepts today. Revisit this before enabling AppKit's
+  # email or social login.
   "zod@<4.6.6": "^4.6.6"
-  # NOTE: elliptic (low, dev-only crypto-browserify polyfill) advisory GHSA-848j-6mx2-7j84
-  # claims a >=6.6.2 patch, but npm's latest is still 6.6.1 — no installable fix yet. Revisit.
+  # NOTE: elliptic (low, dev-only crypto-browserify polyfill) advisory GHSA-848j-6mx2-7j84 covers
+  # every version (<=6.6.1, the latest on npm as of 2026-11-16) and lists no patched release. Revisit.
