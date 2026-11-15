@@ -24,6 +24,7 @@ import {
 } from "./xcmArrival";
 
 const HYDRATION_PARA_ID = getChainById("hydration").paraId;
+const AH_TO_HYDRATION = { from: "pah", to: "hydration" } as const;
 const MESSAGE_ID =
 	"0x6c79370c66515d9e929b9cca10beb95e43247e2469d15c1586b8506d273b631b";
 const OTHER_MESSAGE_ID =
@@ -183,7 +184,7 @@ describe("getSentMessageId", () => {
 		expect(
 			getSentMessageId(
 				getRecord("inBlock", [sentTo(HYDRATION_PARA_ID)]).txEvents,
-				HYDRATION_PARA_ID,
+				AH_TO_HYDRATION,
 			),
 		).toBe(MESSAGE_ID);
 	});
@@ -192,14 +193,14 @@ describe("getSentMessageId", () => {
 		expect(
 			getSentMessageId(
 				getRecord("inBlock", [sentTo(1002)]).txEvents,
-				HYDRATION_PARA_ID,
+				AH_TO_HYDRATION,
 			),
 		).toBeNull();
 	});
 
 	it("returns null before the transaction is included", () => {
 		expect(
-			getSentMessageId(getRecord("broadcasted").txEvents, HYDRATION_PARA_ID),
+			getSentMessageId(getRecord("broadcasted").txEvents, AH_TO_HYDRATION),
 		).toBeNull();
 	});
 });
@@ -219,7 +220,7 @@ describe("getXcmArrival$", () => {
 			blockEvents$,
 			target,
 			returnTokenIds,
-			firstHopParaId: HYDRATION_PARA_ID,
+			firstHop: AH_TO_HYDRATION,
 			bufferBlocks,
 			timeoutMs,
 		}).subscribe({
@@ -397,9 +398,9 @@ describe("arrival on People", () => {
 		const sent = getRecord("finalized", [
 			sentTo(PEOPLE_PARA_ID, PEOPLE_MESSAGE_ID),
 		]);
-		expect(getSentMessageId(sent.txEvents, PEOPLE_PARA_ID)).toBe(
-			PEOPLE_MESSAGE_ID,
-		);
+		expect(
+			getSentMessageId(sent.txEvents, { from: "pasah", to: "paspeople" }),
+		).toBe(PEOPLE_MESSAGE_ID);
 
 		const blockEvents = getXcmBlockEvents([
 			inPhase("ApplyExtrinsic", extrinsicSuccess),
@@ -640,7 +641,9 @@ describe("arrival on Asset Hub from People", () => {
 			"finalized",
 			dotFromPeople.originDryRun.value.emitted_events,
 		);
-		expect(getSentMessageId(record.txEvents, getChainById("pah").paraId)).toBe(
+		expect(
+			getSentMessageId(record.txEvents, { from: "ppeople", to: "pah" }),
+		).toBe(
 			"0x683cf77a60b984103a1a86f1dbb9e61e86e4d88453c30d67e7cdda47eb555b85",
 		);
 	});
@@ -649,9 +652,9 @@ describe("arrival on Asset Hub from People", () => {
 		const sent = getRecord("finalized", [
 			sentTo(getChainById("pah").paraId, PEOPLE_MESSAGE_ID),
 		]);
-		expect(getSentMessageId(sent.txEvents, getChainById("pah").paraId)).toBe(
-			PEOPLE_MESSAGE_ID,
-		);
+		expect(
+			getSentMessageId(sent.txEvents, { from: "ppeople", to: "pah" }),
+		).toBe(PEOPLE_MESSAGE_ID);
 		expect(
 			findArrival(getXcmBlockEvents(ASSET_HUB_BLOCK_22023474), {
 				messageId: PEOPLE_MESSAGE_ID,
@@ -663,7 +666,7 @@ describe("arrival on Asset Hub from People", () => {
 });
 
 describe("arrival on Hydration of a transfer from People through Asset Hub", () => {
-	const ASSET_HUB_PARA_ID = getChainById("pah").paraId;
+	const PEOPLE_TO_AH = { from: "ppeople", to: "pah" } as const;
 	const { originDryRun, hubDryRun, destinationDryRun, beneficiary } =
 		dotPeopleToHydration;
 	if (
@@ -690,14 +693,17 @@ describe("arrival on Hydration of a transfer from People through Asset Hub", () 
 		"finalized",
 		originDryRun.value.emitted_events,
 	);
-	const messageId = getSentMessageId(peopleRecord.txEvents, ASSET_HUB_PARA_ID);
+	const messageId = getSentMessageId(peopleRecord.txEvents, PEOPLE_TO_AH);
 
 	it("reads the id of the message People sends to Asset Hub, not to Hydration", () => {
 		expect(messageId).toBe(
 			"0x8f4e29ed4ed675d67f181086cbb1c2c149f3d21886b9787fe3b045970d742686",
 		);
 		expect(
-			getSentMessageId(peopleRecord.txEvents, HYDRATION_PARA_ID),
+			getSentMessageId(peopleRecord.txEvents, {
+				from: "ppeople",
+				to: "hydration",
+			}),
 		).toBeNull();
 	});
 
@@ -718,7 +724,7 @@ describe("arrival on Hydration of a transfer from People through Asset Hub", () 
 			blockEvents$,
 			target: { tokenId: "hydration-asset::hydration::5", beneficiary },
 			returnTokenIds: ["hydration-asset::hydration::5"],
-			firstHopParaId: ASSET_HUB_PARA_ID,
+			firstHop: PEOPLE_TO_AH,
 			bufferBlocks: getArrivalBufferBlocks("hydration"),
 		}).subscribe((arrival) => arrivals.push(arrival));
 

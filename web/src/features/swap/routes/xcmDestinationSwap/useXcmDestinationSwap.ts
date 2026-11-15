@@ -8,13 +8,13 @@ import { useMemo } from "react";
 import { useDryRun } from "../../../../hooks/useDryRun";
 import { usePoolReservesByTokenIds } from "../../../../hooks/usePoolReservesByTokenIds";
 import { getApi } from "../../../../papi/getApi";
-import { getChainById } from "../../../../registry/chains/chains";
 import { getTokenId } from "../../../../registry/tokens/helpers";
 import type { TokenAmount } from "../../../../registry/tokens/types";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import { useRelayChains } from "../../../../state/relay";
 import type { AnyTransaction } from "../../../../types/transactions";
 import { safeQueryKeyPart } from "../../../../utils/safeQueryKeyPart";
+import { getHopInbound } from "../../../../utils/xcmHop";
 import { useAssetConvertionLPFee } from "../../useAssetConvertionLPFee";
 import type { XcmDestinationSwapRoute } from "../swapRoute";
 import { type AmmPathQuoteState, useAmmPathQuote } from "../useAmmPathQuote";
@@ -37,9 +37,14 @@ const queryDestinationNativeFee = async (
 	message: XcmVersionedXcm,
 ): Promise<bigint | null> => {
 	const api = await getApi(route.destination);
-	const weight = await api.apis.XcmPaymentApi.query_xcm_weight(message, {
-		at: "best",
-	});
+	const inbound = getHopInbound(
+		{ from: route.origin, to: route.destination },
+		message,
+	);
+	const weight = await api.apis.XcmPaymentApi.query_xcm_weight(
+		inbound.message,
+		{ at: "best" },
+	);
 	if (!weight.success) return null;
 	const fee = await api.apis.XcmPaymentApi.query_weight_to_asset_fee(
 		weight.value,
@@ -74,10 +79,10 @@ const useDestinationNativeFee = ({
 	const estimateLeg = useMemo(
 		() =>
 			route && estimate.data
-				? parseOriginDryRun(
-						estimate.data,
-						getChainById(route.destination).paraId,
-					)
+				? parseOriginDryRun(estimate.data, {
+						from: route.origin,
+						to: route.destination,
+					})
 				: undefined,
 		[route, estimate.data],
 	);
