@@ -1,4 +1,4 @@
-import { values } from "lodash-es";
+import { partition, values } from "lodash-es";
 import { useMemo, useRef } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
@@ -7,6 +7,7 @@ import { getBalancesByTokenSummary } from "../../hooks/useBalancesByTokenSummary
 import { useBalancesWithStables } from "../../hooks/useBalancesWithStables";
 import { useTokenPrices } from "../../hooks/useTokenPrices";
 import { PORTFOLIO_TOKEN_TYPES } from "../../registry/tokens/tokens";
+import { useRelayChains } from "../../state/relay";
 import { uniqByPublicKey } from "../../utils/accountPublicKey";
 import { logger } from "../../utils/logger";
 import { provideContext } from "../../utils/provideContext";
@@ -27,13 +28,27 @@ export const usePortfolioProvider = () => {
 
 	const tokens = useMemo(() => values(tokensMap), [tokensMap]);
 
+	const { bridgedAssetHub } = useRelayChains();
+	const [relayTokens, bridgedHubTokens] = useMemo(
+		() => partition(tokens, (token) => token.chainId !== bridgedAssetHub?.id),
+		[tokens, bridgedAssetHub],
+	);
+
 	const { data: tvl } = useAssetHubTVL();
 
-	const { data: liveBalances, isLoading: isLoadingBalances } =
-		useBalancesWithStables({ tokens, accounts });
+	const { data: relayBalances, isLoading: isLoadingBalances } =
+		useBalancesWithStables({ tokens: relayTokens, accounts });
+	const { data: bridgedHubBalances } = useBalancesWithStables({
+		tokens: bridgedHubTokens,
+		accounts,
+	});
+	const liveBalances = useMemo(
+		() => [...relayBalances, ...bridgedHubBalances],
+		[relayBalances, bridgedHubBalances],
+	);
 
 	const lastBalances = useRef(liveBalances);
-	if (liveBalances.length || !accounts.length)
+	if (relayBalances.length || !accounts.length)
 		lastBalances.current = liveBalances;
 	const balances = lastBalances.current;
 

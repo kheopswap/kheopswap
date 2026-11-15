@@ -432,7 +432,8 @@ export const TokenDetails: FC<{ row: PortfolioRowData }> = ({ row }) => {
 				</TokenDetailsRow>
 			))}
 			<TokenInfoRows token={token} />
-			{token.type === "asset" || token.type === "foreign-asset" ? (
+			{(token.type === "asset" || token.type === "foreign-asset") &&
+			token.chainId === assetHub.id ? (
 				<TokenDetailsRow label="Liquidity Pool">
 					<LiquidityPoolValue token={token} />
 				</TokenDetailsRow>
