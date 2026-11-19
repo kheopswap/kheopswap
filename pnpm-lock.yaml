@@ -172,7 +172,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  deepmerge-ts: ^8.0.0
+  deepmerge-ts@<8.0.0: ^8.0.0
   zod@<4.6.6: ^4.6.6
 
 importers:
