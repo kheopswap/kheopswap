@@ -47,7 +47,7 @@
 		"rxjs": "^7.8.2",
 		"tailwind-merge": "^3.7.0",
 		"url-join": "^6.0.0",
-		"viem": "^2.57.19",
+		"viem": "^2.57.20",
 		"webfontloader": "^1.6.28",
 		"yaml": "^2.9.1"
 	},

@@ -14,17 +14,13 @@ minimumReleaseAgeExclude:
   - "@kheopskit/*"
 
 overrides:
-  # GHSA-ggr8-5vv4-36mx: deepmerge-ts stack exhaustion on deeply nested merges (high), patched
-  # >=8.0.0. Dev-only copy via polkadot-api > @polkadot-api/cli > write-package, which declares
-  # ^7.1.0; the override crosses that major deliberately (papi codegen only merges its own small
-  # package.json objects).
-  deepmerge-ts: "^8.0.0"
-  # GHSA-mrhx-c7xc-m3w5: zod memory exhaustion on large arrays (high), patched >=4.6.6 with no 3.x
-  # backport. The latest @reown/appkit-wallet pins zod 3.22.4 and the latest @coinbase/cdp-sdk (via
-  # @reown/appkit > @reown/appkit-utils > @base-org/account) declares ^3.25.76. Their zod schemas
-  # are tree-shaken out of the web bundle. Under zod 4 a z.any() key is required, so appkit-wallet's
-  # frame schema would reject messages it accepts today. Revisit this before enabling AppKit's
-  # email or social login.
+  # GHSA-ggr8-5vv4-36mx (high), patched >=8.0.0. write-package, used only by the papi CLI that
+  # polkadot-api ships, still declares ^7.1.0.
+  "deepmerge-ts@<8.0.0": "^8.0.0"
+  # GHSA-mrhx-c7xc-m3w5 (high), patched >=4.6.6, no 3.x backport. @reown/appkit-wallet pins 3.22.4 and
+  # @coinbase/cdp-sdk (via @reown/appkit) declares ^3.25.76. Their zod schemas are tree-shaken out of the
+  # bundle, but under zod 4 appkit-wallet's frame schema rejects messages it accepted under zod 3: revisit
+  # before enabling AppKit's email or social login.
   "zod@<4.6.6": "^4.6.6"
-  # NOTE: elliptic (low, dev-only crypto-browserify polyfill) advisory GHSA-848j-6mx2-7j84 covers
-  # every version (<=6.6.1, the latest on npm as of 2026-11-16) and lists no patched release. Revisit.
+  # NOTE: elliptic GHSA-848j-6mx2-7j84 (low, dev-only crypto-browserify polyfill) covers every version
+  # (<=6.6.1, still the latest on 2026-11-19) and has no patched release.
