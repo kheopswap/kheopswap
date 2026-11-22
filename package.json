@@ -29,10 +29,10 @@
 	"keywords": [],
 	"author": "Kheops",
 	"license": "AGPL",
-	"packageManager": "pnpm@12.21.0",
+	"packageManager": "pnpm@12.22.0",
 	"devDependencies": {
 		"@biomejs/biome": "^2.6.8",
-		"knip": "^6.45.1",
+		"knip": "^6.46.1",
 		"polkadot-api": "3.3.0",
 		"simple-git-hooks": "^2.14.0"
 	},
