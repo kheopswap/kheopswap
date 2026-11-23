@@ -1,4 +1,5 @@
-import { isEqual, merge } from "lodash-es";
+import { isEqual } from "es-toolkit";
+import { merge } from "es-toolkit/compat";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import { getLocalStorageKey } from "../utils/getLocalStorageKey";
 import { safeParse, safeStringify } from "../utils/serialization";

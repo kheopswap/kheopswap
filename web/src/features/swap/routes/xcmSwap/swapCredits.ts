@@ -1,4 +1,4 @@
-import { isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import type { XcmV5Multilocation } from "../../../../registry/types/xcm";
 import { getXcmV5MultilocationFromTokenId } from "../../../../registry/utils/xcmMultiLocation";
 import type { TxEvents } from "../../../../utils/getErrorMessageFromTxEvents";

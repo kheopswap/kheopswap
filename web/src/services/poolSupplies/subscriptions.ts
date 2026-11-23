@@ -1,4 +1,4 @@
-import { isEqual, uniq } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import type { TokenIdsPair } from "../../registry/tokens/types";
 import { firstThenDebounceTime } from "../../utils/firstThenDebounceTime";
@@ -19,7 +19,7 @@ const allPoolSupplySubscriptions$ = new BehaviorSubject<
 export const poolSuppliesSubscriptions$ = allPoolSupplySubscriptions$.pipe(
 	firstThenDebounceTime(100),
 	map((subs) => subs.flatMap(({ poolSupplyIds }) => poolSupplyIds)),
-	map((pollSupplyIds) => uniq(pollSupplyIds).sort() as PoolSupplyId[]),
+	map((pollSupplyIds) => [...new Set(pollSupplyIds)].sort() as PoolSupplyId[]),
 	distinctUntilChanged<PoolSupplyId[]>(isEqual),
 );
 

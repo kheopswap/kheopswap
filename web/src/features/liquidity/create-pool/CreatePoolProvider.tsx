@@ -1,4 +1,3 @@
-import { fromPairs, pickBy, toPairs } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAllTokens } from "../../../hooks/useAllTokens";
 import { useBalance } from "../../../hooks/useBalance";
@@ -57,7 +56,12 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 		types: POOL_TOKEN2_TOKEN_TYPES,
 	});
 	const tokens = useMemo(
-		() => pickBy(allTokens, (token) => token.chainId === assetHub.id),
+		() =>
+			Object.fromEntries(
+				Object.entries(allTokens).filter(
+					([, token]) => token.chainId === assetHub.id,
+				),
+			),
 		[allTokens, assetHub.id],
 	);
 
@@ -65,8 +69,8 @@ const useCreatePoolProvider = ({ tokenId }: { tokenId: TokenId }) => {
 
 	const tokensWithoutPool = useMemo<Record<string, Token>>(() => {
 		if (!pools) return {};
-		return fromPairs(
-			toPairs(tokens).filter(
+		return Object.fromEntries(
+			Object.entries(tokens).filter(
 				([id]) => !pools.some((pool) => pool.tokenIds.includes(id)),
 			),
 		);

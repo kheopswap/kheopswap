@@ -1,4 +1,4 @@
-import { keyBy, values } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import { BehaviorSubject, debounceTime } from "rxjs";
 import { DEV_IGNORE_STORAGE } from "../../common/constants";
 import { getLocalStorageKey } from "../../utils/getLocalStorageKey";
@@ -29,7 +29,7 @@ const load = (): Record<string, StoredBalance> => {
 
 const save = (balances: Record<string, StoredBalance>) => {
 	try {
-		localStorage.setItem(STORAGE_KEY, safeStringify(values(balances)));
+		localStorage.setItem(STORAGE_KEY, safeStringify(Object.values(balances)));
 	} catch (err) {
 		logger.error("Failed to save balances", err);
 	}

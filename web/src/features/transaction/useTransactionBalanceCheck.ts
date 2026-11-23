@@ -1,4 +1,3 @@
-import { uniq } from "lodash-es";
 import { useMemo } from "react";
 import { useBalance } from "../../hooks/useBalance";
 import { useBalances } from "../../hooks/useBalances";
@@ -29,7 +28,7 @@ export const getInsufficientBalances = ({
 	fee: TokenAmount;
 }): Record<TokenId, string> => {
 	const result: Record<TokenId, string> = {};
-	const tokenIds = uniq([...Object.keys(callSpendings), fee.tokenId]);
+	const tokenIds = [...new Set([...Object.keys(callSpendings), fee.tokenId])];
 	const feeMayReapPayer = isChainIdHydration(parseTokenId(fee.tokenId).chainId);
 
 	for (const tokenId of tokenIds) {
@@ -72,7 +71,7 @@ export const useTransactionBalanceCheck = ({
 		const allTokenIds = Object.keys(callSpendings)
 			.concat(feeToken?.id ?? "")
 			.filter(Boolean) as TokenId[];
-		return uniq(allTokenIds);
+		return [...new Set(allTokenIds)];
 	}, [callSpendings, feeToken?.id]);
 
 	const balanceDefs = useMemo<BalanceDef[] | undefined>(

@@ -1,4 +1,4 @@
-import { fromPairs, isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -54,7 +54,7 @@ export const getTokensByChains$ = (
 ): Observable<Record<string, ChainTokensState | undefined>> =>
 	combineLatest(chainIds.map(getTokensByChain$)).pipe(
 		map((arChainTokens) =>
-			fromPairs(
+			Object.fromEntries(
 				chainIds.map((chainId, index) => [chainId, arChainTokens[index]]),
 			),
 		),
@@ -84,6 +84,8 @@ export const getTokensById$ = (
 ): Observable<Record<string, TokenState | undefined>> =>
 	combineLatest(tokenIds.map(getTokenById$)).pipe(
 		map((arTokens) =>
-			fromPairs(tokenIds.map((tokenId, index) => [tokenId, arTokens[index]])),
+			Object.fromEntries(
+				tokenIds.map((tokenId, index) => [tokenId, arTokens[index]]),
+			),
 		),
 	);

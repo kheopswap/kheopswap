@@ -1,4 +1,4 @@
-import { groupBy, keys } from "lodash-es";
+import { groupBy } from "es-toolkit";
 import { useMemo } from "react";
 import type { PolkadotAccount } from "../common/kheopskit";
 import type { Token, TokenId } from "../registry/tokens/types";
@@ -20,10 +20,10 @@ export const getBalancesByTokenSummary = (
 ) => {
 	const balancesByTokenId = groupBy(
 		balances.filter(isApplicableBalance),
-		"tokenId",
+		(item) => item.tokenId,
 	);
 
-	return keys(balancesByTokenId).reduce(
+	return Object.keys(balancesByTokenId).reduce(
 		(acc, tokenId) => {
 			const tokenBalances = balancesByTokenId[
 				tokenId

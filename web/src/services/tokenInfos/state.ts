@@ -1,4 +1,3 @@
-import { fromPairs, keys } from "lodash-es";
 import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 import type { TokenId, TokenInfo } from "../../registry/tokens/types";
 import { logger } from "../../utils/logger";
@@ -17,10 +16,10 @@ const combineState = (
 
 	try {
 		const allTokenIds = [
-			...new Set<TokenId>(tokenIds.concat(keys(tokenInfos))),
+			...new Set<TokenId>(tokenIds.concat(Object.keys(tokenInfos))),
 		];
 
-		return fromPairs(
+		return Object.fromEntries(
 			allTokenIds.map((tokenId) => {
 				const status = statuses[tokenId] ?? "stale";
 				const tokenInfo = tokenInfos[tokenId];

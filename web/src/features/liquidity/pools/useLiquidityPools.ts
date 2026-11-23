@@ -1,4 +1,3 @@
-import { uniq } from "lodash-es";
 import { useMemo } from "react";
 import { useWallets } from "../../../common/kheopskit";
 import { useNativeToken } from "../../../hooks/useNativeToken";
@@ -47,7 +46,7 @@ export const useLiquidityPoolsTable = () => {
 
 	const { accounts } = useWallets();
 	const addresses = useMemo(
-		() => uniq(accounts.map((a) => a.address)),
+		() => [...new Set(accounts.map((a) => a.address))],
 		[accounts],
 	);
 

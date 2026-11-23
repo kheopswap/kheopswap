@@ -1,4 +1,4 @@
-import { isEqual, values } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import { combineLatest, distinctUntilChanged, map, throttleTime } from "rxjs";
 
 import { balanceStatuses$ } from "./balances/watchers";
@@ -17,7 +17,7 @@ type LoadingStatusSummary = {
 const getSummary = (statusMap: Record<string, LoadingStatus>) => {
 	let [loading, loaded] = [0, 0];
 
-	for (const status of values(statusMap))
+	for (const status of Object.values(statusMap))
 		if (status === "loading") loading++;
 		else if (status === "loaded") loaded++;
 

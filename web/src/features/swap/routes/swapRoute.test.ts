@@ -1,4 +1,4 @@
-import { pick } from "lodash-es";
+import { pick } from "es-toolkit";
 import { describe, expect, it } from "vitest";
 import { getChainById, getChains } from "../../../registry/chains/chains";
 import type { ChainIdAssetHub } from "../../../registry/chains/types";

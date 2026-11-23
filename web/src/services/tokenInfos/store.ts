@@ -1,4 +1,4 @@
-import { keyBy, values } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import { BehaviorSubject, debounceTime } from "rxjs";
 import { DEV_IGNORE_STORAGE } from "../../common/constants";
 import type { TokenInfo } from "../../registry/tokens/types";
@@ -14,7 +14,7 @@ const loadTokenInfos = (): Record<string, TokenInfo> => {
 		const tokenInfosList: TokenInfo[] =
 			strTokenInfos && !DEV_IGNORE_STORAGE ? safeParse(strTokenInfos) : [];
 
-		const tokensInfosMap = keyBy(tokenInfosList, "id");
+		const tokensInfosMap = keyBy(tokenInfosList, (item) => item.id);
 
 		return tokensInfosMap;
 	} catch (err) {
@@ -25,7 +25,7 @@ const loadTokenInfos = (): Record<string, TokenInfo> => {
 
 const saveTokenInfos = (tokens: Record<string, TokenInfo>) => {
 	try {
-		localStorage.setItem(STORAGE_KEY, safeStringify(values(tokens)));
+		localStorage.setItem(STORAGE_KEY, safeStringify(Object.values(tokens)));
 	} catch (err) {
 		console.error("Failed to save token infos", err);
 	}

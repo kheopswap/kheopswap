@@ -1,10 +1,10 @@
-import { isNumber } from "lodash-es";
 import { type FC, useEffect, useMemo } from "react";
 import { refreshPools } from "../../../services/pools/service";
 import { useRelayChains } from "../../../state/relay";
 import type { TransactionRecord } from "../../../state/transactions/types";
 import { cn } from "../../../utils/cn";
 import type { TxEvents } from "../../../utils/getErrorMessageFromTxEvents";
+import { isNumber } from "../../../utils/isNumber";
 
 export const CreatePoolFollowUpContent: FC<{
 	transaction: TransactionRecord;

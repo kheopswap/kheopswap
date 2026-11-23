@@ -1,4 +1,3 @@
-import { fromPairs, keys, uniq } from "lodash-es";
 import { combineLatest, map, shareReplay, throttleTime } from "rxjs";
 import { logger } from "../../utils/logger";
 import type { LoadingStatus } from "../common";
@@ -15,9 +14,11 @@ const combineState = (
 	const stop = logger.cumulativeTimer("balances.combineState");
 
 	try {
-		const allBalanceIds = uniq(balanceIds.concat(keys(balances)));
+		const allBalanceIds = [
+			...new Set(balanceIds.concat(Object.keys(balances))),
+		];
 
-		return fromPairs(
+		return Object.fromEntries(
 			allBalanceIds.map((balanceId) => {
 				const status = statuses[balanceId] ?? "stale";
 				const stored = balances[balanceId];

@@ -1,4 +1,3 @@
-import { fromPairs } from "lodash-es";
 import { useCallback, useMemo } from "react";
 import type { WalletAccount } from "../common/kheopskit";
 import {
@@ -38,7 +37,7 @@ export const useAccountDrawerContent = ({
 	const { data: balances, isLoading } = useBalancesWithStables(summaryInputs);
 
 	const balanceByAccount = useMemo(() => {
-		const balanceByPublicKey = fromPairs(
+		const balanceByPublicKey = Object.fromEntries(
 			balances.filter(isApplicableBalance).map((b) => [
 				getAccountPublicKey(b.address),
 				{
@@ -47,7 +46,7 @@ export const useAccountDrawerContent = ({
 				} as BalanceWithStableSummary,
 			]),
 		);
-		return fromPairs(
+		return Object.fromEntries(
 			accounts.flatMap((account) => {
 				const balance =
 					balanceByPublicKey[getAccountPublicKey(account.address)];

@@ -1,4 +1,4 @@
-import { isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import { distinctUntilChanged, map, tap } from "rxjs";
 import type { TokenId } from "../../registry/tokens/types";
 import { tokenInfosState$ } from "./state";

@@ -1,4 +1,4 @@
-import { keyBy, pickBy, values } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import { map, shareReplay, switchMap } from "rxjs";
 import type { ChainAssetHub } from "../registry/chains/types";
 import {
@@ -14,10 +14,10 @@ import { relayChains$ } from "./relay";
 
 const getKnownTokensOfChain = (chain: ChainAssetHub | undefined) =>
 	keyBy(
-		values(KNOWN_TOKENS_MAP)
+		Object.values(KNOWN_TOKENS_MAP)
 			.filter((token) => token.chainId === chain?.id)
 			.map((token) => Object.assign({}, token, TOKENS_OVERRIDES_MAP[token.id])),
-		"id",
+		(item) => item.id,
 	);
 
 export const viewTokens$ = relayChains$.pipe(
@@ -29,12 +29,12 @@ export const viewTokens$ = relayChains$.pipe(
 
 		return getTokensByChains$(allChains.map((chain) => chain.id)).pipe(
 			map((dicChainsTokenState) => {
-				const allStates = values(dicChainsTokenState).filter(
+				const allStates = Object.values(dicChainsTokenState).filter(
 					(v): v is ChainTokensState => !!v,
 				);
 				const relayTokens = keyBy(
-					allStates.flatMap((state) => values(state.tokens)),
-					"id",
+					allStates.flatMap((state) => Object.values(state.tokens)),
+					(item) => item.id,
 				);
 				const mirrorTokenIds = getAssetHubMirrorTokenIds(
 					{ ...bridgedHubTokens, ...relayTokens },
@@ -45,8 +45,10 @@ export const viewTokens$ = relayChains$.pipe(
 					isLoading: allStates.some((state) => state.status !== "loaded"),
 					tokens: {
 						...relayTokens,
-						...pickBy(bridgedHubTokens, (token) =>
-							mirrorTokenIds.has(token.id),
+						...Object.fromEntries(
+							Object.entries(bridgedHubTokens).filter(([, token]) =>
+								mirrorTokenIds.has(token.id),
+							),
 						),
 					},
 					mirrorTokenIds,
@@ -66,7 +68,11 @@ export const getAllTokens$ = (types?: TokenType[]) => {
 				map(({ isLoading, tokens }) => ({
 					isLoading,
 					data: types
-						? pickBy(tokens, (token) => types.includes(token.type))
+						? Object.fromEntries(
+								Object.entries(tokens).filter(([, token]) =>
+									types.includes(token.type),
+								),
+							)
 						: tokens,
 				})),
 				shareReplay({ bufferSize: 1, refCount: true }),

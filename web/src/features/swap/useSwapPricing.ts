@@ -1,4 +1,4 @@
-import { keyBy, values } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import { useMemo } from "react";
 import { APP_FEE_ADDRESS, APP_FEE_PERCENT } from "../../common/constants";
 import { useBalance } from "../../hooks/useBalance";
@@ -109,10 +109,10 @@ export const useSwapPricing = ({
 				.flatMap((p) => p.tokenIds) ?? [];
 		return [
 			keyBy(
-				values(allTokens).filter(
+				Object.values(allTokens).filter(
 					(t) => t.type === "native" || swappableAssetIds.includes(t.id),
 				) ?? [],
-				"id",
+				(item) => item.id,
 			),
 			isLoadingAllTokens ||
 				isLoadingPools ||

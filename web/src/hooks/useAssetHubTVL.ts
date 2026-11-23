@@ -1,4 +1,4 @@
-import { groupBy, mapValues, toPairs, values } from "lodash-es";
+import { groupBy, mapValues } from "es-toolkit";
 import { useMemo } from "react";
 import { useRelayChains } from "../state/relay";
 import type { BalanceWithStableSummary } from "../types/balances";
@@ -43,18 +43,20 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 
 	const lockedTokens = useMemo(
 		() =>
-			toPairs(
-				mapValues(groupBy(lockedBalances, "tokenId"), (tokenBalances) =>
-					tokenBalances.reduce(
-						(acc, { balance, isLoading }) => {
-							acc.plancks += balance ?? 0n;
-							acc.isLoading = acc.isLoading || isLoading;
-							acc.isInitializing =
-								acc.isInitializing || (!isBigInt(balance) && isLoading);
-							return acc;
-						},
-						{ plancks: 0n, isLoading: false, isInitializing: false },
-					),
+			Object.entries(
+				mapValues(
+					groupBy(lockedBalances, (item) => item.tokenId),
+					(tokenBalances) =>
+						tokenBalances.reduce(
+							(acc, { balance, isLoading }) => {
+								acc.plancks += balance ?? 0n;
+								acc.isLoading = acc.isLoading || isLoading;
+								acc.isInitializing =
+									acc.isInitializing || (!isBigInt(balance) && isLoading);
+								return acc;
+							},
+							{ plancks: 0n, isLoading: false, isInitializing: false },
+						),
 				),
 			).map(([tokenId, summary]) => ({ tokenId, ...summary })),
 		[lockedBalances],
@@ -72,7 +74,7 @@ export const useAssetHubTVL = (): UseAssetHubTVLResult => {
 				isLoadingBalances ||
 				isLoadingPools ||
 				isLoadingAssetConvertPlancks,
-			data: values(tokens).map((token) => {
+			data: Object.values(tokens).map((token) => {
 				const lockedIdx = lockedTokens.findIndex((t) => t.tokenId === token.id);
 				const locked = lockedTokens[lockedIdx];
 				return {

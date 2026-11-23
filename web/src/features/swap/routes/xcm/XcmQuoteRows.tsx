@@ -1,5 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { compact } from "lodash-es";
+import { compact } from "es-toolkit";
 import type { FC } from "react";
 import { FormSummaryRow } from "../../../../components/FormSummary";
 import { Shimmer } from "../../../../components/Shimmer";

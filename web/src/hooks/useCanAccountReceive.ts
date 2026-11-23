@@ -1,4 +1,4 @@
-import { keyBy, values } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { getChainIdFromTokenId } from "../registry/tokens/helpers";
@@ -40,7 +40,9 @@ export const useCanAccountReceive = ({
 	});
 
 	const [sufficientTokens, balanceDefs] = useMemo(() => {
-		const sufficientTokens = values(allTokens).filter((t) => t.isSufficient);
+		const sufficientTokens = Object.values(allTokens).filter(
+			(t) => t.isSufficient,
+		);
 		return [
 			sufficientTokens,
 			address
@@ -66,7 +68,7 @@ export const useCanAccountReceive = ({
 			return { canReceive: false };
 		if (typeof existentialDeposit !== "bigint") return { canReceive: false };
 
-		const balanceMap = keyBy(balances, "tokenId");
+		const balanceMap = keyBy(balances, (item) => item.tokenId);
 		const token = allTokens[tokenId];
 		if (!token) return { canReceive: false };
 

@@ -1,4 +1,4 @@
-import { uniqBy } from "lodash-es";
+import { uniqBy } from "es-toolkit";
 import { useMemo } from "react";
 import { useWallets } from "../common/kheopskit";
 import { useOpenClose } from "../hooks/useOpenClose";

@@ -1,4 +1,4 @@
-import { isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import type { SS58String } from "polkadot-api";
 import { useMemo } from "react";
 import { useBalances } from "../../../hooks/useBalances";

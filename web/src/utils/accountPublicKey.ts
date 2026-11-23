@@ -1,4 +1,4 @@
-import { uniqBy } from "lodash-es";
+import { uniqBy } from "es-toolkit";
 import { AccountId } from "polkadot-api";
 import { toHex } from "polkadot-api/utils";
 import { isEthereumAddress } from "./ethereumAddress";

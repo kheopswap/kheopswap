@@ -3,7 +3,6 @@ import {
 	XcmV5Junctions,
 	XcmV5NetworkId,
 } from "@polkadot-api/descriptors";
-import { fromPairs, pickBy, uniq } from "lodash-es";
 import { firstValueFrom, map, of } from "rxjs";
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -51,14 +50,15 @@ vi.mock("../services/tokens/service", () => ({
 	getTokensByChains$: (chainIds: ChainId[]) => {
 		view.requestedChainIds.push(chainIds);
 		return of(
-			fromPairs(
+			Object.fromEntries(
 				chainIds.map((chainId) => [
 					chainId,
 					{
 						status: view.status,
-						tokens: pickBy(
-							KNOWN_TOKENS_MAP,
-							(token) => token.chainId === chainId,
+						tokens: Object.fromEntries(
+							Object.entries(KNOWN_TOKENS_MAP).filter(
+								([, token]) => token.chainId === chainId,
+							),
 						),
 					},
 				]),
@@ -124,7 +124,7 @@ describe("getAllTokens$", () => {
 				.filter((chain) => chain.relay === relayId)
 				.map((chain) => chain.id);
 			expect(
-				uniq(Object.values(data).map((token) => token.chainId)).sort(),
+				[...new Set(Object.values(data).map((token) => token.chainId))].sort(),
 			).toEqual(chainIds.sort());
 		},
 	);

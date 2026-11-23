@@ -1,4 +1,3 @@
-import { values } from "lodash-es";
 import { type FC, memo, useCallback, useMemo, useState } from "react";
 import type { PolkadotAccount } from "../common/kheopskit";
 import { useBalancesByTokenSummary } from "../hooks/useBalancesByTokenSummary";
@@ -120,7 +119,7 @@ const TokenSelectDrawerContent: FC<{
 }> = ({ tokenId, tokens: tokensMap, accounts, isLoading, onChange }) => {
 	const [search, setSearch] = useState("");
 
-	const tokens = useMemo(() => values(tokensMap ?? {}), [tokensMap]);
+	const tokens = useMemo(() => Object.values(tokensMap ?? {}), [tokensMap]);
 
 	const { data: balances } = useBalancesByTokenSummary({
 		tokens,

@@ -1,4 +1,3 @@
-import { pickBy } from "lodash-es";
 import { useCallback, useEffect, useMemo } from "react";
 import { useAssetConvertPlancks } from "../../hooks/useAssetConvertPlancks";
 import { useBalance } from "../../hooks/useBalance";
@@ -49,8 +48,10 @@ const useTransferProvider = () => {
 
 	const tokens = useMemo(
 		() =>
-			pickBy(assetHubTokens, (token) =>
-				TRANSFERABLE_TOKEN_TYPES.includes(token.type),
+			Object.fromEntries(
+				Object.entries(assetHubTokens).filter(([, token]) =>
+					TRANSFERABLE_TOKEN_TYPES.includes(token.type),
+				),
 			),
 		[assetHubTokens],
 	);

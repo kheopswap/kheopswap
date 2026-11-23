@@ -1,4 +1,4 @@
-import { isEqual, uniq } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import type { ChainIdAssetHub } from "../../registry/chains/types";
 import { firstThenDebounceTime } from "../../utils/firstThenDebounceTime";
@@ -14,7 +14,7 @@ const allPoolsByChainSubscriptions$ = new BehaviorSubject<
 
 export const poolsByChainSubscriptions$ = allPoolsByChainSubscriptions$.pipe(
 	firstThenDebounceTime(100),
-	map((subs) => uniq(subs.map((sub) => sub.chainId)).sort()),
+	map((subs) => [...new Set(subs.map((sub) => sub.chainId))].sort()),
 	distinctUntilChanged<ChainIdAssetHub[]>(isEqual),
 );
 
