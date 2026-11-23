@@ -258,9 +258,6 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.14.26
         version: 3.14.26(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@w3f/polkadot-icons':
-        specifier: ^1.0.0
-        version: 1.0.0(react@19.3.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -2587,11 +2584,6 @@ packages:
 
   '@vitest/spy@5.1.1':
     resolution: {integrity: sha512-6K8C6alQG1/Yc8/ZI22iJS7JEsxPdVzqtqDq+/xM4Z0mGVykemMVjLhqMy/q6/IHYG3kKD8hKSwRen/ZdyI9vQ==}
-
-  '@w3f/polkadot-icons@1.0.0':
-    resolution: {integrity: sha512-luwE3azUgv4wzUFsBMXQG+bIAsG6ozpBtD1fBPmkHRA7RIJQ7kxedBioIuAzw8EoNjyjUt8O+AHeKacaN5UJDg==}
-    peerDependencies:
-      react: '>=17.0.0'
 
   '@wallet-standard/base@1.1.1':
     resolution: {integrity: sha512-gggIHTtxicF9XFMQ12DkfS6NAG92Ak795JeSA7f2whAQ6Y3AkMWWuCMxSZXG2NIPN42kEaZSNVjqMsJRaJRxMQ==}
@@ -6749,10 +6741,6 @@ snapshots:
       vite: 8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
 
   '@vitest/spy@5.1.1': {}
-
-  '@w3f/polkadot-icons@1.0.0(react@19.3.1)':
-    dependencies:
-      react: 19.3.1
 
   '@wallet-standard/base@1.1.1': {}
 
