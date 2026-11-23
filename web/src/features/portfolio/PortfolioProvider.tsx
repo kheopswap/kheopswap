@@ -1,4 +1,4 @@
-import { partition, values } from "lodash-es";
+import { partition } from "es-toolkit";
 import { useMemo, useRef } from "react";
 import { useWallets } from "../../common/kheopskit";
 import { useAllTokens } from "../../hooks/useAllTokens";
@@ -26,7 +26,7 @@ export const usePortfolioProvider = () => {
 		types: PORTFOLIO_TOKEN_TYPES,
 	});
 
-	const tokens = useMemo(() => values(tokensMap), [tokensMap]);
+	const tokens = useMemo(() => Object.values(tokensMap), [tokensMap]);
 
 	const { bridgedAssetHub } = useRelayChains();
 	const [relayTokens, bridgedHubTokens] = useMemo(

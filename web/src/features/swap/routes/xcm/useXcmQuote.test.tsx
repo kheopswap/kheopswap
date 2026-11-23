@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import { isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import type { FC, PropsWithChildren } from "react";
 import {
 	afterEach,

@@ -1,4 +1,3 @@
-import { values } from "lodash-es";
 import { map } from "rxjs";
 import type { ChainId } from "../registry/chains/types";
 import type { Token } from "../registry/tokens/types";
@@ -19,7 +18,7 @@ const useTokensByChains = bindSerialized(
 	({ chainIds }: UseTokensByChainIdsProps) =>
 		getTokensByChains$(chainIds).pipe(
 			map((tokensByChains): UseTokensByChainIdsResult => {
-				const states = values(tokensByChains).filter(
+				const states = Object.values(tokensByChains).filter(
 					(v: unknown): v is ChainTokensState => !!v,
 				);
 				return {

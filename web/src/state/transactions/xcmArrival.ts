@@ -1,4 +1,4 @@
-import { isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import type { HexString } from "polkadot-api";
 import {
 	BehaviorSubject,

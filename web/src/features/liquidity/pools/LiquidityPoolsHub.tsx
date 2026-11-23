@@ -1,4 +1,4 @@
-import { keyBy } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import { type FC, useId, useMemo, useRef } from "react";
 import { Link } from "react-router";
 import { CountUpDecimals } from "../../../components/CountUpDecimals";
@@ -254,7 +254,10 @@ export const LiquidityPoolsHub: FC<{
 		[pools],
 	);
 
-	const poolsById = useMemo(() => keyBy(pools, "poolAssetId"), [pools]);
+	const poolsById = useMemo(
+		() => keyBy(pools, (item) => item.poolAssetId),
+		[pools],
+	);
 
 	const totalTvl = useMemo(
 		() => pools.reduce((acc, pool) => acc + (pool.valuation ?? 0n), 0n),

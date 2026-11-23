@@ -1,4 +1,4 @@
-import { isEqual, uniq, values } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
 import { firstThenDebounceTime } from "../../utils/firstThenDebounceTime";
 import type { BalanceId } from "./types";
@@ -13,7 +13,7 @@ const allBalanceSubscriptions$ = new BehaviorSubject<
 // Unique active subscriptions (1 per token+address)
 export const balanceSubscriptions$ = allBalanceSubscriptions$.pipe(
 	firstThenDebounceTime(100),
-	map((subs) => uniq(values(subs)).sort() as BalanceId[]),
+	map((subs) => [...new Set(Object.values(subs))].sort() as BalanceId[]),
 	distinctUntilChanged<BalanceId[]>(isEqual),
 );
 

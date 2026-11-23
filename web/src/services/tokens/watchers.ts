@@ -1,4 +1,3 @@
-import { isNumber } from "lodash-es";
 import { distinctUntilChanged, filter } from "rxjs";
 import {
 	STORAGE_QUERY_TIMEOUT,
@@ -30,6 +29,7 @@ import {
 	TOKENS_OVERRIDES_MAP,
 } from "../../registry/tokens/tokens";
 import type { Token } from "../../registry/tokens/types";
+import { isNumber } from "../../utils/isNumber";
 import { logger } from "../../utils/logger";
 import { safeStringify } from "../../utils/serialization";
 import { sleep } from "../../utils/sleep";

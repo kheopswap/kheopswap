@@ -1,4 +1,4 @@
-import { isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import { distinctUntilChanged, map, tap } from "rxjs";
 import type { ChainIdAssetHub } from "../../registry/chains/types";
 import type { LoadingStatus } from "../common";

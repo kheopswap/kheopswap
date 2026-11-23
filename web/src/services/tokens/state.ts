@@ -1,4 +1,4 @@
-import { fromPairs, groupBy, keyBy, toPairs, values } from "lodash-es";
+import { groupBy, keyBy } from "es-toolkit";
 import { combineLatest, map, shareReplay } from "rxjs";
 import type { ChainId } from "../../registry/chains/types";
 import type { Token } from "../../registry/tokens/types";
@@ -21,14 +21,20 @@ const combineStateByChainId = (
 ): Record<string, ChainTokensState> => {
 	const stop = logger.cumulativeTimer("tokens.combineStateByChainId");
 	try {
-		const tokensByChain = groupBy(values(tokens).sort(sortTokens), "chainId");
+		const tokensByChain = groupBy(
+			Object.values(tokens).sort(sortTokens),
+			(item) => item.chainId,
+		);
 
-		return fromPairs(
-			toPairs(statusByChain).map(([chainId, status]) => [
+		return Object.fromEntries(
+			Object.entries(statusByChain).map(([chainId, status]) => [
 				chainId,
 				{
 					status,
-					tokens: keyBy(tokensByChain[chainId as ChainId] ?? [], "id"),
+					tokens: keyBy(
+						tokensByChain[chainId as ChainId] ?? [],
+						(item) => item.id,
+					),
 				},
 			]),
 		);

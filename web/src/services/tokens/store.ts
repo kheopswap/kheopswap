@@ -1,4 +1,4 @@
-import { entries, isEqual, keyBy, values } from "lodash-es";
+import { isEqual, keyBy } from "es-toolkit";
 import {
 	BehaviorSubject,
 	debounceTime,
@@ -38,26 +38,26 @@ const loadTokens = (): Record<string, StorageToken> => {
 				? safeParse(strTokens)
 				: KNOWN_TOKENS_LIST;
 
-		const tokensMap = keyBy(tokensList, "id");
+		const tokensMap = keyBy(tokensList, (item) => item.id);
 
 		// override with our static info
-		for (const [tokenId, token] of entries(KNOWN_TOKENS_MAP))
+		for (const [tokenId, token] of Object.entries(KNOWN_TOKENS_MAP))
 			tokensMap[tokenId] = Object.assign(tokensMap[tokenId] ?? {}, token);
 
-		for (const [tokenId, overrides] of entries(TOKENS_OVERRIDES_MAP))
+		for (const [tokenId, overrides] of Object.entries(TOKENS_OVERRIDES_MAP))
 			if (tokensMap[tokenId])
 				tokensMap[tokenId] = Object.assign(tokensMap[tokenId], overrides);
 
 		return tokensMap;
 	} catch (err) {
 		console.error("Failed to load tokens", err);
-		return keyBy(KNOWN_TOKENS_LIST, "id");
+		return keyBy(KNOWN_TOKENS_LIST, (item) => item.id);
 	}
 };
 
 const saveTokens = (tokens: Record<string, StorageToken>) => {
 	try {
-		localStorage.setItem(STORAGE_KEY, safeStringify(values(tokens)));
+		localStorage.setItem(STORAGE_KEY, safeStringify(Object.values(tokens)));
 	} catch (err) {
 		console.error("Failed to save tokens", err);
 	}
@@ -83,7 +83,7 @@ export const updateTokensStore = (
 	// Build a map of new tokens for quick lookup
 	const newTokensMap = keyBy(
 		tokens.filter((t) => t.id && t.type === type && t.chainId === chainId),
-		"id",
+		(item) => item.id,
 	);
 
 	// Track if anything changed
@@ -91,7 +91,7 @@ export const updateTokensStore = (
 	const newValue: Record<string, StorageToken> = {};
 
 	// Keep tokens from other chains/types, check for removals
-	for (const [id, token] of entries(current)) {
+	for (const [id, token] of Object.entries(current)) {
 		if (token.chainId === chainId && token.type === type) {
 			// This token is in the update scope - only keep if in new tokens
 			if (newTokensMap[id]) {
@@ -107,7 +107,7 @@ export const updateTokensStore = (
 	}
 
 	// Add new tokens that weren't in current
-	for (const [id, token] of entries(newTokensMap)) {
+	for (const [id, token] of Object.entries(newTokensMap)) {
 		if (!current[id]) {
 			newValue[id] = token;
 			hasChanges = true;
@@ -146,7 +146,7 @@ const consolidateTokens = (
 	const availableChainIds = getAvailableChainIds();
 
 	const tokensMap: Record<string, Token> = {};
-	for (const [id, token] of entries(storageTokensMap)) {
+	for (const [id, token] of Object.entries(storageTokensMap)) {
 		if (availableChainIds.includes(token.chainId)) {
 			tokensMap[id] = token as Token;
 		}

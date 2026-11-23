@@ -1,5 +1,5 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import { keyBy } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import { type FC, useCallback, useMemo } from "react";
 import { FormSummaryRow } from "../../components/FormSummary";
 import { Shimmer } from "../../components/Shimmer";
@@ -40,7 +40,10 @@ export const TransactionFeeSummaryRow: FC = () => {
 		[close, onFeeTokenChange],
 	);
 
-	const feeTokensMap = useMemo(() => keyBy(feeTokens, "id"), [feeTokens]);
+	const feeTokensMap = useMemo(
+		() => keyBy(feeTokens ?? [], (item) => item.id),
+		[feeTokens],
+	);
 
 	const accounts = useMemo(
 		() => [account?.address].filter(Boolean) as string[],

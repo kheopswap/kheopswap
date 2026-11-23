@@ -1,4 +1,3 @@
-import { values } from "lodash-es";
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -115,7 +114,7 @@ export const getTokenPrices$ = (types?: TokenType[]) => {
 		() => {
 			return getAllTokens$(types).pipe(
 				switchMap(({ data: dicTokens, isLoading: isLoadingTokens }) => {
-					const tokens = values(dicTokens);
+					const tokens = Object.values(dicTokens);
 					return combineLatest(tokens.map(getTokenPrice$)).pipe(
 						throttleTime(300, undefined, {
 							leading: true,

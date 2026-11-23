@@ -1,4 +1,4 @@
-import { keyBy } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import {
 	type FormEventHandler,
 	useCallback,
@@ -35,7 +35,11 @@ export const useLiquidityEditorInputs = () => {
 	const { feeEstimate, feeToken, insufficientBalances } = useTransaction();
 
 	const tokens = useMemo(
-		() => keyBy([nativeToken, assetToken].filter(Boolean) as Token[], "id"),
+		() =>
+			keyBy(
+				[nativeToken, assetToken].filter(Boolean) as Token[],
+				(item) => item.id,
+			),
 		[assetToken, nativeToken],
 	);
 

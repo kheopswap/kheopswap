@@ -1,5 +1,5 @@
 import { bind } from "@react-rxjs/core";
-import { isEqual } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import {
 	distinctUntilChanged,
 	distinctUntilKeyChanged,

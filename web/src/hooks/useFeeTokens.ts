@@ -1,4 +1,4 @@
-import { isEqual, values } from "lodash-es";
+import { isEqual } from "es-toolkit";
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -81,7 +81,7 @@ const getFeeTokens$ = (
 
 			const sufficientTokens$ = getTokensByChain$(chainId).pipe(
 				map((tokensByChainState) =>
-					values(tokensByChainState.tokens ?? {}).filter(
+					Object.values(tokensByChainState.tokens ?? {}).filter(
 						(token) => token.isSufficient,
 					),
 				),

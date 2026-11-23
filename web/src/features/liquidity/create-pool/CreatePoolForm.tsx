@@ -1,4 +1,4 @@
-import { keyBy } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import {
 	type FC,
 	type FormEventHandler,
@@ -171,7 +171,10 @@ const AddLiquidityEditor: FC = () => {
 		);
 	}, [liquidityToAdd, insufficientBalances, token1, token2]);
 
-	const nativeTokens = useMemo(() => keyBy([token1], "id"), [token1]);
+	const nativeTokens = useMemo(
+		() => keyBy([token1], (item) => item.id),
+		[token1],
+	);
 
 	const accounts = useMemo(
 		() => [sender].filter(Boolean) as string[],
