@@ -1,11 +1,12 @@
-import urlJoin from "url-join";
-
 export const getBlockExplorerUrl = (
 	blockExplorerUrl: string | null | undefined,
-	address: string,
-	type: "address" | "account",
+	id: string,
+	type: "address" | "account" | "extrinsic" | "tx",
 ) => {
-	return blockExplorerUrl && address && type
-		? urlJoin(blockExplorerUrl, type, address)
-		: null;
+	if (!blockExplorerUrl || !id) return null;
+
+	const baseUrl = blockExplorerUrl.endsWith("/")
+		? blockExplorerUrl
+		: `${blockExplorerUrl}/`;
+	return new URL(`${type}/${id}`, baseUrl).href;
 };

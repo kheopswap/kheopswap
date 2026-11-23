@@ -45,7 +45,6 @@
 		"react-toastify": "^11.2.0",
 		"rxjs": "^7.8.2",
 		"tailwind-merge": "^3.7.0",
-		"url-join": "^6.0.0",
 		"viem": "^2.58.1",
 		"yaml": "^2.9.1"
 	},
