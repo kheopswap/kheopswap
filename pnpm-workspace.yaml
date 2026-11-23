@@ -22,5 +22,3 @@ overrides:
   # bundle, but under zod 4 appkit-wallet's frame schema rejects messages it accepted under zod 3: revisit
   # before enabling AppKit's email or social login.
   "zod@<4.6.6": "^4.6.6"
-  # NOTE: elliptic GHSA-848j-6mx2-7j84 (low, dev-only crypto-browserify polyfill) covers every version
-  # (<=6.6.1, still the latest on 2026-11-23) and has no patched release.
