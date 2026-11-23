@@ -12,13 +12,13 @@
       "wsUrl": "wss://rpc-asset-hub-kusama.luckyfriday.io",
       "metadata": ".papi/scale/kah.scale",
       "genesis": "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a",
-      "codeHash": "0xf760c1f229bfa2d985d193df40fd5124df5a6a59b947292f7da2f1f9199684ba"
+      "codeHash": "0x47a96e37c8d822ee6bac40abd4a1b59b07acda0a1b07128e5e217971734ae7e8"
     },
     "wah": {
       "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
       "metadata": ".papi/scale/wah.scale",
       "genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
-      "codeHash": "0x31e3e8868acfe04371e09ffee66be05749be3a96d6887becab235d88737a323a"
+      "codeHash": "0xcafffa197d9236b042aeb2cfe56852d5e4ec6575652dbca9c84cf2e2aa2c90a3"
     },
     "pasah": {
       "wsUrl": "wss://sys.turboflakes.io/asset-hub-paseo",
@@ -42,7 +42,7 @@
       "wsUrl": "wss://kusama-people-rpc.polkadot.io",
       "metadata": ".papi/scale/kpeople.scale",
       "genesis": "0xc1af4cb4eb3918e5db15086c0cc5ec17fb334f728b7c65dd44bfe1e174ff8b3f",
-      "codeHash": "0x42a2b929bfe5226747db3c7da9820d8e7f1afd22c1f1dbb176ff6da2934fb793"
+      "codeHash": "0xdb71c74579b7edff0c4550132e0c66cf34fcddb5514d2227256cb80a6de04052"
     },
     "wpeople": {
       "wsUrl": "wss://westend-people-rpc.polkadot.io",
