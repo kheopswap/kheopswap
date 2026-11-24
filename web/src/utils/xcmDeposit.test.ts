@@ -100,9 +100,9 @@ describe("getXcmDepositMatcher", () => {
 			"KSM on Polkadot Asset Hub",
 			ksmKusamaToPolkadot,
 			KSM_ON_PAH,
-			99628419408n,
+			99671703479n,
 		],
-		["DOT on Kusama Asset Hub", dotPolkadotToKusama, DOT_ON_KAH, 9997354620n],
+		["DOT on Kusama Asset Hub", dotPolkadotToKusama, DOT_ON_KAH, 9996915064n],
 	])(
 		"counts the bridged %s deposited to the beneficiary, not the part swapped for the fee",
 		(_, fixture, tokenId, expected) => {

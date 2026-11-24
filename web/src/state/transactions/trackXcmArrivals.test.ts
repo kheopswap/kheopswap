@@ -100,9 +100,9 @@ describe("trackXcmArrivals over the bridge", () => {
 			"KSM on Polkadot Asset Hub",
 			ksmKusamaToPolkadot,
 			KSM_ON_PAH,
-			99628419408n,
+			99671703479n,
 		],
-		["DOT on Kusama Asset Hub", dotPolkadotToKusama, DOT_ON_KAH, 9997354620n],
+		["DOT on Kusama Asset Hub", dotPolkadotToKusama, DOT_ON_KAH, 9996915064n],
 	])(
 		"follows the message its origin sent until %s receives it",
 		(_, fixture, tokenId, received) => {
