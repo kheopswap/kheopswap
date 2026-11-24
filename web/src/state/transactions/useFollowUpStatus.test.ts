@@ -25,4 +25,18 @@ describe("useFollowUpStatus", () => {
 		});
 		expect(result.current.message).not.toMatch(/includ/i);
 	});
+
+	it.each([
+		["polkadot", "https://assethub-paseo.subscan.io/extrinsic/0x01"],
+		["ethereum", "https://blockscout-testnet.polkadot.io/tx/0x01"],
+	])("links a %s account's transaction to its explorer", (platform, url) => {
+		const { result } = renderHook(() =>
+			useFollowUpStatus({
+				...followUp,
+				account: { ...followUp.account, platform },
+			} as FollowUpData),
+		);
+
+		expect(result.current.blockExplorerUrl).toBe(url);
+	});
 });

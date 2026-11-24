@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import urlJoin from "url-join";
 import type { FollowUpData } from "../../components/FollowUpModal";
 import { getChainById } from "../../registry/chains/chains";
+import { getBlockExplorerUrl } from "../../utils/getBlockExplorerUrl";
 import {
 	getErrorMessageFromTxEvents,
 	type TxEvents,
@@ -18,8 +18,8 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 		// EVM transaction hash that only the EVM explorer can resolve.
 		const [baseUrl, path] =
 			followUp.account.platform === "ethereum"
-				? [chain.evmBlockExplorers?.[0], "tx"]
-				: [chain.blockExplorerUrl, "extrinsic"];
+				? ([chain.evmBlockExplorers?.[0], "tx"] as const)
+				: ([chain.blockExplorerUrl, "extrinsic"] as const);
 		if (!baseUrl) return null;
 
 		for (const event of followUp.txEvents) {
@@ -29,7 +29,7 @@ export const useFollowUpStatus = (followUp: FollowUpData) => {
 				case "inBestBlock":
 				case "notInBestBlock":
 				case "finalized":
-					return urlJoin(baseUrl, path, event.txHash);
+					return getBlockExplorerUrl(baseUrl, event.txHash, path);
 				default:
 					break;
 			}

@@ -297,9 +297,6 @@ importers:
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
-      url-join:
-        specifier: ^6.0.0
-        version: 6.0.0
       viem:
         specifier: ^2.58.1
         version: 2.58.1(typescript@7.0.2)(zod@4.6.7)
@@ -4090,10 +4087,6 @@ packages:
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
-
-  url-join@6.0.0:
-    resolution: {integrity: sha512-GrPbZO5/Il4fCWGbvu9nWsanTvCBOPluHf3lzCA+NlfTyObhpt4T6MufVyRj4HAkh3XARV1OTPGHmJfj6LI/jg==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   use-sync-external-store@1.7.0:
     resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
@@ -8483,8 +8476,6 @@ snapshots:
       browserslist: 4.29.6
       escalade: 3.2.0
       picocolors: 1.1.1
-
-  url-join@6.0.0: {}
 
   use-sync-external-store@1.7.0(react@19.3.1):
     dependencies:
