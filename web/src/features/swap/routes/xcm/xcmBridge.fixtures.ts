@@ -753,7 +753,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 								},
 							},
 							who: "13R1jCReSA88A45FhMyGTUKtQF3HiSXEvV5Rz1CBcu9eNFVR",
-							amount: 328296521n,
+							amount: 328422400n,
 						},
 					},
 				},
@@ -762,7 +762,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 328296521n,
+							amount_in: 328422400n,
 							amount_out: 11996874n,
 							path: [
 								[
@@ -779,7 +779,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 											},
 										},
 									},
-									328296521n,
+									328422400n,
 								],
 								[
 									{
@@ -814,7 +814,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 								},
 							},
 							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
-							amount: 99671703479n,
+							amount: 99671577600n,
 						},
 					},
 				},
