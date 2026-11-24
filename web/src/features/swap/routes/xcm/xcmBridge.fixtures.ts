@@ -696,7 +696,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 				type: "Complete",
 				value: {
 					used: {
-						ref_time: 401524000n,
+						ref_time: 403547000n,
 						proof_size: 15856n,
 					},
 				},
@@ -753,7 +753,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 								},
 							},
 							who: "13R1jCReSA88A45FhMyGTUKtQF3HiSXEvV5Rz1CBcu9eNFVR",
-							amount: 371580592n,
+							amount: 328296521n,
 						},
 					},
 				},
@@ -762,7 +762,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 371580592n,
+							amount_in: 328296521n,
 							amount_out: 11996874n,
 							path: [
 								[
@@ -779,7 +779,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 											},
 										},
 									},
-									371580592n,
+									328296521n,
 								],
 								[
 									{
@@ -814,7 +814,7 @@ export const ksmKusamaToPolkadot: BridgeTransferFixture = {
 								},
 							},
 							who: "13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB",
-							amount: 99628419408n,
+							amount: 99671703479n,
 						},
 					},
 				},
@@ -969,7 +969,7 @@ export const ksmPolkadotToKusama: BridgeTransferFixture = {
 								type: "Complete",
 								value: {
 									used: {
-										ref_time: 407325000n,
+										ref_time: 407909000n,
 										proof_size: 3768n,
 									},
 								},
@@ -1636,7 +1636,7 @@ export const dotPolkadotToKusama: BridgeTransferFixture = {
 								type: "Complete",
 								value: {
 									used: {
-										ref_time: 327118000n,
+										ref_time: 326094000n,
 										proof_size: 6208n,
 									},
 								},
@@ -2222,7 +2222,7 @@ export const dotPolkadotToKusama: BridgeTransferFixture = {
 								},
 							},
 							who: "HbJnJy2Jg81pAytZogkz1qCzfyQvgq9VCrLaL5jK79jdtLJ",
-							amount: 2645380n,
+							amount: 3084936n,
 						},
 					},
 				},
@@ -2231,7 +2231,7 @@ export const dotPolkadotToKusama: BridgeTransferFixture = {
 					value: {
 						type: "SwapCreditExecuted",
 						value: {
-							amount_in: 2645380n,
+							amount_in: 3084936n,
 							amount_out: 80837917n,
 							path: [
 								[
@@ -2248,7 +2248,7 @@ export const dotPolkadotToKusama: BridgeTransferFixture = {
 											},
 										},
 									},
-									2645380n,
+									3084936n,
 								],
 								[
 									{
@@ -2283,7 +2283,7 @@ export const dotPolkadotToKusama: BridgeTransferFixture = {
 								},
 							},
 							who: "FBeL7EHTcixza4wwMv4A3TEmL1pVgunDdqYZ2Sbm3uDtFjD",
-							amount: 9997354620n,
+							amount: 9996915064n,
 						},
 					},
 				},
@@ -2940,7 +2940,7 @@ export const dotKusamaToPolkadot: BridgeTransferFixture = {
 				type: "Complete",
 				value: {
 					used: {
-						ref_time: 690838000n,
+						ref_time: 692144000n,
 						proof_size: 12525n,
 					},
 				},

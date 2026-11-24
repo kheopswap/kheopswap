@@ -1016,7 +1016,7 @@ describe("between the Polkadot and Kusama Asset Hubs", () => {
 			ksmKusamaToPolkadot,
 			"native::kah",
 			KSM_ON_PAH,
-			99628419408n,
+			99671703479n,
 		],
 		[
 			"KSM to Kusama",
@@ -1030,7 +1030,7 @@ describe("between the Polkadot and Kusama Asset Hubs", () => {
 			dotPolkadotToKusama,
 			"native::pah",
 			DOT_ON_KAH,
-			9997354620n,
+			9996915064n,
 		],
 		[
 			"DOT to Polkadot",
