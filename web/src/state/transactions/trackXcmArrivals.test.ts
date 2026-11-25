@@ -100,7 +100,7 @@ describe("trackXcmArrivals over the bridge", () => {
 			"KSM on Polkadot Asset Hub",
 			ksmKusamaToPolkadot,
 			KSM_ON_PAH,
-			99671703479n,
+			99671577600n,
 		],
 		["DOT on Kusama Asset Hub", dotPolkadotToKusama, DOT_ON_KAH, 9996915064n],
 	])(
