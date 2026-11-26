@@ -6,11 +6,16 @@ import { cn } from "../utils/cn";
 import { EthereumIdenticon } from "./EthereumIdenticon";
 import { PolkadotIdenticon } from "./PolkadotIdenticon";
 
+const isTalismanAccount = ({ walletId, walletName }: WalletAccount) =>
+	[walletId, walletName].some((walletLabel) =>
+		walletLabel.toLowerCase().includes("talisman"),
+	);
+
 export const AccountIcon: FC<{
 	account: WalletAccount;
 	className?: string;
 }> = ({ account, className }) => {
-	if (account.walletId.includes("talisman")) {
+	if (isTalismanAccount(account)) {
 		return <TalismanOrb seed={account.address} className={className} />;
 	}
 
