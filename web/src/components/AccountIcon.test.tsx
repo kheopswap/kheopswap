@@ -3,6 +3,7 @@ import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { WalletAccount } from "../common/kheopskit";
 import { AccountIcon } from "./AccountIcon";
+import { PolkadotIdenticon } from "./PolkadotIdenticon";
 
 afterEach(cleanup);
 
@@ -45,20 +46,26 @@ describe("AccountIcon", () => {
 		},
 	);
 
-	it("renders a Talisman orb for an account of the Talisman extension", () => {
-		const markup = renderedMarkup(
-			<AccountIcon
-				account={account({
-					platform: "polkadot",
-					address: POLKADOT_ADDRESS,
-					walletId: "polkadot:talisman",
-					walletName: "Talisman",
-				})}
-			/>,
-		);
+	it.each([
+		["polkadot", "polkadot:talisman", POLKADOT_ADDRESS],
+		["ethereum", "ethereum:xyz.talisman", ETHEREUM_ADDRESS],
+	] as const)(
+		"renders a Talisman orb for a %s account of the Talisman extension",
+		(platform, walletId, address) => {
+			const markup = renderedMarkup(
+				<AccountIcon
+					account={account({
+						platform,
+						address,
+						walletId,
+						walletName: "Browser extension",
+					})}
+				/>,
+			);
 
-		expect(markup).toBe(talismanOrbMarkup(POLKADOT_ADDRESS));
-	});
+			expect(markup).toBe(talismanOrbMarkup(address));
+		},
+	);
 
 	it("renders an identicon for an account of another wallet over WalletConnect", () => {
 		const markup = renderedMarkup(
@@ -72,6 +79,10 @@ describe("AccountIcon", () => {
 			/>,
 		);
 
-		expect(markup).not.toBe(talismanOrbMarkup(POLKADOT_ADDRESS));
+		expect(markup).toBe(
+			renderedMarkup(
+				<PolkadotIdenticon address={POLKADOT_ADDRESS} className="size-full" />,
+			),
+		);
 	});
 });
