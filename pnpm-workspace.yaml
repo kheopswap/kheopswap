@@ -4,7 +4,18 @@ packages:
 allowBuilds:
   "@reown/appkit": false
   esbuild: false
-  simple-git-hooks: true
+  simple-git-hooks: false
+
+# refuse to install when the running Node does not satisfy `engines`
+engineStrict: true
+
+# @reown/appkit-utils pins these optional dependencies at 2.27.0, below the ^2.29.0 that
+# @coinbase/cdp-sdk expects, and @x402/svm brings a second @solana/kit. Nothing the app bundles imports them.
+ignoredOptionalDependencies:
+  - "@x402/core"
+  - "@x402/evm"
+  - "@x402/extensions"
+  - "@x402/svm"
 
 # don't install NPM dependencies which were published less than 3 days ago
 # provides some buffer time for the package maintainer / wider community to detect and publicise malicious package versions
@@ -17,8 +28,8 @@ overrides:
   # GHSA-ggr8-5vv4-36mx (high), patched >=8.0.0. write-package, used only by the papi CLI that
   # polkadot-api ships, still declares ^7.1.0.
   "deepmerge-ts@<8.0.0": "^8.0.0"
-  # GHSA-mrhx-c7xc-m3w5 (high), patched >=4.6.6, no 3.x backport. @reown/appkit-wallet pins 3.22.4 and
-  # @coinbase/cdp-sdk (via @reown/appkit) declares ^3.25.76. Their zod schemas are tree-shaken out of the
-  # bundle, but under zod 4 appkit-wallet's frame schema rejects messages it accepted under zod 3: revisit
-  # before enabling AppKit's email or social login.
+  # GHSA-mrhx-c7xc-m3w5 (high), patched >=4.6.6, no 3.x backport. Through @reown/appkit:
+  # @reown/appkit-wallet pins 3.22.4 and @coinbase/cdp-sdk (via @base-org/account) declares ^3.25.76.
+  # Their zod schemas are tree-shaken out of the bundle, but under zod 4 appkit-wallet's frame schema
+  # rejects messages it accepted under zod 3: revisit before enabling AppKit's email or social login.
   "zod@<4.6.6": "^4.6.6"

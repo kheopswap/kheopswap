@@ -7,162 +7,172 @@ importers:
     configDependencies: {}
     packageManagerDependencies:
       pnpm:
-        specifier: 12.22.0
-        version: 12.22.0
+        specifier: 12.23.0
+        version: 12.23.0
 
 packages:
 
-  '@pnpm/exe.android-arm64@12.22.0':
-    resolution: {integrity: sha512-n0kwk3uOtWGaSMJWUuxG8fLefRonw8jR27dhGzMcDz79Um37QKPLEGZAZF37iASbb2yBBQFl4hue6/SfQnmIdA==}
+  '@pnpm/exe.android-arm64@12.23.0':
+    resolution: {integrity: sha512-oqZu9yFInENTRA9BKiOnEqOcpr5dNMDbquxq9zKFKJy0nEC385Vw0e4wlsOAlDh90iX94GND6Fc22FVL2O2SmQ==}
     cpu: [arm64]
     os: [android]
 
-  '@pnpm/exe.android-x64@12.22.0':
-    resolution: {integrity: sha512-1HERYEdvJEjU5p/lyI8g3YNEVdvVz6+omaqI1pKotZB9w92BlSXr0xTqur8X/8GAiE4B/pwZi8+eAi4v+KQVHg==}
+  '@pnpm/exe.android-x64@12.23.0':
+    resolution: {integrity: sha512-fQRjE4Wno8ye0lxhYGmyqdcc6tv+tDGktEmgFzffZ7flp4BG/84VtdXn3i/O4BazgMbNuPdbM75aj7uDZwL7GQ==}
     cpu: [x64]
     os: [android]
 
-  '@pnpm/exe.darwin-arm64@12.22.0':
-    resolution: {integrity: sha512-CU0m1tFFVW2QD2PDVTsdejYGoPzhMq04l/MnwhpCuM2iBXkMXqV52kH24U5A2SYULV4Y/TTYsKL5InKZblVNvw==}
+  '@pnpm/exe.darwin-arm64@12.23.0':
+    resolution: {integrity: sha512-ny5+L92frsfyV3/B3zadYQuU5kBV8o2TXB5WnhBUoJ/9Mz32FVglMr8g1HmUc01yfKkjopZ4rmF1G7vs68JxIg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@pnpm/exe.darwin-x64@12.22.0':
-    resolution: {integrity: sha512-XjVoliuAZjcyQJVymR+n3xmkw3SBME3Sg7wjKBTNbOaTGe3RLIkXt8D9YXOoSnET8gyhQrY8fwThFT+Ki6IVNw==}
+  '@pnpm/exe.darwin-x64@12.23.0':
+    resolution: {integrity: sha512-+MNmpJSAzb9yc80d5l4VbZ/3Teh8xtlacATUyTAx6fELUK0xwmgFi05hqzg1sXLdAPij5gcIp82VvrqY5tzPrQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@pnpm/exe.freebsd-x64@12.22.0':
-    resolution: {integrity: sha512-BefdhvM+nrLXHCRVFmNv5yp4Zhwz29nEP+UPhsvGRRp4YRzgmyxT9r0lVts3Lg0FzcKOtPbM3o0Hyb2y0JF3yw==}
+  '@pnpm/exe.freebsd-x64@12.23.0':
+    resolution: {integrity: sha512-AGfkooje58I9hh4xdSDyZCPLKvjrjuvlkKTK2gsTtj6wfhVTw1jz33wB1XbERt2/0odJdEfgnBPUIdalRnb7Fw==}
     cpu: [x64]
     os: [freebsd]
 
-  '@pnpm/exe.linux-arm64-musl@12.22.0':
-    resolution: {integrity: sha512-72fwiRonMxFAY4Fb611eTaR+8bYwH91SnWCg3aODjhigCMURFe5Pom+TtYM/GMrme2yirGkHbpzU2u0lMMCwTQ==}
+  '@pnpm/exe.linux-arm64-musl@12.23.0':
+    resolution: {integrity: sha512-C09Z3tFnPz7CYiae326dGlJcRUNCBtlJvMc04S9M8YKACebHHyamxCItLAisvGdHVf1BawtU9shV0FngjYxMwA==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-arm64@12.22.0':
-    resolution: {integrity: sha512-1MZ3GfFCFckquAJP6WZ985Lrd5MP5YNA7vPZH79W+1QVzwl55fVMdsAOczdGnFeU4jqMwERnk129/1g9zYxhDw==}
+  '@pnpm/exe.linux-arm64@12.23.0':
+    resolution: {integrity: sha512-RLby8T0CIWAbljrbmjaX6S3PYhMHnLbUp+IDcOmZIY1/+wy8hJoQpjMPZlV4VJIGl8lZKUXtxJcLJ2XZ1z2SVw==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-ppc64@12.22.0':
-    resolution: {integrity: sha512-JOmNBnncDB+9pa8ddtIp9qrLrKwvgzV92xWEFAXSBrDcPIIAdD7imtk3kZnoiApdRzPbQHHj6JJKKVmOUXN0Bw==}
+  '@pnpm/exe.linux-loong64@12.23.0':
+    resolution: {integrity: sha512-XytxNoKD9/PcugxRHmBptRNDxUYwBtQZwBauJ3lKXFJ3sqHPZSjjFxIMX4HTWQn7FqCVnQlF+tbewjUnvQz0dQ==}
+    cpu: [loong64]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.linux-ppc64@12.23.0':
+    resolution: {integrity: sha512-1h9+mBpdmlFA5LW6fAfd5UnLgHakNkEsS1R67mEXY1J6WLLnZcWFJs7Cbde0BD034CRTUa99MaILAuSs2ERf7Q==}
     cpu: [ppc64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-riscv64@12.22.0':
-    resolution: {integrity: sha512-4oJ2VAuzpEnySBxZ9uz9dwIZYqOcgJ7FWIFdPDf9QbkYo8NbskZ2ySgHwlDVnvQYGhTM45kFRDwjfhKYZJJ9PQ==}
+  '@pnpm/exe.linux-riscv64@12.23.0':
+    resolution: {integrity: sha512-SlPz2UxUshIxgyBRKT0PHncYr2pIoFOxf6WR68HCkhGmASGljYlYYwRVfefgoIPM603x4Fcge9/B1Z3aIq1bSQ==}
     cpu: [riscv64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-s390x@12.22.0':
-    resolution: {integrity: sha512-wLbmg1e+9qAUbqZ29/BUvAQwiZtvgzKg3kjDIN4tkxrCATnneM2G0agFpD9yLHD3FT5J8bUB8RWSur5vqm4Vnw==}
+  '@pnpm/exe.linux-s390x@12.23.0':
+    resolution: {integrity: sha512-Hk8jKY0i9sjyKPJFYC71lu7Mq5ahb5sWT2zCqNxzzBCrivvCqv5GVfZurLETC5TsSusE9TRWFpynLgG+iaXmSA==}
     cpu: [s390x]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-x64-musl@12.22.0':
-    resolution: {integrity: sha512-ODMJgTVHvs/WOqQKE9Am5u7RztsNjXZpkn73z9z4SsU7Dtrr/3IQkjvsF1MGM9hbhMdGwl2BHAW91eCCipIsHQ==}
+  '@pnpm/exe.linux-x64-musl@12.23.0':
+    resolution: {integrity: sha512-7+9bD4LBQ5r+7nLnIhDgMnvMm7a7cfc28NogU3NY1sM0+0Jz7K+IwxZb4BJDY/AN1s3F26TgZ3az/bjeCshmXA==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-x64@12.22.0':
-    resolution: {integrity: sha512-iBAZAYCYoow6g0aObKmprKkIBGO72mK4KFfqIrY7jIdHRkAbN67tcN0zgaPE39UAEdMcrkLhLwEml+VMxf8h8Q==}
+  '@pnpm/exe.linux-x64@12.23.0':
+    resolution: {integrity: sha512-vu/N1nUJxLA0IIumbxL/rR6leGA+++SQY0XL+5KPJ1O2kyvzJoLQYL1ibLGO7TRqsZ90wclboEdhIIWvr3Qsig==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.netbsd-x64@12.22.0':
-    resolution: {integrity: sha512-5y9seaGcEL2OH5p9PG1cZRnSQKENvzK8hTsTjkFxUxXM84OCDvSlaSLr4ABrjrxWKlo4k8bjnmW7NEwznlowGA==}
+  '@pnpm/exe.netbsd-x64@12.23.0':
+    resolution: {integrity: sha512-c85UPtAJfPR5+ghXS8UGRQlgxwqvz2PFaPaEzIVwUdBU+5DB4X2iuMAMlMXWS6hJ/OjqhKM6tpwyEc4Kkz40Fg==}
     cpu: [x64]
     os: [netbsd]
 
-  '@pnpm/exe.win32-arm64@12.22.0':
-    resolution: {integrity: sha512-eMJWsyECSWxhGDQwPokhES8dJX0dsu7E0tUfhxAaUnFxX7oBKKNS7kBY9yY75sNq4CmMNLjhOtBwrVjd3bQ1Hg==}
+  '@pnpm/exe.win32-arm64@12.23.0':
+    resolution: {integrity: sha512-lx0B8HPaUEG/ovIC0PmA6HhMhXh6ud0pAWVTDNxZvAfAzuGm0RM78SCT/oBY80lbJnwA9al4sTUroqozZK9hVA==}
     cpu: [arm64]
     os: [win32]
 
-  '@pnpm/exe.win32-x64@12.22.0':
-    resolution: {integrity: sha512-d0D0GIiDkdiUiENlz3sMOR3arSsApaXtBZl2+rDwbwtQJ5IIBopf4KVTSZDPr09yl2NUVglCS5roveGKpYCWOg==}
+  '@pnpm/exe.win32-x64@12.23.0':
+    resolution: {integrity: sha512-OnbBaQWQcw31m5APFNKcM8kdmM6H7k8MoaOnA2m1LsWAHX7AZKB5cdJfNwhHGBfkURcwWk1bnMXBdllujMiCFw==}
     cpu: [x64]
     os: [win32]
 
-  pnpm@12.22.0:
-    resolution: {integrity: sha512-iUlAo9mlffpv03OZD7TkHgnC8tdtmC7R11J105Jn+Yj7Ti1AkAy+mSHGjZfGeqGhCW0nZjPbJI97NJJ6yd23pA==}
+  pnpm@12.23.0:
+    resolution: {integrity: sha512-AtqU/68TP0YHQyKv5VL5DUC19xriWa77zNrMUIWx1hfpjWXgEx9XSLm2dEWXjuUFXX1ZpHPx7vDVBIVP781ZdQ==}
     engines: {node: '>=18'}
     hasBin: true
 
 snapshots:
 
-  '@pnpm/exe.android-arm64@12.22.0':
+  '@pnpm/exe.android-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.android-x64@12.22.0':
+  '@pnpm/exe.android-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.darwin-arm64@12.22.0':
+  '@pnpm/exe.darwin-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.darwin-x64@12.22.0':
+  '@pnpm/exe.darwin-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.freebsd-x64@12.22.0':
+  '@pnpm/exe.freebsd-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-arm64-musl@12.22.0':
+  '@pnpm/exe.linux-arm64-musl@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-arm64@12.22.0':
+  '@pnpm/exe.linux-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-ppc64@12.22.0':
+  '@pnpm/exe.linux-loong64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-riscv64@12.22.0':
+  '@pnpm/exe.linux-ppc64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-s390x@12.22.0':
+  '@pnpm/exe.linux-riscv64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-x64-musl@12.22.0':
+  '@pnpm/exe.linux-s390x@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-x64@12.22.0':
+  '@pnpm/exe.linux-x64-musl@12.23.0':
     optional: true
 
-  '@pnpm/exe.netbsd-x64@12.22.0':
+  '@pnpm/exe.linux-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.win32-arm64@12.22.0':
+  '@pnpm/exe.netbsd-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.win32-x64@12.22.0':
+  '@pnpm/exe.win32-arm64@12.23.0':
     optional: true
 
-  pnpm@12.22.0:
+  '@pnpm/exe.win32-x64@12.23.0':
+    optional: true
+
+  pnpm@12.23.0:
     optionalDependencies:
-      '@pnpm/exe.android-arm64': 12.22.0
-      '@pnpm/exe.android-x64': 12.22.0
-      '@pnpm/exe.darwin-arm64': 12.22.0
-      '@pnpm/exe.darwin-x64': 12.22.0
-      '@pnpm/exe.freebsd-x64': 12.22.0
-      '@pnpm/exe.linux-arm64': 12.22.0
-      '@pnpm/exe.linux-arm64-musl': 12.22.0
-      '@pnpm/exe.linux-ppc64': 12.22.0
-      '@pnpm/exe.linux-riscv64': 12.22.0
-      '@pnpm/exe.linux-s390x': 12.22.0
-      '@pnpm/exe.linux-x64': 12.22.0
-      '@pnpm/exe.linux-x64-musl': 12.22.0
-      '@pnpm/exe.netbsd-x64': 12.22.0
-      '@pnpm/exe.win32-arm64': 12.22.0
-      '@pnpm/exe.win32-x64': 12.22.0
+      '@pnpm/exe.android-arm64': 12.23.0
+      '@pnpm/exe.android-x64': 12.23.0
+      '@pnpm/exe.darwin-arm64': 12.23.0
+      '@pnpm/exe.darwin-x64': 12.23.0
+      '@pnpm/exe.freebsd-x64': 12.23.0
+      '@pnpm/exe.linux-arm64': 12.23.0
+      '@pnpm/exe.linux-arm64-musl': 12.23.0
+      '@pnpm/exe.linux-loong64': 12.23.0
+      '@pnpm/exe.linux-ppc64': 12.23.0
+      '@pnpm/exe.linux-riscv64': 12.23.0
+      '@pnpm/exe.linux-s390x': 12.23.0
+      '@pnpm/exe.linux-x64': 12.23.0
+      '@pnpm/exe.linux-x64-musl': 12.23.0
+      '@pnpm/exe.netbsd-x64': 12.23.0
+      '@pnpm/exe.win32-arm64': 12.23.0
+      '@pnpm/exe.win32-x64': 12.23.0
 
 ---
 lockfileVersion: '9.0'
@@ -187,8 +197,8 @@ importers:
         specifier: ^2.6.8
         version: 2.6.8
       knip:
-        specifier: ^6.46.1
-        version: 6.46.1
+        specifier: ^6.48.0
+        version: 6.48.0
       polkadot-api:
         specifier: 3.3.0
         version: 3.3.0(esbuild@0.28.2)(rxjs@7.8.2)
@@ -214,11 +224,11 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(react@19.3.1)
       '@kheopskit/core':
-        specifier: 6.0.2
-        version: 6.0.2(@reown/appkit@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.1(typescript@7.0.2)(zod@4.6.7))
+        specifier: 6.0.4
+        version: 6.0.4(@reown/appkit@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.4(typescript@7.0.2)(zod@4.6.7))
       '@kheopskit/react':
-        specifier: 6.0.2
-        version: 6.0.2(@kheopskit/core@6.0.2(@reown/appkit@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.1(typescript@7.0.2)(zod@4.6.7)))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)
+        specifier: 6.0.4
+        version: 6.0.4(@kheopskit/core@6.0.4(@reown/appkit@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.4(typescript@7.0.2)(zod@4.6.7)))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)
       '@maskito/core':
         specifier: ^5.6.1
         version: 5.6.1
@@ -244,8 +254,8 @@ importers:
         specifier: ^0.10.8
         version: 0.10.8(react@19.3.1)(rxjs@7.8.2)
       '@reown/appkit':
-        specifier: ^1.8.24
-        version: 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
+        specifier: ^2.0.0
+        version: 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
       '@substrate/connect':
         specifier: ^2.1.8
         version: 2.1.8
@@ -253,11 +263,11 @@ importers:
         specifier: 1.0.4
         version: 1.0.4(react@19.3.1)
       '@tanstack/react-query':
-        specifier: ^5.108.1
-        version: 5.108.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.108.4
+        version: 5.108.4(@types/react@19.3.0)(react@19.3.1)
       '@tanstack/react-virtual':
-        specifier: ^3.14.26
-        version: 3.14.26(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: ^3.14.28
+        version: 3.14.28(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -295,11 +305,11 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
       tailwind-merge:
-        specifier: ^3.7.0
-        version: 3.7.0
+        specifier: ^3.7.1
+        version: 3.7.1
       viem:
-        specifier: ^2.58.1
-        version: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+        specifier: ^2.58.4
+        version: 2.58.4(typescript@7.0.2)(zod@4.6.7)
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
@@ -960,8 +970,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kheopskit/core@6.0.2':
-    resolution: {integrity: sha512-TFDEex/I28Nql0ryz6a9FUT4Vu78NxlFafiVELcsQACm0hl5EUJpGPJ+T4hAcqikbdKFtrPc1TMtBCmaHCaCXw==}
+  '@kheopskit/core@6.0.4':
+    resolution: {integrity: sha512-wYNKBIe9U8azVcNPa9E8iLeEPOIE7zUifw3HfmvdBP7+7A6WhQnH0AppbSckTP+osfTfvR6skBbVuBvN0uievQ==}
     peerDependencies:
       '@reown/appkit': '>=1.7.0'
       '@solana/kit': '>=6.0.0'
@@ -987,10 +997,10 @@ packages:
       viem:
         optional: true
 
-  '@kheopskit/react@6.0.2':
-    resolution: {integrity: sha512-X+hpNzMx1SauTL8mnr8XzYQO7BR26qrVnPvafRm//r7A+h9/YvTjIKvrJFbakaRU1CEV7X4D479Tfn2pSLMpJw==}
+  '@kheopskit/react@6.0.4':
+    resolution: {integrity: sha512-OGcrGncAzSOpMSLhZk5fQJ/uYytuI/eGKk+dGCPFHulhmCXjKvuplad3Lj9A7CJc6YaIUA5eGmP0J3KSI3wkaQ==}
     peerDependencies:
-      '@kheopskit/core': ^6.0.2
+      '@kheopskit/core': ^6.0.4
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
       rxjs: '>=7.0.0'
@@ -1411,34 +1421,34 @@ packages:
   '@remix-run/route-pattern@0.22.1':
     resolution: {integrity: sha512-czdGJWh09Lapvcqt7Vb09KlrU2PhRJ8xQaI+AItTuD9aDJ5MAgxnS38lnys6Ll+6RJEqPiaUqTwIQhVLwFvv+w==}
 
-  '@reown/appkit-common@1.8.24':
-    resolution: {integrity: sha512-BoAGwKwGm4WJ4nkOPk4OsIVGf9NmdINbk5QaCo50j6QJIaIAcL7GVnsV322NBiSuBxobmwbZ3lIezsZCd3G45A==}
+  '@reown/appkit-common@2.0.0':
+    resolution: {integrity: sha512-U9BeSka8bSwRmmfbiIvBqAW32Gv1TUb0+v6Oy9Qq98DTlFmfrqV5dxX2YYQA8s7tOytRjlbUws/N57ClRw4apQ==}
 
-  '@reown/appkit-controllers@1.8.24':
-    resolution: {integrity: sha512-ZEB17sTYfNSMGO5lkWWGn4Q53N0tOSFAqHZt4f5Sxj8certjFXNAcKNjf0Z+bxNgU4Pjv3tisZ+6S4ShOxe6Zw==}
+  '@reown/appkit-controllers@2.0.0':
+    resolution: {integrity: sha512-a7pDgctOH/pYLHG1YxOMzhHfaXXt7ezDs2lpTi4YiIAJmaoyl6LJQCf2y2ZUsJHpfVGiMGlnALabj+5p4zBtSA==}
 
-  '@reown/appkit-pay@1.8.24':
-    resolution: {integrity: sha512-/djGjg2xfSLDxI9Bk0DGxplgzg9npFCa5bY+OUTXaSCBPDNFKMBD8e/EAq+UL43fv/wfJewuK0F4FiLnlVDR8w==}
+  '@reown/appkit-pay@2.0.0':
+    resolution: {integrity: sha512-3xo+RPT6I5mm/hX/rUcpD2x5szUDHFTwjMOdFTH/Y0dRqRviQ/sBefW74AxYd6K9x2l6sCQX6tO+Hij/Y+2lVA==}
 
-  '@reown/appkit-polyfills@1.8.24':
-    resolution: {integrity: sha512-HQr6p5lvx73Q+NHSNQpw9IHuxkpT9ri+z5Hpa/W3hrFsA+Z20x5+H3oQoUivEqQGV2LVVQ75v6h7dfWBnRKy1g==}
+  '@reown/appkit-polyfills@2.0.0':
+    resolution: {integrity: sha512-NhEotcqXjfQVy5jJHieMJDC8t2vj1+fdg3Aqg+4sUdNUbDI1Ch91NEppmhb9/yTCKbR5Rr4fbxTsaMRcOHhZVg==}
 
-  '@reown/appkit-scaffold-ui@1.8.24':
-    resolution: {integrity: sha512-bA5fJQAYAejwWeNUvOQM3luGE1mK9jfzvixx/tNZnatBOavUX07793hXrXksi82QpxOM/H9notgwGGeryDK00w==}
+  '@reown/appkit-scaffold-ui@2.0.0':
+    resolution: {integrity: sha512-GIIrCg1rPJ4J5pq5D12wQHQbTx1l+Wz37Jgli/BkytZ2nayIhdSijUC4idkTdcFbnZNOXHhitLA7C2Xl9HwIiw==}
 
-  '@reown/appkit-ui@1.8.24':
-    resolution: {integrity: sha512-Ex4/s9TtFZfrj0vjNBeH3uy23bIkZbOikcfJ3rInjGAN2ujyrb0ed9ZUWaiNTveVh06hjglYdgQ7B6nYDTBxSw==}
+  '@reown/appkit-ui@2.0.0':
+    resolution: {integrity: sha512-pchJ6huKCB72aohZavF8Iu/n/lOlqbgwTWrsbpzoQczkhofRWRfkoOrMTH/NcFBat5gxQ5zT1i8LhjUH/IHdEA==}
 
-  '@reown/appkit-utils@1.8.24':
-    resolution: {integrity: sha512-HsGAgbWg4SPlZJJGNaKeynrtRZwa9iDPIXQ3iSi/Rc4g0IxZ6ahIGciZzLR/t1QM2Ehmx2MhM6LXVHa4PGbC3A==}
+  '@reown/appkit-utils@2.0.0':
+    resolution: {integrity: sha512-THA1ybgQus6c+Sl931mS8WbdwQXTnsldROVNJ/6JACF4gYYF54eMNkz6Xqpz9BeDNjqaOXYi1mcsCGsP7TbErg==}
     peerDependencies:
       valtio: 2.1.7
 
-  '@reown/appkit-wallet@1.8.24':
-    resolution: {integrity: sha512-MgJ5H25m7PgHwPzzv5nKnzdrMI6F+9zU3oIYsIWT/I/h4EfnN2COt+WuI7uX2Z2J2pWyHi0uDrysRgHU7DPAOw==}
+  '@reown/appkit-wallet@2.0.0':
+    resolution: {integrity: sha512-KcR6SlvYNpZgqo0xZwSI/gpdeFT00OsQ66KQRUOb6Usfy9x2wvFMvcM+ob5KZs/Y2w+QgL++gHH0KlWZ60W89g==}
 
-  '@reown/appkit@1.8.24':
-    resolution: {integrity: sha512-FXxZk+H/1PMABskdaMo+iuzr/9Oi6EYUw75PxeqzvGFVdB5YLAv9HIlIEc/nQiYv8SPoRy6y19TAae9ndiHmqA==}
+  '@reown/appkit@2.0.0':
+    resolution: {integrity: sha512-yyDajcnTUK2Qd5NG5gk/lhADqSrgSMAVn4/+cL67ngdt8hWCm2uUDuW/1gJ3sgqD1OTQmgIYkHKRCnYBDG4x1g==}
 
   '@rolldown/binding-android-arm-eabi@1.2.19':
     resolution: {integrity: sha512-e+Ebe0WT+9tbXmNKPIiC8YrWAHYwug3m6i4p3rZGGulfZri1jtI4HslT+OZnFf/OIHowWF71DTlHwXBP2SiA7A==}
@@ -2332,11 +2342,11 @@ packages:
     peerDependencies:
       react: '>=18.2.0'
 
-  '@tanstack/query-core@5.108.1':
-    resolution: {integrity: sha512-GBX6Xsc9E+9eVLLxuM7orQNbssQjpruOCbocBYwT78MjxOWT5I+CWdvEo0N+UM6+oCZEKxuSud1oFLvE3OEmIg==}
+  '@tanstack/query-core@5.108.4':
+    resolution: {integrity: sha512-2Ks5dlLWz4eXJrthOyG0qW3SLt3xx0RrQmAmN0rnmogiaaOYuWiAe6HAm9KE2b2v8nig+vraNz8fsfZ6fF6zFg==}
 
-  '@tanstack/react-query@5.108.1':
-    resolution: {integrity: sha512-8/p7fpIdmUiKIukQ5ddAMUUSKC7Z8CcgUOBR2r3WqRvMg9Lzc4CXeoFchjfATKvqi23SyYFvesDdOULrvyunNg==}
+  '@tanstack/react-query@5.108.4':
+    resolution: {integrity: sha512-GlTa94kfEKTVsbzXe58rFA3GZ0ZE7N1aFtbZAfOS3XxMv8YNn4C+8rsz40LorHLazdm5PsqCroWaYAR+ZkMXMQ==}
     peerDependencies:
       '@types/react': ^18 || ^19
       react: ^18 || ^19
@@ -2344,14 +2354,14 @@ packages:
       '@types/react':
         optional: true
 
-  '@tanstack/react-virtual@3.14.26':
-    resolution: {integrity: sha512-HUDlfsrYH6ko5xH56L62Mcl/uzT+AGVNMHFuDNqDJMdZWc1AQa2oeVKNUvZ/RWBZQ4TYtyQerFrNvLnp39h65A==}
+  '@tanstack/react-virtual@3.14.28':
+    resolution: {integrity: sha512-zoM4eddIVUsOsunOe26ur+h6YJQbvdzU10a2tKzIovThu5P4SvEyQ+cRx0mbeKfgnR0Mz7KR/NwrZ3GzVnUF/g==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@tanstack/virtual-core@3.19.11':
-    resolution: {integrity: sha512-/5iHb0RHBvj8Di59FDs4ESNm45jls33aZAi4zccVXZjc/6ZvwQP6nzEYeT6weXjTf9E6/vrp2JhYWRyO+ZP13A==}
+  '@tanstack/virtual-core@3.19.13':
+    resolution: {integrity: sha512-CyCvMm7m5JuvPW6eMPZkZBZk6diySrlUQNNRpQPiEnh2vakyghx82Hw3wW2THFUsl6xJ6uM4lSUaiA2T0oYW8w==}
 
   '@testing-library/dom@10.4.2':
     resolution: {integrity: sha512-yzr2S9HyAIdhz2/6qHgbs665Q7PKVcDF05vsOlHPxG1mo36gKVesdYVeDLnXgfjJ03CrKRk08knc6+E/9m8v2Q==}
@@ -3297,8 +3307,8 @@ packages:
   keyvaluestorage-interface@1.0.0:
     resolution: {integrity: sha512-8t6Q3TclQ4uZynJY9IGr2+SsIGwK9JHcO6ootkHCGA0CrQCRy+VkouYNO2xicET6b9al7QKzpebNow+gkpCL8g==}
 
-  knip@6.46.1:
-    resolution: {integrity: sha512-5/ajqjZfmuv8O74+McrKBOSArKG6tsUgy6yJird36VZh9HiUq75qY4U39uqf9wjchEUOLrStuOZpFP057CZFRw==}
+  knip@6.48.0:
+    resolution: {integrity: sha512-v+Gfp6uiOeXaaj+Khk2Z7/fTTZYWLnDwxZapQUyy8WoQFLYXiUHXqRdFJTwRnrKNA1gPXTPi5NGTKKLXyImVrg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -3905,8 +3915,8 @@ packages:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
     engines: {node: '>=20'}
 
-  tailwind-merge@3.7.0:
-    resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
+  tailwind-merge@3.7.1:
+    resolution: {integrity: sha512-v7y4BV4FUlO8exj/4M5UXKeoowDiuugVUg3tkMNIyOUCOHy5xp8+5aWQeXCtZ2491sUV1YPsVeM9EveZ6/xuZQ==}
 
   tailwindcss@4.3.5:
     resolution: {integrity: sha512-FcQk9BuffmEHJP2G0XmB2SplU1aLTI7j07Kunk+U74Ny+XiWOtzXz9aujFZ/avntw1e2cOv/3PkgzflQ7gX2vQ==}
@@ -4108,8 +4118,8 @@ packages:
       react:
         optional: true
 
-  viem@2.58.1:
-    resolution: {integrity: sha512-8qzo5+rbG4Sr9/MvUit9g0r/0H25suExk5WEBOzqXoTu7nYfm8EpgCTtpqQAlu8HkBmz96clZHfN7RkXKT3a1g==}
+  viem@2.58.4:
+    resolution: {integrity: sha512-zeYi2PliKbmJVbIvudHZrYJLh1XMXci6GBJznQLjhhGPGl9L7Hp/LmelpXhOM9VvlXwnvfW7/2PCgpjnc2j8MQ==}
     peerDependencies:
       mppx: '>=0.17.0'
       typescript: '>=5.0.4'
@@ -4384,6 +4394,12 @@ packages:
       use-sync-external-store:
         optional: true
 
+ignoredOptionalDependencies:
+  - '@x402/core'
+  - '@x402/evm'
+  - '@x402/extensions'
+  - '@x402/svm'
+
 snapshots:
 
   '@adobe/css-tools@4.5.0': {}
@@ -4510,7 +4526,7 @@ snapshots:
       idb-keyval: 6.2.1
       ox: 0.6.9(typescript@7.0.2)(zod@4.6.7)
       preact: 10.24.2
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
       zustand: 5.0.3(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
     transitivePeerDependencies:
       - '@types/react'
@@ -4609,7 +4625,7 @@ snapshots:
       jose: 6.2.18
       md5: 2.3.0
       uncrypto: 0.1.3
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
       zod: 4.6.7
     transitivePeerDependencies:
       - bufferutil
@@ -4629,7 +4645,7 @@ snapshots:
       idb-keyval: 6.2.1
       ox: 0.6.9(typescript@7.0.2)(zod@4.6.7)
       preact: 10.24.2
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
       zustand: 5.0.3(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
     transitivePeerDependencies:
       - '@types/react'
@@ -4918,23 +4934,23 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.3
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@kheopskit/core@6.0.2(@reown/appkit@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.1(typescript@7.0.2)(zod@4.6.7))':
+  '@kheopskit/core@6.0.4(@reown/appkit@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.4(typescript@7.0.2)(zod@4.6.7))':
     dependencies:
       '@noble/hashes': 2.4.0
       '@scure/base': 2.4.0
       lodash-es: 4.18.1
       rxjs: 7.8.2
     optionalDependencies:
-      '@reown/appkit': 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
+      '@reown/appkit': 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
       '@solana/kit': 8.6.0(typescript@7.0.2)
       '@wallet-standard/base': 1.1.1
       mipd: 0.0.7(typescript@7.0.2)
       polkadot-api: 3.3.0(esbuild@0.28.2)(rxjs@7.8.2)
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
 
-  '@kheopskit/react@6.0.2(@kheopskit/core@6.0.2(@reown/appkit@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.1(typescript@7.0.2)(zod@4.6.7)))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)':
+  '@kheopskit/react@6.0.4(@kheopskit/core@6.0.4(@reown/appkit@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.4(typescript@7.0.2)(zod@4.6.7)))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@kheopskit/core': 6.0.2(@reown/appkit@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.1(typescript@7.0.2)(zod@4.6.7))
+      '@kheopskit/core': 6.0.4(@reown/appkit@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7))(@solana/kit@8.6.0(typescript@7.0.2))(@wallet-standard/base@1.1.1)(mipd@0.0.7(typescript@7.0.2))(polkadot-api@3.3.0(esbuild@0.28.2)(rxjs@7.8.2))(rxjs@7.8.2)(viem@2.58.4(typescript@7.0.2)(zod@4.6.7))
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
       rxjs: 7.8.2
@@ -5312,11 +5328,11 @@ snapshots:
 
   '@remix-run/route-pattern@0.22.1': {}
 
-  '@reown/appkit-common@1.8.24(typescript@7.0.2)(zod@4.6.7)':
+  '@reown/appkit-common@2.0.0(typescript@7.0.2)(zod@4.6.7)':
     dependencies:
       big.js: 6.2.2
       dayjs: 1.11.13
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
     transitivePeerDependencies:
       - bufferutil
       - mppx
@@ -5324,13 +5340,13 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-controllers@1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)':
+  '@reown/appkit-controllers@2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)':
     dependencies:
-      '@reown/appkit-common': 1.8.24(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-wallet': 1.8.24(typescript@7.0.2)
+      '@reown/appkit-common': 2.0.0(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-wallet': 2.0.0(typescript@7.0.2)
       '@walletconnect/universal-provider': 2.23.7(typescript@7.0.2)(zod@4.6.7)
       valtio: 2.1.7(@types/react@19.3.0)(react@19.3.1)
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -5360,12 +5376,12 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-pay@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)':
+  '@reown/appkit-pay@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)':
     dependencies:
-      '@reown/appkit-common': 1.8.24(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-controllers': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-ui': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-utils': 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
+      '@reown/appkit-common': 2.0.0(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-controllers': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-ui': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-utils': 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
       lit: 3.3.0
       valtio: 2.1.7(@types/react@19.3.0)(react@19.3.1)
     transitivePeerDependencies:
@@ -5406,18 +5422,18 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-polyfills@1.8.24':
+  '@reown/appkit-polyfills@2.0.0':
     dependencies:
       buffer: 6.0.3
 
-  '@reown/appkit-scaffold-ui@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)':
+  '@reown/appkit-scaffold-ui@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)':
     dependencies:
-      '@reown/appkit-common': 1.8.24(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-controllers': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-pay': 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
-      '@reown/appkit-ui': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-utils': 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
-      '@reown/appkit-wallet': 1.8.24(typescript@7.0.2)
+      '@reown/appkit-common': 2.0.0(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-controllers': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-pay': 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
+      '@reown/appkit-ui': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-utils': 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
+      '@reown/appkit-wallet': 2.0.0(typescript@7.0.2)
       lit: 3.3.0
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -5458,12 +5474,12 @@ snapshots:
       - valtio
       - zod
 
-  '@reown/appkit-ui@1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)':
+  '@reown/appkit-ui@2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)':
     dependencies:
       '@phosphor-icons/webcomponents': 2.1.5
-      '@reown/appkit-common': 1.8.24(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-controllers': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-wallet': 1.8.24(typescript@7.0.2)
+      '@reown/appkit-common': 2.0.0(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-controllers': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-wallet': 2.0.0(typescript@7.0.2)
       lit: 3.3.0
       qrcode: 1.5.3
     transitivePeerDependencies:
@@ -5495,17 +5511,17 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-utils@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)':
+  '@reown/appkit-utils@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)':
     dependencies:
-      '@reown/appkit-common': 1.8.24(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-controllers': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-polyfills': 1.8.24
-      '@reown/appkit-wallet': 1.8.24(typescript@7.0.2)
+      '@reown/appkit-common': 2.0.0(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-controllers': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-polyfills': 2.0.0
+      '@reown/appkit-wallet': 2.0.0(typescript@7.0.2)
       '@wallet-standard/wallet': 1.1.0
       '@walletconnect/logger': 3.0.2
       '@walletconnect/universal-provider': 2.23.7(typescript@7.0.2)(zod@4.6.7)
       valtio: 2.1.7(@types/react@19.3.0)(react@19.3.1)
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
     optionalDependencies:
       '@base-org/account': 2.4.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
       '@coinbase/wallet-sdk': 4.3.6(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
@@ -5549,10 +5565,10 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-wallet@1.8.24(typescript@7.0.2)':
+  '@reown/appkit-wallet@2.0.0(typescript@7.0.2)':
     dependencies:
-      '@reown/appkit-common': 1.8.24(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-polyfills': 1.8.24
+      '@reown/appkit-common': 2.0.0(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-polyfills': 2.0.0
       '@walletconnect/logger': 3.0.2
       zod: 4.6.7
     transitivePeerDependencies:
@@ -5561,21 +5577,21 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@reown/appkit@1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)':
+  '@reown/appkit@2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)':
     dependencies:
-      '@reown/appkit-common': 1.8.24(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-controllers': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-pay': 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
-      '@reown/appkit-polyfills': 1.8.24
-      '@reown/appkit-scaffold-ui': 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
-      '@reown/appkit-ui': 1.8.24(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
-      '@reown/appkit-utils': 1.8.24(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
-      '@reown/appkit-wallet': 1.8.24(typescript@7.0.2)
+      '@reown/appkit-common': 2.0.0(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-controllers': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-pay': 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(zod@4.6.7)
+      '@reown/appkit-polyfills': 2.0.0
+      '@reown/appkit-scaffold-ui': 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
+      '@reown/appkit-ui': 2.0.0(@types/react@19.3.0)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+      '@reown/appkit-utils': 2.0.0(@types/react@19.3.0)(debug@4.4.3)(react@19.3.1)(typescript@7.0.2)(use-sync-external-store@1.7.0(react@19.3.1))(valtio@2.1.7(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
+      '@reown/appkit-wallet': 2.0.0(typescript@7.0.2)
       '@walletconnect/universal-provider': 2.23.7(typescript@7.0.2)(zod@4.6.7)
       bs58: 6.0.0
       semver: 7.7.2
       valtio: 2.1.7(@types/react@19.3.0)(react@19.3.1)
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
     optionalDependencies:
       '@lit/react': 1.0.8(@types/react@19.3.0)
     transitivePeerDependencies:
@@ -5775,7 +5791,7 @@ snapshots:
   '@safe-global/safe-apps-sdk@9.1.0(typescript@7.0.2)(zod@4.6.7)':
     dependencies:
       '@safe-global/safe-gateway-typescript-sdk': 3.23.1
-      viem: 2.58.1(typescript@7.0.2)(zod@4.6.7)
+      viem: 2.58.4(typescript@7.0.2)(zod@4.6.7)
     transitivePeerDependencies:
       - bufferutil
       - mppx
@@ -6552,22 +6568,22 @@ snapshots:
       color: 5.0.3
       react: 19.3.1
 
-  '@tanstack/query-core@5.108.1': {}
+  '@tanstack/query-core@5.108.4': {}
 
-  '@tanstack/react-query@5.108.1(@types/react@19.3.0)(react@19.3.1)':
+  '@tanstack/react-query@5.108.4(@types/react@19.3.0)(react@19.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.108.1
+      '@tanstack/query-core': 5.108.4
       react: 19.3.1
     optionalDependencies:
       '@types/react': 19.3.0
 
-  '@tanstack/react-virtual@3.14.26(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@tanstack/react-virtual@3.14.28(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@tanstack/virtual-core': 3.19.11
+      '@tanstack/virtual-core': 3.19.13
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  '@tanstack/virtual-core@3.19.11': {}
+  '@tanstack/virtual-core@3.19.13': {}
 
   '@testing-library/dom@10.4.2':
     dependencies:
@@ -7645,7 +7661,7 @@ snapshots:
 
   keyvaluestorage-interface@1.0.0: {}
 
-  knip@6.46.1:
+  knip@6.48.0:
     dependencies:
       formatly: 0.11.4
       get-tsconfig: 4.14.3
@@ -8355,7 +8371,7 @@ snapshots:
 
   tagged-tag@1.0.0: {}
 
-  tailwind-merge@3.7.0: {}
+  tailwind-merge@3.7.1: {}
 
   tailwindcss@4.3.5: {}
 
@@ -8493,7 +8509,7 @@ snapshots:
       '@types/react': 19.3.0
       react: 19.3.1
 
-  viem@2.58.1(typescript@7.0.2)(zod@4.6.7):
+  viem@2.58.4(typescript@7.0.2)(zod@4.6.7):
     dependencies:
       '@noble/curves': 1.9.1
       '@noble/hashes': 1.8.0
